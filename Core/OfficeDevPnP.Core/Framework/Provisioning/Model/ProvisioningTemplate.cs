@@ -48,6 +48,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private SiteWebhookCollection _siteWebhooks;
         private ClientSidePageCollection _clientSidePages;
 
+        private ProvisioningTenant _tenant;
+        private ApplicationLifecycleManagement _applicationLifecycleManagement;
+
         #endregion
 
         #region Constructors
@@ -86,6 +89,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             this._siteWebhooks = new SiteWebhookCollection(this);
             this._clientSidePages = new ClientSidePageCollection(this);
+
+            this._tenant = new ProvisioningTenant();
+            this._tenant.ParentTemplate = this;
+
+            this._applicationLifecycleManagement = new ApplicationLifecycleManagement();
+            this._applicationLifecycleManagement.ParentTemplate = this;
         }
 
         /// <summary>
@@ -474,6 +483,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// The Tenant-wide settings for the template
+        /// </summary>
+        public ProvisioningTenant Tenant
+        {
+            get { return this._tenant; }
+            set
+            {
+                if (this._tenant != null)
+                {
+                    this._tenant.ParentTemplate = null;
+                }
+                this._tenant = value;
+                if (this._tenant != null)
+                {
+                    this._tenant.ParentTemplate = this;
+                }
+            }
+        }
+
+        public ApplicationLifecycleManagement ApplicationLifecycleManagement
+        {
+            get { return this._applicationLifecycleManagement; }
+            set
+            {
+                if (this._applicationLifecycleManagement != null)
+                {
+                    this._applicationLifecycleManagement.ParentTemplate = null;
+                }
+                this._applicationLifecycleManagement = value;
+                if (this._applicationLifecycleManagement != null)
+                {
+                    this._applicationLifecycleManagement.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
         /// The Image Preview Url of the Provisioning Template
         /// </summary>
         public String ImagePreviewUrl { get; set; }
@@ -527,7 +573,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|{31}|{32}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|{31}|{32}|{33}|",
                 (this.ComposedLook != null ? this.ComposedLook.GetHashCode() : 0),
                 this.ContentTypes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.CustomActions.SiteCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
@@ -562,7 +608,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.SiteWebhooks.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.ClientSidePages.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.TemplateCultureInfo?.GetHashCode() ?? 0,
-                this.Scope.GetHashCode()
+                this.Scope.GetHashCode(),
+                this.Tenant.GetHashCode()
             ).GetHashCode());
         }
 
@@ -583,7 +630,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Compares ProvisioningTemplate object based on ComposedLook, ContentTypes, CustomActions, SiteFeature, WebFeatures, Files, Id, Lists,
         /// PropertyBagEntries, Providers, Security, SiteFields, SitePolicy, Version, Pages, TermGroups, Workflows, AddIns, Publishing, Loaclizations,
-        /// WebSettings, SiteWebhooks, and ClientSidePages properties.
+        /// WebSettings, SiteWebhooks, ClientSidePages, and Tenant properties.
         /// </summary>
         /// <param name="other">ProvisioningTemplate object</param>
         /// <returns>true if the ProvisioningTemplate object is equal to the current object; otherwise, false.</returns>
@@ -629,7 +676,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.SiteWebhooks.DeepEquals(other.SiteWebhooks) &&
                 this.ClientSidePages.DeepEquals(other.ClientSidePages) &&
                 this.TemplateCultureInfo == other.TemplateCultureInfo &&
-                this.Scope == other.Scope
+                this.Scope == other.Scope &&
+                this.Tenant == other.Tenant
             );
         }
 

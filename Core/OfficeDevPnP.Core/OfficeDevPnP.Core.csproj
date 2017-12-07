@@ -434,26 +434,43 @@
     <Compile Include="Framework\Graph\GraphHttpClient.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingValue.cs" />
     <Compile Include="Framework\Graph\Model\SiteClassificationsSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\App.cs" />
+    <Compile Include="Framework\Provisioning\Model\AppCatalog.cs" />
+    <Compile Include="Framework\Provisioning\Model\AppCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ApplicationLifecycleManagement.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasControl.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasControlCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasSection.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasSectionCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ContentDeliveryNetwork.cs" />
+    <Compile Include="Framework\Provisioning\Model\CdnOrigin.cs" />
+    <Compile Include="Framework\Provisioning\Model\CdnOriginCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\CdnSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\ClientSidePage.cs" />
     <Compile Include="Framework\Provisioning\Model\ClientSidePageCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Package.cs" />
     <Compile Include="Framework\Provisioning\Model\ImageRendition.cs" />
+    <Compile Include="Framework\Provisioning\Model\PackageCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ImageRenditionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\IRMSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteWebhook.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteWebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningTenant.cs" />
     <Compile Include="Framework\Provisioning\Model\Webhook.cs" />
     <Compile Include="Framework\Provisioning\Model\WebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\NoScriptTemplateCleaner.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectApplicationLifecycleManagement.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTenant.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AppPackageIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.cs">
       <DependentUpon>ProvisioningSchema-2017-05.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-01.cs">
+      <DependentUpon>ProvisioningSchema-2018-01.xsd</DependentUpon>
     </Compile>
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\DocumentTemplateFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TermSetFromModelToSchemaTypeResolver.cs" />
@@ -467,6 +484,10 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\ListInstanceDataRowsFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\ListInstanceDataRowsFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\RemoveExistingContentTypesFromSchemaToModelValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\AppCatalogFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\CdnFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\CdnFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\AppCatalogFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\WorkHourFromSchemaToModelValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FoldersFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromAuditFlagsToArrayResolver.cs" />
@@ -500,6 +521,8 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\FeaturesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\DirectoriesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201705\ListInstancesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201801\ApplicationLifecycleManagementSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201801\TenantSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WorkflowsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AuditSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SiteColumnsSerializer.cs" />
@@ -511,6 +534,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateBasePropertiesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\RegionalSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WebSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201801Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201705Serializer.cs" />
     <Compile Include="Pages\ClientSidePageCanvas.cs" />
     <Compile Include="Pages\ClientSidePageControls.cs" />
@@ -949,6 +973,9 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-01.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />

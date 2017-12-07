@@ -33,7 +33,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // Retrieve the current web navigation settings
                 var navigationSettings = new WebNavigationSettings(web.Context, web);
-                navigationSettings.EnsureProperties(ns => ns.CurrentNavigation, ns => ns.GlobalNavigation);
+                navigationSettings.EnsureProperties(ns => ns.AddNewPagesToNavigation, ns => ns.CreateFriendlyUrlsForNewPages,
+                    ns => ns.CurrentNavigation, ns => ns.GlobalNavigation);
 
                 switch (navigationSettings.GlobalNavigation.Source)
                 {
@@ -83,6 +84,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                                 currentNavigationType == CurrentNavigationType.Structural | currentNavigationType == CurrentNavigationType.StructuralLocal ? GetCurrentStructuralNavigation(web, navigationSettings) : null,
                                                                 currentNavigationType == CurrentNavigationType.Managed ? GetCurrentManagedNavigation(web, navigationSettings) : null)
                                                             );
+
+                navigationEntity.AddNewPagesToNavigation = navigationSettings.AddNewPagesToNavigation;
+                navigationEntity.CreateFriendlyUrlsForNewPages = navigationSettings.CreateFriendlyUrlsForNewPages;
+
                 // If a base template is specified then use that one to "cleanup" the generated template model
                 if (creationInfo.BaseTemplate != null)
                 {
@@ -123,6 +128,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var navigationSettings = new WebNavigationSettings(web.Context, web);
                     web.Context.Load(navigationSettings, ns => ns.CurrentNavigation, ns => ns.GlobalNavigation);
                     web.Context.ExecuteQueryRetry();
+
+                    navigationSettings.AddNewPagesToNavigation = template.Navigation.AddNewPagesToNavigation;
+                    navigationSettings.CreateFriendlyUrlsForNewPages = template.Navigation.CreateFriendlyUrlsForNewPages;
 
                     if (template.Navigation.GlobalNavigation != null)
                     {
@@ -274,7 +282,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private void ProvisionCurrentStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool clearNavigation, PnPMonitoredScope scope)
         {
-            ProvisionStructuralNavigation(web, structuralNavigation, parser, true, clearNavigation,  scope);
+            ProvisionStructuralNavigation(web, structuralNavigation, parser, true, clearNavigation, scope);
         }
 
         private void ProvisionStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool currentNavigation, bool clearNavigation, PnPMonitoredScope scope)
