@@ -1000,6 +1000,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
 , l => l.ListExperienceOptions
 , l => l.ReadSecurity
+, l => l.WriteSecurity
+, l => l.ExcludeFromOfflineClient
+, l => l.EnableAssignToEmail
 #endif
 );
             web.Context.ExecuteQueryRetry();
@@ -1087,6 +1090,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingList.ReadSecurity = (templateList.ReadSecurity == 0 ? 1 : templateList.ReadSecurity);
                     isDirty = true;
                 }
+                if (existingList.WriteSecurity != (templateList.WriteSecurity == 0 ? 1 : templateList.WriteSecurity))
+                {
+                    existingList.WriteSecurity = (templateList.WriteSecurity == 0 ? 1 : templateList.WriteSecurity);
+                    isDirty = true;
+                }
+                if(existingList.ExcludeFromOfflineClient != templateList.ExcludeFromOfflineClient)
+                {
+                    existingList.ExcludeFromOfflineClient = templateList.ExcludeFromOfflineClient;
+                    isDirty = true;
+                }
+                if(existingList.EnableAssignToEmail != templateList.EnableAssignToEmail)
+                {
+                    existingList.EnableAssignToEmail = templateList.EnableAssignToEmail;
+                    isDirty = true; 
+                }
 #endif
                 if (templateList.ValidationFormula != null && existingList.ValidationFormula != parser.ParseString(templateList.ValidationFormula))
                 {
@@ -1098,6 +1116,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingList.ValidationMessage = parser.ParseString(templateList.ValidationMessage);
                     isDirty = true;
                 }
+                
 
                 if (existingList.IrmExpire != templateList.IrmExpire)
                 {
@@ -1600,6 +1619,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 createdList.ReadSecurity = list.ReadSecurity;
             }
+            if (list.WriteSecurity != default(int))
+            {
+                createdList.WriteSecurity = list.WriteSecurity;
+            }
+            createdList.ExcludeFromOfflineClient = list.ExcludeFromOfflineClient;
+            createdList.EnableAssignToEmail = list.EnableAssignToEmail;
+            
 #endif
             if (!string.IsNullOrEmpty(parser.ParseString(list.ValidationFormula)))
             {
@@ -1948,6 +1974,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
                         l => l.ListExperienceOptions,
                         l => l.ReadSecurity,
+                        l => l.WriteSecurity,
+                        l => l.ExcludeFromOfflineClient,
+                        l => l.EnableAssignToEmail,
 #endif
                         l => l.Fields.IncludeWithDefaultProperties(
                             f => f.Id,
@@ -2038,6 +2067,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
                         ListExperience = (Model.ListExperience)Enum.Parse(typeof(Model.ListExperience), siteList.ListExperienceOptions.ToString()),
                         ReadSecurity = siteList.ReadSecurity,
+                        WriteSecurity = siteList.WriteSecurity,
+                        ExcludeFromOfflineClient = siteList.ExcludeFromOfflineClient,
+                        EnableAssignToEmail = siteList.EnableAssignToEmail,
 #endif
                         MaxVersionLimit =
                             siteList.IsPropertyAvailable("MajorVersionLimit") ? siteList.MajorVersionLimit : 0,
