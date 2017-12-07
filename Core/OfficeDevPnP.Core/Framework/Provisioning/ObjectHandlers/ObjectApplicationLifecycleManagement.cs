@@ -10,6 +10,7 @@ using OfficeDevPnP.Core.ALM;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
+#if !ONPREMISES
     internal class ObjectApplicationLifecycleManagement : ObjectHandlerBase
     {
         public override string Name
@@ -109,4 +110,5 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return (!web.IsSubSite() && template.ApplicationLifecycleManagement != null);
         }
     }
+#endif
 }

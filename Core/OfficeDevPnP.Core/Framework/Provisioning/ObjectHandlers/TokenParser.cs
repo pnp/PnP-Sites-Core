@@ -244,8 +244,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             // AppPackages tokens
+#if !ONPREMISES
             AddAppPackagesTokens(web);
-
+#endif
             var sortedTokens = from t in _tokens
                                orderby t.GetTokenLength() descending
                                select t;
@@ -253,6 +254,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens = sortedTokens.ToList();
         }
 
+#if !ONPREMISES
         private void AddAppPackagesTokens(Web web)
         {
             _tokens.RemoveAll(t => t.GetType() == typeof(AppPackageIdToken));
@@ -265,6 +267,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new AppPackageIdToken(web, app.Title, app.Id));
             }
         }
+#endif
 
         private void AddContentTypeTokens(Web web)
         {

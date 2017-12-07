@@ -14,6 +14,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
+#if !ONPREMISES
     internal class ObjectTenant : ObjectHandlerBase
     {
         public override string Name
@@ -172,5 +173,5 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return stream;
         }
     }
+#endif
 }
-
