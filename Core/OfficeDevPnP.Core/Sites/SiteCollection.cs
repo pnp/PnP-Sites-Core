@@ -134,7 +134,7 @@ namespace OfficeDevPnP.Core.Sites
 
             var accessToken = clientContext.GetAccessToken();
 
-            if (!string.IsNullOrEmpty(accessToken))
+            if (clientContext.IsAppOnly())
             {
                 throw new Exception("App-Only is currently not supported.");
             }
@@ -221,6 +221,11 @@ namespace OfficeDevPnP.Core.Sites
             if (siteCollectionGroupifyInformation.Alias.Contains(" "))
             {
                 throw new ArgumentException("Alias cannot contain spaces", "Alias");
+            }
+
+            if(string.IsNullOrEmpty(siteCollectionGroupifyInformation.DisplayName))
+            {
+                throw new ArgumentException("DisplayName is required", "DisplayName");
             }
 
             ClientContext responseContext = null;

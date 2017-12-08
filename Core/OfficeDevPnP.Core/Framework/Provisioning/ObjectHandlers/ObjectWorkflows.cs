@@ -234,7 +234,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                     // Save the Workflow Definition
                                     var newDefinition = deploymentService.SaveDefinition(workflowDefinition);
-                                    //web.Context.Load(workflowDefinition); //not needed
                                     web.Context.ExecuteQueryRetry();
 
                                     // Let's publish the Workflow Definition, if needed
@@ -243,9 +242,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         deploymentService.PublishDefinition(newDefinition.Value);
                                         web.Context.ExecuteQueryRetry();
                                     }
-
-                                    break; // no errors so exit loop
                                 }
+                                else
+                                {
+                                    // Otherwise update the XAML definition
+                                    workflowDefinition.AssociationUrl = templateDefinition.AssociationUrl;
+                                    workflowDefinition.Description = templateDefinition.Description;
+                                    workflowDefinition.DisplayName = templateDefinition.DisplayName;
+                                    workflowDefinition.FormField = templateDefinition.FormField;
+                                    workflowDefinition.DraftVersion = templateDefinition.DraftVersion;
+                                    workflowDefinition.InitiationUrl = templateDefinition.InitiationUrl;
+                                    workflowDefinition.RequiresAssociationForm = templateDefinition.RequiresAssociationForm;
+                                    workflowDefinition.RequiresInitiationForm = templateDefinition.RequiresInitiationForm;
+                                    workflowDefinition.RestrictToScope = parser.ParseString(templateDefinition.RestrictToScope);
+                                    workflowDefinition.RestrictToType = templateDefinition.RestrictToType != "Universal" ? templateDefinition.RestrictToType : null;
+                                    workflowDefinition.Xaml = parser.ParseXmlString(xaml.ToString());
+
+                                    var updatedDefinition = deploymentService.SaveDefinition(workflowDefinition);
+                                    web.Context.ExecuteQueryRetry();
+
+                                    // Let's publish the Workflow Definition, if needed
+                                    if (templateDefinition.Published)
+                                    {
+                                        deploymentService.PublishDefinition(updatedDefinition.Value);
+                                        web.Context.ExecuteQueryRetry();
+                                    }
+                                }
+
+                                // If we are here, we have the workflow definition
+                                // and we did not have any exception.
+                                // Thus, we can exit from the loop
+                                break;
                             }
                             catch (Exception ex)
                             {

@@ -17,7 +17,7 @@ Base template: goal is to verify that all list properties and elements work as e
   <pnp:Lists>
     <!-- Document Libraries-->
     <!-- Element Webhook -->
-    <pnp:ListInstance Title="LI_201707_10" TemplateType="101" Url="LI_201707_10">
+    <pnp:ListInstance Title="LI_201707_10" TemplateType="101" Url="LI_201707_10" ReadSecurity="1">
       <pnp:Webhooks>
         <pnp:Webhook ExpiresInDays="5" ServerNotificationUrl="https://pnp-functions.azurewebsites.net/api/PnPWebHookTest?code=Em33KG1g/NiOkAY0Ei727xZbQDKeZSaEGz//RxXz0pShGsHAJ9JLhA=="/>
       </pnp:Webhooks>

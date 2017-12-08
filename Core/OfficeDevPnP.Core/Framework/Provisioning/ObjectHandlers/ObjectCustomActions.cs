@@ -95,7 +95,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         ImageUrl = parser.ParseString(customAction.ImageUrl),
                         Location = customAction.Location,
                         Name = customAction.Name,
-                        RegistrationId = customAction.RegistrationId,
+                        RegistrationId = parser.ParseString(customAction.RegistrationId),
                         RegistrationType = customAction.RegistrationType,
                         Remove = customAction.Remove,
                         Rights = customAction.Rights,
@@ -244,10 +244,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingCustomAction.Location = customAction.Location;
                 isDirty = true;
             }
-            if (existingCustomAction.RegistrationId != customAction.RegistrationId)
+            if (existingCustomAction.RegistrationId != parser.ParseString(customAction.RegistrationId))
             {
                 scope.LogPropertyUpdate("RegistrationId");
-                existingCustomAction.RegistrationId = customAction.RegistrationId;
+                existingCustomAction.RegistrationId = parser.ParseString(customAction.RegistrationId);
                 isDirty = true;
             }
             if (existingCustomAction.RegistrationType != customAction.RegistrationType)

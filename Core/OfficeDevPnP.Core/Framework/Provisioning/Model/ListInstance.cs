@@ -521,11 +521,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.TemplateFeatureID == other.TemplateFeatureID &&
                 this.RemoveExistingViews == other.RemoveExistingViews &&
                 this.ContentTypeBindings.DeepEquals(other.ContentTypeBindings) &&
-                this.Views.DeepEquals(other.Views) &&
-                this.Fields.DeepEquals(other.Fields) &&
+                // Only do a deep view compare on non system lists to avoid subtle changes in OOB view XML to popup system lists in the generated model
+                (this.IsApplicationList == false ? this.Views.DeepEquals(other.Views) : true) &&
+                // Only do a deep field compare on non system lists to avoid subtle changes in OOB field XML to popup system lists in the generated model
+                (this.IsApplicationList == false ? this.Fields.DeepEquals(other.Fields) : true) &&
                 this.FieldRefs.DeepEquals(other.FieldRefs) &&
                 this.FieldDefaults.DeepEquals(other.FieldDefaults) &&
-                (this.Security != null ? this.Security.Equals(other.Security) : true) &&
+                ((this.Security != null && other.Security != null) ? this.Security.Equals(other.Security) : true) &&
                 this.Folders.DeepEquals(other.Folders) &&
                 this.UserCustomActions.DeepEquals(other.UserCustomActions) &&
                 this.Webhooks.DeepEquals(other.Webhooks) &&

@@ -202,6 +202,105 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// Moves the control to another section and column while keeping it's current position
+        /// </summary>
+        /// <param name="newSection">New section that will host the control</param>
+        public void MovePosition(CanvasSection newSection)
+        {
+            var currentSection = this.Section;
+            this.section = newSection;
+            this.column = newSection.DefaultColumn;
+            ReindexSection(currentSection);
+            ReindexSection(this.Section);
+        }
+
+        /// <summary>
+        /// Moves the control to another section and column in the given position
+        /// </summary>
+        /// <param name="newSection">New section that will host the control</param>
+        /// <param name="position">New position for the control in the new section</param>
+        public void MovePosition(CanvasSection newSection, int position)
+        {
+            var currentSection = this.Section;
+            MovePosition(newSection);
+            ReindexSection(currentSection);
+            MovePosition(position);
+        }
+
+        /// <summary>
+        /// Moves the control to another section and column while keeping it's current position
+        /// </summary>
+        /// <param name="newColumn">New column that will host the control</param>
+        public void MovePosition(CanvasColumn newColumn)
+        {
+            var currentColumn = this.Column;
+            this.section = newColumn.Section;
+            this.column = newColumn;
+            ReindexColumn(currentColumn);
+            ReindexColumn(this.Column);
+        }
+
+        /// <summary>
+        /// Moves the control to another section and column in the given position
+        /// </summary>
+        /// <param name="newColumn">New column that will host the control</param>
+        /// <param name="position">New position for the control in the new column</param>
+        public void MovePosition(CanvasColumn newColumn, int position)
+        {
+            var currentColumn = this.Column;
+            MovePosition(newColumn);
+            ReindexColumn(currentColumn);
+            MovePosition(position);
+        }
+
+        /// <summary>
+        /// Moves the control inside the current column to a new position
+        /// </summary>
+        /// <param name="position">New position for this control</param>
+        public void MovePosition(int position)
+        {
+            // Ensure we're having a clean sequence before starting
+            ReindexColumn();
+
+            if (position > this.Order)
+            {
+                position++;
+            }
+
+            foreach (var control in this.section.Page.Controls.Where(c => c.Section == this.section && c.Column == this.column && c.Order >= position).OrderBy(p => p.Order))
+            {
+                control.Order = control.Order + 1;
+            }
+            this.Order = position;
+
+            // Ensure we're having a clean sequence to return
+            ReindexColumn();
+        }
+
+        private void ReindexColumn()
+        {
+            ReindexColumn(this.Column);
+        }
+
+        private void ReindexColumn(CanvasColumn column)
+        {
+            var index = 0;
+            foreach (var control in this.column.Section.Page.Controls.Where(c => c.Section == column.Section && c.Column == column).OrderBy(c => c.Order))
+            {
+                index++;
+                control.order = index;
+            }
+        }
+
+        private void ReindexSection(CanvasSection section)
+        {
+            foreach(var column in section.Columns)
+            {
+                ReindexColumn(column);
+            }
+        }
+
+        /// <summary>
         /// Receives "data-sp-controldata" content and detects the type of the control
         /// </summary>
         /// <param name="controlDataJson">data-sp-controldata json string</param>
@@ -213,15 +312,12 @@ namespace OfficeDevPnP.Core.Pages
                 throw new ArgumentNullException("ControlDataJson cannot be null");
             }
 
-            // Decode the html encoded string
-            var decoded = WebUtility.HtmlDecode(controlDataJson);
-
             // Deserialize the json string
             var jsonSerializerSettings = new JsonSerializerSettings()
             {
                 MissingMemberHandling = MissingMemberHandling.Ignore
             };
-            var controlData = JsonConvert.DeserializeObject<ClientSideCanvasControlData>(decoded, jsonSerializerSettings);
+            var controlData = JsonConvert.DeserializeObject<ClientSideCanvasControlData>(controlDataJson, jsonSerializerSettings);
 
             if (controlData.ControlType == 3)
             {
@@ -395,8 +491,10 @@ namespace OfficeDevPnP.Core.Pages
                 div = element;
             }
 
-            // By default text is wrapped in a Paragraph, need to drop it to avoid getting multiple paragraphs on page edits
-            if ((div.FirstChild as IElement).TagName.Equals("P", StringComparison.InvariantCultureIgnoreCase))
+            // By default simple plain text is wrapped in a Paragraph, need to drop it to avoid getting multiple paragraphs on page edits.
+            // Only drop the paragraph tag when there's only one Paragraph element underneath the DIV tag
+            if ((div.FirstChild as IElement).TagName.Equals("P", StringComparison.InvariantCultureIgnoreCase) &&
+                (div.ChildElementCount == 1))
             {
                 this.Text = (div.FirstChild as IElement).InnerHtml;
             }
@@ -441,6 +539,7 @@ namespace OfficeDevPnP.Core.Pages
         private string propertiesJson;
         private ClientSideWebPartControlData spControlData;
         private JObject properties;
+        private JObject serverProcessedContent;
         #endregion
 
         #region construction
@@ -561,7 +660,9 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Json serialized web part properties
+        /// Json serialized web part information. For 1st party web parts this ideally is the *full* JSON string 
+        /// fetch via workbench or via copying it from an existing page. It's important that the serverProcessedContent
+        /// element is included here!
         /// </summary>
         public string PropertiesJson
         {
@@ -583,6 +684,17 @@ namespace OfficeDevPnP.Core.Pages
             get
             {
                 return this.properties;
+            }
+        }
+
+        /// <summary>
+        /// ServerProcessedContent json node
+        /// </summary>
+        public JObject ServerProcessedContent
+        {
+            get
+            {
+                return this.serverProcessedContent;
             }
         }
 
@@ -672,8 +784,9 @@ namespace OfficeDevPnP.Core.Pages
             this.jsonWebPartData = jsonWebPartData.Replace("\"jsonPropsToReplacePnPRules\"", this.Properties.ToString(Formatting.None));
 
             StringBuilder html = new StringBuilder(100);
-            using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
-            {
+            var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), "");
+            try
+            { 
                 htmlWriter.NewLine = string.Empty;
                 htmlWriter.AddAttribute(CanvasControlAttribute, this.CanvasControlData);
                 htmlWriter.AddAttribute(CanvasDataVersionAttribute, this.DataVersion);
@@ -692,14 +805,69 @@ namespace OfficeDevPnP.Core.Pages
 
                 htmlWriter.AddAttribute(WebPartHtmlPropertiesAttribute, this.HtmlProperties);
                 htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
-                htmlWriter.Write(this.HtmlPropertiesData);
+                // Allow for override of the HTML value rendering if this would be needed by controls
+                RenderHtmlProperties(ref htmlWriter);
                 htmlWriter.RenderEndTag();
 
                 htmlWriter.RenderEndTag();
                 htmlWriter.RenderEndTag();
             }
+            finally
+            {
+                if (htmlWriter != null)
+                {
+                    htmlWriter.Dispose();
+                }
+            }
 
             return html.ToString();
+        }
+
+        /// <summary>
+        /// Overrideable method that allows inheriting webparts to control the HTML rendering
+        /// </summary>
+        /// <param name="htmlWriter">Reference to the html renderer used</param>
+        protected virtual void RenderHtmlProperties(ref HtmlTextWriter htmlWriter)
+        {
+            if (this.ServerProcessedContent != null)
+            {
+                if (this.ServerProcessedContent["searchablePlainTexts"] != null)
+                {
+                    foreach (JProperty property in this.ServerProcessedContent["searchablePlainTexts"])
+                    {
+                        htmlWriter.AddAttribute("data-sp-prop-name", property.Name);
+                        htmlWriter.AddAttribute("data-sp-searchableplaintext", "true");
+                        htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
+                        htmlWriter.Write(property.Value.ToString());
+                        htmlWriter.RenderEndTag();
+                    }
+                }
+
+                if (this.ServerProcessedContent["imageSources"] != null)
+                {
+                    foreach (JProperty property in this.ServerProcessedContent["imageSources"])
+                    {
+                        htmlWriter.AddAttribute("data-sp-prop-name", property.Name);
+                        if (!string.IsNullOrEmpty(property.Value.ToString()))
+                        {
+                            htmlWriter.AddAttribute("src", property.Value.ToString());
+                        }
+                        htmlWriter.RenderBeginTag(HtmlTextWriterTag.Img);
+                        htmlWriter.RenderEndTag();
+                    }
+                }
+
+                if (this.ServerProcessedContent["links"] != null)
+                {
+                    foreach (JProperty property in this.ServerProcessedContent["links"])
+                    {
+                        htmlWriter.AddAttribute("data-sp-prop-name", property.Name);
+                        htmlWriter.AddAttribute("href", property.Value.ToString());
+                        htmlWriter.RenderBeginTag(HtmlTextWriterTag.A);
+                        htmlWriter.RenderEndTag();
+                    }
+                }
+            }
         }
         #endregion
 
@@ -742,7 +910,33 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             this.propertiesJson = json;
-            this.properties = JObject.Parse(json);
+
+            var parsedJson = JObject.Parse(json);
+
+            // If the passed structure is the top level JSON structure, which it typically is, then grab the properties from it
+            if (parsedJson["webPartData"] != null && parsedJson["webPartData"]["properties"] != null)
+            {
+                this.properties = (JObject)parsedJson["webPartData"]["properties"];
+            }
+            else if (parsedJson["properties"] != null)
+            {
+                this.properties = (JObject)parsedJson["properties"];
+            }
+            else
+            {
+                this.properties = parsedJson;
+            }
+
+            // If the web part has the serverProcessedContent property then keep this one as it might be needed as input to render the web part HTML later on
+            if (parsedJson["webPartData"] != null && parsedJson["webPartData"]["serverProcessedContent"] != null)
+            {
+                this.serverProcessedContent = (JObject)parsedJson["webPartData"]["serverProcessedContent"];
+            }
+            else if (parsedJson["serverProcessedContent"] != null)
+            {
+                this.serverProcessedContent = (JObject)parsedJson["serverProcessedContent"];
+            }
+
         }
         #endregion
     }

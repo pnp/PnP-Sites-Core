@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS
                 lifeTime = new TimeSpan(0, 60, 0);
             }
 
-            int cookieLifeTime = Math.Min((lifeTime.Hours * 60 + lifeTime.Minutes), logonTokenCacheExpirationWindow);
+            int cookieLifeTime = Math.Min((int)lifeTime.TotalMinutes, logonTokenCacheExpirationWindow);
             DateTime expiresOn = DateTime.Now.AddMinutes(cookieLifeTime);
 
             CookieContainer cc = null;

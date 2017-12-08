@@ -129,7 +129,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (control.ControlProperties.Any())
                                     {
                                         var textProperty = control.ControlProperties.First();
-                                        textControl.Text = textProperty.Value;
+                                        textControl.Text = parser.ParseString(textProperty.Value);
                                         // Reduce column number by 1 due 0 start indexing
                                         page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
                                     }

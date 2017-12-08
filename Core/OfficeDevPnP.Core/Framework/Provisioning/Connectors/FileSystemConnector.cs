@@ -40,6 +40,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
+            container = container.Replace('/', '\\');
 
             this.AddParameterAsString(CONNECTIONSTRING, connectionString);
             this.AddParameterAsString(CONTAINER, container);
@@ -68,6 +69,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
+            container = container.Replace('/', '\\');
 
             List<string> result = new List<string>();
 
@@ -101,6 +103,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
+            container = container.Replace('/', '\\');
 
             List<string> result = new List<string>();
 
@@ -151,6 +154,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
+            container = container.Replace('/', '\\');
 
             string result = null;
             MemoryStream stream = null;
@@ -203,6 +207,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
+            container = container.Replace('/', '\\');
 
             return GetFileFromStorage(fileName, container);
         }
@@ -234,6 +239,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
+            container = container.Replace('/', '\\');
 
             if (stream == null)
             {
@@ -287,6 +293,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
+            container = container.Replace('/', '\\');
 
             try
             {

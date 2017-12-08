@@ -40,4 +40,7 @@ Below all the supported tokens are listed:
 |{termstoreid:&lt;name&gt;}|{termstoreid:ExtraStore}|d42bcad2-0603-4b86-8e3d-72177f4519ca|Returns the id of a termstore by its name.|
 |{themecatalog}|{themecatalog}|/sites/demo/_catalogs/theme|Will return the server relative url of the current site theme catalog.|
 |{webpartid:&lt;name&gt;}|{webpartid:MyWebPart}|767245f6-5f47-4cb5-b558-bcc04956bb7b|Returns the id of a webpart by its name.|
+|{associatedownergroup}|{associatedownergroup}|Owners|Will return the name of the site's associated owners group.|
+|{associatedmembergroup}|{associatedmembergroup}|Members|Will return the name of the site's associated members group.|
+|{associatedvisitorgroup}|{associatedvisitorgroup}|Vistors|Will return the name of the site's associated visitors group.|
 <img src="https://telemetry.sharepointpnp.com/pnp-sites-core/core/provisioningenginetokens" /> 

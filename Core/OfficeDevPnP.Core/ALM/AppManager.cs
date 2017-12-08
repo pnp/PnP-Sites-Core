@@ -1,5 +1,4 @@
-﻿#if !ONPREMISES
-using Microsoft.SharePoint.Client;
+﻿using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities;
@@ -12,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.ALM
 {
+#if !ONPREMISES
     /// <summary>
     /// Allows Application Lifecycle Management for Apps
     /// </summary>
@@ -529,7 +529,7 @@ namespace OfficeDevPnP.Core.ALM
             return await Task.Run(() => addins);
         }
 
-        #region Private Methods
+    #region Private Methods
         private async Task<bool> BaseRequest(Guid id, string method, bool appCatalog = false, Dictionary<string, object> postObject = null)
         {
             var context = _context;
@@ -692,7 +692,7 @@ namespace OfficeDevPnP.Core.ALM
             }
             return await Task.Run(() => returnValue);
         }
-        #endregion
+    #endregion
     }
-}
 #endif
+}
