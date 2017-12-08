@@ -165,7 +165,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var result = provider.GetTemplates();
 
-            Assert.IsTrue(result.Count == 13 || result.Count == 14);
+            Assert.IsTrue(result.Count > 15);
         }
 
         [TestMethod]
