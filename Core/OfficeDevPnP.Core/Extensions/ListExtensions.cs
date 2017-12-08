@@ -639,10 +639,11 @@ namespace Microsoft.SharePoint.Client
         /// <param name="updateAndExecuteQuery">(Optional) Perform list update and executequery, defaults to true</param>
         /// <param name="urlPath">(Optional) URL to use for the list</param>
         /// <param name="enableContentTypes">(Optional) Enable content type management</param>
+        /// <param name="hidden">(Optional) Hide the list from the SharePoint UI</param>
         /// <returns>The newly created list</returns>
-        public static List CreateList(this Web web, ListTemplateType listType, string listName, bool enableVersioning, bool updateAndExecuteQuery = true, string urlPath = "", bool enableContentTypes = false)
+        public static List CreateList(this Web web, ListTemplateType listType, string listName, bool enableVersioning, bool updateAndExecuteQuery = true, string urlPath = "", bool enableContentTypes = false, bool hidden = false)
         {
-            return CreateListInternal(web, null, (int)listType, listName, enableVersioning, updateAndExecuteQuery, urlPath, enableContentTypes);
+            return CreateListInternal(web, null, (int)listType, listName, enableVersioning, updateAndExecuteQuery, urlPath, enableContentTypes, hidden);
         }
 
         /// <summary>
@@ -662,7 +663,7 @@ namespace Microsoft.SharePoint.Client
             return CreateListInternal(web, featureId, listType, listName, enableVersioning, updateAndExecuteQuery, urlPath, enableContentTypes);
         }
 
-        private static List CreateListInternal(this Web web, Guid? templateFeatureId, int templateType, string listName, bool enableVersioning, bool updateAndExecuteQuery = true, string urlPath = "", bool enableContentTypes = false)
+        private static List CreateListInternal(this Web web, Guid? templateFeatureId, int templateType, string listName, bool enableVersioning, bool updateAndExecuteQuery = true, string urlPath = "", bool enableContentTypes = false, bool hidden = false)
         {
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.ListExtensions_CreateList0Template12, listName, templateType, templateFeatureId.HasValue ? " (feature " + templateFeatureId.Value.ToString() + ")" : "");
 
@@ -694,6 +695,10 @@ namespace Microsoft.SharePoint.Client
             if (enableContentTypes)
             {
                 newList.ContentTypesEnabled = true;
+            }
+            if (hidden)
+            {
+                newList.Hidden = true;
             }
             if (updateAndExecuteQuery)
             {
