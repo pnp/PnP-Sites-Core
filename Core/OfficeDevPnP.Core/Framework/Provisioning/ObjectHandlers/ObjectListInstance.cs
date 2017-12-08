@@ -2156,12 +2156,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.Load(webPart.WebPart.Properties);
                         web.Context.ExecuteQueryRetry();
 
-                        var jsLinkValue = webPart.WebPart.Properties["JSLink"];
-
-                        var jsLinkElement = schemaElement.Descendants("JSLink").FirstOrDefault();
-                        if (jsLinkElement != null && jsLinkValue != null)
+                        if (webPart.WebPart.Properties.FieldValues.ContainsKey("JSLink"))
                         {
-                            jsLinkElement.Value = Convert.ToString(jsLinkValue);
+                            var jsLinkValue = webPart.WebPart.Properties["JSLink"];
+
+                            var jsLinkElement = schemaElement.Descendants("JSLink").FirstOrDefault();
+                            if (jsLinkElement != null && jsLinkValue != null)
+                            {
+                                jsLinkElement.Value = Convert.ToString(jsLinkValue);
+                            }
                         }
                     }
                 }
