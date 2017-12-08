@@ -2148,7 +2148,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     Microsoft.SharePoint.Client.File viewPage = web.GetFileByServerRelativeUrl(currentView.ServerRelativeUrl);
                     Microsoft.SharePoint.Client.WebParts.LimitedWebPartManager limitedWebPartManager = viewPage.GetLimitedWebPartManager(Microsoft.SharePoint.Client.WebParts.PersonalizationScope.Shared);
                     web.Context.Load(limitedWebPartManager.WebParts);
-                    web.Context.ExecuteQuery();
+                    web.Context.ExecuteQueryRetry();
 
                     if (limitedWebPartManager.WebParts.Count > 0)
                     {
