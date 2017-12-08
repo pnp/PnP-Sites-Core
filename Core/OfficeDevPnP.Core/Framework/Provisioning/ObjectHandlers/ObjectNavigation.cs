@@ -44,14 +44,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return ret;
         }
 
-        
+
         private ProvisioningTemplate ExtractModernNavObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 template.Navigation = new Model.Navigation(
                     new GlobalNavigation(GlobalNavigationType.Inherit, null, null),
-                    new CurrentNavigation(CurrentNavigationType.Inherit,null, null),
+                    new CurrentNavigation(CurrentNavigationType.Inherit, null, null),
                     new ModernNavigation(GetQuicklaunch(web))
                 );
             }
@@ -130,6 +130,57 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
+        {
+            var ret = parser;
+
+            var siteContext = web.Context.GetSiteCollectionContext();
+            var site = siteContext.Site;
+            siteContext.Load(site);
+            siteContext.ExecuteQueryRetry();
+
+            var baseTemplateValue = site.RootWeb.GetBaseTemplateId();
+
+            switch (baseTemplateValue)
+            {
+                // It is a "modern" team site
+                case "GROUP#0":
+                    ret = ProvisionModernObjects(web, template, parser, applyingInformation);
+                    break;
+                default:
+                    ret = ProvisionLegacyObjects(web, template, parser, applyingInformation);
+                    break;
+            }
+
+            return parser;
+        }
+
+        public TokenParser ProvisionModernObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
+        {
+            using (var scope = new PnPMonitoredScope(this.Name))
+            {
+                if(template.Navigation !=null)
+                {
+                    var quicklaunch = template.Navigation.ModernNavigation.Quicklaunch;
+
+                    // Remove existing nodes, if requested
+                    if (quicklaunch.RemoveExistingNodes || applyingInformation.ClearNavigation)
+                    {
+                        if (!quicklaunch.RemoveExistingNodes && !ClearWarningShown)
+                        {
+                            WriteMessage("You chose to override the template value RemoveExistingNodes=\"false\" by specifying ClearNavigation", ProvisioningMessageType.Warning);
+                            ClearWarningShown = true;
+                        }
+                        web.DeleteAllNavigationNodes(Enums.NavigationType.QuickLaunch);
+                    }
+
+                    ProvisionStructuralNavigationNodes(web, parser, Enums.NavigationType.QuickLaunch, template.Navigation.ModernNavigation.Quicklaunch.NavigationNodes, scope);                   
+                }
+            }
+
+            return parser;
+        }
+
+        public TokenParser ProvisionLegacyObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
