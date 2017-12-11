@@ -8,7 +8,7 @@ using OfficeDevPnP.Core.Utilities;
 namespace Microsoft.SharePoint.Client
 {
     /// <summary>
-    /// Class for deprecated tenant extension methods
+    /// Class for tenant extension methods
     /// </summary>
     public static partial class TenantExtensions
     {

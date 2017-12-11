@@ -49,7 +49,8 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs.Utilities
         /// <param name="tenant">Tenant object to use for resolving the regular sites</param>
         /// <param name="siteWildCard">The widcard site Url (e.g. https://tenant.sharepoint.com/sites/*) </param>
         /// <param name="resolvedSites">List of site collections matching the passed wildcard site Url</param>
-        internal void ResolveSite(Tenant tenant, string siteWildCard, List<string> resolvedSites)
+        /// <param name="excludeOD4B">Excludes the OD4B sites</param>
+        internal void ResolveSite(Tenant tenant, string siteWildCard, List<string> resolvedSites, bool excludeOD4B)
         {
 #if !ONPREMISES
             //strip the wildcard
@@ -58,8 +59,8 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs.Utilities
             // If we did not yet load all sites then do it...this one is only hit the first time
             if (this.sites == null)
             {
-                // Loads all regular Office 365 site collections via the tenant admin API and uses search to resolve the Onedrive site collections
-                FillSitesViaTenantAPIAndSearch(tenant);
+                // Loads all regular Office 365 site collections via the tenant admin API 
+                FillSitesViaTenantAPI(tenant, excludeOD4B);
             }
 
             //iterate the found site collections and add the sites that match to the site wildcard
@@ -103,14 +104,15 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs.Utilities
         }
 
         /// <summary>
-        /// Fill site list via tenant API for "regular" site collections. Search API is used for OneDrive for Business site collections
+        /// Fill site list via tenant API for "regular" site collections. 
         /// </summary>
         /// <param name="tenant">Tenant object to operate against</param>
-        private void FillSitesViaTenantAPIAndSearch(Tenant tenant)
+        /// <param name="excludeOD4B">Exlude OD4B sites</param>
+        private void FillSitesViaTenantAPI(Tenant tenant,bool excludeOD4B)
         {
 #if !ONPREMISES
             // Use tenant API to get the regular sites
-            var props = tenant.GetSiteCollections(includeDetail: false);
+            var props = tenant.GetSiteCollections(includeDetail: false, includeOD4BSites: !excludeOD4B);
             
             if (props.Count == 0)
             {
@@ -128,9 +130,6 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs.Utilities
             {
                 this.sites.Add(prop.Url.ToLower());
             }
-
-            // Use search api to get the OneDrive sites
-            this.sites.AddRange(SiteSearch(tenant.Context, "contentclass:\"STS_Site\" AND WebTemplate:SPSPERS"));
 #endif
         }
 

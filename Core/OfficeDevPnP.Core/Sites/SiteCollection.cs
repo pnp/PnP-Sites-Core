@@ -125,11 +125,16 @@ namespace OfficeDevPnP.Core.Sites
         /// <returns>ClientContext object for the created site collection</returns>
         public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
+            if (siteCollectionCreationInformation.Alias.Contains(" "))
+            {
+                throw new ArgumentException("Alias cannot contain spaces", "Alias");
+            }
+
             ClientContext responseContext = null;
 
             var accessToken = clientContext.GetAccessToken();
 
-            if (!string.IsNullOrEmpty(accessToken))
+            if (clientContext.IsAppOnly())
             {
                 throw new Exception("App-Only is currently not supported.");
             }
@@ -204,6 +209,106 @@ namespace OfficeDevPnP.Core.Sites
                 return await Task.Run(() => responseContext);
             }
         }
+
+        /// <summary>
+        /// Groupifies a classic team site by creating a group for it and connecting the site with the newly created group
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionGroupifyInformation">information about the site to create</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+        public static async Task<ClientContext> GroupifyAsync(ClientContext clientContext, TeamSiteCollectionGroupifyInformation siteCollectionGroupifyInformation)
+        {
+            if (siteCollectionGroupifyInformation.Alias.Contains(" "))
+            {
+                throw new ArgumentException("Alias cannot contain spaces", "Alias");
+            }
+
+            if(string.IsNullOrEmpty(siteCollectionGroupifyInformation.DisplayName))
+            {
+                throw new ArgumentException("DisplayName is required", "DisplayName");
+            }
+
+            ClientContext responseContext = null;
+
+            var accessToken = clientContext.GetAccessToken();
+
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                throw new Exception("App-Only is currently not supported.");
+            }
+            using (var handler = new HttpClientHandler())
+            {
+                clientContext.Web.EnsureProperty(w => w.Url);
+                // we're not in app-only or user + app context, so let's fall back to cookie based auth
+                if (String.IsNullOrEmpty(accessToken))
+                {
+                    handler.SetAuthenticationCookies(clientContext);
+                }
+
+                using (var httpClient = new PnPHttpProvider(handler))
+                {
+                    string requestUrl = String.Format("{0}/_api/GroupSiteManager/CreateGroupForSite", clientContext.Web.Url);
+
+                    Dictionary<string, object> payload = new Dictionary<string, object>();
+                    payload.Add("displayName", siteCollectionGroupifyInformation.DisplayName);
+                    payload.Add("alias", siteCollectionGroupifyInformation.Alias);
+                    payload.Add("isPublic", siteCollectionGroupifyInformation.IsPublic);
+
+                    var optionalParams = new Dictionary<string, object>();
+                    optionalParams.Add("Description", siteCollectionGroupifyInformation.Description != null ? siteCollectionGroupifyInformation.Description : "");
+                    optionalParams.Add("CreationOptions", new { results = new object[0], Classification = siteCollectionGroupifyInformation.Classification != null ? siteCollectionGroupifyInformation.Classification : "" });
+
+                    payload.Add("optionalParams", optionalParams);
+
+                    var body = payload;
+
+                    // Serialize request object to JSON
+                    var jsonBody = JsonConvert.SerializeObject(body);
+                    var requestBody = new StringContent(jsonBody);
+
+                    // Build Http request
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+                    request.Content = requestBody;
+                    request.Headers.Add("accept", "application/json;odata=verbose");
+                    MediaTypeHeaderValue sharePointJsonMediaType = null;
+                    MediaTypeHeaderValue.TryParse("application/json;odata=verbose;charset=utf-8", out sharePointJsonMediaType);
+                    requestBody.Headers.ContentType = sharePointJsonMediaType;
+
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+
+                    requestBody.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+
+                    // Perform actual post operation
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // If value empty, URL is taken
+                        var responseString = await response.Content.ReadAsStringAsync();
+                        var responseJson = JObject.Parse(responseString);
+                      
+                        if (Convert.ToInt32(responseJson["d"]["CreateGroupForSite"]["SiteStatus"]) == 2)
+                        {
+                            responseContext = clientContext;
+                        }
+                        else
+                        {
+                            throw new Exception(responseString);
+                        }
+                    }
+                    else
+                    {
+                        // Something went wrong...
+                        throw new Exception(await response.Content.ReadAsStringAsync());
+                    }
+                }
+                return await Task.Run(() => responseContext);
+            }
+        }
+
 
         private static Guid GetSiteDesignId(CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
         {

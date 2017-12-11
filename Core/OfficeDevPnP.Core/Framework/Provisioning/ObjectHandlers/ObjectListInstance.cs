@@ -329,7 +329,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         foreach (var view in list.Views)
                         {
                             currentViewIndex++;
-                            CreateView(web, view, existingViews, createdList, scope, parser, currentViewIndex, total);
+                            parser = CreateView(web, view, existingViews, createdList, scope, parser, currentViewIndex, total);
 
                         }
                     }
@@ -410,7 +410,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private void CreateView(Web web, View view, Microsoft.SharePoint.Client.ViewCollection existingViews, List createdList, PnPMonitoredScope monitoredScope, TokenParser parser, int currentViewIndex, int total)
+        private TokenParser CreateView(Web web, View view, Microsoft.SharePoint.Client.ViewCollection existingViews, List createdList, PnPMonitoredScope monitoredScope, TokenParser parser, int currentViewIndex, int total)
         {
             try
             {
@@ -496,7 +496,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     viewCI.Title = Path.GetFileNameWithoutExtension(urlAttribute.Value);
                 }
 
+                var reader = viewElement.CreateReader();
+                reader.MoveToContent();
+                var viewInnerXml = reader.ReadInnerXml();
+
                 var createdView = createdList.Views.Add(viewCI);
+                createdView.ListViewXml = viewInnerXml;
+                createdView.Update();
                 createdView.EnsureProperties(v => v.Scope, v => v.JSLink, v => v.Title, v => v.Aggregations, v => v.MobileView, v => v.MobileDefaultView, v => v.ViewData);
                 web.Context.ExecuteQueryRetry();
 
@@ -643,6 +649,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 monitoredScope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_view_failed___0_____1_, ex.Message, ex.StackTrace);
                 throw;
             }
+            return parser;
         }
 
         private static Field UpdateFieldRef(List siteList, Guid fieldId, FieldRef fieldRef, TokenParser parser)
@@ -783,7 +790,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var fieldXml = parser.ParseXmlString(fieldElement.ToString(), "~sitecollection", "~site");
             if (IsFieldXmlValid(parser.ParseXmlString(originalFieldXml), parser, context))
             {
-                field = listInfo.SiteList.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint | AddFieldOptions.AddToNoContentType);
+                var addOptions = listInfo.TemplateList.ContentTypesEnabled
+                    ? AddFieldOptions.AddFieldInternalNameHint | AddFieldOptions.AddToNoContentType
+                    : AddFieldOptions.AddFieldInternalNameHint | AddFieldOptions.AddToDefaultContentType;
+                field = listInfo.SiteList.Fields.AddFieldAsXml(fieldXml, false, addOptions);
                 listInfo.SiteList.Context.Load(field);
                 listInfo.SiteList.Context.ExecuteQueryRetry();
 
@@ -2069,7 +2079,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     list = ExtractContentTypes(web, siteList, contentTypeFields, list);
 
-                    list = ExtractViews(siteList, list);
+                    list = ExtractViews(web, siteList, list);
 
                     list = ExtractFields(web, siteList, contentTypeFields, list, allLists, creationInfo, template);
 
@@ -2124,11 +2134,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 #endif
 
-        private static ListInstance ExtractViews(List siteList, ListInstance list)
+        private static ListInstance ExtractViews(Web web, List siteList, ListInstance list)
         {
             foreach (var view in siteList.Views.AsEnumerable().Where(view => !view.Hidden && view.ListViewXml != null))
             {
                 var schemaElement = XElement.Parse(view.ListViewXml);
+
+                // exclude survey and events list as they dont support jsLink customizations
+                if (siteList.BaseTemplate != (int)ListTemplateType.Survey && siteList.BaseTemplate != (int)ListTemplateType.Events)
+                {
+                    var currentView = siteList.GetViewById(view.Id);
+
+                    Microsoft.SharePoint.Client.File viewPage = web.GetFileByServerRelativeUrl(currentView.ServerRelativeUrl);
+                    Microsoft.SharePoint.Client.WebParts.LimitedWebPartManager limitedWebPartManager = viewPage.GetLimitedWebPartManager(Microsoft.SharePoint.Client.WebParts.PersonalizationScope.Shared);
+                    web.Context.Load(limitedWebPartManager.WebParts);
+                    web.Context.ExecuteQueryRetry();
+
+                    if (limitedWebPartManager.WebParts.Count > 0)
+                    {
+                        var webPart = limitedWebPartManager.WebParts.FirstOrDefault();
+                        web.Context.Load(webPart.WebPart.Properties);
+                        web.Context.ExecuteQueryRetry();
+
+                        if (webPart.WebPart.Properties.FieldValues.ContainsKey("JSLink"))
+                        {
+                            var jsLinkValue = webPart.WebPart.Properties["JSLink"];
+
+                            var jsLinkElement = schemaElement.Descendants("JSLink").FirstOrDefault();
+                            if (jsLinkElement != null && jsLinkValue != null)
+                            {
+                                jsLinkElement.Value = Convert.ToString(jsLinkValue);
+                            }
+                        }
+                    }
+                }
 
                 // Toolbar is not supported
 

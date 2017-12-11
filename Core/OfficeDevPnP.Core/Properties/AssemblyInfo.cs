@@ -43,7 +43,7 @@ using System.Runtime.InteropServices;
 // Minor version = Sequence...version 0 was with January release...so 1=Feb 2=Mar...11=Jan 2017...15=May 2017...20=Nov
 // Third part = version indenpendant showing the release month in YYMM
 // Fourth part = 0 normally or a sequence number when we do an emergency release
-[assembly: AssemblyVersion("2.19.1710.2")]
-[assembly: AssemblyFileVersion("2.19.1710.2")]
+[assembly: AssemblyVersion("2.21.1712.1")]
+[assembly: AssemblyFileVersion("2.21.1712.1")]
 
 [assembly: InternalsVisibleTo("OfficeDevPnP.Core.Tests")]

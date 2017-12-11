@@ -12,6 +12,13 @@ using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.UPAWebService;
 using OfficeDevPnP.Core.Diagnostics;
+using System.Net.Http;
+using CoreUtilities = OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Framework.Graph;
+using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
+using OfficeDevPnP.Core.Framework.Graph.Model;
+using Newtonsoft.Json;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -805,6 +812,80 @@ namespace Microsoft.SharePoint.Client
             }
         }
         #endregion
+
+        #region Site Classification configuration
+
+        /// <summary>
+        /// Enables Site Classifications for the target tenant 
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
+        /// <param name="siteClassificationsSettings">The site classifications settings to apply./param>
+        public static void EnableSiteClassifications(this Tenant tenant, string accessToken, SiteClassificationsSettings siteClassificationsSettings)
+        {
+            SiteClassificationsUtility.EnableSiteClassifications(accessToken, siteClassificationsSettings);
+        }
+
+        /// <summary>
+        /// Enables Site Classifications for the target tenant 
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
+        /// <param name="classificationsList">The list of classification values</param>
+        /// <param name="defaultClassification">The default classification</param>
+        /// <param name="usageGuidelinesUrl">The URL of a guidance page</param>
+        public static void EnableSiteClassifications(this Tenant tenant, string accessToken, IEnumerable<string> classificationsList, string defaultClassification = "", string usageGuidelinesUrl = "")
+        {
+            SiteClassificationsUtility.EnableSiteClassifications(accessToken, classificationsList, defaultClassification, usageGuidelinesUrl);
+        }
+
+        /// <summary>
+        /// Enables Site Classifications for the target tenant 
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
+        /// <returns>The list of Site Classifications values</returns>
+        public static SiteClassificationsSettings GetSiteClassificationsSettings(this Tenant tenant, string accessToken)
+        {
+            return SiteClassificationsUtility.GetSiteClassificationsSettings(accessToken);
+        }
+
+        /// <summary>
+        /// Updates Site Classifications settings for the target tenant
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
+        /// <param name="siteClassificationsSettings">The site classifications settings to update.</param>
+        public static void UpdateSiteClassificationsSettings(this Tenant tenant, string accessToken, SiteClassificationsSettings siteClassificationsSettings)
+        {
+            SiteClassificationsUtility.UpdateSiteClassificationsSettings(accessToken, siteClassificationsSettings);
+        }
+
+        /// <summary>
+        /// Updates Site Classifications settings for the target tenant
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
+        /// <param name="classificationsList">The list of classification values</param>
+        /// <param name="defaultClassification">The default classification</param>
+        /// <param name="usageGuidelinesUrl">The URL of a guidance page</param>
+        public static void UpdateSiteClassificationsSettings(this Tenant tenant, string accessToken, IEnumerable<string> classificationsList, string defaultClassification = "", string usageGuidelinesUrl = "")
+        {
+            SiteClassificationsUtility.UpdateSiteClassificationsSettings(accessToken, classificationsList, defaultClassification, usageGuidelinesUrl);
+        }
+
+        /// <summary>
+        /// Disables Site Classifications settings for the target tenant
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
+        public static void DisableSiteClassifications(this Tenant tenant, string accessToken)
+        {
+            SiteClassificationsUtility.DisableSiteClassifications(accessToken);
+        }
+
+        #endregion
+
 #else
         #region Site collection creation
         /// <summary>

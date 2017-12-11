@@ -15,5 +15,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         V201512 = 4,
         V201605 = 5,
         V201705 = 6,
+        V201801 = 7,
     }
 }

@@ -6,7 +6,7 @@ using OfficeDevPnP.Core.Utilities;
 namespace Microsoft.SharePoint.Client
 {
     /// <summary>
-    /// Class that holds deprecated feature activation and deactivation methods
+    /// Class that deals with feature activation and deactivation
     /// </summary>
     public static partial class FeatureExtensions
     {

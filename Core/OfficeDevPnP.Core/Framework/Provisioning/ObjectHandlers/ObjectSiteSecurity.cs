@@ -63,21 +63,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 //sorting groups with respect to possible dependency through Owner property. Groups that are owners of other groups must be processed prior owned groups.
-                for (int i = siteSecurity.SiteGroups.Count - 1; i >= 0; i--)
+                for (int i = 0; i < siteSecurity.SiteGroups.Count; i++)
                 {
                     var currentGroup = siteSecurity.SiteGroups[i];
-                    string currentGroupOwner = parser.ParseString(currentGroup.Owner);
+                    string currentGroupOwner = currentGroup.Owner;
                     string currentGroupTitle = parser.ParseString(currentGroup.Title);
 
                     if (currentGroupOwner != "SHAREPOINT\\system" && currentGroupOwner != currentGroupTitle && !(currentGroupOwner.StartsWith("{{associated") && currentGroupOwner.EndsWith("group}}")))
                     {
-                        for (int j = 0; j < i; j++)
+                        for (int j = i + 1; j < siteSecurity.SiteGroups.Count; j++)
                         {
-                            if (parser.ParseString(siteSecurity.SiteGroups[j].Owner) == currentGroupTitle)
+                            if (siteSecurity.SiteGroups[j].Title == currentGroupOwner)
                             {
-                                siteSecurity.SiteGroups.RemoveAt(i);
-                                siteSecurity.SiteGroups.Insert(j, currentGroup);
-                                i++;
+                                siteSecurity.SiteGroups.Insert(i, siteSecurity.SiteGroups[j]);
+                                siteSecurity.SiteGroups.RemoveAt(j);
+                                i--;
                                 break;
                             }
                         }
@@ -105,6 +105,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         group.AllowMembersEditMembership = siteGroup.AllowMembersEditMembership;
                         group.AllowRequestToJoinLeave = siteGroup.AllowRequestToJoinLeave;
                         group.AutoAcceptRequestToJoinLeave = siteGroup.AutoAcceptRequestToJoinLeave;
+                        group.OnlyAllowMembersViewMembership = siteGroup.OnlyAllowMembersViewMembership;
+                        group.RequestToJoinLeaveEmailSetting = siteGroup.RequestToJoinLeaveEmailSetting;
 
                         if (parsedGroupTitle != parsedGroupOwner)
                         {
@@ -139,6 +141,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             g => g.AllowMembersEditMembership,
                             g => g.AllowRequestToJoinLeave,
                             g => g.AutoAcceptRequestToJoinLeave,
+                            g => g.OnlyAllowMembersViewMembership,
+                            g => g.RequestToJoinLeaveEmailSetting,                            
                             g => g.Owner.LoginName);
                         web.Context.ExecuteQueryRetry();
 
@@ -178,6 +182,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (group.AutoAcceptRequestToJoinLeave != siteGroup.AutoAcceptRequestToJoinLeave)
                         {
                             group.AutoAcceptRequestToJoinLeave = siteGroup.AutoAcceptRequestToJoinLeave;
+                            isDirty = true;
+                        }
+                        if(group.OnlyAllowMembersViewMembership != siteGroup.OnlyAllowMembersViewMembership)
+                        {
+                            group.OnlyAllowMembersViewMembership = siteGroup.OnlyAllowMembersViewMembership;
+                            isDirty = true;
+                        }
+                        if(!String.IsNullOrEmpty(group.RequestToJoinLeaveEmailSetting) && group.RequestToJoinLeaveEmailSetting != siteGroup.RequestToJoinLeaveEmailSetting)
+                        { 
+                            group.RequestToJoinLeaveEmailSetting = siteGroup.RequestToJoinLeaveEmailSetting;
                             isDirty = true;
                         }
                         if (group.Owner.LoginName != parsedGroupOwner)

@@ -73,8 +73,29 @@ namespace OfficeDevPnP.Core.Tests.Sites
         //        });
         //        Assert.IsNotNull(teamResults);
         //    }
-
         //}
+
+        //[TestMethod]
+        //public async Task GroupifyTeamSiteTestAsync()
+        //{
+        //    using (var clientContext = TestCommon.CreateClientContext("https://contoso.sharepoint.com/sites/groupify_me_2"))
+        //    {
+
+        //        clientContext.Load(clientContext.Web, p => p.Title, p => p.Description);
+        //        clientContext.ExecuteQueryRetry();
+
+        //        var teamResults = await clientContext.GroupifySiteAsync(new Core.Sites.TeamSiteCollectionGroupifyInformation()
+        //        {
+        //            Alias = $"groupify_me_2",
+        //            DisplayName = clientContext.Web.Title,
+        //            IsPublic = false,
+        //            Description = clientContext.Web.Description,
+        //        });
+
+        //        Assert.IsNotNull(teamResults);
+        //    }
+        //}
+
     }
 #endif
 }
