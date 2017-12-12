@@ -51,7 +51,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     siteContext.Load(rootWeb);
                     siteContext.ExecuteQueryRetry();
 
-                    foreach (PageLayout pageLayout in template.Publishing.PageLayouts)
+                // Set available page layouts
+                var availablePageLayouts = template.Publishing.PageLayouts.Select(p => p.Path);
+                if (availablePageLayouts.Any())
+                {
+                    web.SetAvailablePageLayouts(rootWeb, availablePageLayouts);
+                }
+
+                // Set default page layout, if any
+                var defaultPageLayout = template.Publishing.PageLayouts.FirstOrDefault(p => p.IsDefault);
+                if (defaultPageLayout != null)
+                {
+                    web.SetDefaultPageLayoutForSite(rootWeb, defaultPageLayout.Path);
+                }
+
+                // Upload available page layouts
+                foreach (PageLayout pageLayout in template.Publishing.PageLayouts)
                     {
                         var fileName = pageLayout.Path.Split('/').LastOrDefault();
                         var container = template.Connector.GetContainer();
@@ -456,8 +471,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         var pageLayout = new PageLayout();
 
-                        pageLayout.Path = layout.Attribute("url").Value;
-
+                        var pageLayoutFullPath = layout.Attribute("url").Value;
+                        pageLayout.Path = pageLayoutFullPath.Replace("_catalogs/masterpage/", String.Empty); ;
+                        
                         if (pageLayout.Path == defaultPageLayoutUrl)
                         {
                             pageLayout.IsDefault = true;
@@ -467,7 +483,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (isRootWeb)
                         {
                             web.EnsureProperty(w => w.ServerRelativeUrl);
-                            var spFile = web.GetFileByServerRelativeUrl(web.ServerRelativeUrl + "/" + pageLayout.Path);
+                            var spFile = web.GetFileByServerRelativeUrl(web.ServerRelativeUrl + "/" + pageLayoutFullPath);
                             var fileStream = spFile.OpenBinaryStream();
                             web.Context.Load(spFile);
                             web.Context.Load(spFile.ListItemAllFields);
