@@ -1156,6 +1156,7 @@ namespace Microsoft.SharePoint.Client
                 }
 
                 pageLayoutNameWithoutPath = $"{pageLayoutFolder}/{pageLayoutNameWithoutPath}";
+                pageLayoutNameWithoutPath = pageLayoutNameWithoutPath.Replace("_catalogs/masterpage/", "");
             }
 
             var masterPageGallery = web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
