@@ -954,6 +954,42 @@ namespace Microsoft.SharePoint.Client
 
             return listToQuery.Id;
         }
+        
+        /// <summary>
+        /// Get List by using Id
+        /// </summary>
+        /// <param name="web">The web containing the list</param>
+        /// <param name="listId">The Id of the list</param>
+        /// <param name="expressions">Additional list of lambda expressions of properties to load alike l => l.BaseType</param>
+        /// <returns>Loaded list instance matching specified Id</returns>
+        /// <exception cref="System.ArgumentException">Thrown when listId is an empty Guid</exception>
+        /// <exception cref="System.ArgumentNullException">listId is null</exception>
+        public static List GetListById(this Web web, Guid listId, params Expression<Func<List, object>>[] expressions)
+        {
+            var baseExpressions = new List<Expression<Func<List, object>>> { l => l.DefaultViewUrl, l => l.Id, l => l.BaseTemplate, l => l.OnQuickLaunch, l => l.DefaultViewUrl, l => l.Title, l => l.Hidden, l => l.RootFolder };
+
+            if (expressions != null && expressions.Any())
+            {
+                baseExpressions.AddRange(expressions);
+            }
+
+            if (listId == null)
+            {
+                throw new ArgumentNullException(nameof(listId));                    
+            }
+
+            if (listId == Guid.Empty)
+            {
+                throw new ArgumentException(nameof(listId));
+            }
+
+            var query = web.Lists.IncludeWithDefaultProperties(baseExpressions.ToArray());
+            var lists = web.Context.LoadQuery(query.Where(l => l.Id == listId));
+
+            web.Context.ExecuteQueryRetry();
+
+            return lists.FirstOrDefault();
+        }
 
         /// <summary>
         /// Get list by using Title
