@@ -3,6 +3,7 @@ using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Utilities;
 using System;
+using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -191,6 +192,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                         // set the control properties
                                         controlInstance.JsonControlData = (control as Pages.ClientSideWebPart).PropertiesJson;
+
+                                        // Tokenize the JsonControlData
+                                        controlInstance.JsonControlData = TokenizeJsonControlData(web, controlInstance.JsonControlData);
                                     }
 
                                     // add control to section
@@ -255,6 +259,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _willExtract = true;
             }
             return _willExtract.Value;
+        }
+
+        private string TokenizeJsonControlData(Web web, string json)
+        {
+            var lists = web.Lists;
+            web.Context.Load(web, w => w.ServerRelativeUrl, w => w.Id);
+            web.Context.Load(lists, ls => ls.Include(l => l.Id, l => l.Title));
+            web.Context.ExecuteQueryRetry();
+
+            foreach (var list in lists)
+            {
+                json = Regex.Replace(json, list.Id.ToString(), $"{{listid:{System.Security.SecurityElement.Escape(list.Title)}}}", RegexOptions.IgnoreCase);
+            }
+
+            //some webparts already contains the site URL using ~sitecollection token (i.e: CQWP)
+            json = Regex.Replace(json, "\"~sitecollection/(.)*\"", "\"{site}\"", RegexOptions.IgnoreCase);
+            json = Regex.Replace(json, "'~sitecollection/(.)*'", "'{site}'", RegexOptions.IgnoreCase);
+            json = Regex.Replace(json, ">~sitecollection/(.)*<", ">{site}<", RegexOptions.IgnoreCase);
+                                 
+            json = Regex.Replace(json, web.Id.ToString(), "{siteid}", RegexOptions.IgnoreCase);
+            json = Regex.Replace(json, "(\"" + web.ServerRelativeUrl + ")(?!&)", "\"{site}", RegexOptions.IgnoreCase);
+            json = Regex.Replace(json, "'" + web.ServerRelativeUrl, "'{site}", RegexOptions.IgnoreCase);
+            json = Regex.Replace(json, ">" + web.ServerRelativeUrl, ">{site}", RegexOptions.IgnoreCase);
+            return json;
         }
     }
 

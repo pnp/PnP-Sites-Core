@@ -65,6 +65,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public Boolean EnableTreeView { get; set; }
 
+        /// <summary>
+        /// Declares whether the New Page ribbon command will automatically create a navigation item for the newly created page, optional attribute.
+        /// </summary>
+        public Boolean AddNewPagesToNavigation { get; set; }
+
+        /// <summary>
+        /// Declares whether the New Page ribbon command will automatically create a friendly URL for the newly created page, optional attribute.
+        /// </summary>
+        public Boolean CreateFriendlyUrlsForNewPages { get; set; }
+
         #endregion
 
         #region Constructors
@@ -96,10 +106,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
                 (this.GlobalNavigation != null ? this.GlobalNavigation.GetHashCode() : 0),
                 (this.CurrentNavigation != null ? this.CurrentNavigation.GetHashCode() : 0),
-                this.EnableTreeView.GetHashCode()
+                this.EnableTreeView.GetHashCode(),
+                this.AddNewPagesToNavigation.GetHashCode(),
+                this.CreateFriendlyUrlsForNewPages.GetHashCode()
             ).GetHashCode());
         }
 
@@ -129,10 +141,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return (false);
             }
 
-            return (this.GlobalNavigation == other.GlobalNavigation &&
-                this.CurrentNavigation == other.CurrentNavigation &&
-                this.EnableTreeView == other.EnableTreeView
-                );
+            return (this.GlobalNavigation.Equals(other.GlobalNavigation) &&
+                    this.CurrentNavigation.Equals(other.CurrentNavigation) &&
+                    this.EnableTreeView == other.EnableTreeView &&
+                    this.AddNewPagesToNavigation == other.AddNewPagesToNavigation &&
+                    this.CreateFriendlyUrlsForNewPages == other.CreateFriendlyUrlsForNewPages
+                    );
         }
 
         #endregion

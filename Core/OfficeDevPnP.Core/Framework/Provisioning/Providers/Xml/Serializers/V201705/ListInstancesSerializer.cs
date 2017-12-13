@@ -168,6 +168,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                 resolvers.Add($"{listInstanceType}.DraftVersionVisibilitySpecified", new ExpressionValueResolver(() => true));
                 resolvers.Add($"{listInstanceType}.MaxVersionLimitSpecified", new ExpressionValueResolver(() => true));
                 resolvers.Add($"{listInstanceType}.MinorVersionLimitSpecified", new ExpressionValueResolver(() => true));
+                resolvers.Add($"{listInstanceType}.ReadSecuritySpecified", new ExpressionValueResolver((s, v) =>
+                {
+                    var value = (Int32)s.GetPublicInstancePropertyValue("ReadSecurity");
+                    return (value == 1 || value == 2);
+                }
+                ));
+
+                resolvers.Add($"{listInstanceType}.IsApplicationListSpecified", new ExpressionValueResolver(() => true));
 
                 // IRM Settings
                 resolvers.Add($"{listInstanceType}.IRMSettings", new IRMSettingsFromModelToSchemaTypeResolver());

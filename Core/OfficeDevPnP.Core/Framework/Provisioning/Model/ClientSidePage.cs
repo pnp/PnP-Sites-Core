@@ -43,6 +43,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Defines whether the page can be overwritten if it exists
         /// </summary>
         public Boolean Overwrite { get; set; }
+
+        /// <summary>
+        /// Defines the Layout for the client-side page
+        /// </summary>
+        public String Layout { get; set; }
+
+        /// <summary>
+        /// Defines whether to publish the client-side page or not
+        /// </summary>
+        public Boolean Publish { get; set; }
+
+        /// <summary>
+        /// Defines whether the page will have comments enabled or not
+        /// </summary>
+        public Boolean EnableComments { get; set; }
+
         #endregion
 
         #region Constructors

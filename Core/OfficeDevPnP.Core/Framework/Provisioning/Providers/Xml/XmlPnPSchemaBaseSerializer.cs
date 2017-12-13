@@ -114,6 +114,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 var ls = new LocalizationsSerializer();
                 ls.Deserialize(wrapper, result);
 
+                // Handle the Tenant-wide settings of the schema wrapper, if any
+                var ts = new TenantSerializer();
+                ts.Deserialize(wrapper, result);
+
                 // Get the list of templates, if any, wrapped by the wrapper
                 var wrapperTemplates = wrapperType.GetProperty("Templates", 
                     System.Reflection.BindingFlags.Instance | 
@@ -317,6 +321,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 // Handle the Localizations of the schema wrapper, if any
                 var ls = new LocalizationsSerializer();
                 ls.Serialize(template, wrapper);
+
+                // Handle the Tenant-wide of the schema wrapper, if any
+                var ts = new TenantSerializer();
+                ts.Serialize(template, wrapper);
 
                 // Configure the Generator
                 preferences.GetType().GetProperty("Generator",

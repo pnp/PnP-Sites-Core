@@ -8,7 +8,7 @@ using OfficeDevPnP.Core.Entities;
 namespace Microsoft.SharePoint.Client
 {
     /// <summary>
-    /// Class for deprecated taxonomy extension methods
+    /// Class for taxonomy extension methods
     /// </summary>
     public static partial class TaxonomyExtensions
     {

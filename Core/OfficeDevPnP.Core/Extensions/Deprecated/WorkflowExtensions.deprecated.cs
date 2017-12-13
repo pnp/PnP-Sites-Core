@@ -6,7 +6,7 @@ using Microsoft.SharePoint.Client.WorkflowServices;
 namespace Microsoft.SharePoint.Client
 {
     /// <summary>
-    /// Class for deprecated workflow extension methods
+    /// Class for workflow extension methods
     /// </summary>
     public static partial class WorkflowExtensions
     {

@@ -125,7 +125,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return (false);
             }
 
-            return (this.StructuralNavigation == other.StructuralNavigation &&
+            return (this.StructuralNavigation.Equals(other.StructuralNavigation) &&
                 this.ManagedNavigation == other.ManagedNavigation
                 );
         }

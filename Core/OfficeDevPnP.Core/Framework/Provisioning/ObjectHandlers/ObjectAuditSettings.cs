@@ -49,7 +49,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (include)
                 {
-                    template.AuditSettings = auditSettings;
+                    // If a base template is specified then use that one to "cleanup" the generated template model
+                    if (creationInfo.BaseTemplate != null)
+                    {
+                        if (!auditSettings.Equals(creationInfo.BaseTemplate.AuditSettings))
+                        {
+                            template.AuditSettings = auditSettings;
+                        }
+                    }                    
+                    else
+                    {
+                        template.AuditSettings = auditSettings;
+                    }
                 }
             }
             return template;

@@ -33,7 +33,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // Retrieve the current web navigation settings
                 var navigationSettings = new WebNavigationSettings(web.Context, web);
-                navigationSettings.EnsureProperties(ns => ns.CurrentNavigation, ns => ns.GlobalNavigation);
+                navigationSettings.EnsureProperties(ns => ns.AddNewPagesToNavigation, ns => ns.CreateFriendlyUrlsForNewPages,
+                    ns => ns.CurrentNavigation, ns => ns.GlobalNavigation);
 
                 switch (navigationSettings.GlobalNavigation.Source)
                 {
@@ -76,14 +77,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         break;
                 }
 
-                template.Navigation = new Model.Navigation(
-                    new GlobalNavigation(globalNavigationType,
-                        globalNavigationType == GlobalNavigationType.Structural ? GetGlobalStructuralNavigation(web, navigationSettings) : null,
-                        globalNavigationType == GlobalNavigationType.Managed ? GetGlobalManagedNavigation(web, navigationSettings) : null),
-                    new CurrentNavigation(currentNavigationType,
-                        currentNavigationType == CurrentNavigationType.Structural | currentNavigationType == CurrentNavigationType.StructuralLocal ? GetCurrentStructuralNavigation(web, navigationSettings) : null,
-                        currentNavigationType == CurrentNavigationType.Managed ? GetCurrentManagedNavigation(web, navigationSettings) : null)
-                    );
+                var navigationEntity = new Model.Navigation(new GlobalNavigation(globalNavigationType,
+                                                                globalNavigationType == GlobalNavigationType.Structural ? GetGlobalStructuralNavigation(web, navigationSettings) : null,
+                                                                globalNavigationType == GlobalNavigationType.Managed ? GetGlobalManagedNavigation(web, navigationSettings) : null),
+                                                            new CurrentNavigation(currentNavigationType,
+                                                                currentNavigationType == CurrentNavigationType.Structural | currentNavigationType == CurrentNavigationType.StructuralLocal ? GetCurrentStructuralNavigation(web, navigationSettings) : null,
+                                                                currentNavigationType == CurrentNavigationType.Managed ? GetCurrentManagedNavigation(web, navigationSettings) : null)
+                                                            );
+
+                navigationEntity.AddNewPagesToNavigation = navigationSettings.AddNewPagesToNavigation;
+                navigationEntity.CreateFriendlyUrlsForNewPages = navigationSettings.CreateFriendlyUrlsForNewPages;
+
+                // If a base template is specified then use that one to "cleanup" the generated template model
+                if (creationInfo.BaseTemplate != null)
+                {
+                    if (!navigationEntity.Equals(creationInfo.BaseTemplate.Navigation))
+                    {
+                        template.Navigation = navigationEntity;
+                    }
+                }
+                else
+                {
+                    template.Navigation = navigationEntity;
+                }
             }
 
             return template;
@@ -113,6 +129,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.Context.Load(navigationSettings, ns => ns.CurrentNavigation, ns => ns.GlobalNavigation);
                     web.Context.ExecuteQueryRetry();
 
+                    navigationSettings.AddNewPagesToNavigation = template.Navigation.AddNewPagesToNavigation;
+                    navigationSettings.CreateFriendlyUrlsForNewPages = template.Navigation.CreateFriendlyUrlsForNewPages;
+
                     if (template.Navigation.GlobalNavigation != null)
                     {
                         switch (template.Navigation.GlobalNavigation.NavigationType)
@@ -136,8 +155,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation);
                                 }
+                                navigationSettings.GlobalNavigation.Source = StandardNavigationSource.PortalProvider;
+
                                 ProvisionGlobalStructuralNavigation(web,
                                     template.Navigation.GlobalNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
+
                                 break;
                         }
                         navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
@@ -166,17 +188,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation);
                                 }
+                                navigationSettings.CurrentNavigation.Source = StandardNavigationSource.PortalProvider;
+
                                 ProvisionCurrentStructuralNavigation(web,
                                     template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
+
                                 break;
                             case CurrentNavigationType.Structural:
                             default:
+                                web.SetPropertyBagValue(NavigationShowSiblings, "true");
                                 if (template.Navigation.CurrentNavigation.StructuralNavigation == null)
                                 {
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation);
                                 }
+                                navigationSettings.CurrentNavigation.Source = StandardNavigationSource.PortalProvider;
+
                                 ProvisionCurrentStructuralNavigation(web,
                                     template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
+
                                 break;
                         }
                         navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
@@ -253,7 +282,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private void ProvisionCurrentStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool clearNavigation, PnPMonitoredScope scope)
         {
-            ProvisionStructuralNavigation(web, structuralNavigation, parser, true, clearNavigation,  scope);
+            ProvisionStructuralNavigation(web, structuralNavigation, parser, true, clearNavigation, scope);
         }
 
         private void ProvisionStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool currentNavigation, bool clearNavigation, PnPMonitoredScope scope)
