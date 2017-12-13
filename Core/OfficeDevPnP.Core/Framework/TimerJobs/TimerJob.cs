@@ -1526,7 +1526,8 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                     webContext.ExecuteQueryRetry();
                     foreach (var subWeb in webContext.Web.Webs)
                     {
-                        if (!subWeb.WebTemplate.Equals("App", StringComparison.InvariantCultureIgnoreCase))
+                        if (!subWeb.WebTemplate.Equals("App", StringComparison.InvariantCultureIgnoreCase) &&
+                            !subWeb.WebTemplate.Equals("ACCSVC", StringComparison.InvariantCultureIgnoreCase))
                         {
                             queue.Enqueue(subWeb.Url);
                         }
