@@ -933,7 +933,7 @@ namespace Microsoft.SharePoint.Client
                                 if (theme.Name == null || IsMatchingTheme(theme, masterPageUrl, themeUrl, fontUrl))
                                 {
                                     theme.Name = name;
-                                    theme.IsCustomComposedLook = !defaultComposedLooks.Contains(theme.Name);
+                                    theme.IsCustomComposedLook = !defaultComposedLooks.Contains(theme.Name) ;
 
                                     // Restore the default composed look image url
                                     if (imageUrl != null)
