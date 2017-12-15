@@ -853,8 +853,15 @@ namespace Microsoft.SharePoint.Client
                             {
                                 theme.BackgroundImage = (themeItem["ImageUrl"] as FieldUrlValue).Url;
                             }
+                            theme.Name = name;
                         }
                     }
+                }
+
+                if (IsCurrentTheme(theme.Name, currentLookName) && theme.MasterPage == null && theme.Theme == null)
+                {
+                    //Subsite which themes inherits parent
+                    return null;
                 }
 
                 // return here if we did not find the requested theme...it does not exist.
