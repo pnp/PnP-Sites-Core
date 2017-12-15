@@ -42,14 +42,123 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                    var context = web.Context as ClientContext;
+                var context = web.Context as ClientContext;
 
-                    web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
+                web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
 
-                    var siteContext = web.Context.GetSiteCollectionContext();
-                    var rootWeb = siteContext.Site.RootWeb;
-                    siteContext.Load(rootWeb);
-                    siteContext.ExecuteQueryRetry();
+                var siteContext = web.Context.GetSiteCollectionContext();
+                var rootWeb = siteContext.Site.RootWeb;
+                siteContext.Load(rootWeb);
+                siteContext.ExecuteQueryRetry();
+
+                // Upload available page layouts
+                foreach (PageLayout pageLayout in template.Publishing.PageLayouts)
+                {
+                    var fileName = pageLayout.Path.Split('/').LastOrDefault();
+                    var container = template.Connector.GetContainer();
+                    var stream = template.Connector.GetFileStream(fileName, container);
+
+                    // Get Masterpage catalog fodler
+                    var masterpageCatalog = context.Site.GetCatalog((int)ListTemplateType.MasterPageCatalog);
+                    context.Load(masterpageCatalog);
+                    context.ExecuteQuery();
+
+                    var folder = masterpageCatalog.RootFolder;
+
+                    UploadFile(template, pageLayout, folder, stream);
+                }
+
+                foreach (PublishingPage page in template.Publishing.PublishingPages)
+                {
+
+                    string parsedFileName = parser.ParseString(page.FileName);
+                    string parsedFullFileName = parser.ParseString(page.FullFileName);
+
+                    Microsoft.SharePoint.Client.Publishing.PublishingPage existingPage =
+                        web.GetPublishingPage(parsedFileName + ".aspx");
+
+                    if (!web.IsPropertyAvailable("RootFolder"))
+                    {
+                        web.Context.Load(web.RootFolder);
+                        web.Context.ExecuteQueryRetry();
+                    }
+
+                    if (existingPage != null && existingPage.ServerObjectIsNull.Value == false)
+                    {
+                        if (page.WelcomePage && web.RootFolder.WelcomePage.ToLower().Contains(parsedFullFileName.ToLower()))
+                        {
+                            //set the welcome page to a Temp page to allow page deletion
+                            web.RootFolder.WelcomePage = "temp.aspx";
+                            web.RootFolder.Update();
+                            web.Update();
+                            context.ExecuteQueryRetry();
+                        }
+                        existingPage.ListItem.DeleteObject();
+                        context.ExecuteQuery();
+                    }
+
+
+                    web.AddPublishingPage(
+                        parsedFileName,
+                        page.Layout,
+                        parser.ParseString(page.Title)
+                        );
+                    Microsoft.SharePoint.Client.Publishing.PublishingPage publishingPage =
+                        web.GetPublishingPage(parsedFullFileName);
+                    Microsoft.SharePoint.Client.File pageFile = publishingPage.ListItem.File;
+                    pageFile.CheckOut();
+
+                    if (page.Properties != null && page.Properties.Count > 0)
+                    {
+                        context.Load(pageFile, p => p.Name, p => p.CheckOutType);
+                        context.ExecuteQueryRetry();
+                        var parsedProperties = page.Properties.ToDictionary(p => p.Key, p => parser.ParseString(p.Value));
+                        var RootWebUrl = rootWeb.ServerRelativeUrl;
+                        parsedProperties["PublishingPageLayout"] = RootWebUrl + parsedProperties["PublishingPageLayout"];
+                        pageFile.SetFileProperties(parsedProperties, false);
+                    }
+
+                    if (page.WebParts != null && page.WebParts.Count > 0)
+                    {
+                        Microsoft.SharePoint.Client.WebParts.LimitedWebPartManager mgr =
+                            pageFile.GetLimitedWebPartManager(
+                                Microsoft.SharePoint.Client.WebParts.PersonalizationScope.Shared);
+                        context.Load(mgr);
+                        context.ExecuteQueryRetry();
+
+                        AddWebPartsToPublishingPage(web, page, mgr, parser);
+                    }
+
+                    List pagesLibrary = publishingPage.ListItem.ParentList;
+                    context.Load(pagesLibrary);
+                    context.ExecuteQueryRetry();
+
+                    ListItem pageItem = publishingPage.ListItem;
+                    web.Context.Load(pageItem, p => p.File.CheckOutType);
+                    web.Context.ExecuteQueryRetry();
+
+                    if (pageItem.File.CheckOutType != CheckOutType.None)
+                    {
+                        pageItem.File.CheckIn(String.Empty, CheckinType.MajorCheckIn);
+                    }
+
+                    if (page.Publish && pagesLibrary.EnableMinorVersions)
+                    {
+                        pageItem.File.Publish(String.Empty);
+                        if (pagesLibrary.EnableModeration)
+                        {
+                            pageItem.File.Approve(String.Empty);
+                        }
+                    }
+
+
+                    if (page.WelcomePage)
+                    {
+                        SetWelcomePage(web, pageFile);
+                    }
+
+                    context.ExecuteQueryRetry();
+                }
 
                 // Set available page layouts
                 var availablePageLayouts = template.Publishing.PageLayouts.Select(p => p.Path);
@@ -64,115 +173,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     web.SetDefaultPageLayoutForSite(rootWeb, defaultPageLayout.Path);
                 }
-
-                // Upload available page layouts
-                foreach (PageLayout pageLayout in template.Publishing.PageLayouts)
-                    {
-                        var fileName = pageLayout.Path.Split('/').LastOrDefault();
-                        var container = template.Connector.GetContainer();
-                        var stream = template.Connector.GetFileStream(fileName, container);
-
-                        // Get Masterpage catalog fodler
-                        var masterpageCatalog = context.Site.GetCatalog((int)ListTemplateType.MasterPageCatalog);
-                        context.Load(masterpageCatalog);
-                        context.ExecuteQuery();
-
-                        var folder = masterpageCatalog.RootFolder;
-
-                        UploadFile(template, pageLayout, folder, stream);
-                    }
-
-                    foreach (PublishingPage page in template.Publishing.PublishingPages)
-                    {
-
-                        string parsedFileName = parser.ParseString(page.FileName);
-                        string parsedFullFileName = parser.ParseString(page.FullFileName);
-
-                        Microsoft.SharePoint.Client.Publishing.PublishingPage existingPage =
-                            web.GetPublishingPage(parsedFileName + ".aspx");
-
-                        if (!web.IsPropertyAvailable("RootFolder"))
-                        {
-                            web.Context.Load(web.RootFolder);
-                            web.Context.ExecuteQueryRetry();
-                        }
-
-                        if (existingPage != null && existingPage.ServerObjectIsNull.Value == false)
-                        {
-                            if (page.WelcomePage && web.RootFolder.WelcomePage.ToLower().Contains(parsedFullFileName.ToLower()))
-                            {
-                                //set the welcome page to a Temp page to allow page deletion
-                                web.RootFolder.WelcomePage = "temp.aspx";
-                                web.RootFolder.Update();
-                                web.Update();
-                                context.ExecuteQueryRetry();
-                            }
-                            existingPage.ListItem.DeleteObject();
-                            context.ExecuteQuery();
-                        }
-
-
-                        web.AddPublishingPage(
-                            parsedFileName,
-                            page.Layout,
-                            parser.ParseString(page.Title)
-                            );
-                        Microsoft.SharePoint.Client.Publishing.PublishingPage publishingPage =
-                            web.GetPublishingPage(parsedFullFileName);
-                        Microsoft.SharePoint.Client.File pageFile = publishingPage.ListItem.File;
-                        pageFile.CheckOut();
-
-                        if (page.Properties != null && page.Properties.Count > 0)
-                        {
-                            context.Load(pageFile, p => p.Name, p => p.CheckOutType);
-                            context.ExecuteQueryRetry();
-                            var parsedProperties = page.Properties.ToDictionary(p => p.Key, p => parser.ParseString(p.Value));
-                            var RootWebUrl = rootWeb.ServerRelativeUrl;
-                            parsedProperties["PublishingPageLayout"] = RootWebUrl + parsedProperties["PublishingPageLayout"];
-                            pageFile.SetFileProperties(parsedProperties, false);
-                        }
-
-                        if (page.WebParts != null && page.WebParts.Count > 0)
-                        {
-                            Microsoft.SharePoint.Client.WebParts.LimitedWebPartManager mgr =
-                                pageFile.GetLimitedWebPartManager(
-                                    Microsoft.SharePoint.Client.WebParts.PersonalizationScope.Shared);
-                            context.Load(mgr);
-                            context.ExecuteQueryRetry();
-
-                            AddWebPartsToPublishingPage(web, page, mgr, parser);
-                        }
-
-                        List pagesLibrary = publishingPage.ListItem.ParentList;
-                        context.Load(pagesLibrary);
-                        context.ExecuteQueryRetry();
-
-                        ListItem pageItem = publishingPage.ListItem;
-                        web.Context.Load(pageItem, p => p.File.CheckOutType);
-                        web.Context.ExecuteQueryRetry();
-
-                        if (pageItem.File.CheckOutType != CheckOutType.None)
-                        {
-                            pageItem.File.CheckIn(String.Empty, CheckinType.MajorCheckIn);
-                        }
-
-                        if (page.Publish && pagesLibrary.EnableMinorVersions)
-                        {
-                            pageItem.File.Publish(String.Empty);
-                            if (pagesLibrary.EnableModeration)
-                            {
-                                pageItem.File.Approve(String.Empty);
-                            }
-                        }
-
-
-                        if (page.WelcomePage)
-                        {
-                            SetWelcomePage(web, pageFile);
-                        }
-
-                        context.ExecuteQueryRetry();
-                    }
             }
             return parser;
         }
@@ -229,28 +229,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             string defaultViewDisplayName = parser.ParseString(wp.DefaultViewDisplayName);
 
-                string listUrl = webPartProperties.FieldValues["ListUrl"].ToString();
-                web.Context.Load(definition, d => d.Id); // Id of the hidden view which gets automatically created
-                web.Context.ExecuteQuery();
+            string listUrl = webPartProperties.FieldValues["ListUrl"].ToString();
+            web.Context.Load(definition, d => d.Id); // Id of the hidden view which gets automatically created
+            web.Context.ExecuteQuery();
 
-                Guid viewId = definition.Id;
-                List list = web.GetListByUrl(listUrl);
-                web.Context.Load(list);
-                web.Context.Load(list.Views);
-                web.Context.ExecuteQuery();
+            Guid viewId = definition.Id;
+            List list = web.GetListByUrl(listUrl);
+            web.Context.Load(list);
+            web.Context.Load(list.Views);
+            web.Context.ExecuteQuery();
 
-                Microsoft.SharePoint.Client.View viewCreatedFromWebpart = list.Views.GetById(viewId);
-                web.Context.Load(viewCreatedFromWebpart);
+            Microsoft.SharePoint.Client.View viewCreatedFromWebpart = list.Views.GetById(viewId);
+            web.Context.Load(viewCreatedFromWebpart);
 
-                //get xml node
-                var existingViews = list.Views;
-                web.Context.Load(existingViews, vs => vs.Include(v => v.Title, v => v.Id));
-                web.Context.ExecuteQueryRetry();
-                var currentViewIndex = 21;
-                Microsoft.SharePoint.Client.View viewCreatedFromList = CreateView(web, wp.ViewContent, existingViews, list, currentViewIndex);
+            //get xml node
+            var existingViews = list.Views;
+            web.Context.Load(existingViews, vs => vs.Include(v => v.Title, v => v.Id));
+            web.Context.ExecuteQueryRetry();
+            var currentViewIndex = 21;
+            Microsoft.SharePoint.Client.View viewCreatedFromList = CreateView(web, wp.ViewContent, existingViews, list, currentViewIndex);
 
-                //set basic view with defautviewdisplayname 
-                //Microsoft.SharePoint.Client.View viewCreatedFromList = list.Views.GetByTitle(defaultViewDisplayName);
+            //set basic view with defautviewdisplayname 
+            //Microsoft.SharePoint.Client.View viewCreatedFromList = list.Views.GetByTitle(defaultViewDisplayName);
 
             web.Context.Load(
                     viewCreatedFromList,
@@ -273,47 +273,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                      v => v.StyleId
                     );
 
-                web.Context.ExecuteQuery();
+            web.Context.ExecuteQuery();
 
-                //need to copy the same View definition to the new View added by the Webpart manager
-                viewCreatedFromWebpart.ViewQuery = viewCreatedFromList.ViewQuery;
-                viewCreatedFromWebpart.ViewData = viewCreatedFromList.ViewData;
-                viewCreatedFromWebpart.ViewJoins = viewCreatedFromList.ViewJoins;
-                viewCreatedFromWebpart.ViewProjectedFields = viewCreatedFromList.ViewProjectedFields;
-                viewCreatedFromWebpart.Paged = viewCreatedFromList.Paged;
-                viewCreatedFromWebpart.DefaultView = viewCreatedFromList.DefaultView;
-                viewCreatedFromWebpart.RowLimit = viewCreatedFromList.RowLimit;
-                viewCreatedFromWebpart.ContentTypeId = viewCreatedFromList.ContentTypeId;
-                viewCreatedFromWebpart.Scope = viewCreatedFromList.Scope;
-                viewCreatedFromWebpart.MobileView = viewCreatedFromList.MobileView;
-                viewCreatedFromWebpart.MobileDefaultView = viewCreatedFromList.MobileDefaultView;
-                viewCreatedFromWebpart.Aggregations = viewCreatedFromList.Aggregations;
-                viewCreatedFromWebpart.JSLink = viewCreatedFromList.JSLink;
-                viewCreatedFromWebpart.ListViewXml = viewCreatedFromList.ListViewXml;
+            //need to copy the same View definition to the new View added by the Webpart manager
+            viewCreatedFromWebpart.ViewQuery = viewCreatedFromList.ViewQuery;
+            viewCreatedFromWebpart.ViewData = viewCreatedFromList.ViewData;
+            viewCreatedFromWebpart.ViewJoins = viewCreatedFromList.ViewJoins;
+            viewCreatedFromWebpart.ViewProjectedFields = viewCreatedFromList.ViewProjectedFields;
+            viewCreatedFromWebpart.Paged = viewCreatedFromList.Paged;
+            viewCreatedFromWebpart.DefaultView = viewCreatedFromList.DefaultView;
+            viewCreatedFromWebpart.RowLimit = viewCreatedFromList.RowLimit;
+            viewCreatedFromWebpart.ContentTypeId = viewCreatedFromList.ContentTypeId;
+            viewCreatedFromWebpart.Scope = viewCreatedFromList.Scope;
+            viewCreatedFromWebpart.MobileView = viewCreatedFromList.MobileView;
+            viewCreatedFromWebpart.MobileDefaultView = viewCreatedFromList.MobileDefaultView;
+            viewCreatedFromWebpart.Aggregations = viewCreatedFromList.Aggregations;
+            viewCreatedFromWebpart.JSLink = viewCreatedFromList.JSLink;
+            viewCreatedFromWebpart.ListViewXml = viewCreatedFromList.ListViewXml;
 
             viewCreatedFromWebpart.ViewFields.RemoveAll();
-                foreach (var field in viewCreatedFromList.ViewFields)
-                {
-                    viewCreatedFromWebpart.ViewFields.Add(field);
-                }
+            foreach (var field in viewCreatedFromList.ViewFields)
+            {
+                viewCreatedFromWebpart.ViewFields.Add(field);
+            }
 
-                if (webPartProperties.FieldValues.ContainsKey("JSLink") && webPartProperties.FieldValues["JSLink"] != null)
-                {
-                    viewCreatedFromWebpart.JSLink = webPartProperties.FieldValues["JSLink"].ToString();
-                }
+            if (webPartProperties.FieldValues.ContainsKey("JSLink") && webPartProperties.FieldValues["JSLink"] != null)
+            {
+                viewCreatedFromWebpart.JSLink = webPartProperties.FieldValues["JSLink"].ToString();
+            }
 
-                viewCreatedFromWebpart.Update();
+            viewCreatedFromWebpart.Update();
 
-                web.Context.ExecuteQuery();
-                
-                // remove view created for webpart
-                web.Context.Load(list);
-                web.Context.Load(list.Views);
-                web.Context.ExecuteQuery();
-                Microsoft.SharePoint.Client.View LRMCurrentView = list.Views.GetByTitle("LRMCurrentView");
-                LRMCurrentView.DeleteObject();
-                // Execute the query to the server    
-                web.Context.ExecuteQuery();
+            web.Context.ExecuteQuery();
+
+            // remove view created for webpart
+            web.Context.Load(list);
+            web.Context.Load(list.Views);
+            web.Context.ExecuteQuery();
+            Microsoft.SharePoint.Client.View LRMCurrentView = list.Views.GetByTitle("LRMCurrentView");
+            LRMCurrentView.DeleteObject();
+            // Execute the query to the server    
+            web.Context.ExecuteQuery();
         }
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template,
@@ -472,33 +472,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var pageLayout = new PageLayout();
 
                         var pageLayoutFullPath = layout.Attribute("url").Value;
-                        pageLayout.Path = pageLayoutFullPath.Replace("_catalogs/masterpage/", String.Empty); ;
-                        
+                        pageLayout.Path = pageLayoutFullPath.Replace("_catalogs/masterpage/", String.Empty);
+
                         if (pageLayout.Path == defaultPageLayoutUrl)
                         {
                             pageLayout.IsDefault = true;
                         }
                         template.Publishing.PageLayouts.Add(pageLayout);
 
-                        if (isRootWeb)
-                        {
-                            web.EnsureProperty(w => w.ServerRelativeUrl);
-                            var spFile = web.GetFileByServerRelativeUrl(web.ServerRelativeUrl + "/" + pageLayoutFullPath);
-                            var fileStream = spFile.OpenBinaryStream();
-                            web.Context.Load(spFile);
-                            web.Context.Load(spFile.ListItemAllFields);
-                            web.Context.ExecuteQuery();
+                        // Page layouts are always uploaded on root web
+                        var siteContext = web.Context.GetSiteCollectionContext();
+                        var rootWeb = siteContext.Site.RootWeb;
+                        siteContext.Load(rootWeb);
+                        siteContext.ExecuteQueryRetry();
+                        rootWeb.EnsureProperty(w => w.ServerRelativeUrl);
+                        var spFile = rootWeb.GetFileByServerRelativeUrl(rootWeb.ServerRelativeUrl + "/" + pageLayoutFullPath);
+                        var fileStream = spFile.OpenBinaryStream();
+                        rootWeb.Context.Load(spFile);
+                        rootWeb.Context.Load(spFile.ListItemAllFields);
+                        rootWeb.Context.ExecuteQuery();
 
-                            try
-                            {
-                                template.Connector.SaveFileStream(spFile.Name, fileStream.Value);
-                            }
-                            catch (Exception)
-                            {
-                                //The file name might contain encoded characters that prevent upload. Decode it and try again.
-                                var fileName = spFile.Name.Replace("&", "");
-                                template.Connector.SaveFileStream(spFile.Name, fileStream.Value);
-                            }
+                        try
+                        {
+                            template.Connector.SaveFileStream(spFile.Name, fileStream.Value);
+                        }
+                        catch (Exception)
+                        {
+                            //The file name might contain encoded characters that prevent upload. Decode it and try again.
+                            var fileName = spFile.Name.Replace("&", "");
+                            template.Connector.SaveFileStream(spFile.Name, fileStream.Value);
                         }
                     }
 
@@ -666,7 +668,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 "</webParts>";
 
                             }
-                            else {
+                            else
+                            {
                                 ppwp.ViewContent = "<View></View>";
                                 var webPartXML = wpm.ExportWebPart(webPartId);
                                 ctx.ExecuteQuery();
@@ -704,14 +707,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 string url = val.Split(',')[0];
                 if (!string.IsNullOrEmpty(url) && !string.IsNullOrEmpty(layoutName))
                 {
+                    string layoutPath = url.Replace("_catalogs/masterpage/", String.Empty).TrimStart('/');
                     // Check if page layout is not already defined in the PageLayout section of the template
-                    if (!TemplateContainPageLayouts(template, url))
+                    if (!TemplateContainPageLayouts(template, layoutPath))
                     {
                         OfficeDevPnP.Core.Framework.Provisioning.Model.PageLayout targetFile =
                         new OfficeDevPnP.Core.Framework.Provisioning.Model.PageLayout
                         {
                             IsDefault = false,
-                            Path = url
+                            Path = layoutPath
                         };
                         template.Publishing.PageLayouts.Add(targetFile);
 
@@ -936,18 +940,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (viewstyle != null)
                 {
                     var viewStyleID = viewstyle.Attribute("ID") != null ? viewstyle.Attribute("ID").Value : "";
-                    if (viewStyleID != "") { 
+                    if (viewStyleID != "")
+                    {
                         //parse xml
                         XmlDocument doc = new XmlDocument();
-                        doc.LoadXml("<View><ViewStyle ID='"+viewStyleID.ToString()+"'/></View>");
+                        doc.LoadXml("<View><ViewStyle ID='" + viewStyleID.ToString() + "'/></View>");
                         XmlElement element = (XmlElement)doc.SelectSingleNode("//View//ViewStyle");
                         createdView.ListViewXml = doc.FirstChild.InnerXml;
                         createdView.Update();
                     }
                 }
 
-                    // JSLink
-                    var jslinkElement = viewElement.Descendants("JSLink").FirstOrDefault();
+                // JSLink
+                var jslinkElement = viewElement.Descendants("JSLink").FirstOrDefault();
                 if (jslinkElement != null)
                 {
                     var jslink = jslinkElement.Value;
@@ -980,10 +985,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private string returnValue (string key, string val)
+        private string returnValue(string key, string val)
         {
             string htmlvalueType = "";
-            if (key == "Title" || key == "Default" || key == "NoDefaultStyle" || key == "ViewContentTypeId" || key == "XmlDefinitionLink" || key == "Description" || key == "JSLink" || key == "CatalogIconImageUrl" || key == "TitleIconImageUrl" || key == "Width" || key == "Height" || key == "HelpUrl" || key == "SelectParameters") 
+            if (key == "Title" || key == "Default" || key == "NoDefaultStyle" || key == "ViewContentTypeId" || key == "XmlDefinitionLink" || key == "Description" || key == "JSLink" || key == "CatalogIconImageUrl" || key == "TitleIconImageUrl" || key == "Width" || key == "Height" || key == "HelpUrl" || key == "SelectParameters")
             {
                 htmlvalueType = "<property name='" + key + "' type='string'>" + val + "</property>";
             }
@@ -992,7 +997,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 string chrometype = Enum.GetName(typeof(System.Web.UI.WebControls.WebParts.PartChromeType), int.Parse(val));
                 htmlvalueType = "<property name='" + key + "' type='chrometype'>" + chrometype + "</property>";
             }
-            else if ( key == "ShowWithSampleData" || key == "CacheXslStorage" || key == "ManualRefresh" || key == "EnableOriginalValue" || key == "ServerRender" || key == "AllowConnect" || key == "AllowZoneChange" || key == "DisableSaveAsNewViewButton" || key == "AutoRefresh" || key == "FireInitialRow" || key == "AllowEdit" || key == "AllowMinimize" || key == "UseSQLDataSourcePaging" || key == "ShowTimelineIfAvailable" || key == "Hidden" || key == "AllowClose" || key == "InplaceSearchEnabled" || key == "DisableViewSelectorMenu" || key == "IsClientRender" || key == "AsyncRefresh" || key == "HasClientDataSource")
+            else if (key == "ShowWithSampleData" || key == "CacheXslStorage" || key == "ManualRefresh" || key == "EnableOriginalValue" || key == "ServerRender" || key == "AllowConnect" || key == "AllowZoneChange" || key == "DisableSaveAsNewViewButton" || key == "AutoRefresh" || key == "FireInitialRow" || key == "AllowEdit" || key == "AllowMinimize" || key == "UseSQLDataSourcePaging" || key == "ShowTimelineIfAvailable" || key == "Hidden" || key == "AllowClose" || key == "InplaceSearchEnabled" || key == "DisableViewSelectorMenu" || key == "IsClientRender" || key == "AsyncRefresh" || key == "HasClientDataSource")
             {
                 htmlvalueType = "<property name='" + key + "' type='bool'>" + val + "</property>";
             }
