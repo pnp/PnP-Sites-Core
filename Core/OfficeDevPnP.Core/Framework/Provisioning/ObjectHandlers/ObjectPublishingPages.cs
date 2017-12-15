@@ -32,7 +32,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (!_willExtract.HasValue)
             {
                 web.EnsureProperty(w => w.WebTemplate);
-                _willExtract = web.WebTemplate.ToLower().Contains("blankinternet") || web.WebTemplate.ToLower().Contains("enterwiki");
+                var pubWeb = Microsoft.SharePoint.Client.Publishing.PublishingWeb.GetPublishingWeb(web.Context, web);
+                web.Context.Load(pubWeb);
+                web.Context.ExecuteQueryRetry();
+                _willExtract = pubWeb != null;
             }
             return _willExtract.Value;
         }
@@ -126,7 +129,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         context.Load(mgr);
                         context.ExecuteQueryRetry();
 
-                        AddWebPartsToPublishingPage(web, page, mgr, parser);
+                        AddWebPartsToPublishingPage(web, page, mgr, parser, publishingPage.ListItem);
                     }
 
                     List pagesLibrary = publishingPage.ListItem.ParentList;
@@ -196,7 +199,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.SetHomePage(rootFolderRelativeUrl);
         }
 
-        private static void AddWebPartsToPublishingPage(Web web, PublishingPage page, Microsoft.SharePoint.Client.WebParts.LimitedWebPartManager mgr, TokenParser parser)
+        private static void AddWebPartsToPublishingPage(Web web, PublishingPage page, Microsoft.SharePoint.Client.WebParts.LimitedWebPartManager mgr, TokenParser parser, ListItem pageItem)
         {
             ClientContext ctx = web.Context as ClientContext;
             foreach (var wp in page.WebParts)
@@ -210,6 +213,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                                                         );
                 var webPartProperties = definition.WebPart.Properties;
                 web.Context.Load(definition.WebPart);
+                web.Context.Load(definition, d  => d.Id);
                 web.Context.Load(webPartProperties);
                 web.Context.ExecuteQuery();
 
@@ -217,7 +221,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     AddListViewWebpart(web, wp, definition, webPartProperties, parser);
                 }
+
+                if (wp.Zone == "wpz")
+                {
+                    //wpz means webpart inserted in PublishingPageContent
+                    pageItem.Context.Load(pageItem, i => i["PublishingPageContent"]);
+                    pageItem.Context.ExecuteQueryRetry();
+                    pageItem["PublishingPageContent"] = String.Concat(pageItem["PublishingPageContent"], GetEmbeddedWPString(definition.Id));
+                    pageItem.Update();
+                    pageItem.Context.ExecuteQueryRetry();
+                }
             }
+        }
+
+        private static string GetEmbeddedWPString(Guid wpGuid)
+        {
+            // set the web part's ID as part of the ID-s of the div elements
+            string wpForm = @"
+            <div class=""ms-rtestate-read ms-rte-wpbox"">
+ 
+            <div class=""ms-rtestate-notify ms-rtegenerate-notify ms-rtestate-read {0}"" id=""div_{0}"">
+                                        </div>
+ 
+ 
+            <div id=""vid_{0}"" style=""display:none"">
+                                        </div>
+ 
+                                    </div>
+ 
+            ";
+            return string.Format(wpForm, wpGuid);
         }
 
         private static void AddListViewWebpart(
@@ -667,7 +700,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                             page.WebParts.Add(ppwp);
                         }
-                        catch { }
+                        catch(Exception ex) { }
                     }
                 }
                 #endregion
