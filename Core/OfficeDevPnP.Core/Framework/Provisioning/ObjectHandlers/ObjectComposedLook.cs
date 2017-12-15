@@ -208,12 +208,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.BackgroundImage, scope);
                         DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Theme, scope);
                         DownLoadFile(spConnector, spConnectorRoot, creationInfo.FileConnector, web.Url, theme.Font, scope);
-                    }
 
-                    // Create file entries for the custom theme files, but only if it's a root site
-                    // If it's root site we do not extract or set theme files, since those are in the root of the site collection
-                    if (!web.IsSubSite())
-                    {   
+                        // Create file entries for the custom theme files, but only if it's a root site
+                        // If it's root site we do not extract or set theme files, since those are in the root of the site collection
                         if (!string.IsNullOrEmpty(template.ComposedLook.BackgroundFile))
                         {
                             template.Files.Add(GetComposedLookFile(template.ComposedLook.BackgroundFile));
@@ -227,6 +224,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             template.Files.Add(GetComposedLookFile(template.ComposedLook.FontFile));
                         }
                     }
+
                     // If a base template is specified then use that one to "cleanup" the generated template model
                     if (creationInfo != null && creationInfo.BaseTemplate != null)
                     {
