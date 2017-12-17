@@ -20,14 +20,16 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(web, p => p.WebTemplate, p => p.Configuration);
             web.Context.ExecuteQueryRetry();
 
-            //if (web.IsFeatureActive(PUBLISHING_FEATURE_WEB) && web.WebTemplate == "STS" && web.Configuration == 0)
-            //{
-            //    return GetBaseTemplate(web, "STS0PUBLISHING", 0);
-            //}
-            //else
-            //{
-            return GetBaseTemplate(web, web.WebTemplate, web.Configuration);
-            //}
+            if (Boolean.Parse(web.GetPropertyBagValueString("__PublishingFeatureActivated", "false")) && web.WebTemplate == "STS" && web.Configuration == 0)
+            {
+                // Publishing feature has been activated on team site : manage template as a publishing site
+                // so that template is not full of publishing fields and content types
+                return GetBaseTemplate(web, "STSPUBLISHING", 0);
+            }
+            else
+            {
+                return GetBaseTemplate(web, web.WebTemplate, web.Configuration);
+            }
         }
 
         public static ProvisioningTemplate GetBaseTemplate(this Web web, string webTemplate, short configuration)

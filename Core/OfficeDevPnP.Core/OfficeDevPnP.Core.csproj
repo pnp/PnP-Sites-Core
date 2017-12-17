@@ -1023,6 +1023,7 @@
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\STS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\STSPUBLISHING0Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\BDR0Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\BICENTERSITE0Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\BLOG0Template.xml" />
@@ -1032,7 +1033,9 @@
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\PROJECTSITE0Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCENTERLITE0Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\STS1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\STSPUBLISHING0Template.xml" />
     <Content Include="Framework\Provisioning\BaseTemplates\v16_0\VISPRUS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\STSPUBLISHING0Template.xml" />
     <Content Include="Sites\Dummy.txt" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\GROUP0Template.xml" />
     <Content Include="pnp.ico" />
