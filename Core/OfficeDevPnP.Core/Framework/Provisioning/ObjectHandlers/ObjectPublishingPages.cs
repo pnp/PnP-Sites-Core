@@ -31,11 +31,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willExtract.HasValue)
             {
-                web.EnsureProperty(w => w.WebTemplate);
-                var pubWeb = Microsoft.SharePoint.Client.Publishing.PublishingWeb.GetPublishingWeb(web.Context, web);
-                web.Context.Load(pubWeb);
-                web.Context.ExecuteQueryRetry();
-                _willExtract = pubWeb != null;
+                var publishingActivated = Boolean.Parse(web.GetPropertyBagValueString("__PublishingFeatureActivated", "false"));
+                _willExtract = publishingActivated;
             }
             return _willExtract.Value;
         }
