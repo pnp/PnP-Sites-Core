@@ -296,6 +296,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 modelTerm.Id = Guid.NewGuid();
             }
+            
+            // We have to verify that the Term does not exist at all before creating it. One scenario that slips through
+            // is e.g. if two terms have been merged in the termstore. The merged term will never be returned when iterating all
+            // terms and its easy for any logic elsewhere to assume the term does not exist. We have to explicitly request the term
+            // in order to see that we either get null or another term (in the case of merged terms)
+            var testTerm = parent.TermStore.GetTerm(modelTerm.Id);
+            parent.TermStore.Context.Load(testTerm, t=> t.Id, t => t.MergedTermIds);
+            parent.TermStore.Context.ExecuteQueryRetry();
+            if (!testTerm.ServerObjectIsNull())
+            {
+                if (testTerm.Id != modelTerm.Id && testTerm.MergedTermIds.Contains(modelTerm.Id))
+                {
+                    // this term has been merged into another term, we should not try to create it
+                    // doing so will create a duplicate term in this termset (as of 2017-12-21).
+                    return null;
+                }
+            }
+
 
             if (parent is Term)
             {
