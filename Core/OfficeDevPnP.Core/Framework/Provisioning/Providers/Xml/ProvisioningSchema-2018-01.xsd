@@ -1133,18 +1133,6 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="ModernNavigation" minOccurs="0">
-        <xsd:annotation>
-          <xsd:documentation xml:lang="en">
-            The Modern Navigation settings for the Provisioning Template, optional element.
-          </xsd:documentation>
-        </xsd:annotation>
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="Quicklaunch" type="pnp:Quicklaunch" minOccurs="0" maxOccurs="1" />
-          </xsd:sequence>
-        </xsd:complexType>
-      </xsd:element>
       <xsd:element name="GlobalNavigation" minOccurs="0">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
@@ -1264,24 +1252,6 @@
         <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
         <xsd:documentation xml:lang="en">
           Declares whether the New Page ribbon command will automatically create a friendly URL for the newly created page, optional attribute.
-        </xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute>
-  </xsd:complexType>
-
-  <xsd:complexType name="Quicklaunch">
-    <xsd:annotation>
-      <xsd:documentation xml:lang="en">
-        Defines the quicklaunch of a site.
-      </xsd:documentation>
-    </xsd:annotation>
-    <xsd:sequence>
-      <xsd:element name="NavigationNode" type="pnp:NavigationNode" minOccurs="0" maxOccurs="unbounded" />
-    </xsd:sequence>
-    <xsd:attribute name="RemoveExistingNodes" type="xsd:boolean" use="required">
-      <xsd:annotation>
-        <xsd:documentation xml:lang="en">
-          Defines whether to remove existing nodes before creating those described through this element, required attribute.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
@@ -4470,16 +4440,7 @@
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
               <xsd:documentation xml:lang="en">
-                Defines whether to skip the feature deployment for tenant-wide enabled packages, optional attribute (default: false).
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:attribute>
-
-          <xsd:attribute name="Overwrite" type="xsd:boolean" use="optional" default="false">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines whether to overwrite an already existing package in the AppCatalog, optional attribute (default: false).
+                Defines whether to skip the feature deployment for tenant-wide enabled packages, optional attribute.
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
