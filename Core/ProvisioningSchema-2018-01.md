@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 12/7/2017*
+* Topic automatically generated on 12/27/2017*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -1950,9 +1950,9 @@ Attibute|Type|Description
 PageName|xsd:string|Defines the page name for a single ClientSidePage.
 PromoteAsNewsArticle|xsd:boolean|Declares to promote the page as a news article.
 Overwrite|xsd:boolean|Can the page be overwritten if it exists.
-Layout|xsd:string|Defines the target layout for the client-side page, optional attribute.
-Publish|xsd:boolean|Defines whether the page will be published or not, optional attribute.
-EnableComments|xsd:boolean|Defines whether the page will have comments enabled or not, optional attribute.
+Layout|xsd:string|Defines the target layout for the client-side page, optional attribute (default: Article).
+Publish|xsd:boolean|Defines whether the page will be published or not, optional attribute (default: true).
+EnableComments|xsd:boolean|Defines whether the page will have comments enabled or not, optional attribute (default: true).
 <a name="sections"></a>
 ### Sections
 Defines the Canvas sections for a single ClientSidePage.
