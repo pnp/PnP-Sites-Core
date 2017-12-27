@@ -75,6 +75,8 @@
     <add key="HighTrustCertificateStoreLocation" value="CurrentUser" />
     <!-- The thumbprint / hash of the High Trust certificate in the Windows certificate store -->
     <add key="HighTrustCertificateStoreThumbprint" value="bef80ea8c46391873e00a0ea588bd8feadd01d22" />
+    <!-- Pattern for generating subsites for multilingual testing. Use {0} in the pattern! At this location, the localeId will be inserted. -->
+    <add key="MultiLingualSubsiteTitlePattern" value="pnp-locale-{0}" />
 
 
     <!--Testing for Webhook test endpoint-->

@@ -15,6 +15,9 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using Microsoft.SharePoint.Client.Taxonomy;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.Utilities;
+using Microsoft.SharePoint.Client.WebParts;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
@@ -2256,6 +2259,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var fieldsToProcess = siteList.Fields.AsEnumerable().Where(field => !field.Hidden || SpecialFields.Contains(field.InternalName)).ToArray();
 
+            var defaultData = GetDefaultFieldData(web);
+
             foreach (var field in fieldsToProcess)
             {
                 var siteColumn = siteColumns.FirstOrDefault(sc => sc.Id == field.Id);
@@ -2281,37 +2286,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (sourceId != null && sourceId == "http://schemas.microsoft.com/sharepoint/v3")
                     {
-                        if (field.InternalName == "Editor" ||
-                            field.InternalName == "Author" ||
-                            field.InternalName == "Title" ||
-                            field.InternalName == "ID" ||
-                            field.InternalName == "Created" ||
-                            field.InternalName == "Modified" ||
-                            field.InternalName == "Attachments" ||
-                            field.InternalName == "_UIVersionString" ||
-                            field.InternalName == "DocIcon" ||
-                            field.InternalName == "LinkTitleNoMenu" ||
-                            field.InternalName == "LinkTitle" ||
-                            field.InternalName == "Edit" ||
-                            field.InternalName == "AppAuthor" ||
-                            field.InternalName == "AppEditor" ||
-                            field.InternalName == "ContentType" ||
-                            field.InternalName == "ItemChildCount" ||
-                            field.InternalName == "FolderChildCount" ||
-                            field.InternalName == "LinkFilenameNoMenu" ||
-                            field.InternalName == "LinkFilename" ||
-                            field.InternalName == "_CopySource" ||
-                            field.InternalName == "ParentVersionString" ||
-                            field.InternalName == "ParentLeafName" ||
-                            field.InternalName == "_CheckinComment" ||
-                            field.InternalName == "FileLeafRef" ||
-                            field.InternalName == "FileSizeDisplay" ||
-                            field.InternalName == "Preview" ||
-                            field.InternalName == "ThumbnailOnForm" ||
-                            field.InternalName == "CheckoutUser" ||
-                            field.InternalName == "Modified_x0020_By" ||
-                            field.InternalName == "Created_x0020_By"
-                            )
+                        if (ShouldSkipField(defaultData,list,field))
                         {
                             addField = false;
                         }
@@ -2422,6 +2397,61 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return list;
         }
+
+        private ProvisioningTemplate GetDefaultFieldData(Web web)
+        {
+            try
+            {
+                ProvisioningTemplate result = null;
+
+                web.RegionalSettings.EnsureProperty(x => x.LocaleId);
+                var cultureInfo = System.Globalization.CultureInfo.GetCultureInfo((int)web.RegionalSettings.LocaleId);
+
+                string nativeFilesTemplatePath = string.Format("OfficeDevPnP.Core.Framework.Provisioning.BaseTemplates.Common.ListInstances-Default-{0}.xml", cultureInfo.Name.ToLowerInvariant());
+                using (Stream stream = typeof(BaseTemplateManager).Assembly.GetManifestResourceStream(nativeFilesTemplatePath))
+                {
+                    // Figure out the formatter to use
+                    XDocument xTemplate = XDocument.Load(stream);
+                    var namespaceDeclarations = xTemplate.Root.Attributes().Where(a => a.IsNamespaceDeclaration).
+                            GroupBy(a => a.Name.Namespace == XNamespace.None ? String.Empty : a.Name.LocalName,
+                                    a => XNamespace.Get(a.Value)).
+                            ToDictionary(g => g.Key,
+                                         g => g.First());
+                    var pnpns = namespaceDeclarations["pnp"];
+
+                    stream.Seek(0, SeekOrigin.Begin);
+
+                    // Get the XML document from the stream
+                    ITemplateFormatter formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(pnpns.NamespaceName);
+
+                    // And convert it into a template
+                    result = formatter.ToProvisioningTemplate(stream);
+                }
+
+                return (result);
+            }
+            catch(Exception)
+            {
+                return new ProvisioningTemplate();
+            }
+        }
+
+        private bool ShouldSkipField(ProvisioningTemplate defaultListData,ListInstance list,Field field)
+        {
+            var defaultDataList = defaultListData.Lists.SingleOrDefault(l => l.TemplateType == list.TemplateType);
+            if (defaultDataList != null)
+            {
+                if(defaultDataList.FieldRefs.Any(fr => 
+                    fr.Name.Equals(field.InternalName) &&
+                    fr.DisplayName.Equals(field.Title)
+                    ))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
         private static ListInstance ExtractInformationRightsManagement(Web web, List siteList, ListInstance list, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
             if (siteList.BaseTemplate != (int)ListTemplateType.PictureLibrary && siteList.IrmEnabled)

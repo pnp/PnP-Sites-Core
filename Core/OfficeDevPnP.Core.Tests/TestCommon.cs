@@ -329,6 +329,14 @@ namespace OfficeDevPnP.Core.Tests
 
             return secureString;
         }
+        
+        public static string GetMultiLingualSubSiteTitle(int localeId)
+        {
+            var siteTitlePattern = ConfigurationManager.AppSettings["MultiLingualSubsiteTitlePattern"]?.ToString();
+            if (string.IsNullOrEmpty(siteTitlePattern)) { throw new ConfigurationErrorsException("Setting 'MultiLingualSubsiteTitlePattern' is missing"); }
+            if (!siteTitlePattern.Contains("{0}")) { throw new ConfigurationErrorsException("App setting 'MultiLingualSubsiteTitlePattern' should contain '{0}' for inserting the localeId"); }
+            return string.Format(siteTitlePattern, localeId);
+        }
         #endregion
     }
 }

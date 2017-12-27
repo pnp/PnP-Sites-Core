@@ -6,6 +6,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using System.Xml.Linq;
+using System.Text.RegularExpressions;
+using System.Globalization;
+using System.Xml;
+using System.Text;
+using System.IO;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 {
@@ -611,5 +617,462 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             }
         }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_EnUs()
+        {
+            CheckOOBFieldsAreHidden(1033);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_ArSa()
+        {
+            CheckOOBFieldsAreHidden(1025);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_NlNl()
+        {
+            CheckOOBFieldsAreHidden(1043);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_AzLatn()
+        {
+            CheckOOBFieldsAreHidden(1068);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_EuEs()
+        {
+            CheckOOBFieldsAreHidden(1069);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_BsLatnBa()
+        {
+            CheckOOBFieldsAreHidden(5146);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_BgBg()
+        {
+            CheckOOBFieldsAreHidden(1026);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_CaEs()
+        {
+            CheckOOBFieldsAreHidden(1027);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_ZhCn()
+        {
+            CheckOOBFieldsAreHidden(2052);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_ZhTw()
+        {
+            CheckOOBFieldsAreHidden(1028);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_HrHr()
+        {
+            CheckOOBFieldsAreHidden(1050);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_CsCz()
+        {
+            CheckOOBFieldsAreHidden(1029);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_DaDk()
+        {
+            CheckOOBFieldsAreHidden(1030);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_PrsAf()
+        {
+            CheckOOBFieldsAreHidden(1164);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_EtEe()
+        {
+            CheckOOBFieldsAreHidden(1061);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_FiFi()
+        {
+            CheckOOBFieldsAreHidden(1035);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_FrFr()
+        {
+            CheckOOBFieldsAreHidden(1036);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_GlEs()
+        {
+            CheckOOBFieldsAreHidden(1110);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_DeDe()
+        {
+            CheckOOBFieldsAreHidden(1031);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_ElGr()
+        {
+            CheckOOBFieldsAreHidden(1032);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_HeIl()
+        {
+            CheckOOBFieldsAreHidden(1037);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_HiIn()
+        {
+            CheckOOBFieldsAreHidden(1081);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_HuHu()
+        {
+            CheckOOBFieldsAreHidden(1038);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_IdId()
+        {
+            CheckOOBFieldsAreHidden(1057);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_GaIe()
+        {
+            CheckOOBFieldsAreHidden(2108);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_ItIt()
+        {
+            CheckOOBFieldsAreHidden(1040);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_JaJp()
+        {
+            CheckOOBFieldsAreHidden(1041);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_KkKz()
+        {
+            CheckOOBFieldsAreHidden(1087);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_KoKr()
+        {
+            CheckOOBFieldsAreHidden(1042);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_LvLv()
+        {
+            CheckOOBFieldsAreHidden(1062);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_LtLt()
+        {
+            CheckOOBFieldsAreHidden(1063);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_MkMk()
+        {
+            CheckOOBFieldsAreHidden(1071);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_MsMy()
+        {
+            CheckOOBFieldsAreHidden(1086);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_NbNo()
+        {
+            CheckOOBFieldsAreHidden(1044);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_PlPl()
+        {
+            CheckOOBFieldsAreHidden(1045);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_PtBr()
+        {
+            CheckOOBFieldsAreHidden(1046);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_PtPt()
+        {
+            CheckOOBFieldsAreHidden(2070);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_RoRo()
+        {
+            CheckOOBFieldsAreHidden(1048);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_RuRu()
+        {
+            CheckOOBFieldsAreHidden(1049);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_SrCyrlRs()
+        {
+            CheckOOBFieldsAreHidden(10266);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_SrLatnRs()
+        {
+            CheckOOBFieldsAreHidden(9242);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_SkSk()
+        {
+            CheckOOBFieldsAreHidden(1051);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_SlSi()
+        {
+            CheckOOBFieldsAreHidden(1060);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_EsEs()
+        {
+            CheckOOBFieldsAreHidden(3082);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_SvSe()
+        {
+            CheckOOBFieldsAreHidden(1053);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_ThTh()
+        {
+            CheckOOBFieldsAreHidden(1054);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_TrTr()
+        {
+            CheckOOBFieldsAreHidden(1055);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_UkUa()
+        {
+            CheckOOBFieldsAreHidden(1058);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_ViVn()
+        {
+            CheckOOBFieldsAreHidden(1066);
+        }
+
+        [TestMethod]
+        public void ChangeOOBFieldTitles_CyGb()
+        {
+            CheckOOBFieldsAreHidden(1106);
+        }
+
+        #region HelperMethods
+
+        public void CheckOOBFieldsAreHidden(int localeId)
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var siteTitle = TestCommon.GetMultiLingualSubSiteTitle(localeId);
+                Web subWeb = ctx.Web.GetWeb(siteTitle) ?? ctx.Web.CreateWeb(new Entities.SiteEntity() { Lcid = (uint)localeId, Title = siteTitle, Url = siteTitle });
+                var cultureInfo = CultureInfo.GetCultureInfo(localeId);
+
+                CheckOOBFieldsAreHiddenForList(subWeb, cultureInfo);
+                CheckOOBFieldsAreHiddenForLibrary(subWeb, cultureInfo);
+                CheckOOBFieldsAreHiddenForImagesLibrary(subWeb, cultureInfo);
+            }
+        }
+
+        //Check if the default fields are hidden (return 0 fields), change title of 'Title' field, should be returned (return 3 fields)
+        public void CheckOOBFieldsAreHiddenForList(Web subWeb, CultureInfo cultureInfo)
+        {
+            string listTitle = "CustomList";
+
+            //Delete list if it exists
+            var list = subWeb.GetListByTitle(listTitle);
+            if (list != null)
+            {
+                list.DeleteObject();
+                list.Context.ExecuteQueryRetry();
+            }
+
+            //Create new list (to ensure, no custom fields are present)
+            list = subWeb.CreateList(ListTemplateType.GenericList, listTitle, false, true);
+
+            //Extract provisioning template of the list. No fields should be present. (Because there are only OOB field at this moment)
+            var template = subWeb.GetProvisioningTemplate(new ProvisioningTemplateCreationInformation(subWeb)
+            {
+                HandlersToProcess = Handlers.Lists
+            });
+            Assert.IsTrue(template.Lists.Any());
+            var templateList = template.Lists.SingleOrDefault(l => l.Title.Equals(listTitle));
+            Assert.IsNotNull(templateList);
+
+            Assert.AreEqual(0, templateList.FieldRefs.Count);
+
+            //Set title's display name to custom value      
+            ChangeListFieldTitle(list, "Title", "CustomTitle", cultureInfo);
+            ChangeListFieldTitle(list, "LinkTitle", "CustomTitle", cultureInfo);
+            ChangeListFieldTitle(list, "LinkTitleNoMenu", "CustomTitle", cultureInfo);
+
+            //Extract provisioning template of the list. Title field should be present
+            template = subWeb.GetProvisioningTemplate(new ProvisioningTemplateCreationInformation(subWeb)
+            {
+                HandlersToProcess = Handlers.Lists
+            });
+            Assert.IsTrue(template.Lists.Any());
+            templateList = template.Lists.SingleOrDefault(l => l.Title.Equals(listTitle));
+            Assert.IsNotNull(templateList);
+            Assert.AreEqual(3, templateList.FieldRefs.Count);
+            Assert.IsTrue(templateList.FieldRefs.Any(f => f.Name.Equals("Title")));
+            Assert.IsTrue(templateList.FieldRefs.Any(f => f.Name.Equals("LinkTitleNoMenu")));
+            Assert.IsTrue(templateList.FieldRefs.Any(f => f.Name.Equals("LinkTitle")));
+        }
+        
+        //Check if the default fields are hidden (return 5 fields), change title of 'Title' field, should be returned (return 6 fields)
+        public void CheckOOBFieldsAreHiddenForLibrary(Web subWeb, CultureInfo cultureInfo)
+        {
+            string libraryTitle = "CustomLib";
+
+            //Delete library if it exists
+            var lib = subWeb.GetListByTitle(libraryTitle);
+            if (lib != null)
+            {
+                lib.DeleteObject();
+                lib.Context.ExecuteQueryRetry();
+            }
+
+            //Create new library (to ensure, no custom fields are present)
+            lib = subWeb.CreateList(ListTemplateType.DocumentLibrary, libraryTitle, false, true);
+
+            //Extract provisioning template of the list. No fields should be present. (Because there are only OOB field at this moment)
+            var template = subWeb.GetProvisioningTemplate(new ProvisioningTemplateCreationInformation(subWeb)
+            {
+                HandlersToProcess = Handlers.Lists
+            });
+            Assert.IsTrue(template.Lists.Any());
+            var templateList = template.Lists.SingleOrDefault(l => l.Title.Equals(libraryTitle));
+            Assert.IsNotNull(templateList);
+            
+            Assert.AreEqual(0, templateList.FieldRefs.Count);
+
+            ChangeListFieldTitle(lib, "Title", "CustomTitle", cultureInfo);
+
+            //Extract provisioning template of the list. Title field should be present
+            template = subWeb.GetProvisioningTemplate(new ProvisioningTemplateCreationInformation(subWeb)
+            {
+                HandlersToProcess = Handlers.Lists
+            });
+            Assert.IsTrue(template.Lists.Any());
+            templateList = template.Lists.SingleOrDefault(l => l.Title.Equals(libraryTitle));
+            Assert.IsNotNull(templateList);
+            Assert.AreEqual(1, templateList.FieldRefs.Count);
+            Assert.IsTrue(templateList.FieldRefs.Any(f => f.Name.Equals("Title")));
+        }
+
+        //Check if the default fields are hidden (return 17 fields), change title of 'Title' field, should be returned (return 18 fields)
+        public void CheckOOBFieldsAreHiddenForImagesLibrary(Web subWeb, CultureInfo cultureInfo)
+        {
+            string imageLibTitle = "CustomImages";
+
+            //Delete image library if it exists
+            var imageLib = subWeb.GetListByTitle(imageLibTitle);
+            if (imageLib != null)
+            {
+                imageLib.DeleteObject();
+                imageLib.Context.ExecuteQueryRetry();
+            }
+
+            //Create new library (to ensure, no custom fields are present)
+            imageLib = subWeb.CreateList(ListTemplateType.PictureLibrary, imageLibTitle, false, true);
+
+            //Extract provisioning template of the list. No fields should be present. (Because there are only OOB field at this moment)
+            var template = subWeb.GetProvisioningTemplate(new ProvisioningTemplateCreationInformation(subWeb)
+            {
+                HandlersToProcess = Handlers.Lists
+            });
+            Assert.IsTrue(template.Lists.Any());
+            var templateList = template.Lists.SingleOrDefault(l => l.Title.Equals(imageLibTitle));
+            Assert.IsNotNull(templateList);
+            Assert.AreEqual(0, templateList.FieldRefs.Count);
+
+            //Set title's display name to custom value
+            ChangeListFieldTitle(imageLib, "Title", "CustomTitle", cultureInfo);
+
+            //Extract provisioning template of the list. Title field should be present
+            template = subWeb.GetProvisioningTemplate(new ProvisioningTemplateCreationInformation(subWeb)
+            {
+                HandlersToProcess = Handlers.Lists
+            });
+            Assert.IsTrue(template.Lists.Any());
+            templateList = template.Lists.SingleOrDefault(l => l.Title.Equals(imageLibTitle));
+            Assert.IsNotNull(templateList);
+            Assert.AreEqual(1, templateList.FieldRefs.Count);
+            Assert.IsTrue(templateList.FieldRefs.Any(f => f.Name.Equals("Title")));
+        }
+
+        public void ChangeListFieldTitle(List list, string internalName, string customTitle, CultureInfo cultureInfo = null)
+        {
+            var titleField = list.Fields.GetFieldByInternalName(internalName);
+            titleField.Title = customTitle;
+            titleField.SchemaXml = Regex.Replace(titleField.SchemaXml, "DisplayName=\"[^\"]*\"", "DisplayName=\"" + customTitle + "\"");
+            if (cultureInfo != null)
+                titleField.TitleResource.SetValueForUICulture(cultureInfo.Name, customTitle);
+            titleField.UpdateAndPushChanges(true);
+            list.Context.ExecuteQueryRetry();
+        }
+
+        #endregion
     }
 }
