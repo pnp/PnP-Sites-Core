@@ -393,7 +393,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     {
         public static String SaveXamlToFile(this String xaml, Guid id, OfficeDevPnP.Core.Framework.Provisioning.Connectors.FileConnectorBase connector, ListCollection lists)
         {
-            // Tokenize XAML to replace any ListId attribute with the corresponding token
+            // Tokenize XAML to replace any ListId or ToListId attribute with the corresponding token
             XElement xamlDocument = XElement.Parse(xaml);
             string[] listIdAttributes = {"ListId", "ToListId"};
             
