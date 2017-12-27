@@ -1280,7 +1280,7 @@ namespace Microsoft.SharePoint.Client
                 // Ensure that ListItemAllFields.ServerObjectIsNull is loaded
                 try
                 {
-                    file.EnsureProperty(f => f.ListItemAllFields);
+                    file.EnsureProperties(f => f.ListItemAllFields, f => f.CheckOutType, f => f.Name);
                 }
                 catch
                 {

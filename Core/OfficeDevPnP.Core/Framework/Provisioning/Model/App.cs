@@ -22,9 +22,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Defines the Action for the App to manage
         /// </summary>
         /// <remarks>
-        /// Possible values are: Install, Update, Uninstall,
+        /// Possible values are: Install, Update, Uninstall.
         /// </remarks>
         public AppAction Action { get; set; }
+
+        /// <summary>
+        /// Defines whether the package will be handled synchronously or asynchronously
+        /// </summary>
+        /// <remarks>
+        /// Possible values are: Synchronously, Asynchronously.
+        /// </remarks>
+        public SyncMode SyncMode { get; set; }
 
         #endregion
 
@@ -93,5 +101,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Instructs the engine to uninstall the package from the site collection.
         /// </summary>
         Uninstall,
+    }
+
+    /// <summary>
+    /// Defines whether the package will be handled synchronously or asynchronously
+    /// </summary>
+    public enum SyncMode
+    {
+        /// <summary>
+        /// Defines that the package will be handled synchronously.
+        /// </summary>
+        Synchronously,
+        /// <summary>
+        /// Defines that the package will be handled asynchronously.
+        /// </summary>
+        Asynchronously,
     }
 }
