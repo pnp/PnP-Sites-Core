@@ -25,7 +25,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
             {
                 modelSource = source as Model.NavigationNode;
             }
-            
+            if (modelSource == null)
+            {
+                modelSource = source as Model.Quicklaunch;
+            }
+
             if (modelSource != null)
             {
                 Model.NavigationNodeCollection sourceNodes = modelSource.GetPublicInstancePropertyValue("NavigationNodes") as Model.NavigationNodeCollection;

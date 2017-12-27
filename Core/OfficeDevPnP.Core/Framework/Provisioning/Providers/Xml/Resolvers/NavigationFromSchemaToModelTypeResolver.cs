@@ -41,65 +41,92 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                     navigation = source.GetPublicInstancePropertyValue("CurrentNavigation");
                     targetIsGlobal = false;
                     break;
+                case "ModernNavigation":
+                    navigation = source.GetPublicInstancePropertyValue("ModernNavigation");
+                    targetIsGlobal = false;
+                    break;
             }
+
+            
 
             if (navigation != null)
             {
                 var navigationType = navigation.GetPublicInstancePropertyValue("NavigationType");
-                switch (navigationType.ToString())
+
+                //TODO add a navigation type of modern navigation or quicklaunch only so it can be included in the switch below
+                if (navigationType == null)
                 {
-                    case "Managed":
-                        targetNavigation = new Model.ManagedNavigation();
+                    targetNavigation = new Model.Quicklaunch();
+                    var quicklaunch = navigation.GetPublicInstancePropertyValue("Quicklaunch");
 
-                        var managedNavigation = navigation.GetPublicInstancePropertyValue("ManagedNavigation");
-                        PnPObjectsMapper.MapProperties(managedNavigation, targetNavigation, resolvers, true);
+                    if (!resolvers.ContainsKey($"{targetNavigation.GetType().FullName}.NavigationNodes"))
+                    {
+                        resolvers.Add($"{targetNavigation.GetType().FullName}.NavigationNodes", new NavigationNodeFromSchemaToModelTypeResolver());
+                    }
 
-                        if (targetIsGlobal)
-                        {
-                            target = new Model.GlobalNavigation(Model.GlobalNavigationType.Managed, null, (Model.ManagedNavigation)targetNavigation);
-                        }
-                        else
-                        {
-                            target = new Model.CurrentNavigation(Model.CurrentNavigationType.Managed, null, (Model.ManagedNavigation)targetNavigation);
-                        }
+                    PnPObjectsMapper.MapProperties(quicklaunch, targetNavigation, resolvers, true);
 
-                        break;
-                    case "Structural":
-                    case "StructuralLocal":
-                        targetNavigation = new Model.StructuralNavigation();
-                        var structuralNavigation = navigation.GetPublicInstancePropertyValue("StructuralNavigation");
-                        var structuralNavigationNodes = structuralNavigation.GetPublicInstancePropertyValue("NavigationNode");
-
-                        if (!resolvers.ContainsKey($"{targetNavigation.GetType().FullName}.NavigationNodes"))
-                        {
-                            resolvers.Add($"{targetNavigation.GetType().FullName}.NavigationNodes", new NavigationNodeFromSchemaToModelTypeResolver());
-                        }
-
-                        PnPObjectsMapper.MapProperties(structuralNavigation, targetNavigation, resolvers, true);
-
-                        if (targetIsGlobal)
-                        {
-                            target = new Model.GlobalNavigation(Model.GlobalNavigationType.Structural, (Model.StructuralNavigation)targetNavigation, null);
-                        }
-                        else
-                        {
-                            target = new Model.CurrentNavigation(
-                                navigationType.ToString() == "Structural" ? Model.CurrentNavigationType.Structural : Model.CurrentNavigationType.StructuralLocal,
-                                (Model.StructuralNavigation)targetNavigation, null);
-                        }
-
-                        break;
-                    case "Inherit":
-                        if (targetIsGlobal)
-                        {
-                            target = new Model.GlobalNavigation(Model.GlobalNavigationType.Inherit, null, null);
-                        }
-                        else
-                        {
-                            target = new Model.CurrentNavigation(Model.CurrentNavigationType.Inherit, null, null);
-                        }
-                        break;
+                    target = new Model.ModernNavigation((Model.Quicklaunch)targetNavigation);
                 }
+                else
+                {
+                    switch (navigationType.ToString())
+                    {
+                        case "Managed":
+                            targetNavigation = new Model.ManagedNavigation();
+
+                            var managedNavigation = navigation.GetPublicInstancePropertyValue("ManagedNavigation");
+                            PnPObjectsMapper.MapProperties(managedNavigation, targetNavigation, resolvers, true);
+
+                            if (targetIsGlobal)
+                            {
+                                target = new Model.GlobalNavigation(Model.GlobalNavigationType.Managed, null, (Model.ManagedNavigation)targetNavigation);
+                            }
+                            else
+                            {
+                                target = new Model.CurrentNavigation(Model.CurrentNavigationType.Managed, null, (Model.ManagedNavigation)targetNavigation);
+                            }
+
+                            break;
+                        case "Structural":
+                        case "StructuralLocal":
+                            targetNavigation = new Model.StructuralNavigation();
+                            var structuralNavigation = navigation.GetPublicInstancePropertyValue("StructuralNavigation");
+                            var structuralNavigationNodes = structuralNavigation.GetPublicInstancePropertyValue("NavigationNode");
+
+                            if (!resolvers.ContainsKey($"{targetNavigation.GetType().FullName}.NavigationNodes"))
+                            {
+                                resolvers.Add($"{targetNavigation.GetType().FullName}.NavigationNodes", new NavigationNodeFromSchemaToModelTypeResolver());
+                            }
+
+                            PnPObjectsMapper.MapProperties(structuralNavigation, targetNavigation, resolvers, true);
+
+                            if (targetIsGlobal)
+                            {
+                                target = new Model.GlobalNavigation(Model.GlobalNavigationType.Structural, (Model.StructuralNavigation)targetNavigation, null);
+                            }
+                            else
+                            {
+                                target = new Model.CurrentNavigation(
+                                    navigationType.ToString() == "Structural" ? Model.CurrentNavigationType.Structural : Model.CurrentNavigationType.StructuralLocal,
+                                    (Model.StructuralNavigation)targetNavigation, null);
+                            }
+
+                            break;
+                        case "Inherit":
+                            if (targetIsGlobal)
+                            {
+                                target = new Model.GlobalNavigation(Model.GlobalNavigationType.Inherit, null, null);
+                            }
+                            else
+                            {
+                                target = new Model.CurrentNavigation(Model.CurrentNavigationType.Inherit, null, null);
+                            }
+                            break;
+                    }
+                }
+
+                
                 return (target);
             }
             return null;

@@ -3122,6 +3122,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2018/01/ProvisioningSchema")]
     public partial class Navigation {
         
+        private NavigationModernNavigation modernNavigationField;
+        
         private NavigationGlobalNavigation globalNavigationField;
         
         private NavigationCurrentNavigation currentNavigationField;
@@ -3136,6 +3138,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
             this.enableTreeViewField = false;
             this.addNewPagesToNavigationField = false;
             this.createFriendlyUrlsForNewPagesField = false;
+        }
+        
+        /// <remarks/>
+        public NavigationModernNavigation ModernNavigation {
+            get {
+                return this.modernNavigationField;
+            }
+            set {
+                this.modernNavigationField = value;
+            }
         }
         
         /// <remarks/>
@@ -3201,47 +3213,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2018/01/ProvisioningSchema")]
-    public partial class NavigationGlobalNavigation {
+    public partial class NavigationModernNavigation {
         
-        private StructuralNavigation structuralNavigationField;
-        
-        private ManagedNavigation managedNavigationField;
-        
-        private NavigationGlobalNavigationNavigationType navigationTypeField;
-        
-        public NavigationGlobalNavigation() {
-            this.navigationTypeField = NavigationGlobalNavigationNavigationType.Inherit;
-        }
+        private Quicklaunch quicklaunchField;
         
         /// <remarks/>
-        public StructuralNavigation StructuralNavigation {
+        public Quicklaunch Quicklaunch {
             get {
-                return this.structuralNavigationField;
+                return this.quicklaunchField;
             }
             set {
-                this.structuralNavigationField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public ManagedNavigation ManagedNavigation {
-            get {
-                return this.managedNavigationField;
-            }
-            set {
-                this.managedNavigationField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(NavigationGlobalNavigationNavigationType.Inherit)]
-        public NavigationGlobalNavigationNavigationType NavigationType {
-            get {
-                return this.navigationTypeField;
-            }
-            set {
-                this.navigationTypeField = value;
+                this.quicklaunchField = value;
             }
         }
     }
@@ -3252,7 +3234,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2018/01/ProvisioningSchema")]
-    public partial class StructuralNavigation {
+    public partial class Quicklaunch {
         
         private NavigationNode[] navigationNodeField;
         
@@ -3358,6 +3340,92 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
             }
             set {
                 this.isVisibleField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2018/01/ProvisioningSchema")]
+    public partial class NavigationGlobalNavigation {
+        
+        private StructuralNavigation structuralNavigationField;
+        
+        private ManagedNavigation managedNavigationField;
+        
+        private NavigationGlobalNavigationNavigationType navigationTypeField;
+        
+        public NavigationGlobalNavigation() {
+            this.navigationTypeField = NavigationGlobalNavigationNavigationType.Inherit;
+        }
+        
+        /// <remarks/>
+        public StructuralNavigation StructuralNavigation {
+            get {
+                return this.structuralNavigationField;
+            }
+            set {
+                this.structuralNavigationField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public ManagedNavigation ManagedNavigation {
+            get {
+                return this.managedNavigationField;
+            }
+            set {
+                this.managedNavigationField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(NavigationGlobalNavigationNavigationType.Inherit)]
+        public NavigationGlobalNavigationNavigationType NavigationType {
+            get {
+                return this.navigationTypeField;
+            }
+            set {
+                this.navigationTypeField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2018/01/ProvisioningSchema")]
+    public partial class StructuralNavigation {
+        
+        private NavigationNode[] navigationNodeField;
+        
+        private bool removeExistingNodesField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("NavigationNode")]
+        public NavigationNode[] NavigationNode {
+            get {
+                return this.navigationNodeField;
+            }
+            set {
+                this.navigationNodeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool RemoveExistingNodes {
+            get {
+                return this.removeExistingNodesField;
+            }
+            set {
+                this.removeExistingNodesField = value;
             }
         }
     }

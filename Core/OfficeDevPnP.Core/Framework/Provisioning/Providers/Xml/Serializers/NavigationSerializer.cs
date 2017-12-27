@@ -24,6 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 var expressions = new Dictionary<Expression<Func<Model.Navigation, Object>>, IResolver>();
                 expressions.Add(n => n.CurrentNavigation, new NavigationFromSchemaToModelTypeResolver("CurrentNavigation"));
                 expressions.Add(n => n.GlobalNavigation, new NavigationFromSchemaToModelTypeResolver("GlobalNavigation"));
+                expressions.Add(n => n.ModernNavigation, new NavigationFromSchemaToModelTypeResolver("ModernNavigation"));
 
                 template.Navigation = new Model.Navigation();
                 PnPObjectsMapper.MapProperties(navigation, template.Navigation, expressions, true);
@@ -44,6 +45,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     new NavigationFromModelToSchemaTypeResolver("GlobalNavigation"));
                 resolvers.Add($"{navigationType}.CurrentNavigation",
                     new NavigationFromModelToSchemaTypeResolver("CurrentNavigation"));
+                resolvers.Add($"{navigationType}.ModernNavigation",
+                    new NavigationFromModelToSchemaTypeResolver("ModernNavigation"));
 
                 PnPObjectsMapper.MapProperties(template.Navigation, target, resolvers, recursive: true);
 
