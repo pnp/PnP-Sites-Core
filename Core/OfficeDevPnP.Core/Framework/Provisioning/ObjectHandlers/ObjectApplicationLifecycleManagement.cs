@@ -67,10 +67,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             var appId = Guid.Parse(parser.ParseString(app.AppId));
                             var alreadyExists = siteApps.Any(a => a.Id == appId);
+                            var working = false;
 
                             if (app.Action == AppAction.Install && !alreadyExists)
                             {
                                 manager.Install(appId);
+                                working = true;
                             }
                             else if (app.Action == AppAction.Install && alreadyExists)
                             {
@@ -79,6 +81,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             else if (app.Action == AppAction.Uninstall && alreadyExists)
                             {
                                 manager.Uninstall(appId);
+                                working = true;
                             }
                             else if (app.Action == AppAction.Uninstall && !alreadyExists)
                             {
@@ -87,10 +90,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             else if (app.Action == AppAction.Update && alreadyExists)
                             {
                                 manager.Upgrade(appId);
+                                working = true;
                             }
                             else if (app.Action == AppAction.Update && !alreadyExists)
                             {
                                 WriteMessage($"App with ID {appId} does not exist in the target site and cannot be updated!", ProvisioningMessageType.Warning);
+                            }
+
+                            if (app.SyncMode == SyncMode.Synchronously && working)
+                            {
+                                // We need to wait for the app management
+                                // to be completed before proceeding
                             }
                         }
                     }
