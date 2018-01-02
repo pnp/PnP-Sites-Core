@@ -23,8 +23,8 @@ namespace OfficeDevPnP.Core.Utilities.Cache
         /// Returns an item in cache keyed by the cacheKey parameter
         /// </summary>
         /// <typeparam name="T">The expected type of cached item</typeparam>
-        /// <param name="cacheKey">The </param>
-        /// <returns></returns>
+        /// <param name="cacheKey">The key for the cached item</param>
+        /// <returns>The item retrieved from the cache</returns>
         T Get<T>(string cacheKey);
     }
 }

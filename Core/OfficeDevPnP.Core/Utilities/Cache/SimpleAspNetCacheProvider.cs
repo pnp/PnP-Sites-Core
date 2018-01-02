@@ -13,11 +13,23 @@ namespace OfficeDevPnP.Core.Utilities.Cache
     /// </summary>
     public class SimpleAspNetCacheProvider : ICacheProvider
     {
+        /// <summary>
+        /// Gets an item from the cache
+        /// </summary>
+        /// <typeparam name="T">Type of the object to get from cache</typeparam>
+        /// <param name="cacheKey">Key of the object to get from cache</param>
+        /// <returns>Default type value if not found, the object otherwise</returns>
         public T Get<T>(string cacheKey)
         {
             return (T)HttpRuntime.Cache.Get(cacheKey);
         }
 
+        /// <summary>
+        /// Stores an object in the cache. If the object exists it will be updated
+        /// </summary>
+        /// <typeparam name="T">Type of the object to store in the cache</typeparam>
+        /// <param name="cacheKey">Key of the object to store in the cache</param>
+        /// <param name="item">The actual object to store in the cache</param>
         public void Put<T>(string cacheKey, T item)
         {
             HttpRuntime.Cache.Insert(cacheKey, item);
