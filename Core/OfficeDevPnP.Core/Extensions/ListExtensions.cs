@@ -1642,6 +1642,169 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
+        public static void SetDefaultColumnValues(this List list, IEnumerable<IDefaultColumnValue> columnValues, bool ignoreExistingDefaultColumnValues)
+        {
+            if (ignoreExistingDefaultColumnValues)
+            {
+                list.SetDefaultColumnValuesImplementation(columnValues);
+            }
+            else
+            {
+                list.SetDefaultColumnValues(columnValues);
+            }               
+        }
+
+        public static void ClearDefaultColumnValues(this List list)
+        {
+            var defaultValuesFileName = "client_LocationBasedDefaults.html";
+            using (var clientContext = (ClientContext)list.Context)
+            {
+                clientContext.Load(list.RootFolder);
+                clientContext.Load(list.RootFolder.Folders);
+                clientContext.ExecuteQueryRetry();
+
+                // Check if default values file is present
+                var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
+                var configFile = formsFolder.Files.GetByUrl(defaultValuesFileName);
+                clientContext.Load(configFile, c => c.Exists);
+                bool fileExists = false;
+                try
+                {
+                    clientContext.ExecuteQueryRetry();
+                    fileExists = true;
+                }
+                catch { }
+
+                if (fileExists)
+                {
+                    configFile.DeleteObject();
+                    clientContext.ExecuteQueryRetry();
+                }
+            }
+        }
+
+        public static void ClearDefaultColumnValues(this List list, IEnumerable<IDefaultColumnValue> columnValues)
+        {
+            var defaultValuesFileName = "client_LocationBasedDefaults.html";
+            using (var clientContext = (ClientContext)list.Context)
+            {
+                clientContext.Load(list.RootFolder);
+                clientContext.Load(list.RootFolder.Folders);
+                clientContext.ExecuteQueryRetry();
+                TaxonomySession taxSession = TaxonomySession.GetTaxonomySession(clientContext);
+                // Check if default values file is present
+                var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
+                List<IDefaultColumnValue> remainingValues = new List<IDefaultColumnValue>();
+
+                if (formsFolder != null)
+                {
+                    var configFile = formsFolder.Files.GetByUrl(defaultValuesFileName);
+                    clientContext.Load(configFile, c => c.Exists);
+                    bool fileExists = false;
+                    try
+                    {
+                        clientContext.ExecuteQueryRetry();
+                        fileExists = true;
+                    }
+                    catch { }
+
+                    if (fileExists)
+                    {
+                        var streamResult = configFile.OpenBinaryStream();
+                        clientContext.ExecuteQueryRetry();
+                        XDocument document = XDocument.Load(streamResult.Value);
+                        var values = from a in document.Descendants("a") select a;
+
+                        foreach (var value in values)
+                        {
+                            var href = value.Attribute("href").Value;
+                            href = Uri.UnescapeDataString(href);
+                            href = href.Replace(list.RootFolder.ServerRelativeUrl, "/");
+                            var defaultValues = from d in value.Descendants("DefaultValue") select d;
+                            foreach (var defaultValue in defaultValues)
+                            {
+                                var fieldName = defaultValue.Attribute("FieldName").Value;
+
+                                var field = list.Fields.GetByInternalNameOrTitle(fieldName);
+                                clientContext.Load(field);
+                                clientContext.ExecuteQueryRetry();
+                                if (field.FieldTypeKind == FieldType.Text ||
+                                    field.FieldTypeKind == FieldType.Choice ||
+                                    field.FieldTypeKind == FieldType.MultiChoice ||
+                                    field.FieldTypeKind == FieldType.User ||
+                                    field.FieldTypeKind == FieldType.Boolean ||
+                                    field.FieldTypeKind == FieldType.DateTime ||
+                                    field.FieldTypeKind == FieldType.Number ||
+                                    field.FieldTypeKind == FieldType.Currency
+                                    )
+                                {
+                                    var textValue = defaultValue.Value;
+
+                                    if (field.FieldTypeKind == FieldType.User && !textValue.Contains(";#"))
+                                    {
+                                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ListExtensions_IncorrectValueFormat);
+                                        continue;
+                                    }
+
+                                    var defaultColumnTextValue = new DefaultColumnTextValue()
+                                    {
+                                        FieldInternalName = fieldName,
+                                        FolderRelativePath = href,
+                                        Text = textValue
+                                    };
+
+                                    bool shouldBeKept = columnValues
+                                        .FirstOrDefault(c =>
+                                            c.FieldInternalName == defaultColumnTextValue.FieldInternalName && c.FolderRelativePath == defaultColumnTextValue.FolderRelativePath
+                                        ) == null;
+                                    if (shouldBeKept == true)
+                                    {
+                                        remainingValues.Add(defaultColumnTextValue);
+                                    }
+                                }
+                                else
+                                {
+                                    var termsIdentifier = defaultValue.Value;
+
+                                    var terms = termsIdentifier.Split(new string[] { ";#" }, StringSplitOptions.None);
+
+                                    var existingTerms = new List<Term>();
+                                    for (int q = 1; q < terms.Length; q++)
+                                    {
+                                        var termIdString = terms[q].Split(new char[] { '|' })[1];
+                                        var term = taxSession.GetTerm(new Guid(termIdString));
+                                        clientContext.Load(term, t => t.Id, t => t.Name);
+                                        clientContext.ExecuteQueryRetry();
+                                        existingTerms.Add(term);
+                                        q++; // Skip one
+                                    }
+
+                                    var defaultColumnTermValue = new DefaultColumnTermValue()
+                                    {
+                                        FieldInternalName = fieldName,
+                                        FolderRelativePath = href,
+                                    };
+                                    existingTerms.ForEach(t => defaultColumnTermValue.Terms.Add(t));
+
+                                    bool shouldBeKept = columnValues
+                                        .FirstOrDefault(c =>
+                                            c.FieldInternalName == defaultColumnTermValue.FieldInternalName && c.FolderRelativePath == defaultColumnTermValue.FolderRelativePath
+                                        ) == null;
+                                    if (shouldBeKept == true)
+                                    {
+                                        remainingValues.Add(defaultColumnTermValue);
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+                list.SetDefaultColumnValuesImplementation(remainingValues);
+            }
+        }
+
         /// <summary>
         /// <para>Gets default values for column values.</para>
         /// <para></para>
