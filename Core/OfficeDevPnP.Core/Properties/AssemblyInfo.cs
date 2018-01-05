@@ -16,7 +16,7 @@ using System.Runtime.InteropServices;
 #endif
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("OfficeDevPnP.Core")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2017")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en-US")]
