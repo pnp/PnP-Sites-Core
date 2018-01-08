@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.17.1707.0, Culture=neutral, PublicKeyToken=null">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.21.1712.0, Culture=neutral, PublicKeyToken=null">
     <pnp:Parameters>
       <pnp:Parameter Key="O365TenantName">contoso</pnp:Parameter>
       <pnp:Parameter Key="CodeProvidedParam" />
@@ -224,14 +224,14 @@
             </pnp:BreakRoleInheritance>
           </pnp:Security>
           <pnp:UserCustomActions>
-            <pnp:CustomAction Name="CA_LIST_ECB_ITEM" Description="Custom Action for ECB in List" Location="EditControlBlock" Title="Sample Custom Action" Sequence="1000" Rights="AddListItems,EditListItems,DeleteListItems" Url="https://spmanaged.azurewebsites.net/customAction/?ItemUrl={ItemUrl}&amp;ItemId={ItemId}&amp;ListId={ListId}&amp;SiteUrl={SiteUrl}" RegistrationId="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" RegistrationType="ContentType" />
+            <pnp:CustomAction Name="CA_LIST_ECB_ITEM" Description="Custom Action for ECB in List" Location="EditControlBlock" Title="Sample Custom Action" Sequence="1000" Rights="AddListItems,EditListItems,DeleteListItems" Url="https://spmanaged.azurewebsites.net/customAction/?ItemUrl={ItemUrl}&amp;ItemId={ItemId}&amp;ListId={ListId}&amp;SiteUrl={SiteUrl}" RegistrationId="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" RegistrationType="ContentType" ClientSideComponentId="00000000-0000-0000-0000-000000000000" />
           </pnp:UserCustomActions>
           <pnp:Webhooks>
             <pnp:Webhook ServerNotificationUrl="http://myapp.azurewebsites.net/WebHookListener" ExpiresInDays="120" />
           </pnp:Webhooks>
           <pnp:IRMSettings Enabled="true" AllowWriteCopy="false" DocumentAccessExpireDays="30" DocumentLibraryProtectionExpiresInDays="90" EnableDocumentAccessExpire="true" EnableGroupProtection="false" GroupName="Custom IRM Group" LicenseCacheExpireDays="60" PolicyDescription="Sample IRM Policy" PolicyTitle="Sample IRM Policy" />
         </pnp:ListInstance>
-        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" RemoveExistingContentTypes="true" TemplateFeatureID="00000000-0000-0000-0000-000000000000">
+        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" RemoveExistingContentTypes="true">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
           </pnp:ContentTypeBindings>
@@ -252,11 +252,11 @@
       </pnp:Features>
       <pnp:CustomActions>
         <pnp:SiteCustomActions>
-          <pnp:CustomAction Name="CA_SITE_SETTINGS_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="Site Classification" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None" />
-          <pnp:CustomAction Name="CA_STDMENU_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteActions" Location="Microsoft.SharePoint.StandardMenu" Title="Site Classification" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None" />
+          <pnp:CustomAction Name="CA_SITE_SETTINGS_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="Site Classification" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None" ClientSideComponentId="00000000-0000-0000-0000-000000000000" />
+          <pnp:CustomAction Name="CA_STDMENU_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteActions" Location="Microsoft.SharePoint.StandardMenu" Title="Site Classification" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None" ClientSideComponentId="00000000-0000-0000-0000-000000000000" />
         </pnp:SiteCustomActions>
         <pnp:WebCustomActions>
-          <pnp:CustomAction Name="CA_SUBSITE_OVERRIDE" Description="Override new sub-site link" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="SubSite Overide" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None" />
+          <pnp:CustomAction Name="CA_SUBSITE_OVERRIDE" Description="Override new sub-site link" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="SubSite Overide" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None" ClientSideComponentId="00000000-0000-0000-0000-000000000000" />
         </pnp:WebCustomActions>
       </pnp:CustomActions>
       <pnp:Files>
@@ -290,40 +290,42 @@
           <pnp:WebParts>
             <pnp:WebPart Title="Script Editor" Row="1" Column="1">
               <pnp:Contents>
-                <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
-                  <metaData>
-                    <type name="Microsoft.SharePoint.WebPartPages.ScriptEditorWebPart, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
-                    <importErrorMessage>Cannot import this Web Part.</importErrorMessage>
-                  </metaData>
-                  <data>
-                    <properties>
-                      <property name="ExportMode" type="exportmode">All</property>
-                      <property name="HelpUrl" type="string" />
-                      <property name="Hidden" type="bool">False</property>
-                      <property name="Description" type="string">Allows authors to insert HTML snippets or scripts.</property>
-                      <property name="Content" type="string"><![CDATA[
+                <webParts>
+                  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
+                    <metaData>
+                      <type name="Microsoft.SharePoint.WebPartPages.ScriptEditorWebPart, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
+                      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>
+                    </metaData>
+                    <data>
+                      <properties>
+                        <property name="ExportMode" type="exportmode">All</property>
+                        <property name="HelpUrl" type="string" />
+                        <property name="Hidden" type="bool">False</property>
+                        <property name="Description" type="string">Allows authors to insert HTML snippets or scripts.</property>
+                        <property name="Content" type="string"><![CDATA[
                           <script type="text/javascript">
                           function showAlert(){alert("Hello!")};
                           </script><input type="button" onclick="showAlert();" value="Click me">]]></property>
-                      <property name="CatalogIconImageUrl" type="string" />
-                      <property name="Title" type="string">Script Editor</property>
-                      <property name="AllowHide" type="bool">True</property>
-                      <property name="AllowMinimize" type="bool">True</property>
-                      <property name="AllowZoneChange" type="bool">True</property>
-                      <property name="TitleUrl" type="string" />
-                      <property name="ChromeType" type="chrometype">None</property>
-                      <property name="AllowConnect" type="bool">True</property>
-                      <property name="Width" type="unit" />
-                      <property name="Height" type="unit" />
-                      <property name="HelpMode" type="helpmode">Navigate</property>
-                      <property name="AllowEdit" type="bool">True</property>
-                      <property name="TitleIconImageUrl" type="string" />
-                      <property name="Direction" type="direction">NotSet</property>
-                      <property name="AllowClose" type="bool">True</property>
-                      <property name="ChromeState" type="chromestate">Normal</property>
-                    </properties>
-                  </data>
-                </webPart>
+                        <property name="CatalogIconImageUrl" type="string" />
+                        <property name="Title" type="string">Script Editor</property>
+                        <property name="AllowHide" type="bool">True</property>
+                        <property name="AllowMinimize" type="bool">True</property>
+                        <property name="AllowZoneChange" type="bool">True</property>
+                        <property name="TitleUrl" type="string" />
+                        <property name="ChromeType" type="chrometype">None</property>
+                        <property name="AllowConnect" type="bool">True</property>
+                        <property name="Width" type="unit" />
+                        <property name="Height" type="unit" />
+                        <property name="HelpMode" type="helpmode">Navigate</property>
+                        <property name="AllowEdit" type="bool">True</property>
+                        <property name="TitleIconImageUrl" type="string" />
+                        <property name="Direction" type="direction">NotSet</property>
+                        <property name="AllowClose" type="bool">True</property>
+                        <property name="ChromeState" type="chromestate">Normal</property>
+                      </properties>
+                    </data>
+                  </webPart>
+                </webParts>
               </pnp:Contents>
             </pnp:WebPart>
           </pnp:WebParts>
@@ -339,15 +341,15 @@
           <pnp:TermSets>
             <pnp:TermSet Name="Projects" ID="5880b01b-5d6f-4606-a492-3b03a2fb4dd7" Language="1040">
               <pnp:Terms>
-                <pnp:Term Name="IT Projects" ID="3d212fc2-f176-4621-aed1-128219666d95" Language="0">
+                <pnp:Term Name="IT Projects" ID="3d212fc2-f176-4621-aed1-128219666d95">
                   <pnp:Terms>
-                    <pnp:Term Name="Cloud" ID="87c55100-8316-4da0-97fd-feb5731880f6" Language="0">
+                    <pnp:Term Name="Cloud" ID="87c55100-8316-4da0-97fd-feb5731880f6">
                       <pnp:Terms />
                       <pnp:Labels>
                         <pnp:Label Language="1040" Value="Nuvola" />
                       </pnp:Labels>
                     </pnp:Term>
-                    <pnp:Term Name="New Farm" ID="c422bd0d-681d-448f-a41e-c71c473a95cc" Language="0" IsDeprecated="true">
+                    <pnp:Term Name="New Farm" ID="c422bd0d-681d-448f-a41e-c71c473a95cc" IsDeprecated="true">
                       <pnp:Terms />
                       <pnp:Labels>
                         <pnp:Label Language="1040" Value="Nuova Farm" />
@@ -363,15 +365,15 @@
                     <pnp:Property Key="LocalProperty2" Value="Value2" />
                   </pnp:LocalCustomProperties>
                 </pnp:Term>
-                <pnp:Term Name="HSE Projects" ID="1f1b9ee8-74ea-4d89-b502-feaa44340385" Language="0">
+                <pnp:Term Name="HSE Projects" ID="1f1b9ee8-74ea-4d89-b502-feaa44340385">
                   <pnp:Terms>
-                    <pnp:Term Name="Security Assessment" ID="3279fe80-95db-4d35-b235-a9b2f0fb6f9e" Language="0">
+                    <pnp:Term Name="Security Assessment" ID="3279fe80-95db-4d35-b235-a9b2f0fb6f9e">
                       <pnp:Terms />
                       <pnp:Labels>
                         <pnp:Label Language="1040" Value="Valutazione Sicurezza" />
                       </pnp:Labels>
                     </pnp:Term>
-                    <pnp:Term Name="Safety Program" ID="fbea36ea-a750-4a97-9667-5d51a6c895af" Language="0">
+                    <pnp:Term Name="Safety Program" ID="fbea36ea-a750-4a97-9667-5d51a6c895af">
                       <pnp:Terms />
                       <pnp:Labels>
                         <pnp:Label Language="1040" Value="Programma Sicurezza" />
@@ -461,18 +463,18 @@
       </pnp:SiteWebhooks>
       <pnp:ClientSidePages>
         <pnp:ClientSidePage PageName="test.aspx" PromoteAsNewsArticle="true" Overwrite="true">
-          <pnp:Zones>
-            <pnp:Zone Order="1" Type="OneColumn">
+          <pnp:Sections>
+            <pnp:Section Order="1" Type="OneColumn">
               <pnp:Controls>
-                <pnp:CanvasControl WebPartType="Image" CustomWebPartName="CustomWebPartName" JsonControlData="{}" ControlId="0eaba53f-55d8-44b5-9f7c-61301c7f1e0e" Order="1" Section="2">
+                <pnp:CanvasControl WebPartType="Image" CustomWebPartName="CustomWebPartName" JsonControlData="{}" ControlId="0eaba53f-55d8-44b5-9f7c-61301c7f1e0e" Order="1" Column="2">
                   <pnp:CanvasControlProperties>
                     <pnp:CanvasControlProperty Key="SampleKey1" Value="{token1}" />
                     <pnp:CanvasControlProperty Key="SampleKey2" Value="{token2}" />
                   </pnp:CanvasControlProperties>
                 </pnp:CanvasControl>
               </pnp:Controls>
-            </pnp:Zone>
-          </pnp:Zones>
+            </pnp:Section>
+          </pnp:Sections>
         </pnp:ClientSidePage>
       </pnp:ClientSidePages>
     </pnp:ProvisioningTemplate>

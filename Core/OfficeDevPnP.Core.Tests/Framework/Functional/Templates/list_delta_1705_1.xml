@@ -16,7 +16,7 @@ Base template: goal is to verify delta handling for list properties and elements
   <pnp:Lists>
     <!-- Document Libraries-->
     <!-- Element Webhook: increase the expiration time of an existing list webhook -->
-    <pnp:ListInstance Title="LI_201707_10" TemplateType="101" Url="LI_201707_10">
+    <pnp:ListInstance Title="LI_201707_10" TemplateType="101" Url="LI_201707_10" ReadSecurity="1">
       <pnp:Webhooks>
         <pnp:Webhook ExpiresInDays="10" ServerNotificationUrl="https://pnp-functions.azurewebsites.net/api/PnPWebHookTest?code=Em33KG1g/NiOkAY0Ei727xZbQDKeZSaEGz//RxXz0pShGsHAJ9JLhA=="/>
       </pnp:Webhooks>

@@ -88,10 +88,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     ListItem listitem = null;
                                     if (!string.IsNullOrEmpty(listInstance.DataRows.KeyColumn))
                                     {
+                                        // Get value from key column
+                                        var dataRowValues = dataRow.Values.Where(v => v.Key == listInstance.DataRows.KeyColumn);
+
                                         // if it is empty, skip the check
-                                        if (!string.IsNullOrEmpty(dataRow.Key))
+                                        if (dataRowValues.Any())
                                         {
-                                            var query = $@"<View><Query><Where><Eq><FieldRef Name=""{parsedKeyColumn}""/><Value Type=""{keyColumnType}"">{parser.ParseString(dataRow.Key)}</Value></Eq></Where></Query><RowLimit>1</RowLimit></View>";
+                                            var query = $@"<View><Query><Where><Eq><FieldRef Name=""{parsedKeyColumn}""/><Value Type=""{keyColumnType}"">{parser.ParseString(dataRowValues.FirstOrDefault().Value)}</Value></Eq></Where></Query><RowLimit>1</RowLimit></View>";
                                             var camlQuery = new CamlQuery()
                                             {
                                                 ViewXml = query

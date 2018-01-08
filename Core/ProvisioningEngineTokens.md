@@ -10,6 +10,9 @@ Below all the supported tokens are listed:
 
 |Token|Example|Output example|Description
 |-----|-------|-----------|-----
+|{associatedmembergroup}|{associatedmembergroup}|Members|Will return the name of the site's associated members group.|
+|{associatedownergroup}|{associatedownergroup}|Owners|Will return the name of the site's associated owners group.|
+|{associatedvisitorgroup}|{associatedvisitorgroup}|Vistors|Will return the name of the site's associated visitors group.|
 |{contenttypeid:&lt;name&gt;}|{contenttypeid:Reservations}|0x0102004F51EFDEA49C49668EF9C6744C8CF87D|Will return the id of the content type by name.|
 |{currentuserfullname}|{currentuserfullname}|Test User|Will return the full name of the user. Notice, does not work when using app only authentication.|
 |{currentuserid}|{currentuserid}|12|Will return the current user id, as present in the Site User Info List|

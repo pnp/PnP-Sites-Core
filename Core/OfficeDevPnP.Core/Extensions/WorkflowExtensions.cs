@@ -6,6 +6,9 @@ using Microsoft.SharePoint.Client.WorkflowServices;
 
 namespace Microsoft.SharePoint.Client
 {
+    /// <summary>
+    /// Class for workflow extension methods
+    /// </summary>
     public static partial class WorkflowExtensions
     {
         #region Subscriptions

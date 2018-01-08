@@ -12,6 +12,7 @@ using System.Configuration;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
+using System.IdentityModel.Tokens;
 
 #if !ONPREMISES
 using OfficeDevPnP.Core.Sites;
@@ -113,12 +114,20 @@ namespace Microsoft.SharePoint.Client
                     // Add event handler to "insert" app decoration header to mark the PnP Sites Core library as a known application
                     EventHandler<WebRequestEventArgs> appDecorationHandler = (s, e) =>
                     {
-                        if (string.IsNullOrEmpty(userAgent) && !string.IsNullOrEmpty(ClientContextExtensions.userAgentFromConfig))
+                        bool overrideUserAgent = true;
+                        var existingUserAgent = e.WebRequestExecutor.WebRequest.UserAgent;
+                        if (!string.IsNullOrEmpty(existingUserAgent) && existingUserAgent.StartsWith("NONISV|SharePointPnP|PnPPS/"))
                         {
-                            userAgent = userAgentFromConfig;
+                            overrideUserAgent = false;
                         }
-
-                        e.WebRequestExecutor.WebRequest.UserAgent = string.IsNullOrEmpty(userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : userAgent;
+                        if (overrideUserAgent)
+                        {
+                            if (string.IsNullOrEmpty(userAgent) && !string.IsNullOrEmpty(ClientContextExtensions.userAgentFromConfig))
+                            {
+                                userAgent = userAgentFromConfig;
+                            }
+                            e.WebRequestExecutor.WebRequest.UserAgent = string.IsNullOrEmpty(userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : userAgent;
+                        }
                     };
 
                     clientContext.ExecutingWebRequest += appDecorationHandler;
@@ -229,12 +238,31 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if app-only, false otherwise</returns>
         public static bool IsAppOnly(this ClientRuntimeContext clientContext)
         {
-            if (clientContext.Credentials == null)
+            // Set initial result to false
+            var result = false;
+
+            // Try to get an access token from the current context
+            var accessToken = clientContext.GetAccessToken();
+
+            // If any
+            if (!String.IsNullOrEmpty(accessToken))
             {
-                return true;
+                // Try to decode the access token
+                var token = new JwtSecurityToken(accessToken);
+
+                // Search for the UPN claim, to see if we have user's delegation
+                var upn = token.Claims.FirstOrDefault(claim => claim.Type == "upn")?.Value;
+                if (String.IsNullOrEmpty(upn))
+                {
+                    result = true;
+                }
+            }
+            else if (clientContext.Credentials == null)
+            {
+                result = true;
             }
 
-            return false;
+            return (result);
         }
 
         /// <summary>
@@ -399,7 +427,7 @@ namespace Microsoft.SharePoint.Client
                     string requestUrl = String.Format("{0}/_api/contextinfo", context.Web.Url);
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=verbose");
-                    if(!string.IsNullOrEmpty(accessToken))
+                    if (!string.IsNullOrEmpty(accessToken))
                     {
                         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
                     }
@@ -450,6 +478,17 @@ namespace Microsoft.SharePoint.Client
         public static async Task<ClientContext> CreateSiteAsync(this ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
             return await SiteCollection.CreateAsync(clientContext, siteCollectionCreationInformation);
+        }
+
+        /// <summary>
+        /// BETA: Groupifies a classic Team Site Collection
+        /// </summary>
+        /// <param name="clientContext">ClientContext instance of the site to be groupified</param>
+        /// <param name="siteCollectionGroupifyInformation">Information needed to groupify this site</param>
+        /// <returns>The clientcontext of the groupified site</returns>
+        public static async Task<ClientContext> GroupifySiteAsync(this ClientContext clientContext, TeamSiteCollectionGroupifyInformation siteCollectionGroupifyInformation)
+        {
+            return await SiteCollection.GroupifyAsync(clientContext, siteCollectionGroupifyInformation);
         }
 #endif
     }

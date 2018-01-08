@@ -82,7 +82,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return (false);
             }
 
-            return ((BaseNavigationKind)this == (BaseNavigationKind)other &&
+            return (((BaseNavigationKind)this).Equals((BaseNavigationKind)other) &&
                 this.NavigationType == other.NavigationType
                 );
         }

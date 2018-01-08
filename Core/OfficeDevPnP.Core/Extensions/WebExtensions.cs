@@ -1320,13 +1320,12 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The Uri holding the app catalog site url</returns>
         public static Uri GetAppCatalog(this Web web)
         {
-            // Assume there's only one appcatalog site
-            var results = ((web.Context) as ClientContext).Web.SiteSearch("contentclass:STS_Site AND SiteTemplate:APPCATALOG");
-            foreach (var site in results)
+            var tenantSettings = TenantSettings.GetCurrent(web.Context);
+            tenantSettings.EnsureProperties(s => s.CorporateCatalogUrl);
+            if(!string.IsNullOrEmpty(tenantSettings.CorporateCatalogUrl))
             {
-                return new Uri(site.Url);
+                return new Uri(tenantSettings.CorporateCatalogUrl);
             }
-
             return null;
         }
 
