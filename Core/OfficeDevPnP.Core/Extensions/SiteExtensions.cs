@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Microsoft.SharePoint.Client
 {
+#if !ONPREMISES
     public static class SiteExtensions
     {
 #if !ONPREMISES
@@ -26,7 +27,7 @@ namespace Microsoft.SharePoint.Client
             {
                 // It is a "modern" team site
                 case "GROUP#0":
-                   
+
                     if (String.IsNullOrEmpty(accessToken))
                     {
                         throw new ArgumentNullException("accessToken");
@@ -62,7 +63,6 @@ namespace Microsoft.SharePoint.Client
                     break;
             }
         }
-
         /// <summary>
         /// Retrieves the current value for the Site Classification of a Site Collection
         /// </summary>
@@ -75,4 +75,5 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
     }
+#endif
 }
