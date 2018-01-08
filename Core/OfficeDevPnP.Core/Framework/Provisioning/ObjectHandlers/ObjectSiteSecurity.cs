@@ -335,7 +335,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var assignmentsForPrincipal = webRoleAssignments.Where(t => t.PrincipalId == principal.Id);
                                 foreach (var assignmentForPrincipal in assignmentsForPrincipal)
                                 {
-                                    var binding = assignmentForPrincipal.EnsureProperty(r => r.RoleDefinitionBindings).FirstOrDefault(b => b.Name == roleAssignment.RoleDefinition);
+                                    var binding = assignmentForPrincipal.EnsureProperty(r => r.RoleDefinitionBindings).FirstOrDefault(b => b.Name == parser.ParseString(roleAssignment.RoleDefinition));
                                     if (binding != null)
                                     {
                                         assignmentForPrincipal.DeleteObject();
