@@ -70,6 +70,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         page = web.AddClientSidePage(pageName);
                     }
 
+                    // Set page layout
+                    if (!string.IsNullOrEmpty(clientSidePage.Layout))
+                    {
+                        if (clientSidePage.Layout.Equals("Article", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            page.LayoutType = Pages.ClientSidePageLayoutType.Article;
+                        }
+                        else if (clientSidePage.Layout.Equals("Home", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            page.LayoutType = Pages.ClientSidePageLayoutType.Home;
+                        }
+                    }
+
                     // Load existing available controls
                     var componentsToAdd = page.AvailableClientSideComponents().ToList();
 
@@ -294,10 +307,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Persist the page
                     page.Save(pageName);
 
-                    // Make it a news page if requested
-                    if (clientSidePage.PromoteAsNewsArticle)
+                    // Set commenting, ignore on pages of the type Home
+                    if (page.LayoutType != Pages.ClientSidePageLayoutType.Home)
                     {
-                        page.PromoteAsNewsArticle();
+                        // Make it a news page if requested
+                        if (clientSidePage.PromoteAsNewsArticle)
+                        {
+                            page.PromoteAsNewsArticle();
+                        }
+
+                        if (clientSidePage.EnableComments)
+                        {
+                            page.EnableComments();
+                        }
+                        else
+                        {
+                            page.DisableComments();
+                        }
+                    }
+
+                    // Publish page 
+                    if (clientSidePage.Publish)
+                    {
+                        page.Publish();
                     }
 
                 }

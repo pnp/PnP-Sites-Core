@@ -393,16 +393,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     {
         public static String SaveXamlToFile(this String xaml, Guid id, OfficeDevPnP.Core.Framework.Provisioning.Connectors.FileConnectorBase connector, ListCollection lists)
         {
-            // Tokenize XAML to replace any ListId attribute with the corresponding token
+            // Tokenize XAML to replace any ListId or ToListId attribute with the corresponding token
             XElement xamlDocument = XElement.Parse(xaml);
-            var elements = (IEnumerable)xamlDocument.XPathEvaluate("//child::*[@ListId]");
+            string[] listIdAttributes = {"ListId", "ToListId"};
+            
+            var elements = (IEnumerable)xamlDocument.XPathEvaluate($"//child::*[@{listIdAttributes[0]}|@{listIdAttributes[1]}]");
 
-            if (elements != null)
+            if (elements != null) // always true, consider removing 
             {
                 foreach (var element in elements.Cast<XElement>())
                 {
-                    var listId = element.Attribute("ListId").Value;
-                    element.SetAttributeValue("ListId", TokenizeListIdProperty(listId, lists));
+                    foreach (var listIdAttribute in listIdAttributes)
+                    {
+                        if (element.Attribute(listIdAttribute) != null)
+                        {
+                            var listId = element.Attribute(listIdAttribute).Value;
+                            element.SetAttributeValue(listIdAttribute, TokenizeListIdProperty(listId, lists));
+                        }
+                    }
                 }
 
                 xaml = xamlDocument.ToString();

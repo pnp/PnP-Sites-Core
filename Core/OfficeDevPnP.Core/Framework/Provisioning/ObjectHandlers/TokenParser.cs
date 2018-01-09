@@ -260,11 +260,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.RemoveAll(t => t.GetType() == typeof(AppPackageIdToken));
 
             var manager = new AppManager(web.Context as ClientContext);
-            var appPackages = manager.GetAvailable();
 
-            foreach (var app in appPackages)
+            try
             {
-                _tokens.Add(new AppPackageIdToken(web, app.Title, app.Id));
+                var appPackages = manager.GetAvailable();
+
+                foreach (var app in appPackages)
+                {
+                    _tokens.Add(new AppPackageIdToken(web, app.Title, app.Id));
+                }
+            }
+            catch (Exception)
+            {
+                // In case of any failure, just skip creating AppPackageIdToken instances
+                // and move forward. It means that there is no AppCatalog or no ALM APIs
             }
         }
 #endif

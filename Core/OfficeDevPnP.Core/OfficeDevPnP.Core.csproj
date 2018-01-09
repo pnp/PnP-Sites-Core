@@ -875,6 +875,9 @@
     <Compile Include="IdentityModel\WSTrustBindings\CertificateWSTrustBinding.cs" />
     <Compile Include="Sites\SiteCollection.cs" />
     <Compile Include="Sites\SiteCollectionCreationInformation.cs" />
+    <Compile Include="Utilities\Cache\ICacheProvider.cs" />
+    <Compile Include="Utilities\Cache\InMemoryCacheProvider.cs" />
+    <Compile Include="Utilities\Cache\SimpleAspNetCacheProvider.cs" />
     <Compile Include="Utilities\CanvasControl\CanvasControlPostProcessorFactory.cs" />
     <Compile Include="Utilities\CanvasControl\ICanvasControlPostProcessor.cs" />
     <Compile Include="Utilities\CanvasControl\Processors\PassThroughProcessor.cs" />

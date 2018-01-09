@@ -51,6 +51,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             PageName = homepageName,
                             PromoteAsNewsArticle = false,
                             Overwrite = false,
+                            Publish = true,
+                            Layout = homePage.LayoutType.ToString(),
+                            EnableComments = !homePage.CommentsDisabled,
                         };
 
                         // Add the sections

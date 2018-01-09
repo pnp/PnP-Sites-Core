@@ -58,7 +58,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var total = template.Lists.Count;
                     var currentListIndex = 0;
 
-                    #region Lists
+                    #region Lists and List Content Types
 
                     // Only create/update list at ListAndStandardFields stage.
                     if (_stage == FieldStage.ListAndStandardFields)

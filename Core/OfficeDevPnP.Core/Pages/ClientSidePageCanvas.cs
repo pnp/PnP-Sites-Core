@@ -944,15 +944,6 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void Publish()
         {
-            Publish("");
-        }
-
-        /// <summary>
-        /// Publishes a client side page
-        /// </summary>
-        /// <param name="publishMessage">Publish message</param>
-        public void Publish(string publishMessage)
-        {
             // Load the page
             string serverRelativePageName;
             File pageFile;
@@ -964,9 +955,18 @@ namespace OfficeDevPnP.Core.Pages
                 // connect up the page list item for future reference
                 this.pageListItem = pageFile.ListItemAllFields;
                 // publish the page
-                pageFile.Publish(publishMessage);
-                this.Context.ExecuteQueryRetry();
+                pageFile.PublishFileToLevel(FileLevel.Published);
             }
+        }
+
+        /// <summary>
+        /// Publishes a client side page
+        /// </summary>
+        /// <param name="publishMessage">Publish message</param>
+        [Obsolete("Please use the Publish() method instead. This method will be removed in the March 2018 release.")]
+        public void Publish(string publishMessage)
+        {
+            this.Publish();
         }
 
         /// <summary>
