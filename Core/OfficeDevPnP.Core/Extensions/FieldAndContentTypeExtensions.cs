@@ -241,11 +241,11 @@ namespace Microsoft.SharePoint.Client
             IEnumerable<Field> fields = null;
             if (searchInSiteHierarchy)
             {
-                fields = web.Context.LoadQuery(web.AvailableFields.Where(f => f.Id == fieldId));
+                fields = web.Context.LoadQuery(web.AvailableFields.Include(f=>f.Id, f=>f.InternalName, f=>f.Title).Where(f => f.Id == fieldId));
             }
             else
             {
-                fields = web.Context.LoadQuery(web.Fields.Where(f => f.Id == fieldId));
+                fields = web.Context.LoadQuery(web.Fields.Include(f => f.Id, f => f.InternalName, f => f.Title).Where(f => f.Id == fieldId));
             }
 
             web.Context.ExecuteQueryRetry();
