@@ -300,8 +300,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         page.PromoteAsNewsArticle();
                     }
 
-                    page.Publish();
-
                 }
             }
             return parser;
