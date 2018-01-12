@@ -277,6 +277,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private string TokenizeJsonControlData(Web web, string json)
         {
             var lists = web.Lists;
+            var site = (web.Context as ClientContext).Site;
+            web.Context.Load(site, s => s.Id);
             web.Context.Load(web, w => w.ServerRelativeUrl, w => w.Id);
             web.Context.Load(lists, ls => ls.Include(l => l.Id, l => l.Title));
             web.Context.ExecuteQueryRetry();
@@ -290,7 +292,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             json = Regex.Replace(json, "\"~sitecollection/(.)*\"", "\"{site}\"", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, "'~sitecollection/(.)*'", "'{site}'", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, ">~sitecollection/(.)*<", ">{site}<", RegexOptions.IgnoreCase);
-                                 
+
+            json = Regex.Replace(json, site.Id.ToString(), "{sitecollectionid}", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, web.Id.ToString(), "{siteid}", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, "(\"" + web.ServerRelativeUrl + ")(?!&)", "\"{site}", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, "'" + web.ServerRelativeUrl, "'{site}", RegexOptions.IgnoreCase);
