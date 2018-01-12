@@ -1,4 +1,5 @@
 ﻿using Microsoft.SharePoint.Client;
+using Newtonsoft.Json;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Utilities;
@@ -194,7 +195,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         }
 
                                         // set the control properties
-                                        controlInstance.JsonControlData = (control as Pages.ClientSideWebPart).PropertiesJson;
+                                        if ((control as Pages.ClientSideWebPart).ServerProcessedContent != null)
+                                        {
+                                            string serverProcessedContent = (control as Pages.ClientSideWebPart).ServerProcessedContent.ToString(Formatting.None);
+
+                                            controlInstance.JsonControlData = "{ \"serverProcessedContent\": " + serverProcessedContent + ", \"properties\": " + (control as Pages.ClientSideWebPart).PropertiesJson + "}";
+                                        }
+                                        else
+                                        {
+                                            controlInstance.JsonControlData = (control as Pages.ClientSideWebPart).PropertiesJson;
+                                        }
 
                                         // Tokenize the JsonControlData
                                         controlInstance.JsonControlData = TokenizeJsonControlData(web, controlInstance.JsonControlData);

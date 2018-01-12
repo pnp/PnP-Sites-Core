@@ -899,6 +899,12 @@ namespace OfficeDevPnP.Core.Pages
             this.description = wpJObject["description"] != null ? wpJObject["description"].Value<string>() : "";
             // Set property to trigger correct loading of properties 
             this.PropertiesJson = wpJObject["properties"].ToString(Formatting.None);
+            // Store the server processed content as that's needed for full fidelity
+            if (wpJObject["serverProcessedContent"] != null)
+            {
+                this.serverProcessedContent = (JObject)wpJObject["serverProcessedContent"];
+            }
+
             this.webPartId = wpJObject["id"].Value<string>();
 
             var wpHtmlProperties = wpDiv.GetElementsByTagName("div").Where(a => a.HasAttribute(ClientSideWebPart.WebPartHtmlPropertiesAttribute)).FirstOrDefault();
