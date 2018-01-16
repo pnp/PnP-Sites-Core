@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
@@ -956,6 +957,42 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Get List by using Id
+        /// </summary>
+        /// <param name="web">The web containing the list</param>
+        /// <param name="listId">The Id of the list</param>
+        /// <param name="expressions">Additional list of lambda expressions of properties to load alike l => l.BaseType</param>
+        /// <returns>Loaded list instance matching specified Id</returns>
+        /// <exception cref="System.ArgumentException">Thrown when listId is an empty Guid</exception>
+        /// <exception cref="System.ArgumentNullException">listId is null</exception>
+        public static List GetListById(this Web web, Guid listId, params Expression<Func<List, object>>[] expressions)
+        {
+            var baseExpressions = new List<Expression<Func<List, object>>> { l => l.DefaultViewUrl, l => l.Id, l => l.BaseTemplate, l => l.OnQuickLaunch, l => l.DefaultViewUrl, l => l.Title, l => l.Hidden, l => l.RootFolder };
+
+            if (expressions != null && expressions.Any())
+            {
+                baseExpressions.AddRange(expressions);
+            }
+
+            if (listId == null)
+            {
+                throw new ArgumentNullException(nameof(listId));
+            }
+
+            if (listId == Guid.Empty)
+            {
+                throw new ArgumentException(nameof(listId));
+            }
+
+            var query = web.Lists.IncludeWithDefaultProperties(baseExpressions.ToArray());
+            var lists = web.Context.LoadQuery(query.Where(l => l.Id == listId));
+
+            web.Context.ExecuteQueryRetry();
+
+            return lists.FirstOrDefault();
+        }
+
+        /// <summary>
         /// Get list by using Title
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
@@ -1391,7 +1428,6 @@ namespace Microsoft.SharePoint.Client
             }
 
         }
-
         #endregion
 
         private static void SetDefaultColumnValuesImplementation(this List list, IEnumerable<IDefaultColumnValue> columnValues)
@@ -1402,8 +1438,7 @@ namespace Microsoft.SharePoint.Client
                 {
                     var values = columnValues.ToList<IDefaultColumnValue>();
 
-                    clientContext.Load(list.RootFolder);
-                    clientContext.Load(list.RootFolder.Folders);
+                    clientContext.Load(list.RootFolder, r => r.ServerRelativeUrl);
                     clientContext.ExecuteQueryRetry();
 
                     var xMetadataDefaults = new XElement("MetadataDefaults");
@@ -1411,21 +1446,14 @@ namespace Microsoft.SharePoint.Client
                     while (values.Any())
                     {
                         // Get the first entry 
-                        var defaultColumnValue = values.First();
+                        IDefaultColumnValue defaultColumnValue = values.First();
                         var path = defaultColumnValue.FolderRelativePath;
                         if (string.IsNullOrEmpty(path))
                         {
                             // Assume root folder
                             path = "/";
                         }
-                        if (path.Equals("/"))
-                        {
-                            path = list.RootFolder.ServerRelativeUrl;
-                        }
-                        else
-                        {
-                            path = UrlUtility.Combine(list.RootFolder.ServerRelativeUrl, path);
-                        }
+                        path = path.Equals("/") ? list.RootFolder.ServerRelativeUrl : UrlUtility.Combine(list.RootFolder.ServerRelativeUrl, path);
                         // Find all in the same path:
                         var defaultColumnValuesInSamePath = columnValues.Where(x => x.FolderRelativePath == defaultColumnValue.FolderRelativePath);
                         path = Uri.EscapeUriString(path);
@@ -1436,18 +1464,28 @@ namespace Microsoft.SharePoint.Client
                         {
                             var fieldName = defaultColumnValueInSamePath.FieldInternalName;
                             var fieldStringBuilder = new StringBuilder();
-                            if (defaultColumnValueInSamePath.GetType() == typeof(DefaultColumnTermValue))
+
+                            var termValue = defaultColumnValueInSamePath as DefaultColumnTermValue;
+                            if (termValue != null)
                             {
                                 // Term value
-                                foreach (var term in ((DefaultColumnTermValue)defaultColumnValueInSamePath).Terms)
+                                foreach (var term in termValue.Terms)
                                 {
-                                    term.EnsureProperties(t => t.Id, t => t.Name);
+                                    string wssId = string.Empty;
+                                    if (!term.IsPropertyAvailable("Id"))
+                                    {
+                                        term.EnsureProperties(t => t.Id, t => t.Name);
+                                    }
+                                    if (term.IsPropertyAvailable("CustomProperties"))
+                                    {
+                                        term.CustomProperties.TryGetValue("WssId", out wssId);
+                                    }
 
-                                    var wssId = list.ParentWeb.GetWssIdForTerm(term);
+                                    if (string.IsNullOrEmpty(wssId)) wssId = "-1";
                                     fieldStringBuilder.AppendFormat("{0};#{1}|{2};#", wssId, term.Name, term.Id);
                                 }
                                 var xDefaultValue = new XElement("DefaultValue", new XAttribute("FieldName", fieldName));
-                                var fieldString = fieldStringBuilder.ToString().TrimEnd(new char[] { ';', '#' });
+                                var fieldString = fieldStringBuilder.ToString().TrimEnd(';', '#');
                                 xDefaultValue.SetValue(fieldString);
                                 xATag.Add(xDefaultValue);
                             }
@@ -1465,7 +1503,7 @@ namespace Microsoft.SharePoint.Client
                         xMetadataDefaults.Add(xATag);
                     }
 
-                    var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
+                    var formsFolder = GetFormsFolderFromList(list, clientContext);
                     if (formsFolder != null)
                     {
                         var xmlSb = new StringBuilder();
@@ -1539,12 +1577,10 @@ namespace Microsoft.SharePoint.Client
 
             using (var clientContext = (ClientContext)list.Context)
             {
-                clientContext.Load(list.RootFolder);
-                clientContext.Load(list.RootFolder.Folders);
+                clientContext.Load(list.RootFolder, r => r.ServerRelativeUrl);
                 clientContext.ExecuteQueryRetry();
-                TaxonomySession taxSession = TaxonomySession.GetTaxonomySession(clientContext);
                 // Check if default values file is present
-                var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
+                var formsFolder = GetFormsFolderFromList(list, clientContext);
                 List<IDefaultColumnValue> existingValues = new List<IDefaultColumnValue>();
 
                 if (formsFolder != null)
@@ -1565,20 +1601,26 @@ namespace Microsoft.SharePoint.Client
                         clientContext.ExecuteQueryRetry();
                         XDocument document = XDocument.Load(streamResult.Value);
                         var values = from a in document.Descendants("a") select a;
+                        Dictionary<string, Field> fieldCache = new Dictionary<string, Field>();
 
                         foreach (var value in values)
                         {
                             var href = value.Attribute("href").Value;
                             href = Uri.UnescapeDataString(href);
-                            href = href.Replace(list.RootFolder.ServerRelativeUrl, "/");
+                            href = href.Replace(list.RootFolder.ServerRelativeUrl, "/").Replace("//", "/");
                             var defaultValues = from d in value.Descendants("DefaultValue") select d;
                             foreach (var defaultValue in defaultValues)
                             {
                                 var fieldName = defaultValue.Attribute("FieldName").Value;
+                                Field field;
+                                if (!fieldCache.TryGetValue(fieldName, out field))
+                                {
+                                    field = list.Fields.GetByInternalNameOrTitle(fieldName);
+                                    clientContext.Load(field);
+                                    clientContext.ExecuteQueryRetry();
+                                    fieldCache.Add(fieldName, field);
+                                }
 
-                                var field = list.Fields.GetByInternalNameOrTitle(fieldName);
-                                clientContext.Load(field);
-                                clientContext.ExecuteQueryRetry();
                                 if (field.FieldTypeKind == FieldType.Text ||
                                     field.FieldTypeKind == FieldType.Choice ||
                                     field.FieldTypeKind == FieldType.MultiChoice ||
@@ -1609,30 +1651,30 @@ namespace Microsoft.SharePoint.Client
                                 {
                                     var termsIdentifier = defaultValue.Value;
 
-                                    var terms = termsIdentifier.Split(new string[] { ";#" }, StringSplitOptions.None);
-
+                                    var terms = termsIdentifier.Split(new[] { ";#" }, StringSplitOptions.None);
                                     var existingTerms = new List<Term>();
-                                    for (int q = 1; q < terms.Length; q++)
+                                    for (int q = 0; q < terms.Length; q += 2)
                                     {
-                                        var termIdString = terms[q].Split(new char[] { '|' })[1];
-                                        var term = taxSession.GetTerm(new Guid(termIdString));
-                                        clientContext.Load(term, t => t.Id, t => t.Name);
-                                        clientContext.ExecuteQueryRetry();
-                                        existingTerms.Add(term);
-                                        q++; // Skip one
+                                        var wssId = terms[q];
+                                        var splitData = terms[q + 1].Split(new char[] { '|' });
+
+                                        var termName = splitData[0];
+                                        var termIdString = splitData[1];
+
+                                        Term perfTerm = HydrateTermFromText(clientContext, termIdString, termName, wssId);
+                                        existingTerms.Add(perfTerm);
                                     }
 
                                     var defaultColumnTermValue = new DefaultColumnTermValue()
                                     {
                                         FieldInternalName = fieldName,
-                                        FolderRelativePath = href,
+                                        FolderRelativePath = href
                                     };
                                     existingTerms.ForEach(t => defaultColumnTermValue.Terms.Add(t));
 
                                     existingValues.Add(defaultColumnTermValue);
                                 }
                             }
-
                         }
                     }
                 }
@@ -1640,6 +1682,33 @@ namespace Microsoft.SharePoint.Client
                 var termsList = columnValues.Union(existingValues, new DefaultColumnTermValueComparer()).ToList();
                 list.SetDefaultColumnValuesImplementation(termsList);
             }
+        }
+
+        private static Term HydrateTermFromText(ClientContext clientContext, string termIdString, string termName, string wssId)
+        {
+            if (string.IsNullOrEmpty(wssId)) wssId = "-1";
+            Term perfTerm = new Term(clientContext, null);
+            var prop = perfTerm.GetType().GetProperty("ObjectData", BindingFlags.Instance | BindingFlags.NonPublic);
+            ClientObjectData data = (ClientObjectData)prop.GetValue(perfTerm);
+            data.Properties["Id"] = Guid.Parse(termIdString);
+            data.Properties["Name"] = termName;
+            data.Properties["CustomProperties"] = new Dictionary<string, string>();
+            perfTerm.CustomProperties.Add("WssId", wssId);
+            return perfTerm;
+        }
+
+        private static Folder GetFormsFolderFromList(List list, ClientContext clientContext)
+        {
+            Folder formsFolder = null;
+            try
+            {
+                formsFolder = clientContext.Web.GetFolderByServerRelativeUrl(list.RootFolder.ServerRelativeUrl + "/Forms");
+                clientContext.ExecuteQueryRetry();
+            }
+            catch (FileNotFoundException)
+            {
+            }
+            return formsFolder;
         }
 
         /// <summary>
@@ -1847,10 +1916,9 @@ namespace Microsoft.SharePoint.Client
             using (var clientContext = (ClientContext)list.Context)
             {
                 clientContext.Load(list.RootFolder);
-                clientContext.Load(list.RootFolder.Folders);
                 clientContext.ExecuteQueryRetry();
 
-                var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
+                var formsFolder = GetFormsFolderFromList(list, clientContext);
                 if (formsFolder != null)
                 {
                     var configFile = formsFolder.Files.GetByUrl("client_LocationBasedDefaults.html");

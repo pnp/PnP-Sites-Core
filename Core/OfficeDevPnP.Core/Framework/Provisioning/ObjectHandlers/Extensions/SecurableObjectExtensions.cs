@@ -57,8 +57,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                     if (principal == null)
                     {
                         principal = context.Web.EnsureUser(roleAssignmentPrincipal);
-                        principal.EnsureProperty(p => p.Id);
                     }
+                    principal.EnsureProperty(p => p.Id);
 
                     if (principal != null)
                     {

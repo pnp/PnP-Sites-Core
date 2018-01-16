@@ -48,7 +48,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var total = template.Lists.Count;
 
-                    #region Lists
+                    #region Lists and List Content Types
 
                     var currentListIndex = 0;
                     foreach (var templateList in template.Lists)

@@ -868,6 +868,10 @@ namespace OfficeDevPnP.Core.Pages
                     }
                 }
             }
+            else
+            {
+                htmlWriter.Write(this.HtmlPropertiesData);
+            }
         }
         #endregion
 
