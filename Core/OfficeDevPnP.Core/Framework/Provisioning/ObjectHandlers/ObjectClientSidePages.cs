@@ -139,7 +139,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 if (control.Type == WebPartType.Text)
                                 {
                                     Pages.ClientSideText textControl = new Pages.ClientSideText();
-                                    if (control.ControlProperties.Any())
+                                    if (control.ControlProperties != null && control.ControlProperties.Any())
                                     {
                                         var textProperty = control.ControlProperties.First();
                                         textControl.Text = parser.ParseString(textProperty.Value);
@@ -260,7 +260,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         }
 
                                         // set using property collection
-                                        if (control.ControlProperties.Any())
+                                        if (control.ControlProperties != null && control.ControlProperties.Any())
                                         {
                                             // grab the "default" properties so we can deduct their types, needed to correctly apply the set properties
                                             var controlManifest = JObject.Parse(baseControl.Manifest);
