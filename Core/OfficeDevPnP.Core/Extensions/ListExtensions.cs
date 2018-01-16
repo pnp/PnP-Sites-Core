@@ -1642,9 +1642,23 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-        public static void SetDefaultColumnValues(this List list, IEnumerable<IDefaultColumnValue> columnValues, bool ignoreExistingDefaultColumnValues)
+        /// <summary>
+        /// <para>Sets default values for column values.</para>
+        /// <para>In order to for instance set the default Enterprise Metadata keyword field to a term, add the enterprise metadata keyword to a library (internal name "TaxKeyword")</para>
+        /// <para> </para>
+        /// <para>Column values are defined by the DefaultColumnValue class that has 3 properties:</para>
+        /// <para>RelativeFolderPath : / to set a default value for the root of the document library, or /foldername to specify a subfolder</para>
+        /// <para>FieldInternalName : The name of the field to set. For instance "TaxKeyword" to set the Enterprise Metadata field</para>
+        /// <para>Terms : A collection of Taxonomy terms to set</para>
+        /// <para></para>
+        /// <para>Supported column types: Metadata, Text, Choice, MultiChoice, People, Boolean, DateTime, Number, Currency</para>
+        /// </summary>
+        /// <param name="list">The list to process.</param>
+        /// <param name="columnValues">The default column values.</param>
+        /// <param name="overwriteExistingDefaultColumnValues">If true, the currrent default column values will be overwritten.</param>
+        public static void SetDefaultColumnValues(this List list, IEnumerable<IDefaultColumnValue> columnValues, bool overwriteExistingDefaultColumnValues)
         {
-            if (ignoreExistingDefaultColumnValues)
+            if (overwriteExistingDefaultColumnValues)
             {
                 list.SetDefaultColumnValuesImplementation(columnValues);
             }
@@ -1654,6 +1668,10 @@ namespace Microsoft.SharePoint.Client
             }               
         }
 
+        /// <summary>
+        /// Remove all default column values that are defined for this list.
+        /// </summary>
+        /// <param name="list">The list to process.</param>
         public static void ClearDefaultColumnValues(this List list)
         {
             var defaultValuesFileName = "client_LocationBasedDefaults.html";
@@ -1673,7 +1691,10 @@ namespace Microsoft.SharePoint.Client
                     clientContext.ExecuteQueryRetry();
                     fileExists = true;
                 }
-                catch { }
+                catch
+                {
+                    // Do nothing here
+                }
 
                 if (fileExists)
                 {
@@ -1683,6 +1704,11 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
+        /// <summary>
+        /// Removes the provided default column values from the specified folder(s) from list, if they were set.
+        /// </summary>
+        /// <param name="list">The list to process.</param>
+        /// <param name="columnValues">The default column values that must be cleared.</param>
         public static void ClearDefaultColumnValues(this List list, IEnumerable<IDefaultColumnValue> columnValues)
         {
             var defaultValuesFileName = "client_LocationBasedDefaults.html";
