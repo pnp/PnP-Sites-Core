@@ -111,7 +111,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return (false);
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             return (template.Tenant != null);
         }
