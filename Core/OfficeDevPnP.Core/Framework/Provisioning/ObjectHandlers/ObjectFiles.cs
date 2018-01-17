@@ -13,6 +13,7 @@ using System.IO;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.Utilities;
 using Microsoft.SharePoint.Client.Taxonomy;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -107,6 +108,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (targetFile != null)
                     {
+                        // Add the fileuniqueid tokens
+                        targetFile.EnsureProperties(p => p.UniqueId, p => p.ServerRelativeUrl);
+                        parser.AddToken(new FileUniqueIdToken(web, targetFile.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), targetFile.UniqueId));
+                        parser.AddToken(new FileUniqueIdEncodedToken(web, targetFile.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), targetFile.UniqueId));
+
                         if (file.Properties != null && file.Properties.Any())
                         {
                             Dictionary<string, string> transformedProperties = file.Properties.ToDictionary(property => property.Key, property => parser.ParseString(property.Value));
@@ -467,6 +473,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var tempFileName = fileName.Replace(@"/", @"\");
                 container = fileName.Substring(0, tempFileName.LastIndexOf(@"\"));
                 fileName = fileName.Substring(tempFileName.LastIndexOf(@"\") + 1);
+            }
+            else if (!string.IsNullOrEmpty(file.Folder))
+            {
+                // transform slashes
+                container = file.Folder.Replace(@"/", @"\");
             }
 
             // add the default provided container (if any)
