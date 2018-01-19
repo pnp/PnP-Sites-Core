@@ -684,11 +684,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 #endif
 
-            // We cannot configure Hidden property for Phonetic fields 
-            if (!(siteList.BaseTemplate == (int)ListTemplateType.Contacts &&
-                (fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase) ||
-                fieldRef.Name.Equals("FirstNamePhonetic", StringComparison.InvariantCultureIgnoreCase) ||
-                fieldRef.Name.Equals("CompanyPhonetic", StringComparison.InvariantCultureIgnoreCase))))
+            // We cannot configure Hidden property for Phonetic or Compliance fields 
+            if (!(
+                    siteList.BaseTemplate == (int)ListTemplateType.Contacts &&
+                    (
+                        fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase) ||
+                        fieldRef.Name.Equals("FirstNamePhonetic", StringComparison.InvariantCultureIgnoreCase) ||
+                        fieldRef.Name.Equals("CompanyPhonetic", StringComparison.InvariantCultureIgnoreCase)
+                    )
+                )
+                &&
+                !(
+                    siteList.BaseTemplate == (int)ListTemplateType.DocumentLibrary &&
+                    (
+                        fieldRef.Name.Equals("_ComplianceFlags", StringComparison.InvariantCultureIgnoreCase) ||
+                        fieldRef.Name.Equals("_ComplianceTag", StringComparison.InvariantCultureIgnoreCase) ||
+                        fieldRef.Name.Equals("_ComplianceTagWrittenTime", StringComparison.InvariantCultureIgnoreCase) ||
+                        fieldRef.Name.Equals("_ComplianceTagUserId", StringComparison.InvariantCultureIgnoreCase)
+                    )
+                )
+            )
             {
                 if (fieldRef.Hidden != listField.Hidden)
                 {
