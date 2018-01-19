@@ -1499,7 +1499,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             if (!string.IsNullOrEmpty(userCustomAction.ClientSideComponentProperties))
             {
-                newUserCustomAction.ClientSideComponentProperties = userCustomAction.ClientSideComponentProperties;
+                newUserCustomAction.ClientSideComponentProperties = parser.ParseString(userCustomAction.ClientSideComponentProperties);
             }
 #endif
 
