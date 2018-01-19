@@ -1492,6 +1492,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (!string.IsNullOrEmpty(userCustomAction.Description) && userCustomAction.Description.ContainsResourceToken())
             {
                 newUserCustomAction.DescriptionResource.SetUserResourceValue(userCustomAction.Description, parser);
+            }            
+            if(userCustomAction.ClientSideComponentId != null && userCustomAction.ClientSideComponentId != Guid.Empty)
+            {
+                newUserCustomAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
+            }
+            if (!string.IsNullOrEmpty(userCustomAction.ClientSideComponentProperties))
+            {
+                newUserCustomAction.ClientSideComponentProperties = userCustomAction.ClientSideComponentProperties;
             }
 #endif
 
@@ -2478,6 +2486,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 };
 
 #if !ONPREMISES
+                customAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
+                customAction.ClientSideComponentProperties = userCustomAction.ClientSideComponentProperties;
                 if (creationInfo.PersistMultiLanguageResources)
                 {
                     siteList.EnsureProperty(l => l.Title);
@@ -2515,7 +2525,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return schemaXml;
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override bool WillProvision(Web web, ProvisioningTemplate template)
         {
             if (!_willProvision.HasValue)
             {
