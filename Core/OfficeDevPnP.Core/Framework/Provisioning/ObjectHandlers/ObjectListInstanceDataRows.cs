@@ -252,7 +252,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                                 // Multi value field - Expected format: term label|term GUID;term label|term GUID;term label|term GUID...
 
                                                                 TaxonomyField taxonomyField = web.Context.CastTo<TaxonomyField>(dataField);
-                                                                taxonomyField.SetFieldValueByLabelGuidPair(listitem, dataValue.Value);
+                                                                taxonomyField.SetFieldValueByLabelGuidPair(listitem, fieldValue);
                                                                 break;
                                                         }
                                                         break;
