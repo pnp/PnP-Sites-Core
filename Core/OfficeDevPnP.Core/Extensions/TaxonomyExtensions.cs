@@ -1581,11 +1581,11 @@ namespace Microsoft.SharePoint.Client
 
             if (string.IsNullOrEmpty(label) && termGuid.Equals(Guid.Empty))
             {
-                taxField.SetFieldValue(item, string.Empty);
+                taxField.SetFieldValueByLabelGuidPair(item, string.Empty);
             }
             else
             {
-                taxField.SetFieldValue(item, $"{label}|{termGuid.ToString()}");
+                taxField.SetFieldValueByLabelGuidPair(item, $"{label}|{termGuid.ToString()}");
             }
             item.Update();
             clientContext.ExecuteQueryRetry();
@@ -1623,7 +1623,7 @@ namespace Microsoft.SharePoint.Client
                     termValuesStringbuilder.Append(term.Value + "|" + term.Key.ToString());
                 }
 
-                taxField.SetFieldValue(item, termValuesStringbuilder.ToString());
+                taxField.SetFieldValueByLabelGuidPair(item, termValuesStringbuilder.ToString());
                 item.Update();
                 clientContext.ExecuteQueryRetry();
             }
@@ -1642,9 +1642,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="taxonomyField">The field to set</param>
         /// <param name="item">The item to process</param>
         /// <param name="value">The value to set on the taxonomy field</param>
-        public static void SetFieldValue(this TaxonomyField taxonomyField, ListItem item, string value)
+        public static void SetFieldValueByLabelGuidPair(this TaxonomyField taxonomyField, ListItem item, string value)
         {
-            taxonomyField.EnsureProperties(f => f.TypeAsString, f => f.TextField, f => f.AllowMultipleValues);
+            taxonomyField.EnsureProperties(f => f.TextField, f => f.AllowMultipleValues);
 
             //TaxonomyFieldValue.PopulateFromLabelGuidPairs(string) has not been exposed to CSOM.
             //This trick uses TaxonomyFieldValueCollection to get the same result for single value taxonomy fields.
