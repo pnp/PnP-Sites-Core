@@ -251,57 +251,57 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                         break;
                                                 }
                                             }
-                                            web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
+                                        }
+                                        web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
 
-                                            if (dataRow.Security != null && (dataRow.Security.ClearSubscopes == true || dataRow.Security.CopyRoleAssignments == true || dataRow.Security.RoleAssignments.Count > 0))
+                                        if (dataRow.Security != null && (dataRow.Security.ClearSubscopes == true || dataRow.Security.CopyRoleAssignments == true || dataRow.Security.RoleAssignments.Count > 0))
+                                        {
+                                            listitem.SetSecurity(parser, dataRow.Security);
+                                        }
+                                        //AssignedTo
+                                        if (assignedTo)
+                                        {
+                                            String fieldValue = parser.ParseString(dataRow.Values[FieldAssignedTo]);
+                                            if (fieldValue.Contains(","))
                                             {
-                                                listitem.SetSecurity(parser, dataRow.Security);
-                                            }
-                                            //AssignedTo
-                                            if (assignedTo)
-                                            {
-                                                String fieldValue = parser.ParseString(dataRow.Values[FieldAssignedTo]);
-                                                if (fieldValue.Contains(","))
+                                                var userValues = new List<FieldUserValue>();
+                                                fieldValue.Split(',').All(value =>
                                                 {
-                                                    var userValues = new List<FieldUserValue>();
-                                                    fieldValue.Split(',').All(value =>
-                                                    {
-                                                        var user = web.EnsureUser(value);
-                                                        web.Context.Load(user);
-                                                        web.Context.ExecuteQueryRetry();
-                                                        if (user != null)
-                                                        {
-                                                            userValues.Add(new FieldUserValue
-                                                            {
-                                                                LookupId = user.Id,
-                                                            }); ;
-                                                        }
-                                                        return true;
-                                                    });
-                                                    listitem[parser.ParseString(FieldAssignedTo)] = userValues.ToArray();
-                                                }
-                                                else
-                                                {
-                                                    var user = web.EnsureUser(fieldValue);
+                                                    var user = web.EnsureUser(value);
                                                     web.Context.Load(user);
                                                     web.Context.ExecuteQueryRetry();
                                                     if (user != null)
                                                     {
-                                                        var userValue = new FieldUserValue
+                                                        userValues.Add(new FieldUserValue
                                                         {
                                                             LookupId = user.Id,
-                                                        };
-                                                        listitem[parser.ParseString(FieldAssignedTo)] = userValue;
+                                                        }); ;
                                                     }
-                                                }
-                                                listitem.Update();
-                                                web.Context.ExecuteQueryRetry();
+                                                    return true;
+                                                });
+                                                listitem[parser.ParseString(FieldAssignedTo)] = userValues.ToArray();
                                             }
-
-                                            if (dataRow.Security != null && (dataRow.Security.ClearSubscopes == true || dataRow.Security.CopyRoleAssignments == true || dataRow.Security.RoleAssignments.Count > 0))
+                                            else
                                             {
-                                                listitem.SetSecurity(parser, dataRow.Security);
+                                                var user = web.EnsureUser(fieldValue);
+                                                web.Context.Load(user);
+                                                web.Context.ExecuteQueryRetry();
+                                                if (user != null)
+                                                {
+                                                    var userValue = new FieldUserValue
+                                                    {
+                                                        LookupId = user.Id,
+                                                    };
+                                                    listitem[parser.ParseString(FieldAssignedTo)] = userValue;
+                                                }
                                             }
+                                            listitem.Update();
+                                            web.Context.ExecuteQueryRetry();
+                                        }
+
+                                        if (dataRow.Security != null && (dataRow.Security.ClearSubscopes == true || dataRow.Security.CopyRoleAssignments == true || dataRow.Security.RoleAssignments.Count > 0))
+                                        {
+                                            listitem.SetSecurity(parser, dataRow.Security);
                                         }
                                     }
                                 }
