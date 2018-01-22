@@ -87,6 +87,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new CurrentUserFullNameToken(web));
             _tokens.Add(new AuthenticationRealmToken(web));
             _tokens.Add(new HostUrlToken(web));
+#if !ONPREMISES
+            _tokens.Add(new SiteCollectionConnectedOffice365GroupId(web));
+#endif
 
             // Add lists
             AddListTokens(web);

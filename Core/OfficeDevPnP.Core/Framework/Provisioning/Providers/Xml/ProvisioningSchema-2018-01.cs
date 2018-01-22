@@ -8149,8 +8149,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         /// <remarks/>
         QuickLinks,
+
+        /// <remarks/>
+        CustomMessageRegion,
+
+        /// <remarks/>
+        Divider,
+
+        /// <remarks/>
+        MicrosoftForms,
+
+        /// <remarks/>
+        Spacer,
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
     [System.SerializableAttribute()]
