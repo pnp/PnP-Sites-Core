@@ -623,16 +623,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         try
                         {
-                            ctx.Load(wpd);
+                            ctx.Load(wpd, def => def.ZoneId, def => def.Id);
                             ctx.ExecuteQueryRetry();
                             var wp = wpd.WebPart;
-                            ctx.Load(wp);
+                            ctx.Load(wp, def => def.ZoneIndex, def => def.Title, def => def.Properties, def => def.TitleUrl);
                             ctx.ExecuteQueryRetry();
                             PublishingPageWebPart ppwp = new PublishingPageWebPart();
                             ppwp.Title = wp.Title;
-                            ppwp.Zone = wp.ZoneIndex.ToString();
+                            ppwp.Order = (uint)wp.ZoneIndex;
+                            ppwp.Zone = wpd.ZoneId.ToString();
                             var webPartId = wpd.Id;
-                            
                             if (!string.IsNullOrEmpty(wp.TitleUrl))
                             {
                                 ppwp.DefaultViewDisplayName = "";

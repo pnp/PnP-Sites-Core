@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 
 #if !ONPREMISES
 using OfficeDevPnP.Core.Sites;
