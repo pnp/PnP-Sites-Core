@@ -5,7 +5,7 @@
     xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
-    <!--
+  <!--
   ****  WARNING ****
 
   If you want to change this schema, please target the proper repository, which is the PnP-Provisioning-Schema one that is

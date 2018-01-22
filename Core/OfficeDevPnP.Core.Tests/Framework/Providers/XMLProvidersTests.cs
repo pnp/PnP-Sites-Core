@@ -165,18 +165,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var result = provider.GetTemplates();
 
-            Assert.IsTrue(result.Count == 11);
-            Assert.IsTrue(result[0].Files.Count == 5);
-            Assert.IsTrue(result[1].Files.Count == 5);
-            Assert.IsTrue(result[2].Files.Count == 6);
-            Assert.IsTrue(result[3].Files.Count == 5);
-            Assert.IsTrue(result[4].Files.Count == 1);
-            Assert.IsTrue(result[5].Files.Count == 5);
-            Assert.IsTrue(result[6].Files.Count == 1);
-            Assert.IsTrue(result[7].Files.Count == 1);
-            Assert.IsTrue(result[8].Files.Count == 1);
-            Assert.IsTrue(result[9].Files.Count == 5);
-            Assert.IsTrue(result[10].Files.Count == 2);
+            Assert.IsTrue(result.Count > 15);
         }
 
         [TestMethod]
@@ -355,10 +344,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     "Templates");
 
             var _source1 = provider.GetTemplate("ProvisioningTemplate-2015-03-Sample-01.xml");
-            provider.SaveAs(_source1, "ProvisioningTemplate-2016-05-Sample-01.xml", XMLPnPSchemaFormatter.LatestFormatter);
+            provider.SaveAs(_source1, "ProvisioningTemplate-2016-05-Sample-01.xml", XMLPnPSchemaFormatter.GetSpecificFormatter(XMLPnPSchemaVersion.V201605));
 
             var _source2 = provider.GetTemplate("ProvisioningTemplate-2015-03-Sample-02.xml");
-            provider.SaveAs(_source2, "ProvisioningTemplate-2016-05-Sample-02.xml", XMLPnPSchemaFormatter.LatestFormatter);
+            provider.SaveAs(_source2, "ProvisioningTemplate-2016-05-Sample-02.xml", XMLPnPSchemaFormatter.GetSpecificFormatter(XMLPnPSchemaVersion.V201605));
         }
 
         [TestMethod]
@@ -577,6 +566,51 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningTemplate-2016-05-Sample-03-OUT.xml"));
 
             var template2 = provider.GetTemplate("ProvisioningTemplate-2016-05-Sample-03-OUT.xml", serializer);
+            Assert.IsNotNull(template2);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_SerializeDeserialize_201705()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201705Serializer();
+            var template1 = provider.GetTemplate("ProvisioningSchema-2017-05-FullSample-01.xml", serializer);
+            Assert.IsNotNull(template1);
+
+            provider.SaveAs(template1, "ProvisioningSchema-2017-05-FullSample-01-OUT.xml", serializer);
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningSchema-2017-05-FullSample-01-OUT.xml"));
+
+            var template2 = provider.GetTemplate("ProvisioningSchema-2017-05-FullSample-01-OUT.xml", serializer);
+            Assert.IsNotNull(template2);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_SerializeDeserialize_201801()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201801Serializer();
+            var template1 = provider.GetTemplate("ProvisioningSchema-2018-01-FullSample-01.xml", serializer);
+            Assert.IsNotNull(template1);
+
+            // Add stuff that is not supported anymore, to test the serialization behavior
+            template1.AddIns.Add(new AddIn { PackagePath = "test", Source = "test" });
+
+            provider.SaveAs(template1, "ProvisioningSchema-2018-01-FullSample-01-OUT.xml", serializer);
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningSchema-2018-01-FullSample-01-OUT.xml"));
+
+            var template2 = provider.GetTemplate("ProvisioningSchema-2018-01-FullSample-01-OUT.xml", serializer);
             Assert.IsNotNull(template2);
         }
 
@@ -977,7 +1011,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual((uint)1, webpart.Order);
             Assert.AreEqual("Main", webpart.Zone);
             Assert.IsNotNull(webpart.Contents);
-            Assert.AreEqual("<webPart>[!<![CDATA[web part definition goes here]]></webPart>", webpart.Contents.Trim());
+            Assert.AreEqual("<Contents xmlns=\"http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema\"><webParts xmlns=\"\"><webPart>[!<![CDATA[web part definition goes here]]></webPart></webParts></Contents>", webpart.Contents.Trim());
 
             Assert.IsNotNull(file.WebParts);
             webpart = file.WebParts.FirstOrDefault(wp => wp.Title == "My Editor");
@@ -985,7 +1019,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual((uint)10, webpart.Order);
             Assert.AreEqual("Left", webpart.Zone);
             Assert.IsNotNull(webpart.Contents);
-            Assert.AreEqual("<webPart>[!<![CDATA[web part definition goes here]]></webPart>", webpart.Contents.Trim());
+            Assert.AreEqual("<Contents xmlns=\"http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema\"><webParts xmlns=\"\"><webPart>[!<![CDATA[web part definition goes here]]></webPart></webParts></Contents>", webpart.Contents.Trim());
 
             file = result.Files.FirstOrDefault(f => f.Src == "/Resources/Files/SAMPLE.js");
             Assert.IsNotNull(file);
@@ -1305,7 +1339,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual((uint)1, webpart.Row);
             Assert.AreEqual((uint)2, webpart.Column);
             Assert.IsNotNull(webpart.Contents);
-            Assert.AreEqual("<webPart>[!<![CDATA[web part definition goes here]]></webPart>", webpart.Contents);
+            Assert.AreEqual("<webParts><webPart>[!<![CDATA[web part definition goes here]]></webPart></webParts>", webpart.Contents);
 
             Assert.IsNotNull(page.WebParts);
             webpart = page.WebParts.FirstOrDefault(wp => wp.Title == "My Editor");
@@ -1313,7 +1347,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual((uint)2, webpart.Row);
             Assert.AreEqual((uint)1, webpart.Column);
             Assert.IsNotNull(webpart.Contents);
-            Assert.AreEqual("<webPart>[!<![CDATA[web part definition goes here]]></webPart>", webpart.Contents);
+            Assert.AreEqual("<webParts><webPart>[!<![CDATA[web part definition goes here]]></webPart></webParts>", webpart.Contents);
 
             Assert.IsNotNull(page.Fields);
             Assert.AreEqual(4, page.Fields.Count() );
@@ -1539,7 +1573,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Term2Set1Group1", tm.Name);
             Assert.AreEqual("Term2 Set1 Group1", tm.Description);
             Assert.AreEqual(102, tm.CustomSortOrder);
-            Assert.AreEqual(0, tm.Language);
+            Assert.IsNull(tm.Language);
             Assert.AreEqual("term1owner@term2owner", tm.Owner);
             Assert.AreEqual(Guid.Empty, tm.SourceTermId);
             Assert.IsFalse(tm.IsAvailableForTagging);

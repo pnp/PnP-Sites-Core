@@ -299,6 +299,11 @@ namespace Microsoft.SharePoint.Client
             return false;
         }
 
+        /// <summary>
+        /// Checks if the current web is a publishing site or not
+        /// </summary>
+        /// <param name="web">Web to check</param>
+        /// <returns>True is publishing site, false otherwise</returns>
         public static bool IsPublishingWeb(this Web web)
         {
             var featureActivated = GetPropertyBagValueInternal(web, "__PublishingFeatureActivated");
@@ -393,7 +398,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The site to process</param>
         /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
-        /// <returns></returns>
+        /// <returns>all app instances</returns>
         public static ClientObjectList<AppInstance> GetAppInstances(this Web web, params Expression<Func<AppInstance, object>>[] expressions)
         {
             var instances = AppCatalog.GetAppInstances(web.Context, web);
@@ -569,7 +574,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="keywordQueryValue">Keyword query</param>
-        /// <param name="trimDuplicates">Indicates if dublicates should be trimmed or not</param>
+        /// <param name="trimDuplicates">Indicates if duplicates should be trimmed or not</param>
         /// <returns>All found site collections</returns>
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static List<SiteEntity> SiteSearch(this Web web, string keywordQueryValue, bool trimDuplicates = false)
@@ -916,7 +921,7 @@ namespace Microsoft.SharePoint.Client
         /// Returns all keys in the property bag that have been marked for indexing
         /// </summary>
         /// <param name="web">The site to process</param>
-        /// <returns></returns>
+        /// <returns>all indexed property bag keys</returns>
         public static IEnumerable<string> GetIndexedPropertyBagKeys(this Web web)
         {
             var keys = new List<string>();
@@ -1035,9 +1040,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">The web to process</param>
         /// <param name="name">The name of the event receiver (needs to be unique among the event receivers registered on this list)</param>
         /// <param name="url">The URL of the remote WCF service that handles the event</param>
-        /// <param name="eventReceiverType"></param>
-        /// <param name="synchronization"></param>
-        /// <param name="sequenceNumber"></param>
+        /// <param name="eventReceiverType">The type of event for the event receiver.</param>
+        /// <param name="synchronization">An enumeration that specifies the synchronization state for the event receiver.</param>
+        /// <param name="sequenceNumber">An integer that represents the relative sequence of the event.</param>
         /// <param name="force">If True any event already registered with the same name will be removed first.</param>
         /// <returns>Returns an EventReceiverDefinition if succeeded. Returns null if failed.</returns>
         public static EventReceiverDefinition AddRemoteEventReceiver(this Web web, string name, string url, EventReceiverType eventReceiverType, EventReceiverSynchronization synchronization, int sequenceNumber, bool force)
@@ -1078,8 +1083,8 @@ namespace Microsoft.SharePoint.Client
         /// Returns an event receiver definition
         /// </summary>
         /// <param name="web">Web to process</param>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="id">The id of event receiver</param>
+        /// <returns>Returns an EventReceiverDefinition if succeeded. Returns null if failed.</returns>
         public static EventReceiverDefinition GetEventReceiverById(this Web web, Guid id)
         {
             IEnumerable<EventReceiverDefinition> receivers = null;
@@ -1103,9 +1108,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns an event receiver definition
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="web">Web to process</param>
+        /// <param name="name">The name of the receiver</param>
+        /// <returns>Returns an EventReceiverDefinition if succeeded. Returns null if failed.</returns>
         public static EventReceiverDefinition GetEventReceiverByName(this Web web, string name)
         {
             IEnumerable<EventReceiverDefinition> receivers = null;
@@ -1159,7 +1164,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Can be used to apply custom remote provisioning template on top of existing site. 
         /// </summary>
-        /// <param name="web"></param>
+        /// <param name="web">web to apply remote template</param>
         /// <param name="template">ProvisioningTemplate with the settings to be applied</param>
         /// <param name="applyingInformation">Specified additional settings and or properties</param>
         public static void ApplyProvisioningTemplate(this Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation = null)
@@ -1306,6 +1311,130 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
         #endregion
+
+        #region ClientSide Package Deployment
+        /// <summary>
+        /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
+        /// </summary>
+        /// <param name="web">Web to operate against</param>
+        /// <returns>The Uri holding the app catalog site url</returns>
+        public static Uri GetAppCatalog(this Web web)
+        {
+            // Assume there's only one appcatalog site
+            var results = ((web.Context) as ClientContext).Web.SiteSearch("contentclass:STS_Site AND SiteTemplate:APPCATALOG");
+            foreach (var site in results)
+            {
+                return new Uri(site.Url);
+            }
+
+            return null;
+        }
+
+#if !ONPREMISES
+        /// <summary>
+        /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
+        /// </summary>
+        /// <param name="web">Web to operate against</param>
+        /// <param name="spPkgName">Name of the package to upload (e.g. demo.sppkg) </param>
+        /// <param name="spPkgPath">Path on the filesystem where this package is stored</param>
+        /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
+        /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
+        /// <returns>The ListItem of the added package row</returns>
+        public static ListItem DeployApplicationPackageToAppCatalog(this Web web, string spPkgName, string spPkgPath, bool autoDeploy = true, bool overwrite = true)
+        {
+            var appCatalogSite = web.GetAppCatalog();
+            if (appCatalogSite == null)
+            {
+                throw new ArgumentException("No app catalog site found, please ensure the site exists or specify the site as parameter. Note that the app catalog site is retrieved via search, so take in account the indexing time.");
+            }
+
+            return DeployApplicationPackageToAppCatalogImplementation(web, appCatalogSite.ToString(), spPkgName, spPkgPath, autoDeploy, false, overwrite);
+        }
+
+        /// <summary>
+        /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
+        /// </summary>
+        /// <param name="web">Tenant to operate against</param>
+        /// <param name="spPkgName">Name of the package to upload (e.g. demo.sppkg) </param>
+        /// <param name="spPkgPath">Path on the filesystem where this package is stored</param>
+        /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
+        /// <param name="skipFeatureDeployment">Skip the feature deployment step, allows for a one-time central deployment of your solution</param>
+        /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
+        /// <returns>The ListItem of the added package row</returns>
+        public static ListItem DeployApplicationPackageToAppCatalog(this Web web, string spPkgName, string spPkgPath, bool autoDeploy = true, bool skipFeatureDeployment = true, bool overwrite = true)
+        {
+            var appCatalogSite = web.GetAppCatalog();
+            if (appCatalogSite == null)
+            {
+                throw new ArgumentException("No app catalog site found, please ensure the site exists or specify the site as parameter. Note that the app catalog site is retrieved via search, so take in account the indexing time.");
+            }
+
+            return DeployApplicationPackageToAppCatalogImplementation(web, appCatalogSite.ToString(), spPkgName, spPkgPath, autoDeploy, skipFeatureDeployment, overwrite);
+        }
+
+
+        private static ListItem DeployApplicationPackageToAppCatalogImplementation(this Web web, string appCatalogSiteUrl, string spPkgName, string spPkgPath, bool autoDeploy, bool skipFeatureDeployment, bool overwrite)
+        {
+            if (String.IsNullOrEmpty(appCatalogSiteUrl))
+            {
+                throw new ArgumentException("Please specify a app catalog site url");
+            }
+
+            Uri catalogUri;
+            if (!Uri.TryCreate(appCatalogSiteUrl, UriKind.Absolute, out catalogUri))
+            {
+                throw new ArgumentException("Please specify a valid app catalog site url");
+            }
+
+            if (String.IsNullOrEmpty(spPkgName))
+            {
+                throw new ArgumentException("Please specify a package name");
+            }
+
+            if (String.IsNullOrEmpty(spPkgPath))
+            {
+                throw new ArgumentException("Please specify a package path");
+            }
+
+            using (var appCatalogContext = web.Context.Clone(catalogUri))
+            {
+                List catalog = appCatalogContext.Web.GetListByUrl("appcatalog");
+                if (catalog == null)
+                {
+                    throw new Exception($"No app catalog found...did you provide a valid app catalog site?");
+                }
+
+                Folder rootFolder = catalog.RootFolder;
+
+                // Upload package
+                var sppkgFile = rootFolder.UploadFile(spPkgName, System.IO.Path.Combine(spPkgPath, spPkgName), overwrite);
+                if (sppkgFile == null)
+                {
+                    throw new Exception($"Upload of {spPkgName} failed");
+                }
+
+                if ((autoDeploy || skipFeatureDeployment) &&
+                    System.IO.Path.GetExtension(spPkgName).ToLower() == ".sppkg")
+                {
+                    // Trigger "deployment" by setting the IsClientSideSolutionDeployed bool to true which triggers 
+                    // an event receiver that will process the sppkg file and update the client side componenent manifest list
+                    sppkgFile.ListItemAllFields["IsClientSideSolutionDeployed"] = autoDeploy;
+                    // deal with "upgrading" solutions
+                    sppkgFile.ListItemAllFields["IsClientSideSolutionCurrentVersionDeployed"] = autoDeploy;
+                    // Allow for a central deployment of the solution, no need to install the solution in the individual site collections.
+                    // Only works when the solution is not using feature framework to "configure" the site upon solution installation
+                    sppkgFile.ListItemAllFields["SkipFeatureDeployment"] = skipFeatureDeployment;
+                    sppkgFile.ListItemAllFields.Update();
+                }
+
+                appCatalogContext.Load(sppkgFile.ListItemAllFields);
+                appCatalogContext.ExecuteQueryRetry();
+
+                return sppkgFile.ListItemAllFields;
+            }
+        }
+#endif
+    #endregion
 
     }
 }

@@ -11,10 +11,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
     /// </summary>
     public class PnPPackageFileItem
     {
+        /// <summary>
+        /// Name of the package file item
+        /// </summary>
         public String Name { get; set; }
-
+        /// <summary>
+        /// Folder containing the package file item
+        /// </summary>
         public String Folder { get; set; }
-
+        /// <summary>
+        /// Content of the package file item
+        /// </summary>
         public Byte[] Content { get; set; }
     }
 }

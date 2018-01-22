@@ -14,6 +14,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     {
         public string Name => this.GetType().Name;
 
+        public bool CustomCollectionResolver => false;
+
+
         public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {
             var result = new Dictionary<String, String>();

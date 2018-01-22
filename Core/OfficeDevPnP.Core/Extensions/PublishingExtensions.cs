@@ -8,6 +8,9 @@ using OfficeDevPnP.Core.Utilities;
 
 namespace Microsoft.SharePoint.Client
 {
+    /// <summary>
+    /// Class for publishing extension methods
+    /// </summary>
     public static class PublishingExtensions
     {
         #region Publishing Pages

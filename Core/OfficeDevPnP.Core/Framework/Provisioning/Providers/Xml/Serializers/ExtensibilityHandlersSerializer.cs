@@ -20,6 +20,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var handlers = persistence.GetPublicInstancePropertyValue("Providers");
+
             if (handlers != null)
             {
                 var expressions = new Dictionary<Expression<Func<ExtensibilityHandler, Object>>, IResolver>();

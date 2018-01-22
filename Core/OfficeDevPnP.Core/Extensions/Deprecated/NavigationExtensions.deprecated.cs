@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Microsoft.SharePoint.Client
 {
     /// <summary>
-    /// This class holds deprecated navigation related methods
+    /// This class holds navigation related methods
     /// </summary>
     public static partial class NavigationExtensions
     {

@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS
         /// <param name="password">Password of th user</param>
         /// <param name="userNameMixed">Uri to the ADFS usernamemixed endpoint</param>
         /// <param name="relyingPartyIdentifier">Identifier of the ADFS relying party that we're hitting</param>
-        /// <param name="logonTokenCacheExpirationWindow"></param>
+        /// <param name="logonTokenCacheExpirationWindow">Logon TokenCache expiration window integer value</param>
         /// <returns>A cookiecontainer holding the FedAuth cookie</returns>
         public CookieContainer GetFedAuthCookie(string siteUrl, string userName, string password, Uri userNameMixed, string relyingPartyIdentifier, int logonTokenCacheExpirationWindow)
         {
@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS
                 lifeTime = new TimeSpan(0, 60, 0);
             }
 
-            int cookieLifeTime = Math.Min((lifeTime.Hours * 60 + lifeTime.Minutes), logonTokenCacheExpirationWindow);
+            int cookieLifeTime = Math.Min((int)lifeTime.TotalMinutes, logonTokenCacheExpirationWindow);
             DateTime expiresOn = DateTime.Now.AddMinutes(cookieLifeTime);
 
             CookieContainer cc = null;

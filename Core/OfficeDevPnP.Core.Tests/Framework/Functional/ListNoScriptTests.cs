@@ -50,6 +50,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             new ListImplementation().SiteCollection1605ListAdding(centralSiteCollectionUrl);
         }
+
+        [TestMethod]
+        [Timeout(15 * 60 * 1000)]
+        public void SiteCollection1705ListAddingTest()
+        {
+            new ListImplementation().SiteCollection1705ListAdding(centralSiteCollectionUrl);
+        }
         #endregion
 
         #region Web test cases
@@ -66,6 +73,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             new ListImplementation().Web1605ListAdding(centralSubSiteUrl);
         }
+
+        [TestMethod]
+        [Timeout(15 * 60 * 1000)]
+        public void Web1705ListAddingTest()
+        {
+            new ListImplementation().Web1705ListAdding(centralSubSiteUrl);
+        }
+
         #endregion
 
     }

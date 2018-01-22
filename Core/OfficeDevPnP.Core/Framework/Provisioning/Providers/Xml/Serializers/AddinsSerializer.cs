@@ -19,6 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var addIns = persistence.GetPublicInstancePropertyValue("AddIns");
+
             if (addIns != null)
             {
                 template.AddIns.AddRange(
@@ -34,15 +35,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         {
             if (template.AddIns != null && template.AddIns.Count > 0)
             {
-                var addInType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.AddInsAddin, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
-                var addinSourceType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.AddInsAddinSource, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
+                var addInType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.AddInsAddin, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", false);
+                var addinSourceType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.AddInsAddinSource, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", false);
 
-                var expressions = new Dictionary<string, IResolver>();
-                expressions.Add($"{addInType}.Source", new FromStringToEnumValueResolver(addinSourceType));
+                if (addInType != null && addinSourceType != null)
+                {
+                    var expressions = new Dictionary<string, IResolver>();
+                    expressions.Add($"{addInType}.Source", new FromStringToEnumValueResolver(addinSourceType));
 
-                persistence.GetPublicInstanceProperty("Addins").SetValue(
-                    persistence,
-                    PnPObjectsMapper.MapObjects(template.AddIns, new CollectionFromModelToSchemaTypeResolver(addInType), expressions, true));
+                    persistence.GetPublicInstanceProperty("Addins").SetValue(
+                        persistence,
+                        PnPObjectsMapper.MapObjects(template.AddIns, new CollectionFromModelToSchemaTypeResolver(addInType), expressions, true));
+                }
             }
         }
     }

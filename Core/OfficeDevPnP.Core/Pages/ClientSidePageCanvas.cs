@@ -1,7 +1,9 @@
 ﻿using AngleSharp.Parser.Html;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
+using OfficeDevPnP.Core.Utilities;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -18,26 +20,93 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public enum DefaultClientSideWebParts
     {
+        /// <summary>
+        /// Third party webpart
+        /// </summary>
+        ThirdParty,
+        /// <summary>
+        /// Content Rollup webpart
+        /// </summary>
         ContentRollup,
+        /// <summary>
+        /// Bing Map webpart
+        /// </summary>
         BingMap,
+        /// <summary>
+        /// Content Embed webpart
+        /// </summary>
         ContentEmbed,
+        /// <summary>
+        /// Document Embed webpart
+        /// </summary>
         DocumentEmbed,
+        /// <summary>
+        /// Image webpart
+        /// </summary>
         Image,
+        /// <summary>
+        /// Image Gallery webpart
+        /// </summary>
         ImageGallery,
+        /// <summary>
+        /// Link Preview webpart
+        /// </summary>
         LinkPreview,
+        /// <summary>
+        /// News Feed webpart
+        /// </summary>
         NewsFeed,
+        /// <summary>
+        /// News Reel webpart
+        /// </summary>
         NewsReel,
+        /// <summary>
+        /// PowerBI Report Embed webpart
+        /// </summary>
         PowerBIReportEmbed,
+        /// <summary>
+        /// Quick Chart webpart
+        /// </summary>
         QuickChart,
+        /// <summary>
+        /// Site Activity webpart
+        /// </summary>
         SiteActivity,
+        /// <summary>
+        /// Video Embed webpart 
+        /// </summary>
         VideoEmbed,
+        /// <summary>
+        /// Yammer Embed webpart
+        /// </summary>
         YammerEmbed,
+        /// <summary>
+        /// Events webpart
+        /// </summary>
         Events,
+        /// <summary>
+        /// Group Calendar webpart
+        /// </summary>
         GroupCalendar,
+        /// <summary>
+        /// Hero webpart
+        /// </summary>
         Hero,
+        /// <summary>
+        /// List webpart
+        /// </summary>
         List,
+        /// <summary>
+        /// Page Title webpart
+        /// </summary>
         PageTitle,
+        /// <summary>
+        /// People webpart
+        /// </summary>
         People,
+        /// <summary>
+        /// Quick Links webpart
+        /// </summary>
         QuickLinks
     }
 
@@ -104,7 +173,7 @@ namespace OfficeDevPnP.Core.Pages
         private string sitePagesServerRelativeUrl;
         private bool securityInitialized = false;
         private string accessToken;
-        private System.Collections.Generic.List<CanvasZone> zones = new System.Collections.Generic.List<CanvasZone>(1);
+        private System.Collections.Generic.List<CanvasSection> sections = new System.Collections.Generic.List<CanvasSection>(1);
         private System.Collections.Generic.List<CanvasControl> controls = new System.Collections.Generic.List<CanvasControl>(5);
         private ClientSidePageLayoutType layoutType;
         private bool keepDefaultWebParts;
@@ -126,7 +195,6 @@ namespace OfficeDevPnP.Core.Pages
                 this.keepDefaultWebParts = false;
             }
 
-            //this.zones.Add(new CanvasZone(this, CanvasZoneTemplate.OneColumn, 0));
             this.pagesLibrary = "SitePages";
         }
 
@@ -162,13 +230,13 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Collection of Zones that exist on this client side page
+        /// Collection of sections that exist on this client side page
         /// </summary>
-        public System.Collections.Generic.List<CanvasZone> Zones
+        public System.Collections.Generic.List<CanvasSection> Sections
         {
             get
             {
-                return this.zones;
+                return this.sections;
             }
         }
 
@@ -273,19 +341,38 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// The default zone of the client side page
+        /// The default section of the client side page
         /// </summary>
-        public CanvasZone DefaultZone
+        public CanvasSection DefaultSection
         {
             get
             {
-                // Add a default zone if there wasn't one yet created
-                if (this.zones.Count == 0)
+                if (!Debugger.IsAttached)
                 {
-                    this.zones.Add(new CanvasZone(this, CanvasZoneTemplate.OneColumn, 0));
-                }
+                    // Add a default section if there wasn't one yet created
+                    if (this.sections.Count == 0)
+                    {
+                        this.sections.Add(new CanvasSection(this, CanvasSectionTemplate.OneColumn, 0));
+                    }
 
-                return zones.First();
+                    return sections.First();
+                }
+                else
+                {
+                    if (this.sections.Count > 0)
+                    {
+                        return sections.First();
+                    }
+                    else
+                    {
+                        if (this.sections.Count == 0)
+                        {
+                            this.sections.Add(new CanvasSection(this, CanvasSectionTemplate.OneColumn, 0));
+                        }
+
+                        return sections.First();
+                    }
+                }
             }
         }
 
@@ -311,48 +398,64 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region public methods
-
         /// <summary>
-        /// Adds a new zone to your client side page
+        /// Clears all control and sections from this page
         /// </summary>
-        /// <param name="template">The <see cref="CanvasZoneTemplate"/> type of the zone</param>
-        /// <param name="order">Controls the order of the new zone</param>
-        public void AddZone(CanvasZoneTemplate template, int order)
+        public void ClearPage()
         {
-            var zone = new CanvasZone(this, template, order);
-            AddZone(zone);
-        }
-
-        /// <summary>
-        /// Adds a new zone to your client side page
-        /// </summary>
-        /// <param name="zone"><see cref="CanvasZone"/> object describing the zone to add</param>
-        public void AddZone(CanvasZone zone)
-        {
-            if (zone == null)
+            foreach(var section in this.sections)
             {
-                throw new ArgumentNullException("Passed zone cannot be null");
+                foreach(var control in section.Controls)
+                {
+                    control.Delete();
+                }                
             }
-            this.zones.Add(zone);
+
+            this.sections.Clear();
+
         }
 
         /// <summary>
-        /// Adds a new zone to your client side page with a given order
+        /// Adds a new section to your client side page
         /// </summary>
-        /// <param name="zone"><see cref="CanvasZone"/> object describing the zone to add</param>
-        /// <param name="order">Controls the order of the new zone</param>
-        public void AddZone(CanvasZone zone, float order)
+        /// <param name="template">The <see cref="CanvasSectionTemplate"/> type of the section</param>
+        /// <param name="order">Controls the order of the new section</param>
+        public void AddSection(CanvasSectionTemplate template, float order)
         {
-            if (zone == null)
-            {
-                throw new ArgumentNullException("Passed zone cannot be null");
-            }
-            zone.Order = order;
-            this.zones.Add(zone);
+            var section = new CanvasSection(this, template, order);
+            AddSection(section);
         }
 
         /// <summary>
-        /// Adds a new control to your client side page using the default <see cref="CanvasZone"/>
+        /// Adds a new section to your client side page
+        /// </summary>
+        /// <param name="section"><see cref="CanvasSection"/> object describing the section to add</param>
+        public void AddSection(CanvasSection section)
+        {
+            if (section == null)
+            {
+                throw new ArgumentNullException("Passed section cannot be null");
+            }
+            this.sections.Add(section);
+        }
+
+        /// <summary>
+        /// Adds a new section to your client side page with a given order
+        /// </summary>
+        /// <param name="section"><see cref="CanvasSection"/> object describing the section to add</param>
+        /// <param name="order">Controls the order of the new section</param>
+        public void AddSection(CanvasSection section, float order)
+        {
+            if (section == null)
+            {
+                throw new ArgumentNullException("Passed section cannot be null");
+            }
+            section.Order = order;
+            this.sections.Add(section);
+        }
+
+        /// <summary>
+        /// Adds a new control to your client side page using the default <see cref="CanvasSection"/>
         /// </summary>
         /// <param name="control"><see cref="CanvasControl"/> to add</param>
         public void AddControl(CanvasControl control)
@@ -362,24 +465,24 @@ namespace OfficeDevPnP.Core.Pages
                 throw new ArgumentNullException("Passed control cannot be null");
             }
 
-            // add to defaultzone and section
-            if (control.Zone == null)
-            {
-                control.zone = this.DefaultZone;
-            }
+            // add to defaultsection and column
             if (control.Section == null)
             {
-                control.section = this.DefaultZone.DefaultSection;
+                control.section = this.DefaultSection;
+            }
+            if (control.Column == null)
+            {
+                control.column = this.DefaultSection.DefaultColumn;
             }
 
             this.controls.Add(control);
         }
 
         /// <summary>
-        /// Adds a new control to your client side page using the default <see cref="CanvasZone"/> using a given order
+        /// Adds a new control to your client side page using the default <see cref="CanvasSection"/> using a given order
         /// </summary>
         /// <param name="control"><see cref="CanvasControl"/> to add</param>
-        /// <param name="order">Order of the control in the default zone</param>
+        /// <param name="order">Order of the control in the default section</param>
         public void AddControl(CanvasControl control, int order)
         {
             if (control == null)
@@ -387,61 +490,15 @@ namespace OfficeDevPnP.Core.Pages
                 throw new ArgumentNullException("Passed control cannot be null");
             }
 
-            // add to defaultzone and section
-            if (control.Zone == null)
-            {
-                control.zone = this.DefaultZone;
-            }
+            // add to default section and column
             if (control.Section == null)
             {
-                control.section = this.DefaultZone.DefaultSection;
+                control.section = this.DefaultSection;
             }
-            control.Order = order;
-
-            this.controls.Add(control);
-        }
-
-        /// <summary>
-        /// Adds a new control to your client side page in the given zone
-        /// </summary>
-        /// <param name="control"><see cref="CanvasControl"/> to add</param>
-        /// <param name="zone"><see cref="CanvasZone"/> that will hold the control. Control will end up in the <see cref="CanvasZone.DefaultSection"/>.</param>
-        public void AddControl(CanvasControl control, CanvasZone zone)
-        {
-            if (control == null)
+            if (control.Column == null)
             {
-                throw new ArgumentNullException("Passed control cannot be null");
+                control.column = this.DefaultSection.DefaultColumn;
             }
-            if (zone == null)
-            {
-                throw new ArgumentNullException("Passed zone cannot be null");
-            }
-
-            control.zone = zone;
-            control.section = zone.DefaultSection;
-
-            this.controls.Add(control);
-        }
-
-        /// <summary>
-        /// Adds a new control to your client side page in the given zone with a given order
-        /// </summary>
-        /// <param name="control"><see cref="CanvasControl"/> to add</param>
-        /// <param name="zone"><see cref="CanvasZone"/> that will hold the control. Control will end up in the <see cref="CanvasZone.DefaultSection"/>.</param>
-        /// <param name="order">Order of the control in the given zone</param>
-        public void AddControl(CanvasControl control, CanvasZone zone, int order)
-        {
-            if (control == null)
-            {
-                throw new ArgumentNullException("Passed control cannot be null");
-            }
-            if (zone == null)
-            {
-                throw new ArgumentNullException("Passed zone cannot be null");
-            }
-
-            control.zone = zone;
-            control.section = zone.DefaultSection;
             control.Order = order;
 
             this.controls.Add(control);
@@ -451,7 +508,7 @@ namespace OfficeDevPnP.Core.Pages
         /// Adds a new control to your client side page in the given section
         /// </summary>
         /// <param name="control"><see cref="CanvasControl"/> to add</param>
-        /// <param name="section"><see cref="CanvasSection"/> that will hold the control</param>    
+        /// <param name="section"><see cref="CanvasSection"/> that will hold the control. Control will end up in the <see cref="CanvasSection.DefaultColumn"/>.</param>
         public void AddControl(CanvasControl control, CanvasSection section)
         {
             if (control == null)
@@ -463,8 +520,8 @@ namespace OfficeDevPnP.Core.Pages
                 throw new ArgumentNullException("Passed section cannot be null");
             }
 
-            control.zone = section.Zone;
             control.section = section;
+            control.column = section.DefaultColumn;
 
             this.controls.Add(control);
         }
@@ -473,7 +530,7 @@ namespace OfficeDevPnP.Core.Pages
         /// Adds a new control to your client side page in the given section with a given order
         /// </summary>
         /// <param name="control"><see cref="CanvasControl"/> to add</param>
-        /// <param name="section"><see cref="CanvasSection"/> that will hold the control</param>    
+        /// <param name="section"><see cref="CanvasSection"/> that will hold the control. Control will end up in the <see cref="CanvasSection.DefaultColumn"/>.</param>
         /// <param name="order">Order of the control in the given section</param>
         public void AddControl(CanvasControl control, CanvasSection section, int order)
         {
@@ -486,8 +543,54 @@ namespace OfficeDevPnP.Core.Pages
                 throw new ArgumentNullException("Passed section cannot be null");
             }
 
-            control.zone = section.Zone;
             control.section = section;
+            control.column = section.DefaultColumn;
+            control.Order = order;
+
+            this.controls.Add(control);
+        }
+
+        /// <summary>
+        /// Adds a new control to your client side page in the given section
+        /// </summary>
+        /// <param name="control"><see cref="CanvasControl"/> to add</param>
+        /// <param name="column"><see cref="CanvasColumn"/> that will hold the control</param>    
+        public void AddControl(CanvasControl control, CanvasColumn column)
+        {
+            if (control == null)
+            {
+                throw new ArgumentNullException("Passed control cannot be null");
+            }
+            if (column == null)
+            {
+                throw new ArgumentNullException("Passed column cannot be null");
+            }
+
+            control.section = column.Section;
+            control.column = column;
+
+            this.controls.Add(control);
+        }
+
+        /// <summary>
+        /// Adds a new control to your client side page in the given section with a given order
+        /// </summary>
+        /// <param name="control"><see cref="CanvasControl"/> to add</param>
+        /// <param name="column"><see cref="CanvasColumn"/> that will hold the control</param>    
+        /// <param name="order">Order of the control in the given section</param>
+        public void AddControl(CanvasControl control, CanvasColumn column, int order)
+        {
+            if (control == null)
+            {
+                throw new ArgumentNullException("Passed control cannot be null");
+            }
+            if (column == null)
+            {
+                throw new ArgumentNullException("Passed column cannot be null");
+            }
+
+            control.section = column.Section;
+            control.column = column;
             control.Order = order;
 
             this.controls.Add(control);
@@ -520,9 +623,18 @@ namespace OfficeDevPnP.Core.Pages
 
                 htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
 
-                foreach (var zone in this.zones.OrderBy(p => p.Order))
+                // Normalize section order by starting from 1, users could have started from 0 or left gaps in the numbering
+                var sectionsToOrder = this.sections.OrderBy(p => p.Order).ToList();
+                int i = 1;
+                foreach(var section in sectionsToOrder)
                 {
-                    htmlWriter.Write(zone.ToHtml());
+                    section.Order = i;
+                    i++;
+                }
+
+                foreach (var section in this.sections.OrderBy(p => p.Order))
+                {
+                    htmlWriter.Write(section.ToHtml());
                 }
 
                 htmlWriter.RenderEndTag();
@@ -555,6 +667,14 @@ namespace OfficeDevPnP.Core.Pages
             };
 
             var pagesLibrary = page.Context.Web.GetListByUrl(page.PagesLibrary, p => p.RootFolder);
+            
+            // Not all sites do have a pages library, throw a nice exception in that case
+            if (pagesLibrary == null)
+            {
+                cc.Web.EnsureProperty(w => w.Url);
+                throw new ArgumentException($"Site {cc.Web.Url} does not have a sitepages library and therefore this page can't be a client side page.");
+            }
+
             page.sitePagesServerRelativeUrl = pagesLibrary.RootFolder.ServerRelativeUrl;
 
             var file = page.Context.Web.GetFileByServerRelativeUrl($"{page.sitePagesServerRelativeUrl}/{page.pageName}");
@@ -567,26 +687,42 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             var item = file.ListItemAllFields;
-            page.LayoutType = (ClientSidePageLayoutType)Enum.Parse(typeof(ClientSidePageLayoutType), item[ClientSidePage.PageLayoutType].ToString());
-            if (!(item[ClientSidePage.CanvasField] == null || string.IsNullOrEmpty(item[ClientSidePage.CanvasField].ToString())))
-            {
-                var html = item[ClientSidePage.CanvasField].ToString();
 
-                if (string.IsNullOrEmpty(html))
+            // Check if this is a client side page
+            if (item.FieldValues.ContainsKey(ClientSidePage.ClientSideApplicationId) && item[ClientSideApplicationId] != null && item[ClientSideApplicationId].ToString().Equals(ClientSidePage.SitePagesFeatureId, StringComparison.InvariantCultureIgnoreCase))
+            {
+                page.pageListItem = item;
+                page.PageTitle = Convert.ToString(item[ClientSidePage.Title]);
+
+                // set layout type
+                if (item.FieldValues.ContainsKey(ClientSidePage.PageLayoutType) && item[ClientSidePage.PageLayoutType] != null && !string.IsNullOrEmpty(item[ClientSidePage.PageLayoutType].ToString()))
                 {
-                    throw new ArgumentException($"Page {pageName} is not a \"modern\" client side page");
+                    page.LayoutType = (ClientSidePageLayoutType)Enum.Parse(typeof(ClientSidePageLayoutType), item[ClientSidePage.PageLayoutType].ToString());
+                }
+                else
+                {
+                    throw new Exception($"Page layout type could not be determined for page {pageName}");                    
                 }
 
-                page.pageListItem = item;
-                page.LoadFromHtml(html);
+                // If the canvasfield1 field is present and filled then let's parse it
+                if (item.FieldValues.ContainsKey(ClientSidePage.CanvasField) && !(item[ClientSidePage.CanvasField] == null || string.IsNullOrEmpty(item[ClientSidePage.CanvasField].ToString())))
+                {
+                    var html = item[ClientSidePage.CanvasField].ToString();
+                    page.LoadFromHtml(html);
+                }
             }
+            else
+            {
+                throw new ArgumentException($"Page {pageName} is not a \"modern\" client side page");
+            }
+
             return page;
         }
 
         /// <summary>
         /// Persists the current <see cref="ClientSidePage"/> instance as a client side page in SharePoint
         /// </summary>
-        /// <param name="pageName"></param>
+        /// <param name="pageName">Name of the page (e.g. mypage.aspx) to save</param>
         public void Save(string pageName = null)
         {
             string serverRelativePageName;
@@ -594,7 +730,7 @@ namespace OfficeDevPnP.Core.Pages
             ListItem item;
 
             // Validate we're not using "wrong" layouts for the given site type
-            ValidateOneColumnFullWidthZoneUsage();
+            ValidateOneColumnFullWidthSectionUsage();
 
             // Try to load the page
             LoadPageFile(pageName, out serverRelativePageName, out pageFile);
@@ -605,7 +741,7 @@ namespace OfficeDevPnP.Core.Pages
                 item = this.spPagesLibrary.RootFolder.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
                 // Fix page to be modern
                 item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.ModernArticlePage;
-                item[ClientSidePage.Title] = string.IsNullOrWhiteSpace(this.pageTitle) ? System.IO.Path.GetFileNameWithoutExtension(this.pageName) : pageTitle;
+                item[ClientSidePage.Title] = string.IsNullOrWhiteSpace(this.pageTitle) ? System.IO.Path.GetFileNameWithoutExtension(this.pageName) : this.pageTitle;
                 item[ClientSidePage.ClientSideApplicationId] = ClientSidePage.SitePagesFeatureId;
                 item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
                 if (this.layoutType == ClientSidePageLayoutType.Article)
@@ -620,6 +756,10 @@ namespace OfficeDevPnP.Core.Pages
             else
             {
                 item = pageFile.ListItemAllFields;
+                if (!string.IsNullOrWhiteSpace(this.pageTitle))
+                {
+                    item[ClientSidePage.Title] = this.pageTitle;
+                }
             }
 
             // Persist to page field
@@ -689,6 +829,40 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// Return the type for a given first party name (=guid)
+        /// </summary>
+        /// <param name="name">Name (= guid) of the first party web part</param>
+        /// <returns>First party web part</returns>
+        public static DefaultClientSideWebParts NameToClientSideWebPartEnum(string name)
+        {
+            switch (name.ToLower())
+            {
+                case "daf0b71c-6de8-4ef7-b511-faae7c388708": return DefaultClientSideWebParts.ContentRollup;
+                case "e377ea37-9047-43b9-8cdb-a761be2f8e09": return DefaultClientSideWebParts.BingMap;
+                case "490d7c76-1824-45b2-9de3-676421c997fa": return DefaultClientSideWebParts.ContentEmbed;
+                case "b7dd04e1-19ce-4b24-9132-b60a1c2b910d": return DefaultClientSideWebParts.DocumentEmbed;
+                case "d1d91016-032f-456d-98a4-721247c305e8": return DefaultClientSideWebParts.Image;
+                case "af8be689-990e-492a-81f7-ba3e4cd3ed9c": return DefaultClientSideWebParts.ImageGallery;
+                case "6410b3b6-d440-4663-8744-378976dc041e": return DefaultClientSideWebParts.LinkPreview;
+                case "0ef418ba-5d19-4ade-9db0-b339873291d0": return DefaultClientSideWebParts.NewsFeed;
+                case "a5df8fdf-b508-4b66-98a6-d83bc2597f63": return DefaultClientSideWebParts.NewsReel;
+                case "58fcd18b-e1af-4b0a-b23b-422c2c52d5a2": return DefaultClientSideWebParts.PowerBIReportEmbed;
+                case "91a50c94-865f-4f5c-8b4e-e49659e69772": return DefaultClientSideWebParts.QuickChart;
+                case "eb95c819-ab8f-4689-bd03-0c2d65d47b1f": return DefaultClientSideWebParts.SiteActivity;
+                case "275c0095-a77e-4f6d-a2a0-6a7626911518": return DefaultClientSideWebParts.VideoEmbed;
+                case "31e9537e-f9dc-40a4-8834-0e3b7df418bc": return DefaultClientSideWebParts.YammerEmbed;
+                case "20745d7d-8581-4a6c-bf26-68279bc123fc": return DefaultClientSideWebParts.Events;
+                case "6676088b-e28e-4a90-b9cb-d0d0303cd2eb": return DefaultClientSideWebParts.GroupCalendar;
+                case "c4bd7b2f-7b6e-4599-8485-16504575f590": return DefaultClientSideWebParts.Hero;
+                case "f92bf067-bc19-489e-a556-7fe95f508720": return DefaultClientSideWebParts.List;
+                case "cbe7b0a9-3504-44dd-a3a3-0e5cacd07788": return DefaultClientSideWebParts.PageTitle;
+                case "7f718435-ee4d-431c-bdbf-9c4ff326f46e": return DefaultClientSideWebParts.People;
+                case "c70391ea-0b10-4ee9-b2b4-006d3fcad0cd": return DefaultClientSideWebParts.QuickLinks;
+                default: return DefaultClientSideWebParts.ThirdParty;
+            }
+        }
+
+        /// <summary>
         /// Creates an instance of an out of the box (default, first party) client side web part
         /// </summary>
         /// <param name="webPart">The out of the box web part you want to instantiate</param>
@@ -738,9 +912,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Request information about the available client side components from SharePoint
-            Task<String> availableClientSideComponentsJson = Task.WhenAny(
-                GetClientSideWebPartsAsync(this.accessToken, this.Context)
-                ).Result;
+            Task<String> availableClientSideComponentsJson = Task.Run(() => GetClientSideWebPartsAsync(this.accessToken, this.Context).Result);
 
             if (String.IsNullOrEmpty(availableClientSideComponentsJson.Result))
             {
@@ -748,9 +920,10 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Deserialize the returned data
-            var jsonSerializerSettings = new JsonSerializerSettings();
-            jsonSerializerSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
-
+            var jsonSerializerSettings = new JsonSerializerSettings()
+            {
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
             var clientSideComponents = ((System.Collections.Generic.IEnumerable<ClientSideComponent>)JsonConvert.DeserializeObject<AvailableClientSideComponents>(availableClientSideComponentsJson.Result, jsonSerializerSettings).value);
 
             if (clientSideComponents.Count() == 0)
@@ -771,15 +944,6 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void Publish()
         {
-            Publish("");
-        }
-
-        /// <summary>
-        /// Publishes a client side page
-        /// </summary>
-        /// <param name="publishMessage">Publish message</param>
-        public void Publish(string publishMessage)
-        {
             // Load the page
             string serverRelativePageName;
             File pageFile;
@@ -791,9 +955,18 @@ namespace OfficeDevPnP.Core.Pages
                 // connect up the page list item for future reference
                 this.pageListItem = pageFile.ListItemAllFields;
                 // publish the page
-                pageFile.Publish(publishMessage);
-                this.Context.ExecuteQueryRetry();
+                pageFile.PublishFileToLevel(FileLevel.Published);
             }
+        }
+
+        /// <summary>
+        /// Publishes a client side page
+        /// </summary>
+        /// <param name="publishMessage">Publish message</param>
+        [Obsolete("Please use the Publish() method instead. This method will be removed in the March 2018 release.")]
+        public void Publish(string publishMessage)
+        {
+            this.Publish();
         }
 
         /// <summary>
@@ -867,6 +1040,7 @@ namespace OfficeDevPnP.Core.Pages
 
             this.Context.Web.EnsureProperty(p => p.RootFolder);
             this.Context.Web.RootFolder.WelcomePage = $"{this.PagesLibrary}/{this.PageListItem[ClientSidePage.FileLeafRef].ToString()}";
+            this.Context.Web.RootFolder.Update();
             this.Context.ExecuteQueryRetry();
         }
         #endregion
@@ -887,23 +1061,23 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
-        private void ValidateOneColumnFullWidthZoneUsage()
+        private void ValidateOneColumnFullWidthSectionUsage()
         {
-            bool hasOneColumnFullWidthZone = false;
-            foreach (var zone in this.zones)
+            bool hasOneColumnFullWidthSection = false;
+            foreach (var section in this.sections)
             {
-                if (zone.Type == CanvasZoneTemplate.OneColumnFullWidth)
+                if (section.Type == CanvasSectionTemplate.OneColumnFullWidth)
                 {
-                    hasOneColumnFullWidthZone = true;
+                    hasOneColumnFullWidthSection = true;
                     break;
                 }
             }
-            if (hasOneColumnFullWidthZone)
+            if (hasOneColumnFullWidthSection)
             {
                 this.Context.Web.EnsureProperties(p => p.WebTemplate, p => p.Configuration);
                 if (!this.Context.Web.WebTemplate.Equals("SITEPAGEPUBLISHING", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    throw new Exception($"You can't use a OneColumnFullWidth zone in this site template ({this.Context.Web.WebTemplate})");
+                    throw new Exception($"You can't use a OneColumnFullWidth section in this site template ({this.Context.Web.WebTemplate})");
                 }
             }
         }
@@ -974,10 +1148,10 @@ namespace OfficeDevPnP.Core.Pages
                 // select all control div's
                 var clientSideControls = document.All.Where(m => m.HasAttribute(CanvasControl.ControlDataAttribute));
 
-                // clear zones as we're constructing them from the loaded html
-                this.zones.Clear();
+                // clear sections as we're constructing them from the loaded html
+                this.sections.Clear();
 
-                int controlOrder = 0;
+                int controlOrder = 0;                
                 foreach (var clientSideControl in clientSideControls)
                 {
                     var controlData = clientSideControl.GetAttribute(CanvasControl.ControlDataAttribute);
@@ -991,22 +1165,25 @@ namespace OfficeDevPnP.Core.Pages
                         };
                         control.FromHtml(clientSideControl);
 
-                        // Handle control positioning in zones and sections
-                        ApplyZoneAndSection(control, control.SpControlData.Position);
+                        // Handle control positioning in sections and columns
+                        ApplySectionAndColumn(control, control.SpControlData.Position);
 
                         this.AddControl(control);
                     }
                     else if (controlType == typeof(ClientSideWebPart))
                     {
-                        var control = new ClientSideWebPart();
+                        var control = new ClientSideWebPart()
+                        {
+                            Order = controlOrder
+                        };
                         control.FromHtml(clientSideControl);
 
-                        // Handle control positioning in zones and sections
-                        ApplyZoneAndSection(control, control.SpControlData.Position);
+                        // Handle control positioning in sections and columns
+                        ApplySectionAndColumn(control, control.SpControlData.Position);
 
                         this.AddControl(control);
                     }
-                    else if (controlType == typeof(CanvasSection))
+                    else if (controlType == typeof(CanvasColumn))
                     {
                         var jsonSerializerSettings = new JsonSerializerSettings()
                         {
@@ -1014,19 +1191,18 @@ namespace OfficeDevPnP.Core.Pages
                         };
                         var sectionData = JsonConvert.DeserializeObject<ClientSideCanvasData>(controlData, jsonSerializerSettings);
                         
-                        var currentZone = this.zones.Where(p => p.Order == sectionData.Position.ZoneIndex).FirstOrDefault();
-                        if (currentZone == null)
-                        {
-                            this.AddZone(new CanvasZone(this), sectionData.Position.ZoneIndex);
-                            currentZone = this.zones.Where(p => p.Order == sectionData.Position.ZoneIndex).First();
-                        }
-
-                        var currentSection = currentZone.Sections.Where(p => p.Order == sectionData.Position.SectionIndex).FirstOrDefault();
+                        var currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).FirstOrDefault();
                         if (currentSection == null)
                         {
-                            CanvasSection newSection = new CanvasSection(currentZone);
-                            currentZone.AddSection(new CanvasSection(currentZone, sectionData.Position.SectionIndex, sectionData.Position.SectionFactor));
-                            currentSection = currentZone.Sections.Where(p => p.Order == sectionData.Position.SectionIndex).First();
+                            this.AddSection(new CanvasSection(this), sectionData.Position.ZoneIndex);
+                            currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).First();
+                        }
+
+                        var currentColumn = currentSection.Columns.Where(p => p.Order == sectionData.Position.SectionIndex).FirstOrDefault();
+                        if (currentColumn == null)
+                        {
+                            currentSection.AddColumn(new CanvasColumn(currentSection, sectionData.Position.SectionIndex, sectionData.Position.SectionFactor));
+                            currentColumn = currentSection.Columns.Where(p => p.Order == sectionData.Position.SectionIndex).First();
                         }
                     }
 
@@ -1034,62 +1210,78 @@ namespace OfficeDevPnP.Core.Pages
                 }
             }
 
-            // Perform zone type detection
-            foreach(var zone in this.zones)
+            // Perform section type detection
+            foreach(var section in this.sections)
             {
-                if (zone.Sections.Count == 1)
+                if (section.Columns.Count == 1)
                 {
-                    if (zone.Sections[0].SectionFactor == 0)
+                    if (section.Columns[0].ColumnFactor == 0)
                     {
-                        zone.Type = CanvasZoneTemplate.OneColumnFullWidth;
+                        section.Type = CanvasSectionTemplate.OneColumnFullWidth;
                     }
                     else
                     {
-                        zone.Type = CanvasZoneTemplate.OneColumn;
+                        section.Type = CanvasSectionTemplate.OneColumn;
                     }
                 }
-                else if (zone.Sections.Count == 2)
+                else if (section.Columns.Count == 2)
                 {
-                    if (zone.Sections[0].SectionFactor == 6)
+                    if (section.Columns[0].ColumnFactor == 6)
                     {
-                        zone.Type = CanvasZoneTemplate.TwoColumn;
+                        section.Type = CanvasSectionTemplate.TwoColumn;
                     }
-                    else if (zone.Sections[0].SectionFactor == 4)
+                    else if (section.Columns[0].ColumnFactor == 4)
                     {
-                        zone.Type = CanvasZoneTemplate.TwoColumnRight;
+                        section.Type = CanvasSectionTemplate.TwoColumnRight;
                     }
-                    else if (zone.Sections[0].SectionFactor == 8)
+                    else if (section.Columns[0].ColumnFactor == 8)
                     {
-                        zone.Type = CanvasZoneTemplate.TwoColumnLeft;
+                        section.Type = CanvasSectionTemplate.TwoColumnLeft;
                     }
                 }
-                else if (zone.Sections.Count == 3)
+                else if (section.Columns.Count == 3)
                 {
-                    zone.Type = CanvasZoneTemplate.ThreeColumn;
+                    section.Type = CanvasSectionTemplate.ThreeColumn;
                 }
             }
-
+            // Reindex the control order. We're starting control order from 1 for each column.
+            ReIndex();
         }
 
-        private void ApplyZoneAndSection(CanvasControl control, ClientSideCanvasControlPosition position)
+        private void ReIndex()
         {
-            var currentZone = this.zones.Where(p => p.Order == position.ZoneIndex).FirstOrDefault();
-            if (currentZone == null)
+            foreach (var section in this.sections.OrderBy(s => s.Order))
             {
-                this.AddZone(new CanvasZone(this), position.ZoneIndex);
-                currentZone = this.zones.Where(p => p.Order == position.ZoneIndex).First();
+                foreach (var column in section.Columns.OrderBy(c => c.Order))
+                {
+                    var indexer = 0;
+                    foreach (var control in column.Controls.OrderBy(c => c.Order))
+                    {
+                        indexer++;
+                        control.Order = indexer;
+                    }
+                }
             }
+        }
 
-            var currentSection = currentZone.Sections.Where(p => p.Order == position.SectionIndex).FirstOrDefault();
+        private void ApplySectionAndColumn(CanvasControl control, ClientSideCanvasControlPosition position)
+        {
+            var currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).FirstOrDefault();
             if (currentSection == null)
             {
-                CanvasSection newSection = new CanvasSection(currentZone);
-                currentZone.AddSection(new CanvasSection(currentZone, position.SectionIndex, position.SectionFactor));
-                currentSection = currentZone.Sections.Where(p => p.Order == position.SectionIndex).First();
+                this.AddSection(new CanvasSection(this), position.ZoneIndex);
+                currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).First();
             }
 
-            control.zone = currentZone;
+            var currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).FirstOrDefault();
+            if (currentColumn == null)
+            {
+                currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor));
+                currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).First();
+            }
+
             control.section = currentSection;
+            control.column = currentColumn;
         }
 
         private async Task<string> GetClientSideWebPartsAsync(string accessToken, ClientContext context)
@@ -1098,14 +1290,14 @@ namespace OfficeDevPnP.Core.Pages
 
             using (var handler = new HttpClientHandler())
             {
+                context.Web.EnsureProperty(w => w.Url);
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
-                    handler.Credentials = context.Credentials;
-                    handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                    handler.SetAuthenticationCookies(context);
                 }
 
-                using (var httpClient = new HttpClient(handler))
+                using (var httpClient = new PnPHttpProvider(handler))
                 {
                     //GET https://bertonline.sharepoint.com/sites/130023/_api/web/GetClientSideWebParts HTTP/1.1
 
@@ -1120,7 +1312,7 @@ namespace OfficeDevPnP.Core.Pages
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     }
 
-                    HttpResponseMessage response = await httpClient.SendAsync(request);
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -1132,7 +1324,7 @@ namespace OfficeDevPnP.Core.Pages
                         throw new Exception(await response.Content.ReadAsStringAsync());
                     }
                 }
-                return await Task.Run(() => responseString);
+                return responseString;
             }
         }
 
@@ -1158,7 +1350,7 @@ namespace OfficeDevPnP.Core.Pages
     /// <summary>
     /// The type of canvas being used
     /// </summary>
-    public enum CanvasZoneTemplate
+    public enum CanvasSectionTemplate
     {
         /// <summary>
         /// One column
@@ -1188,17 +1380,17 @@ namespace OfficeDevPnP.Core.Pages
     }
 
     /// <summary>
-    /// Represents a zone on the canvas
+    /// Represents a section on the canvas
     /// </summary>
-    public class CanvasZone
+    public class CanvasSection
     {
         #region variables
-        private System.Collections.Generic.List<CanvasSection> sections = new System.Collections.Generic.List<CanvasSection>(3);
+        private System.Collections.Generic.List<CanvasColumn> columns = new System.Collections.Generic.List<CanvasColumn>(3);
         private ClientSidePage page;
         #endregion
 
         #region construction
-        internal CanvasZone(ClientSidePage page)
+        internal CanvasSection(ClientSidePage page)
         {
             if (page == null)
             {
@@ -1210,12 +1402,12 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Creates a new canvas zone
+        /// Creates a new canvas section
         /// </summary>
-        /// <param name="page"><see cref="ClientSidePage"/> instance that holds this zone</param>
-        /// <param name="canvasSectionTemplate">Type of zone to create</param>
-        /// <param name="order">Order of this zone in the collection of zones on the page</param>
-        public CanvasZone(ClientSidePage page, CanvasZoneTemplate canvasSectionTemplate, int order)
+        /// <param name="page"><see cref="ClientSidePage"/> instance that holds this section</param>
+        /// <param name="canvasSectionTemplate">Type of section to create</param>
+        /// <param name="order">Order of this section in the collection of sections on the page</param>
+        public CanvasSection(ClientSidePage page, CanvasSectionTemplate canvasSectionTemplate, float order)
         {
             if (page == null)
             {
@@ -1228,30 +1420,30 @@ namespace OfficeDevPnP.Core.Pages
 
             switch (canvasSectionTemplate)
             {
-                case CanvasZoneTemplate.OneColumn:
+                case CanvasSectionTemplate.OneColumn:
                     goto default;
-                case CanvasZoneTemplate.OneColumnFullWidth:
-                    this.sections.Add(new CanvasSection(this, 1, 0));
+                case CanvasSectionTemplate.OneColumnFullWidth:
+                    this.columns.Add(new CanvasColumn(this, 1, 0));
                     break;
-                case CanvasZoneTemplate.TwoColumn:
-                    this.sections.Add(new CanvasSection(this, 1, 6));
-                    this.sections.Add(new CanvasSection(this, 2, 6));
+                case CanvasSectionTemplate.TwoColumn:
+                    this.columns.Add(new CanvasColumn(this, 1, 6));
+                    this.columns.Add(new CanvasColumn(this, 2, 6));
                     break;
-                case CanvasZoneTemplate.ThreeColumn:
-                    this.sections.Add(new CanvasSection(this, 1, 4));
-                    this.sections.Add(new CanvasSection(this, 2, 4));
-                    this.sections.Add(new CanvasSection(this, 3, 4));
+                case CanvasSectionTemplate.ThreeColumn:
+                    this.columns.Add(new CanvasColumn(this, 1, 4));
+                    this.columns.Add(new CanvasColumn(this, 2, 4));
+                    this.columns.Add(new CanvasColumn(this, 3, 4));
                     break;
-                case CanvasZoneTemplate.TwoColumnLeft:
-                    this.sections.Add(new CanvasSection(this, 1, 8));
-                    this.sections.Add(new CanvasSection(this, 2, 4));
+                case CanvasSectionTemplate.TwoColumnLeft:
+                    this.columns.Add(new CanvasColumn(this, 1, 8));
+                    this.columns.Add(new CanvasColumn(this, 2, 4));
                     break;
-                case CanvasZoneTemplate.TwoColumnRight:
-                    this.sections.Add(new CanvasSection(this, 1, 4));
-                    this.sections.Add(new CanvasSection(this, 2, 8));
+                case CanvasSectionTemplate.TwoColumnRight:
+                    this.columns.Add(new CanvasColumn(this, 1, 4));
+                    this.columns.Add(new CanvasColumn(this, 2, 8));
                     break;
                 default:
-                    this.sections.Add(new CanvasSection(this, 1, 12));
+                    this.columns.Add(new CanvasColumn(this, 1, 12));
                     break;
             }            
         }
@@ -1259,28 +1451,28 @@ namespace OfficeDevPnP.Core.Pages
 
         #region Properties
         /// <summary>
-        /// Type of the zone
+        /// Type of the section
         /// </summary>
-        public CanvasZoneTemplate Type { get; set; }
+        public CanvasSectionTemplate Type { get; set; }
 
         /// <summary>
-        /// Order in which this zone is presented on the page
+        /// Order in which this section is presented on the page
         /// </summary>
         public float Order { get; set; }
 
         /// <summary>
-        /// <see cref="CanvasSection"/> instances that are part of this zone
+        /// <see cref="CanvasColumn"/> instances that are part of this section
         /// </summary>
-        public System.Collections.Generic.List<CanvasSection> Sections
+        public System.Collections.Generic.List<CanvasColumn> Columns
         {
             get
             {
-                return this.sections;
+                return this.columns;
             }
         }
 
         /// <summary>
-        /// The <see cref="ClientSidePage"/> instance holding this zone
+        /// The <see cref="ClientSidePage"/> instance holding this section
         /// </summary>
         public ClientSidePage Page
         {
@@ -1291,38 +1483,38 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Controls hosted in this zone
+        /// Controls hosted in this section
         /// </summary>
         public System.Collections.Generic.List<CanvasControl> Controls
         {
             get
             {
-                return this.Page.Controls.Where(p => p.Zone == this).ToList<CanvasControl>();
+                return this.Page.Controls.Where(p => p.Section == this).ToList<CanvasControl>();
             }
         }
 
         /// <summary>
-        /// The default <see cref="CanvasSection"/> of this zone
+        /// The default <see cref="CanvasColumn"/> of this section
         /// </summary>
-        public CanvasSection DefaultSection
+        public CanvasColumn DefaultColumn
         {
             get
             {
-                if (this.sections.Count == 0)
+                if (this.columns.Count == 0)
                 {
-                    this.sections.Add(new CanvasSection(this));
+                    this.columns.Add(new CanvasColumn(this));
                 }
 
-                return this.sections.First();
+                return this.columns.First();
             }
         }
         #endregion
 
         #region public methods
         /// <summary>
-        /// Renders this zone as a HTML fragment
+        /// Renders this section as a HTML fragment
         /// </summary>
-        /// <returns>HTML string representing this zone</returns>
+        /// <returns>HTML string representing this section</returns>
         public string ToHtml()
         {
             StringBuilder html = new StringBuilder(100);
@@ -1330,9 +1522,9 @@ namespace OfficeDevPnP.Core.Pages
             {
                 htmlWriter.NewLine = string.Empty;
 
-                foreach (var section in this.sections.OrderBy(z => z.Order))
+                foreach (var column in this.columns.OrderBy(z => z.Order))
                 {
-                    htmlWriter.Write(section.ToHtml());
+                    htmlWriter.Write(column.ToHtml());
                 }
             }
 
@@ -1341,68 +1533,69 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         #region internal and private methods
-        internal void AddSection(CanvasSection section)
+        internal void AddColumn(CanvasColumn column)
         {
-            if (section == null)
+            if (column == null)
             {
-                throw new ArgumentNullException("Passed section cannot be null");
+                throw new ArgumentNullException("Passed column cannot be null");
             }
 
-            this.sections.Add(section);
+            this.columns.Add(column);
         }
         #endregion
     }
 
     /// <summary>
-    /// Represents a section in a canvas zone
+    /// Represents a column in a canvas section
     /// </summary>
-    public class CanvasSection
+    public class CanvasColumn
     {
         #region variables
         public const string CanvasControlAttribute = "data-sp-canvascontrol";
         public const string CanvasDataVersionAttribute = "data-sp-canvasdataversion";
         public const string ControlDataAttribute = "data-sp-controldata";
 
-        private int sectionFactor;
-        private CanvasZone zone;
+        private int columnFactor;
+        private CanvasSection section;
         private string DataVersion = "1.0";
         #endregion
 
         // internal constructors as we don't want users to manually create sections
         #region construction
-        internal CanvasSection(CanvasZone zone)
+        internal CanvasColumn(CanvasSection section)
         {
-            if (zone == null)
+            if (section == null)
             {
-                throw new ArgumentNullException("Passed zone cannot be null");
+                throw new ArgumentNullException("Passed section cannot be null");
             }
 
-            this.zone = zone;
-            this.sectionFactor = 12;
+            this.section = section;
+            this.columnFactor = 12;
             this.Order = 0;
         }
 
-        internal CanvasSection(CanvasZone zone, int order)
+        internal CanvasColumn(CanvasSection section, int order)
         {
-            if (zone == null)
+            if (section == null)
             {
-                throw new ArgumentNullException("Passed zone cannot be null");
+                throw new ArgumentNullException("Passed section cannot be null");
             }
 
-            this.zone = zone;
+            this.section = section;
             this.Order = order;
         }
 
-        internal CanvasSection(CanvasZone zone, int order, int sectionFactor)
+        internal CanvasColumn(CanvasSection section, int order, int? sectionFactor)
         {
-            if (zone == null)
+            if (section == null)
             {
-                throw new ArgumentNullException("Passed zone cannot be null");
+                throw new ArgumentNullException("Passed section cannot be null");
             }
 
-            this.zone = zone;
+            this.section = section;
             this.Order = order;
-            this.sectionFactor = sectionFactor;
+            // if the sectionFactor was undefined is was not defined as there was no section in the original markup. Since we however provision back as one column page let's set the sectionFactor to 12.
+            this.columnFactor = sectionFactor.HasValue ? sectionFactor.Value : 12;
         }
         #endregion
 
@@ -1410,24 +1603,24 @@ namespace OfficeDevPnP.Core.Pages
         internal int Order { get; set; }
 
         /// <summary>
-        /// <see cref="CanvasZone"/> this section belongs to
+        /// <see cref="CanvasSection"/> this section belongs to
         /// </summary>
-        public CanvasZone Zone
+        public CanvasSection Section
         {
             get
             {
-                return this.zone;
+                return this.section;
             }
         }
 
         /// <summary>
-        /// Section size factor. Max value is 12 (= one column), other options are 8,6,4 or 0
+        /// Column size factor. Max value is 12 (= one column), other options are 8,6,4 or 0
         /// </summary>
-        public int SectionFactor
+        public int ColumnFactor
         {
             get
             {
-                return this.sectionFactor;
+                return this.columnFactor;
             }
         }
 
@@ -1438,7 +1631,7 @@ namespace OfficeDevPnP.Core.Pages
         {
             get
             {
-                return this.Zone.Page.Controls.Where(p => p.Zone == this.Zone && p.Section == this).ToList<CanvasControl>();
+                return this.Section.Page.Controls.Where(p => p.Section == this.Section && p.Column == this).ToList<CanvasControl>();
             }
         }
         #endregion
@@ -1457,7 +1650,7 @@ namespace OfficeDevPnP.Core.Pages
 
                 bool controlWrittenToSection = false;
                 int controlIndex = 0;
-                foreach (var control in this.Zone.Page.Controls.Where(p => p.Zone == this.Zone && p.Section == this).OrderBy(z => z.Order))
+                foreach (var control in this.Section.Page.Controls.Where(p => p.Section == this.Section && p.Column == this).OrderBy(z => z.Order))
                 {
                     controlIndex++;
                     htmlWriter.Write(control.ToHtml(controlIndex));
@@ -1472,9 +1665,9 @@ namespace OfficeDevPnP.Core.Pages
                     {
                         Position = new ClientSideCanvasPosition()
                         {
-                            ZoneIndex = this.Zone.Order,
+                            ZoneIndex = this.Section.Order,
                             SectionIndex = this.Order,
-                            SectionFactor = this.SectionFactor,
+                            SectionFactor = this.ColumnFactor,
                         }
                     };
 
@@ -1510,11 +1703,29 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public class ClientSideComponent
     {
+        /// <summary>
+        /// Component type for client side webpart object
+        /// </summary>
         public int ComponentType { get; set; }
+        /// <summary>
+        /// Id for client side webpart object
+        /// </summary>
         public string Id { get; set; }
+        /// <summary>
+        /// Manifest for client side webpart object
+        /// </summary>
         public string Manifest { get; set; }
+        /// <summary>
+        /// Manifest type for client side webpart object
+        /// </summary>
         public int ManifestType { get; set; }
+        /// <summary>
+        /// Name for client side webpart object
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// Status for client side webpart object
+        /// </summary>
         public int Status { get; set; }
     }
     #endregion

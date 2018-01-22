@@ -19,6 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var filesCollection = persistence.GetPublicInstancePropertyValue("Files");
+
             if (filesCollection != null)
             {
                 var directories = filesCollection.GetPublicInstancePropertyValue("Directory");
@@ -64,7 +65,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add($"{directoryType}.LevelSpecified", new ExpressionValueResolver(() => true));
 
                 expressions.Add($"{directoryType}.Security", new PropertyObjectTypeResolver(objectSecurityType, "Security"));
-                expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssigmentsFromModelToSchemaTypeResolver());
+                expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssignmentsFromModelToSchemaTypeResolver());
 
                 var filesCollection = persistence.GetPublicInstancePropertyValue("Files");
                 if (filesCollection == null)

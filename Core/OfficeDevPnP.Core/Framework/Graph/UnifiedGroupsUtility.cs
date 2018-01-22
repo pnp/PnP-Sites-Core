@@ -10,11 +10,21 @@ using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
+    /// <summary>
+    /// Class that deals with Unified group CRUD operations.
+    /// </summary>
     public static class UnifiedGroupsUtility
     {
         private const int defaultRetryCount = 10;
         private const int defaultDelay = 500;
 
+        /// <summary>
+        ///  Creates a new GraphServiceClient instance using a custom PnPHttpProvider
+        /// </summary>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to configure the HTTP bearer Authorization Header</param>
+        /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request.</param>
+        /// <returns></returns>
         private static GraphServiceClient CreateGraphClient(String accessToken, int retryCount = defaultRetryCount, int delay = defaultDelay)
         {
             // Creates a new GraphServiceClient instance using a custom PnPHttpProvider
@@ -706,6 +716,165 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 throw;
             }
             return (result);
+        }
+
+        /// <summary>
+        /// Returns all the Members of an Office 365 group.
+        /// </summary>
+        /// <param name="group">The Office 365 group object of type UnifiedGroupEntity</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
+        /// <returns>Members of an Office 365 group as a list of UnifiedGroupUser entity</returns>
+        public static List<UnifiedGroupUser> GetUnifiedGroupMembers(UnifiedGroupEntity group, string accessToken, int retryCount = 10, int delay = 500)
+        {
+            List<UnifiedGroupUser> unifiedGroupUsers = null;
+            List<User> unifiedGroupGraphUsers = null;
+            IGroupMembersCollectionWithReferencesPage groupUsers = null;
+
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+            if (group == null)
+            {
+                throw new ArgumentNullException(nameof(group));
+            }
+
+            try
+            {
+                var result = Task.Run(async () =>
+                {
+                    var graphClient = CreateGraphClient(accessToken, retryCount, delay);
+
+                    // Get the members of an Office 365 group.
+                    groupUsers = await graphClient.Groups[group.GroupId].Members.Request().GetAsync();
+                    if (groupUsers.CurrentPage != null && groupUsers.CurrentPage.Count > 0)
+                    {
+                        unifiedGroupGraphUsers = new List<User>();
+
+                        GenerateGraphUserCollection(groupUsers.CurrentPage,unifiedGroupGraphUsers);
+                    }
+
+                    // Retrieve users when the results are paged.
+                    while (groupUsers.NextPageRequest != null)
+                    {
+                        groupUsers = groupUsers.NextPageRequest.GetAsync().GetAwaiter().GetResult();
+                        if (groupUsers.CurrentPage != null && groupUsers.CurrentPage.Count > 0)
+                        {
+                            GenerateGraphUserCollection(groupUsers.CurrentPage, unifiedGroupGraphUsers);
+                        }
+                    }
+
+                    // Create the collection of type OfficeDevPnP 'UnifiedGroupUser' after all users are retrieved, including paged data.
+                    if (unifiedGroupGraphUsers != null && unifiedGroupGraphUsers.Count > 0)
+                    {
+                        unifiedGroupUsers = new List<UnifiedGroupUser>();
+                        foreach (User usr in unifiedGroupGraphUsers)
+                        {
+                            UnifiedGroupUser groupUser = new UnifiedGroupUser();
+                            groupUser.UserPrincipalName = usr.UserPrincipalName != null ? usr.UserPrincipalName : string.Empty;
+                            groupUser.DisplayName = usr.DisplayName != null ? usr.DisplayName : string.Empty;
+                            unifiedGroupUsers.Add(groupUser);
+                        }
+                    }
+                    return unifiedGroupUsers;
+
+                }).GetAwaiter().GetResult();
+            }
+            catch (ServiceException ex)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
+            }
+            return unifiedGroupUsers;
+        }
+
+        /// <summary>
+        /// Returns all the Owners of an Office 365 group.
+        /// </summary>
+        /// <param name="group">The Office 365 group object of type UnifiedGroupEntity</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
+        /// <returns>Owners of an Office 365 group as a list of UnifiedGroupUser entity</returns>
+        public static List<UnifiedGroupUser> GetUnifiedGroupOwners(UnifiedGroupEntity group, string accessToken, int retryCount = 10, int delay = 500)
+        {
+            List<UnifiedGroupUser> unifiedGroupUsers = null;
+            List<User> unifiedGroupGraphUsers = null;
+            IGroupOwnersCollectionWithReferencesPage groupUsers = null;
+
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            try
+            {
+                var result = Task.Run(async () =>
+                {
+                    var graphClient = CreateGraphClient(accessToken, retryCount, delay);
+
+                    // Get the owners of an Office 365 group.
+                    groupUsers = await graphClient.Groups[group.GroupId].Owners.Request().GetAsync();
+                    if (groupUsers.CurrentPage != null && groupUsers.CurrentPage.Count > 0)
+                    {
+                        unifiedGroupGraphUsers = new List<User>();
+                        GenerateGraphUserCollection(groupUsers.CurrentPage, unifiedGroupGraphUsers);
+                    }
+
+                    // Retrieve users when the results are paged.
+                    while (groupUsers.NextPageRequest != null)
+                    {
+                        groupUsers = groupUsers.NextPageRequest.GetAsync().GetAwaiter().GetResult();
+                        if (groupUsers.CurrentPage != null && groupUsers.CurrentPage.Count > 0)
+                        {
+                            GenerateGraphUserCollection(groupUsers.CurrentPage, unifiedGroupGraphUsers);
+                        }
+                    }
+
+                    // Create the collection of type OfficeDevPnP 'UnifiedGroupUser' after all users are retrieved, including paged data.
+                    if (unifiedGroupGraphUsers != null && unifiedGroupGraphUsers.Count > 0)
+                    {
+                        unifiedGroupUsers = new List<UnifiedGroupUser>();
+                        foreach (User usr in unifiedGroupGraphUsers)
+                        {
+                            UnifiedGroupUser groupUser = new UnifiedGroupUser();
+                            groupUser.UserPrincipalName = usr.UserPrincipalName != null ? usr.UserPrincipalName : string.Empty;
+                            groupUser.DisplayName = usr.DisplayName != null ? usr.DisplayName : string.Empty;
+                            unifiedGroupUsers.Add(groupUser);
+                        }
+                    }
+                    return unifiedGroupUsers;
+
+                }).GetAwaiter().GetResult();
+            }
+            catch (ServiceException ex)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
+            }
+            return unifiedGroupUsers;
+        }
+
+        /// <summary>
+        /// Helper method. Generates a collection of Microsoft.Graph.User entity from directory objects.
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="unifiedGroupGraphUsers"></param>
+        /// <returns>Returns a collection of Microsoft.Graph.User entity</returns>
+        private static List<User> GenerateGraphUserCollection(IList<DirectoryObject> page, List<User> unifiedGroupGraphUsers)
+        {
+            // Create a collection of Microsoft.Graph.User type
+            foreach (User usr in page)
+            {
+                if (usr != null)
+                {
+                    unifiedGroupGraphUsers.Add(usr);
+                }
+            }
+
+            return unifiedGroupGraphUsers;
         }
     }
 }

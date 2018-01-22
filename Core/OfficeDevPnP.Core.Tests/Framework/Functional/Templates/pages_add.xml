@@ -9,6 +9,8 @@
         </pnp:BreakRoleInheritance>
       </pnp:Security>
     </pnp:Page>
+    <!-- Provision wiki page in a sub folder -->
+    <pnp:Page Layout="TwoColumns" Overwrite="true" Url="{site}/SitePages/Sub/DemoWikiPage.aspx"></pnp:Page>
     <pnp:Page Layout="Custom" Overwrite="true" Url="{site}/SitePages/AnotherWikiPage.aspx">
       <pnp:Fields>
         <pnp:Field FieldName="WikiField">

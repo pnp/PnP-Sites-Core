@@ -21,12 +21,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for CurrentNavigation class
+        /// </summary>
         public CurrentNavigation()
         {
 
         }
 
+        /// <summary>
+        /// Constructor for CurrentNavigation class
+        /// </summary>
+        /// <param name="navigationType">CurrentNavigationType object</param>
+        /// <param name="structuralNavigation">StructuralNavigation object</param>
+        /// <param name="managedNavigation">ManagedNavigation object</param>
         public CurrentNavigation(CurrentNavigationType navigationType, StructuralNavigation structuralNavigation = null, ManagedNavigation managedNavigation = null):
             base(structuralNavigation, managedNavigation)
         {
@@ -36,7 +44,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}",
@@ -45,6 +56,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with CurrentNavigation
+        /// </summary>
+        /// <param name="obj">Object that represents CurrentNavigation</param>
+        /// <returns>true if the current object is equal to the CurrentNavigation</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is CurrentNavigation))
@@ -54,6 +70,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((CurrentNavigation)obj));
         }
 
+        /// <summary>
+        /// Compares CurrentNavigation object based on BaseNavigationKind and NavigationType.
+        /// </summary>
+        /// <param name="other">CurrentNavigation object</param>
+        /// <returns>true if the CurrentNavigation object is equal to the current object; otherwise, false.</returns>
         public bool Equals(CurrentNavigation other)
         {
             if (other == null)
@@ -61,7 +82,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return (false);
             }
 
-            return ((BaseNavigationKind)this == (BaseNavigationKind)other &&
+            return (((BaseNavigationKind)this).Equals((BaseNavigationKind)other) &&
                 this.NavigationType == other.NavigationType
                 );
         }

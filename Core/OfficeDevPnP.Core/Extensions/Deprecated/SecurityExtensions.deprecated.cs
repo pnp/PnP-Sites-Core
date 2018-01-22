@@ -6,7 +6,7 @@ using OfficeDevPnP.Core.Entities;
 namespace Microsoft.SharePoint.Client
 {
     /// <summary>
-    /// This manager class holds deprecated security related methods
+    /// This manager class holds security related methods
     /// </summary>
     public static partial class SecurityExtensions
     {

@@ -4,11 +4,21 @@ using System.Reflection;
 
 namespace OfficeDevPnP.Core
 {
+    /// <summary>
+    /// Class that deals with PnPClientContext methods
+    /// </summary>
     public class PnPClientContext : ClientContext
     {
         public int RetryCount { get; set; }
         public int Delay { get; set; }
 
+        /// <summary>
+        /// Converts ClientContext into PnPClientContext
+        /// </summary>
+        /// <param name="clientContext">A SharePoint ClientContext for resource operations</param>
+        /// <param name="retryCount">Maximum amount of retries before giving up</param>
+        /// <param name="delay">Initial delay in milliseconds</param>
+        /// <returns></returns>
         public static PnPClientContext ConvertFrom(ClientContext clientContext, int retryCount = 10, int delay = 500)
         {
             var context = new PnPClientContext(clientContext.Url, retryCount, delay);
@@ -42,9 +52,9 @@ namespace OfficeDevPnP.Core
         /// <summary>
         /// Creates a ClientContext allowing you to override the default retry and delay values of ExecuteQueryRetry
         /// </summary>
-        /// <param name="url"></param>
-        /// <param name="retryCount"></param>
-        /// <param name="delay"></param>
+        /// <param name="url">A SharePoint site url</param>
+        /// <param name="retryCount">Maximum amount of retries before giving up</param>
+        /// <param name="delay">Initial delay in milliseconds</param>
         public PnPClientContext(string url, int retryCount = 10, int delay = 500) : base(url)
         {
             RetryCount = retryCount;
@@ -54,9 +64,9 @@ namespace OfficeDevPnP.Core
         /// <summary>
         /// Creates a ClientContext allowing you to override the default retry and delay values of ExecuteQueryRetry
         /// </summary>
-        /// <param name="uri"></param>
-        /// <param name="retryCount"></param>
-        /// <param name="delay"></param>
+        /// <param name="uri">A SharePoint site/web full url</param>
+        /// <param name="retryCount">Maximum amount of retries before giving up</param>
+        /// <param name="delay">Initial delay in milliseconds</param>
         public PnPClientContext(Uri uri, int retryCount = 10, int delay = 500) : base(uri)
         {
             RetryCount = retryCount;

@@ -104,7 +104,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             #region Property handling
             // Base property handling
             // Drop list properties if they're not provided in the source XML
-            string[] ListProperties = new string[] { "Description", "DocumentTemplate", "MinorVersionLimit", "MaxVersionLimit", "DraftVersionVisibility", "TemplateFeatureID", "EnableAttachments" };
+            string[] ListProperties = new string[] { "Description", "DocumentTemplate", "MinorVersionLimit", "MaxVersionLimit", "DraftVersionVisibility", "TemplateFeatureID",
+                "EnableAttachments", "DefaultDisplayFormUrl", "DefaultEditFormUrl", "DefaultNewFormUrl", "ImageUrl", "ValidationFormula", "ValidationMessage" };
             foreach (string listProperty in ListProperties)
             {
                 if (sourceObject.Attribute(listProperty) == null)
@@ -114,7 +115,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             }
 
             // Drop list elements if they're not provided in the source XML
-            string[] ListElements = new string[] { "ContentTypeBindings", "Views", "FieldRefs", "Fields" };
+            string[] ListElements = new string[] {
+                "ContentTypeBindings", "Views", "FieldRefs", "Fields"
+#if ONPREMISES
+                , "Webhooks"
+#endif
+            };
             foreach (var listElement in ListElements)
             {
                 var sourceListElementXML = sourceObject.Descendants(ns + listElement);
@@ -123,7 +129,22 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                 {
                     targetListElementXML.Remove();
                 }
+
+#if ONPREMISES
+                // Drop webhooks element from on-premises validation flow
+                if (listElement.Equals("Webhooks", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    if (sourceListElementXML.Any())
+                    {
+                        sourceListElementXML.Remove();
+                    }
+                }
+#endif
             }
+
+            // Drop TemplateFeatureID from both -  this was a temp measure, should not be needed anymore with fixed serializer
+            //DropAttribute(targetObject, "TemplateFeatureID");
+            //DropAttribute(sourceObject, "TemplateFeatureID");
 
 #if ONPREMISES
             // MaxVersionLimit cannot be set in on-premises, so remove it before comparing before and after
@@ -258,10 +279,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     if (sourceFields != null && sourceFields.Any())
                     {
                         if (!sourceFields.Where(p => p.Attribute("ID").Value.Equals(targetField.Attribute("ID").Value)).Any())
-                        { 
+                        {
                             targetField.Remove();
                         }
-                    }                    
+                    }
                 }
             }
             #endregion
@@ -313,7 +334,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             {
                 bool validFieldDefaults = true;
 
-                foreach(var sourceFieldDefault in sourceFieldDefaults)
+                foreach (var sourceFieldDefault in sourceFieldDefaults)
                 {
                     string fieldDefaultValue = sourceFieldDefault.Value;
                     string fieldDefaultName = sourceFieldDefault.Attribute("FieldName").Value;
@@ -370,7 +391,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     if (list != null)
                     {
                         list.EnsureProperty(w => w.RootFolder);
-                        foreach(var folder in sourceFolders.Descendants(ns + "Folder"))
+                        foreach (var folder in sourceFolders.Descendants(ns + "Folder"))
                         {
                             // only verify first level folders
                             if (folder.Parent.Equals(sourceFolders.First()))
@@ -393,8 +414,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                                     foreach (var sourceRoleAssignment in sourceRoleAssignments)
                                     {
                                         sourceFolderSecurityElement.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment()
-                                            { Principal = sourceRoleAssignment.Attribute("Principal").Value,
-                                              RoleDefinition = sourceRoleAssignment.Attribute("RoleDefinition").Value
+                                        {
+                                            Principal = sourceRoleAssignment.Attribute("Principal").Value,
+                                            RoleDefinition = sourceRoleAssignment.Attribute("RoleDefinition").Value
                                         });
                                     }
 
@@ -523,6 +545,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             #endregion
         }
 
-        #endregion
+#endregion
     }
 }

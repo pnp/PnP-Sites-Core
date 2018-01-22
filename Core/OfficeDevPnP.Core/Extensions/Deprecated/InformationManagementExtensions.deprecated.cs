@@ -8,7 +8,7 @@ namespace Microsoft.SharePoint.Client
 {
 
     /// <summary>
-    /// Class that holds deprecated information management extension methods
+    /// Class that deals with information management features
     /// </summary>
     public static partial class InformationManagementExtensions
     {

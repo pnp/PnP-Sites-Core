@@ -13,6 +13,9 @@ using OfficeDevPnP.Core.Utilities;
 
 namespace Microsoft.SharePoint.Client
 {
+    /// <summary>
+    /// Class that holds the file and folder methods
+    /// </summary>
     public static partial class FileFolderExtensions
     {
         const string REGEX_INVALID_FILE_NAME_CHARS = @"[<>:;*?/\\|""&%\t\r\n]";
@@ -101,8 +104,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Creates a new document set as a child of an existing folder, with the specified content type ID.
         /// </summary>
-        /// <param name="folder"></param>
-        /// <param name="documentSetName"></param>
+        /// <param name="folder">Folder of the document set</param>
+        /// <param name="documentSetName">Name of the document set</param>
         /// <param name="contentTypeId">Content type of the document set</param>
         /// <returns>The created Folder representing the document set, so that additional operations (such as setting properties) can be done.</returns>
         /// <remarks>
@@ -324,7 +327,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The web to process</param>
         /// <param name="serverRelativeFolderUrl">Folder to check</param>
-        /// <returns></returns>
+        /// <returns>Returns true if folder exists</returns>
         public static bool DoesFolderExists(this Web web, string serverRelativeFolderUrl)
         {
             Folder folder = web.GetFolderByServerRelativeUrl(serverRelativeFolderUrl);
@@ -829,7 +832,7 @@ namespace Microsoft.SharePoint.Client
         /// Uploads a file to the specified folder.
         /// </summary>
         /// <param name="folder">Folder to upload file to.</param>
-        /// <param name="fileName"></param>
+        /// <param name="fileName">Name of the file</param>
         /// <param name="localFilePath">Location of the file to be uploaded.</param>
         /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
         /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
@@ -859,7 +862,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="folder">Folder to upload file to.</param>
         /// <param name="fileName">Location of the file to be uploaded.</param>
-        /// <param name="stream"></param>
+        /// <param name="stream">A stream object that represents the file.</param>
         /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
         /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
@@ -905,7 +908,7 @@ namespace Microsoft.SharePoint.Client
         /// Uploads a file to the specified folder by saving the binary directly (via webdav).
         /// </summary>
         /// <param name="folder">Folder to upload file to.</param>
-        /// <param name="fileName"></param>
+        /// <param name="fileName">Name of the file</param>
         /// <param name="localFilePath">Location of the file to be uploaded.</param>
         /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
         /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
@@ -936,7 +939,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="folder">Folder to upload file to.</param>
         /// <param name="fileName">Location of the file to be uploaded.</param>
-        /// <param name="stream"></param>
+        /// <param name="stream">A stream object that represents the file.</param>
         /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
         /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
@@ -1290,6 +1293,20 @@ namespace Microsoft.SharePoint.Client
                 var context = file.Context;
 
                 bool normalFile = true;
+                // Ensure that ListItemAllFields.ServerObjectIsNull is loaded
+                try
+                {
+                    file.EnsureProperties(f => f.ListItemAllFields, f => f.CheckOutType, f => f.Name);
+                }
+                catch
+                {
+                    // Catch all errors...there's a valid scenario for this failing when this is not a file associated to a listitem
+                    normalFile = false;
+                }
+
+                // Only access ListItemAllFields if the above load succeeded. If it didn't, accessing it will throw it back in the context, and the next
+                // ExecuteQueryRetry will throw a 'The object specified does not belong to a list.' error.
+                normalFile = normalFile && (!file.ListItemAllFields.ServerObjectIsNull ?? false); //normal files have listItemAllFields;
                 var checkOutRequired = false;
                 if (normalFile)
                 {

@@ -7,6 +7,9 @@ using System.Xml.Serialization;
 
 namespace OfficeDevPnP.Core.Utilities
 {
+    /// <summary>
+    /// Holds methods for XML serialization
+    /// </summary>
     public static class XMLSerializer
     {
         #region Private Instance Members
@@ -39,9 +42,9 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Deserialize an XDocuemnt to instance of an object T
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="xdoc"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">Generic Type paramerter</typeparam>
+        /// <param name="xdoc">XML document</param>
+        /// <returns>Returns deserialized object</returns>
         public static T Deserialize<T>(XDocument xdoc)
         {
             XmlSerializer _xmlSerializer = new XmlSerializer(typeof(T));
@@ -54,8 +57,8 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Serializes an object instance to an XML represented string. 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="objectToSerialize"></param>
+        /// <typeparam name="T">Generic Type parameter</typeparam>
+        /// <param name="objectToSerialize">Object to serialize</param>
         /// <returns>An string that represents the serialized object.</returns>
         public static string Serialize<T>(T objectToSerialize) where T : new()
         {
@@ -65,9 +68,9 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Serializes an object instance to an XML represented string, providing custom namespace prefixes. 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Generic type object to serialize</typeparam>
         /// <param name="objectToSerialize"></param>
-        /// <param name="ns"></param>
+        /// <param name="ns">Xml serialization namespace</param>
         /// <returns>An string that represents the serialized object.</returns>
         public static string Serialize<T>(T objectToSerialize, XmlSerializerNamespaces ns) where T : new()
         {
@@ -89,7 +92,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Serializes an object instance to a stream. 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Generic type to serialize</typeparam>
         /// <param name="objectToSerialize"></param>
         /// <returns>An string that represents the serialized object.</returns>
         public static Stream SerializeToStream<T>(T objectToSerialize) where T : new()
@@ -100,9 +103,9 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Serializes an object instance to a stream, providing custom namespace prefixes. 
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Generic type to serialize</typeparam>
         /// <param name="objectToSerialize"></param>
-        /// <param name="ns"></param>
+        /// <param name="ns">Xml serializer namespace</param>
         /// <returns>An string that represents the serialized object.</returns>
         public static Stream SerializeToStream<T>(T objectToSerialize, XmlSerializerNamespaces ns) where T : new()
         {

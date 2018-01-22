@@ -28,5 +28,25 @@ namespace OfficeDevPnP.Core.Utilities
                 return (result);
             }, 
             true);
+
+        /// <summary>
+        /// Get's a tag that identifies the PnP Core library for UserAgent string
+        /// </summary>
+        /// <returns>PnP Core library identification user-agent</returns>
+        public static string PnPCoreUserAgent
+        {
+            get
+            {
+                return (PnPCoreUserAgentLazy.Value);
+            }
+        }
+
+        private static Lazy<String> PnPCoreUserAgentLazy = new Lazy<String>(
+            () => {
+                Assembly coreAssembly = Assembly.GetExecutingAssembly();         
+                String result = $"NONISV|SharePointPnP|PnPCore/{((AssemblyFileVersionAttribute)coreAssembly.GetCustomAttribute(typeof(AssemblyFileVersionAttribute))).Version}";
+                return (result);
+            },
+            true);
     }
 }

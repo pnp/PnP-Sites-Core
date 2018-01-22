@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
@@ -8,7 +9,6 @@ using System.Net;
 using System.IO;
 using Microsoft.SharePoint.Client.Taxonomy;
 using System.Xml.Linq;
-using System.Collections.Generic;
 using System.Xml;
 using System.Text;
 
@@ -635,36 +635,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var webPartId = wpd.Id;
                             if (!string.IsNullOrEmpty(wp.TitleUrl))
                             {
-                                //set display view
-                                //List lista = web.Lists.GetById(new Guid(wp.Properties.FieldValues["ListName"].ToString()));
-                                //ctx.Load(lista);
-                                //ctx.Load(lista.Views);
-                                //ctx.Load(lista.RootFolder);
-                                //ctx.ExecuteQuery();
-                                //ppwp.DefaultViewDisplayName = lista.Views[0].Title.ToString();
-                                //Regex regex = new Regex(@"(\bBaseViewID=)(.)(\d+)(.)");
-                                //string input = wp.Properties.FieldValues["XmlDefinition"].ToString();
-                                //ppwp.ViewContent = wp.Properties.FieldValues["XmlDefinition"].ToString();
-                                //Match match = regex.Match(input);
-                                //string baseViewid = "";
-                                //if (match.Success)
-                                //{
-                                //    baseViewid = match.Groups[3].Value;
-                                //}
-                                //if (baseViewid != "") { 
-                                //    Microsoft.SharePoint.Client.ViewCollection viewColl = lista.Views;
-                                //    ctx.Load(viewColl,views => views.Include(view => view.Title,view => view.BaseViewId));
-                                //    ctx.ExecuteQuery();
-                                //    foreach (Microsoft.SharePoint.Client.View view in viewColl)
-                                //    {
-                                //        if(view.BaseViewId == baseViewid)
-                                //        {
-                                //            ppwp.DefaultViewDisplayName = view.Title;
-                                //            break;
-                                //        }
-                                //    }
-                                //}
-
                                 ppwp.DefaultViewDisplayName = "";
                                 ppwp.ViewContent = wp.Properties.FieldValues["XmlDefinition"].ToString();
 
@@ -698,14 +668,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 "</webParts>";
 
                             }
-                            else
-                            {
+                            else {
                                 // Webpart that are not checked as exportable would fail
                                 wp.EnsureProperty(w => w.ExportMode);
                                 if (wp.ExportMode != Microsoft.SharePoint.Client.WebParts.WebPartExportMode.All)
                                 {
+                                    bool forceCheckout = false;
+                                    if (item.File.CheckOutType == CheckOutType.None)
+                                    {
+                                        item.File.CheckOut();
+                                        ctx.ExecuteQuery();
+                                        forceCheckout = true;
+                                    }
                                     wp.ExportMode = Microsoft.SharePoint.Client.WebParts.WebPartExportMode.All;
                                     wpd.SaveWebPartChanges();
+
+                                    if (forceCheckout)
+                                    {
+                                        item.File.CheckIn(String.Empty, CheckinType.MajorCheckIn);
+                                        ctx.ExecuteQuery();
+                                    }
                                 }
                                 var webPartXML = wpm.ExportWebPart(webPartId);
                                 ctx.ExecuteQuery();

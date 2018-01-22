@@ -98,11 +98,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Constructor for ContentType class
+        /// </summary>
         public ContentType()
         {
             _fieldRefs = new FieldRefCollection(this.ParentTemplate);
         }
 
+        /// <summary>
+        /// Constructor for ContentType class
+        /// </summary>
+        /// <param name="id">Content Type ID</param>
+        /// <param name="name">Content Type Name</param>
+        /// <param name="description">Content Type Description</param>
+        /// <param name="group">Content Type Group</param>
+        /// <param name="contenttypeSealed">Sealed Content Type</param>
+        /// <param name="hidden">Hidden Content Type</param>
+        /// <param name="readyonly">ReadOnly Content Type</param>
+        /// <param name="documentTemplate">Document template of the content type</param>
+        /// <param name="overwrite">Specify true to overwrite</param>
+        /// <param name="fieldRefs">Content Type Field References</param>
         public ContentType(string id, string name, string description, string group, bool contenttypeSealed, bool hidden, bool readyonly, string documentTemplate, bool overwrite, IEnumerable<FieldRef> fieldRefs):
             this()
         {
@@ -122,6 +138,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Comparison code
 
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|",
@@ -139,6 +159,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with ContentType
+        /// </summary>
+        /// <param name="obj">Object that represents ContentType</param>
+        /// <returns>true if the current object is equal to the ContentType</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ContentType))
@@ -148,6 +173,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((ContentType)obj));
         }
 
+        /// <summary>
+        /// Compares ContentType object based on Id, Name, Description, Group, Hidden, RedOnly, Overwrite, Sealed, DocumentTemplate, DocumentSetTemplate and FieldRefs properties.
+        /// </summary>
+        /// <param name="other">ContentType object</param>
+        /// <returns>true if the ContentType object is equal to the current object; otherwise, false.</returns>
         public bool Equals(ContentType other)
         {
             if (other == null)

@@ -34,6 +34,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var themesCatalog = ctx.Web.GetCatalog((int)ListTemplateType.ThemeCatalog);
                 ctx.Load(themesCatalog, t => t.RootFolder.ServerRelativeUrl);
 
+                var expectedRoleDefinitionId = 1073741826;
+                var roleDefinition = ctx.Web.RoleDefinitions.GetById(expectedRoleDefinitionId);
+                ctx.Load(roleDefinition);
+
                 ctx.ExecuteQueryRetry();
 
                 var currentUser = ctx.Web.EnsureProperty(w => w.CurrentUser);
@@ -70,6 +74,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var associatedVisitorGroupId = parser.ParseString("{groupid:associatedvisitorgroup}");
                 var groupId = parser.ParseString($"{{groupid:{ownerGroupName}}}");
                 var siteOwner = parser.ParseString("{siteowner}");
+                var roleDefinitionId = parser.ParseString($"{{roledefinitionid:{roleDefinition.Name}}}");
 
                 Assert.IsTrue(site1 == $"{ctx.Web.ServerRelativeUrl}/test");
                 Assert.IsTrue(site2 == $"{ctx.Web.ServerRelativeUrl}/test");
@@ -96,7 +101,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(int.Parse(associatedVisitorGroupId) == ctx.Web.AssociatedVisitorGroup.Id);
                 Assert.IsTrue(associatedOwnerGroupId == groupId);
                 Assert.IsTrue(siteOwner == ctx.Site.Owner.LoginName);
-
+                
+                Assert.IsTrue(roleDefinitionId == expectedRoleDefinitionId.ToString(), $"Role Definition Id was not parsed correctly (expected:{expectedRoleDefinitionId};returned:{roleDefinitionId})");
             }
         }
 
@@ -132,6 +138,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var termSetId = Guid.NewGuid();
                 var termStoreId = Guid.NewGuid();
 
+                var resolvedTermGroupName = parser.ParseString("{sitecollectiontermgroupname}");
 
                 // Use fake data
                 parser.AddToken(new ContentTypeIdToken(web, contentTypeName, contentTypeId));
@@ -139,6 +146,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 parser.AddToken(new ListUrlToken(web, listTitle, listUrl));
                 parser.AddToken(new WebPartIdToken(web, webPartTitle, webPartId));
                 parser.AddToken(new TermSetIdToken(web, termGroupName, termSetName, termSetId));
+                parser.AddToken(new TermSetIdToken(web, resolvedTermGroupName, termSetName, termSetId));
                 parser.AddToken(new TermStoreIdToken(web, termStoreName, termStoreId));
 
                 var resolvedContentTypeId = parser.ParseString($"{{contenttypeid:{contentTypeName}}}");
@@ -150,6 +158,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var parameterTest2 = parser.ParseString("abc{$test(T)}/test");
                 var resolvedWebpartId = parser.ParseString($"{{webpartid:{webPartTitle}}}");
                 var resolvedTermSetId = parser.ParseString($"{{termsetid:{termGroupName}:{termSetName}}}");
+                var resolvedTermSetId2 = parser.ParseString($"{{termsetid:{{sitecollectiontermgroupname}}:{termSetName}}}");
                 var resolvedTermStoreId = parser.ParseString($"{{termstoreid:{termStoreName}}}");
 
 
@@ -161,8 +170,46 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(parameterTest2 == parameterExpectedResult);
                 Assert.IsTrue(Guid.TryParse(resolvedWebpartId, out outGuid));
                 Assert.IsTrue(Guid.TryParse(resolvedTermSetId, out outGuid));
+                Assert.IsTrue(Guid.TryParse(resolvedTermSetId2, out outGuid));
                 Assert.IsTrue(Guid.TryParse(resolvedTermStoreId, out outGuid));
 
+            }
+        }
+
+        [TestMethod]
+        public void NestedTokenTests()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                ctx.Load(ctx.Web, w => w.Id, w => w.ServerRelativeUrl, w => w.Title, w => w.AssociatedOwnerGroup.Title, w => w.AssociatedMemberGroup.Title, w => w.AssociatedVisitorGroup.Title);
+                ctx.Load(ctx.Site, s => s.ServerRelativeUrl);
+                ctx.ExecuteQueryRetry();
+
+                var template = new ProvisioningTemplate();
+                template.Parameters.Add("test3", "reallynestedvalue:{parameter:test2}");
+                template.Parameters.Add("test1", "testValue");
+                template.Parameters.Add("test2", "value:{parameter:test1}");
+
+                // Test parameters that infinitely loop
+                template.Parameters.Add("chain1", "{parameter:chain3}");
+                template.Parameters.Add("chain2", "{parameter:chain1}");
+                template.Parameters.Add("chain3", "{parameter:chain2}");
+
+                var parser = new TokenParser(ctx.Web, template);
+               
+                var parameterTest1 = parser.ParseString("parameterTest:{parameter:test1}");
+                var parameterTest2 = parser.ParseString("parameterTest:{parameter:test2}");
+                var parameterTest3 = parser.ParseString("parameterTest:{parameter:test3}");
+                Assert.IsTrue(parameterTest1 == "parameterTest:testValue");
+                Assert.IsTrue(parameterTest2 == "parameterTest:value:testValue");
+                Assert.IsTrue(parameterTest3 == "parameterTest:reallynestedvalue:value:testValue");
+
+                var chainTest1 = parser.ParseString("parameterTest:{parameter:chain1}");
+
+                // Parser should stop processing parent tokens when processing nested tokens,
+                // so we should end up with the value of the last param (chain2) in our param chain, 
+                // which will not get detokenized.
+                Assert.IsTrue(chainTest1 == "parameterTest:{parameter:chain1}");
             }
         }
     }

@@ -10,6 +10,9 @@ Below all the supported tokens are listed:
 
 |Token|Example|Output example|Description
 |-----|-------|-----------|-----
+|{associatedmembergroup}|{associatedmembergroup}|Members|Will return the name of the site's associated members group.|
+|{associatedownergroup}|{associatedownergroup}|Owners|Will return the name of the site's associated owners group.|
+|{associatedvisitorgroup}|{associatedvisitorgroup}|Vistors|Will return the name of the site's associated visitors group.|
 |{contenttypeid:&lt;name&gt;}|{contenttypeid:Reservations}|0x0102004F51EFDEA49C49668EF9C6744C8CF87D|Will return the id of the content type by name.|
 |{currentuserfullname}|{currentuserfullname}|Test User|Will return the full name of the user. Notice, does not work when using app only authentication.|
 |{currentuserid}|{currentuserid}|12|Will return the current user id, as present in the Site User Info List|
@@ -21,11 +24,11 @@ Below all the supported tokens are listed:
 |{keywordstermstoreid}|{keywordstermstoreid}|FDF19D89-A82F-4AB9-9BB5-B49E6CA5212E|Will return the ID/Guid of the keyword term store, without { }. If you want a ID with { } around the value, use the token as follows: {{keywordstermstoreid}}|
 |{listid:&lt;name&gt;}|{listid:Demo List}|FDF19D89-A82F-4AB9-9BB5-B49E6CA5212E|Will return the ID of the list specified by the parameter, which is the title of the list. If you want a ID with { } around the value, use the token as follows: {{listid:Demo List}}|
 |{listurl:&lt;name&gt;}|{listurl:Demo List}|lists/demolist|Will return the url of the list specified by the parameter, which is the title of the list.|
-|{listviewid:&lt;ListName&gt;,&lt;ViewName&gt;}|{listviewid:MyList,MyView}|ddc063cb-0c0e-4ce1-821c-a1f629992e42|Returns the id of a given view in a list without { }. Write {{listviewid:MyList,MyView}} to return an id in the shape of {ddc063cb-0c0e-4ce1-821c-a1f629992e42}|
+|{viewid:&lt;ListName&gt;,&lt;ViewName&gt;}|{viewid:MyList,MyView}|ddc063cb-0c0e-4ce1-821c-a1f629992e42|Returns the id of a given view in a list without { }. Write {{viewid:MyList,MyView}} to return an id in the shape of {ddc063cb-0c0e-4ce1-821c-a1f629992e42}|
 |{loc:&lt;token&gt;}<br/>{localize:&lt;token&gt;}<br/>{localization:&lt;token&gt;}<br/>{resource:&lt;token&gt;}<br/>{res:&lt;token&gt;}|{resource:MyListName}|Mijn lijst|Returns a token from an embedded resource file in a template for the current language of the web you are provisioning to.|
 |{masterpagecatalog}|{masterpagecatalog}|/sites/demo/_catalogs/masterpage|Will return the server relative url of the masterpage catalog for the current site.|
 |{parameter:&lt;name&gt;}|{parameter:DefaultGroup}|string value|Will return the value of the parameter as specified in the template.|
-|{roledefinition:&lt;name&gt;}|{roledefinition:Full Control}|Object of type RoleDefinition|Returns a roledefinition, to be used in Security elements of the template|
+|{roledefinition:&lt;name&gt;}|{roledefinition:Administrator}|Object of type RoleDefinition|Returns a roledefinition, to be used in Security elements of the template. Eg. Administrator, Contributor, Reader|
 |{sitecollectionid}|{sitecollectionid}|73170a53-c1ce-4cd0-9569-e464069f1a69|Returns the id of the current site collection. Write {{sitecollectionid}} to return the id in the shape of {73170a53-c1ce-4cd0-9569-e464069f1a69}|
 |{sitecollectiontermgroupid}|{sitecollectiontermgroupid}|2235e428-83a9-4486-9583-64dd454f9918|Returns the id of the current site collection term group. This group is not present by default in SharePoint 2013 and 2016, but if the token is encountered in the template and the group does not exist, it will be created.|
 |{sitecollectiontermgroupname}|{sitecollectiontermgroupname}|Site Collection - mytenant.sharepoint.com-sites-demo|Returns the name of the site collection term group.  You can use this value also in as a nested token, alike {termsetid:{sitecollectiontermgroupname}:mytermset}|

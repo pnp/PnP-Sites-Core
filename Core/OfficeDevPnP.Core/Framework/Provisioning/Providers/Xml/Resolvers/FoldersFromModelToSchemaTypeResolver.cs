@@ -11,6 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     internal class FoldersFromModelToSchemaTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
+        public bool CustomCollectionResolver => false;
 
         public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {
@@ -24,7 +25,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 
             if (modelSource != null)
             {
-                Model.FolderCollection sourceFolders= modelSource.GetPublicInstancePropertyValue("Folders") as Model.FolderCollection;
+                Model.FolderCollection sourceFolders = modelSource.GetPublicInstancePropertyValue("Folders") as Model.FolderCollection;
                 if (sourceFolders != null)
                 {
                     var folderTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Folder, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
@@ -46,7 +47,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                 }
             }
 
-            return (result);
+            return (result.Length > 0 ? result : null);
         }
     }
 }

@@ -68,6 +68,7 @@ namespace OfficeDevPnP.Core
         public const string WikiDocument = "0x010108";
         public const string WorkflowHistory = "0x0109";
         public const string WorkflowTask = "0x010801";
+        public const string Workflow2013Task = "0x0108003365C4474CAE8C42BCE396314E88E51F";
         public const string XMLDocument = "0x010101";
         public const string XSLStyle = "0x010100734778F2B7DF462491FC91844AE431CF";
 

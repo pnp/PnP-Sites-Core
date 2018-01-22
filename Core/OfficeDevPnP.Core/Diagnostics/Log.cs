@@ -13,13 +13,18 @@ namespace OfficeDevPnP.Core.Diagnostics
 
         [ThreadStatic]
         private static LogLevel? _logLevel;
-
+        /// <summary>
+        /// Gets or sets Log Level
+        /// </summary>
         public static LogLevel LogLevel
         {
             get { return _logLevel.Value; }
             set { _logLevel = value; }
         }
 
+        /// <summary>
+        /// Gets or sets ILogger object
+        /// </summary>
         public static ILogger Logger
         {
             get { return _logger; }
@@ -81,6 +86,12 @@ namespace OfficeDevPnP.Core.Diagnostics
         #region Public Members
 
         #region Error
+        /// <summary>
+        /// Logs error message and source
+        /// </summary>
+        /// <param name="source">Error source</param>
+        /// <param name="message">Error message</param>
+        /// <param name="args">Arguments object</param>
         public static void Error(string source, string message, params object[] args)
         {
             InitializeLogger();
@@ -93,6 +104,13 @@ namespace OfficeDevPnP.Core.Diagnostics
                 });
             }
         }
+        /// <summary>
+        /// Logs error message, source and exception
+        /// </summary>
+        /// <param name="ex">Exception object</param>
+        /// <param name="source">Error source</param>
+        /// <param name="message">Error message</param>
+        /// <param name="args">Arguments object</param>
         public static void Error(Exception ex, string source, string message, params object[] args)
         {
             InitializeLogger();
@@ -106,6 +124,10 @@ namespace OfficeDevPnP.Core.Diagnostics
                 });
             }
         }
+        /// <summary>
+        /// Error LogEntry
+        /// </summary>
+        /// <param name="logEntry">LogEntry object</param>
         public static void Error(LogEntry logEntry)
         {
             InitializeLogger();
@@ -117,6 +139,12 @@ namespace OfficeDevPnP.Core.Diagnostics
         #endregion
 
         #region Info
+        /// <summary>
+        /// Log Information
+        /// </summary>
+        /// <param name="source">Source string</param>
+        /// <param name="message">Message string</param>
+        /// <param name="args">Arguments object</param>
         public static void Info(string source, string message, params object[] args)
         {
             InitializeLogger();
@@ -129,6 +157,13 @@ namespace OfficeDevPnP.Core.Diagnostics
                 });
             }
         }
+        /// <summary>
+        /// Log Information
+        /// </summary>
+        /// <param name="ex">Exception object</param>
+        /// <param name="source">Source string</param>
+        /// <param name="message">Message string</param>
+        /// <param name="args">Arguments option</param>
         public static void Info(Exception ex, string source, string message, params object[] args)
         {
             InitializeLogger();
@@ -142,6 +177,10 @@ namespace OfficeDevPnP.Core.Diagnostics
                 });
             }
         }
+        /// <summary>
+        /// Log Information
+        /// </summary>
+        /// <param name="logEntry">LogEntry object</param>
         public static void Info(LogEntry logEntry)
         {
             InitializeLogger();
@@ -153,7 +192,12 @@ namespace OfficeDevPnP.Core.Diagnostics
         #endregion
 
         #region Warning
-
+        /// <summary>
+        /// Warning Log
+        /// </summary>
+        /// <param name="source">Source string</param>
+        /// <param name="message">Message string</param>
+        /// <param name="args">Arguments object</param>
         public static void Warning(string source, string message, params object[] args)
         {
             InitializeLogger();
@@ -166,7 +210,13 @@ namespace OfficeDevPnP.Core.Diagnostics
                 });
             }
         }
-
+        /// <summary>
+        /// Warning Log
+        /// </summary>
+        /// <param name="source">Source string</param>
+        /// <param name="ex">Exception object</param>
+        /// <param name="message">Message string</param>
+        /// <param name="args">Arguments object</param>
         public static void Warning(string source, Exception ex, string message, params object[] args)
         {
             InitializeLogger();
@@ -181,6 +231,10 @@ namespace OfficeDevPnP.Core.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Warning Log
+        /// </summary>
+        /// <param name="logEntry">LogEntry object</param>
         public static void Warning(LogEntry logEntry)
         {
             InitializeLogger();
@@ -192,6 +246,12 @@ namespace OfficeDevPnP.Core.Diagnostics
         #endregion
 
         #region Debug
+        /// <summary>
+        /// Debug Log
+        /// </summary>
+        /// <param name="source">Source stirng</param>
+        /// <param name="message">Message string</param>
+        /// <param name="args">Arguments object</param>
         public static void Debug(string source, string message, params object[] args)
         {
             InitializeLogger();
@@ -206,7 +266,13 @@ namespace OfficeDevPnP.Core.Diagnostics
         }
 
 
-
+        /// <summary>
+        /// Debug Log
+        /// </summary>
+        /// <param name="source">Source string</param>
+        /// <param name="ex">Exception object</param>
+        /// <param name="message">Message string</param>
+        /// <param name="args">Arguments object</param>
         public static void Debug(string source, Exception ex, string message, params object[] args)
         {
             InitializeLogger();
@@ -221,6 +287,10 @@ namespace OfficeDevPnP.Core.Diagnostics
             }
         }
 
+        /// <summary>
+        /// Debug Log
+        /// </summary>
+        /// <param name="logEntry">LogEntry object</param>
         public static void Debug(LogEntry logEntry)
         {
             InitializeLogger();

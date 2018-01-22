@@ -49,6 +49,10 @@
       <Link>ProvisioningSchema-2016-05.cs</Link>
       <DependentUpon>ProvisioningSchema-2016-05.xsd</DependentUpon>
     </Compile>
+    <Compile Include="..\..\..\OfficeDevPnP.Core\Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-01.cs">
+      <Link>ProvisioningSchema-2018-01.cs</Link>
+      <DependentUpon>ProvisioningSchema-2018-01.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -67,6 +71,14 @@
     </None>
     <None Include="..\..\..\OfficeDevPnP.Core\Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.xsd">
       <Link>ProvisioningSchema-2016-05.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\..\..\OfficeDevPnP.Core\Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.xsd">
+      <Link>ProvisioningSchema-2017-05.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\..\..\OfficeDevPnP.Core\Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-01.xsd">
+      <Link>ProvisioningSchema-2018-01.xsd</Link>
       <SubType>Designer</SubType>
     </None>
     <None Include="..\..\..\ProvisioningSchema-2015-05.md">

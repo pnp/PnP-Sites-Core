@@ -337,7 +337,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             {
                 using (var tenantContext = TestCommon.CreateTenantClientContext())
                 {
-                    tenantContext.RequestTimeout = Timeout.Infinite;
+                    tenantContext.RequestTimeout = 1000 * 60 * 15;
 
                     var tenant = new Tenant(tenantContext);
                     string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
@@ -387,6 +387,18 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             {
                 Console.WriteLine(ex.ToDetailedString());
                 throw;
+            }
+        }
+        #endregion
+
+        #region AppCatalog tests
+        [TestMethod()]
+        public void GetAppCatalogTest()
+        {
+            using (var tenantContext = TestCommon.CreateTenantClientContext())
+            {
+                var tenant = new Tenant(tenantContext);
+                Assert.IsNotNull(tenant.GetAppCatalog());
             }
         }
         #endregion

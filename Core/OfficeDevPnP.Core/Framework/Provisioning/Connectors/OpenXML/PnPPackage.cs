@@ -53,6 +53,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
 
         #region Public Properties
 
+        /// <summary>
+        /// The complete package object
+        /// </summary>
         public Package Package { get; private set; }
 
         /// <summary>
@@ -181,6 +184,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
 
         #region Package Handling methods
 
+        /// <summary>
+        /// Opens the package and returns it based on the path
+        /// </summary>
+        /// <param name="path">Path of the package</param>
+        /// <param name="mode">File Mode of the package</param>
+        /// <param name="access">File Access</param>
+        /// <returns>Package</returns>
         public static PnPPackage Open(string path, FileMode mode, FileAccess access)
         {
             PnPPackage package = new PnPPackage();
@@ -189,6 +199,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             return package;
         }
 
+        /// <summary>
+        /// Opens the package and returns it based on the stream
+        /// </summary>
+        /// <param name="stream">The stream</param>
+        /// <param name="mode">File Mode of the package</param>
+        /// <param name="access">File Access</param>
+        /// <returns>Package</returns>
         public static PnPPackage Open(Stream stream, FileMode mode, FileAccess access)
         {
             PnPPackage package = new PnPPackage();
@@ -197,7 +214,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             return package;
         }
 
-
+        /// <summary>
+        /// Adds file to the package
+        /// </summary>
+        /// <param name="fileName">Name of the file</param>
+        /// <param name="value">Value of the file</param>
         public void AddFile(string fileName, Byte[] value)
         {
             fileName = fileName.TrimStart('/');
@@ -206,6 +227,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             SetPackagePartValue(value, part);
         }
 
+        /// <summary>
+        /// Clear the files having package parts with specific relationship type
+        /// </summary>
         public void ClearFiles()
         {
             ClearPackagePartsWithRelationshipType(R_PROVISIONINGTEMPLATE_FILE, FilesOriginPart);

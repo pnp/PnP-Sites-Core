@@ -42,6 +42,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Comparison code
 
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|",
@@ -53,6 +57,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with DesignPackage
+        /// </summary>
+        /// <param name="obj">Object that represents DesignPackage</param>
+        /// <returns>true if the current object is equal to the DesignPackage</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is DesignPackage))
@@ -62,6 +71,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((DesignPackage)obj));
         }
 
+        /// <summary>
+        /// Compares DesignPackage object based on DesignPackagePath, MajorVersion, MinorVersion, PackageGuid and PackageName.
+        /// </summary>
+        /// <param name="other">DesignPackage object</param>
+        /// <returns>true if the DesignPackage object is equal to the current object; otherwise, false.</returns>
         public bool Equals(DesignPackage other)
         {
             if (other == null)

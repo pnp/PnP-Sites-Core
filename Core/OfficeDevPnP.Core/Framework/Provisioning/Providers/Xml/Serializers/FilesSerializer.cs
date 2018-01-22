@@ -19,6 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var filesCollection = persistence.GetPublicInstancePropertyValue("Files");
+
             if (filesCollection != null)
             {
                 var files = filesCollection.GetPublicInstancePropertyValue("File");
@@ -35,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     fl => fl.GetPublicInstancePropertyValue("Security")?.GetPublicInstancePropertyValue("BreakRoleInheritance")));
                 expressions.Add(f => f.Security.RoleAssignments, new RoleAssigmentsFromSchemaToModelTypeResolver());
                 expressions.Add(f => f.WebParts[0].Order, new ExpressionValueResolver<int>((v) => (uint)v));
-                expressions.Add(f => f.WebParts[0].Contents, new ExpressionValueResolver((s, v) => v != null ? ((XmlElement)v).InnerXml : null));
+                expressions.Add(f => f.WebParts[0].Contents, new ExpressionValueResolver((s, v) => v != null ? ((XmlElement)v).OuterXml : null));
 
                 template.Files.AddRange(
                     PnPObjectsMapper.MapObjects<File>(files,
@@ -72,7 +73,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add($"{fileType}.LevelSpecified", new ExpressionValueResolver(() => true));
 
                 expressions.Add($"{fileType}.Security", new PropertyObjectTypeResolver(objectSecurityType, "Security"));
-                expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssigmentsFromModelToSchemaTypeResolver());
+                expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssignmentsFromModelToSchemaTypeResolver());
 
                 expressions.Add($"{baseNamespace}.WebPartPageWebPart.Order", new ExpressionValueResolver<uint>((v) => (int)v));
                 //convert webpart content to xml element
