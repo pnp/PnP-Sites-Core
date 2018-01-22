@@ -475,11 +475,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 container = fileName.Substring(0, tempFileName.LastIndexOf(@"\"));
                 fileName = fileName.Substring(tempFileName.LastIndexOf(@"\") + 1);
             }
-            else if (!string.IsNullOrEmpty(file.Folder))
-            {
-                // transform slashes
-                container = file.Folder.Replace(@"/", @"\");
-            }
 
             // add the default provided container (if any)
             if (!String.IsNullOrEmpty(container))

@@ -286,7 +286,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                                             template.Files.Add(new Model.File()
                                                             {
                                                                 Folder = templateFolderPath,
-                                                                Src = fileName,
+                                                                Src = $"{templateFolderPath}/{fileName}",
                                                                 Overwrite = true,
                                                                 Level = (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), file.Level.ToString())
                                                             });
