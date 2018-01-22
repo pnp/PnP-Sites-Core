@@ -18,6 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private AvailableWebTemplateCollection _availableWebTemplates;
         private PageLayoutCollection _pageLayouts;
         private ImageRenditionCollection _imageRenditions;
+        private PublishingPageCollection _publishingPages;
 
         #endregion
 
@@ -29,6 +30,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             this._availableWebTemplates = new AvailableWebTemplateCollection(this.ParentTemplate);
             this._pageLayouts = new PageLayoutCollection(this.ParentTemplate);
+            this._publishingPages = new PublishingPageCollection(this.ParentTemplate);
             this._imageRenditions = new ImageRenditionCollection(this.ParentTemplate);
         }
 
@@ -39,7 +41,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <param name="designPackage">Design Package for publishing</param>
         /// <param name="availableWebTemplates">Available WebTemplates for publishing</param>
         /// <param name="pageLayouts">PageLayouts for publishing</param>
-        public Publishing(AutoCheckRequirementsOptions autoCheckRequirements, DesignPackage designPackage = null, IEnumerable<AvailableWebTemplate> availableWebTemplates = null, IEnumerable<PageLayout> pageLayouts = null) 
+        /// <param name="publishingPages">Publishing page for publishing</param>
+         public Publishing(AutoCheckRequirementsOptions autoCheckRequirements, DesignPackage designPackage = null, IEnumerable<AvailableWebTemplate> availableWebTemplates = null, IEnumerable<PageLayout> pageLayouts = null, IEnumerable<PublishingPage> publishingPages = null) 
             : this()
         {
             this.AutoCheckRequirements = autoCheckRequirements;
@@ -50,6 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
             this.AvailableWebTemplates.AddRange(availableWebTemplates);
             this.PageLayouts.AddRange(pageLayouts);
+            this.PublishingPages.AddRange(publishingPages);
         }
 
         #endregion
@@ -95,6 +99,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// Defines the publishing pages 
+        /// </summary>
+        public PublishingPageCollection PublishingPages
+        {
+            get { return this._publishingPages; }
+            private set { this._publishingPages = value; }
+        }
+
+        /// <summary>
         /// Defines how an engine should behave if the requirements for provisioning publishing capabilities are not satisfied by the target site 
         /// </summary>
         public AutoCheckRequirementsOptions AutoCheckRequirements { get; set; }
@@ -114,12 +127,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|",
                 this.AutoCheckRequirements.GetHashCode(),
                 this.AvailableWebTemplates.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 (this.DesignPackage != null ? this.DesignPackage.GetHashCode() : 0),
                 this.PageLayouts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.ImageRenditions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.ImageRenditions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.PublishingPages.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
@@ -154,7 +168,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.AvailableWebTemplates.DeepEquals(other.AvailableWebTemplates) &&
                 this.DesignPackage == other.DesignPackage &&
                 this.PageLayouts.DeepEquals(other.PageLayouts) &&
-                this.ImageRenditions.DeepEquals(other.ImageRenditions)
+                this.ImageRenditions.DeepEquals(other.ImageRenditions) &&
+                this.PublishingPages.DeepEquals(other.PublishingPages)
                 );
         }
 

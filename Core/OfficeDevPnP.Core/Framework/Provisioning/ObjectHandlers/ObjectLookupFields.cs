@@ -66,7 +66,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var field = rootWeb.Fields.GetById(fieldId);
                     rootWeb.Context.Load(field, f => f.SchemaXmlWithResourceTokens);
-                    rootWeb.Context.ExecuteQueryRetry();
+                    try
+                    {
+                        rootWeb.Context.ExecuteQueryRetry();
+                    }
+                    catch { continue; }
 
                     List sourceList = FindSourceList(listIdentifier, web, rootWeb);
 
@@ -144,12 +148,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 List retVal = rootWeb.Lists.FirstOrDefault(l => l.Id.Equals(listGuid));
 
-                if(retVal == null)
+                if (retVal == null)
                 {
                     retVal = web.Lists.FirstOrDefault(l => l.Id.Equals(listGuid));
                 }
 
-                if(retVal == null)
+                if (retVal == null)
                 {
                     Log.Warning(Constants.LOGGING_SOURCE, CoreResources.Provisioning_ObjectHandlers_LookupFields_LookupTargetListLookupFailed__0, listIdentifier);
                 }

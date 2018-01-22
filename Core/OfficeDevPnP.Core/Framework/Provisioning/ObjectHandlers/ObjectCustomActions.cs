@@ -339,6 +339,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var context = (ClientContext)web.Context;
                 bool isSubSite = web.IsSubSite();
+
                 var webCustomActions = web.GetCustomActions();
                 var siteCustomActions = context.Site.GetCustomActions();
 

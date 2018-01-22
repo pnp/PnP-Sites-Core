@@ -26,6 +26,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public string Zone { get; set; }
         /// <summary>
+        /// Webpart ViewContent
+        /// </summary>
+        public string ViewContent { get; set; }
+
+        /// <summary>
         /// Webpart Order
         /// </summary>
         public uint Order { get; set; }

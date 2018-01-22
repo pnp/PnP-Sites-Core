@@ -22,7 +22,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         // See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f?ui=en-US&rs=en-US&ad=US
         public static readonly string[] BlockedExtensionsInNoScript = new string[] { ".asmx", ".ascx", ".aspx", ".htc", ".jar", ".master", ".swf", ".xap", ".xsf" };
-        public static readonly string[] BlockedLibrariesInNoScript = new string[] { "_catalogs/theme", "style library", "_catalogs/lt", "_catalogs/wp" };
+        public static readonly string[] BlockedLibrariesInNoScript = new string[] { "_catalogs/theme", "style library", "_catalogs/lt", "_catalogs/wp", "pages" };
 
         public override string Name
         {
@@ -129,7 +129,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page, webPart.Title);
                                     var wpEntity = new WebPartEntity();
                                     wpEntity.WebPartTitle = parser.ParseString(webPart.Title);
-                                    wpEntity.WebPartXml = parser.ParseXmlString(webPart.Contents).Trim(new[] { '\n', ' ' });
+                                    wpEntity.WebPartXml = parser.ParseString(webPart.Contents, "~site", "~sitecollection").Trim(new[] { '\n', ' ' });
                                     wpEntity.WebPartZone = webPart.Zone;
                                     wpEntity.WebPartIndex = (int)webPart.Order;
                                     var wpd = web.AddWebPartToWebPartPage(targetFile.ServerRelativeUrl, wpEntity);
