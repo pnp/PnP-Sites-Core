@@ -1645,6 +1645,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Webhook {0} has been expired and will be skipped during creation/update of list {1}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Updating field {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstances_Updating_field__0_ {
