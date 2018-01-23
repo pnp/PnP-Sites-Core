@@ -466,7 +466,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 return item.ToString();
             }
-            if (Decimal.TryParse(item.ToString(), out Decimal number))
+            if (item is Decimal)
             {
                 return item.ToString().Replace(",", ".");
             }
