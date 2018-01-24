@@ -160,7 +160,10 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 var tenant = new Tenant(tenantContext);
                 var siteCollections = tenant.GetSiteCollections();
 
-                var site = siteCollections.Last();
+                // Grab a random site collection from the list of returned site collections
+                int siteNumberToCheck = new Random().Next(0, siteCollections.Count - 1);
+
+                var site = siteCollections[siteNumberToCheck];
                 var siteExists1 = tenant.CheckIfSiteExists(site.Url, "Active");
                 Assert.IsTrue(siteExists1);
 
