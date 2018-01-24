@@ -28,6 +28,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         public const String PROVISIONING_SCHEMA_NAMESPACE_2018_01 = "http://schemas.dev.office.com/PnP/2018/01/ProvisioningSchema";
         
         public const String PROVISIONING_SCHEMA_NAMESPACE_2016_12 = "http://schemas.dev.office.com/PnP/2016/12/ProvisioningSchema";
+
+        public const String PROVISIONING_SCHEMA_NAMESPACE_2018_02 = "http://schemas.dev.office.com/PnP/2018/02/ProvisioningSchema";
     }
 }
 
