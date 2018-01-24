@@ -460,7 +460,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// </summary>
         private static Stream GetFileStream(ProvisioningTemplate template, Model.File file)
         {
-            var fileName = file.Src;
+            var fileName = file.Src.Replace("_catalogs\\masterpage\\","");
             var container = String.Empty;
             if (fileName.Contains(@"\") || fileName.Contains(@"/"))
             {

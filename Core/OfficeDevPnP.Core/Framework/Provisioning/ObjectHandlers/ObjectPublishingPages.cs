@@ -573,7 +573,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 ctx.Load(item);
                 var readonlyFields = ctx.LoadQuery(pagesList.Fields.Where(f => f.Title == "Modified"));
                 ctx.ExecuteQueryRetry();
-                if (item.DisplayName == "tmp")
+                if (item.DisplayName == "tmp" || item.FileSystemObjectType == FileSystemObjectType.Folder)
                     continue;
                 OfficeDevPnP.Core.Framework.Provisioning.Model.PublishingPage page = new OfficeDevPnP.Core.Framework.Provisioning.Model.PublishingPage { };
 
