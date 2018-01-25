@@ -1464,6 +1464,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingList.ValidationMessage = parser.ParseString(templateList.ValidationMessage);
                     isDirty = true;
                 }
+
+                if (isDirty)
+                {
+                    existingList.Update();
+                    web.Context.ExecuteQueryRetry();
+                    isDirty = false;
+                }
+
                 if (templateList.Security != null)
                 {
                     existingList.SetSecurity(parser, templateList.Security);
@@ -1784,11 +1792,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (!string.IsNullOrEmpty(parser.ParseString(list.ValidationFormula)))
             {
                 createdList.ValidationFormula = parser.ParseString(list.ValidationFormula);
+                createdList.Update();
             }
             if (!string.IsNullOrEmpty(parser.ParseString(list.ValidationMessage)))
             {
                 createdList.ValidationMessage = parser.ParseString(list.ValidationMessage);
+                createdList.Update();
             }
+            web.Context.ExecuteQueryRetry();
 
             // Add any custom action
             if (list.UserCustomActions.Any())
