@@ -99,7 +99,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Deletes the child website with the specified leaf URL, from a parent Web, if it exists. 
+        /// Deletes the child website with the specified leaf URL, from a parent Web, if it exists.
         /// </summary>
         /// <param name="parentWeb">The parent Web (site) to delete from</param>
         /// <param name="leafUrl">A string that represents the URL leaf name.</param>
@@ -137,7 +137,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Gets the collection of the URLs of all Web sites that are contained within the site collection, 
+        /// Gets the collection of the URLs of all Web sites that are contained within the site collection,
         /// including the top-level site and its subsites.
         /// </summary>
         /// <param name="site">Site collection to retrieve the URLs for.</param>
@@ -202,7 +202,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Determines if a child Web site with the specified leaf URL exists. 
+        /// Determines if a child Web site with the specified leaf URL exists.
         /// </summary>
         /// <param name="parentWeb">The Web site to check under</param>
         /// <param name="leafUrl">A string that represents the URL leaf name.</param>
@@ -314,10 +314,10 @@ namespace Microsoft.SharePoint.Client
 
         /// <summary>
         /// Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing.
-        /// 
+        ///
         /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
         /// for the effects of NoScript
-        /// 
+        ///
         /// </summary>
         /// <param name="site">site to verify</param>
         /// <returns>True if noscript, false otherwise</returns>
@@ -328,10 +328,10 @@ namespace Microsoft.SharePoint.Client
 
         /// <summary>
         /// Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing.
-        /// 
+        ///
         /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
         /// for the effects of NoScript
-        /// 
+        ///
         /// </summary>
         /// <param name="web">Web to verify</param>
         /// <returns>True if noscript, false otherwise</returns>
@@ -559,7 +559,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Returns all site collections that are indexed. In MT the search center, mysite host and contenttype hub are defined as non indexable by default and thus 
+        /// Returns all site collections that are indexed. In MT the search center, mysite host and contenttype hub are defined as non indexable by default and thus
         /// are not returned
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
@@ -1136,7 +1136,7 @@ namespace Microsoft.SharePoint.Client
         #region Localization
 #if !ONPREMISES
         /// <summary>
-        /// Can be used to set translations for different cultures. 
+        /// Can be used to set translations for different cultures.
         /// </summary>
         /// <example>
         ///     web.SetLocalizationForSiteLabels("fi-fi", "Name of the site in Finnish", "Description in Finnish");
@@ -1162,7 +1162,7 @@ namespace Microsoft.SharePoint.Client
         #region TemplateHandling
 
         /// <summary>
-        /// Can be used to apply custom remote provisioning template on top of existing site. 
+        /// Can be used to apply custom remote provisioning template on top of existing site.
         /// </summary>
         /// <param name="web">web to apply remote template</param>
         /// <param name="template">ProvisioningTemplate with the settings to be applied</param>
@@ -1312,6 +1312,7 @@ namespace Microsoft.SharePoint.Client
 #endif
         #endregion
 
+#if !ONPREMISES
         #region ClientSide Package Deployment
         /// <summary>
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
@@ -1320,17 +1321,15 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The Uri holding the app catalog site url</returns>
         public static Uri GetAppCatalog(this Web web)
         {
-            // Assume there's only one appcatalog site
-            var results = ((web.Context) as ClientContext).Web.SiteSearch("contentclass:STS_Site AND SiteTemplate:APPCATALOG");
-            foreach (var site in results)
+            var tenantSettings = TenantSettings.GetCurrent(web.Context);
+            tenantSettings.EnsureProperties(s => s.CorporateCatalogUrl);
+            if(!string.IsNullOrEmpty(tenantSettings.CorporateCatalogUrl))
             {
-                return new Uri(site.Url);
+                return new Uri(tenantSettings.CorporateCatalogUrl);
             }
-
             return null;
         }
 
-#if !ONPREMISES
         /// <summary>
         /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
         /// </summary>
@@ -1416,7 +1415,7 @@ namespace Microsoft.SharePoint.Client
                 if ((autoDeploy || skipFeatureDeployment) &&
                     System.IO.Path.GetExtension(spPkgName).ToLower() == ".sppkg")
                 {
-                    // Trigger "deployment" by setting the IsClientSideSolutionDeployed bool to true which triggers 
+                    // Trigger "deployment" by setting the IsClientSideSolutionDeployed bool to true which triggers
                     // an event receiver that will process the sppkg file and update the client side componenent manifest list
                     sppkgFile.ListItemAllFields["IsClientSideSolutionDeployed"] = autoDeploy;
                     // deal with "upgrading" solutions
@@ -1433,8 +1432,8 @@ namespace Microsoft.SharePoint.Client
                 return sppkgFile.ListItemAllFields;
             }
         }
-#endif
     #endregion
+#endif
 
     }
 }

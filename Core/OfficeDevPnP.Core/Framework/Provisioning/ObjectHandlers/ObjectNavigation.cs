@@ -118,11 +118,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     // Check if this is not a noscript site as navigation features are not supported
-                    if (web.IsNoScriptSite())
-                    {
-                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_Navigation_SkipProvisioning);
-                        return parser;
-                    }
+                    bool isNoScriptSite = web.IsNoScriptSite();
 
                     // Retrieve the current web navigation settings
                     var navigationSettings = new WebNavigationSettings(web.Context, web);
@@ -162,8 +158,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 break;
                         }
-                        navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
-                        web.Context.ExecuteQueryRetry();
+                        if (!isNoScriptSite)
+                        {
+                            navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
+                            web.Context.ExecuteQueryRetry();
+                        }
                     }
 
                     if (template.Navigation.CurrentNavigation != null)
@@ -183,7 +182,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 navigationSettings.CurrentNavigation.TermSetId = Guid.Parse(parser.ParseString(template.Navigation.CurrentNavigation.ManagedNavigation.TermSetId));
                                 break;
                             case CurrentNavigationType.StructuralLocal:
-                                web.SetPropertyBagValue(NavigationShowSiblings, "false");
+                                if (!isNoScriptSite)
+                                {
+                                    web.SetPropertyBagValue(NavigationShowSiblings, "false");
+                                }
                                 if (template.Navigation.CurrentNavigation.StructuralNavigation == null)
                                 {
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation);
@@ -196,7 +198,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 break;
                             case CurrentNavigationType.Structural:
                             default:
-                                web.SetPropertyBagValue(NavigationShowSiblings, "true");
+                                if (!isNoScriptSite)
+                                {
+                                    web.SetPropertyBagValue(NavigationShowSiblings, "true");
+                                }
                                 if (template.Navigation.CurrentNavigation.StructuralNavigation == null)
                                 {
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_current_structural_navigation);
@@ -208,8 +213,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 break;
                         }
-                        navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
-                        web.Context.ExecuteQueryRetry();
+
+                        if (!isNoScriptSite)
+                        {
+                            navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
+                            web.Context.ExecuteQueryRetry();
+                        }
                     }
                 }
             }
@@ -465,7 +474,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return WebSupportsExtractNavigation(web);
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             return (template.Navigation != null &&
                 WebSupportsProvisionNavigation(web, template));

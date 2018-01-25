@@ -1038,6 +1038,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error during automatic client side page connected file export: {0}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePageContents_ErrorDuringFileExport {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePageContents_ErrorDuringFileExport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This page is not a valid client side page and can&apos;t be extracted. Underlying error = {0}..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ClientSidePageContents_NoValidPage {
@@ -1641,6 +1650,15 @@ namespace OfficeDevPnP.Core {
         internal static string Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Webhook {0} has been expired and will be skipped during creation/update of list {1}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook", resourceCulture);
             }
         }
         

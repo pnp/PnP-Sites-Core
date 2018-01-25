@@ -1348,7 +1348,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var webhook in templateList.Webhooks)
                     {
-                        AddOrUpdateListWebHook(existingList, webhook, true);
+                        AddOrUpdateListWebHook(existingList, webhook, scope, true);
                     }
                 }
 #endif
@@ -1812,7 +1812,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 foreach(var webhook in list.Webhooks)
                 {
-                    AddOrUpdateListWebHook(createdList, webhook);
+                    AddOrUpdateListWebHook(createdList, webhook, scope);
                 }
             }
 #endif
@@ -1824,32 +1824,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 #if !ONPREMISES
-        private void AddOrUpdateListWebHook(List list, Webhook webhook, bool isListUpdate = false)
+        private void AddOrUpdateListWebHook(List list, Webhook webhook, PnPMonitoredScope scope, bool isListUpdate = false)
         {
-            // for a new list immediately add the webhook
-            if (!isListUpdate)
+            if (webhook.ExpiresInDays > 0)
             {
-                var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
-            }
-            // for existing lists add a new webhook or update existing webhook
-            else
-            {
-                // get the webhooks defined on the list
-                var addedWebhooks = Task.Run(() => list.GetWebhookSubscriptionsAsync()).Result;
-
-                var existingWebhook = addedWebhooks.Where(p => p.NotificationUrl.Equals(webhook.ServerNotificationUrl, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-                if (existingWebhook != null)
+                // for a new list immediately add the webhook
+                if (!isListUpdate)
                 {
-                    // refresh the expiration date of the existing webhook
-                    existingWebhook.ExpirationDateTime = DateTime.Now.AddDays(webhook.ExpiresInDays);
-                    // update the existing webhook
-                    list.UpdateWebhookSubscription(existingWebhook);
-                }
-                else
-                {
-                    // add as new webhook
                     var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
                 }
+                // for existing lists add a new webhook or update existing webhook
+                else
+                {
+                    // get the webhooks defined on the list
+                    var addedWebhooks = Task.Run(() => list.GetWebhookSubscriptionsAsync()).Result;
+
+                    var existingWebhook = addedWebhooks.Where(p => p.NotificationUrl.Equals(webhook.ServerNotificationUrl, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                    if (existingWebhook != null)
+                    {
+                        // refresh the expiration date of the existing webhook
+                        existingWebhook.ExpirationDateTime = DateTime.Now.AddDays(webhook.ExpiresInDays);
+                        // update the existing webhook
+                        list.UpdateWebhookSubscription(existingWebhook);
+                    }
+                    else
+                    {
+                        // add as new webhook
+                        var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
+                    }
+                }
+            }
+            else
+            {
+                list.EnsureProperty(l => l.Title);
+                scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook, webhook.ServerNotificationUrl, list.Title);
             }
         }
 #endif
@@ -2516,7 +2524,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return schemaXml;
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             if (!_willProvision.HasValue)
             {
