@@ -1727,10 +1727,7 @@ namespace Microsoft.SharePoint.Client
         [Obsolete("Use the list extension .SetDefaultContentType instead. This method produces unwanted side effects.")]
         //Problems with this code:
         //1. It messes up the existing order and visibility configuration for the folder/list
-        //2. Even if the default sort order (no unique order set) or the existing unique sort order
-        //   already has the specified content type set as default, this method unnecessarily 
-        //   sets or updates the unique content type order.
-        //3. Given a list with the picture content type added, and not the document content type (0x0101). 
+        //2. Given a list with the picture content type added, and not the document content type (0x0101). 
         //   If a user tries to set the document content type as default using the document content type id,        
         //   then this code will incorrectly add the picture content type as the default content type.
         //   This happens because the code searches for ANY child content type of the specified content type id.
@@ -1789,13 +1786,12 @@ namespace Microsoft.SharePoint.Client
             Folder rootFolder = list.RootFolder;
             list.Context.Load(list,
                 l => l.RootFolder.ServerRelativeUrl,
-                l => l.ContentTypes.Include(ct => ct.Id)
+                l => l.ContentTypes.Include(ct => ct.Id);
                 );
 
             list.Context.Load(rootFolder,
                 rf => rf.ContentTypeOrder,
-                rf => rf.UniqueContentTypeOrder,
-                rf => rf.ServerRelativeUrl
+                rf => rf.UniqueContentTypeOrder
                 );
             list.Context.ExecuteQueryRetry();
 
@@ -1832,20 +1828,19 @@ namespace Microsoft.SharePoint.Client
             }
             else
             {
-                // Content Type is NOT visible.
-                if (list.ContentTypes.FirstOrDefault(ct => ct.Id.StringValue.Equals(contentTypeId.StringValue, StringComparison.OrdinalIgnoreCase)) == null)
+                // Content Type is NOT visible. Add it to the first content type order position.
+                // If the content type does not exist in the list a server exception will be thrown.
+                try
                 {
-                    // Content Type is not found in the list
-                    throw new ArgumentOutOfRangeException(nameof(contentTypeId), string.Format(CoreResources.FieldAndContentTypeExtensions_ContentTypeMissing, contentTypeId, list.RootFolder.ServerRelativeUrl));
-                }
-                else
-                {
-                    // Add the content type to the first content type order position.
-                    uniqueContentTypeOrder.Insert(0, contentTypeId);
-                    rootFolder.UniqueContentTypeOrder = uniqueContentTypeOrder;
-                    list.RootFolder.Update();
                     list.Context.ExecuteQueryRetry();
                 }
+                catch (ServerException ex)
+                {
+                }
+                uniqueContentTypeOrder.Insert(0, contentTypeId);
+                rootFolder.UniqueContentTypeOrder = uniqueContentTypeOrder;
+                list.RootFolder.Update();
+                list.Context.ExecuteQueryRetry();
             }
         }
 
