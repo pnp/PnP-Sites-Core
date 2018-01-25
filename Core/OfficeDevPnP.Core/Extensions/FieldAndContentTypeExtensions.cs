@@ -1195,7 +1195,7 @@ namespace Microsoft.SharePoint.Client
             }
 
             //Previously this code returned false when list.ContentTypesEnabled was false.
-            //This made no sence as there are content types in a list even if list.ContentTypesEnabled is set to false.
+            //This made no sense as there are content types in a list even if list.ContentTypesEnabled is set to false.
             //This gives unexpected results, and has been removed.
 
             var ctCol = list.ContentTypes;
