@@ -18,8 +18,11 @@ namespace Microsoft.SharePoint.Client
     /// </summary>
     public static partial class FileFolderExtensions
     {
-        const string REGEX_INVALID_FILE_NAME_CHARS = @"[<>:;*?/\\|""&%\t\r\n]";
-
+#if !ONPREMISES
+        const string REGEX_INVALID_FILE_NAME_CHARS = @"[""#%*:<>?/\|.\t\r\n]";
+#else
+        const string REGEX_INVALID_FILE_NAME_CHARS = @"[~#%&*{}\:<>?/|""\t\r\n]";
+#endif
         /// <summary>
         /// Approves a file
         /// </summary>
