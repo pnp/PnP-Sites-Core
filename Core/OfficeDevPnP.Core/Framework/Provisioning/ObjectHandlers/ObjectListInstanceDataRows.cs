@@ -1,26 +1,25 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using Field = Microsoft.SharePoint.Client.Field;
+﻿using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Field = Microsoft.SharePoint.Client.Field;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectListInstanceDataRows : ObjectHandlerBase
     {
-
         public override string Name
         {
             get { return "List instances Data Rows"; }
         }
+
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-
                 if (template.Lists.Any())
                 {
                     var rootWeb = (web.Context as ClientContext).Site.RootWeb;
@@ -55,19 +54,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var keyColumn = fields.FirstOrDefault(f => f.InternalName.Equals(parsedKeyColumn, StringComparison.InvariantCultureIgnoreCase));
                                 if (keyColumn != null)
                                 {
-
                                     switch (keyColumn.FieldTypeKind)
                                     {
                                         case FieldType.User:
                                         case FieldType.Lookup:
                                             keyColumnType = "Lookup";
                                             break;
+
                                         case FieldType.URL:
                                             keyColumnType = "Url";
                                             break;
+
                                         case FieldType.DateTime:
                                             keyColumnType = "DateTime";
                                             break;
+
                                         case FieldType.Number:
                                         case FieldType.Counter:
                                             keyColumnType = "Number";
@@ -78,11 +79,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             foreach (var dataRow in listInstance.DataRows)
                             {
-
                                 try
                                 {
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_, listInstance.DataRows.IndexOf(dataRow) + 1);
-
 
                                     bool create = true;
                                     ListItem listitem = null;
@@ -133,118 +132,129 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             if (dataField != null)
                                             {
                                                 String fieldValue = parser.ParseString(dataValue.Value);
-
-                                                switch (dataField.FieldTypeKind)
+                                                if (fieldValue != null)
                                                 {
-                                                    case FieldType.Geolocation:
-                                                        // FieldGeolocationValue - Expected format: Altitude,Latitude,Longitude,Measure
-                                                        var geolocationArray = fieldValue.Split(',');
-                                                        if (geolocationArray.Length == 4)
-                                                        {
-                                                            var geolocationValue = new FieldGeolocationValue
+                                                    switch (dataField.FieldTypeKind)
+                                                    {
+                                                        case FieldType.Geolocation:
+                                                            // FieldGeolocationValue - Expected format: Altitude,Latitude,Longitude,Measure
+                                                            var geolocationArray = fieldValue.Split(',');
+                                                            if (geolocationArray.Length == 4)
                                                             {
-                                                                Altitude = Double.Parse(geolocationArray[0]),
-                                                                Latitude = Double.Parse(geolocationArray[1]),
-                                                                Longitude = Double.Parse(geolocationArray[2]),
-                                                                Measure = Double.Parse(geolocationArray[3]),
-                                                            };
-                                                            listitem[parser.ParseString(dataValue.Key)] = geolocationValue;
-                                                        }
-                                                        else
-                                                        {
-                                                            listitem[parser.ParseString(dataValue.Key)] = fieldValue;
-                                                        }
-                                                        break;
-                                                    case FieldType.Lookup:
-                                                        // FieldLookupValue - Expected format: LookupID or LookupID,LookupID,LookupID...
-                                                        if (fieldValue.Contains(","))
-                                                        {
-                                                            var lookupValues = new List<FieldLookupValue>();
-                                                            fieldValue.Split(',').All(value =>
-                                                            {
-                                                                lookupValues.Add(new FieldLookupValue
+                                                                var geolocationValue = new FieldGeolocationValue
                                                                 {
-                                                                    LookupId = int.Parse(value),
-                                                                });
-                                                                return true;
-                                                            });
-                                                            listitem[parser.ParseString(dataValue.Key)] = lookupValues.ToArray();
-                                                        }
-                                                        else
-                                                        {
-                                                            var lookupValue = new FieldLookupValue
-                                                            {
-                                                                LookupId = int.Parse(fieldValue),
-                                                            };
-                                                            listitem[parser.ParseString(dataValue.Key)] = lookupValue;
-                                                        }
-                                                        break;
-                                                    case FieldType.URL:
-                                                        // FieldUrlValue - Expected format: URL,Description
-                                                        var urlArray = fieldValue.Split(',');
-                                                        var linkValue = new FieldUrlValue();
-                                                        if (urlArray.Length == 2)
-                                                        {
-                                                            linkValue.Url = urlArray[0];
-                                                            linkValue.Description = urlArray[1];
-                                                        }
-                                                        else
-                                                        {
-                                                            linkValue.Url = urlArray[0];
-                                                            linkValue.Description = urlArray[0];
-                                                        }
-                                                        listitem[parser.ParseString(dataValue.Key)] = linkValue;
-                                                        break;
-                                                    case FieldType.User:
-                                                        // FieldUserValue - Expected format: loginName or loginName,loginName,loginName...
-                                                        if (fieldValue.Contains(","))
-                                                        {
-                                                            var userValues = new List<FieldUserValue>();
-                                                            fieldValue.Split(',').All(value =>
-                                                            {
-                                                                var user = web.EnsureUser(value);
-                                                                web.Context.Load(user);
-                                                                web.Context.ExecuteQueryRetry();
-                                                                if (user != null)
-                                                                {
-                                                                    userValues.Add(new FieldUserValue
-                                                                    {
-                                                                        LookupId = user.Id,
-                                                                    }); ;
-                                                                }
-                                                                return true;
-                                                            });
-                                                            listitem[parser.ParseString(dataValue.Key)] = userValues.ToArray();
-                                                        }
-                                                        else
-                                                        {
-                                                            var user = web.EnsureUser(fieldValue);
-                                                            web.Context.Load(user);
-                                                            web.Context.ExecuteQueryRetry();
-                                                            if (user != null)
-                                                            {
-                                                                var userValue = new FieldUserValue
-                                                                {
-                                                                    LookupId = user.Id,
+                                                                    Altitude = Double.Parse(geolocationArray[0]),
+                                                                    Latitude = Double.Parse(geolocationArray[1]),
+                                                                    Longitude = Double.Parse(geolocationArray[2]),
+                                                                    Measure = Double.Parse(geolocationArray[3]),
                                                                 };
-                                                                listitem[parser.ParseString(dataValue.Key)] = userValue;
+                                                                listitem[parser.ParseString(dataValue.Key)] = geolocationValue;
                                                             }
                                                             else
                                                             {
                                                                 listitem[parser.ParseString(dataValue.Key)] = fieldValue;
                                                             }
-                                                        }
-                                                        break;
-                                                    case FieldType.DateTime:
-                                                        var dateTime = DateTime.MinValue;
-                                                        if (DateTime.TryParse(fieldValue, out dateTime))
-                                                        {
-                                                            listitem[parser.ParseString(dataValue.Key)] = dateTime;
-                                                        }
-                                                        break;
-                                                    default:
-                                                        listitem[parser.ParseString(dataValue.Key)] = fieldValue;
-                                                        break;
+                                                            break;
+
+                                                        case FieldType.Lookup:
+                                                            // FieldLookupValue - Expected format: LookupID or LookupID,LookupID,LookupID...
+                                                            if (fieldValue.Contains(","))
+                                                            {
+                                                                var lookupValues = new List<FieldLookupValue>();
+                                                                fieldValue.Split(',').All(value =>
+                                                                {
+                                                                    lookupValues.Add(new FieldLookupValue
+                                                                    {
+                                                                        LookupId = int.Parse(value),
+                                                                    });
+                                                                    return true;
+                                                                });
+                                                                listitem[parser.ParseString(dataValue.Key)] = lookupValues.ToArray();
+                                                            }
+                                                            else
+                                                            {
+                                                                var lookupValue = new FieldLookupValue
+                                                                {
+                                                                    LookupId = int.Parse(fieldValue),
+                                                                };
+                                                                listitem[parser.ParseString(dataValue.Key)] = lookupValue;
+                                                            }
+                                                            break;
+
+                                                        case FieldType.URL:
+                                                            // FieldUrlValue - Expected format: URL,Description
+                                                            var urlArray = fieldValue.Split(',');
+                                                            var linkValue = new FieldUrlValue();
+                                                            if (urlArray.Length == 2)
+                                                            {
+                                                                linkValue.Url = urlArray[0];
+                                                                linkValue.Description = urlArray[1];
+                                                            }
+                                                            else
+                                                            {
+                                                                linkValue.Url = urlArray[0];
+                                                                linkValue.Description = urlArray[0];
+                                                            }
+                                                            listitem[parser.ParseString(dataValue.Key)] = linkValue;
+                                                            break;
+
+                                                        case FieldType.User:
+                                                            // FieldUserValue - Expected format: loginName or loginName,loginName,loginName...
+                                                            if (fieldValue.Contains(","))
+                                                            {
+                                                                var userValues = new List<FieldUserValue>();
+                                                                fieldValue.Split(',').All(value =>
+                                                                {
+                                                                    var user = web.EnsureUser(value);
+                                                                    web.Context.Load(user);
+                                                                    web.Context.ExecuteQueryRetry();
+                                                                    if (user != null)
+                                                                    {
+                                                                        userValues.Add(new FieldUserValue
+                                                                        {
+                                                                            LookupId = user.Id,
+                                                                        }); ;
+                                                                    }
+                                                                    return true;
+                                                                });
+                                                                listitem[parser.ParseString(dataValue.Key)] = userValues.ToArray();
+                                                            }
+                                                            else
+                                                            {
+                                                                var user = web.EnsureUser(fieldValue);
+                                                                web.Context.Load(user);
+                                                                web.Context.ExecuteQueryRetry();
+                                                                if (user != null)
+                                                                {
+                                                                    var userValue = new FieldUserValue
+                                                                    {
+                                                                        LookupId = user.Id,
+                                                                    };
+                                                                    listitem[parser.ParseString(dataValue.Key)] = userValue;
+                                                                }
+                                                                else
+                                                                {
+                                                                    listitem[parser.ParseString(dataValue.Key)] = fieldValue;
+                                                                }
+                                                            }
+                                                            break;
+
+                                                        case FieldType.DateTime:
+                                                            var dateTime = DateTime.MinValue;
+                                                            if (DateTime.TryParse(fieldValue, out dateTime))
+                                                            {
+                                                                listitem[parser.ParseString(dataValue.Key)] = dateTime;
+                                                            }
+                                                            break;
+
+                                                        default:
+                                                            listitem[parser.ParseString(dataValue.Key)] = fieldValue;
+                                                            break;
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    listitem[parser.ParseString(dataValue.Key)] = fieldValue;
                                                 }
                                                 listitem.Update();
                                             }
@@ -259,7 +269,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 catch (Exception ex)
                                 {
-
                                     if (ex.GetType().Equals(typeof(ServerException)) &&
                                         (ex as ServerException).ServerErrorTypeName.Equals("Microsoft.SharePoint.SPDuplicateValuesFoundException", StringComparison.InvariantCultureIgnoreCase) &&
                                         applyingInformation.IgnoreDuplicateDataRowErrors)
@@ -277,7 +286,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    #endregion
+                    #endregion DataRows
                 }
             }
 
@@ -310,4 +319,3 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
     }
 }
-
