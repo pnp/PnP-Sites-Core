@@ -44,7 +44,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             // Retrieve the fields' types from the list
                             Microsoft.SharePoint.Client.FieldCollection fields = list.Fields;
-                            web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind, f => f.TypeAsString, f=>f.ReadOnlyField));
+                            web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f=>f.Title,f => f.FieldTypeKind, f => f.TypeAsString, f=>f.ReadOnlyField));
                             web.Context.ExecuteQueryRetry();
 
                             var keyColumnType = "Text";
@@ -281,7 +281,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                                 listitem[fieldName] = null;
                                                             }
                                                             break;
-
+                                                        case FieldType.Attachments:
+                                                        case FieldType.Computed:
+                                                            scope.LogWarning("Unsupported field type: {0} (Field:{1})", dataField.FieldTypeKind, fieldName);
+                                                            break;
                                                         default:
                                                             listitem[fieldName] = fieldValue;
                                                             break;
@@ -290,7 +293,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 }
                                                 catch (Exception exc)
                                                 {
-                                                    scope.LogWarning("Error when reading value {0} for field {1}", fieldValue, fieldName);
+                                                    scope.LogWarning("Error when reading value {0} for field {1}. Exception : {2}", fieldValue, fieldName, exc.Message);
+                                                    scope.LogDebug("Exception was {0}", exc);
                                                 }
                                             }
                                         }
