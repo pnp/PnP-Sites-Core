@@ -20,8 +20,10 @@ namespace Microsoft.SharePoint.Client
     {
 #if !ONPREMISES
         const string REGEX_INVALID_FILE_NAME_CHARS = @"[""#%*:<>?/\|.\t\r\n]";
+        const string REGEX_INVALID_FOLDER_NAME_CHARS = REGEX_INVALID_FILE_NAME_CHARS;
 #else
         const string REGEX_INVALID_FILE_NAME_CHARS = @"[~#%&*{}\:<>?/|""\t\r\n]";
+        const string REGEX_INVALID_FOLDER_NAME_CHARS = REGEX_INVALID_FILE_NAME_CHARS;
 #endif
         /// <summary>
         /// Approves a file
@@ -220,7 +222,7 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder CreateFolder(this Web web, string folderName)
         {
-            if (folderName.ContainsInvalidUrlChars())
+            if (Regex.IsMatch(folderName, REGEX_INVALID_FOLDER_NAME_CHARS))
             {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
             }
@@ -246,7 +248,7 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder CreateFolder(this Folder parentFolder, string folderName)
         {
-            if (folderName.ContainsInvalidUrlChars())
+            if (Regex.IsMatch(folderName, REGEX_INVALID_FOLDER_NAME_CHARS))
             {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
             }
@@ -384,7 +386,7 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder EnsureFolder(this Web web, string folderName, params Expression<Func<Folder, object>>[] expressions)
         {
-            if (folderName.ContainsInvalidUrlChars())
+            if (Regex.IsMatch(folderName, REGEX_INVALID_FOLDER_NAME_CHARS))
             {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
             }
@@ -408,7 +410,7 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder EnsureFolder(this Folder parentFolder, string folderName, params Expression<Func<Folder, object>>[] expressions)
         {
-            if (folderName.ContainsInvalidUrlChars())
+            if (Regex.IsMatch(folderName, REGEX_INVALID_FOLDER_NAME_CHARS))
             {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
             }
@@ -688,7 +690,7 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentNullException(nameof(folderName));
             }
 
-            if (folderName.ContainsInvalidUrlChars())
+            if (Regex.IsMatch(folderName, REGEX_INVALID_FOLDER_NAME_CHARS))
             {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
             }
