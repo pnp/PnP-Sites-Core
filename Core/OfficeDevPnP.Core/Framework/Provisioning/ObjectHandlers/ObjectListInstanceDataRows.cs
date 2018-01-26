@@ -44,7 +44,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             // Retrieve the fields' types from the list
                             Microsoft.SharePoint.Client.FieldCollection fields = list.Fields;
-                            web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind, f => f.TypeAsString));
+                            web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind, f => f.TypeAsString, f=>f.ReadOnlyField));
                             web.Context.ExecuteQueryRetry();
 
                             var keyColumnType = "Text";
@@ -130,9 +130,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             Field dataField = fields.FirstOrDefault(
                                                 f => f.InternalName == fieldName);
 
-                                            if (dataField != null)
+                                            if (dataField == null)
+                                            {
+                                                scope.LogWarning("Cannot find field {0} in list {1}", fieldName, listInstance.Title);
+                                            }
+                                            else if (dataField.ReadOnlyField)
+                                            {
+                                                scope.LogWarning("Cannot set field {0} in list {1} because it's a readonly field", fieldName, listInstance.Title);
+                                            }
+                                            else
                                             {
                                                 String fieldValue = parser.ParseString(dataValue.Value);
+                                                scope.LogDebug("Setting field {0} in list {1} with value {2}", dataField.Title, listInstance.Title, fieldValue);
                                                 try
                                                 {
                                                     switch (dataField.FieldTypeKind)
@@ -283,10 +292,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 {
                                                     scope.LogWarning("Error when reading value {0} for field {1}", fieldValue, fieldName);
                                                 }
-                                            }
-                                            else
-                                            {
-                                                scope.LogWarning("Cannot find field {0} in list {1}", fieldName, listInstance.Title);
                                             }
                                         }
                                         web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
