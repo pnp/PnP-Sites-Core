@@ -1,26 +1,25 @@
-﻿using System;
-using System.Linq;
-using System.Collections.Generic;
-using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using Field = Microsoft.SharePoint.Client.Field;
+﻿using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Field = Microsoft.SharePoint.Client.Field;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectListInstanceDataRows : ObjectHandlerBase
     {
-
         public override string Name
         {
             get { return "List instances Data Rows"; }
         }
+
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-
                 if (template.Lists.Any())
                 {
                     var rootWeb = (web.Context as ClientContext).Site.RootWeb;
@@ -55,19 +54,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var keyColumn = fields.FirstOrDefault(f => f.InternalName.Equals(parsedKeyColumn, StringComparison.InvariantCultureIgnoreCase));
                                 if (keyColumn != null)
                                 {
-
                                     switch (keyColumn.FieldTypeKind)
                                     {
                                         case FieldType.User:
                                         case FieldType.Lookup:
                                             keyColumnType = "Lookup";
                                             break;
+
                                         case FieldType.URL:
                                             keyColumnType = "Url";
                                             break;
+
                                         case FieldType.DateTime:
                                             keyColumnType = "DateTime";
                                             break;
+
                                         case FieldType.Number:
                                         case FieldType.Counter:
                                             keyColumnType = "Number";
@@ -78,11 +79,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             foreach (var dataRow in listInstance.DataRows)
                             {
-
                                 try
                                 {
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_, listInstance.DataRows.IndexOf(dataRow) + 1);
-
 
                                     bool create = true;
                                     ListItem listitem = null;
@@ -133,10 +132,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             if (dataField != null)
                                             {
                                                 String fieldValue = parser.ParseString(dataValue.Value);
-
                                                 switch (dataField.FieldTypeKind)
                                                 {
                                                     case FieldType.Geolocation:
+                                                        if(fieldValue == null)
+                                                        {
+                                                            listitem[parser.ParseString(dataValue.Key)] = null;
+                                                            break;
+                                                        }
                                                         // FieldGeolocationValue - Expected format: Altitude,Latitude,Longitude,Measure
                                                         var geolocationArray = fieldValue.Split(',');
                                                         if (geolocationArray.Length == 4)
@@ -155,7 +158,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                             listitem[parser.ParseString(dataValue.Key)] = fieldValue;
                                                         }
                                                         break;
+
                                                     case FieldType.Lookup:
+                                                        if (fieldValue == null)
+                                                        {
+                                                            listitem[parser.ParseString(dataValue.Key)] = null;
+                                                            break;
+                                                        }
                                                         // FieldLookupValue - Expected format: LookupID or LookupID,LookupID,LookupID...
                                                         if (fieldValue.Contains(","))
                                                         {
@@ -179,7 +188,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                             listitem[parser.ParseString(dataValue.Key)] = lookupValue;
                                                         }
                                                         break;
+
                                                     case FieldType.URL:
+                                                        if (fieldValue == null)
+                                                        {
+                                                            listitem[parser.ParseString(dataValue.Key)] = null;
+                                                            break;
+                                                        }
+
                                                         // FieldUrlValue - Expected format: URL,Description
                                                         var urlArray = fieldValue.Split(',');
                                                         var linkValue = new FieldUrlValue();
@@ -195,7 +211,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                         }
                                                         listitem[parser.ParseString(dataValue.Key)] = linkValue;
                                                         break;
+
                                                     case FieldType.User:
+                                                        if (fieldValue == null)
+                                                        {
+                                                            listitem[parser.ParseString(dataValue.Key)] = null;
+                                                            break;
+                                                        }
+
                                                         // FieldUserValue - Expected format: loginName or loginName,loginName,loginName...
                                                         if (fieldValue.Contains(","))
                                                         {
@@ -235,13 +258,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                             }
                                                         }
                                                         break;
+
                                                     case FieldType.DateTime:
-                                                        var dateTime = DateTime.MinValue;
-                                                        if (DateTime.TryParse(fieldValue, out dateTime))
+                                                        if (DateTime.TryParse(fieldValue, out DateTime dateTime))
                                                         {
                                                             listitem[parser.ParseString(dataValue.Key)] = dateTime;
                                                         }
+                                                        else
+                                                        {
+                                                            listitem[parser.ParseString(dataValue.Key)] = null;
+                                                        }
                                                         break;
+
                                                     default:
                                                         listitem[parser.ParseString(dataValue.Key)] = fieldValue;
                                                         break;
@@ -259,7 +287,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 catch (Exception ex)
                                 {
-
                                     if (ex.GetType().Equals(typeof(ServerException)) &&
                                         (ex as ServerException).ServerErrorTypeName.Equals("Microsoft.SharePoint.SPDuplicateValuesFoundException", StringComparison.InvariantCultureIgnoreCase) &&
                                         applyingInformation.IgnoreDuplicateDataRowErrors)
@@ -277,7 +304,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    #endregion
+                    #endregion DataRows
                 }
             }
 
@@ -310,4 +337,3 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
     }
 }
-
