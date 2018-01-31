@@ -830,6 +830,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 modelTerm.IsSourceTerm = term.IsSourceTerm;
                 modelTerm.SourceTermId = (term.SourceTerm != null) ? term.SourceTerm.Id : Guid.Empty;
                 modelTerm.IsDeprecated = term.IsDeprecated;
+                modelTerm.Description = term.Description;
+                modelTerm.Owner = term.Owner;
 
                 if ((!term.IsReused || term.IsSourceTerm) && term.Labels.Any())
                 {
