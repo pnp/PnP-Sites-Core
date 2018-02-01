@@ -814,7 +814,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 customSortOrder = ((Term)parent).CustomSortOrder;
             }
             context.Load(terms, tms => tms.IncludeWithDefaultProperties(t => t.Labels, t => t.CustomSortOrder,
-                t => t.IsReused, t => t.IsSourceTerm, t => t.SourceTerm, t => t.IsDeprecated));
+                t => t.IsReused, t => t.IsSourceTerm, t => t.SourceTerm, t => t.IsDeprecated, t => t.Description, t => t.Owner));
             context.ExecuteQueryRetry();
 
             foreach (var term in terms)
