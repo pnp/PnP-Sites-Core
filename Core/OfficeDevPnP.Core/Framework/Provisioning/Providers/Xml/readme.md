@@ -11,4 +11,5 @@ for the following types:
 * DataValue
 * FieldDefault
 * WebPartPageWebPart
+* PublishingWebPartPageWebPart
 * WikiPageWebPart

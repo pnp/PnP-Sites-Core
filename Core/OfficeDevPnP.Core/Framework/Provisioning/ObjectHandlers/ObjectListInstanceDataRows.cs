@@ -82,10 +82,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 try
                                 {
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_, listInstance.DataRows.IndexOf(dataRow) + 1);
+                                    var listitemCI = new ListItemCreationInformation();
+                                    var listitem = list.AddItem(listitemCI);
+                                    string arrayUser = "";
 
 
                                     bool create = true;
-                                    ListItem listitem = null;
                                     if (!string.IsNullOrEmpty(listInstance.DataRows.KeyColumn))
                                     {
                                         // Get value from key column
@@ -121,7 +123,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         if (listitem == null)
                                         {
-                                            var listitemCI = new ListItemCreationInformation();
+                                            listitemCI = new ListItemCreationInformation();
                                             listitem = list.AddItem(listitemCI);
                                         }
 
@@ -196,44 +198,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                         listitem[parser.ParseString(dataValue.Key)] = linkValue;
                                                         break;
                                                     case FieldType.User:
-                                                        // FieldUserValue - Expected format: loginName or loginName,loginName,loginName...
-                                                        if (fieldValue.Contains(","))
-                                                        {
-                                                            var userValues = new List<FieldUserValue>();
-                                                            fieldValue.Split(',').All(value =>
-                                                            {
-                                                                var user = web.EnsureUser(value);
-                                                                web.Context.Load(user);
-                                                                web.Context.ExecuteQueryRetry();
-                                                                if (user != null)
-                                                                {
-                                                                    userValues.Add(new FieldUserValue
-                                                                    {
-                                                                        LookupId = user.Id,
-                                                                    }); ;
-                                                                }
-                                                                return true;
-                                                            });
-                                                            listitem[parser.ParseString(dataValue.Key)] = userValues.ToArray();
-                                                        }
-                                                        else
-                                                        {
-                                                            var user = web.EnsureUser(fieldValue);
-                                                            web.Context.Load(user);
-                                                            web.Context.ExecuteQueryRetry();
-                                                            if (user != null)
-                                                            {
-                                                                var userValue = new FieldUserValue
-                                                                {
-                                                                    LookupId = user.Id,
-                                                                };
-                                                                listitem[parser.ParseString(dataValue.Key)] = userValue;
-                                                            }
-                                                            else
-                                                            {
-                                                                listitem[parser.ParseString(dataValue.Key)] = fieldValue;
-                                                            }
-                                                        }
+                                                        arrayUser += dataValue.Key + ";";
                                                         break;
                                                     case FieldType.DateTime:
                                                         var dateTime = DateTime.MinValue;
@@ -246,10 +211,55 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                         listitem[parser.ParseString(dataValue.Key)] = fieldValue;
                                                         break;
                                                 }
-                                                listitem.Update();
                                             }
                                         }
-                                        web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
+                                        listitem.Update();
+                                        web.Context.ExecuteQueryRetry();
+
+                                        //Users
+                                        if (!string.IsNullOrEmpty(arrayUser))
+                                        {
+                                            string[] parts = arrayUser.Trim(';').Split(';');
+                                            foreach (var filedName in parts)
+                                            {
+                                                String fieldValue = parser.ParseString(dataRow.Values[filedName]);
+                                                if (fieldValue.Contains(";"))
+                                                {
+                                                    var userValues = new List<FieldUserValue>();
+                                                    fieldValue.Split(';').All(value =>
+                                                    {
+                                                        var user = web.EnsureUser(value);
+                                                        web.Context.Load(user);
+                                                        web.Context.ExecuteQueryRetry();
+                                                        if (user != null)
+                                                        {
+                                                            userValues.Add(new FieldUserValue
+                                                            {
+                                                                LookupId = user.Id,
+                                                            }); ;
+                                                        }
+                                                        return true;
+                                                    });
+                                                    listitem[parser.ParseString(filedName)] = userValues.ToArray();
+                                                }
+                                                else
+                                                {
+                                                    var user = web.EnsureUser(fieldValue);
+                                                    web.Context.Load(user);
+                                                    web.Context.ExecuteQueryRetry();
+                                                    if (user != null)
+                                                    {
+                                                        var userValue = new FieldUserValue
+                                                        {
+                                                            LookupId = user.Id,
+                                                        };
+                                                        listitem[parser.ParseString(filedName)] = userValue;
+                                                    }
+                                                }
+                                                listitem.Update();
+                                                web.Context.ExecuteQueryRetry();
+                                            }
+                                        }
 
                                         if (dataRow.Security != null && (dataRow.Security.ClearSubscopes == true || dataRow.Security.CopyRoleAssignments == true || dataRow.Security.RoleAssignments.Count > 0))
                                         {
@@ -259,7 +269,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 catch (Exception ex)
                                 {
-
                                     if (ex.GetType().Equals(typeof(ServerException)) &&
                                         (ex as ServerException).ServerErrorTypeName.Equals("Microsoft.SharePoint.SPDuplicateValuesFoundException", StringComparison.InvariantCultureIgnoreCase) &&
                                         applyingInformation.IgnoreDuplicateDataRowErrors)

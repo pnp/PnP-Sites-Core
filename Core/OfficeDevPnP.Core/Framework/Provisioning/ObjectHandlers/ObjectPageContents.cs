@@ -81,16 +81,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         web.Context.Load(webPart,
                                             wp => wp.Id,
                                             wp => wp.WebPart.Title,
-                                            wp => wp.WebPart.ZoneIndex
+                                            wp => wp.WebPart.ZoneIndex,
+                                            wp => wp.WebPart.Properties
                                             );
                                         web.Context.ExecuteQueryRetry();
 
                                         var webPartxml = TokenizeWebPartXml(web, web.GetWebPartXml(webPart.Id, welcomePageUrl));
 
+                                        string ViewContentxml = "<View></View>";
+
+                                        if (webPart.WebPart.Properties != null && webPart.WebPart.Properties.FieldValues != null && webPart.WebPart.Properties.FieldValues.ContainsKey("XmlDefinition"))
+                                        {
+                                            ViewContentxml = webPart.WebPart.Properties.FieldValues["XmlDefinition"].ToString();
+                                        }
+
                                         page.WebParts.Add(new Model.WebPart()
                                         {
                                             Title = webPart.WebPart.Title,
                                             Contents = webPartxml,
+                                            ViewContent = ViewContentxml,
                                             Order = (uint)webPart.WebPart.ZoneIndex,
                                             Row = 1, // By default we will create a onecolumn layout, add the webpart to it, and later replace the wikifield on the page to position the webparts correctly.
                                             Column = 1 // By default we will create a onecolumn layout, add the webpart to it, and later replace the wikifield on the page to position the webparts correctly.
@@ -118,11 +127,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         }
                         else if (listItem.FieldValues.ContainsKey("ClientSideApplicationId") && listItem.FieldValues["ClientSideApplicationId"] != null && listItem.FieldValues["ClientSideApplicationId"].ToString().ToLower() == "b6917cb1-93a0-4b97-a84d-7cf49975d4ec")
-                        { 
+                        {
                             // this is a client side page, so let's skip it since it's handled by the Client Side Page contents handler
-                        }   
+                        }
                         else
-                        {                            
+                        {
                             if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION) || creationInfo.SkipVersionCheck)
                             {
                                 // Not a wikipage
@@ -144,7 +153,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 catch (ServerException ex)
                 {
-                    
+
                     //ignore this error. The default page is not a page but a list view.
                     if (ex.ServerErrorCode != -2146232832 && ex.HResult != -2146233088)
                     {
@@ -229,7 +238,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     Title = webPart.WebPart.Title,
                     Row = (uint)webPart.WebPart.ZoneIndex,
                     Order = (uint)webPart.WebPart.ZoneIndex,
-                    Contents = webPartxml
+                    Contents = webPartxml,
+                    ViewContent = "<View></View>",
                 };
 #if !SP2016
                 // As long as we've no CSOM library that has the ZoneID we can't use the version check as things don't compile...
@@ -271,6 +281,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             xml = Regex.Replace(xml, "(\"" + web.ServerRelativeUrl + ")(?!&)", "\"{site}", RegexOptions.IgnoreCase);
             xml = Regex.Replace(xml, "'" + web.ServerRelativeUrl, "'{site}", RegexOptions.IgnoreCase);
             xml = Regex.Replace(xml, ">" + web.ServerRelativeUrl, ">{site}", RegexOptions.IgnoreCase);
+            xml = Regex.Replace(xml, ">" + web.Url, ">{site}", RegexOptions.IgnoreCase);
             return xml;
         }
 
@@ -293,7 +304,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (!_willExtract.HasValue)
             {
 #if !ONPREMISES
-                _willExtract = true;
+                web.EnsureProperty(w => w.WebTemplate);
+                _willExtract = !(web.WebTemplate.ToLower().Contains("blankinternet") || web.WebTemplate.ToLower().Contains("enterwiki"));
 #else
                 _willExtract = web.Context.Credentials != null ? true : false;
 #endif

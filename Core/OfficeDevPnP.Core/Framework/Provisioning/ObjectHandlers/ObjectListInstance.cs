@@ -329,7 +329,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         foreach (var view in list.Views)
                         {
                             currentViewIndex++;
-                            parser = CreateView(web, view, existingViews, createdList, scope, parser, currentViewIndex, total);
+                            CreateView(web, view, existingViews, createdList, scope, parser, currentViewIndex, total);
 
                         }
                     }
@@ -410,7 +410,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private TokenParser CreateView(Web web, View view, Microsoft.SharePoint.Client.ViewCollection existingViews, List createdList, PnPMonitoredScope monitoredScope, TokenParser parser, int currentViewIndex, int total)
+        private void CreateView(Web web, View view, Microsoft.SharePoint.Client.ViewCollection existingViews, List createdList, PnPMonitoredScope monitoredScope, TokenParser parser, int currentViewIndex, int total)
         {
             try
             {
@@ -422,8 +422,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 WriteMessage($"Views for list {createdList.Title}|{displayNameElement.Value}|{currentViewIndex}|{total}", ProvisioningMessageType.Progress);
                 monitoredScope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_view__0_, displayNameElement.Value);
-
-
                 var viewTitle = parser.ParseString(displayNameElement.Value);
                 var existingView = existingViews.FirstOrDefault(v => v.Title == viewTitle);
                 if (existingView != null)
@@ -649,7 +647,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 monitoredScope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_view_failed___0_____1_, ex.Message, ex.StackTrace);
                 throw;
             }
-            return parser;
         }
 
         private static Field UpdateFieldRef(List siteList, Guid fieldId, FieldRef fieldRef, TokenParser parser)
@@ -683,11 +680,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 #endif
 
-            // We cannot configure Hidden property for Phonetic fields 
-            if (!(siteList.BaseTemplate == (int)ListTemplateType.Contacts &&
-                (fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase) ||
-                fieldRef.Name.Equals("FirstNamePhonetic", StringComparison.InvariantCultureIgnoreCase) ||
-                fieldRef.Name.Equals("CompanyPhonetic", StringComparison.InvariantCultureIgnoreCase))))
+            // We cannot configure Hidden property for Phonetic or Compliance fields 
+            if (!(
+                    siteList.BaseTemplate == (int)ListTemplateType.Contacts &&
+                    (
+                        fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase) ||
+                        fieldRef.Name.Equals("FirstNamePhonetic", StringComparison.InvariantCultureIgnoreCase) ||
+                        fieldRef.Name.Equals("CompanyPhonetic", StringComparison.InvariantCultureIgnoreCase)
+                    )
+                )
+                &&
+                !(
+                    siteList.BaseTemplate == (int)ListTemplateType.DocumentLibrary &&
+                    (
+                        fieldRef.Name.Equals("_ComplianceFlags", StringComparison.InvariantCultureIgnoreCase) ||
+                        fieldRef.Name.Equals("_ComplianceTag", StringComparison.InvariantCultureIgnoreCase) ||
+                        fieldRef.Name.Equals("_ComplianceTagWrittenTime", StringComparison.InvariantCultureIgnoreCase) ||
+                        fieldRef.Name.Equals("_ComplianceTagUserId", StringComparison.InvariantCultureIgnoreCase)
+                    )
+                )
+            )
             {
                 if (fieldRef.Hidden != listField.Hidden)
                 {
@@ -2095,7 +2107,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (baseTemplateList != null)
                     {
-                        if (!baseTemplateList.Equals(list))
+                        if (!baseTemplateList.Equals(list) || list.Url == "Shared Documents")
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_, list.Title, list.Url);
                             template.Lists.Add(list);
