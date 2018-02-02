@@ -300,7 +300,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     v => v.Aggregations,
                     v => v.JSLink,
                     v => v.ListViewXml,
-                     v => v.StyleId
+                    v => v.StyleId
                     );
 
             web.Context.ExecuteQuery();
@@ -319,7 +319,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             viewCreatedFromWebpart.MobileDefaultView = viewCreatedFromList.MobileDefaultView;
             viewCreatedFromWebpart.Aggregations = viewCreatedFromList.Aggregations;
             viewCreatedFromWebpart.JSLink = viewCreatedFromList.JSLink;
-            viewCreatedFromWebpart.ListViewXml = viewCreatedFromList.ListViewXml;
 
             viewCreatedFromWebpart.ViewFields.RemoveAll();
             foreach (var field in viewCreatedFromList.ViewFields)
@@ -333,7 +332,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             viewCreatedFromWebpart.Update();
-
+            definition.SaveWebPartChanges();
             web.Context.ExecuteQuery();
 
             // remove view created for webpart
