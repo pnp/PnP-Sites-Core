@@ -60,7 +60,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
                 }
                 else if (providerInstance != null)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(provider), string.Format(CoreResources.Provisioning_Extensibility_Invalid_Handler_Implementation, provider.Assembly, provider.Type));
+                    throw new ArgumentOutOfRangeException(nameof(provider), string.Format(CoreResources.Provisioning_Extensibility_Invalid_Handler_Implementation, this.GetType().Assembly.GetName().Version.ToString(), provider.Assembly, provider.Type));
                 }
                 return new List<TokenDefinition>();
             }
@@ -144,7 +144,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
                 }
                 else if (_instance != null && !(_instance is IProvisioningExtensibilityTokenProvider))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(handler), string.Format(CoreResources.Provisioning_Extensibility_Invalid_Handler_Implementation, handler.Assembly, handler.Type));
+                    throw new ArgumentOutOfRangeException(nameof(handler), string.Format(CoreResources.Provisioning_Extensibility_Invalid_Handler_Implementation, this.GetType().Assembly.GetName().Version.ToString(), handler.Assembly, handler.Type));
                 }
             }
             catch (Exception ex)
@@ -208,7 +208,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
                 }
                 else if (_instance != null && !(_instance is IProvisioningExtensibilityTokenProvider))
                 {
-                    throw new ArgumentOutOfRangeException(nameof(handler), string.Format(CoreResources.Provisioning_Extensibility_Invalid_Handler_Implementation, handler.Assembly, handler.Type));
+                    throw new ArgumentOutOfRangeException(nameof(handler), string.Format(CoreResources.Provisioning_Extensibility_Invalid_Handler_Implementation, this.GetType().Assembly.GetName().Version.ToString(), handler.Assembly, handler.Type));
                 }
                 else
                 {

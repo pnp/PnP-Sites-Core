@@ -930,7 +930,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &quot;The extensibility handler does not implement a supported extensibility handler interface. Assembly: {0}. Type {1}&quot;.
+        ///   Looks up a localized string similar to The extensibility handler does not implement a supported extensibility handler interface. Check if the extensibility handler references the same version of OfficeDevPnP currently in use (Version {0}). Assembly: {1}. Type: {2}.
         /// </summary>
         internal static string Provisioning_Extensibility_Invalid_Handler_Implementation {
             get {

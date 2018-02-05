@@ -1106,6 +1106,6 @@
     <value>Webhook {0} has been expired and will be skipped during creation/update of list {1}.</value>
   </data>
   <data name="Provisioning_Extensibility_Invalid_Handler_Implementation" xml:space="preserve">
-    <value>"The extensibility handler does not implement a supported extensibility handler interface. Assembly: {0}. Type {1}"</value>
+    <value>The extensibility handler does not implement a supported extensibility handler interface. Check if the extensibility handler references the same version of OfficeDevPnP currently in use (Version {0}). Assembly: {1}. Type: {2}</value>
   </data>
 </root>
