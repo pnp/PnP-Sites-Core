@@ -38,12 +38,21 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
-// Convention:
+
+// Convention (AssemblyVersion ONLY):
 // Major version = current version 2
+// Minor version = Should NOT change unless there are backwards incompatible changes. Should be set to 0 at next major version (3).
+// Third part = 0
+// Fourth part = 0
+// If this version number is changed it will break existing Extensibility handlers as they need to be rebuilt using the same version
+// This is OK if there are changes that are not backwards compatible.
+[assembly: AssemblyVersion("2.24.0.0")]
+
+// Convention (AssemblyFileVersion ONLY):
+// Major version = Same as for AssemblyVersion
 // Minor version = Sequence...version 0 was with January release...so 1=Feb 2=Mar...11=Jan 2017...15=May 2017...20=Nov
 // Third part = version indenpendant showing the release month in YYMM
 // Fourth part = 0 normally or a sequence number when we do an emergency release
-[assembly: AssemblyVersion("2.24.1803.0")]
 [assembly: AssemblyFileVersion("2.24.1803.0")]
 
 [assembly: InternalsVisibleTo("OfficeDevPnP.Core.Tests")]
