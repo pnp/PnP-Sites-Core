@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:Providers>
+    <pnp:Provider HandlerType="OfficeDev.PnP.Provisioning.Providers.InvalidProvider, OfficeDev.PnP.Provisioning.Providers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" Enabled="true">
+      <pnp:Configuration>
+        <MyProviderConfiguration id="SampleConfig" xmlns="http://schemas.somecompany.com/MyProviderConfiguration">
+          <ChildNode Attribute="value">TextContent</ChildNode>
+        </MyProviderConfiguration>
+      </pnp:Configuration>
+    </pnp:Provider>
+  </pnp:Providers>
+</pnp:ProvisioningTemplate>

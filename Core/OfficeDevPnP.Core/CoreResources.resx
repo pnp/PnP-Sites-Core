@@ -1105,4 +1105,7 @@
   <data name="Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook" xml:space="preserve">
     <value>Webhook {0} has been expired and will be skipped during creation/update of list {1}.</value>
   </data>
+  <data name="Provisioning_Extensibility_Invalid_Handler_Implementation" xml:space="preserve">
+    <value>"The extensibility handler does not implement a supported extensibility handler interface. Assembly: {0}. Type {1}"</value>
+  </data>
 </root>

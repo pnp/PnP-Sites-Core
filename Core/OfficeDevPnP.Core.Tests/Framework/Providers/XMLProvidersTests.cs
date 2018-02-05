@@ -13,6 +13,7 @@ using System.Threading;
 using System.Xml.Linq;
 using OfficeDevPnP.Core.Utilities;
 using System.Collections.Generic;
+using System.IO;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Providers
 {
@@ -2412,6 +2413,36 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", handler.Assembly);
             Assert.IsFalse(handler.Enabled);
             Assert.IsNull(handler.Configuration);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FileNotFoundException))]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_UnavailableExtensibilityHandlersThrowsException_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources\Templates",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "UnavailableExtensibilityHandlerTemplates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.GetTemplate("ProvisioningTemplate-2016-05-Sample.xml", serializer);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FileNotFoundException))]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_UnavailableExtensibilityHandlersThrowsException_201512()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources\Templates",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "UnavailableExtensibilityHandlerTemplates");
+
+            var serializer = new XMLPnPSchemaV201512Formatter();
+            provider.GetTemplate("ProvisioningSchema-2015-12-Sample.xml", serializer);
         }
 
         [TestMethod]

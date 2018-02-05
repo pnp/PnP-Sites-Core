@@ -31,7 +31,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     var typeName = s.GetPublicInstancePropertyValue("HandlerType");
                     if(typeName != null)
                     {
-                        var type = Type.GetType(typeName.ToString(), false);
+                        object enabledValue = s.GetPublicInstancePropertyValue("Enabled");
+                        bool enabled = false;
+                        if (enabledValue != null)
+                        {
+                            enabled = (bool)enabledValue;
+                        }
+
+                        var type = Type.GetType(typeName.ToString(), enabled);
                         if(type != null)
                         {
                             d.Assembly = type.Assembly.FullName;
