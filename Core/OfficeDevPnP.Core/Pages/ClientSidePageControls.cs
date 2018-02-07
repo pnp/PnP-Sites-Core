@@ -493,7 +493,7 @@ namespace OfficeDevPnP.Core.Pages
 
             // By default simple plain text is wrapped in a Paragraph, need to drop it to avoid getting multiple paragraphs on page edits.
             // Only drop the paragraph tag when there's only one Paragraph element underneath the DIV tag
-            if ((div.FirstChild as IElement).TagName.Equals("P", StringComparison.InvariantCultureIgnoreCase) &&
+            if ((div.FirstChild != null && (div.FirstChild as IElement).TagName.Equals("P", StringComparison.InvariantCultureIgnoreCase)) &&
                 (div.ChildElementCount == 1))
             {
                 this.Text = (div.FirstChild as IElement).InnerHtml;
@@ -868,6 +868,10 @@ namespace OfficeDevPnP.Core.Pages
                     }
                 }
             }
+            else
+            {
+                htmlWriter.Write(this.HtmlPropertiesData);
+            }
         }
         #endregion
 
@@ -895,6 +899,12 @@ namespace OfficeDevPnP.Core.Pages
             this.description = wpJObject["description"] != null ? wpJObject["description"].Value<string>() : "";
             // Set property to trigger correct loading of properties 
             this.PropertiesJson = wpJObject["properties"].ToString(Formatting.None);
+            // Store the server processed content as that's needed for full fidelity
+            if (wpJObject["serverProcessedContent"] != null)
+            {
+                this.serverProcessedContent = (JObject)wpJObject["serverProcessedContent"];
+            }
+
             this.webPartId = wpJObject["id"].Value<string>();
 
             var wpHtmlProperties = wpDiv.GetElementsByTagName("div").Where(a => a.HasAttribute(ClientSideWebPart.WebPartHtmlPropertiesAttribute)).FirstOrDefault();

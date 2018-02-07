@@ -12,7 +12,7 @@ using System.Configuration;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
-using System.IdentityModel.Tokens.Jwt;
+using System.IdentityModel.Tokens;
 
 #if !ONPREMISES
 using OfficeDevPnP.Core.Sites;
@@ -248,17 +248,13 @@ namespace Microsoft.SharePoint.Client
             if (!String.IsNullOrEmpty(accessToken))
             {
                 // Try to decode the access token
-                JwtSecurityTokenHandler jwtHandler = new JwtSecurityTokenHandler();
-                if (jwtHandler.CanReadToken(accessToken))
-                {
-                    var token = jwtHandler.ReadToken(accessToken) as JwtSecurityToken;
+                var token = new JwtSecurityToken(accessToken);
 
-                    // Search for the UPN claim, to see if we have user's delegation
-                    var upn = token.Claims.FirstOrDefault(claim => claim.Type == "upn")?.Value;
-                    if (String.IsNullOrEmpty(upn))
-                    {
-                        result = true;
-                    }
+                // Search for the UPN claim, to see if we have user's delegation
+                var upn = token.Claims.FirstOrDefault(claim => claim.Type == "upn")?.Value;
+                if (String.IsNullOrEmpty(upn))
+                {
+                    result = true;
                 }
             }
             else if (clientContext.Credentials == null)

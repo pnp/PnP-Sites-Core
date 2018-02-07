@@ -150,39 +150,40 @@ namespace OfficeDevPnP.Core.Tests.Sites
             }
         }
 
-        [TestMethod]
-        public async Task InstallUninstallTestAsync()
-        {
-            using (var clientContext = TestCommon.CreateClientContext())
-            {
-                AppManager manager = new AppManager(clientContext);
+        // No point in having this test as we can't wait for the installation to fully complete before calling uninstall
+        //[TestMethod]
+        //public async Task InstallUninstallTestAsync()
+        //{
+        //    using (var clientContext = TestCommon.CreateClientContext())
+        //    {
+        //        AppManager manager = new AppManager(clientContext);
 
-                var appBytes = OfficeDevPnP.Core.Tests.Properties.Resources.alm;
+        //        var appBytes = OfficeDevPnP.Core.Tests.Properties.Resources.alm;
 
-                var appMetadata = await manager.AddAsync(appBytes, $"app-{appGuid}.sppkg", true);
+        //        var appMetadata = await manager.AddAsync(appBytes, $"app-{appGuid}.sppkg", true);
 
-                Assert.IsNotNull(appMetadata);
+        //        Assert.IsNotNull(appMetadata);
 
-                var installResults = await manager.InstallAsync(appMetadata);
+        //        var installResults = await manager.InstallAsync(appMetadata);
 
-                Assert.IsTrue(installResults);
+        //        Assert.IsTrue(installResults);
 
-                //TODO: Better test required
-                /*
-                var installedMetadata = await manager.GetAvailableAsync(appMetadata.Id);
+        //        //TODO: Better test required
+        //        /*
+        //        var installedMetadata = await manager.GetAvailableAsync(appMetadata.Id);
 
-                Thread.Sleep(10000); // sleep 10 seconds
+        //        Thread.Sleep(10000); // sleep 10 seconds
 
-                Assert.IsTrue(installedMetadata.InstalledVersion != null);
-                */
+        //        Assert.IsTrue(installedMetadata.InstalledVersion != null);
+        //        */
 
-                var uninstallResults = await manager.UninstallAsync(appMetadata);
+        //        var uninstallResults = await manager.UninstallAsync(appMetadata);
 
-                Assert.IsTrue(uninstallResults);
+        //        Assert.IsTrue(uninstallResults);
 
-                await manager.RemoveAsync(appMetadata);
-            }
-        }
+        //        await manager.RemoveAsync(appMetadata);
+        //    }
+        //}
     }
 }
 #endif

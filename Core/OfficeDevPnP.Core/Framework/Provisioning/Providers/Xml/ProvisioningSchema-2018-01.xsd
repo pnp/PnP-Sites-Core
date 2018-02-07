@@ -3312,29 +3312,29 @@
       </xsd:annotation>
     </xsd:attribute>
 
-    <xsd:attribute name="Layout" type="xsd:string" use="optional" default="false">
+    <xsd:attribute name="Layout" type="xsd:string" use="optional" default="Article">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
         <xsd:documentation xml:lang="en">
-          Defines the target layout for the client-side page, optional attribute.
+          Defines the target layout for the client-side page, optional attribute (default: Article).
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
 
-    <xsd:attribute name="Publish" type="xsd:boolean" use="optional" default="false">
+    <xsd:attribute name="Publish" type="xsd:boolean" use="optional" default="true">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
         <xsd:documentation xml:lang="en">
-          Defines whether the page will be published or not, optional attribute.
+          Defines whether the page will be published or not, optional attribute (default: true).
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
 
-    <xsd:attribute name="EnableComments" type="xsd:boolean" use="optional" default="false">
+    <xsd:attribute name="EnableComments" type="xsd:boolean" use="optional" default="true">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
         <xsd:documentation xml:lang="en">
-          Defines whether the page will have comments enabled or not, optional attribute.
+          Defines whether the page will have comments enabled or not, optional attribute (default: true).
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
@@ -3496,6 +3496,10 @@
           <xsd:enumeration value="PageTitle" />
           <xsd:enumeration value="People" />
           <xsd:enumeration value="QuickLinks" />
+          <xsd:enumeration value="CustomMessageRegion" />
+          <xsd:enumeration value="Divider" />
+          <xsd:enumeration value="MicrosoftForms" />
+          <xsd:enumeration value="Spacer" />
         </xsd:restriction>
       </xsd:simpleType>
 
@@ -4340,6 +4344,37 @@
                           <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
                           <xsd:documentation xml:lang="en">
                             Instructs the engine to uninstall the package from the site collection.
+                          </xsd:documentation>
+                        </xsd:annotation>
+                      </xsd:enumeration>
+                    </xsd:restriction>
+                  </xsd:simpleType>
+
+                </xsd:attribute>
+
+                <xsd:attribute name="SyncMode" use="optional" default="Synchronously">
+                  <xsd:annotation>
+                    <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
+                    <xsd:documentation xml:lang="en">
+                      Defines whether the package will be handled synchronously or asynchronously, optional attribute (default: Synchronously).
+                    </xsd:documentation>
+                  </xsd:annotation>
+
+                  <xsd:simpleType>
+                    <xsd:restriction base="xsd:string">
+                      <xsd:enumeration value="Synchronously">
+                        <xsd:annotation>
+                          <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
+                          <xsd:documentation xml:lang="en">
+                            Defines that the package will be handled synchronously.
+                          </xsd:documentation>
+                        </xsd:annotation>
+                      </xsd:enumeration>
+                      <xsd:enumeration value="Asynchronously">
+                        <xsd:annotation>
+                          <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
+                          <xsd:documentation xml:lang="en">
+                            Defines that the package will be handled asynchronously.
                           </xsd:documentation>
                         </xsd:annotation>
                       </xsd:enumeration>

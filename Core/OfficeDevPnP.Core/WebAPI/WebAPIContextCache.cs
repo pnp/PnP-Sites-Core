@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OfficeDevPnP.Core.Utilities.Cache;
+using System;
 using System.Collections.Generic;
 
 namespace OfficeDevPnP.Core.WebAPI
@@ -9,13 +10,32 @@ namespace OfficeDevPnP.Core.WebAPI
     /// </summary>
     public class WebAPIContextCache
     {
-        private Dictionary<string, WebAPIContexCacheItem> clientContextCache = new Dictionary<string, WebAPIContexCacheItem>();
+        #region Cache Provider
+        private ICacheProvider _cacheProvider;
+        /// <summary>
+        /// Gets or Sets the cache provider
+        /// If no provider is configured, returns a default in memory cache provider implementation
+        /// </summary>
+        public ICacheProvider CacheProvider
+        {
+            get
+            {
+                if (_cacheProvider == null)
+                    _cacheProvider = new InMemoryCacheProvider();
+                return _cacheProvider;
+            }
+            set
+            {
+                _cacheProvider = value;
+            }
+        }
+        #endregion
 
         #region Singleton implementation
         // Singleton variables
         private static volatile WebAPIContextCache instance;
         private static object syncRoot = new Object();
-        
+
         // Singleton private constructor
         private WebAPIContextCache() { }
 
@@ -47,14 +67,7 @@ namespace OfficeDevPnP.Core.WebAPI
         /// <param name="sharePointServiceContextCacheItem">A <see cref="WebAPIContexCacheItem"/> object</param>
         public void Put(string cacheKey, WebAPIContexCacheItem sharePointServiceContextCacheItem)
         {
-            if (!clientContextCache.ContainsKey(cacheKey))
-            {
-                clientContextCache.Add(cacheKey, sharePointServiceContextCacheItem);
-            }
-            else
-            {
-                clientContextCache[cacheKey] = sharePointServiceContextCacheItem;
-            }
+            CacheProvider.Put(cacheKey, sharePointServiceContextCacheItem);
         }
 
         /// <summary>
@@ -64,7 +77,7 @@ namespace OfficeDevPnP.Core.WebAPI
         /// <returns>A <see cref="WebAPIContexCacheItem"/> object</returns>
         public WebAPIContexCacheItem Get(string cacheKey)
         {
-            return clientContextCache[cacheKey];
+            return CacheProvider.Get<WebAPIContexCacheItem>(cacheKey);
         }
 
     }

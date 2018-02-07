@@ -107,7 +107,23 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Quick Links webpart
         /// </summary>
-        QuickLinks
+        QuickLinks,
+        /// <summary>
+        /// Custom Message Region web part
+        /// </summary>
+        CustomMessageRegion,
+        /// <summary>
+        /// Divider web part
+        /// </summary>
+        Divider,
+        /// <summary>
+        /// Microsoft Forms web part
+        /// </summary>
+        MicrosoftForms,
+        /// <summary>
+        /// Spacer web part
+        /// </summary>
+        Spacer
     }
 
     /// <summary>
@@ -824,6 +840,10 @@ namespace OfficeDevPnP.Core.Pages
                 case DefaultClientSideWebParts.PageTitle: return "cbe7b0a9-3504-44dd-a3a3-0e5cacd07788";
                 case DefaultClientSideWebParts.People: return "7f718435-ee4d-431c-bdbf-9c4ff326f46e";
                 case DefaultClientSideWebParts.QuickLinks: return "c70391ea-0b10-4ee9-b2b4-006d3fcad0cd";
+                case DefaultClientSideWebParts.CustomMessageRegion: return "71c19a43-d08c-4178-8218-4df8554c0b0e";
+                case DefaultClientSideWebParts.Divider: return "2161a1c6-db61-4731-b97c-3cdb303f7cbb";
+                case DefaultClientSideWebParts.MicrosoftForms: return "b19b3b9e-8d13-4fec-a93c-401a091c0707";
+                case DefaultClientSideWebParts.Spacer: return "8654b779-4886-46d4-8ffb-b5ed960ee986";
                 default: return "";
             }
         }
@@ -846,6 +866,8 @@ namespace OfficeDevPnP.Core.Pages
                 case "6410b3b6-d440-4663-8744-378976dc041e": return DefaultClientSideWebParts.LinkPreview;
                 case "0ef418ba-5d19-4ade-9db0-b339873291d0": return DefaultClientSideWebParts.NewsFeed;
                 case "a5df8fdf-b508-4b66-98a6-d83bc2597f63": return DefaultClientSideWebParts.NewsReel;
+                // Seems like we've been having 2 guids to identify this web part...
+                case "8c88f208-6c77-4bdb-86a0-0c47b4316588": return DefaultClientSideWebParts.NewsReel;
                 case "58fcd18b-e1af-4b0a-b23b-422c2c52d5a2": return DefaultClientSideWebParts.PowerBIReportEmbed;
                 case "91a50c94-865f-4f5c-8b4e-e49659e69772": return DefaultClientSideWebParts.QuickChart;
                 case "eb95c819-ab8f-4689-bd03-0c2d65d47b1f": return DefaultClientSideWebParts.SiteActivity;
@@ -858,6 +880,10 @@ namespace OfficeDevPnP.Core.Pages
                 case "cbe7b0a9-3504-44dd-a3a3-0e5cacd07788": return DefaultClientSideWebParts.PageTitle;
                 case "7f718435-ee4d-431c-bdbf-9c4ff326f46e": return DefaultClientSideWebParts.People;
                 case "c70391ea-0b10-4ee9-b2b4-006d3fcad0cd": return DefaultClientSideWebParts.QuickLinks;
+                case "71c19a43-d08c-4178-8218-4df8554c0b0e": return DefaultClientSideWebParts.CustomMessageRegion;
+                case "2161a1c6-db61-4731-b97c-3cdb303f7cbb": return DefaultClientSideWebParts.Divider;
+                case "b19b3b9e-8d13-4fec-a93c-401a091c0707": return DefaultClientSideWebParts.MicrosoftForms;
+                case "8654b779-4886-46d4-8ffb-b5ed960ee986": return DefaultClientSideWebParts.Spacer;
                 default: return DefaultClientSideWebParts.ThirdParty;
             }
         }
@@ -944,15 +970,6 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void Publish()
         {
-            Publish("");
-        }
-
-        /// <summary>
-        /// Publishes a client side page
-        /// </summary>
-        /// <param name="publishMessage">Publish message</param>
-        public void Publish(string publishMessage)
-        {
             // Load the page
             string serverRelativePageName;
             File pageFile;
@@ -964,9 +981,18 @@ namespace OfficeDevPnP.Core.Pages
                 // connect up the page list item for future reference
                 this.pageListItem = pageFile.ListItemAllFields;
                 // publish the page
-                pageFile.Publish(publishMessage);
-                this.Context.ExecuteQueryRetry();
+                pageFile.PublishFileToLevel(FileLevel.Published);
             }
+        }
+
+        /// <summary>
+        /// Publishes a client side page
+        /// </summary>
+        /// <param name="publishMessage">Publish message</param>
+        [Obsolete("Please use the Publish() method instead. This method will be removed in the March 2018 release.")]
+        public void Publish(string publishMessage)
+        {
+            this.Publish();
         }
 
         /// <summary>

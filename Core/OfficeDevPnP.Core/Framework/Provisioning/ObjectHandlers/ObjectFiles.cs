@@ -13,6 +13,7 @@ using System.IO;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.Utilities;
 using Microsoft.SharePoint.Client.Taxonomy;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -107,6 +108,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (targetFile != null)
                     {
+                        // Add the fileuniqueid tokens
+#if !SP2013
+                        targetFile.EnsureProperties(p => p.UniqueId, p => p.ServerRelativeUrl);
+                        parser.AddToken(new FileUniqueIdToken(web, targetFile.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), targetFile.UniqueId));
+                        parser.AddToken(new FileUniqueIdEncodedToken(web, targetFile.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), targetFile.UniqueId));
+#endif
                         if (file.Properties != null && file.Properties.Any())
                         {
                             Dictionary<string, string> transformedProperties = file.Properties.ToDictionary(property => property.Key, property => parser.ParseString(property.Value));
@@ -410,7 +417,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             if (!_willProvision.HasValue)
             {
