@@ -13,9 +13,10 @@ Current version is based on **SharePoint Server 2016 RTM** version
 # 15 folder - SharePoint 2013 (On-Premises) #
 [![SharePointPnPCore2013](https://img.shields.io/nuget/v/SharePointPnPCore2013.svg)](https://www.nuget.org/packages/SharePointPnPCore2013/)
 
-Current version is based on version **15.0.4801.1000** (March 2016 CU)
+Current version is based on version **15.0.4953.1000** (August 1, 2017, update for SharePoint Server 2013 Client Components SDK (KB3213571) / August 2017 CU)
 
 Version History
+-  Version up until February 2nd 2018: version deployed with the March 2016 CU (version **15.0.4801.1000**)
 -  Version up until April 15th 2015: version deployed with the March 2015 CU (version **15.0.4701.1000**)
 -  Version up until March 12th 2015: version deployed with the February 2015 CU (version **15.0.4693.1000**)
 -  Version up until February 12th 2015: version deployed with the December 2014 CU (version **15.0.4675.1000**)
