@@ -208,7 +208,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             try
             {
                 web.Context.Load(targetFile, f => f.CheckOutType, f => f.CheckedOutByUser, f => f.ListItemAllFields.ParentList.ForceCheckout);
-                web.Context.ExecuteQueryRetry();                
+                web.Context.ExecuteQueryRetry();
 
                 if (targetFile.ListItemAllFields.ServerObjectIsNull.HasValue
                     && !targetFile.ListItemAllFields.ServerObjectIsNull.Value
@@ -248,7 +248,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Get a reference to the target list, if any
                 // and load file item properties
                 var parentList = file.ListItemAllFields.ParentList;
-                context.Load(parentList);
+                context.Load(parentList, lst=>lst.Title);
                 context.Load(file.ListItemAllFields);
                 try
                 {
@@ -270,7 +270,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var propertyValue = kvp.Value;
 
                     var targetField = parentList.Fields.GetByInternalNameOrTitle(propertyName);
-                    targetField.EnsureProperties(f => f.TypeAsString, f => f.ReadOnlyField);
+                    context.Load(targetField, f => f.TypeAsString, f => f.ReadOnlyField);
+                    context.ExecuteQueryRetry();
+                    if (targetField.ServerObjectIsNull()) {
+                        Log.Warning(Constants.LOGGING_SOURCE, $"Field {propertyName} was not found in list or library {parentList.Title}");
+                    }
+                    //targetField.EnsureProperties(f => f.TypeAsString, f => f.ReadOnlyField);
 
                     // Changed by PaoloPia because there are fields like PublishingPageLayout
                     // which are marked as read-only, but have to be overwritten while uploading
@@ -456,8 +461,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     catch(Exception)
                     {
                         //unable to Upload file, just ignore
-                    }                    
-                }             
+                    }
+                }
             }
             return targetFile;
         }
