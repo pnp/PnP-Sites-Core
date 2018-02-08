@@ -931,6 +931,7 @@ namespace Microsoft.SharePoint.Client
             }
 
             tenant.CreateGroupForSite(siteUrl, siteCollectionGroupifyInformation.DisplayName, siteCollectionGroupifyInformation.Alias, siteCollectionGroupifyInformation.IsPublic, optionalParams);
+            tenant.Context.ExecuteQueryRetry();
         }
         #endregion
 
