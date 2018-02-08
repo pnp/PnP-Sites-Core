@@ -218,7 +218,12 @@ namespace OfficeDevPnP.Core.Sites
         /// <returns>ClientContext object for the created site collection</returns>
         public static async Task<ClientContext> GroupifyAsync(ClientContext clientContext, TeamSiteCollectionGroupifyInformation siteCollectionGroupifyInformation)
         {
-            if (siteCollectionGroupifyInformation.Alias.Contains(" "))
+            if (siteCollectionGroupifyInformation == null)
+            {
+                throw new ArgumentException("Missing value for siteCollectionGroupifyInformation", "sitecollectionGroupifyInformation");
+            }
+
+            if (!string.IsNullOrEmpty(siteCollectionGroupifyInformation.Alias) && siteCollectionGroupifyInformation.Alias.Contains(" "))
             {
                 throw new ArgumentException("Alias cannot contain spaces", "Alias");
             }
@@ -254,9 +259,20 @@ namespace OfficeDevPnP.Core.Sites
                     payload.Add("alias", siteCollectionGroupifyInformation.Alias);
                     payload.Add("isPublic", siteCollectionGroupifyInformation.IsPublic);
 
-                    var optionalParams = new Dictionary<string, object>();
+                    var optionalParams = new Dictionary<string, object>();                    
                     optionalParams.Add("Description", siteCollectionGroupifyInformation.Description != null ? siteCollectionGroupifyInformation.Description : "");
-                    optionalParams.Add("CreationOptions", new { results = new object[0], Classification = siteCollectionGroupifyInformation.Classification != null ? siteCollectionGroupifyInformation.Classification : "" });
+
+                    // Handle groupify options
+                    var creationOptionsValues = new List<string>();
+                    if (siteCollectionGroupifyInformation.KeepOldHomePage)
+                    {
+                        creationOptionsValues.Add("SharePointKeepOldHomepage");
+                    }
+                    var creationOptions = new Dictionary<string, object>();
+                    creationOptions.Add("results", creationOptionsValues.ToArray());
+                    optionalParams.Add("CreationOptions", creationOptions);
+
+                    optionalParams.Add("Classification", siteCollectionGroupifyInformation.Classification != null ? siteCollectionGroupifyInformation.Classification : "");
 
                     payload.Add("optionalParams", optionalParams);
 
@@ -289,8 +305,9 @@ namespace OfficeDevPnP.Core.Sites
                         // If value empty, URL is taken
                         var responseString = await response.Content.ReadAsStringAsync();
                         var responseJson = JObject.Parse(responseString);
-                      
-                        if (Convert.ToInt32(responseJson["d"]["CreateGroupForSite"]["SiteStatus"]) == 2)
+
+                        // SiteStatus 1 = Provisioning, SiteStatus 2 = Ready
+                        if (Convert.ToInt32(responseJson["d"]["CreateGroupForSite"]["SiteStatus"]) == 2 || Convert.ToInt32(responseJson["d"]["CreateGroupForSite"]["SiteStatus"]) == 1)
                         {
                             responseContext = clientContext;
                         }

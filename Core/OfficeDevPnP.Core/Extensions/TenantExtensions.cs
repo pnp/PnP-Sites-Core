@@ -19,6 +19,7 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Framework.Graph.Model;
 using Newtonsoft.Json;
+using OfficeDevPnP.Core.Sites;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -884,6 +885,53 @@ namespace Microsoft.SharePoint.Client
             SiteClassificationsUtility.DisableSiteClassifications(accessToken);
         }
 
+        #endregion
+
+        #region Site groupify
+        /// <summary>
+        /// Connect an Office 365 group to an existing SharePoint site collection
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="siteUrl">Url to the site collection that needs to get connected to an Office 365 group</param>
+        /// <param name="siteCollectionGroupifyInformation">Information that configures the "groupify" process</param>
+        public static void GroupifySite(this Tenant tenant, string siteUrl, TeamSiteCollectionGroupifyInformation siteCollectionGroupifyInformation)
+        {
+            if (string.IsNullOrEmpty(siteUrl))
+            {
+                throw new ArgumentException("Missing value for siteUrl", "siteUrl");
+            }
+
+            if (siteCollectionGroupifyInformation == null)
+            {
+                throw new ArgumentException("Missing value for siteCollectionGroupifyInformation", "sitecollectionGroupifyInformation");
+            }
+
+            if (!string.IsNullOrEmpty(siteCollectionGroupifyInformation.Alias) && siteCollectionGroupifyInformation.Alias.Contains(" "))
+            {
+                throw new ArgumentException("Alias cannot contain spaces", "Alias");
+            }
+
+            if (string.IsNullOrEmpty(siteCollectionGroupifyInformation.DisplayName))
+            {
+                throw new ArgumentException("DisplayName is required", "DisplayName");
+            }
+
+            GroupCreationParams optionalParams = new GroupCreationParams(tenant.Context);
+            if (!String.IsNullOrEmpty(siteCollectionGroupifyInformation.Description))
+            {
+                optionalParams.Description = siteCollectionGroupifyInformation.Description;
+            }
+            if (!String.IsNullOrEmpty(siteCollectionGroupifyInformation.Classification))
+            {
+                optionalParams.Classification = siteCollectionGroupifyInformation.Classification;
+            }
+            if (siteCollectionGroupifyInformation.KeepOldHomePage)
+            {
+                optionalParams.CreationOptions = new string[] { "SharePointKeepOldHomepage" };
+            }
+
+            tenant.CreateGroupForSite(siteUrl, siteCollectionGroupifyInformation.DisplayName, siteCollectionGroupifyInformation.Alias, siteCollectionGroupifyInformation.IsPublic, optionalParams);
+        }
         #endregion
 
 #else
