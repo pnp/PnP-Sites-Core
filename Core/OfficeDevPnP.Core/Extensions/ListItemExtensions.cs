@@ -25,7 +25,6 @@ namespace OfficeDevPnP.Core.Extensions
             if (listitem == null) throw new ArgumentNullException(nameof(listitem));
             if (web == null) throw new ArgumentNullException(nameof(web));
             if (dataField == null) throw new ArgumentNullException(nameof(dataField));
-            if (scope == null) throw new ArgumentNullException(nameof(scope));
 
             var fieldName = dataField.InternalName;
 
@@ -219,7 +218,7 @@ namespace OfficeDevPnP.Core.Extensions
                                     }
                                     else
                                     {
-                                        scope.LogWarning("Term {0} is not found (setting field {1})", termLabel, dataField.InternalName);
+                                        scope?.LogWarning("Term {0} is not found (setting field {1})", termLabel, dataField.InternalName);
                                     }
                                 }
 
@@ -241,14 +240,14 @@ namespace OfficeDevPnP.Core.Extensions
                                 }
                                 else
                                 {
-                                    scope.LogWarning("Term {0} is not found (setting field {1})", fieldValue, dataField.InternalName);
+                                    scope?.LogWarning("Term {0} is not found (setting field {1})", fieldValue, dataField.InternalName);
                                 }
                             }
                         }
                     }
                     else
                     {
-                        scope.LogWarning("Unsupported field type: {0}/ (Field:{1})", dataField.FieldTypeKind, dataField.TypeAsString, fieldName);
+                        scope?.LogWarning("Unsupported field type: {0}/ (Field:{1})", dataField.FieldTypeKind, dataField.TypeAsString, fieldName);
 
                     }
                     break;
@@ -266,16 +265,6 @@ namespace OfficeDevPnP.Core.Extensions
             }
         }
 
-        private static SPTerm ResolveTerm(ClientRuntimeContext context, TaxonomyField taxField, string fieldValue, out int lcid)
-        {
-
-            var taxSession = TaxonomySession.GetTaxonomySession(context);
-            var store = taxField.IsKeyword ? taxSession.GetDefaultKeywordsTermStore() : taxSession.GetDefaultSiteCollectionTermStore();
-            var termSet = store.GetTermSet(taxField.TermSetId);
-            lcid = store.EnsureProperty(s=>s.DefaultLanguage);
-            return termSet.Terms.GetByName(fieldValue);
-
-        }
 
         public static void SetListItemFieldValue(
             this ListItem listitem,
@@ -294,24 +283,24 @@ namespace OfficeDevPnP.Core.Extensions
 
             if (dataField == null)
             {
-                scope.LogWarning("Cannot find field {0} in list {1}", fieldName, listInstance.Title);
+                scope?.LogWarning("Cannot find field {0} in list {1}", fieldName, listInstance.Title);
             }
             else if (dataField.ReadOnlyField)
             {
-                scope.LogWarning("Cannot set field {0} in list {1} because it's a readonly field", fieldName, listInstance.Title);
+                scope?.LogWarning("Cannot set field {0} in list {1} because it's a readonly field", fieldName, listInstance.Title);
             }
             else
             {
                 var fieldValue = parser.ParseString(valueAsAsString);
-                scope.LogDebug("Setting field {0} in list {1} with value {2}", dataField.Title, listInstance.Title, fieldValue);
+                scope?.LogDebug("Setting field {0} in list {1} with value {2}", dataField.Title, listInstance.Title, fieldValue);
                 try
                 {
                     listitem.SetListItemValue(web, dataField, fieldValue, scope);
                 }
                 catch (Exception exc)
                 {
-                    scope.LogWarning("Error when reading value {0} for field {1}. Exception : {2}", fieldValue, fieldName, exc.Message);
-                    scope.LogDebug("Exception was {0}", exc);
+                    scope?.LogWarning("Error when reading value {0} for field {1}. Exception : {2}", fieldValue, fieldName, exc.Message);
+                    scope?.LogDebug("Exception was {0}", exc);
                 }
             }
         }

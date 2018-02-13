@@ -235,6 +235,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
+        [Obsolete("Prefer using SetFileProperties(File, IDictionary<string, string>, PnPMonitoredScope, bool) overload to allow warnings to be shown.")]
+        public void SetFileProperties(File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
+        {
+            SetFileProperties(file, properties, null, checkoutIfRequired);
+        }
         public void SetFileProperties(File file, IDictionary<string, string> properties, PnPMonitoredScope scope, bool checkoutIfRequired = true)
         {
             var context = file.Context;
