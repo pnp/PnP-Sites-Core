@@ -56,7 +56,7 @@ namespace Microsoft.SharePoint.Client
 
             if (!termStore.IsObjectPropertyInstantiated("Name"))
             {
-                // get instances to root web, since we are processing currently sub site 
+                // get instances to root web, since we are processing currently sub site
                 termStore.Context.Load(termStore);
                 termStore.Context.ExecuteQueryRetry();
             }
@@ -467,7 +467,7 @@ namespace Microsoft.SharePoint.Client
 
             var lmi = new LabelMatchInformation(site.Context);
 
-            lmi.Lcid = 1033;
+            lmi.Lcid = ts.EnsureProperty(tstore=>tstore.DefaultLanguage);
             lmi.TrimUnavailable = true;
             lmi.TermLabel = term;
 
@@ -533,9 +533,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         ///  Imports an array of | delimited strings into the deafult site collection termstore. Specify strings in this format:
         ///  TermGroup|TermSet|Term
-        ///  
+        ///
         ///  E.g. "Locations|Nordics|Sweden"
-        ///  
+        ///
         /// </summary>
         /// <param name="site">The current site</param>
         /// <param name="termLines">Array of TermLines</param>
@@ -557,9 +557,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         ///  Imports an array of | delimited strings into the deafult site collection termstore. Specify strings in this format:
         ///  TermGroup|TermSet|Term
-        ///  
+        ///
         ///  E.g. "Locations|Nordics|Sweden"
-        ///  
+        ///
         /// </summary>
         /// <param name="site">The current site</param>
         /// <param name="termLines">Array of TermLines</param>
@@ -757,7 +757,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The created, or updated, term set</returns>
         /// <remarks>
         /// <para>
-        /// The format of the file is the same as that used by the import function in the 
+        /// The format of the file is the same as that used by the import function in the
         /// web interface. A sample file can be obtained from the web interface.
         /// </para>
         /// <para>
@@ -767,7 +767,7 @@ namespace Microsoft.SharePoint.Client
         /// <code>Term Set Name,Term Set Description,LCID,Available for Tagging,Term Description,Level 1 Term,Level 2 Term,Level 3 Term,Level 4 Term,Level 5 Term,Level 6 Term,Level 7 Term</code>
         /// </para>
         /// <para>
-        /// The first data row must contain the Term Set Name, Term Set Description, and LCID, and should also contain the first term. 
+        /// The first data row must contain the Term Set Name, Term Set Description, and LCID, and should also contain the first term.
         /// </para>
         /// <para>
         /// It is recommended that a fixed GUID be used as the termSetId, to allow the term set to be easily updated (so do not pass Guid.Empty).
@@ -775,7 +775,7 @@ namespace Microsoft.SharePoint.Client
         /// <para>
         /// In contrast to the web interface import, this is not a one-off import but runs synchronisation logic allowing updating of an existing Term Set.
         /// When synchronising, any existing terms are matched (with Term Description and Available for Tagging updated as necessary),
-        /// any new terms are added in the correct place in the hierarchy, and (if synchroniseDeletions is set) any terms not in the imported file 
+        /// any new terms are added in the correct place in the hierarchy, and (if synchroniseDeletions is set) any terms not in the imported file
         /// are removed.
         /// </para>
         /// <para>
@@ -808,7 +808,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The created, or updated, term set</returns>
         /// <remarks>
         /// <para>
-        /// The format of the file is the same as that used by the import function in the 
+        /// The format of the file is the same as that used by the import function in the
         /// web interface. A sample file can be obtained from the web interface.
         /// </para>
         /// <para>
@@ -818,7 +818,7 @@ namespace Microsoft.SharePoint.Client
         /// <code>Term Set Name,Term Set Description,LCID,Available for Tagging,Term Description,Level 1 Term,Level 2 Term,Level 3 Term,Level 4 Term,Level 5 Term,Level 6 Term,Level 7 Term</code>
         /// </para>
         /// <para>
-        /// The first data row must contain the Term Set Name, Term Set Description, and LCID, and should also contain the first term. 
+        /// The first data row must contain the Term Set Name, Term Set Description, and LCID, and should also contain the first term.
         /// </para>
         /// <para>
         /// It is recommended that a fixed GUID be used as the termSetId, to allow the term set to be easily updated (so do not pass Guid.Empty).
@@ -826,7 +826,7 @@ namespace Microsoft.SharePoint.Client
         /// <para>
         /// In contrast to the web interface import, this is not a one-off import but runs synchronisation logic allowing updating of an existing Term Set.
         /// When synchronising, any existing terms are matched (with Term Description and Available for Tagging updated as necessary),
-        /// any new terms are added in the correct place in the hierarchy, and (if synchroniseDeletions is set) any terms not in the imported file 
+        /// any new terms are added in the correct place in the hierarchy, and (if synchroniseDeletions is set) any terms not in the imported file
         /// are removed.
         /// </para>
         /// <para>
@@ -1783,7 +1783,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Can be used to create taxonomy field remotely in a list. 
+        /// Can be used to create taxonomy field remotely in a list.
         /// </summary>
         /// <param name="list">List to be processed</param>
         /// <param name="fieldCreationInformation">Creation information of the field</param>

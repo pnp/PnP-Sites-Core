@@ -410,6 +410,7 @@
     <Compile Include="Extensions\FileFolderExtensions.cs" />
     <Compile Include="Extensions\InformationManagementExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
+    <Compile Include="Extensions\ListItemExtensions.cs" />
     <Compile Include="Extensions\ListRatingExtensions.cs" />
     <Compile Include="Extensions\ProvisioningExtensions.cs" />
     <Compile Include="Extensions\PublishingExtensions.cs" />

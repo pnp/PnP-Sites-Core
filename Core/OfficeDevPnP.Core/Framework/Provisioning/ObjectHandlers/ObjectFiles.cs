@@ -1,19 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Entities;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using File = Microsoft.SharePoint.Client.File;
+﻿using Microsoft.SharePoint.Client;
+using Newtonsoft.Json;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Entities;
+using OfficeDevPnP.Core.Extensions;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using System;
-using System.Text.RegularExpressions;
-using System.Net;
+using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json;
-using OfficeDevPnP.Core.Utilities;
-using Microsoft.SharePoint.Client.Taxonomy;
-using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using System.Linq;
+using System.Net;
+using System.Text.RegularExpressions;
+using File = Microsoft.SharePoint.Client.File;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -23,6 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         // See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f?ui=en-US&rs=en-US&ad=US
         public static readonly string[] BlockedExtensionsInNoScript = new string[] { ".asmx", ".ascx", ".aspx", ".htc", ".jar", ".master", ".swf", ".xap", ".xsf" };
+
         public static readonly string[] BlockedLibrariesInNoScript = new string[] { "_catalogs/theme", "style library", "_catalogs/lt", "_catalogs/wp" };
 
         public override string Name
@@ -117,7 +116,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (file.Properties != null && file.Properties.Any())
                         {
                             Dictionary<string, string> transformedProperties = file.Properties.ToDictionary(property => property.Key, property => parser.ParseString(property.Value));
-                            SetFileProperties(targetFile, transformedProperties, false);
+                            SetFileProperties(targetFile, transformedProperties, scope, false);
                         }
 
 #if !SP2013
@@ -154,7 +153,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         webPartsNeedLocalization = true;
                                     }
 #endif
-                                    }
+                                }
                             }
                         }
 
@@ -195,7 +194,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             targetFile.ListItemAllFields.SetSecurity(parser, file.Security);
                         }
                     }
-
                 }
             }
             WriteMessage("Done processing files", ProvisioningMessageType.Completed);
@@ -232,15 +230,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return checkedOut;
         }
 
-
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-
             return template;
         }
 
-
-        public void SetFileProperties(File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
+        public void SetFileProperties(File file, IDictionary<string, string> properties, PnPMonitoredScope scope, bool checkoutIfRequired = true)
         {
             var context = file.Context;
             if (properties != null && properties.Count > 0)
@@ -248,7 +243,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Get a reference to the target list, if any
                 // and load file item properties
                 var parentList = file.ListItemAllFields.ParentList;
-                context.Load(parentList, lst=>lst.Title);
+                context.Load(
+                    parentList,
+                    lst => lst.Title,
+                    lst => lst.Fields.Include(f => f.Id, f => f.TypeAsString, f => f.ReadOnlyField, f => f.InternalName, f => f.FieldTypeKind, f => f.Title)
+                    );
                 context.Load(file.ListItemAllFields);
                 try
                 {
@@ -264,99 +263,54 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 // Loop through and detect changes first, then, check out if required and apply
-                foreach (var kvp in properties)
+                if (parentList != null)
                 {
-                    var propertyName = kvp.Key;
-                    var propertyValue = kvp.Value;
-
-                    var targetField = parentList.Fields.GetByInternalNameOrTitle(propertyName);
-                    context.Load(targetField, f => f.TypeAsString, f => f.ReadOnlyField);
-                    context.ExecuteQueryRetry();
-                    if (targetField.ServerObjectIsNull()) {
-                        Log.Warning(Constants.LOGGING_SOURCE, $"Field {propertyName} was not found in list or library {parentList.Title}");
-                    }
-                    //targetField.EnsureProperties(f => f.TypeAsString, f => f.ReadOnlyField);
-
-                    // Changed by PaoloPia because there are fields like PublishingPageLayout
-                    // which are marked as read-only, but have to be overwritten while uploading
-                    // a publishing page file and which in reality can still be written
-                    if (!targetField.ReadOnlyField || WriteableReadOnlyFields.Contains(propertyName.ToLower()))
+                    foreach (var kvp in properties)
                     {
-                        switch (propertyName.ToUpperInvariant())
+                        var propertyName = kvp.Key;
+                        var propertyValue = kvp.Value;
+
+                        var targetField = parentList.Fields.FirstOrDefault(f => f.InternalName == propertyName || f.Title == propertyName); ;
+                        if (targetField == null)
                         {
-                            case "CONTENTTYPE":
-                                {
-                                    Microsoft.SharePoint.Client.ContentType targetCT = parentList.GetContentTypeByName(propertyValue);
-                                    context.ExecuteQueryRetry();
-
-                                    if (targetCT != null)
-                                    {
-                                        file.ListItemAllFields["ContentTypeId"] = targetCT.StringId;
-                                    }
-                                    else
-                                    {
-                                        Log.Error(Constants.LOGGING_SOURCE, "Content Type {0} does not exist in target list!", propertyValue);
-                                    }
-                                    break;
-                                }
-                            default:
-                                {
-                                    switch (targetField.TypeAsString)
-                                    {
-                                        case "User":
-                                            var user = parentList.ParentWeb.EnsureUser(propertyValue);
-                                            context.Load(user);
-                                            context.ExecuteQueryRetry();
-
-                                            if (user != null)
-                                            {
-                                                var userValue = new FieldUserValue
-                                                {
-                                                    LookupId = user.Id,
-                                                };
-                                                file.ListItemAllFields[propertyName] = userValue;
-                                            }
-                                            break;
-                                        case "URL":
-                                            var urlArray = propertyValue.Split(',');
-                                            var linkValue = new FieldUrlValue();
-                                            if (urlArray.Length == 2)
-                                            {
-                                                linkValue.Url = urlArray[0];
-                                                linkValue.Description = urlArray[1];
-                                            }
-                                            else
-                                            {
-                                                linkValue.Url = urlArray[0];
-                                                linkValue.Description = urlArray[0];
-                                            }
-                                            file.ListItemAllFields[propertyName] = linkValue;
-                                            break;
-                                        case "MultiChoice":
-                                            var multiChoice = JsonUtility.Deserialize<String[]>(propertyValue);
-                                            file.ListItemAllFields[propertyName] = multiChoice;
-                                            break;
-                                        case "LookupMulti":
-                                            var lookupMultiValue = JsonUtility.Deserialize<FieldLookupValue[]>(propertyValue);
-                                            file.ListItemAllFields[propertyName] = lookupMultiValue;
-                                            break;
-                                        case "TaxonomyFieldType":
-                                            var taxonomyValue = JsonUtility.Deserialize<TaxonomyFieldValue>(propertyValue);
-                                            file.ListItemAllFields[propertyName] = taxonomyValue;
-                                            break;
-                                        case "TaxonomyFieldTypeMulti":
-                                            var taxonomyValueArray = JsonUtility.Deserialize<TaxonomyFieldValue[]>(propertyValue);
-                                            file.ListItemAllFields[propertyName] = taxonomyValueArray;
-                                            break;
-                                        default:
-                                            file.ListItemAllFields[propertyName] = propertyValue;
-                                            break;
-                                    }
-                                    break;
-                                }
+                            Log.Warning(Constants.LOGGING_SOURCE, $"Field {propertyName} was not found in list or library {parentList.Title}");
+                            continue;
                         }
+                        //targetField.EnsureProperties(f => f.TypeAsString, f => f.ReadOnlyField);
+
+                        // Changed by PaoloPia because there are fields like PublishingPageLayout
+                        // which are marked as read-only, but have to be overwritten while uploading
+                        // a publishing page file and which in reality can still be written
+                        if (!targetField.ReadOnlyField || WriteableReadOnlyFields.Contains(propertyName.ToLower()))
+                        {
+                            switch (propertyName.ToUpperInvariant())
+                            {
+                                case "CONTENTTYPE":
+                                    {
+                                        Microsoft.SharePoint.Client.ContentType targetCT = parentList.GetContentTypeByName(propertyValue);
+                                        context.ExecuteQueryRetry();
+
+                                        if (targetCT != null)
+                                        {
+                                            file.ListItemAllFields["ContentTypeId"] = targetCT.StringId;
+                                        }
+                                        else
+                                        {
+                                            Log.Error(Constants.LOGGING_SOURCE, "Content Type {0} does not exist in target list!", propertyValue);
+                                        }
+                                        break;
+                                    }
+                                default:
+                                    {
+                                        var listItem = file.ListItemAllFields;
+                                        listItem.SetListItemValue(((ClientContext)context).Web, targetField, propertyValue, scope);
+
+                                        break;
+                                    }
+                            }
+                        }
+                        file.ListItemAllFields.Update();
                     }
-                    file.ListItemAllFields.Update();
                     context.ExecuteQueryRetry();
                 }
             }
@@ -418,7 +372,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private ProvisioningTemplate CleanupEntities(ProvisioningTemplate template, ProvisioningTemplate baseTemplate)
         {
-
             return template;
         }
 
@@ -458,7 +411,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         targetFile = folder.UploadFile(fileName, stream, file.Overwrite);
                     }
-                    catch(Exception)
+                    catch (Exception)
                     {
                         //unable to Upload file, just ignore
                     }

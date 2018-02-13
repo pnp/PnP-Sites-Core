@@ -15,7 +15,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// <returns>json string</returns>
         public static string Serialize<T>(T obj)
         {
-            return JsonConvert.SerializeObject(obj) ;
+            return JsonConvert.SerializeObject(obj);
         }
 
         /// <summary>
@@ -29,5 +29,30 @@ namespace OfficeDevPnP.Core.Utilities
             return JsonConvert.DeserializeObject<T>(json);
         }
 
+        /// <summary>
+        /// Try to deserialize a string into an object
+        /// </summary>
+        /// <typeparam name="T">Type of the returned object</typeparam>
+        /// <param name="json">json string</param>
+        /// <param name="value">Object of type T is the deserialization succeeded</param>
+        /// <returns><c>true</c> if the deserialization was successfull otherwise <c>false</c></returns>
+        public static bool TryDeserialize<T>(string json, out T value)
+        {
+            try
+            {
+                value = Deserialize<T>(json);
+                return true;
+            }
+            catch (JsonReaderException)
+            {
+                value = default(T);
+                return false;
+            }
+            catch (JsonSerializationException)
+            {
+                value = default(T);
+                return false;
+            }
+        }
     }
 }
