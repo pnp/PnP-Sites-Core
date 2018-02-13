@@ -467,7 +467,7 @@ namespace Microsoft.SharePoint.Client
 
             var lmi = new LabelMatchInformation(site.Context);
 
-            lmi.Lcid = 1033;
+            lmi.Lcid = ts.EnsureProperty(tstore=>tstore.DefaultLanguage);
             lmi.TrimUnavailable = true;
             lmi.TermLabel = term;
 
