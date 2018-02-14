@@ -1,9 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+#if !NETSTANDARD2_0
 using System.Runtime.Remoting.Messaging;
+#endif
 using System.Text;
 using System.Threading.Tasks;
+#if NETSTANDARD2_0
+using System.Threading;
+#endif
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
@@ -52,6 +57,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
         }
 
+#if !NETSTANDARD2_0
         public static PnPSerializationScope Current
         {
             get { return CallContext.LogicalGetData(nameof(PnPSerializationScope)) as PnPSerializationScope; }
@@ -61,5 +67,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 CallContext.LogicalSetData(nameof(PnPSerializationScope), value);
             }
         }
+#else
+        private static AsyncLocal<PnPSerializationScope> _pnpSerializationScope = new AsyncLocal<PnPSerializationScope>();
+
+        public static PnPSerializationScope Current
+        {
+            get { return _pnpSerializationScope.Value; }
+            set
+            {
+                _pnpSerializationScope.Value = value;
+            }
+        }
+#endif
     }
 }

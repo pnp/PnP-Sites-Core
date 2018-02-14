@@ -143,6 +143,7 @@ namespace Microsoft.SharePoint.Client
                     }
                 case BuiltInIdentity.EveryoneButExternalUsers:
                     {
+#if !NETSTANDARD2_0
                         User spReader = null;
                         try
                         {
@@ -295,7 +296,7 @@ namespace Microsoft.SharePoint.Client
                                 case 1066: // Vietnamese
                                     userIdentity = "Tất cả mọi người trừ người dùng bên ngoài";
                                     break;
-                            }
+                    }
                             if (!string.IsNullOrEmpty(userIdentity))
                             {
                                 spReader = web.EnsureUser(userIdentity);
@@ -311,13 +312,16 @@ namespace Microsoft.SharePoint.Client
                         web.AssociatedVisitorGroup.Update();
                         web.Context.ExecuteQueryRetry();
                         return spReader;
+#else
+                        throw new Exception("Not supported");
+#endif
                     }
             }
 
             return null;
         }
 
-        #endregion
+#endregion
 
 #if !ONPREMISES
 #region External sharing management
@@ -1163,6 +1167,7 @@ namespace Microsoft.SharePoint.Client
         }
 #endregion
 
+#if !NETSTANDARD2_0
 #region Authentication Realm
         /// <summary>
         /// Returns the authentication realm for the current web
@@ -1179,6 +1184,7 @@ namespace Microsoft.SharePoint.Client
 
         }
 #endregion
+#endif
 
 #region SecurableObject traversal
 
