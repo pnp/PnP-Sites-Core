@@ -4,13 +4,17 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading;
+#if !NETSTANDARD2_0
 using System.Xml.Serialization.Configuration;
+#endif
 using Microsoft.Graph;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.Online.SharePoint.TenantManagement;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
+#if !NETSTANDARD2_0
 using OfficeDevPnP.Core.UPAWebService;
+#endif
 using OfficeDevPnP.Core.Diagnostics;
 using System.Net.Http;
 using CoreUtilities = OfficeDevPnP.Core.Utilities;
@@ -30,7 +34,7 @@ namespace Microsoft.SharePoint.Client
         const string SITE_STATUS_RECYCLED = "Recycled";
 
 #if !ONPREMISES
-        #region Site collection creation
+#region Site collection creation
         /// <summary>
         /// Adds a SiteEntity by launching site collection creation and waits for the creation to finish
         /// </summary>
@@ -140,9 +144,9 @@ namespace Microsoft.SharePoint.Client
             };
             return tenant.CreateSiteCollection(siteCol, removeFromRecycleBin, wait, timeoutFunction);
         }
-        #endregion
+#endregion
 
-        #region Site status checks
+#region Site status checks
         /// <summary>
         /// Returns if a site collection is in a particular status. If the url contains a sub site then returns true is the sub site exists, false if not. 
         /// Status is irrelevant for sub sites
@@ -303,9 +307,9 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
-        #endregion
+#endregion
 
-        #region Site collection deletion
+#region Site collection deletion
         /// <summary>
         /// Deletes a site collection
         /// </summary>
@@ -385,9 +389,9 @@ namespace Microsoft.SharePoint.Client
             }
             return ret;
         }
-        #endregion
+#endregion
 
-        #region Site collection properties
+#region Site collection properties
         /// <summary>
         /// Gets the ID of site collection with specified URL
         /// </summary>
@@ -534,9 +538,9 @@ namespace Microsoft.SharePoint.Client
 
             }
         }
-        #endregion
+#endregion
 
-        #region Site collection administrators
+#region Site collection administrators
         /// <summary>
         /// Add a site collection administrator to a site collection
         /// </summary>
@@ -570,9 +574,9 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
-        #endregion
+#endregion
 
-        #region Site enumeration
+#region Site enumeration
         /// <summary>
         /// Returns all site collections in the current Tenant based on a startIndex. IncludeDetail adds additional properties to the SPSite object. 
         /// </summary>
@@ -633,6 +637,7 @@ namespace Microsoft.SharePoint.Client
             return sites;
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Get OneDrive site collections by iterating through all user profiles.
         /// </summary>
@@ -670,7 +675,9 @@ namespace Microsoft.SharePoint.Client
 
             return sites;
         }
+#endif
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the UserProfileService proxy to enable calls to the UPA web service.
         /// </summary>
@@ -695,7 +702,9 @@ namespace Microsoft.SharePoint.Client
             }
             return client;
         }
-        #endregion
+#endif
+
+#endregion
 
         #region ClientSide Package Deployment
 
@@ -921,9 +930,9 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
-        #endregion
+#endregion
 
-        #region Site collection deletion
+#region Site collection deletion
         /// <summary>
         /// Deletes a site collection
         /// </summary>
@@ -934,7 +943,7 @@ namespace Microsoft.SharePoint.Client
             tenant.RemoveSite(siteFullUrl);
             tenant.Context.ExecuteQueryRetry();
         }
-        #endregion
+#endregion
 #endif
     }
 }

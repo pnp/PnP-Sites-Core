@@ -197,7 +197,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (stream != null)
                         {
+#if !NETSTANDARD2_0
                             using (ResXResourceReader resxReader = new ResXResourceReader(stream))
+#else
+                            using (ResourceReader resxReader = new ResourceReader(stream))
+#endif
                             {
                                 foreach (DictionaryEntry entry in resxReader)
                                 {
