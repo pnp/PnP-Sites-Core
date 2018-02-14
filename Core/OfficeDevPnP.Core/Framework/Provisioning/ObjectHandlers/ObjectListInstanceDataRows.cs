@@ -246,9 +246,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                         listitem[parser.ParseString(dataValue.Key)] = fieldValue;
                                                         break;
                                                 }
-                                                listitem.Update();
                                             }
                                         }
+
+                                        listitem.Update();
                                         web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
 
                                         if (dataRow.Security != null && (dataRow.Security.ClearSubscopes == true || dataRow.Security.CopyRoleAssignments == true || dataRow.Security.RoleAssignments.Count > 0))
