@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+#if NETSTANDARD2_0
+using System.Net;
+#endif
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.Online.SharePoint.TenantManagement;
 using OfficeDevPnP.Core;
@@ -17,7 +20,7 @@ namespace Microsoft.SharePoint.Client
     /// </summary>
     public static partial class SecurityExtensions
     {
-        #region Site collection administrator management
+#region Site collection administrator management
         /// <summary>
         /// Get a list of site collection administrators
         /// </summary>
@@ -103,9 +106,9 @@ namespace Microsoft.SharePoint.Client
         }
 
 
-        #endregion
+#endregion
 
-        #region Permissions management
+#region Permissions management
         /// <summary>
         /// Add read access to the group "Everyone except external users".
         /// </summary>
@@ -1167,7 +1170,7 @@ namespace Microsoft.SharePoint.Client
         }
 #endregion
 
-#if !NETSTANDARD2_0
+
 #region Authentication Realm
         /// <summary>
         /// Returns the authentication realm for the current web
@@ -1177,14 +1180,46 @@ namespace Microsoft.SharePoint.Client
         public static Guid GetAuthenticationRealm(this Web web)
         {
             web.EnsureProperty(w => w.Url);
-
+#if !NETSTANDARD2_0
             var returnGuid = new Guid(TokenHelper.GetRealmFromTargetUrl(new Uri(web.Url)));
 
             return returnGuid;
+#else
+            WebRequest request = WebRequest.Create(new Uri(web.Url) + "/_vti_bin/client.svc");
+            request.Headers.Add("Authorization: Bearer ");
 
+            try
+            {
+                using (request.GetResponse())
+                {
+                }
+            }
+            catch (WebException e)
+            {
+                var bearerResponseHeader = e.Response.Headers["WWW-Authenticate"];
+
+                const string bearer = "Bearer realm=\"";
+                var bearerIndex = bearerResponseHeader.IndexOf(bearer, StringComparison.Ordinal);
+
+                var realmIndex = bearerIndex + bearer.Length;
+
+                if (bearerResponseHeader.Length >= realmIndex + 36)
+                {
+                    var targetRealm = bearerResponseHeader.Substring(realmIndex, 36);
+
+                    Guid realmGuid;
+
+                    if (Guid.TryParse(targetRealm, out realmGuid))
+                    {
+                        return realmGuid;
+                    }
+                }
+            }
+            return Guid.Empty;
+#endif
         }
 #endregion
-#endif
+
 
 #region SecurableObject traversal
 
