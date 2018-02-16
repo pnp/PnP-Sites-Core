@@ -899,7 +899,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 
-        public override bool WillProvision(Web web, Model.ProvisioningTemplate template)
+        public override bool WillProvision(Web web, Model.ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             if (!_willProvision.HasValue)
             {

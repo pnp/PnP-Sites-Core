@@ -6,6 +6,7 @@ using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Linq;
 using OfficeDevPnP.Core.Utilities.CanvasControl;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -23,12 +24,56 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 web.EnsureProperties(w => w.ServerRelativeUrl);
 
+                // determine pages library
+                string pagesLibrary = "SitePages";
+
+                // pre create the needed pages so we can fill the needed tokens which might be used later on when we put web parts on those pages
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
-                    // determine pages library
-                    string pagesLibrary = "SitePages";
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(clientSidePage.PageName)}.aspx";
+                    string url = $"{pagesLibrary}/{pageName}";
 
+                    url = UrlUtility.Combine(web.ServerRelativeUrl, url);
+
+                    var exists = true;
+                    try
+                    {
+                        var file = web.GetFileByServerRelativeUrl(url);
+                        web.Context.Load(file, f => f.UniqueId, f => f.ServerRelativeUrl);
+                        web.Context.ExecuteQueryRetry();
+
+                        // Fill token
+                        parser.AddToken(new PageUniqueIdToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+                        parser.AddToken(new PageUniqueIdEncodedToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+                    }
+                    catch (ServerException ex)
+                    {
+                        if (ex.ServerErrorTypeName == "System.IO.FileNotFoundException")
+                        {
+                            exists = false;
+                        }
+                    }
+
+                    if (!exists)
+                    {
+                        // Pre-create the page    
+                        Pages.ClientSidePage page = web.AddClientSidePage(pageName);
+                        page.Save(pageName);
+
+                        var file = web.GetFileByServerRelativeUrl(url);
+                        web.Context.Load(file, f => f.UniqueId, f => f.ServerRelativeUrl);
+                        web.Context.ExecuteQueryRetry();
+
+                        // Fill token
+                        parser.AddToken(new PageUniqueIdToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+                        parser.AddToken(new PageUniqueIdEncodedToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+                    }
+                }
+
+                // Iterate over the pages and create/update them
+                foreach (var clientSidePage in template.ClientSidePages)
+                {
+                    string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(clientSidePage.PageName)}.aspx";
                     string url = $"{pagesLibrary}/{pageName}";
 
                     url = UrlUtility.Combine(web.ServerRelativeUrl, url);
@@ -238,6 +283,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             case WebPartType.YammerEmbed:
                                                 webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.YammerEmbed);
                                                 break;
+                                            case WebPartType.CustomMessageRegion:
+                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.CustomMessageRegion);
+                                                break;
+                                            case WebPartType.Divider:
+                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Divider);
+                                                break;
+                                            case WebPartType.MicrosoftForms:
+                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.MicrosoftForms);
+                                                break;
+                                            case WebPartType.Spacer:
+                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Spacer);
+                                                break;
                                         }
 
                                         baseControl = componentsToAdd.FirstOrDefault(p => p.Name.Equals(webPartName, StringComparison.InvariantCultureIgnoreCase));
@@ -357,7 +414,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             if (!_willProvision.HasValue)
             {

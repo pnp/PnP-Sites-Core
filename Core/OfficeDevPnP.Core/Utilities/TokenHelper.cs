@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_0
 using Microsoft.IdentityModel;
 using SharePointPnP.IdentityModel.Extensions.S2S.Protocols.OAuth2;
 using SharePointPnP.IdentityModel.Extensions.S2S.Tokens;
@@ -1544,3 +1545,4 @@ namespace OfficeDevPnP.Core.Utilities
         #endregion
     }
 }
+#endif

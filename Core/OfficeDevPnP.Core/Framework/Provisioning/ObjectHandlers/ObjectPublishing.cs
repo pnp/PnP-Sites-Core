@@ -378,7 +378,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return web.IsFeatureActive(Constants.FeatureId_Web_Publishing);
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             return template.Publishing != null;
         }

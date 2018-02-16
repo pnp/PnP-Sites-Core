@@ -1,3 +1,4 @@
+#if !NETSTANDARD2_0
 using OfficeDevPnP.Core.IdentityModel.WSTrustBindings;
 using System;
 using System.IdentityModel.Protocols.WSTrust;
@@ -91,3 +92,4 @@ namespace OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS
 
     }
 }
+#endif
