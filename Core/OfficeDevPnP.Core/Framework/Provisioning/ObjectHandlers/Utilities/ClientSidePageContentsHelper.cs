@@ -48,7 +48,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     {
                         PageName = pageName,
                         PromoteAsNewsArticle = false,
-                        Overwrite = false,
+                        Overwrite = true,
                         Publish = true,
                         Layout = pageToExtract.LayoutType.ToString(),
                         EnableComments = !pageToExtract.CommentsDisabled,
@@ -183,6 +183,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         case Pages.DefaultClientSideWebParts.QuickLinks:
                                             controlInstance.Type = WebPartType.QuickLinks;
                                             break;
+                                        case Pages.DefaultClientSideWebParts.CustomMessageRegion:
+                                            controlInstance.Type = WebPartType.CustomMessageRegion;
+                                            break;
+                                        case Pages.DefaultClientSideWebParts.Divider:
+                                            controlInstance.Type = WebPartType.Divider;
+                                            break;
+                                        case Pages.DefaultClientSideWebParts.MicrosoftForms:
+                                            controlInstance.Type = WebPartType.MicrosoftForms;
+                                            break;
+                                        case Pages.DefaultClientSideWebParts.Spacer:
+                                            controlInstance.Type = WebPartType.Spacer;
+                                            break;
                                         case Pages.DefaultClientSideWebParts.ThirdParty:
                                             controlInstance.Type = WebPartType.Custom;
                                             break;
@@ -274,7 +286,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                                             template.Files.Add(new Model.File()
                                                             {
                                                                 Folder = templateFolderPath,
-                                                                Src = fileName,
+                                                                Src = $"{templateFolderPath}/{fileName}",
                                                                 Overwrite = true,
                                                                 Level = (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), file.Level.ToString())
                                                             });
@@ -404,7 +416,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         {
             var lists = web.Lists;
             var site = (web.Context as ClientContext).Site;
-            web.Context.Load(site, s => s.Id);
+            web.Context.Load(site, s => s.Id, s => s.GroupId);
             web.Context.Load(web, w => w.ServerRelativeUrl, w => w.Id, w => w.Url);
             web.Context.Load(lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.Views.Include(v=>v.Id, v => v.Title)));
             web.Context.ExecuteQueryRetry();
@@ -438,6 +450,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             json = Regex.Replace(json, "'" + web.ServerRelativeUrl, "'{site}", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, ">" + web.ServerRelativeUrl, ">{site}", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, web.ServerRelativeUrl, "{site}", RegexOptions.IgnoreCase);
+
+            // Connected Office 365 group tokenization
+            if (site.GroupId != null && !site.GroupId.Equals(Guid.Empty))
+            {
+                json = Regex.Replace(json, site.GroupId.ToString(), "{sitecollectionconnectedoffice365groupid}", RegexOptions.IgnoreCase);
+            }
 
             return json;
         }

@@ -139,11 +139,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
             var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
 
+            // store as site relative path
+            folderPath = folderPath.Replace(web.ServerRelativeUrl, "").Trim('/');
             var templateFile = new Model.File()
             {
-                // Strip the site relative url from the folder when creating a file entry, no point in having that here
-                Folder = Tokenize(folderPath.Replace(web.ServerRelativeUrl, "").TrimStart('/'), web.Url),
-                Src = fileName,
+                Folder = Tokenize(folderPath, web.Url),
+                Src = !string.IsNullOrEmpty(folderPath) ? $"{folderPath}/{fileName}" : fileName,
                 Overwrite = true,
             };
 
