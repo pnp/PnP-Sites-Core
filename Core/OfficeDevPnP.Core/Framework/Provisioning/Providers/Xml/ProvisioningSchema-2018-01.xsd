@@ -4475,16 +4475,7 @@
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
               <xsd:documentation xml:lang="en">
-                Defines whether to skip the feature deployment for tenant-wide enabled packages, optional attribute (default: false).
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:attribute>
-
-          <xsd:attribute name="Overwrite" type="xsd:boolean" use="optional" default="false">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines whether to overwrite an already existing package in the AppCatalog, optional attribute (default: false).
+                Defines whether to skip the feature deployment for tenant-wide enabled packages, optional attribute.
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>

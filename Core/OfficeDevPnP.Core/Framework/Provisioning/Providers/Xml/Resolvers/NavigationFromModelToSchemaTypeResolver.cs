@@ -40,12 +40,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
             var managedNavigationType = Type.GetType(managedNavigationTypeName, true);
             var structuralNavigationTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StructuralNavigation, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
             var structuralNavigationType = Type.GetType(structuralNavigationTypeName, true);
-            
+
+            var modernNavigationTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.NavigationModernNavigation, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var modernNavigationType = Type.GetType(modernNavigationTypeName, true);
+            //var modernNavigationTypeTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.NavigationModernNavigationNavigationType, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            //var modernNavigationTypeType = Type.GetType(modernNavigationTypeTypeName, true);
+
+            var quickLaunchTypeName= $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Quicklaunch, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var quickLaunchType = Type.GetType(quickLaunchTypeName, true);
+
             var modelSource = source as Model.Navigation;
+
             if (modelSource != null)
             {
                 switch (this._navigationType)
                 {
+                    case "ModernNavigation":
+                        target = Activator.CreateInstance(modernNavigationType);
+                        //target.SetPublicInstancePropertyValue("NavigationType", Enum.Parse(modernNavigationTypeType, modelSource.ModernNavigation.NavigationType.ToString()));
+
+                        var quickLaunch = Activator.CreateInstance(quickLaunchType);
+
+                        if (!resolvers.ContainsKey($"{quickLaunch.GetType().FullName}.NavigationNode"))
+                        {
+                            resolvers.Add($"{quickLaunch.GetType().FullName}.NavigationNode", new NavigationNodeFromModelToSchemaTypeResolver());
+                        }
+
+                        PnPObjectsMapper.MapProperties(modelSource.ModernNavigation.Quicklaunch, quickLaunch, resolvers, true);
+                        target.SetPublicInstancePropertyValue("Quicklaunch", quickLaunch);
+
+                        break;
                     case "GlobalNavigation":
                         navigation = modelSource.GlobalNavigation;
 

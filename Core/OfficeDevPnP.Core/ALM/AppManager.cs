@@ -459,9 +459,15 @@ namespace OfficeDevPnP.Core.ALM
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
         /// <returns></returns>
+        //private async Task<dynamic> BaseGetAvailableAsync(Guid id)
+        //{
+        //    var ret = new List<AppMetadata>();
+
+        //    return await Task.Run(() => ret);
+        //}
         private async Task<dynamic> BaseGetAvailableAsync(Guid id)
         {
-            dynamic addins = null;
+            dynamic addins = new List<AppMetadata>();
 
             var accessToken = _context.GetAccessToken();
 
@@ -522,14 +528,14 @@ namespace OfficeDevPnP.Core.ALM
                     else
                     {
                         // Something went wrong...
-                        throw new Exception(await response.Content.ReadAsStringAsync());
+                        //throw new Exception(await response.Content.ReadAsStringAsync());
                     }
                 }
             }
             return await Task.Run(() => addins);
         }
 
-    #region Private Methods
+        #region Private Methods
         private async Task<bool> BaseRequest(Guid id, string method, bool appCatalog = false, Dictionary<string, object> postObject = null)
         {
             var context = _context;

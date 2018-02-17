@@ -7541,11 +7541,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         private bool skipFeatureDeploymentField;
         
-        private bool overwriteField;
-        
         public AppCatalogPackage() {
             this.skipFeatureDeploymentField = false;
-            this.overwriteField = false;
         }
         
         /// <remarks/>
@@ -7590,18 +7587,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
             }
             set {
                 this.skipFeatureDeploymentField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(false)]
-        public bool Overwrite {
-            get {
-                return this.overwriteField;
-            }
-            set {
-                this.overwriteField = value;
             }
         }
     }
