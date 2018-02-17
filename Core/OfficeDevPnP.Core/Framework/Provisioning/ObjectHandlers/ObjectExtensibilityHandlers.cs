@@ -126,12 +126,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             if (!_willProvision.HasValue)
             {
 #pragma warning disable 618
-                _willProvision = template.ExtensibilityHandlers.Union(template.Providers).Any();
+                _willProvision = template.ExtensibilityHandlers
+                    .Union(template.Providers)
+                    .Union(applyingInformation.ExtensibilityHandlers).Any();
 #pragma warning restore 618
             }
             return _willProvision.Value;

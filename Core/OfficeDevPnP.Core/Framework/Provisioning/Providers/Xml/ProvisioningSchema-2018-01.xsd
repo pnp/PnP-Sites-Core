@@ -3496,6 +3496,10 @@
           <xsd:enumeration value="PageTitle" />
           <xsd:enumeration value="People" />
           <xsd:enumeration value="QuickLinks" />
+          <xsd:enumeration value="CustomMessageRegion" />
+          <xsd:enumeration value="Divider" />
+          <xsd:enumeration value="MicrosoftForms" />
+          <xsd:enumeration value="Spacer" />
         </xsd:restriction>
       </xsd:simpleType>
 
