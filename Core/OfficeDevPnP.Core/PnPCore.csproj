@@ -79,4 +79,8 @@
     </EmbeddedResource>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Utilities\OAuth\" />
+  </ItemGroup>
+
 </Project>
