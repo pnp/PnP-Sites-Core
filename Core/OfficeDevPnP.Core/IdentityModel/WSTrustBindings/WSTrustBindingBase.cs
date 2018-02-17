@@ -1,5 +1,5 @@
 ﻿/* Based on reflectored code coming from Microsoft.IdentityModel.Protocols.WSTrust.Bindings.WSTrustBindingBase class */
-
+#if !NETSTANDARD2_0
 using System;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
@@ -206,3 +206,4 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
         }
     }
 }
+#endif

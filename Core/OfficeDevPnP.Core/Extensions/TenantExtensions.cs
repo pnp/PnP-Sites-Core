@@ -4,13 +4,17 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading;
+#if !NETSTANDARD2_0
 using System.Xml.Serialization.Configuration;
+#endif
 using Microsoft.Graph;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.Online.SharePoint.TenantManagement;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
+#if !NETSTANDARD2_0
 using OfficeDevPnP.Core.UPAWebService;
+#endif
 using OfficeDevPnP.Core.Diagnostics;
 using System.Net.Http;
 using CoreUtilities = OfficeDevPnP.Core.Utilities;
@@ -636,6 +640,7 @@ namespace Microsoft.SharePoint.Client
             return sites;
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Get OneDrive site collections by iterating through all user profiles.
         /// </summary>
@@ -673,7 +678,9 @@ namespace Microsoft.SharePoint.Client
 
             return sites;
         }
+#endif
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the UserProfileService proxy to enable calls to the UPA web service.
         /// </summary>
@@ -698,6 +705,8 @@ namespace Microsoft.SharePoint.Client
             }
             return client;
         }
+#endif
+
 #endregion
 
 #region ClientSide Package Deployment
