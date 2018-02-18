@@ -1094,17 +1094,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = true;
                 }
 #endif
-                if (templateList.ValidationFormula != null && existingList.ValidationFormula != parser.ParseString(templateList.ValidationFormula))
-                {
-                    existingList.ValidationFormula = parser.ParseString(templateList.ValidationFormula);
-                    isDirty = true;
-                }
-                if (templateList.ValidationMessage != null && existingList.ValidationMessage != parser.ParseString(templateList.ValidationMessage))
-                {
-                    existingList.ValidationMessage = parser.ParseString(templateList.ValidationMessage);
-                    isDirty = true;
-                }
-
                 if (existingList.IrmExpire != templateList.IrmExpire)
                 {
                     existingList.IrmExpire = templateList.IrmExpire;
@@ -1463,6 +1452,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
+                // A validation formula may reference columns specified in a contenttype. We
+                // have to apply the validation formula after contenttypes have been added/removed
+                if (templateList.ValidationFormula != null && existingList.ValidationFormula != parser.ParseString(templateList.ValidationFormula))
+                {
+                    existingList.ValidationFormula = parser.ParseString(templateList.ValidationFormula);
+                    isDirty = true;
+                }
+                if (templateList.ValidationMessage != null && existingList.ValidationMessage != parser.ParseString(templateList.ValidationMessage))
+                {
+                    existingList.ValidationMessage = parser.ParseString(templateList.ValidationMessage);
+                    isDirty = true;
+                }
+
+                if (isDirty)
+                {
+                    existingList.Update();
+                    web.Context.ExecuteQueryRetry();
+                    isDirty = false;
+                }
+
                 if (templateList.Security != null)
                 {
                     existingList.SetSecurity(parser, templateList.Security);
@@ -1615,14 +1624,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 createdList.ReadSecurity = list.ReadSecurity;
             }
 #endif
-            if (!string.IsNullOrEmpty(parser.ParseString(list.ValidationFormula)))
-            {
-                createdList.ValidationFormula = parser.ParseString(list.ValidationFormula);
-            }
-            if (!string.IsNullOrEmpty(parser.ParseString(list.ValidationMessage)))
-            {
-                createdList.ValidationMessage = parser.ParseString(list.ValidationMessage);
-            }
             if (createdList.BaseTemplate != (int)ListTemplateType.PictureLibrary && list.IRMSettings != null)
             {
                 createdList.IrmEnabled = list.IRMSettings.Enabled;
@@ -1794,6 +1795,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
+            // A list validation formula may reference columns specified in a contenttype. We
+            // have to apply the validation formula after contenttypes have been added/removed
+            if (!string.IsNullOrEmpty(parser.ParseString(list.ValidationFormula)))
+            {
+                createdList.ValidationFormula = parser.ParseString(list.ValidationFormula);
+                createdList.Update();
+            }
+            if (!string.IsNullOrEmpty(parser.ParseString(list.ValidationMessage)))
+            {
+                createdList.ValidationMessage = parser.ParseString(list.ValidationMessage);
+                createdList.Update();
+            }
+            web.Context.ExecuteQueryRetry();
 
             // Add any custom action
             if (list.UserCustomActions.Any())
