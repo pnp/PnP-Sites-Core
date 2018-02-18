@@ -1155,9 +1155,13 @@ namespace Microsoft.SharePoint.Client
                     }
                 case BuiltInIdentity.EveryoneButExternalUsers:
                     {
+#if !NETSTANDARD2_0
                         string userIdentity = $"c:0-.f|rolemanager|spo-grid-all-users/{web.GetAuthenticationRealm()}";
                         permissionEntity = web.EnsureUser(userIdentity);
                         break;
+#else
+                        throw new Exception("Not Supported");
+#endif
                     }
             }
 
@@ -1189,9 +1193,9 @@ namespace Microsoft.SharePoint.Client
             list.Context.ExecuteQueryRetry();
         }
 
-        #endregion
+#endregion
 
-        #region List view
+#region List view
 
         /// <summary>
         /// Creates list views based on specific xml structure from file
@@ -1428,7 +1432,7 @@ namespace Microsoft.SharePoint.Client
             }
 
         }
-        #endregion
+#endregion
 
         private static void SetDefaultColumnValuesImplementation(this List list, IEnumerable<IDefaultColumnValue> columnValues)
         {

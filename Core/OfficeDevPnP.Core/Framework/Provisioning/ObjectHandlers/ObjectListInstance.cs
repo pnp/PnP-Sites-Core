@@ -1492,6 +1492,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (!string.IsNullOrEmpty(userCustomAction.Description) && userCustomAction.Description.ContainsResourceToken())
             {
                 newUserCustomAction.DescriptionResource.SetUserResourceValue(userCustomAction.Description, parser);
+            }            
+            if(userCustomAction.ClientSideComponentId != null && userCustomAction.ClientSideComponentId != Guid.Empty)
+            {
+                newUserCustomAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
+            }
+            if (!string.IsNullOrEmpty(userCustomAction.ClientSideComponentProperties))
+            {
+                newUserCustomAction.ClientSideComponentProperties = parser.ParseString(userCustomAction.ClientSideComponentProperties);
             }
 #endif
 
@@ -2486,6 +2494,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 };
 
 #if !ONPREMISES
+                customAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
+                customAction.ClientSideComponentProperties = userCustomAction.ClientSideComponentProperties;
                 if (creationInfo.PersistMultiLanguageResources)
                 {
                     siteList.EnsureProperty(l => l.Title);

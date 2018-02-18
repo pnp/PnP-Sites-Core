@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NETSTANDARD2_0
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -433,3 +434,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
     }
 }
+#endif
