@@ -86,6 +86,7 @@ namespace Microsoft.SharePoint.Client
             ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
 #endif
         }
+
 #if !ONPREMISES
         private static async Task ExecuteQueryImplementation(ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
 #else
@@ -113,16 +114,7 @@ namespace Microsoft.SharePoint.Client
             {
                 try
                 {
-                    // ClientTag property is limited to 32 chars
-                    if (string.IsNullOrEmpty(clientTag))
-                    {
-                        clientTag = $"{PnPCoreUtilities.PnPCoreVersionTag}:{GetCallingPnPMethod()}";
-                    }
-                    if (clientTag.Length > 32)
-                    {
-                        clientTag = clientTag.Substring(0, 32);
-                    }
-                    clientContext.ClientTag = clientTag;
+                    clientContext.ClientTag = SetClientTag(clientTag);
 
                     // Make CSOM request more reliable by disabling the return value cache. Given we 
                     // often clone context objects and the default value is
@@ -132,23 +124,7 @@ namespace Microsoft.SharePoint.Client
                     clientContext.DisableReturnValueCache = true;
 #endif
                     // Add event handler to "insert" app decoration header to mark the PnP Sites Core library as a known application
-                    EventHandler<WebRequestEventArgs> appDecorationHandler = (s, e) =>
-                    {
-                        bool overrideUserAgent = true;
-                        var existingUserAgent = e.WebRequestExecutor.WebRequest.UserAgent;
-                        if (!string.IsNullOrEmpty(existingUserAgent) && existingUserAgent.StartsWith("NONISV|SharePointPnP|PnPPS/"))
-                        {
-                            overrideUserAgent = false;
-                        }
-                        if (overrideUserAgent)
-                        {
-                            if (string.IsNullOrEmpty(userAgent) && !string.IsNullOrEmpty(ClientContextExtensions.userAgentFromConfig))
-                            {
-                                userAgent = userAgentFromConfig;
-                            }
-                            e.WebRequestExecutor.WebRequest.UserAgent = string.IsNullOrEmpty(userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : userAgent;
-                        }
-                    };
+                    EventHandler<WebRequestEventArgs> appDecorationHandler = AttachRequestUserAgent(userAgent);
 
                     clientContext.ExecutingWebRequest += appDecorationHandler;
 
@@ -191,6 +167,52 @@ namespace Microsoft.SharePoint.Client
                 }
             }
             throw new MaximumRetryAttemptedException($"Maximum retry attempts {retryCount}, has be attempted.");
+        }
+
+        /// <summary>
+        /// Attaches either a passed user agent, or one defined in the App.config file, to the WebRequstExecutor UserAgent property.
+        /// </summary>
+        /// <param name="customUserAgent">a custom user agent to override any defined in App.config</param>
+        /// <returns>An EventHandler of WebRequestEventArgs.</returns>
+        private static EventHandler<WebRequestEventArgs> AttachRequestUserAgent(string customUserAgent)
+        {
+            return (s, e) =>
+            {
+                bool overrideUserAgent = true;
+                var existingUserAgent = e.WebRequestExecutor.WebRequest.UserAgent;
+                if (!string.IsNullOrEmpty(existingUserAgent) && existingUserAgent.StartsWith("NONISV|SharePointPnP|PnPPS/"))
+                {
+                    overrideUserAgent = false;
+                }
+                if (overrideUserAgent)
+                {
+                    if (string.IsNullOrEmpty(customUserAgent) && !string.IsNullOrEmpty(ClientContextExtensions.userAgentFromConfig))
+                    {
+                        customUserAgent = userAgentFromConfig;
+                    }
+                    e.WebRequestExecutor.WebRequest.UserAgent = string.IsNullOrEmpty(customUserAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : customUserAgent;
+                }
+            };
+        }
+
+        /// <summary>
+        /// Sets the client context client tag on outgoing CSOM requests.
+        /// </summary>
+        /// <param name="clientTag">An optional client tag to set on client context requests.</param>
+        /// <returns></returns>
+        private static string SetClientTag(string clientTag = "")
+        {
+            // ClientTag property is limited to 32 chars
+            if (string.IsNullOrEmpty(clientTag))
+            {
+                clientTag = $"{PnPCoreUtilities.PnPCoreVersionTag}:{GetCallingPnPMethod()}";
+            }
+            if (clientTag.Length > 32)
+            {
+                clientTag = clientTag.Substring(0, 32);
+            }
+
+            return clientTag;
         }
 
 
@@ -397,6 +419,10 @@ namespace Microsoft.SharePoint.Client
             return hasMinimalVersion;
         }
 
+        /// <summary>
+        /// Returns the name of the method calling ExecuteQueryRetry and ExecuteQueryRetryAsync
+        /// </summary>
+        /// <returns>A string with the method name</returns>
         private static string GetCallingPnPMethod()
         {
             StackTrace t = new StackTrace();
@@ -407,7 +433,8 @@ namespace Microsoft.SharePoint.Client
                 for (int i = 0; i < t.FrameCount; i++)
                 {
                     var frame = t.GetFrame(i);
-                    if (frame.GetMethod().Name.Equals("ExecuteQueryRetry"))
+                    var frameName = frame.GetMethod().Name;
+                    if (frameName.Equals("ExecuteQueryRetry") || frameName.Equals("ExecuteQueryRetryAsync"))
                     {
                         var method = t.GetFrame(i + 1).GetMethod();
 
