@@ -15,7 +15,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         }
         public override string GetReplaceValue()
         {
+#if !NETSTANDARD2_0
             return Web.GetAuthenticationRealm().ToString();
+#else
+            throw new Exception("authenticationrealm token not supported");
+#endif
         }
     }
 }

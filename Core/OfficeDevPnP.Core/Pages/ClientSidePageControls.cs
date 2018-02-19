@@ -5,7 +5,9 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Text;
+#if !NETSTANDARD2_0
 using System.Web.UI;
+#endif
 
 namespace OfficeDevPnP.Core.Pages
 {
@@ -294,7 +296,7 @@ namespace OfficeDevPnP.Core.Pages
 
         private void ReindexSection(CanvasSection section)
         {
-            foreach(var column in section.Columns)
+            foreach (var column in section.Columns)
             {
                 ReindexColumn(column);
             }
@@ -435,7 +437,8 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Obtain the json data
-            ClientSideTextControlData controlData = new ClientSideTextControlData() {
+            ClientSideTextControlData controlData = new ClientSideTextControlData()
+            {
                 ControlType = this.ControlType,
                 Id = this.InstanceId.ToString("D"),
                 Position = new ClientSideCanvasControlPosition()
@@ -445,10 +448,18 @@ namespace OfficeDevPnP.Core.Pages
                     SectionFactor = this.Column.ColumnFactor,
                     ControlIndex = controlIndex,
                 },
-                EditorType = "CKEditor" };
+                EditorType = "CKEditor"
+            };
             jsonControlData = JsonConvert.SerializeObject(controlData);
 
             StringBuilder html = new StringBuilder(100);
+#if NETSTANDARD2_0
+            html.Append($@"<div {CanvasControlAttribute}=""{this.CanvasControlData}"" {CanvasDataVersionAttribute}=""{ this.DataVersion}""  {ControlDataAttribute}=""{this.jsonControlData.Replace("\"", "&quot;")}"">");
+            html.Append($@"<div {TextRteAttribute}=""{this.Rte}"">");
+            html.Append($@"<p>{this.Text}</p>");
+            html.Append("</div>");
+            html.Append("</div>");
+#else
             using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
             {
                 htmlWriter.NewLine = string.Empty;
@@ -468,7 +479,7 @@ namespace OfficeDevPnP.Core.Pages
                 htmlWriter.RenderEndTag();
                 htmlWriter.RenderEndTag();
             }
-
+#endif
             return html.ToString();
         }
         #endregion
@@ -784,9 +795,21 @@ namespace OfficeDevPnP.Core.Pages
             this.jsonWebPartData = jsonWebPartData.Replace("\"jsonPropsToReplacePnPRules\"", this.Properties.ToString(Formatting.None));
 
             StringBuilder html = new StringBuilder(100);
+#if NETSTANDARD2_0
+            html.Append($@"<div {CanvasControlAttribute}=""{this.CanvasControlData}"" {CanvasDataVersionAttribute}=""{this.DataVersion}"" {ControlDataAttribute}=""{this.JsonControlData.Replace("\"", "&quot;")}"">");
+            html.Append($@"<div {WebPartAttribute}=""{this.WebPartData}"" {WebPartDataVersionAttribute}=""{this.DataVersion}"" {WebPartDataAttribute}=""{this.JsonWebPartData}"">");
+            html.Append($@"<div {WebPartComponentIdAttribute}=""""");
+            html.Append(this.WebPartId);
+            html.Append("/div>");
+            html.Append($@"<div {WebPartHtmlPropertiesAttribute}=""{this.HtmlProperties}"">");
+            RenderHtmlProperties(ref html);
+            html.Append("</div>");
+            html.Append("</div>");
+            html.Append("</div>");
+#else
             var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), "");
             try
-            { 
+            {
                 htmlWriter.NewLine = string.Empty;
                 htmlWriter.AddAttribute(CanvasControlAttribute, this.CanvasControlData);
                 htmlWriter.AddAttribute(CanvasDataVersionAttribute, this.DataVersion);
@@ -819,7 +842,7 @@ namespace OfficeDevPnP.Core.Pages
                     htmlWriter.Dispose();
                 }
             }
-
+#endif
             return html.ToString();
         }
 
@@ -827,6 +850,49 @@ namespace OfficeDevPnP.Core.Pages
         /// Overrideable method that allows inheriting webparts to control the HTML rendering
         /// </summary>
         /// <param name="htmlWriter">Reference to the html renderer used</param>
+#if NETSTANDARD2_0
+        protected virtual void RenderHtmlProperties(ref StringBuilder htmlWriter)
+        {
+            if (this.ServerProcessedContent != null)
+            {
+                if (this.ServerProcessedContent["searchablePlainTexts"] != null)
+                {
+                    foreach (JProperty property in this.ServerProcessedContent["searchablePlainTexts"])
+                    {
+                        htmlWriter.Append($@"<div data-sp-prop-name=""{property.Name}"" data-sp-searchableplaintext=""true"">");
+                        htmlWriter.Append(property.Value.ToString());
+                        htmlWriter.Append("</div>");
+                    }
+                }
+
+                if (this.ServerProcessedContent["imageSources"] != null)
+                {
+                    foreach (JProperty property in this.ServerProcessedContent["imageSources"])
+                    {
+                        htmlWriter.Append($@"<img data-sp-prop-name=""{property.Name}""");
+
+                        if (!string.IsNullOrEmpty(property.Value.ToString()))
+                        {
+                            htmlWriter.Append($@" src=""{property.Value.Value<string>()}""");
+                        }
+                        htmlWriter.Append("></img>");
+                    }
+                }
+
+                if (this.ServerProcessedContent["links"] != null)
+                {
+                    foreach (JProperty property in this.ServerProcessedContent["links"])
+                    {
+                        htmlWriter.Append($@"<a data-sp-prop-name=""{property.Name}"" href=""{property.Value.Value<string>()}""></a>");
+                    }
+                }
+            }
+            else
+            {
+                htmlWriter.Append(this.htmlPropertiesData);
+            }
+        }
+#else
         protected virtual void RenderHtmlProperties(ref HtmlTextWriter htmlWriter)
         {
             if (this.ServerProcessedContent != null)
@@ -873,6 +939,7 @@ namespace OfficeDevPnP.Core.Pages
                 htmlWriter.Write(this.HtmlPropertiesData);
             }
         }
+#endif
         #endregion
 
         #region Internal and private methods

@@ -153,6 +153,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
+                catch (ServerUnauthorizedAccessException)
+                {
+                    // If we don't have permission to access the TermGroup, just skip it
+                }
                 catch (NullReferenceException)
                 {
                     // If there isn't a default TermGroup for the Site Collection, we skip the terms in token handler
@@ -193,7 +197,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (stream != null)
                         {
+#if !NETSTANDARD2_0
                             using (ResXResourceReader resxReader = new ResXResourceReader(stream))
+#else
+                            using (ResourceReader resxReader = new ResourceReader(stream))
+#endif
                             {
                                 foreach (DictionaryEntry entry in resxReader)
                                 {

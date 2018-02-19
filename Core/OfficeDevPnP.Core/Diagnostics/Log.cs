@@ -47,8 +47,11 @@ namespace OfficeDevPnP.Core.Diagnostics
                         if (config.Logger.ElementInformation.IsPresent)
                         {
                             var loggerType = Type.GetType(config.Logger.Type, false);
-
+#if !NETSTANDARD2_0
                             _logger = (ILogger)Activator.CreateInstance(loggerType.Assembly.FullName, loggerType.FullName).Unwrap();
+#else
+                            _logger = (ILogger)Activator.CreateInstance(loggerType);
+#endif
                         }
                         else
                         {
@@ -83,9 +86,9 @@ namespace OfficeDevPnP.Core.Diagnostics
             }
         }
 
-        #region Public Members
+#region Public Members
 
-        #region Error
+#region Error
         /// <summary>
         /// Logs error message and source
         /// </summary>
@@ -136,9 +139,9 @@ namespace OfficeDevPnP.Core.Diagnostics
                 _logger.Error(logEntry);
             }
         }
-        #endregion
+#endregion
 
-        #region Info
+#region Info
         /// <summary>
         /// Log Information
         /// </summary>
@@ -189,9 +192,9 @@ namespace OfficeDevPnP.Core.Diagnostics
                 _logger.Info(logEntry);
             }
         }
-        #endregion
+#endregion
 
-        #region Warning
+#region Warning
         /// <summary>
         /// Warning Log
         /// </summary>
@@ -243,9 +246,9 @@ namespace OfficeDevPnP.Core.Diagnostics
                 _logger.Warning(logEntry);
             }
         }
-        #endregion
+#endregion
 
-        #region Debug
+#region Debug
         /// <summary>
         /// Debug Log
         /// </summary>
@@ -299,8 +302,8 @@ namespace OfficeDevPnP.Core.Diagnostics
                 _logger.Debug(logEntry);
             }
         }
-        #endregion
+#endregion
 
-        #endregion
+#endregion
     }
 }
