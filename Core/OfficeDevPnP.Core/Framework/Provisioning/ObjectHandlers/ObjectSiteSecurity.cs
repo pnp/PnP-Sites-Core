@@ -8,6 +8,7 @@ using OfficeDevPnP.Core.Diagnostics;
 using Microsoft.SharePoint.Client.Utilities;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using RoleDefinition = Microsoft.SharePoint.Client.RoleDefinition;
+using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -93,14 +94,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     string parsedGroupTitle = parser.ParseString(siteGroup.Title);
                     string parsedGroupOwner = parser.ParseString(siteGroup.Owner);
                     string parsedGroupDescription = parser.ParseString(siteGroup.Description);
-                    bool descriptionHasHtml = HttpUtility.HtmlEncode(parsedGroupDescription) != parsedGroupDescription;
 
                     if (!web.GroupExists(parsedGroupTitle))
                     {
                         scope.LogDebug("Creating group {0}", parsedGroupTitle);
                         group = web.AddGroup(
                             parsedGroupTitle,
-                            parsedGroupDescription,
+                            //If the description is more than 512 characters long a server exception will be thrown.
+                            PnPHttpUtility.ConvertSimpleHtmlToText(parsedGroupDescription, int.MaxValue),
                             parsedGroupTitle == parsedGroupOwner);
                         group.AllowMembersEditMembership = siteGroup.AllowMembersEditMembership;
                         group.AllowRequestToJoinLeave = siteGroup.AllowRequestToJoinLeave;
@@ -123,13 +124,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.ExecuteQueryRetry();
                         parser.AddToken(new GroupIdToken(web, group.Title, group.Id));
 
-                        if (descriptionHasHtml)
-                        {
-                            var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
-                            groupItem["Notes"] = parsedGroupDescription;
-                            groupItem.Update();
-                            web.Context.ExecuteQueryRetry();
-                        }
+                        var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
+                        groupItem["Notes"] = parsedGroupDescription;
+                        groupItem.Update();
+                        web.Context.ExecuteQueryRetry();
                     }
                     else
                     {
@@ -146,8 +144,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             g => g.Owner.LoginName);
                         web.Context.ExecuteQueryRetry();
 
-                        var isDirty = false;
-                        if (descriptionHasHtml)
+                        var groupNeedsUpdate = false;
+                        var executeQuery = false;
+
+                        if (!String.IsNullOrEmpty(parsedGroupDescription))
                         {
                             var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
                             web.Context.Load(groupItem, g => g["Notes"]);
@@ -158,41 +158,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 groupItem["Notes"] = parsedGroupDescription;
                                 groupItem.Update();
-                                isDirty = true;
+                                executeQuery = true;
                             }
-                        }
-                        else
-                        {
-                            if (!String.IsNullOrEmpty(group.Description) && group.Description != parsedGroupDescription)
+
+                            var plainTextDescription = PnPHttpUtility.ConvertSimpleHtmlToText(parsedGroupDescription, int.MaxValue);
+                            if (group.Description != plainTextDescription)
                             {
-                                group.Description = parsedGroupDescription;
-                                isDirty = true;
+                                //If the description is more than 512 characters long a server exception will be thrown.
+                                group.Description = plainTextDescription;
+                                groupNeedsUpdate = true;
                             }
                         }
+
                         if (group.AllowMembersEditMembership != siteGroup.AllowMembersEditMembership)
                         {
                             group.AllowMembersEditMembership = siteGroup.AllowMembersEditMembership;
-                            isDirty = true;
+                            groupNeedsUpdate = true;
                         }
                         if (group.AllowRequestToJoinLeave != siteGroup.AllowRequestToJoinLeave)
                         {
                             group.AllowRequestToJoinLeave = siteGroup.AllowRequestToJoinLeave;
-                            isDirty = true;
+                            groupNeedsUpdate = true;
                         }
                         if (group.AutoAcceptRequestToJoinLeave != siteGroup.AutoAcceptRequestToJoinLeave)
                         {
                             group.AutoAcceptRequestToJoinLeave = siteGroup.AutoAcceptRequestToJoinLeave;
-                            isDirty = true;
+                            groupNeedsUpdate = true;
                         }
                         if (group.OnlyAllowMembersViewMembership != siteGroup.OnlyAllowMembersViewMembership)
                         {
                             group.OnlyAllowMembersViewMembership = siteGroup.OnlyAllowMembersViewMembership;
-                            isDirty = true;
+                            groupNeedsUpdate = true;
                         }
                         if (!String.IsNullOrEmpty(group.RequestToJoinLeaveEmailSetting) && group.RequestToJoinLeaveEmailSetting != siteGroup.RequestToJoinLeaveEmailSetting)
                         {
                             group.RequestToJoinLeaveEmailSetting = siteGroup.RequestToJoinLeaveEmailSetting;
-                            isDirty = true;
+                            groupNeedsUpdate = true;
                         }
                         if (group.Owner.LoginName != parsedGroupOwner)
                         {
@@ -209,14 +210,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 group.Owner = group;
                             }
-                            isDirty = true;
+                            groupNeedsUpdate = true;
                         }
-                        if (isDirty)
+                        if (groupNeedsUpdate)
                         {
                             scope.LogDebug("Updating existing group {0}", group.Title);
                             group.Update();
+                            executeQuery = true;
+                        }
+                        if (executeQuery)
+                        {
                             web.Context.ExecuteQueryRetry();
                         }
+
                     }
                     if (group != null && siteGroup.Members.Any())
                     {
