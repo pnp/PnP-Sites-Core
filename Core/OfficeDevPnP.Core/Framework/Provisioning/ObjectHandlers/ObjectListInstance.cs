@@ -86,14 +86,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var createdList = returnTuple.Item1;
                                 parser = returnTuple.Item2;
                                 processedLists.Add(new ListInfo { SiteList = createdList, TemplateList = templateList });
-                                var newListToken = new ListIdToken(web, createdList.Title, createdList.Id);
 
-                                // Remove any existing list tokens with the same name, for example, lists with the same name from the root site.
-                                parser.Tokens.RemoveAll(t => t.GetType() == typeof(ListIdToken) && t.GetTokens().SequenceEqual(newListToken.GetTokens()) );
-                                parser.Tokens.RemoveAll(t => t.GetType() == typeof(ListUrlToken) && t.GetTokens().SequenceEqual(newListToken.GetTokens()));
-                                parser.Tokens.RemoveAll(t => t.GetType() == typeof(ListViewIdToken) && t.GetTokens().SequenceEqual(newListToken.GetTokens()));
-
-                                parser.AddToken(newListToken);
+                                parser.AddToken(new ListIdToken(web, createdList.Title, createdList.Id), true);
 
 #if !SP2013
                                 foreach (var supportedlanguageId in web.SupportedUILanguageIds)
@@ -103,10 +97,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     createdList.Context.ExecuteQueryRetry();
 
                                     if (titleResource != null && titleResource.Value != null)
-                                        parser.AddToken(new ListIdToken(web, titleResource.Value, createdList.Id));
+                                        parser.AddToken(new ListIdToken(web, titleResource.Value, createdList.Id), true);
                                 }
 #endif
-                                parser.AddToken(new ListUrlToken(web, createdList.Title, createdList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+                                parser.AddToken(new ListUrlToken(web, createdList.Title, createdList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)), true);
                             }
                             catch (Exception ex)
                             {
@@ -640,7 +634,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // Add ListViewId token parser
                 createdView.EnsureProperty(v => v.Id);
-                parser.AddToken(new ListViewIdToken(web, createdList.Title, createdView.Title, createdView.Id));
+                parser.AddToken(new ListViewIdToken(web, createdList.Title, createdView.Title, createdView.Id), true);
 
 #if !SP2013
                 // Localize view title
@@ -1025,8 +1019,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingList.Title = parser.ParseString(templateList.Title);
                     if (!oldTitle.Equals(existingList.Title, StringComparison.OrdinalIgnoreCase))
                     {
-                        parser.AddToken(new ListIdToken(web, existingList.Title, existingList.Id));
-                        parser.AddToken(new ListUrlToken(web, existingList.Title, existingList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+                        parser.AddToken(new ListIdToken(web, existingList.Title, existingList.Id), true);
+                        parser.AddToken(new ListUrlToken(web, existingList.Title, existingList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)), true);
                     }
                     isDirty = true;
                 }

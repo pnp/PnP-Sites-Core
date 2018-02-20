@@ -42,6 +42,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="tokenDefinition">A TokenDefinition object</param>
         public void AddToken(TokenDefinition tokenDefinition)
         {
+            AddToken(tokenDefinition, false);
+        }
+
+        /// <summary>
+        /// Adds token definition, replacing any existing tokens of the same type with the same name.
+        /// </summary>
+        /// <param name="tokenDefinition">A TokenDefinition object</param>
+        /// <param name="replaceMatching">Before adding, remove any existing tokens of the same type with the same name</param>
+        public void AddToken(TokenDefinition tokenDefinition, bool replaceMatching)
+        {
+            if (replaceMatching)
+            {
+                _tokens.RemoveAll(t => t.GetType() == tokenDefinition.GetType() && t.GetTokens().SequenceEqual(tokenDefinition.GetTokens()));
+            }
 
             _tokens.Add(tokenDefinition);
             // ORDER IS IMPORTANT!
