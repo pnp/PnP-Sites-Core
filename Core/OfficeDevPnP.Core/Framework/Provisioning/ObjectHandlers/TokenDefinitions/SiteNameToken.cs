@@ -5,7 +5,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class SiteNameToken : TokenDefinition
     {
         public SiteNameToken(Web web)
-            : base(web, "~sitename", "{sitename}")
+            //Due to backwardscompatibility issues this token can not use the intended sitename token value
+            //This is because SiteTitleToken historically was created with sitename token value and incorrectly returned the site title.
+            //If possible this should be changed to sitename in the future.
+            //: base(web, "~sitename", "{sitename}")
+            : base(web, "~webname", "{webname}")
         {
         }
 
