@@ -5,7 +5,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class SiteNameToken : TokenDefinition
     {
         public SiteNameToken(Web web)
-            : base(web, "~sitename", "{sitename}")
+            //Due to backwardscompatibility issues this token can not use the intended sitename token value
+            //This is because SiteTitleToken historically was created with sitename token value and incorrectly returned the site title.
+            //If possible this should be changed to sitename in the future.
+            //: base(web, "~sitename", "{sitename}")
+            : base(web, "~webname", "{webname}")
         {
         }
 
@@ -13,13 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (CacheValue == null)
             {
-                this.Web.EnsureProperty(w => w.Url);
-                using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
-                {
-                    context.Load(context.Web, w => w.Title);
-                    context.ExecuteQueryRetry();
-                    CacheValue = context.Web.Title;
-                }
+                CacheValue = this.Web.GetName();
             }
             return CacheValue;
         }
