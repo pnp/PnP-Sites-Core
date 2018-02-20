@@ -484,8 +484,6 @@ namespace OfficeDevPnP.Core.ALM
 
             try
             {
-
-
                 using (var handler = new HttpClientHandler())
                 {
                     _context.Web.EnsureProperty(w => w.Url);
