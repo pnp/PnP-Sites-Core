@@ -140,6 +140,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         container = container.TrimStart("/".ToCharArray());
                     }
 
+#if !NETSTANDARD2_0
                     if (template.Connector.GetType() == typeof(Connectors.AzureStorageConnector))
                     {
                         if (template.Connector.GetContainer().EndsWith("/"))
@@ -155,6 +156,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         container = $@"{template.Connector.GetContainer()}\{container}";
                     }
+#else
+                    container = $@"{template.Connector.GetContainer()}\{container}";
+#endif
                 }
             }
             else
@@ -174,4 +178,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
     }
 #endif
-}
+                }

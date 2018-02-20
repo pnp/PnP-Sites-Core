@@ -1312,6 +1312,40 @@ namespace Microsoft.SharePoint.Client
 #endif
         #endregion
 
+        /// <summary>
+        /// Gets the name part of the URL of the Server Relative URL of the Web.
+        /// </summary>
+        /// <param name="web">The Web to process</param>
+        /// <returns>A string that contains the name part of the Server Relative URL (the last part of the URL) of a web.</returns>
+        public static string GetName(this Web web)
+        {
+            web.Context.Load(web, w => w.ParentWeb.ServerRelativeUrl);
+            web.Context.Load(web, w => w.ServerRelativeUrl);
+            web.Context.ExecuteQueryRetry();
+            string webName;
+            string parentWebUrl = null;
+
+            //web.ParentWeb.ServerObjectIsNull will be null if a parent web exists.
+            //ClientObjectExtensions.ServerObjectIsNull() seems to have a problem when 
+            //ClientObject.ServerObjectIsNull == null
+            //ServerObjectIsNull is then undefined but ClientObjectExtensions.ServerObjectIsNull()
+            //incorrectly returns true.
+            if (web.ParentWeb.ServerObjectIsNull == null || !web.ParentWeb.ServerObjectIsNull.Value)
+            {
+                parentWebUrl = web.ParentWeb.ServerRelativeUrl;
+            }
+
+            if (parentWebUrl == null)
+            {
+                webName = string.Empty;
+            }
+            else
+            {
+                webName = UrlUtility.ConvertToServiceRelUrl(web.ServerRelativeUrl, parentWebUrl);
+            }
+            return webName;
+        }
+
 #if !ONPREMISES
         #region ClientSide Package Deployment
         /// <summary>
@@ -1432,7 +1466,7 @@ namespace Microsoft.SharePoint.Client
                 return sppkgFile.ListItemAllFields;
             }
         }
-    #endregion
+        #endregion
 #endif
 
     }
