@@ -86,8 +86,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var createdList = returnTuple.Item1;
                                 parser = returnTuple.Item2;
                                 processedLists.Add(new ListInfo { SiteList = createdList, TemplateList = templateList });
+                                var newListToken = new ListIdToken(web, createdList.Title, createdList.Id);
 
-                                parser.AddToken(new ListIdToken(web, createdList.Title, createdList.Id));
+                                // Remove any existing list tokens with the same name, for example, lists with the same name from the root site.
+                                parser.Tokens.RemoveAll(t => t.GetType() == typeof(ListIdToken) && t.GetTokens().SequenceEqual(newListToken.GetTokens()) );
+                                parser.Tokens.RemoveAll(t => t.GetType() == typeof(ListUrlToken) && t.GetTokens().SequenceEqual(newListToken.GetTokens()));
+                                parser.Tokens.RemoveAll(t => t.GetType() == typeof(ListViewIdToken) && t.GetTokens().SequenceEqual(newListToken.GetTokens()));
+
+                                parser.AddToken(newListToken);
 
 #if !SP2013
                                 foreach (var supportedlanguageId in web.SupportedUILanguageIds)
