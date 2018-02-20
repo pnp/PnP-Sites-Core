@@ -1313,10 +1313,10 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         /// <summary>
-        /// Gets the name of the Web site.
+        /// Gets the name part of the URL of the Server Relative URL of the Web.
         /// </summary>
         /// <param name="web">The Web to process</param>
-        /// <returns>A string that contains the name</returns>
+        /// <returns>A string that contains the name part of the Server Relative URL (the last part of the URL) of a web.</returns>
         public static string GetName(this Web web)
         {
             web.Context.Load(web, w => w.ParentWeb.ServerRelativeUrl);
