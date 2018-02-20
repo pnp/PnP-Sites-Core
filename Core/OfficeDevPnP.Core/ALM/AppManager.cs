@@ -484,6 +484,8 @@ namespace OfficeDevPnP.Core.ALM
 
             try
             {
+
+
                 using (var handler = new HttpClientHandler())
                 {
                     _context.Web.EnsureProperty(w => w.Url);
@@ -517,7 +519,7 @@ namespace OfficeDevPnP.Core.ALM
                             // If value empty, URL is taken
                             var responseString = await response.Content.ReadAsStringAsync();
                             if (responseString != null)
-                            {                                
+                            {
                                 if (Guid.Empty == id && string.IsNullOrEmpty(title))
                                 {
                                     var responseJson = JObject.Parse(responseString);
@@ -538,7 +540,7 @@ namespace OfficeDevPnP.Core.ALM
                                     var responseJson = JObject.Parse(responseString);
                                     var returnedAddins = responseJson["d"];
                                     addins = JsonConvert.DeserializeObject<AppMetadata>(returnedAddins.ToString());
-                                }                                
+                                }
                             }
                         }
                         else
