@@ -5,9 +5,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class SiteTitleToken : TokenDefinition
     {
         public SiteTitleToken(Web web)
-            //sitename token value has been added for backwards compatibility
-            //This is because SiteTitleToken historically was created with sitename token value and incorrectly returned the site title.
-            //If possible this should be removed annd moved to SiteNameToken in the future.
+            //sitename token has been added for backwards compatibility
+            //This is because SiteTitleToken historically was created with sitename token and incorrectly returned the site title.
+            //If possible this should be removed and moved to SiteNameToken in the future.
             : base(web, "~sitetitle", "{sitetitle}", "~sitename", "{sitename}")
         {
         }
