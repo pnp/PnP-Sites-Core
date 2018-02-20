@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
+    /// <summary>
+    /// Utility class to perform Graph operations.
+    /// </summary>
     public static class GraphUtility
     {
         private const int defaultRetryCount = 10;
@@ -39,6 +42,15 @@ namespace OfficeDevPnP.Core.Framework.Graph
             return (result);
         }
 
+        /// <summary>
+        /// This method sends an Azure guest user invitation to the provided email address.
+        /// </summary>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="guestUserEmail">Email of the user to whom the invite must be sent</param>
+        /// <param name="redirectUri">URL where the user will be redirected after the invite is accepted.</param>
+        /// <param name="customizedMessage">Customized email message to be sent in the invitation email.</param>
+        /// <param name="guestUserDisplayName">Display name of the Guest user.</param>
+        /// <returns></returns>
         public static Invitation InviteGuestUser(string accessToken, string guestUserEmail, string redirectUri, string customizedMessage = "", string guestUserDisplayName = "")
         {
             Invitation inviteUserResponse = null;
