@@ -409,7 +409,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
                 else
                 {
-                    throw new Exception("You first need to save the page before you check for CommentsEnabled status");
+                    throw new InvalidOperationException("You first need to save the page before you check for CommentsEnabled status");
                 }
             }
         }
