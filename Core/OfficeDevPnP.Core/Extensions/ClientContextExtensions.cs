@@ -30,6 +30,7 @@ namespace Microsoft.SharePoint.Client
     {
         private static string userAgentFromConfig = null;
         private static string accessToken = null;
+        private static bool hasAuthCookies;
 
         /// <summary>
         /// Static constructor, only executed once per class load
@@ -263,6 +264,10 @@ namespace Microsoft.SharePoint.Client
             else if (clientContext.Credentials == null)
             {
                 result = true;
+            } else
+            {
+                // do we have cookies?
+                
             }
 
             return (result);
@@ -290,6 +295,41 @@ namespace Microsoft.SharePoint.Client
             clientContext.ExecutingWebRequest -= handler;
 
             return accessToken;
+        }
+
+        /// <summary>
+        /// Gets a boolean if the current request contains the FedAuth and rtFa cookies.
+        /// </summary>
+        /// <param name="clientContext"></param>
+        /// <returns></returns>
+        public static bool HasAuthCookies(this ClientRuntimeContext clientContext)
+        {
+            clientContext.ExecutingWebRequest += ClientContext_ExecutingWebRequestCookieCounter;
+            clientContext.ExecuteQueryRetry();
+            clientContext.ExecutingWebRequest -= ClientContext_ExecutingWebRequestCookieCounter;
+            return hasAuthCookies;
+        }
+
+        private static void ClientContext_ExecutingWebRequestCookieCounter(object sender, WebRequestEventArgs e)
+        {
+            var fedAuth = false;
+            var rtFa = false;
+            var cookies = e.WebRequestExecutor.WebRequest.CookieContainer.GetCookies(e.WebRequestExecutor.WebRequest.RequestUri);
+            if (cookies.Count > 0)
+            {
+                for (var q = 0; q < cookies.Count; q++)
+                {
+                    if (cookies[q].Name == "FedAuth")
+                    {
+                        fedAuth = true;
+                    } 
+                    if(cookies[q].Name == "rtFa")
+                    {
+                        rtFa = true;
+                    }
+                }
+            }
+            hasAuthCookies = fedAuth && rtFa;
         }
 
         /// <summary>
