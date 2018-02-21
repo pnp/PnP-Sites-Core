@@ -493,6 +493,17 @@ namespace Microsoft.SharePoint.Client
         {
             return await SiteCollection.GroupifyAsync(clientContext, siteCollectionGroupifyInformation);
         }
+
+        /// <summary>
+        /// Checks if an alias is already used for an office 365 group or not
+        /// </summary>
+        /// <param name="clientContext">ClientContext of the site to operate against</param>
+        /// <param name="alias">Alias to verify</param>
+        /// <returns>True if in use, false otherwise</returns>
+        public static async Task<bool> AliasExistsAsync(this ClientContext clientContext, string alias)
+        {
+            return await SiteCollection.AliasExistsAsync(clientContext, alias);
+        }
 #endif
     }
 }
