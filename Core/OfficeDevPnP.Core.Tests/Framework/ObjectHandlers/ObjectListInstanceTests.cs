@@ -48,6 +48,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 // Clean all data row test list instances, also after a previous test case failed.
                 DeleteDataRowLists(ctx);
 
+                // first delete content types
+                var contentTypes = ctx.LoadQuery(ctx.Web.ContentTypes);
+                ctx.ExecuteQueryRetry();
+                var testContentTypes = contentTypes.Where(l => l.Name.StartsWith("Test_", StringComparison.OrdinalIgnoreCase));
+                foreach (var ctype in testContentTypes)
+                {
+                    ctype.DeleteObject();
+                    isDirty = true;
+                }
+
                 var field = ctx.Web.GetFieldById<FieldText>(fieldId); // Guid matches ID in field caml.
                 var calculatedField = ctx.Web.GetFieldById<FieldCalculated>(calculatedFieldId); // Guid matches ID in field caml.
 
@@ -609,6 +619,242 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 rowCount = ctx.Web.GetListByTitle(datarowListName).ItemCount;
                 Assert.IsTrue(rowCount == 4, "Row count not equals 4");
 
+            }
+        }
+
+        [TestMethod]
+        public void CanUpdateDefaultContentTypeWithoutModifyingContentTypeNewButtonVisibility()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // create content types
+                var documentCtype = web.ContentTypes.GetById(BuiltInContentTypeId.Document);
+                var newCtypeInfo1 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType1",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo2 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType2",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo3 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType3",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo4 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType4",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo5 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType5",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+
+                var newCtype1 = web.ContentTypes.Add(newCtypeInfo1);
+                var newCtype2 = web.ContentTypes.Add(newCtypeInfo2);
+                var newCtype3 = web.ContentTypes.Add(newCtypeInfo3);
+                var newCtype4 = web.ContentTypes.Add(newCtypeInfo4);
+                var newCtype5 = web.ContentTypes.Add(newCtypeInfo5);
+                clientContext.Load(newCtype1);
+                clientContext.Load(newCtype2);
+                clientContext.Load(newCtype3);
+                clientContext.Load(newCtype4);
+                clientContext.Load(newCtype5);
+                clientContext.ExecuteQueryRetry();
+
+                var newList = new ListCreationInformation()
+                {
+                    TemplateType = (int)ListTemplateType.DocumentLibrary,
+                    Title = listName,
+                    Url = listName
+                };
+
+                var doclib = clientContext.Web.Lists.Add(newList);
+                doclib.ContentTypesEnabled = true;
+                doclib.ContentTypes.AddExistingContentType(newCtype1);
+                doclib.ContentTypes.AddExistingContentType(newCtype3);
+                doclib.ContentTypes.AddExistingContentType(newCtype4);
+                doclib.Update();
+
+                clientContext.Load(newCtype1, ct => ct.Id);
+                clientContext.Load(newCtype2, ct => ct.Id);
+                clientContext.Load(newCtype3, ct => ct.Id);
+                clientContext.Load(newCtype4, ct => ct.Id);
+                clientContext.Load(newCtype5, ct => ct.Id);
+
+                clientContext.Load(doclib.ContentTypes);
+                clientContext.Load(doclib.RootFolder, rf => rf.ContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                var contentTypeOrder = doclib.RootFolder.ContentTypeOrder;
+                //Make a content type hidden in the new button.
+                contentTypeOrder.Remove(contentTypeOrder.First(ct => ct.GetParentIdValue().Equals(newCtype3.Id.StringValue, StringComparison.OrdinalIgnoreCase)));
+
+                doclib.RootFolder.UniqueContentTypeOrder = contentTypeOrder;
+                Assert.IsTrue(contentTypeOrder.ElementAt(0).GetParentIdValue().Equals(BuiltInContentTypeId.Document, StringComparison.OrdinalIgnoreCase));
+
+                doclib.RootFolder.Update();
+
+                clientContext.ExecuteQueryRetry();
+
+                var template = new ProvisioningTemplate();
+                var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
+
+                listInstance.Url = listName;
+                listInstance.Title = listName;
+                listInstance.TemplateType = (int)ListTemplateType.DocumentLibrary;
+                listInstance.ContentTypesEnabled = true;
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding() { ContentTypeId = newCtype1.Id.StringValue, Default = true });
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding() { ContentTypeId = newCtype2.Id.StringValue, Hidden = false });
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding() { ContentTypeId = newCtype4.Id.StringValue, Remove = true });
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding() { ContentTypeId = newCtype5.Id.StringValue });
+
+                template.Lists.Add(listInstance);
+
+                var parser = new TokenParser(clientContext.Web, template);
+
+                // Update the List with new default content type
+                new ObjectListInstance().ProvisionObjects(clientContext.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var list = clientContext.Web.GetListByUrl(listInstance.Url);
+                Assert.IsNotNull(list);
+
+                clientContext.Load(doclib.RootFolder, rf => rf.UniqueContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                var actualContentTypeOrder = doclib.RootFolder.UniqueContentTypeOrder;
+                bool isContentType2VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.GetParentIdValue().Equals(newCtype2.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+                bool isContentType3VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.GetParentIdValue().Equals(newCtype3.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+                bool isContentType4VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.GetParentIdValue().Equals(newCtype4.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+                bool isContentType5VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.GetParentIdValue().Equals(newCtype5.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+
+                bool contentType4ExistsInList = doclib.ContentTypeExistsById(newCtype4.Id.StringValue);
+
+                Assert.IsTrue(isContentType2VisibleInNewButton, "Content type 2 has not been made visible in the new button");
+                Assert.IsFalse(isContentType3VisibleInNewButton, "Content type 3 has incorrectly been made visible in the new button");
+                Assert.IsFalse(isContentType4VisibleInNewButton, "Content type 4 has incorrectly been made visible in the new button");
+                Assert.IsTrue(isContentType5VisibleInNewButton, "Content type 5 has not been made visible in the new button");
+                Assert.IsFalse(contentType4ExistsInList, "Content type 4 has not been removed from the list content types");
+            }
+        }
+        [TestMethod]
+        public void CanRemoveContentTypeWithoutModifyingContentTypeNewButtonVisibility()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // create content types
+                var documentCtype = web.ContentTypes.GetById(BuiltInContentTypeId.Document);
+                var newCtypeInfo1 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType1",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo2 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType2",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo3 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType3",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+
+                var newCtype1 = web.ContentTypes.Add(newCtypeInfo1);
+                var newCtype2 = web.ContentTypes.Add(newCtypeInfo2);
+                var newCtype3 = web.ContentTypes.Add(newCtypeInfo3);
+                clientContext.Load(newCtype1);
+                clientContext.Load(newCtype2);
+                clientContext.Load(newCtype3);
+                clientContext.ExecuteQueryRetry();
+
+                var newList = new ListCreationInformation()
+                {
+                    TemplateType = (int)ListTemplateType.DocumentLibrary,
+                    Title = listName,
+                    Url = listName
+                };
+
+                var doclib = clientContext.Web.Lists.Add(newList);
+                doclib.ContentTypesEnabled = true;
+                doclib.ContentTypes.AddExistingContentType(newCtype1);
+                doclib.ContentTypes.AddExistingContentType(newCtype3);
+                doclib.Update();
+
+                clientContext.Load(newCtype1, ct => ct.Id);
+                clientContext.Load(newCtype2, ct => ct.Id);
+                clientContext.Load(newCtype3, ct => ct.Id);
+
+                clientContext.Load(doclib.ContentTypes);
+                clientContext.Load(doclib.RootFolder, rf => rf.ContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                var contentTypeOrder = doclib.RootFolder.ContentTypeOrder;
+                //Make a content type hidden in the new button.
+                contentTypeOrder.Remove(contentTypeOrder.First(ct => ct.GetParentIdValue().Equals(newCtype3.Id.StringValue, StringComparison.OrdinalIgnoreCase)));
+
+                doclib.RootFolder.UniqueContentTypeOrder = contentTypeOrder;
+                Assert.IsTrue(contentTypeOrder.ElementAt(0).GetParentIdValue().Equals(BuiltInContentTypeId.Document, StringComparison.OrdinalIgnoreCase));
+
+                doclib.RootFolder.Update();
+                doclib.Update();
+
+                clientContext.ExecuteQueryRetry();
+
+                var template = new ProvisioningTemplate();
+                var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
+
+                listInstance.Url = listName;
+                listInstance.Title = listName;
+                listInstance.TemplateType = (int)ListTemplateType.DocumentLibrary;
+                listInstance.ContentTypesEnabled = true;
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding() { ContentTypeId = newCtype1.Id.StringValue, Default = true });
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding() { ContentTypeId = newCtype2.Id.StringValue, Hidden = false });
+
+                template.Lists.Add(listInstance);
+
+                var parser = new TokenParser(clientContext.Web, template);
+
+                // Update the List with new default content type
+                new ObjectListInstance().ProvisionObjects(clientContext.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var list = clientContext.Web.GetListByUrl(listInstance.Url);
+                Assert.IsNotNull(list);
+
+                clientContext.Load(doclib.RootFolder, rf => rf.UniqueContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                var actualContentTypeOrder = doclib.RootFolder.UniqueContentTypeOrder;
+                bool isHiddenContentTypeStillHidden = actualContentTypeOrder.FirstOrDefault(ct => ct.GetParentIdValue().Equals(newCtype3.Id.StringValue, StringComparison.OrdinalIgnoreCase)) == null;
+                bool isContentType2VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.GetParentIdValue().Equals(newCtype2.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+
+                Assert.IsTrue(isHiddenContentTypeStillHidden, "Content type has incorrectly been made visible in the new button");
+                Assert.IsTrue(isContentType2VisibleInNewButton, "Content type 2 has not been made visible in the new button");
             }
         }
     }
