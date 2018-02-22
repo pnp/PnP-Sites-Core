@@ -341,6 +341,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Content Type with ID {0} does not exist in the list {1}.
+        /// </summary>
+        internal static string FieldAndContentTypeExtensions_ContentTypeMissing {
+            get {
+                return ResourceManager.GetString("FieldAndContentTypeExtensions_ContentTypeMissing", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Creating content type &apos;{0}&apos; ({1})..
         /// </summary>
         internal static string FieldAndContentTypeExtensions_CreateContentType01 {
