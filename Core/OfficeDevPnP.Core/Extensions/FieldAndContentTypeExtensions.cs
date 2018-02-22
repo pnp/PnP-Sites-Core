@@ -1669,10 +1669,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="list">List to update</param>
         /// <param name="contentTypeId">Complete ID for the content type</param>        
-        [Obsolete("Use the list extension .SetDefaultContentType instead")]
         public static void SetDefaultContentTypeToList(this Web web, List list, string contentTypeId)
         {
-            SetDefaultContentTypeToList(list, contentTypeId);
+            list.SetDefaultContentType(contentTypeId);
         }
 
         /// <summary>
@@ -1681,10 +1680,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="list">List to update</param>
         /// <param name="contentType">Content type to make default</param>
-        [Obsolete("Use the list extension .SetDefaultContentType instead")]
         public static void SetDefaultContentTypeToList(this Web web, List list, ContentType contentType)
         {
-            SetDefaultContentTypeToList(list, contentType.Id.ToString());
+            list.SetDefaultContentType(contentType.Id);
         }
 
         /// <summary>
@@ -1693,69 +1691,23 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="listTitle">Title of the list to be updated</param>
         /// <param name="contentTypeId">Complete ID for the content type</param>
-        [Obsolete("Use the list extension .SetDefaultContentType instead")]
         public static void SetDefaultContentTypeToList(this Web web, string listTitle, string contentTypeId)
         {
-            // Get list instances
             var list = web.GetListByTitle(listTitle);
             web.Context.Load(list);
             web.Context.ExecuteQueryRetry();
-
-            // Add content type to list
-            SetDefaultContentTypeToList(list, contentTypeId);
+            list.SetDefaultContentType(contentTypeId);
         }
 
         /// <summary>
         /// Set's default content type list. 
         /// </summary>
-        /// <remarks>Notice. Currently removes other content types from the list. Known issue</remarks>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="listTitle">Title of the list to be updated</param>
         /// <param name="contentType">Content type to make default</param>
-        [Obsolete("Use the list extension .SetDefaultContentType instead")]
         public static void SetDefaultContentTypeToList(this Web web, string listTitle, ContentType contentType)
         {
             SetDefaultContentTypeToList(web, listTitle, contentType.Id.ToString());
-        }
-
-        /// <summary>
-        /// Set's default content type list. 
-        /// </summary>
-        /// <remarks>Notice. Currently removes other content types from the list. Known issue</remarks>
-        /// <param name="list">List to update</param>
-        /// <param name="contentTypeId">Complete ID for the content type</param>
-        [Obsolete("Use the list extension .SetDefaultContentType instead. This method produces unwanted side effects.")]
-        //Problems with this code:
-        //1. It messes up the existing order and visibility configuration for the folder/list
-        //2. Even if the default sort order (no unique order set) or the existing unique sort order
-        //   already has the specified content type set as default, this method unnecessarily 
-        //   sets or updates the unique content type order.
-        //3. Given a list with the picture content type added, and not the document content type (0x0101). 
-        //   If a user tries to set the document content type as default using the document content type id,        
-        //   then this code will incorrectly add the picture content type as the default content type.
-        //   This happens because the code searches for ANY child content type of the specified content type id.
-        //   The code should only allow exact content type id matches. 
-        //   A check for a direct child could be implemented, but it increases the complexity. All similar
-        //   methods should then also implement direct child capabilities, 
-        //   which might not be possible in all cases and would confuse API users.
-        //   Also, existing SharePoint CSOM methods does not implement a fallback to direct child content type functionality
-        public static void SetDefaultContentTypeToList(this List list, string contentTypeId)
-        {
-            var ctCol = list.ContentTypes;
-            list.Context.Load(ctCol);
-            list.Context.ExecuteQueryRetry();
-
-            var ctIds = ctCol.AsEnumerable().Select(ct => ct.Id).ToList();
-
-            // remove the folder content type
-            var newOrder = ctIds.Except(ctIds.Where(id => id.StringValue.StartsWith("0x012000")))
-                                 .OrderBy(x => !x.StringValue.StartsWith(contentTypeId, StringComparison.OrdinalIgnoreCase))
-                                 .ToArray();
-            list.RootFolder.UniqueContentTypeOrder = newOrder;
-
-            list.RootFolder.Update();
-            list.Update();
-            list.Context.ExecuteQueryRetry();
         }
 
         /// <summary>
@@ -1869,7 +1821,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Makes the specified conten types visible in the list new button. Existing visibility and content type order is not altered.
+        /// Makes the specified content types visible in the list new button. Existing visibility and content type order is not altered.
         /// </summary>
         /// <remarks>
         /// Content types specified in <paramref name="contentTypes"/> needs to be the actual content type in the list and not it's parent.
@@ -1907,7 +1859,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Hides the specified conten types in the list new button. Existing visibility and content type order is not altered.
+        /// Hides the specified content types in the list new button. Existing visibility and content type order is not altered.
         /// </summary>
         /// <remarks>
         /// Content types specified in <paramref name="contentTypes"/> needs to be the actual content type in the list and not it's parent.
@@ -2013,19 +1965,6 @@ namespace Microsoft.SharePoint.Client
                 parentIdValue = "0x" + contentTypeIdValue.Substring(0, length);
             }
             return parentIdValue;
-        }
-
-
-
-        /// <summary>
-        /// Set default content type to list
-        /// </summary>
-        /// <param name="list">List to update</param>
-        /// <param name="contentType">Content type to make default</param>
-        [Obsolete("Use the list extension .SetDefaultContentType instead. This method produces unwanted side effects.")]
-        public static void SetDefaultContentTypeToList(this List list, ContentType contentType)
-        {
-            SetDefaultContentTypeToList(list, contentType.Id.ToString());
         }
 
         /// <summary>
