@@ -134,7 +134,7 @@ namespace OfficeDevPnP.Core.Sites
 
             var accessToken = clientContext.GetAccessToken();
 
-            if (clientContext.IsAppOnly() && !clientContext.HasAuthCookies())
+            if (clientContext.IsAppOnly())
             {
                 throw new Exception("App-Only is currently not supported.");
             }
@@ -237,7 +237,7 @@ namespace OfficeDevPnP.Core.Sites
 
             var accessToken = clientContext.GetAccessToken();
 
-            if (!string.IsNullOrEmpty(accessToken) && !clientContext.HasAuthCookies())
+            if (clientContext.IsAppOnly())
             {
                 throw new Exception("App-Only is currently not supported.");
             }

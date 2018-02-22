@@ -264,12 +264,12 @@ namespace Microsoft.SharePoint.Client
             else if (clientContext.Credentials == null)
             {
                 result = true;
-            } else
-            {
-                // do we have cookies?
-                
             }
-
+            // As a final check, do we have the auth cookies?
+            if (clientContext.HasAuthCookies())
+            {
+                result = false;
+            }
             return (result);
         }
 
@@ -302,7 +302,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="clientContext"></param>
         /// <returns></returns>
-        public static bool HasAuthCookies(this ClientRuntimeContext clientContext)
+        private static bool HasAuthCookies(this ClientRuntimeContext clientContext)
         {
             clientContext.ExecutingWebRequest += ClientContext_ExecutingWebRequestCookieCounter;
             clientContext.ExecuteQueryRetry();
@@ -322,8 +322,8 @@ namespace Microsoft.SharePoint.Client
                     if (cookies[q].Name == "FedAuth")
                     {
                         fedAuth = true;
-                    } 
-                    if(cookies[q].Name == "rtFa")
+                    }
+                    if (cookies[q].Name == "rtFa")
                     {
                         rtFa = true;
                     }
