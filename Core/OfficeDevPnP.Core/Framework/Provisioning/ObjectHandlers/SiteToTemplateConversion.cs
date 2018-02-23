@@ -277,7 +277,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 int step = 1;
 
-                var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(web, template));
+                var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(web, template, provisioningInfo));
 
                 // Remove potentially unsupported artifacts
 
@@ -290,7 +290,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var handler in objectHandlers)
                 {
-                    if (handler.WillProvision(web, template))
+                    if (handler.WillProvision(web, template, provisioningInfo))
                     {
                         if (messagesDelegate != null)
                         {

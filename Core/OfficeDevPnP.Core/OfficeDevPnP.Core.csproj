@@ -381,6 +381,11 @@
   <ItemGroup>
     <Compile Include="ALM\AppManager.cs" />
     <Compile Include="ALM\AppMetadata.cs" />
+    <Compile Include="CoreResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CoreResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Entities\UnifiedGroupUser.cs" />
     <Compile Include="Entities\WebhookNotification.cs" />
     <Compile Include="Entities\WebhookSubscription.cs" />
@@ -419,11 +424,6 @@
     <Compile Include="Extensions\TaxonomyExtensions.cs" />
     <Compile Include="Extensions\TemplateFieldExtension.cs" />
     <Compile Include="Extensions\TenantExtensions.cs" />
-    <Compile Include="CoreResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CoreResources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Framework\Graph\Model\DirectorySetting.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingTemplates.cs" />
     <Compile Include="Framework\Graph\GraphHttpClient.cs" />
@@ -460,7 +460,17 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdTokenEncoded.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\HostUrlToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\PageUniqueIdEncodedToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\PageUniqueIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionConnectedOffice365GroupId.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionIdEncodedToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteIdEncodedToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteTitleToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ClientSidePageContentsHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AppPackageIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.cs">
       <DependentUpon>ProvisioningSchema-2017-05.xsd</DependentUpon>
@@ -782,7 +792,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\GuidToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CurrentUserIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteIdToken.cs" />
-    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteNameToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\WebNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\TermSetIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ParameterToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ListUrlToken.cs" />
@@ -1132,8 +1142,8 @@
   <Target Name="AfterBuild" DependsOnTargets="">
   </Target>
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>del $(ProjectDir)\obj\pnpcore.*
+del $(ProjectDir)\obj\*.json</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>

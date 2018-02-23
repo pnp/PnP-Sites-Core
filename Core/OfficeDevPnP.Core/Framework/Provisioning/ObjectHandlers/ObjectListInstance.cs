@@ -46,6 +46,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     rootWeb.Context.Load(rootWeb.Lists, lists => lists.Include(l => l.Id, l => l.RootFolder.ServerRelativeUrl, l => l.Fields).Where(l => l.Hidden == false));
 
                     web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
+                    web.Context.Load(web.AvailableFields, fields => fields.Include(f => f.Id, f => f.InternalName, f => f.SchemaXmlWithResourceTokens));
                     web.Context.ExecuteQueryRetry();
                     var existingLists = web.Lists.AsEnumerable().ToList();
                     var serverRelativeUrl = web.ServerRelativeUrl;
@@ -201,7 +202,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 if (!listInfo.SiteList.FieldExistsById(fieldRef.Id))
                                 {
-                                    field = CreateFieldRef(listInfo, field, fieldRef, parser);
+                                    field = CreateFieldRef(listInfo.SiteList, field, fieldRef, parser);
                                 }
                                 else
                                 {
@@ -759,7 +760,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return listField;
         }
 
-        private static Field CreateFieldRef(ListInfo listInfo, Field field, FieldRef fieldRef, TokenParser parser)
+        private static Field CreateFieldRef(List list, Field field, FieldRef fieldRef, TokenParser parser)
         {
             field.EnsureProperty(f => f.SchemaXmlWithResourceTokens);
             XElement element = XElement.Parse(field.SchemaXmlWithResourceTokens);
@@ -783,7 +784,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 field.SchemaXml = ObjectField.TokenizeFieldValidationFormula(field, field.SchemaXml);
             }
 
-            var createdField = listInfo.SiteList.Fields.Add(field);
+            var createdField = list.Fields.Add(field);
 
             createdField.Context.Load(createdField, cf => cf.Id, cf => cf.Title, cf => cf.Hidden, cf => cf.Required);
             createdField.Context.ExecuteQueryRetry();
@@ -1430,7 +1431,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var webhook in templateList.Webhooks)
                     {
-                        AddOrUpdateListWebHook(existingList, webhook, true);
+                        AddOrUpdateListWebHook(existingList, webhook, scope, true);
                     }
                 }
 #endif
@@ -1513,7 +1514,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     foreach (var ctb in bindingsToAdd)
                     {
-                        var tempCT = web.GetContentTypeById(ctb.ContentTypeId, searchInSiteHierarchy: true);
+                        var tempCT = web.GetContentTypeById(
+                            ctb.ContentTypeId,
+                            true,
+                            cts => cts.Include(
+                                ct => ct.Id,
+                                ct => ct.Name,
+                                ct => ct.FieldLinks.Include(fl => fl.Id, fl => fl.Hidden)
+                            ));
                         if (tempCT != null)
                         {
                             // Get the name of the existing CT
@@ -1522,6 +1530,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             // If the CT does not exist in the target list, and we don't have to remove it
                             if (!existingList.ContentTypeExistsByName(name) && !ctb.Remove)
                             {
+                                AddContentTypeHiddenFieldsToList(tempCT, existingList);
                                 existingList.AddContentTypeToListById(ctb.ContentTypeId, searchContentTypeInSiteHierarchy: true);
                             }
                             // Else if the CT exists in the target list, and we have to remove it
@@ -1801,6 +1810,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.Context.Load(createdList, l => l.Id);
             web.Context.Load(createdList, l => l.RootFolder.ServerRelativeUrl);
             web.Context.Load(createdList.ContentTypes);
+            web.Context.Load(createdList.Fields);
             web.Context.ExecuteQueryRetry();
 
             if (createdList.BaseTemplate != (int)ListTemplateType.Survey)
@@ -1815,15 +1825,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 ContentTypeBinding defaultCtBinding = null;
                 foreach (var ctBinding in list.ContentTypeBindings)
                 {
-                    var tempCT = web.GetContentTypeById(ctBinding.ContentTypeId, searchInSiteHierarchy: true);
+                    var tempCT = web.GetContentTypeById(
+                        ctBinding.ContentTypeId,
+                        true, cts => cts.Include(
+                            ct => ct.Id,
+                            ct => ct.Name,
+                            ct => ct.FieldLinks.Include(fl => fl.Id, fl => fl.Hidden)
+                            ));
                     if (tempCT != null)
                     {
                         // Get the name of the existing CT
-                        var name = tempCT.EnsureProperty(ct => ct.Name);
+                        var name = tempCT.Name;
 
                         // If the CT does not exist in the target list, and we don't have to remove it
                         if (!createdList.ContentTypeExistsByName(name) && !ctBinding.Remove)
                         {
+                            AddContentTypeHiddenFieldsToList(tempCT, createdList);
                             // Then add it to the target list
                             createdList.AddContentTypeToListById(ctBinding.ContentTypeId, searchContentTypeInSiteHierarchy: true);
                         }
@@ -1890,7 +1907,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 foreach(var webhook in list.Webhooks)
                 {
-                    AddOrUpdateListWebHook(createdList, webhook);
+                    AddOrUpdateListWebHook(createdList, webhook, scope);
                 }
             }
 #endif
@@ -1901,33 +1918,66 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return Tuple.Create(createdList, parser);
         }
 
-#if !ONPREMISES
-        private void AddOrUpdateListWebHook(List list, Webhook webhook, bool isListUpdate = false)
+        private void AddContentTypeHiddenFieldsToList(ContentType tempCT, List createdList)
         {
-            // for a new list immediately add the webhook
-            if (!isListUpdate)
+            var ctx = (ClientContext)createdList.Context;
+            var web = ctx.Web;
+            foreach (var fieldLink in tempCT.FieldLinks)
             {
-                var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
-            }
-            // for existing lists add a new webhook or update existing webhook
-            else
-            {
-                // get the webhooks defined on the list
-                var addedWebhooks = Task.Run(() => list.GetWebhookSubscriptionsAsync()).Result;
+                if (fieldLink.Hidden && !createdList.FieldExistsById(fieldLink.Id))
+                {
+                    var siteField = web.AvailableFields.First(f => f.Id == fieldLink.Id);
 
-                var existingWebhook = addedWebhooks.Where(p => p.NotificationUrl.Equals(webhook.ServerNotificationUrl, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-                if (existingWebhook != null)
-                {
-                    // refresh the expiration date of the existing webhook
-                    existingWebhook.ExpirationDateTime = DateTime.Now.AddDays(webhook.ExpiresInDays);
-                    // update the existing webhook
-                    list.UpdateWebhookSubscription(existingWebhook);
+                    var fieldSchema = XElement.Parse(siteField.SchemaXmlWithResourceTokens);
+                    var displayNameBackup = (string)fieldSchema.Attribute("DisplayName") ?? (string)fieldSchema.Attribute("Name");
+
+                    fieldSchema.SetAttributeValue("DisplayName", (string)fieldSchema.Attribute("Name"));
+
+                    var createdField = createdList.Fields.AddFieldAsXml(fieldSchema.ToString(), false, AddFieldOptions.AddToNoContentType);
+                    ctx.ExecuteQuery();
+                    var createdFieldSchema = XElement.Parse(createdField.EnsureProperty(f => f.SchemaXml));
+                    createdFieldSchema.SetAttributeValue("DisplayName", displayNameBackup);
+                    createdField.SchemaXml = createdFieldSchema.ToString();
+                    ctx.ExecuteQuery();
                 }
-                else
+            }
+        }
+
+#if !ONPREMISES
+        private void AddOrUpdateListWebHook(List list, Webhook webhook, PnPMonitoredScope scope, bool isListUpdate = false)
+        {
+            if (webhook.ExpiresInDays > 0)
+            {
+                // for a new list immediately add the webhook
+                if (!isListUpdate)
                 {
-                    // add as new webhook
                     var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
                 }
+                // for existing lists add a new webhook or update existing webhook
+                else
+                {
+                    // get the webhooks defined on the list
+                    var addedWebhooks = Task.Run(() => list.GetWebhookSubscriptionsAsync()).Result;
+
+                    var existingWebhook = addedWebhooks.Where(p => p.NotificationUrl.Equals(webhook.ServerNotificationUrl, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                    if (existingWebhook != null)
+                    {
+                        // refresh the expiration date of the existing webhook
+                        existingWebhook.ExpirationDateTime = DateTime.Now.AddDays(webhook.ExpiresInDays);
+                        // update the existing webhook
+                        list.UpdateWebhookSubscription(existingWebhook);
+                    }
+                    else
+                    {
+                        // add as new webhook
+                        var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
+                    }
+                }
+            }
+            else
+            {
+                list.EnsureProperty(l => l.Title);
+                scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook, webhook.ServerNotificationUrl, list.Title);
             }
         }
 #endif
@@ -2589,7 +2639,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return schemaXml;
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             if (!_willProvision.HasValue)
             {

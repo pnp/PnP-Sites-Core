@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class CoreResources {
@@ -337,6 +337,15 @@ namespace OfficeDevPnP.Core {
         internal static string FieldAndContentTypeExtensions_ContentType01AlreadyExists {
             get {
                 return ResourceManager.GetString("FieldAndContentTypeExtensions_ContentType01AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Content Type with ID {0} does not exist in the list {1}.
+        /// </summary>
+        internal static string FieldAndContentTypeExtensions_ContentTypeMissing {
+            get {
+                return ResourceManager.GetString("FieldAndContentTypeExtensions_ContentTypeMissing", resourceCulture);
             }
         }
         
@@ -1029,6 +1038,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error during automatic client side page connected file export: {0}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePageContents_ErrorDuringFileExport {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePageContents_ErrorDuringFileExport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This page is not a valid client side page and can&apos;t be extracted. Underlying error = {0}..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ClientSidePageContents_NoValidPage {
@@ -1636,6 +1654,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Webhook {0} has been expired and will be skipped during creation/update of list {1}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Updating field {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstances_Updating_field__0_ {
@@ -1668,6 +1695,15 @@ namespace OfficeDevPnP.Core {
         internal static string Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_ {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error during webhook add/update: {0}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_Webhook_Error {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_Webhook_Error", resourceCulture);
             }
         }
         
