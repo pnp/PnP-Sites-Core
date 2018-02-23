@@ -1699,6 +1699,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error during webhook add/update: {0}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_Webhook_Error {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_Webhook_Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Data Rows.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstancesDataRows {

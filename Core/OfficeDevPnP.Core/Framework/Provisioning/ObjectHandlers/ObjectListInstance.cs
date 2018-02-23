@@ -1836,30 +1836,38 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (webhook.ExpiresInDays > 0)
             {
-                // for a new list immediately add the webhook
-                if (!isListUpdate)
+                try
                 {
-                    var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
-                }
-                // for existing lists add a new webhook or update existing webhook
-                else
-                {
-                    // get the webhooks defined on the list
-                    var addedWebhooks = Task.Run(() => list.GetWebhookSubscriptionsAsync()).Result;
-
-                    var existingWebhook = addedWebhooks.Where(p => p.NotificationUrl.Equals(webhook.ServerNotificationUrl, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-                    if (existingWebhook != null)
+                    // for a new list immediately add the webhook
+                    if (!isListUpdate)
                     {
-                        // refresh the expiration date of the existing webhook
-                        existingWebhook.ExpirationDateTime = DateTime.Now.AddDays(webhook.ExpiresInDays);
-                        // update the existing webhook
-                        list.UpdateWebhookSubscription(existingWebhook);
-                    }
-                    else
-                    {
-                        // add as new webhook
                         var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
                     }
+                    // for existing lists add a new webhook or update existing webhook
+                    else
+                    {
+                        // get the webhooks defined on the list
+                        var addedWebhooks = Task.Run(() => list.GetWebhookSubscriptionsAsync()).Result;
+
+                        var existingWebhook = addedWebhooks.Where(p => p.NotificationUrl.Equals(webhook.ServerNotificationUrl, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                        if (existingWebhook != null)
+                        {
+                            // refresh the expiration date of the existing webhook
+                            existingWebhook.ExpirationDateTime = DateTime.Now.AddDays(webhook.ExpiresInDays);
+                            // update the existing webhook
+                            list.UpdateWebhookSubscription(existingWebhook);
+                        }
+                        else
+                        {
+                            // add as new webhook
+                            var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Eat all webhook exceptions, we don't want to stop the provisioning flow is an exported file happended to have a reference to a stale webhook
+                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_Webhook_Error, ex.Message);
                 }
             }
             else
