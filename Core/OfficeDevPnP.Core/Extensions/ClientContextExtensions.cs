@@ -314,21 +314,26 @@ namespace Microsoft.SharePoint.Client
         {
             var fedAuth = false;
             var rtFa = false;
-            var cookies = e.WebRequestExecutor.WebRequest.CookieContainer.GetCookies(e.WebRequestExecutor.WebRequest.RequestUri);
-            if (cookies.Count > 0)
+
+            if (e.WebRequestExecutor != null && e.WebRequestExecutor.WebRequest != null && e.WebRequestExecutor.WebRequest.CookieContainer != null)
             {
-                for (var q = 0; q < cookies.Count; q++)
+                var cookies = e.WebRequestExecutor.WebRequest.CookieContainer.GetCookies(e.WebRequestExecutor.WebRequest.RequestUri);
+                if (cookies.Count > 0)
                 {
-                    if (cookies[q].Name == "FedAuth")
+                    for (var q = 0; q < cookies.Count; q++)
                     {
-                        fedAuth = true;
-                    }
-                    if (cookies[q].Name == "rtFa")
-                    {
-                        rtFa = true;
+                        if (cookies[q].Name == "FedAuth")
+                        {
+                            fedAuth = true;
+                        }
+                        if (cookies[q].Name == "rtFa")
+                        {
+                            rtFa = true;
+                        }
                     }
                 }
             }
+
             hasAuthCookies = fedAuth && rtFa;
         }
 
