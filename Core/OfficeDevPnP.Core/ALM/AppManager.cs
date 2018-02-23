@@ -482,41 +482,41 @@ namespace OfficeDevPnP.Core.ALM
 
             var accessToken = _context.GetAccessToken();
 
-            try
+            using (var handler = new HttpClientHandler())
             {
-                using (var handler = new HttpClientHandler())
+                _context.Web.EnsureProperty(w => w.Url);
+
+                // we're not in app-only or user + app context, so let's fall back to cookie based auth
+                if (String.IsNullOrEmpty(accessToken))
                 {
-                    _context.Web.EnsureProperty(w => w.Url);
+                    handler.SetAuthenticationCookies(_context);
+                }
 
-                    // we're not in app-only or user + app context, so let's fall back to cookie based auth
-                    if (String.IsNullOrEmpty(accessToken))
+                using (var httpClient = new PnPHttpProvider(handler))
+                {
+                    string requestUrl = $"{_context.Web.Url}/_api/web/tenantappcatalog/AvailableApps";
+                    if (Guid.Empty != id)
                     {
-                        handler.SetAuthenticationCookies(_context);
+                        requestUrl = $"{_context.Web.Url}/_api/web/tenantappcatalog/AvailableApps/GetById('{id}')";
                     }
-
-                    using (var httpClient = new PnPHttpProvider(handler))
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+                    request.Headers.Add("accept", "application/json;odata=verbose");
+                    if (!string.IsNullOrEmpty(accessToken))
                     {
-                        string requestUrl = $"{_context.Web.Url}/_api/web/tenantappcatalog/AvailableApps";
-                        if (Guid.Empty != id)
-                        {
-                            requestUrl = $"{_context.Web.Url}/_api/web/tenantappcatalog/AvailableApps/GetById('{id}')";
-                        }
-                        HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
-                        request.Headers.Add("accept", "application/json;odata=verbose");
-                        if (!string.IsNullOrEmpty(accessToken))
-                        {
-                            request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
-                        }
-                        request.Headers.Add("X-RequestDigest", await _context.GetRequestDigest());
+                        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                    request.Headers.Add("X-RequestDigest", await _context.GetRequestDigest());
 
-                        // Perform actual post operation
-                        HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
+                    // Perform actual post operation
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
-                        if (response.IsSuccessStatusCode)
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // If value empty, URL is taken
+                        var responseString = await response.Content.ReadAsStringAsync();
+                        if (responseString != null)
                         {
-                            // If value empty, URL is taken
-                            var responseString = await response.Content.ReadAsStringAsync();
-                            if (responseString != null)
+                            try
                             {
                                 if (Guid.Empty == id && string.IsNullOrEmpty(title))
                                 {
@@ -539,19 +539,18 @@ namespace OfficeDevPnP.Core.ALM
                                     var returnedAddins = responseJson["d"];
                                     addins = JsonConvert.DeserializeObject<AppMetadata>(returnedAddins.ToString());
                                 }
+
                             }
+                            catch { }
                         }
-                        else
-                        {
-                            // Something went wrong...
-                            throw new Exception(await response.Content.ReadAsStringAsync());
-                        }
+                    }
+                    else
+                    {
+                        // Something went wrong...
+                        throw new Exception(await response.Content.ReadAsStringAsync());
                     }
                 }
             }
-            catch { }
-            //var innerException = JObject.Parse(ex.Message);
-            //Log.Error("AppManager.cs - Something went wrong...", Convert.ToString(innerException["error"]["message"]["value"]));            
             return await Task.Run(() => addins);
         }
 
