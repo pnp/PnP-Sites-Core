@@ -517,7 +517,57 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Associate the provided groups as default owners, members or visitors groups. If a group is null then the 
+        /// Ensures a group
+        /// </summary>
+        /// <param name="web">Site to add the group to</param>
+        /// <param name="groupName">Name of the group</param>
+        /// <param name="groupDescription">Description of the group</param>
+        /// <param name="owner">Sets the owner of created group, if null then created group is set as owner</param>
+        /// <param name="onlyAllowMembersViewMembership">Set whether members are allowed to see group membership, defaults to false</param>
+        /// <param name="executeQuery">Set to false to postpone the executequery call</param>
+        /// <returns>The created group</returns>
+        public static Group EnsureGroup(
+            this Web web,
+            string groupName,
+            string groupDescription,
+            Principal owner = null,
+            bool onlyAllowMembersViewMembership = false,
+            bool executeQuery = true)
+        {
+            ExceptionHandlingScope scope = new ExceptionHandlingScope(web.Context);
+
+            Group group;
+
+            using (scope.StartScope())
+            {
+                using (scope.StartTry())
+                {
+                    group = web.SiteGroups.GetByName(groupName);
+                }
+
+                using (scope.StartCatch())
+                {
+                    group = web.SiteGroups.Add(new GroupCreationInformation
+                    {
+                        Title = groupName,
+                        Description = groupDescription
+                    });
+                    group.Owner = owner ?? group;
+                    group.OnlyAllowMembersViewMembership = onlyAllowMembersViewMembership;
+                    group.Update();
+                }
+            }
+
+            if (executeQuery)
+            {
+                web.Context.ExecuteQueryRetry();
+            }
+
+            return group;
+        }
+
+        /// <summary>
+        /// Associate the provided groups as default owners, members or visitors groups. If a group is null then the
         /// association is not done
         /// </summary>
         /// <param name="web">Site to operate on</param>
@@ -769,7 +819,7 @@ namespace Microsoft.SharePoint.Client
             {
                 return;
             }
-            
+
             var roleAssignments = securableObject.RoleAssignments;
             securableObject.Context.Load(roleAssignments);
             securableObject.Context.ExecuteQueryRetry();
@@ -801,7 +851,7 @@ namespace Microsoft.SharePoint.Client
                 {
                     roleDefinitionBindings.Add(roleDefinition);
 
-                    //update                        
+                    //update
                     roleAssignment.ImportRoleDefinitionBindings(roleDefinitionBindings);
                     roleAssignment.Update();
                     securableObject.Context.ExecuteQueryRetry();
@@ -937,7 +987,7 @@ namespace Microsoft.SharePoint.Client
             {
                 return;
             }
-            
+
             var roleAssignments = securableObject.RoleAssignments;
             securableObject.Context.Load(roleAssignments);
             securableObject.Context.ExecuteQueryRetry();
@@ -962,7 +1012,7 @@ namespace Microsoft.SharePoint.Client
                     rdc.Remove(roleDefinition);
                 }
 
-                //update                      
+                //update
                 roleAssignment.ImportRoleDefinitionBindings(rdc);
                 roleAssignment.Update();
                 securableObject.Context.ExecuteQueryRetry();
@@ -1103,7 +1153,7 @@ namespace Microsoft.SharePoint.Client
 
             if (users.AreItemsAvailable)
             {
-                result = users.Any(u => 
+                result = users.Any(u =>
                   u.LoginName.ToLowerInvariant().Contains(userLoginName.ToLowerInvariant())
                 );
             }
@@ -1363,8 +1413,8 @@ namespace Microsoft.SharePoint.Client
 
         /// <summary>
         /// A dictionary to cache resolved user emails. key: user login name, value: user email.
-        /// *** 
-        /// Don't use this cache in a real world application. 
+        /// ***
+        /// Don't use this cache in a real world application.
         /// ***
         /// Instead it should be replaced by a real cache with ref object to clear up intermediate records periodically.
         /// </summary>
@@ -1386,13 +1436,13 @@ namespace Microsoft.SharePoint.Client
 
         /// <summary>
         /// A dictionary to cache all user entities of a given SharePoint group. key: group login name, value: an array of user entities belongs to the group.
-        /// *** 
-        /// Don't use this cache in a real world application. 
+        /// ***
+        /// Don't use this cache in a real world application.
         /// ***
         /// Instead it should be replaced by a real cache with ref object to clear up intermediate records periodically.
         /// </summary>
         private static Dictionary<string, UserEntity[]> MockupGroupCache = new Dictionary<string, UserEntity[]>();
-        
+
         /// <summary>
         /// Ensure all users of a given SharePoint group has been cached.
         /// </summary>
