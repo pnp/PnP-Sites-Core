@@ -519,7 +519,7 @@ namespace Microsoft.SharePoint.Client
             TermStore ts = tSession.GetDefaultSiteCollectionTermStore();
             TermSet tset = ts.GetTermSet(termSetId);
 
-            t = tset.CreateTerm(term, 1033, termId);
+            t = tset.CreateTerm(term, ts.EnsureProperty(tstore=>tstore.DefaultLanguage), termId);
             //site.Context.Load(tSession);
             //site.Context.Load(ts);
             //site.Context.Load(tset);
