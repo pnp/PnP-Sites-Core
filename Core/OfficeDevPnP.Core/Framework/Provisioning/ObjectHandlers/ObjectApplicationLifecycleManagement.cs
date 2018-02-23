@@ -27,8 +27,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // NOOP
 
                 // Process the collection of Apps installed in the current Site Collection
-                var uri = web.GetAppCatalog();
-                if(uri != null)
+                var appCatalogUri = web.GetAppCatalog();
+                if(appCatalogUri != null)
                 {
                     var manager = new AppManager(web.Context as ClientContext);
 
