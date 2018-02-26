@@ -86,6 +86,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                     bool create = true;
                                     ListItem listitem = null;
+                                    var usersFields = new Dictionary<string, object>();
                                     if (!string.IsNullOrEmpty(listInstance.DataRows.KeyColumn))
                                     {
                                         // Get value from key column
@@ -196,44 +197,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                         listitem[parser.ParseString(dataValue.Key)] = linkValue;
                                                         break;
                                                     case FieldType.User:
-                                                        // FieldUserValue - Expected format: loginName or loginName,loginName,loginName...
-                                                        if (fieldValue.Contains(","))
-                                                        {
-                                                            var userValues = new List<FieldUserValue>();
-                                                            fieldValue.Split(',').All(value =>
-                                                            {
-                                                                var user = web.EnsureUser(value);
-                                                                web.Context.Load(user);
-                                                                web.Context.ExecuteQueryRetry();
-                                                                if (user != null)
-                                                                {
-                                                                    userValues.Add(new FieldUserValue
-                                                                    {
-                                                                        LookupId = user.Id,
-                                                                    }); ;
-                                                                }
-                                                                return true;
-                                                            });
-                                                            listitem[parser.ParseString(dataValue.Key)] = userValues.ToArray();
-                                                        }
-                                                        else
-                                                        {
-                                                            var user = web.EnsureUser(fieldValue);
-                                                            web.Context.Load(user);
-                                                            web.Context.ExecuteQueryRetry();
-                                                            if (user != null)
-                                                            {
-                                                                var userValue = new FieldUserValue
-                                                                {
-                                                                    LookupId = user.Id,
-                                                                };
-                                                                listitem[parser.ParseString(dataValue.Key)] = userValue;
-                                                            }
-                                                            else
-                                                            {
-                                                                listitem[parser.ParseString(dataValue.Key)] = fieldValue;
-                                                            }
-                                                        }
+                                                        usersFields.Add(dataValue.Key, fieldValue);
                                                         break;
                                                     case FieldType.DateTime:
                                                         var dateTime = DateTime.MinValue;
@@ -246,10 +210,57 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                         listitem[parser.ParseString(dataValue.Key)] = fieldValue;
                                                         break;
                                                 }
-                                                listitem.Update();
                                             }
                                         }
+                                        listitem.Update();
                                         web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
+
+                                        if (usersFields.Count > 0)
+                                        {
+                                            foreach (var userField in usersFields)
+                                            {
+                                                // FieldUserValue - Expected format: loginName or loginName,loginName,loginName...
+                                                if (userField.Value.ToString().Contains(","))
+                                                {
+                                                    var userValues = new List<FieldUserValue>();
+                                                    userField.Value.ToString().Split(',').All(value =>
+                                                    {
+                                                        var user = web.EnsureUser(value);
+                                                        web.Context.Load(user);
+                                                        web.Context.ExecuteQueryRetry();
+                                                        if (user != null)
+                                                        {
+                                                            userValues.Add(new FieldUserValue
+                                                            {
+                                                                LookupId = user.Id,
+                                                            }); ;
+                                                        }
+                                                        return true;
+                                                    });
+                                                    listitem[parser.ParseString(userField.Key)] = userValues.ToArray();
+                                                }
+                                                else
+                                                {
+                                                    var user = web.EnsureUser(userField.Value.ToString());
+                                                    web.Context.Load(user);
+                                                    web.Context.ExecuteQueryRetry();
+                                                    if (user != null)
+                                                    {
+                                                        var userValue = new FieldUserValue
+                                                        {
+                                                            LookupId = user.Id,
+                                                        };
+                                                        listitem[parser.ParseString(userField.Key)] = userValue;
+                                                    }
+                                                    else
+                                                    {
+                                                        listitem[parser.ParseString(userField.Key)] = userField.Value.ToString();
+                                                    }
+                                                }
+                                                listitem.Update();
+                                                web.Context.ExecuteQueryRetry();
+                                            }
+                                        }
 
                                         if (dataRow.Security != null && (dataRow.Security.ClearSubscopes == true || dataRow.Security.CopyRoleAssignments == true || dataRow.Security.RoleAssignments.Count > 0))
                                         {
@@ -310,4 +321,3 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
     }
 }
-
