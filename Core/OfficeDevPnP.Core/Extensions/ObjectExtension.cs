@@ -13,6 +13,7 @@ namespace OfficeDevPnP.Core.Extensions
     /// </summary>
     public static class ObjectExtension
     {
+
         /// <summary>
         /// Set an object field or property and returns if the value was changed.
         /// </summary>
@@ -113,5 +114,14 @@ namespace OfficeDevPnP.Core.Extensions
             }
         }
 
+        /// <summary>
+        /// Nullify a string when it's an empty one
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string NullIfEmpty(this string value)
+        {
+            return string.IsNullOrEmpty(value) ? null : value;
+        }
     }
 }

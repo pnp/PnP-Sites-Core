@@ -544,7 +544,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 // ContentTypeID
-                var contentTypeID = viewElement.Attribute("ContentTypeID") != null ? viewElement.Attribute("ContentTypeID").Value : null;
+                var contentTypeID = (string)viewElement.Attribute("ContentTypeID");
                 if (!string.IsNullOrEmpty(contentTypeID) && (contentTypeID != BuiltInContentTypeId.System))
                 {
                     ContentTypeId childContentTypeId = null;
@@ -566,7 +566,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // Default for content type
                 bool parsedDefaultViewForContentType;
-                var defaultViewForContentType = viewElement.Attribute("DefaultViewForContentType") != null ? viewElement.Attribute("DefaultViewForContentType").Value : null;
+                var defaultViewForContentType = (string) viewElement.Attribute("DefaultViewForContentType");
                 if (!string.IsNullOrEmpty(defaultViewForContentType) && bool.TryParse(defaultViewForContentType, out parsedDefaultViewForContentType))
                 {
                     createdView.DefaultViewForContentType = parsedDefaultViewForContentType;
@@ -1040,13 +1040,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     isDirty = true;
                 }
-                isDirty |= existingList.Set(x => x.DocumentTemplateUrl, parser.ParseString(templateList.DocumentTemplate));
+                isDirty |= existingList.Set(x => x.DocumentTemplateUrl, parser.ParseString(templateList.DocumentTemplate).NullIfEmpty());
                 isDirty |= existingList.Set(x => x.Description, parser.ParseString(templateList.Description));
                 isDirty |= existingList.Set(x => x.Hidden, templateList.Hidden);
                 isDirty |= existingList.Set(x => x.OnQuickLaunch, templateList.OnQuickLaunch);
-                isDirty |= existingList.Set(x => x.DefaultDisplayFormUrl, parser.ParseString(templateList.DefaultDisplayFormUrl));
-                isDirty |= existingList.Set(x => x.DefaultEditFormUrl, parser.ParseString(templateList.DefaultEditFormUrl));
-                isDirty |= existingList.Set(x => x.DefaultNewFormUrl, parser.ParseString(templateList.DefaultNewFormUrl));
+                isDirty |= existingList.Set(x => x.DefaultDisplayFormUrl, parser.ParseString(templateList.DefaultDisplayFormUrl).NullIfEmpty());
+                isDirty |= existingList.Set(x => x.DefaultEditFormUrl, parser.ParseString(templateList.DefaultEditFormUrl).NullIfEmpty());
+                isDirty |= existingList.Set(x => x.DefaultNewFormUrl, parser.ParseString(templateList.DefaultNewFormUrl).NullIfEmpty());
 
                 if (existingList.Direction == "none" && templateList.Direction != ListReadingDirection.None)
                 {
