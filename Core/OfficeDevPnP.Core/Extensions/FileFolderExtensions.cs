@@ -18,6 +18,8 @@ namespace Microsoft.SharePoint.Client
     /// </summary>
     public static partial class FileFolderExtensions
     {
+        const string REGEX_INVALID_FILE_NAME_CHARS = @"[<>:;*?/\\|""&%\t\r\n]";
+
         /// <summary>
         /// Approves a file
         /// </summary>
@@ -215,7 +217,7 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder CreateFolder(this Web web, string folderName)
         {
-            if (folderName.ContainsInvalidFileFolderChars())
+            if (folderName.ContainsInvalidUrlChars())
             {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
             }
@@ -241,7 +243,7 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder CreateFolder(this Folder parentFolder, string folderName)
         {
-            if (folderName.ContainsInvalidFileFolderChars())
+            if (folderName.ContainsInvalidUrlChars())
             {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
             }
@@ -379,7 +381,7 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder EnsureFolder(this Web web, string folderName, params Expression<Func<Folder, object>>[] expressions)
         {
-            if (folderName.ContainsInvalidFileFolderChars())
+            if (folderName.ContainsInvalidUrlChars())
             {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
             }
@@ -403,7 +405,7 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder EnsureFolder(this Folder parentFolder, string folderName, params Expression<Func<Folder, object>>[] expressions)
         {
-            if (folderName.ContainsInvalidFileFolderChars())
+            if (folderName.ContainsInvalidUrlChars())
             {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
             }
@@ -683,7 +685,7 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentNullException(nameof(folderName));
             }
 
-            if (folderName.ContainsInvalidFileFolderChars())
+            if (folderName.ContainsInvalidUrlChars())
             {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
             }
@@ -881,7 +883,7 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFile_Destination_file_name_is_required_, nameof(fileName));
             }
 
-            if (fileName.ContainsInvalidFileFolderChars())
+            if (Regex.IsMatch(fileName, REGEX_INVALID_FILE_NAME_CHARS))
             {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_, nameof(fileName));
             }
@@ -958,7 +960,7 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFile_Destination_file_name_is_required_, nameof(fileName));
             }
 
-            if (fileName.ContainsInvalidFileFolderChars())
+            if (Regex.IsMatch(fileName, REGEX_INVALID_FILE_NAME_CHARS))
             {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFileWebDav_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_, nameof(fileName));
             }

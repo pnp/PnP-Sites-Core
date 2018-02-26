@@ -10,13 +10,10 @@ namespace OfficeDevPnP.Core.Utilities
     public static class UrlUtility
     {
         const char PATH_DELIMITER = '/';
-
 #if !ONPREMISES
         const string INVALID_CHARS_REGEX = @"[\\#%*/:<>?+|\""]";
-        const string REGEX_INVALID_FILEFOLDER_NAME_CHARS = @"[""#%*:<>?/\|\t\r\n]";
 #else
         const string INVALID_CHARS_REGEX = @"[\\~#%&*{}/:<>?+|\""]";
-        const string REGEX_INVALID_FILEFOLDER_NAME_CHARS = @"[~#%&*{}\:<>?/|""\t\r\n]";
 #endif
         const string IIS_MAPPED_PATHS_REGEX = @"/(_layouts|_admin|_app_bin|_controltemplates|_login|_vti_bin|_vti_pvt|_windows|_wpresources)/";
 
@@ -116,29 +113,19 @@ namespace OfficeDevPnP.Core.Utilities
         #endregion
 
         /// <summary>
-        /// Checks if url contains invalid characters or not
+        /// Checks url contians invalid characters or not
         /// </summary>
-        /// <param name="content">Url value</param>
+        /// <param name="content">url value</param>
         /// <returns>Returns true if url contains invalid characters. Otherwise returns false.</returns>
         public static bool ContainsInvalidUrlChars(this string content)
         {
-	        return Regex.IsMatch(content, INVALID_CHARS_REGEX);
-        }
-
-        /// <summary>
-        /// Checks if file or folder contains invalid characters or not
-        /// </summary>
-        /// <param name="content">File or folder name to check</param>
-        /// <returns>True if contains invalid chars, false otherwise</returns>
-        public static bool ContainsInvalidFileFolderChars(this string content)
-        {
-            return Regex.IsMatch(content, REGEX_INVALID_FILEFOLDER_NAME_CHARS);
+	    return Regex.IsMatch(content, INVALID_CHARS_REGEX);
         }
 
         /// <summary>
         /// Removes invalid characters
         /// </summary>
-        /// <param name="content">Url value</param>
+        /// <param name="content">url value</param>
         /// <returns>Returns url without invalid characters</returns>
         public static string StripInvalidUrlChars(this string content)
         {

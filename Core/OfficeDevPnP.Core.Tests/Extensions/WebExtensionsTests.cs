@@ -129,7 +129,7 @@ namespace Microsoft.SharePoint.Client.Tests
             bool dirty = false;
             clientContext.Load(clientContext.Web.Webs, wc => wc.Include(w => w.Title, w => w.ServerRelativeUrl));
             clientContext.ExecuteQueryRetry();
-            foreach (Web subWeb in clientContext.Web.Webs.ToList())
+            foreach (Web subWeb in clientContext.Web.Webs)
             {
                 if (subWeb.Title.StartsWith("Test_") || subWeb.ServerRelativeUrl.Contains("Test_"))
                 {

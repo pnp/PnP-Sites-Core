@@ -1540,33 +1540,6 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-        /// <summary>
-        /// Ensures the specified label for the specified lcid exists.
-        /// </summary>
-        /// <param name="term">The term to ensure the label for</param>
-        /// <param name="lcid">The LCID of the label to ensure</param>
-        /// <param name="labelName">The name of the label to ensure</param>
-        /// <param name="isDefault">Determines if the label should be the default</param>
-        public static void EnsureLabel(this Term term, int lcid, string labelName, bool isDefault)
-        {
-            var clientContext = term.Context;
-
-            if (term.ServerObjectIsNull == true)
-            {
-                clientContext.Load(term);
-                clientContext.ExecuteQueryRetry();
-            }
-
-            clientContext.Load(term.Labels);
-            clientContext.ExecuteQueryRetry();
-
-            if (!term.Labels.Where(l => l.Language == lcid).Any(l => l.Value == labelName))
-            {
-                term.CreateLabel(labelName, lcid, isDefault);
-                clientContext.ExecuteQueryRetry();
-            }
-        }
-
         #endregion
 
         #region Fields

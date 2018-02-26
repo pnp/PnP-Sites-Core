@@ -474,77 +474,43 @@ namespace Microsoft.SharePoint.Client.Tests
 			}
 		}
 
-        [TestMethod]
-        public void SetDefaultContentTypeTest()
-        {
-            using (var clientContext = TestCommon.CreateClientContext())
-            {
-                var web = clientContext.Web;
+		[TestMethod]
+		public void SetDefaultContentTypeToListTest()
+		{
+			using (var clientContext = TestCommon.CreateClientContext())
+			{
+				var web = clientContext.Web;
 
-                var testList = web.CreateList(ListTemplateType.DocumentLibrary, "Test_SetDefaultContentTypeToListTestList", true, true, "", true);
+				var testList = web.CreateList(ListTemplateType.DocumentLibrary, "Test_SetDefaultContentTypeToListTestList", true, true, "", true);
 
-                var parentCt = web.GetContentTypeById("0x0101");
-                var ct = web.CreateContentType("Test_SetDefaultContentTypeToListCt", "Desc", "", "Test_Group", parentCt);
-                clientContext.Load(ct);
-                clientContext.Load(testList.RootFolder, f => f.ContentTypeOrder);
-                clientContext.ExecuteQueryRetry();
+				var parentCt = web.GetContentTypeById("0x0101");
+				var ct = web.CreateContentType("Test_SetDefaultContentTypeToListCt", "Desc", "", "Test_Group", parentCt);
+				clientContext.Load(ct);
+				clientContext.Load(testList.RootFolder, f => f.ContentTypeOrder);
+				clientContext.ExecuteQueryRetry();
 
-                var prevUniqueContentTypeOrder = testList.RootFolder.ContentTypeOrder;
+				var prevUniqueContentTypeOrder = testList.RootFolder.ContentTypeOrder;
 
-                Assert.AreEqual(1, prevUniqueContentTypeOrder.Count());
+				Assert.AreEqual(1, prevUniqueContentTypeOrder.Count());
 
-                var newContentType = testList.ContentTypes.AddExistingContentType(ct);
+				var newContentType = testList.ContentTypes.AddExistingContentType(ct);
                 clientContext.Load(newContentType, nct => nct.Id);
                 clientContext.ExecuteQueryRetry();
 
                 testList.SetDefaultContentType(newContentType.Id);
-                clientContext.Load(testList.RootFolder, f => f.ContentTypeOrder);
-                clientContext.ExecuteQueryRetry();
+				clientContext.Load(testList.RootFolder, f => f.ContentTypeOrder);
+				clientContext.ExecuteQueryRetry();
 
-                Assert.AreEqual(2, testList.RootFolder.ContentTypeOrder.Count());
-                Assert.IsTrue(testList.RootFolder.ContentTypeOrder.First().StringValue.StartsWith(ct.Id.StringValue, StringComparison.OrdinalIgnoreCase));
+				Assert.AreEqual(2, testList.RootFolder.ContentTypeOrder.Count());
+				Assert.IsTrue(testList.RootFolder.ContentTypeOrder.First().StringValue.StartsWith(ct.Id.StringValue, StringComparison.OrdinalIgnoreCase));
 
-                testList.DeleteObject();
-                ct.DeleteObject();
-                clientContext.ExecuteQueryRetry();
-            }
-        }
+				testList.DeleteObject();
+				ct.DeleteObject();
+				clientContext.ExecuteQueryRetry();
+			}
+		}
 
-        [TestMethod]
-        public void SetDefaultContentTypeToListTest()
-        {
-            using (var clientContext = TestCommon.CreateClientContext())
-            {
-                var web = clientContext.Web;
-
-                var testList = web.CreateList(ListTemplateType.DocumentLibrary, "Test_SetDefaultContentTypeToListTestList", true, true, "", true);
-
-                var parentCt = web.GetContentTypeById("0x0101");
-                var ct = web.CreateContentType("Test_SetDefaultContentTypeToListCt", "Desc", "", "Test_Group", parentCt);
-                clientContext.Load(ct);
-                clientContext.Load(testList.RootFolder, f => f.ContentTypeOrder);
-                clientContext.ExecuteQueryRetry();
-
-                var prevUniqueContentTypeOrder = testList.RootFolder.ContentTypeOrder;
-
-                Assert.AreEqual(1, prevUniqueContentTypeOrder.Count());
-
-                testList.AddContentTypeToList(ct);
-
-                testList.SetDefaultContentTypeToList(ct);
-                clientContext.Load(testList.RootFolder, f => f.ContentTypeOrder);
-                clientContext.ExecuteQueryRetry();
-
-                Assert.AreEqual(2, testList.RootFolder.ContentTypeOrder.Count());
-                Assert.IsTrue(testList.RootFolder.ContentTypeOrder.First().StringValue.StartsWith(ct.Id.StringValue, StringComparison.OrdinalIgnoreCase));
-
-                testList.DeleteObject();
-                ct.DeleteObject();
-                clientContext.ExecuteQueryRetry();
-            }
-        }
-
-        [TestMethod()]
+		[TestMethod()]
 		public void ReorderContentTypesTest()
 		{
 			using (var clientContext = TestCommon.CreateClientContext())
