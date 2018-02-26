@@ -247,7 +247,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                     if (owners != null && owners.Length > 0)
                     {
-                        await AddOwners(owners, graphClient, addedGroup);
+                        await UpdateOwners(owners, graphClient, addedGroup);
                     }
 
                     #endregion
@@ -256,7 +256,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                     if (members != null && members.Length > 0)
                     {
-                        await AddMembers(members, graphClient, addedGroup);
+                        await UpdateMembers(members, graphClient, addedGroup);
                     }
 
                     #endregion
@@ -273,7 +273,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
             return (result);
         }
 
-        private static async Task AddMembers(string[] members, GraphServiceClient graphClient, Group addedGroup)
+        private static async Task UpdateMembers(string[] members, GraphServiceClient graphClient, Group targetGroup)
         {
             foreach (var m in members)
             {
@@ -290,7 +290,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     try
                     {
                         // And if any, add it to the collection of group's owners
-                        await graphClient.Groups[addedGroup.Id].Members.References.Request().AddAsync(member);
+                        await graphClient.Groups[targetGroup.Id].Members.References.Request().AddAsync(member);
                     }
                     catch (ServiceException ex)
                     {
@@ -306,9 +306,50 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     }
                 }
             }
+
+            // Remove any leftover member
+            var fullListOfMembers = await graphClient.Groups[targetGroup.Id].Members.Request().Select("userPrincipalName, Id").GetAsync();
+            var pageExists = true;
+
+            while (pageExists)
+            {
+                foreach (var member in fullListOfMembers)
+                {
+                    var currentMemberPrincipalName = (member as Microsoft.Graph.User)?.UserPrincipalName;
+                    if (!String.IsNullOrEmpty(currentMemberPrincipalName) &&
+                        !members.Contains(currentMemberPrincipalName, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        try
+                        {
+                            // If it is not in the list of current owners, just remove it
+                            await graphClient.Groups[targetGroup.Id].Members[member.Id].Reference.Request().DeleteAsync();
+                        }
+                        catch (ServiceException ex)
+                        {
+                            if (ex.Error.Code == "Request_BadRequest")
+                            {
+                                // Skip any failing removal
+                            }
+                            else
+                            {
+                                throw ex;
+                            }
+                        }
+                    }
+                }
+
+                if (fullListOfMembers.NextPageRequest != null)
+                {
+                    fullListOfMembers = await fullListOfMembers.NextPageRequest.GetAsync();
+                }
+                else
+                {
+                    pageExists = false;
+                }
+            }
         }
 
-        private static async Task AddOwners(string[] owners, GraphServiceClient graphClient, Group addedGroup)
+        private static async Task UpdateOwners(string[] owners, GraphServiceClient graphClient, Group targetGroup)
         {
             foreach (var o in owners)
             {
@@ -325,7 +366,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     try
                     {
                         // And if any, add it to the collection of group's owners
-                        await graphClient.Groups[addedGroup.Id].Owners.References.Request().AddAsync(owner);
+                        await graphClient.Groups[targetGroup.Id].Owners.References.Request().AddAsync(owner);
                     }
                     catch (ServiceException ex)
                     {
@@ -339,6 +380,47 @@ namespace OfficeDevPnP.Core.Framework.Graph
                             throw ex;
                         }
                     }
+                }
+            }
+
+            // Remove any leftover owner
+            var fullListOfOwners = await graphClient.Groups[targetGroup.Id].Owners.Request().Select("userPrincipalName, Id").GetAsync();
+            var pageExists = true;
+
+            while(pageExists)
+            {
+                foreach (var owner in fullListOfOwners)
+                {
+                    var currentOwnerPrincipalName = (owner as Microsoft.Graph.User)?.UserPrincipalName;
+                    if (!String.IsNullOrEmpty(currentOwnerPrincipalName) &&
+                        !owners.Contains(currentOwnerPrincipalName, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        try
+                        {
+                            // If it is not in the list of current owners, just remove it
+                            await graphClient.Groups[targetGroup.Id].Owners[owner.Id].Reference.Request().DeleteAsync();
+                        }
+                        catch (ServiceException ex)
+                        {
+                            if (ex.Error.Code == "Request_BadRequest")
+                            {
+                                // Skip any failing removal
+                            }
+                            else
+                            {
+                                throw ex;
+                            }
+                        }
+                    }
+                }
+
+                if (fullListOfOwners.NextPageRequest != null)
+                {
+                    fullListOfOwners = await fullListOfOwners.NextPageRequest.GetAsync();
+                }
+                else
+                {
+                    pageExists = false;
                 }
             }
         }
@@ -401,19 +483,19 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         updateGroup = true;
                     }
 
-                    // Check if we are to add owners
+                    // Check if we need to update owners
                     if (owners != null && owners.Length > 0)
                     {
                         // For each and every owner
-                        await AddOwners(owners, graphClient, groupToUpdate);
+                        await UpdateOwners(owners, graphClient, groupToUpdate);
                         updateGroup = true;
                     }
 
-                    // Check if we are to add members
+                    // Check if we need to update members
                     if (members != null && members.Length > 0)
                     {
                         // For each and every owner
-                        await AddMembers(members, graphClient, groupToUpdate);
+                        await UpdateMembers(members, graphClient, groupToUpdate);
                         updateGroup = true;
                     }
 
