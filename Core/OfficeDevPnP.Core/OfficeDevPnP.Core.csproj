@@ -416,6 +416,7 @@
     <Compile Include="Extensions\InformationManagementExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\ListRatingExtensions.cs" />
+    <Compile Include="Extensions\ObjectExtension.cs" />
     <Compile Include="Extensions\ProvisioningExtensions.cs" />
     <Compile Include="Extensions\PublishingExtensions.cs" />
     <Compile Include="Extensions\RecordsManagementExtensions.cs" />
