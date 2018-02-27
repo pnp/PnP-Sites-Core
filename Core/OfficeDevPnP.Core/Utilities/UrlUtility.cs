@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Utilities
@@ -9,10 +10,13 @@ namespace OfficeDevPnP.Core.Utilities
     public static class UrlUtility
     {
         const char PATH_DELIMITER = '/';
+
 #if !ONPREMISES
         const string INVALID_CHARS_REGEX = @"[\\#%*/:<>?+|\""]";
+        const string REGEX_INVALID_FILEFOLDER_NAME_CHARS = @"[""#%*:<>?/\|\t\r\n]";
 #else
         const string INVALID_CHARS_REGEX = @"[\\~#%&*{}/:<>?+|\""]";
+        const string REGEX_INVALID_FILEFOLDER_NAME_CHARS = @"[~#%&*{}\:<>?/|""\t\r\n]";
 #endif
         const string IIS_MAPPED_PATHS_REGEX = @"/(_layouts|_admin|_app_bin|_controltemplates|_login|_vti_bin|_vti_pvt|_windows|_wpresources)/";
 
@@ -112,19 +116,29 @@ namespace OfficeDevPnP.Core.Utilities
         #endregion
 
         /// <summary>
-        /// Checks url contians invalid characters or not
+        /// Checks if url contains invalid characters or not
         /// </summary>
-        /// <param name="content">url value</param>
+        /// <param name="content">Url value</param>
         /// <returns>Returns true if url contains invalid characters. Otherwise returns false.</returns>
         public static bool ContainsInvalidUrlChars(this string content)
         {
-	    return Regex.IsMatch(content, INVALID_CHARS_REGEX);
+	        return Regex.IsMatch(content, INVALID_CHARS_REGEX);
+        }
+
+        /// <summary>
+        /// Checks if file or folder contains invalid characters or not
+        /// </summary>
+        /// <param name="content">File or folder name to check</param>
+        /// <returns>True if contains invalid chars, false otherwise</returns>
+        public static bool ContainsInvalidFileFolderChars(this string content)
+        {
+            return Regex.IsMatch(content, REGEX_INVALID_FILEFOLDER_NAME_CHARS);
         }
 
         /// <summary>
         /// Removes invalid characters
         /// </summary>
-        /// <param name="content">url value</param>
+        /// <param name="content">Url value</param>
         /// <returns>Returns url without invalid characters</returns>
         public static string StripInvalidUrlChars(this string content)
         {
@@ -151,5 +165,50 @@ namespace OfficeDevPnP.Core.Utilities
             return Regex.IsMatch(url, IIS_MAPPED_PATHS_REGEX, RegexOptions.IgnoreCase);
         }
 
+        /// <summary>
+        /// Taken from Microsoft.SharePoint.Utilities.SPUtility
+        /// </summary>
+        /// <param name="strUrl"></param>
+        /// <param name="strBaseUrl"></param>
+        /// <returns></returns>
+        internal static string ConvertToServiceRelUrl(string strUrl, string strBaseUrl)
+        {
+            if (((strBaseUrl == null) || !StsStartsWith(strBaseUrl, "/")) || ((strUrl == null) || !StsStartsWith(strUrl, "/")))
+            {
+                throw new ArgumentException();
+            }
+            if ((strUrl.Length > 1) && (strUrl[strUrl.Length - 1] == '/'))
+            {
+                strUrl = strUrl.Substring(0, strUrl.Length - 1);
+            }
+            if ((strBaseUrl.Length > 1) && (strBaseUrl[strBaseUrl.Length - 1] == '/'))
+            {
+                strBaseUrl = strBaseUrl.Substring(0, strBaseUrl.Length - 1);
+            }
+            if (!StsStartsWith(strUrl, strBaseUrl))
+            {
+                throw new ArgumentException();
+            }
+            if (strBaseUrl == "/")
+            {
+                return strUrl.Substring(1);
+            }
+            if (strUrl.Length == strBaseUrl.Length)
+            {
+                return "";
+            }
+            return strUrl.Substring(strBaseUrl.Length + 1);
+        }
+
+        /// <summary>
+        /// Taken from Microsoft.SharePoint.Utilities.SPUtility
+        /// </summary>
+        /// <param name="strMain"></param>
+        /// <param name="strBegining"></param>
+        /// <returns></returns>
+        internal static bool StsStartsWith(string strMain, string strBegining)
+        {
+            return CultureInfo.InvariantCulture.CompareInfo.IsPrefix(strMain, strBegining, CompareOptions.IgnoreCase);
+        }
     }
 }

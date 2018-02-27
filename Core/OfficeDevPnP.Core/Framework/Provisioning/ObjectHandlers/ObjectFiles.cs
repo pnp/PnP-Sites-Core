@@ -6,6 +6,7 @@ using OfficeDevPnP.Core.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using System;
+using System.Net;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -35,9 +36,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 // Check if this is not a noscript site as we're not allowed to write to the web property bag is that one
                 bool isNoScriptSite = web.IsNoScriptSite();
-
-                var context = web.Context as ClientContext;
-
                 web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
 
                 // Build on the fly the list of additional files coming from the Directories
@@ -50,6 +48,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var filesToProcess = template.Files.Union(directoryFiles).ToArray();
                 var currentFileIndex = 0;
+                var originalWeb = web; // Used to store and re-store context in case files are deployed to masterpage gallery
                 foreach (var file in filesToProcess)
                 {
                     file.Src = parser.ParseString(file.Src);
@@ -58,6 +57,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     currentFileIndex++;
                     WriteMessage($"File|{targetFileName}|{currentFileIndex}|{filesToProcess.Length}", ProvisioningMessageType.Progress);
                     var folderName = parser.ParseString(file.Folder);
+
+                    if (folderName.ToLower().Contains("/_catalogs/"))
+                    {
+                        // Edge case where you have files in the template which should be provisioned to the site collection
+                        // master page gallery and not to a connected subsite
+                        web = web.Context.GetSiteCollectionContext().Web;
+                        web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
+                    }
 
                     if (folderName.ToLower().StartsWith((web.ServerRelativeUrl.ToLower())))
                     {
@@ -194,6 +201,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             targetFile.ListItemAllFields.SetSecurity(parser, file.Security);
                         }
                     }
+
+                    web = originalWeb; // restore context in case files are provisioned to the master page gallery #1059
                 }
             }
             WriteMessage("Done processing files", ProvisioningMessageType.Completed);
@@ -330,7 +339,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>True is the file will not be uploaded, false otherwise</returns>
         public static bool SkipFile(bool isNoScriptSite, string fileName, string folderName)
         {
-            string fileExtionsion = System.IO.Path.GetExtension(fileName).ToLower();
+            string fileExtionsion = Path.GetExtension(fileName).ToLower();
             if (isNoScriptSite)
             {
                 if (!String.IsNullOrEmpty(fileExtionsion) && BlockedExtensionsInNoScript.Contains(fileExtionsion))
@@ -448,7 +457,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         container = container.TrimStart("/".ToCharArray());
                     }
-
+#if !NETSTANDARD2_0
                     if (template.Connector.GetType() == typeof(Connectors.AzureStorageConnector))
                     {
                         if (template.Connector.GetContainer().EndsWith("/"))
@@ -464,6 +473,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         container = $@"{template.Connector.GetContainer()}\{container}";
                     }
+#else
+                    container = $@"{template.Connector.GetContainer()}\{container}";
+#endif
                 }
             }
             else
@@ -521,13 +533,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (!String.IsNullOrEmpty(directory.IncludedExtensions) && directory.IncludedExtensions != "*.*")
             {
-                var includedExtensions = directory.IncludedExtensions.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var includedExtensions = directory.IncludedExtensions.Split(new [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 files = files.Where(f => includedExtensions.Contains($"*{Path.GetExtension(f).ToLower()}")).ToList();
             }
 
             if (!String.IsNullOrEmpty(directory.ExcludedExtensions))
             {
-                var excludedExtensions = directory.ExcludedExtensions.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var excludedExtensions = directory.ExcludedExtensions.Split(new [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 files = files.Where(f => !excludedExtensions.Contains($"*{Path.GetExtension(f).ToLower()}")).ToList();
             }
 

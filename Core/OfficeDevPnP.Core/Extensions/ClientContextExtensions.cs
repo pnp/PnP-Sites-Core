@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens;
+#if NETSTANDARD2_0
+using System.IdentityModel.Tokens.Jwt;
+#endif
 
 #if !ONPREMISES
 using OfficeDevPnP.Core.Sites;
@@ -27,6 +30,7 @@ namespace Microsoft.SharePoint.Client
     {
         private static string userAgentFromConfig = null;
         private static string accessToken = null;
+        private static bool hasAuthCookies;
 
         /// <summary>
         /// Static constructor, only executed once per class load
@@ -261,7 +265,11 @@ namespace Microsoft.SharePoint.Client
             {
                 result = true;
             }
-
+            // As a final check, do we have the auth cookies?
+            if (clientContext.HasAuthCookies())
+            {
+                result = false;
+            }
             return (result);
         }
 
@@ -287,6 +295,46 @@ namespace Microsoft.SharePoint.Client
             clientContext.ExecutingWebRequest -= handler;
 
             return accessToken;
+        }
+
+        /// <summary>
+        /// Gets a boolean if the current request contains the FedAuth and rtFa cookies.
+        /// </summary>
+        /// <param name="clientContext"></param>
+        /// <returns></returns>
+        private static bool HasAuthCookies(this ClientRuntimeContext clientContext)
+        {
+            clientContext.ExecutingWebRequest += ClientContext_ExecutingWebRequestCookieCounter;
+            clientContext.ExecuteQueryRetry();
+            clientContext.ExecutingWebRequest -= ClientContext_ExecutingWebRequestCookieCounter;
+            return hasAuthCookies;
+        }
+
+        private static void ClientContext_ExecutingWebRequestCookieCounter(object sender, WebRequestEventArgs e)
+        {
+            var fedAuth = false;
+            var rtFa = false;
+
+            if (e.WebRequestExecutor != null && e.WebRequestExecutor.WebRequest != null && e.WebRequestExecutor.WebRequest.CookieContainer != null)
+            {
+                var cookies = e.WebRequestExecutor.WebRequest.CookieContainer.GetCookies(e.WebRequestExecutor.WebRequest.RequestUri);
+                if (cookies.Count > 0)
+                {
+                    for (var q = 0; q < cookies.Count; q++)
+                    {
+                        if (cookies[q].Name == "FedAuth")
+                        {
+                            fedAuth = true;
+                        }
+                        if (cookies[q].Name == "rtFa")
+                        {
+                            rtFa = true;
+                        }
+                    }
+                }
+            }
+
+            hasAuthCookies = fedAuth && rtFa;
         }
 
         /// <summary>
@@ -489,6 +537,17 @@ namespace Microsoft.SharePoint.Client
         public static async Task<ClientContext> GroupifySiteAsync(this ClientContext clientContext, TeamSiteCollectionGroupifyInformation siteCollectionGroupifyInformation)
         {
             return await SiteCollection.GroupifyAsync(clientContext, siteCollectionGroupifyInformation);
+        }
+
+        /// <summary>
+        /// Checks if an alias is already used for an office 365 group or not
+        /// </summary>
+        /// <param name="clientContext">ClientContext of the site to operate against</param>
+        /// <param name="alias">Alias to verify</param>
+        /// <returns>True if in use, false otherwise</returns>
+        public static async Task<bool> AliasExistsAsync(this ClientContext clientContext, string alias)
+        {
+            return await SiteCollection.AliasExistsAsync(clientContext, alias);
         }
 #endif
     }

@@ -1105,4 +1105,10 @@
   <data name="Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook" xml:space="preserve">
     <value>Webhook {0} has been expired and will be skipped during creation/update of list {1}.</value>
   </data>
+  <data name="FieldAndContentTypeExtensions_ContentTypeMissing" xml:space="preserve">
+    <value>Content Type with ID {0} does not exist in the list {1}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Webhook_Error" xml:space="preserve">
+    <value>Error during webhook add/update: {0}.</value>
+  </data>
 </root>

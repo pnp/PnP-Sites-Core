@@ -237,7 +237,7 @@ namespace OfficeDevPnP.Core.Sites
 
             var accessToken = clientContext.GetAccessToken();
 
-            if (!string.IsNullOrEmpty(accessToken))
+            if (clientContext.IsAppOnly())
             {
                 throw new Exception("App-Only is currently not supported.");
             }
@@ -353,6 +353,62 @@ namespace OfficeDevPnP.Core.Sites
             }
 
             return Guid.Empty;
+        }
+
+        /// <summary>
+        /// Checks if a given alias is already in use or not
+        /// </summary>
+        /// <param name="context">Context to operate against</param>
+        /// <param name="alias">Alias to check</param>
+        /// <returns>True if in use, false otherwise</returns>
+        public static async Task<bool> AliasExistsAsync(ClientContext context, string alias)
+        {
+            bool aliasExists = true;
+
+            var accessToken = context.GetAccessToken();
+
+            using (var handler = new HttpClientHandler())
+            {
+                context.Web.EnsureProperty(w => w.Url);
+
+                if (String.IsNullOrEmpty(accessToken))
+                {
+                    handler.SetAuthenticationCookies(context);
+                }
+
+                using (var httpClient = new HttpClient(handler))
+                {
+                    string requestUrl = String.Format("{0}/_api/SP.Directory.DirectorySession/Group(alias='{1}')", context.Web.Url, alias);
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+                    request.Headers.Add("accept", "application/json;odata.metadata=minimal");
+                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    request.Headers.Add("odata-version", "4.0");
+
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+
+                    // Perform actual GET request
+                    HttpResponseMessage response = await httpClient.SendAsync(request);
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        aliasExists = false;
+                        // If value empty, URL is taken
+                    }
+                    else if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        aliasExists = true;
+                    }
+                    else
+                    {
+                        // Something went wrong...
+                        throw new Exception(await response.Content.ReadAsStringAsync());
+                    }
+                }
+                return await Task.Run(() => aliasExists);
+            }
         }
 
 

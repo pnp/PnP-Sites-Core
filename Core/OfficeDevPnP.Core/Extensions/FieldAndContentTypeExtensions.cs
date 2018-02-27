@@ -571,9 +571,9 @@ namespace Microsoft.SharePoint.Client
                     additionalAttributesList.Add(string.Format(Constants.FIELD_XML_PARAMETER_FORMAT, "ClientSideComponentId", fieldCreationInformation.ClientSideComponentId.ToString("D")));
                 }
             }
-            if(!additionalAttributesList.Contains("ClientSideComponentProperties"))
+            if (!additionalAttributesList.Contains("ClientSideComponentProperties"))
             {
-                if(fieldCreationInformation.ClientSideComponentProperties != null)
+                if (fieldCreationInformation.ClientSideComponentProperties != null)
                 {
                     additionalAttributesList.Add(string.Format(Constants.FIELD_XML_PARAMETER_FORMAT, "ClientSideComponentProperties", fieldCreationInformation.ClientSideComponentProperties));
                 }
@@ -869,18 +869,35 @@ namespace Microsoft.SharePoint.Client
                 list.Context.ExecuteQueryRetry();
             }
 
-            list.ContentTypes.AddExistingContentType(contentType);
+            ContentType newContentType = list.ContentTypes.AddExistingContentType(contentType);
+            newContentType.EnsureProperty(ct => ct.Id);
             list.Context.ExecuteQueryRetry();
 
             // Set the default content type
             if (defaultContent)
             {
-                SetDefaultContentTypeToList(list, contentType);
+                SetDefaultContentType(list, newContentType.Id);
+            }
+            else
+            {
+                // Ensure that the content type is visible in the new button
+                if (newContentType.GetIsAllowedInContentTypeOrder())
+                {
+                    list.RootFolder.EnsureProperty(rf => rf.UniqueContentTypeOrder);
+
+                    IList<ContentTypeId> uniqueContentTypeOrder = list.RootFolder.UniqueContentTypeOrder;
+                    if (uniqueContentTypeOrder != null)
+                    {
+                        uniqueContentTypeOrder = uniqueContentTypeOrder.ToList();
+                        uniqueContentTypeOrder.Add(newContentType.Id);
+                        list.RootFolder.UniqueContentTypeOrder = uniqueContentTypeOrder;
+                        list.RootFolder.Update();
+                        list.Context.ExecuteQueryRetry();
+                    }
+                }
             }
             return true;
         }
-
-
 
         /// <summary>
         /// Associates field to content type
@@ -1177,12 +1194,9 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentNullException(nameof(contentTypeId));
             }
 
-            list.EnsureProperty(l => l.ContentTypesEnabled);
-
-            if (!list.ContentTypesEnabled)
-            {
-                return false;
-            }
+            //Previously this code returned false when list.ContentTypesEnabled was false.
+            //This made no sense as there are content types in a list even if list.ContentTypesEnabled is set to false.
+            //This gives unexpected results, and has been removed.
 
             var ctCol = list.ContentTypes;
             list.Context.Load(ctCol, col => col.Include(ct => ct.Id, ct => ct.Parent));
@@ -1650,89 +1664,260 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Set default content type to list
+        /// Sets the default content type in a list.
         /// </summary>
-        /// <param name="web">Site to be processed - can be root web or sub site</param>
-        /// <param name="list">List to update</param>
-        /// <param name="contentTypeId">Complete ID for the content type</param>
-        public static void SetDefaultContentTypeToList(this Web web, List list, string contentTypeId)
+        /// <remarks>
+        /// Content type specified in <paramref name="contentTypeId"/> needs to be
+        /// the id of the actual content type in the list and not it's parent.
+        /// </remarks>
+        /// <param name="list">Target list containing the content type</param>
+        /// <param name="contentTypeId">Id of the list content type to make default.</param>
+        public static void SetDefaultContentType(this List list, string contentTypeId)
         {
-            SetDefaultContentTypeToList(list, contentTypeId);
+            ContentType listContentType = list.ContentTypes.GetById(contentTypeId);
+            list.Context.Load(listContentType, ct => ct.Id);
+            list.Context.ExecuteQueryRetry();
+            list.SetDefaultContentType(listContentType.Id);
         }
 
         /// <summary>
-        /// Set default content type to list
+        /// Sets the default content type in a list.
         /// </summary>
-        /// <param name="web">Site to be processed - can be root web or sub site</param>
-        /// <param name="list">List to update</param>
-        /// <param name="contentType">Content type to make default</param>
-        public static void SetDefaultContentTypeToList(this Web web, List list, ContentType contentType)
+        /// <remarks>
+        /// Content type specified in <paramref name="contentTypeId"/> needs to be
+        /// the id of the actual content type in the list and not it's parent.
+        /// </remarks>
+        /// <param name="list">Target list containing the content type</param>
+        /// <param name="contentTypeId">Id of the list content type to make default.</param>
+        public static void SetDefaultContentType(this List list, ContentTypeId contentTypeId)
         {
-            SetDefaultContentTypeToList(list, contentType.Id.ToString());
-        }
+            Folder rootFolder = list.RootFolder;
+            list.Context.Load(list,
+                l => l.RootFolder.ServerRelativeUrl,
+                l => l.ContentTypes.Include(ct => ct.Id)
+                );
 
-        /// <summary>
-        /// Set default content type to list
-        /// </summary>
-        /// <param name="web">Site to be processed - can be root web or sub site</param>
-        /// <param name="listTitle">Title of the list to be updated</param>
-        /// <param name="contentTypeId">Complete ID for the content type</param>
-        public static void SetDefaultContentTypeToList(this Web web, string listTitle, string contentTypeId)
-        {
-            // Get list instances
-            var list = web.GetListByTitle(listTitle);
-            web.Context.Load(list);
-            web.Context.ExecuteQueryRetry();
-
-            // Add content type to list
-            SetDefaultContentTypeToList(list, contentTypeId);
-        }
-
-        /// <summary>
-        /// Set's default content type list. 
-        /// </summary>
-        /// <remarks>Notice. Currently removes other content types from the list. Known issue</remarks>
-        /// <param name="web">Site to be processed - can be root web or sub site</param>
-        /// <param name="listTitle">Title of the list to be updated</param>
-        /// <param name="contentType">Content type to make default</param>
-        public static void SetDefaultContentTypeToList(this Web web, string listTitle, ContentType contentType)
-        {
-            SetDefaultContentTypeToList(web, listTitle, contentType.Id.ToString());
-        }
-
-        /// <summary>
-        /// Set's default content type list. 
-        /// </summary>
-        /// <remarks>Notice. Currently removes other content types from the list. Known issue</remarks>
-        /// <param name="list">List to update</param>
-        /// <param name="contentTypeId">Complete ID for the content type</param>
-        public static void SetDefaultContentTypeToList(this List list, string contentTypeId)
-        {
-            var ctCol = list.ContentTypes;
-            list.Context.Load(ctCol);
+            list.Context.Load(rootFolder,
+                rf => rf.ContentTypeOrder,
+                rf => rf.UniqueContentTypeOrder,
+                rf => rf.ServerRelativeUrl
+                );
             list.Context.ExecuteQueryRetry();
 
-            var ctIds = ctCol.AsEnumerable().Select(ct => ct.Id).ToList();
+            IList<ContentTypeId> uniqueContentTypeOrder = rootFolder.UniqueContentTypeOrder;
+            if (uniqueContentTypeOrder == null)
+            {
+                uniqueContentTypeOrder = rootFolder.ContentTypeOrder;
+            }
+            uniqueContentTypeOrder = uniqueContentTypeOrder.ToList();
+            ContentTypeId defaultContentTypeId = null;
+            foreach (ContentTypeId orderContentTypeId in uniqueContentTypeOrder)
+            {
+                if (orderContentTypeId.StringValue.Equals(contentTypeId.StringValue, StringComparison.OrdinalIgnoreCase))
+                {
+                    defaultContentTypeId = orderContentTypeId;
+                    break;
+                }
+            }
+            if (defaultContentTypeId != null)
+            {
+                // Content Type is already visible
+                // If the index is 0 we don't need to make any changes as the content type is already the default one
+                int contentTypeIndex = uniqueContentTypeOrder.IndexOf(defaultContentTypeId);
 
-            // remove the folder content type
-            var newOrder = ctIds.Except(ctIds.Where(id => id.StringValue.StartsWith("0x012000")))
-                                 .OrderBy(x => !x.StringValue.StartsWith(contentTypeId, StringComparison.OrdinalIgnoreCase))
-                                 .ToArray();
-            list.RootFolder.UniqueContentTypeOrder = newOrder;
-
-            list.RootFolder.Update();
-            list.Update();
-            list.Context.ExecuteQueryRetry();
+                if (contentTypeIndex > 0)
+                {
+                    // Content Type is visible but not the default content type
+                    // Move the content type to the first position
+                    IList<ContentTypeId> newContentTypeOrder = uniqueContentTypeOrder.OrderBy(ct => ct != defaultContentTypeId).ToArray();
+                    rootFolder.UniqueContentTypeOrder = newContentTypeOrder;
+                    list.RootFolder.Update();
+                    list.Context.ExecuteQueryRetry();
+                }
+            }
+            else
+            {
+                // Content Type is NOT visible.
+                if (list.ContentTypes.FirstOrDefault(ct => ct.Id.StringValue.Equals(contentTypeId.StringValue, StringComparison.OrdinalIgnoreCase)) == null)
+                {
+                    // Content Type is not found in the list
+                    throw new ArgumentOutOfRangeException(nameof(contentTypeId), string.Format(CoreResources.FieldAndContentTypeExtensions_ContentTypeMissing, contentTypeId, list.RootFolder.ServerRelativeUrl));
+                }
+                else
+                {
+                    // Add the content type to the first content type order position.
+                    uniqueContentTypeOrder.Insert(0, contentTypeId);
+                    rootFolder.UniqueContentTypeOrder = uniqueContentTypeOrder;
+                    list.RootFolder.Update();
+                    list.Context.ExecuteQueryRetry();
+                }
+            }
         }
 
         /// <summary>
-        /// Set default content type to list
+        /// Checks if the content type is allowed to be set in the content type order.
         /// </summary>
-        /// <param name="list">List to update</param>
-        /// <param name="contentType">Content type to make default</param>
-        public static void SetDefaultContentTypeToList(this List list, ContentType contentType)
+        /// <param name="contentType">Target content type to check</param>
+        public static bool GetIsAllowedInContentTypeOrder(this ContentType contentType)
         {
-            SetDefaultContentTypeToList(list, contentType.Id.ToString());
+            contentType.EnsureProperty(ct => ct.Id);
+            string parentContentTypeId = contentType.Id.GetParentIdValue();
+            if (parentContentTypeId == null)
+            {
+                return true;
+            }
+            else
+            {
+                return (!parentContentTypeId.Equals(BuiltInContentTypeId.Folder, StringComparison.OrdinalIgnoreCase))
+                    && !(parentContentTypeId.Equals(BuiltInContentTypeId.UntypedDocument, StringComparison.OrdinalIgnoreCase));
+            }
+        }
+
+        /// <summary>
+        /// Makes the specified content types visible in the list new button. Existing visibility and content type order is not altered.
+        /// </summary>
+        /// <remarks>
+        /// Content types specified in <paramref name="contentTypes"/> needs to be the actual content type in the list and not it's parent.
+        /// </remarks>
+        /// <param name="list">Target list containing the content types</param>
+        /// <param name="contentTypes">List content types to make visible</param>
+        public static void ShowContentTypesInNewButton(this List list, IList<ContentType> contentTypes)
+        {
+            list.Context.Load(list.RootFolder, rf => rf.UniqueContentTypeOrder);
+            list.Context.ExecuteQueryRetry();
+
+            IList<ContentTypeId> uniqueContentTypeOrder = list.RootFolder.UniqueContentTypeOrder;
+            //If UniqueContentTypeOrder is null then all content types are already visible.
+            if (uniqueContentTypeOrder != null)
+            {
+                uniqueContentTypeOrder = uniqueContentTypeOrder.ToList();
+                bool isDirty = false;
+                foreach (ContentType contentType in contentTypes)
+                {
+                    list.EnsureProperty(ct => ct.Id);
+
+                    if (!uniqueContentTypeOrder.Contains(contentType.Id, new ContentTypeIdComparer()))
+                    {
+                        uniqueContentTypeOrder.Add(contentType.Id);
+                        isDirty = true;
+                    }
+                }
+                if (isDirty)
+                {
+                    list.RootFolder.UniqueContentTypeOrder = uniqueContentTypeOrder;
+                    list.RootFolder.Update();
+                    list.Context.ExecuteQueryRetry();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Hides the specified content types in the list new button. Existing visibility and content type order is not altered.
+        /// </summary>
+        /// <remarks>
+        /// Content types specified in <paramref name="contentTypes"/> needs to be the actual content type in the list and not it's parent.
+        /// </remarks>
+        /// <param name="list">Target list containing the content types</param>
+        /// <param name="contentTypes">Content types to hide</param>
+        public static void HideContentTypesInNewButton(this List list, IList<ContentType> contentTypes)
+        {
+            bool isDirty = false;
+            Folder rootFolder = list.RootFolder;
+
+            list.Context.Load(rootFolder,
+                rf => rf.ContentTypeOrder,
+                rf => rf.UniqueContentTypeOrder
+                );
+            list.Context.ExecuteQueryRetry();
+
+            IList<ContentTypeId> uniqueContentTypeOrder = rootFolder.UniqueContentTypeOrder;
+            if (uniqueContentTypeOrder == null)
+            {
+                uniqueContentTypeOrder = rootFolder.ContentTypeOrder;
+            }
+            foreach (ContentType contentType in contentTypes)
+            {
+                list.EnsureProperty(ct => ct.Id);
+
+                ContentTypeId contentTypeIdToRemove = uniqueContentTypeOrder.FirstOrDefault(ctId => ctId.StringValue.Equals(contentType.Id.StringValue, StringComparison.OrdinalIgnoreCase));
+                if (contentTypeIdToRemove != null)
+                {
+                    uniqueContentTypeOrder.Remove(contentTypeIdToRemove);
+                    isDirty = true;
+                }
+            }
+            if (isDirty)
+            {
+                rootFolder.UniqueContentTypeOrder = uniqueContentTypeOrder;
+                list.RootFolder.Update();
+                list.Update();
+                list.Context.ExecuteQueryRetry();
+            }
+        }
+
+        private class ContentTypeIdComparer : EqualityComparer<ContentTypeId>
+        {
+            public override bool Equals(ContentTypeId x, ContentTypeId y)
+            {
+                if (x == null && y == null)
+                    return true;
+                else if (x == null || y == null)
+                    return false;
+
+                return (x.StringValue.Equals(y.StringValue, StringComparison.OrdinalIgnoreCase));
+            }
+
+            public override int GetHashCode(ContentTypeId obj)
+            {
+                return obj.StringValue.GetHashCode();
+            }
+        }
+
+        /// <summary>
+        /// Calculates if a content type id is a child of another content type id
+        /// </summary>
+        /// <param name="current">Parent content type id</param>
+        /// <param name="contentTypeId">Content type id to check</param>
+        public static bool IsChildOf(this ContentTypeId current, ContentTypeId contentTypeId)
+        {
+            if (current.StringValue.Length < contentTypeId.StringValue.Length)
+            {
+                return false;
+            }
+            return current.StringValue.StartsWith(contentTypeId.StringValue);
+        }
+
+        /// <summary>
+        /// Calculates if a content type id is a parent of another content type id
+        /// </summary>
+        /// <param name="current">Child content type id</param>
+        /// <param name="contentTypeId">Content type id to check</param>
+        public static bool IsParentOf(this ContentTypeId current, ContentTypeId contentTypeId) => contentTypeId.IsChildOf(current);
+
+        /// <summary>
+        /// Calculates the parent content type id
+        /// </summary>
+        /// <param name="contentTypeId">Content type id to calculate the parent content type id from</param>
+
+        public static string GetParentIdValue(this ContentTypeId contentTypeId)
+        {
+            int length = 0;
+            //Exclude the 0x part
+            string contentTypeIdValue = contentTypeId.StringValue.Substring(2);
+            for (int i = 0; i < contentTypeIdValue.Length; i += 2)
+            {
+                length = i;
+                if (contentTypeIdValue.Substring(i, 2).Equals("00", StringComparison.OrdinalIgnoreCase))
+                {
+                    i += 32;
+                }
+            }
+            string parentIdValue = string.Empty;
+            if (length > 0)
+            {
+                parentIdValue = "0x" + contentTypeIdValue.Substring(0, length);
+            }
+            return parentIdValue;
         }
 
         /// <summary>

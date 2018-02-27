@@ -372,15 +372,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             page.PromoteAsNewsArticle();
                         }
+                    }
 
-                        if (clientSidePage.EnableComments)
-                        {
-                            page.EnableComments();
-                        }
-                        else
-                        {
-                            page.DisableComments();
-                        }
+                    if (clientSidePage.EnableComments)
+                    {
+                        page.EnableComments();
+                    }
+                    else
+                    {
+                        page.DisableComments();
                     }
 
                     // Publish page 
