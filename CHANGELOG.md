@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Added SetDefaultContentType extension methods on List objects. Notice that this method behaves different from the deprecated SetDefaultContentTypeToList method. See the Deprecated section.
+- Added support for taxonomy fields in DataRows at the provisioning engine level. [jensotto]
 
 ### Changed
 - Added support for updating owners and members of an Office 365 Group.
