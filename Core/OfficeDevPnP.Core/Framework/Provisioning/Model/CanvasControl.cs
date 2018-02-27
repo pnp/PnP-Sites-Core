@@ -134,5 +134,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         PageTitle,
         People,
         QuickLinks,
+        CustomMessageRegion,
+        Divider,
+        MicrosoftForms,
+        Spacer
     }
 }

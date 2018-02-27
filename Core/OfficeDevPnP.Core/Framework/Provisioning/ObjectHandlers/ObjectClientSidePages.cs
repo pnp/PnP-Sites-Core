@@ -283,6 +283,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             case WebPartType.YammerEmbed:
                                                 webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.YammerEmbed);
                                                 break;
+                                            case WebPartType.CustomMessageRegion:
+                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.CustomMessageRegion);
+                                                break;
+                                            case WebPartType.Divider:
+                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Divider);
+                                                break;
+                                            case WebPartType.MicrosoftForms:
+                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.MicrosoftForms);
+                                                break;
+                                            case WebPartType.Spacer:
+                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Spacer);
+                                                break;
                                         }
 
                                         baseControl = componentsToAdd.FirstOrDefault(p => p.Name.Equals(webPartName, StringComparison.InvariantCultureIgnoreCase));
@@ -360,15 +372,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             page.PromoteAsNewsArticle();
                         }
+                    }
 
-                        if (clientSidePage.EnableComments)
-                        {
-                            page.EnableComments();
-                        }
-                        else
-                        {
-                            page.DisableComments();
-                        }
+                    if (clientSidePage.EnableComments)
+                    {
+                        page.EnableComments();
+                    }
+                    else
+                    {
+                        page.DisableComments();
                     }
 
                     // Publish page 

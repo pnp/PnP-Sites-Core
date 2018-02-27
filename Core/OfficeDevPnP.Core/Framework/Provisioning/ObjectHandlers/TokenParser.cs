@@ -73,10 +73,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new SiteCollectionTermStoreIdToken(web));
             _tokens.Add(new KeywordsTermStoreIdToken(web));
             _tokens.Add(new ThemeCatalogToken(web));
-            _tokens.Add(new SiteNameToken(web));
+            _tokens.Add(new WebNameToken(web));
             _tokens.Add(new SiteIdToken(web));
             _tokens.Add(new SiteIdEncodedToken(web));
             _tokens.Add(new SiteOwnerToken(web));
+            _tokens.Add(new SiteTitleToken(web));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.members));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.visitors));
@@ -87,6 +88,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new CurrentUserFullNameToken(web));
             _tokens.Add(new AuthenticationRealmToken(web));
             _tokens.Add(new HostUrlToken(web));
+#if !ONPREMISES
+            _tokens.Add(new SiteCollectionConnectedOffice365GroupId(web));
+#endif
 
             // Add lists
             AddListTokens(web);
@@ -150,6 +154,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
+                catch (ServerUnauthorizedAccessException)
+                {
+                    // If we don't have permission to access the TermGroup, just skip it
+                }
                 catch (NullReferenceException)
                 {
                     // If there isn't a default TermGroup for the Site Collection, we skip the terms in token handler
@@ -190,7 +198,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (stream != null)
                         {
+#if !NETSTANDARD2_0
                             using (ResXResourceReader resxReader = new ResXResourceReader(stream))
+#else
+                            using (ResourceReader resxReader = new ResourceReader(stream))
+#endif
                             {
                                 foreach (DictionaryEntry entry in resxReader)
                                 {

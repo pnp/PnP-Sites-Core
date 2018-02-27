@@ -15,7 +15,9 @@ using PersonalizationScope = Microsoft.SharePoint.Client.WebParts.Personalizatio
 using System.Net;
 using System.IO;
 using System.Text;
+#if !NETSTANDARD2_0
 using System.Web.Configuration;
+#endif
 using WebPart = OfficeDevPnP.Core.Framework.Provisioning.Model.WebPart;
 using OfficeDevPnP.Core.Pages;
 using Microsoft.SharePoint.Client.Utilities;
