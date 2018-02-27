@@ -5,6 +5,7 @@ using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
@@ -24,7 +25,7 @@ namespace OfficeDevPnP.Core.ALM
             if (context == null)
             {
                 throw new ArgumentException(nameof(context));
-            } 
+            }
             else
             {
                 _context = context;
@@ -457,9 +458,25 @@ namespace OfficeDevPnP.Core.ALM
         /// <summary>
         /// Returns an available app
         /// </summary>
-        /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <param name="title">The title of the app.</param>
         /// <returns></returns>
-        private async Task<dynamic> BaseGetAvailableAsync(Guid id)
+        public AppMetadata GetAvailable(string title)
+        {
+            return BaseGetAvailableAsync(Guid.Empty, title).GetAwaiter().GetResult();
+        }
+
+        public async Task<AppMetadata> GetAvailableAsync(string title)
+        {
+            return await BaseGetAvailableAsync(Guid.Empty, title);
+        }
+
+        /// <summary>
+        /// Returns an available app
+        /// </summary>
+        /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <param name="title">The title of the app.</param>
+        /// <returns></returns>
+        private async Task<dynamic> BaseGetAvailableAsync(Guid id = default(Guid), string title = "")
         {
             dynamic addins = null;
 
@@ -501,12 +518,20 @@ namespace OfficeDevPnP.Core.ALM
                         {
                             try
                             {
-                                if (Guid.Empty == id)
+                                if (Guid.Empty == id && string.IsNullOrEmpty(title))
                                 {
                                     var responseJson = JObject.Parse(responseString);
                                     var returnedAddins = responseJson["d"]["results"] as JArray;
 
                                     addins = JsonConvert.DeserializeObject<List<AppMetadata>>(returnedAddins.ToString());
+                                }
+                                else if (!String.IsNullOrEmpty(title))
+                                {
+                                    var responseJson = JObject.Parse(responseString);
+                                    var returnedAddins = responseJson["d"]["results"] as JArray;
+
+                                    var listAddins = JsonConvert.DeserializeObject<List<AppMetadata>>(returnedAddins.ToString());
+                                    addins = listAddins.Where(a => a.Title == title).FirstOrDefault();
                                 }
                                 else
                                 {
@@ -529,7 +554,7 @@ namespace OfficeDevPnP.Core.ALM
             return await Task.Run(() => addins);
         }
 
-    #region Private Methods
+        #region Private Methods
         private async Task<bool> BaseRequest(Guid id, string method, bool appCatalog = false, Dictionary<string, object> postObject = null)
         {
             var context = _context;
@@ -692,7 +717,7 @@ namespace OfficeDevPnP.Core.ALM
             }
             return await Task.Run(() => returnValue);
         }
-    #endregion
+        #endregion
     }
 #endif
 }

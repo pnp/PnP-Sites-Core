@@ -228,7 +228,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
 
             if (!handlerCache.ContainsKey(handler))
             {
+#if NETSTANDARD2_0
+                var _instance = Activator.CreateInstance(handler.GetType());
+#else
                 var _instance = Activator.CreateInstance(handler.Assembly, handler.Type).Unwrap();
+#endif
                 handlerCache.Add(handler, _instance);
             }
             return handlerCache[handler];
