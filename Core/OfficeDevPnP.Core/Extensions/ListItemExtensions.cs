@@ -18,7 +18,8 @@ namespace OfficeDevPnP.Core.Extensions
             this ListItem listitem,
             Web web,
             SPField dataField,
-            string fieldValue,
+            string dataValue,
+            TokenParser parser,
             PnPMonitoredScope scope
             )
         {
@@ -27,7 +28,7 @@ namespace OfficeDevPnP.Core.Extensions
             if (dataField == null) throw new ArgumentNullException(nameof(dataField));
 
             var fieldName = dataField.InternalName;
-
+            var fieldValue = parser.ParseString(dataValue);
             switch (dataField.FieldTypeKind)
             {
                 case FieldType.Geolocation:
@@ -295,7 +296,7 @@ namespace OfficeDevPnP.Core.Extensions
                 scope?.LogDebug("Setting field {0} in list {1} with value {2}", dataField.Title, listInstance.Title, fieldValue);
                 try
                 {
-                    listitem.SetListItemValue(web, dataField, fieldValue, scope);
+                    listitem.SetListItemValue(web, dataField, fieldValue, parser, scope);
                 }
                 catch (Exception exc)
                 {

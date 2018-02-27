@@ -5,8 +5,8 @@ using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System;
-using System.Net;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -249,6 +249,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             SetFileProperties(file, properties, null, checkoutIfRequired);
         }
+
         public void SetFileProperties(File file, IDictionary<string, string> properties, PnPMonitoredScope scope, bool checkoutIfRequired = true)
         {
             var context = file.Context;
@@ -533,13 +534,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (!String.IsNullOrEmpty(directory.IncludedExtensions) && directory.IncludedExtensions != "*.*")
             {
-                var includedExtensions = directory.IncludedExtensions.Split(new [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var includedExtensions = directory.IncludedExtensions.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 files = files.Where(f => includedExtensions.Contains($"*{Path.GetExtension(f).ToLower()}")).ToList();
             }
 
             if (!String.IsNullOrEmpty(directory.ExcludedExtensions))
             {
-                var excludedExtensions = directory.ExcludedExtensions.Split(new [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var excludedExtensions = directory.ExcludedExtensions.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 files = files.Where(f => !excludedExtensions.Contains($"*{Path.GetExtension(f).ToLower()}")).ToList();
             }
 
