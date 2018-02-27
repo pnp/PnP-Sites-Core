@@ -467,7 +467,7 @@ namespace Microsoft.SharePoint.Client
 
             var lmi = new LabelMatchInformation(site.Context);
 
-            lmi.Lcid = ts.EnsureProperty(tstore=>tstore.DefaultLanguage);
+            lmi.Lcid = ts.EnsureProperty(tstore => tstore.DefaultLanguage);
             lmi.TrimUnavailable = true;
             lmi.TermLabel = term;
 
@@ -519,7 +519,7 @@ namespace Microsoft.SharePoint.Client
             TermStore ts = tSession.GetDefaultSiteCollectionTermStore();
             TermSet tset = ts.GetTermSet(termSetId);
 
-            t = tset.CreateTerm(term, ts.EnsureProperty(tstore=>tstore.DefaultLanguage), termId);
+            t = tset.CreateTerm(term, ts.EnsureProperty(tstore => tstore.DefaultLanguage), termId);
             //site.Context.Load(tSession);
             //site.Context.Load(ts);
             //site.Context.Load(tset);
