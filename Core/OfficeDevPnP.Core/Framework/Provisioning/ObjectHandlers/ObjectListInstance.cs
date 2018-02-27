@@ -1,31 +1,39 @@
-﻿using System;
+﻿using Microsoft.SharePoint.Client;
+using Microsoft.SharePoint.Client.Taxonomy;
+using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Extensions;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using OfficeDevPnP.Core.Utilities;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using System.Xml.Linq;
-using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using ContentType = Microsoft.SharePoint.Client.ContentType;
 using Field = Microsoft.SharePoint.Client.Field;
 using View = OfficeDevPnP.Core.Framework.Provisioning.Model.View;
-using OfficeDevPnP.Core.Diagnostics;
-using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
-using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
-using Microsoft.SharePoint.Client.Taxonomy;
-using System.Text.RegularExpressions;
-using OfficeDevPnP.Core.Utilities;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectListInstance : ObjectHandlerBase
     {
+        private readonly FieldStage _stage;
 
         public override string Name
         {
-            get { return "List instances"; }
+            get { return $"List instances ({_stage} stage)"; }
         }
+
+        public ObjectListInstance(FieldStage stage)
+        {
+            this._stage = stage;
+        }
+
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -35,59 +43,65 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var rootWeb = ((ClientContext)web.Context).Site.RootWeb;
 
                     web.EnsureProperties(w => w.ServerRelativeUrl, w => w.SupportedUILanguageIds);
+                    rootWeb.Context.Load(rootWeb.Lists, lists => lists.Include(l => l.Id, l => l.RootFolder.ServerRelativeUrl, l => l.Fields).Where(l => l.Hidden == false));
 
                     web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
+                    web.Context.Load(web.AvailableFields, fields => fields.Include(f => f.Id, f => f.InternalName, f => f.SchemaXmlWithResourceTokens));
                     web.Context.ExecuteQueryRetry();
                     var existingLists = web.Lists.AsEnumerable().ToList();
                     var serverRelativeUrl = web.ServerRelativeUrl;
 
-                    var processedLists = new List<ListInfo>();
+                    List<ListInfo> processedLists;
 
                     // Check if this is not a noscript site as we're not allowed to update some properties
                     bool isNoScriptSite = web.IsNoScriptSite();
 
                     var total = template.Lists.Count;
+                    var currentListIndex = 0;
 
                     #region Lists and List Content Types
 
-                    var currentListIndex = 0;
-                    foreach (var templateList in template.Lists)
+                    // Only create/update list at ListAndStandardFields stage.
+                    if (_stage == FieldStage.ListAndStandardFields)
                     {
-                        currentListIndex++;
-                        WriteMessage($"List|{templateList.Title}|{currentListIndex}|{total}", ProvisioningMessageType.Progress);
-                        // Check for the presence of the references content types and throw an exception if not present or in template
-                        if (templateList.ContentTypesEnabled)
+                        processedLists = new List<ListInfo>();
+                        foreach (var templateList in template.Lists)
                         {
-                            var existingCts = web.Context.LoadQuery(web.AvailableContentTypes);
-                            web.Context.ExecuteQueryRetry();
-                            foreach (var ct in templateList.ContentTypeBindings)
+                            currentListIndex++;
+                            WriteMessage($"List|{templateList.Title}|{currentListIndex}|{total}", ProvisioningMessageType.Progress);
+                            // Check for the presence of the references content types and throw an exception if not present or in template
+                            if (templateList.ContentTypesEnabled)
                             {
-                                var found = template.ContentTypes.Any(t => t.Id.ToUpperInvariant() == ct.ContentTypeId.ToUpperInvariant());
-                                if (found == false)
+                                var existingCts = web.Context.LoadQuery(web.AvailableContentTypes);
+                                web.Context.ExecuteQueryRetry();
+                                foreach (var ct in templateList.ContentTypeBindings)
                                 {
-                                    found = existingCts.Any(t => t.StringId.ToUpperInvariant() == ct.ContentTypeId.ToUpperInvariant());
-                                }
-                                if (!found)
-                                {
-                                    scope.LogError("Referenced content type {0} not available in site or in template", ct.ContentTypeId);
-                                    throw new Exception($"Referenced content type {ct.ContentTypeId} not available in site or in template");
+                                    var found = template.ContentTypes.Any(t => t.Id.ToUpperInvariant() == ct.ContentTypeId.ToUpperInvariant());
+                                    if (found == false)
+                                    {
+                                        found = existingCts.Any(t => t.StringId.ToUpperInvariant() == ct.ContentTypeId.ToUpperInvariant());
+                                    }
+                                    if (!found)
+                                    {
+                                        scope.LogError("Referenced content type {0} not available in site or in template", ct.ContentTypeId);
+                                        throw new Exception($"Referenced content type {ct.ContentTypeId} not available in site or in template");
+                                    }
                                 }
                             }
-                        }
-                        // check if the List exists by url or by title
-                        var index = existingLists.FindIndex(x => x.Title.Equals(parser.ParseString(templateList.Title), StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, parser.ParseString(templateList.Url)), StringComparison.OrdinalIgnoreCase));
+                            // check if the List exists by url or by title
+                            var index = existingLists.FindIndex(x => x.Title.Equals(parser.ParseString(templateList.Title), StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, parser.ParseString(templateList.Url)), StringComparison.OrdinalIgnoreCase));
 
-                        if (index == -1)
-                        {
-                            try
+                            if (index == -1)
                             {
-                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0_, templateList.Title);
-                                var returnTuple = CreateList(web, templateList, parser, scope, isNoScriptSite);
-                                var createdList = returnTuple.Item1;
-                                parser = returnTuple.Item2;
-                                processedLists.Add(new ListInfo { SiteList = createdList, TemplateList = templateList });
+                                try
+                                {
+                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0_, templateList.Title);
+                                    var returnTuple = CreateList(web, templateList, parser, scope, isNoScriptSite);
+                                    var createdList = returnTuple.Item1;
+                                    parser = returnTuple.Item2;
+                                    processedLists.Add(new ListInfo { SiteList = createdList, TemplateList = templateList });
 
-                                parser.AddToken(new ListIdToken(web, createdList.Title, createdList.Id));
+                                    parser.AddToken(new ListIdToken(web, createdList.Title, createdList.Id));
 
 #if !SP2013
                                 foreach (var supportedlanguageId in web.SupportedUILanguageIds)
@@ -100,42 +114,54 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         parser.AddToken(new ListIdToken(web, titleResource.Value, createdList.Id));
                                 }
 #endif
-                                parser.AddToken(new ListUrlToken(web, createdList.Title, createdList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
-                            }
-                            catch (Exception ex)
-                            {
-                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0__failed___1_____2_, templateList.Title, ex.Message, ex.StackTrace);
-                                throw;
-                            }
-                        }
-                        else
-                        {
-                            try
-                            {
-                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0_, templateList.Title);
-                                var existingList = web.Lists[index];
-                                var returnTuple = UpdateList(web, existingList, templateList, parser, scope, isNoScriptSite);
-                                var updatedList = returnTuple.Item1;
-                                parser = returnTuple.Item2;
-                                if (updatedList != null)
+                                    parser.AddToken(new ListUrlToken(web, createdList.Title, createdList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+                                }
+                                catch (Exception ex)
                                 {
-                                    processedLists.Add(new ListInfo { SiteList = updatedList, TemplateList = templateList });
+                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0__failed___1_____2_, templateList.Title, ex.Message, ex.StackTrace);
+                                    throw;
                                 }
                             }
-                            catch (Exception ex)
+                            else
                             {
-                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_, templateList.Title, ex.Message, ex.StackTrace);
-                                throw;
+                                try
+                                {
+                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0_, templateList.Title);
+                                    var existingList = web.Lists[index];
+                                    if (_stage == FieldStage.ListAndStandardFields)
+                                    {
+                                        UpdateList(web, existingList, templateList, parser, scope, isNoScriptSite);
+                                    }
+                                    if (existingList != null)
+                                    {
+                                        processedLists.Add(new ListInfo { SiteList = existingList, TemplateList = templateList });
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_, templateList.Title, ex.Message, ex.StackTrace);
+                                    throw;
+                                }
                             }
                         }
+
                     }
-                    #endregion
+                    else
+                    {
+                        // still have to build the processed lists collection
+                        // We are searching for matches between title or url
+                        processedLists = (from templateList in template.Lists
+                                          from siteList in web.Lists
+                                          where siteList.Title.Equals(parser.ParseString(templateList.Title), StringComparison.OrdinalIgnoreCase) || siteList.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, parser.ParseString(templateList.Url)), StringComparison.OrdinalIgnoreCase)
+                                          select new ListInfo { SiteList = siteList, TemplateList = templateList }).ToList();
+
+                    }
+                    #endregion Lists
 
                     #region FieldRefs
 
                     foreach (var listInfo in processedLists)
                     {
-
                         if (listInfo.TemplateList.FieldRefs.Any())
                         {
                             total = listInfo.TemplateList.FieldRefs.Count;
@@ -145,8 +171,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_FieldRef_Updating_list__0_, listInfo.TemplateList.Title, fieldRef.Name);
 
                                 currentListIndex++;
+
+                                var templateField = template.SiteFields.FirstOrDefault(tf => (Guid)XElement.Parse(parser.ParseString(tf.SchemaXml)).Attribute("ID") == fieldRef.Id);
+                                var fieldStage = templateField?.GetFieldStage(parser);
+                                if (fieldStage.GetValueOrDefault(FieldStage.ListAndStandardFields) != _stage) continue;
+
                                 WriteMessage($"Site Columns for list {listInfo.TemplateList.Title}|{fieldRef.Name}|{currentListIndex}|{total}", ProvisioningMessageType.Progress);
-                                var field = rootWeb.GetFieldById(fieldRef.Id);
+
+                                Field field = null;
+                                if (_stage != FieldStage.DependentLookupFields || templateField == null || fieldRef.Id == Guid.Empty)
+                                {
+                                    field = rootWeb.GetFieldById(fieldRef.Id);
+                                }
+                                else
+                                {
+                                    // Because the id of dependent lookup cannot be set and is autogenerated, we have to retrieve the actual field id
+                                    var mappedFieldId = Guid.Parse(parser.ParseString(fieldRef.Id.ToString("D")));
+                                    field = web.AvailableFields.GetById(mappedFieldId);
+                                    field.EnsureProperties(f => f.Id, f => f.InternalName, f => f.Title);
+                                }
+
                                 if (field == null)
                                 {
                                     // log missing referenced field
@@ -158,7 +202,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 if (!listInfo.SiteList.FieldExistsById(fieldRef.Id))
                                 {
-                                    field = CreateFieldRef(listInfo, field, fieldRef, parser);
+                                    field = CreateFieldRef(listInfo.SiteList, field, fieldRef, parser);
                                 }
                                 else
                                 {
@@ -207,7 +251,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    #endregion
+                    #endregion FieldRefs
 
                     #region Fields
 
@@ -219,14 +263,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             total = listInfo.TemplateList.Fields.Count;
                             foreach (var field in listInfo.TemplateList.Fields)
                             {
-
+                                if (field.GetFieldStage(parser) != _stage)
+                                {
+                                    continue;
+                                }
                                 var fieldElement = XElement.Parse(parser.ParseXmlString(field.SchemaXml, "~sitecollection", "~site"));
                                 if (fieldElement.Attribute("ID") == null)
                                 {
                                     scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_, field.SchemaXml);
                                     throw new Exception(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_, field.SchemaXml));
                                 }
-                                var id = fieldElement.Attribute("ID").Value;
+                                var id = parser.ParseString((string)fieldElement.Attribute("ID"));
                                 var internalName = fieldElement.Attribute("InternalName")?.Value;
 
                                 WriteMessage($"List Columns for list {listInfo.TemplateList.Title}|{internalName ?? id}|{currentFieldIndex}|{total}", ProvisioningMessageType.Progress);
@@ -244,7 +291,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         try
                                         {
                                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_field__0_, fieldGuid);
-                                            var createdField = CreateField(fieldElement, listInfo, parser, field.SchemaXml, web.Context, scope);
+                                            var createdField = CreateField(fieldElement, listInfo, parser, field.SchemaXml, (ClientContext)web.Context, rootWeb, scope);
                                             if (createdField != null)
                                             {
                                                 createdField.EnsureProperties(f => f.InternalName, f => f.Title);
@@ -276,7 +323,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_field__0__failed___1_____2_, fieldGuid, ex.Message, ex.StackTrace);
                                             throw;
                                         }
-
                                     }
                                 }
                             }
@@ -285,124 +331,129 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    #endregion
+                    #endregion Fields
 
-                    #region Default Field Values
-                    foreach (var listInfo in processedLists)
+                    // Create view and apply some settings only at the very last stage
+                    // to be sure all fields are available and to avoid doing the work twice
+                    if (_stage == FieldStage.DependentLookupFields)
                     {
-                        if (listInfo.TemplateList.FieldDefaults.Any())
+
+                        #region Default Field Values
+
+                        foreach (var listInfo in processedLists)
                         {
-                            foreach (var fieldDefault in listInfo.TemplateList.FieldDefaults)
+                            if (listInfo.TemplateList.FieldDefaults.Any())
                             {
-                                var field = listInfo.SiteList.Fields.GetByInternalNameOrTitle(fieldDefault.Key);
-                                field.DefaultValue = fieldDefault.Value;
-                                field.Update();
+                                foreach (var fieldDefault in listInfo.TemplateList.FieldDefaults)
+                                {
+                                    var field = listInfo.SiteList.Fields.GetByInternalNameOrTitle(fieldDefault.Key);
+                                    field.DefaultValue = fieldDefault.Value;
+                                    field.Update();
+                                    web.Context.ExecuteQueryRetry();
+                                }
+                            }
+                        }
+
+                        #endregion Default Field Values
+
+                        #region Views
+
+                        foreach (var listInfo in processedLists)
+                        {
+                            var list = listInfo.TemplateList;
+                            var createdList = listInfo.SiteList;
+
+                            if (list.Views.Any() && list.RemoveExistingViews)
+                            {
+                                while (createdList.Views.Any())
+                                {
+                                    createdList.Views[0].DeleteObject();
+                                }
+                                web.Context.ExecuteQueryRetry();
+                            }
+
+                            var existingViews = createdList.Views;
+                            web.Context.Load(existingViews, vs => vs.Include(v => v.Title, v => v.Id));
+                            web.Context.ExecuteQueryRetry();
+                            total = list.Views.Count;
+                            var currentViewIndex = 0;
+                            foreach (var view in list.Views)
+                            {
+                                currentViewIndex++;
+                                CreateView(web, view, existingViews, createdList, scope, parser, currentViewIndex, total);
+                            }
+                        }
+
+                        #endregion Views
+
+                        #region Folders
+
+                        // Folders are supported for document libraries and generic lists only
+                        foreach (var list in processedLists)
+                        {
+                            list.SiteList.EnsureProperties(l => l.BaseType);
+                            if ((list.SiteList.BaseType == BaseType.DocumentLibrary |
+                                list.SiteList.BaseType == BaseType.GenericList) &&
+                                list.TemplateList.Folders != null && list.TemplateList.Folders.Count > 0)
+                            {
+                                list.SiteList.EnableFolderCreation = true;
+                                list.SiteList.Update();
+                                web.Context.ExecuteQueryRetry();
+
+                                var rootFolder = list.SiteList.RootFolder;
+                                foreach (var folder in list.TemplateList.Folders)
+                                {
+                                    CreateFolderInList(rootFolder, folder, parser, scope);
+                                }
+                            }
+                        }
+
+                        #endregion Folders
+
+                        #region IRM Settings
+
+                        // Configure IRM Settings
+                        foreach (var list in processedLists)
+                        {
+                            if (list.SiteList.BaseTemplate != (int)ListTemplateType.PictureLibrary && list.TemplateList.IRMSettings != null && list.TemplateList.IRMSettings.Enabled)
+                            {
+                                list.SiteList.IrmEnabled = true;
+                                list.SiteList.IrmExpire = list.TemplateList.IrmExpire;
+                                list.SiteList.IrmReject = list.TemplateList.IrmReject;
+
+                                list.SiteList.InformationRightsManagementSettings.AllowPrint = list.TemplateList.IRMSettings.AllowPrint;
+                                list.SiteList.InformationRightsManagementSettings.AllowScript = list.TemplateList.IRMSettings.AllowScript;
+                                list.SiteList.InformationRightsManagementSettings.AllowWriteCopy = list.TemplateList.IRMSettings.AllowWriteCopy;
+                                list.SiteList.InformationRightsManagementSettings.DisableDocumentBrowserView = list.TemplateList.IRMSettings.DisableDocumentBrowserView;
+                                list.SiteList.InformationRightsManagementSettings.DocumentAccessExpireDays = list.TemplateList.IRMSettings.DocumentAccessExpireDays;
+                                if (list.TemplateList.IRMSettings.DocumentLibraryProtectionExpiresInDays > 0)
+                                {
+                                    list.SiteList.InformationRightsManagementSettings.DocumentLibraryProtectionExpireDate = DateTime.Now.AddDays(list.TemplateList.IRMSettings.DocumentLibraryProtectionExpiresInDays);
+                                }
+                                list.SiteList.InformationRightsManagementSettings.EnableDocumentAccessExpire = list.TemplateList.IRMSettings.EnableDocumentAccessExpire;
+                                list.SiteList.InformationRightsManagementSettings.EnableDocumentBrowserPublishingView = list.TemplateList.IRMSettings.EnableDocumentBrowserPublishingView;
+                                list.SiteList.InformationRightsManagementSettings.EnableGroupProtection = list.TemplateList.IRMSettings.EnableGroupProtection;
+                                list.SiteList.InformationRightsManagementSettings.EnableLicenseCacheExpire = list.TemplateList.IRMSettings.EnableLicenseCacheExpire;
+                                list.SiteList.InformationRightsManagementSettings.GroupName = list.TemplateList.IRMSettings.GroupName;
+                                list.SiteList.InformationRightsManagementSettings.LicenseCacheExpireDays = list.TemplateList.IRMSettings.LicenseCacheExpireDays;
+                                list.SiteList.InformationRightsManagementSettings.PolicyDescription = list.TemplateList.IRMSettings.PolicyDescription;
+                                list.SiteList.InformationRightsManagementSettings.PolicyTitle = list.TemplateList.IRMSettings.PolicyTitle;
+
+                                list.SiteList.Update();
                                 web.Context.ExecuteQueryRetry();
                             }
                         }
-                    }
-                    #endregion
 
-                    #region Views
+                        #endregion IRM Settings
 
-                    foreach (var listInfo in processedLists)
-                    {
-
-
-                        var list = listInfo.TemplateList;
-                        var createdList = listInfo.SiteList;
-
-                        if (list.Views.Any() && list.RemoveExistingViews)
+                        // If an existing view is updated, and the list is to be listed on the QuickLaunch, it is removed because the existing view will be deleted and recreated from scratch.
+                        foreach (var listInfo in processedLists)
                         {
-                            while (createdList.Views.Any())
-                            {
-                                createdList.Views[0].DeleteObject();
-                            }
-                            web.Context.ExecuteQueryRetry();
+                            listInfo.SiteList.OnQuickLaunch = listInfo.TemplateList.OnQuickLaunch;
+                            listInfo.SiteList.Update();
                         }
-
-                        var existingViews = createdList.Views;
-                        web.Context.Load(existingViews, vs => vs.Include(v => v.Title, v => v.Id));
                         web.Context.ExecuteQueryRetry();
-                        total = list.Views.Count;
-                        var currentViewIndex = 0;
-                        foreach (var view in list.Views)
-                        {
-                            currentViewIndex++;
-                            parser = CreateView(web, view, existingViews, createdList, scope, parser, currentViewIndex, total);
-
-                        }
                     }
-
-                    #endregion
-
-                    #region Folders
-
-                    // Folders are supported for document libraries and generic lists only
-                    foreach (var list in processedLists)
-                    {
-                        list.SiteList.EnsureProperties(l => l.BaseType);
-                        if ((list.SiteList.BaseType == BaseType.DocumentLibrary |
-                            list.SiteList.BaseType == BaseType.GenericList) &&
-                            list.TemplateList.Folders != null && list.TemplateList.Folders.Count > 0)
-                        {
-                            list.SiteList.EnableFolderCreation = true;
-                            list.SiteList.Update();
-                            web.Context.ExecuteQueryRetry();
-
-                            var rootFolder = list.SiteList.RootFolder;
-                            foreach (var folder in list.TemplateList.Folders)
-                            {
-                                CreateFolderInList(rootFolder, folder, parser, scope);
-                            }
-                        }
-                    }
-
-                    #endregion
-
-                    #region IRM Settings
-
-                    // Configure IRM Settings
-                    foreach (var list in processedLists)
-                    {
-                        if (list.SiteList.BaseTemplate != (int)ListTemplateType.PictureLibrary && list.TemplateList.IRMSettings != null && list.TemplateList.IRMSettings.Enabled)
-                        {
-                            list.SiteList.IrmEnabled = true;
-                            list.SiteList.IrmExpire = list.TemplateList.IrmExpire;
-                            list.SiteList.IrmReject = list.TemplateList.IrmReject;
-
-                            list.SiteList.InformationRightsManagementSettings.AllowPrint = list.TemplateList.IRMSettings.AllowPrint;
-                            list.SiteList.InformationRightsManagementSettings.AllowScript = list.TemplateList.IRMSettings.AllowScript;
-                            list.SiteList.InformationRightsManagementSettings.AllowWriteCopy = list.TemplateList.IRMSettings.AllowWriteCopy;
-                            list.SiteList.InformationRightsManagementSettings.DisableDocumentBrowserView = list.TemplateList.IRMSettings.DisableDocumentBrowserView;
-                            list.SiteList.InformationRightsManagementSettings.DocumentAccessExpireDays = list.TemplateList.IRMSettings.DocumentAccessExpireDays;
-                            if (list.TemplateList.IRMSettings.DocumentLibraryProtectionExpiresInDays > 0)
-                            {
-                                list.SiteList.InformationRightsManagementSettings.DocumentLibraryProtectionExpireDate = DateTime.Now.AddDays(list.TemplateList.IRMSettings.DocumentLibraryProtectionExpiresInDays);
-                            }
-                            list.SiteList.InformationRightsManagementSettings.EnableDocumentAccessExpire = list.TemplateList.IRMSettings.EnableDocumentAccessExpire;
-                            list.SiteList.InformationRightsManagementSettings.EnableDocumentBrowserPublishingView = list.TemplateList.IRMSettings.EnableDocumentBrowserPublishingView;
-                            list.SiteList.InformationRightsManagementSettings.EnableGroupProtection = list.TemplateList.IRMSettings.EnableGroupProtection;
-                            list.SiteList.InformationRightsManagementSettings.EnableLicenseCacheExpire = list.TemplateList.IRMSettings.EnableLicenseCacheExpire;
-                            list.SiteList.InformationRightsManagementSettings.GroupName = list.TemplateList.IRMSettings.GroupName;
-                            list.SiteList.InformationRightsManagementSettings.LicenseCacheExpireDays = list.TemplateList.IRMSettings.LicenseCacheExpireDays;
-                            list.SiteList.InformationRightsManagementSettings.PolicyDescription = list.TemplateList.IRMSettings.PolicyDescription;
-                            list.SiteList.InformationRightsManagementSettings.PolicyTitle = list.TemplateList.IRMSettings.PolicyTitle;
-
-                            list.SiteList.Update();
-                            web.Context.ExecuteQueryRetry();
-                        }
-                    }
-
-                    #endregion
-
-                    // If an existing view is updated, and the list is to be listed on the QuickLaunch, it is removed because the existing view will be deleted and recreated from scratch. 
-                    foreach (var listInfo in processedLists)
-                    {
-                        listInfo.SiteList.OnQuickLaunch = listInfo.TemplateList.OnQuickLaunch;
-                        listInfo.SiteList.Update();
-                    }
-                    web.Context.ExecuteQueryRetry();
 
                     WriteMessage("Done processing lists", ProvisioningMessageType.Completed);
                 }
@@ -423,7 +474,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 WriteMessage($"Views for list {createdList.Title}|{displayNameElement.Value}|{currentViewIndex}|{total}", ProvisioningMessageType.Progress);
                 monitoredScope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_view__0_, displayNameElement.Value);
 
-
                 var viewTitle = parser.ParseString(displayNameElement.Value);
                 var existingView = existingViews.FirstOrDefault(v => v.Title == viewTitle);
                 if (existingView != null)
@@ -436,7 +486,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var viewTypeString = viewElement.Attribute("Type") != null ? viewElement.Attribute("Type").Value : "None";
                 viewTypeString = viewTypeString[0].ToString().ToUpper() + viewTypeString.Substring(1).ToLower();
                 var viewType = (ViewType)Enum.Parse(typeof(ViewType), viewTypeString);
-                
+
                 // Fix the calendar recurrence
                 if (viewType == ViewType.Calendar)
                 {
@@ -486,7 +536,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     SetAsDefaultView = viewDefault,
                 };
 
-                // Allow to specify a custom view url. View url is taken from title, so we first set title to the view url value we need, 
+                // Allow to specify a custom view url. View url is taken from title, so we first set title to the view url value we need,
                 // create the view and then set title back to the original value
                 var urlAttribute = viewElement.Attribute("Url");
                 var urlHasValue = urlAttribute != null && !string.IsNullOrEmpty(urlAttribute.Value);
@@ -508,7 +558,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (urlHasValue)
                 {
-                    //restore original title 
+                    //restore original title
                     createdView.Title = viewTitle;
                     createdView.Update();
                 }
@@ -587,7 +637,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
-
 
                 // JSLink
                 var jslinkElement = viewElement.Descendants("JSLink").FirstOrDefault();
@@ -683,7 +732,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 #endif
 
-            // We cannot configure Hidden property for Phonetic fields 
+            // We cannot configure Hidden property for Phonetic fields
             if (!(siteList.BaseTemplate == (int)ListTemplateType.Contacts &&
                 (fieldRef.Name.Equals("LastNamePhonetic", StringComparison.InvariantCultureIgnoreCase) ||
                 fieldRef.Name.Equals("FirstNamePhonetic", StringComparison.InvariantCultureIgnoreCase) ||
@@ -711,7 +760,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return listField;
         }
 
-        private static Field CreateFieldRef(ListInfo listInfo, Field field, FieldRef fieldRef, TokenParser parser)
+        private static Field CreateFieldRef(List list, Field field, FieldRef fieldRef, TokenParser parser)
         {
             field.EnsureProperty(f => f.SchemaXmlWithResourceTokens);
             XElement element = XElement.Parse(field.SchemaXmlWithResourceTokens);
@@ -735,7 +784,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 field.SchemaXml = ObjectField.TokenizeFieldValidationFormula(field, field.SchemaXml);
             }
 
-            var createdField = listInfo.SiteList.Fields.Add(field);
+            var createdField = list.Fields.Add(field);
 
             createdField.Context.Load(createdField, cf => cf.Id, cf => cf.Title, cf => cf.Hidden, cf => cf.Required);
             createdField.Context.ExecuteQueryRetry();
@@ -782,7 +831,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return createdField;
         }
 
-        private static Field CreateField(XElement fieldElement, ListInfo listInfo, TokenParser parser, string originalFieldXml, ClientRuntimeContext context, PnPMonitoredScope scope)
+        private Field CreateField(XElement fieldElement, ListInfo listInfo, TokenParser parser, string originalFieldXml, ClientContext context, Web rootWeb, PnPMonitoredScope scope)
         {
             Field field = null;
             fieldElement = PrepareField(fieldElement);
@@ -796,6 +845,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 field = listInfo.SiteList.Fields.AddFieldAsXml(fieldXml, false, addOptions);
                 listInfo.SiteList.Context.Load(field);
                 listInfo.SiteList.Context.ExecuteQueryRetry();
+
+                //if (_stage == FieldStage.DependentLookupFields)
+                //{
+                //    // Because using AddDependentLookup method does not allow to set the id, we fake the pnp engine by creating a token just for the id
+                //    parser.AddToken(new DependentFieldLookupIdToken(context.Web, (Guid)fieldElement.Attribute("ID"), field.Id));
+                //}
+                // Add newly created field to token set, this allows to create a field + use it in a formula in the same provisioning template
+                parser.AddToken(new FieldTitleToken(context.Web, field.InternalName, field.Title));
 
                 bool isDirty = false;
 #if !SP2013
@@ -834,6 +891,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 throw new Exception($"The field was found invalid: {tokenString}");
             }
             return field;
+        }
+
+        private static List FindSourceList(string listIdentifier, Web web, Web rootWeb)
+        {
+            Guid listGuid = Guid.Empty;
+
+            if (!Guid.TryParse(listIdentifier, out listGuid))
+            {
+                var sourceListUrl = UrlUtility.Combine(web.ServerRelativeUrl, listIdentifier);
+                return web.Lists.FirstOrDefault(l => l.RootFolder.ServerRelativeUrl.Equals(sourceListUrl, StringComparison.OrdinalIgnoreCase));
+            }
+            else
+            {
+                List retVal = rootWeb.Lists.FirstOrDefault(l => l.Id.Equals(listGuid));
+
+                if (retVal == null)
+                {
+                    retVal = web.Lists.FirstOrDefault(l => l.Id.Equals(listGuid));
+                }
+
+                if (retVal == null)
+                {
+                    Log.Warning(Constants.LOGGING_SOURCE, CoreResources.Provisioning_ObjectHandlers_LookupFields_LookupTargetListLookupFailed__0, listIdentifier);
+                }
+                return retVal;
+            }
         }
 
         private Field UpdateField(ClientObject web, ListInfo listInfo, Guid fieldId, XElement templateFieldElement, Field existingField, PnPMonitoredScope scope, TokenParser parser, string originalFieldXml)
@@ -945,8 +1028,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (listIdentifier != null)
             {
-                // Temporary remove list attribute from fieldElement
-                fieldElement.Attribute("List").Remove();
+                //// Temporary remove list attribute from fieldElement
+                //fieldElement.Attribute("List").Remove();
 
                 if (fieldElement.Attribute("RelationshipDeleteBehavior") != null)
                 {
@@ -961,14 +1044,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             fieldElement.Add(new XAttribute("Indexed", "TRUE"));
                     }
 
-                    fieldElement.Attribute("RelationshipDeleteBehavior").Remove();
+                    //fieldElement.Attribute("RelationshipDeleteBehavior").Remove();
                 }
             }
 
             return fieldElement;
         }
 
-        private Tuple<List, TokenParser> UpdateList(Web web, List existingList, ListInstance templateList, TokenParser parser, PnPMonitoredScope scope, bool isNoScriptSite = false)
+        private void UpdateList(Web web, List existingList, ListInstance templateList, TokenParser parser, PnPMonitoredScope scope, bool isNoScriptSite = false)
         {
             web.Context.Load(existingList,
                 l => l.Title,
@@ -1171,27 +1254,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         existingList.InformationRightsManagementSettings.EnableGroupProtection = templateList.IRMSettings.EnableGroupProtection;
                         isDirty = true;
                     }
-                    if(existingList.InformationRightsManagementSettings.EnableLicenseCacheExpire != templateList.IRMSettings.EnableLicenseCacheExpire)
+                    if (existingList.InformationRightsManagementSettings.EnableLicenseCacheExpire != templateList.IRMSettings.EnableLicenseCacheExpire)
                     {
                         existingList.InformationRightsManagementSettings.EnableLicenseCacheExpire = templateList.IRMSettings.EnableLicenseCacheExpire;
                         isDirty = true;
                     }
-                    if(existingList.InformationRightsManagementSettings.GroupName != parser.ParseString(templateList.IRMSettings.GroupName))
+                    if (existingList.InformationRightsManagementSettings.GroupName != parser.ParseString(templateList.IRMSettings.GroupName))
                     {
                         existingList.InformationRightsManagementSettings.GroupName = parser.ParseString(templateList.IRMSettings.GroupName);
                         isDirty = true;
                     }
-                    if(existingList.InformationRightsManagementSettings.LicenseCacheExpireDays != templateList.IRMSettings.LicenseCacheExpireDays)
+                    if (existingList.InformationRightsManagementSettings.LicenseCacheExpireDays != templateList.IRMSettings.LicenseCacheExpireDays)
                     {
                         existingList.InformationRightsManagementSettings.LicenseCacheExpireDays = templateList.IRMSettings.LicenseCacheExpireDays;
                         isDirty = true;
                     }
-                    if(existingList.InformationRightsManagementSettings.PolicyDescription != parser.ParseString(templateList.IRMSettings.PolicyDescription))
+                    if (existingList.InformationRightsManagementSettings.PolicyDescription != parser.ParseString(templateList.IRMSettings.PolicyDescription))
                     {
                         existingList.InformationRightsManagementSettings.PolicyDescription = parser.ParseString(templateList.IRMSettings.PolicyDescription);
                         isDirty = true;
                     }
-                    if(existingList.InformationRightsManagementSettings.PolicyTitle != parser.ParseString(templateList.IRMSettings.PolicyTitle))
+                    if (existingList.InformationRightsManagementSettings.PolicyTitle != parser.ParseString(templateList.IRMSettings.PolicyTitle))
                     {
                         existingList.InformationRightsManagementSettings.PolicyTitle = parser.ParseString(templateList.IRMSettings.PolicyTitle);
                         isDirty = true;
@@ -1329,7 +1412,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-                if(templateList.NoCrawl != existingList.NoCrawl)
+                if (templateList.NoCrawl != existingList.NoCrawl)
                 {
                     existingList.NoCrawl = templateList.NoCrawl;
                     isDirty = true;
@@ -1354,6 +1437,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
 
                 #region UserCustomActions
+
                 if (!isNoScriptSite)
                 {
                     // Add any UserCustomActions
@@ -1384,7 +1468,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 else
                                 {
-                                    // Otherwise we update it, and before we force the target 
+                                    // Otherwise we update it, and before we force the target
                                     // registration type and ID to avoid issues
                                     userCustomAction.RegistrationType = UserCustomActionRegistrationType.List;
                                     userCustomAction.RegistrationId = existingList.Id.ToString("B").ToUpper();
@@ -1408,131 +1492,78 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions);
                 }
-#endregion
+
+                #endregion UserCustomActions
 
                 if (existingList.ContentTypesEnabled)
                 {
-                    ConfigureContentTypes(web, existingList, templateList, false);
+                    // Check if we need to add a content type
+
+                    var existingContentTypes = existingList.ContentTypes;
+                    web.Context.Load(existingContentTypes, cts => cts.Include(ct => ct.StringId));
+                    web.Context.ExecuteQueryRetry();
+
+                    if (templateList.RemoveExistingContentTypes && existingContentTypes.Count > 0)
+                    {
+                        WriteMessage($"You specified to remove existing content types for the list  with url '{existingList.RootFolder.ServerRelativeUrl}'. We found a list with the same url in the site. In case of a list update we cannot remove existing content types as they can be in use by existing list items and/or documents.", ProvisioningMessageType.Warning);
+                    }
+
+                    var bindingsToAdd = templateList.ContentTypeBindings.Where(ctb => existingContentTypes.All(ct => !ctb.ContentTypeId.Equals(ct.StringId, StringComparison.InvariantCultureIgnoreCase))).ToList();
+                    var defaultCtBinding = templateList.ContentTypeBindings.FirstOrDefault(ctb => ctb.Default == true);
+                    var currentDefaultContentTypeId = existingContentTypes.First().StringId;
+
+                    foreach (var ctb in bindingsToAdd)
+                    {
+                        var tempCT = web.GetContentTypeById(
+                            ctb.ContentTypeId,
+                            true,
+                            cts => cts.Include(
+                                ct => ct.Id,
+                                ct => ct.Name,
+                                ct => ct.FieldLinks.Include(fl => fl.Id, fl => fl.Hidden)
+                            ));
+                        if (tempCT != null)
+                        {
+                            // Get the name of the existing CT
+                            var name = tempCT.EnsureProperty(ct => ct.Name);
+
+                            // If the CT does not exist in the target list, and we don't have to remove it
+                            if (!existingList.ContentTypeExistsByName(name) && !ctb.Remove)
+                            {
+                                AddContentTypeHiddenFieldsToList(tempCT, existingList);
+                                existingList.AddContentTypeToListById(ctb.ContentTypeId, searchContentTypeInSiteHierarchy: true);
+                            }
+                            // Else if the CT exists in the target list, and we have to remove it
+                            else if (existingList.ContentTypeExistsByName(name) && ctb.Remove)
+                            {
+                                // Then remove it from the target list
+                                existingList.RemoveContentTypeByName(name);
+                            }
+                        }
+                    }
+
+                    // default ContentTypeBinding should be set last because
+                    // list extension .SetDefaultContentTypeToList() re-sets
+                    // the list.RootFolder UniqueContentTypeOrder property
+                    // which may cause missing CTs from the "New Button"
+                    if (defaultCtBinding != null)
+                    {
+                        // Only update the defualt contenttype when we detect a change in default value
+                        if (!currentDefaultContentTypeId.Equals(defaultCtBinding.ContentTypeId, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            existingList.SetDefaultContentTypeToList(defaultCtBinding.ContentTypeId);
+                        }
+                    }
                 }
                 if (templateList.Security != null)
                 {
                     existingList.SetSecurity(parser, templateList.Security);
                 }
-                return Tuple.Create(existingList, parser);
             }
             else
             {
                 scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_, templateList.Title, templateList.Url, existingList.Id);
                 WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_, templateList.Title, templateList.Url, existingList.Id), ProvisioningMessageType.Warning);
-                return null;
-            }
-        }
-
-        private void ConfigureContentTypes(Web web, List list, ListInstance templateList, bool isNewList)
-        {
-            var contentTypesToRemove = new List<ContentType>();
-
-            if (isNewList)
-            {
-                if (templateList.RemoveExistingContentTypes && templateList.ContentTypeBindings.Count > 0)
-                {
-                    contentTypesToRemove.AddRange(list.ContentTypes);
-                }
-            }
-            else
-            {
-                var existingContentTypes = list.ContentTypes;
-                web.Context.Load(existingContentTypes, cts => cts.Include(ct => ct.StringId));
-                web.Context.Load(existingContentTypes, cts => cts.Include(ct => ct.Id));
-                web.Context.ExecuteQueryRetry();
-
-                if (templateList.RemoveExistingContentTypes && existingContentTypes.Count > 0)
-                {
-                    WriteMessage($"You specified to remove existing content types for the list  with url '{list.RootFolder.ServerRelativeUrl}'. We found a list with the same url in the site. In case of a list update we cannot remove existing content types as they can be in use by existing list items and/or documents.", ProvisioningMessageType.Warning);
-                }
-            }
-
-            ContentType defaultContentType = null;
-            IList<ContentType> contentTypesToShowInNewButton = new List<ContentType>();
-            IList<ContentType> contentTypesToHideInNewButton = new List<ContentType>();
-
-            foreach (var ctb in templateList.ContentTypeBindings)
-            {
-                var tempCT = web.GetContentTypeById(ctb.ContentTypeId, searchInSiteHierarchy: true);
-                if (tempCT != null)
-                {
-                    ContentTypeId existingContentTypeId = list.ContentTypes.BestMatch(ctb.ContentTypeId);
-                    bool contentTypeAlreadyExistsInList = existingContentTypeId != null && existingContentTypeId.GetParentIdValue().Equals(ctb.ContentTypeId, StringComparison.OrdinalIgnoreCase);
-                    if (ctb.Remove)
-                    {
-                        if (contentTypeAlreadyExistsInList)
-                        {
-                            // Remove the content type
-                            list.ContentTypes.GetById(existingContentTypeId.StringValue).DeleteObject();
-                            list.Update();
-                            web.Context.ExecuteQueryRetry();
-                        }
-                    }
-                    else
-                    {
-                        ContentType listContentType;
-                        if (contentTypeAlreadyExistsInList)
-                        {
-                            //Get the content type
-                            listContentType = list.ContentTypes.GetById(existingContentTypeId.StringValue);
-                        }
-                        else
-                        {
-                            // Add the content type
-                            listContentType = list.ContentTypes.AddExistingContentType(tempCT);
-                        }
-                        web.Context.ExecuteQueryRetry();
-
-                        if (ctb.Default && defaultContentType == null)
-                        {
-                            defaultContentType = listContentType;
-                        }
-
-                        if (listContentType.GetIsAllowedInContentTypeOrder())
-                        {
-                            if (ctb.Hidden)
-                            {
-                                contentTypesToHideInNewButton.Add(listContentType);
-                            }
-                            else
-                            {
-                                contentTypesToShowInNewButton.Add(listContentType);
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Effectively remove existing content types, if any
-            foreach (var ct in contentTypesToRemove)
-            {
-                var shouldDelete = true;
-                shouldDelete &= ((list.BaseTemplate != (int)ListTemplateType.DocumentLibrary
-                    && list.BaseTemplate != 851)
-                    || !ct.StringId.StartsWith(BuiltInContentTypeId.Folder + "00"));
-
-                if (shouldDelete)
-                {
-                    ct.DeleteObject();
-                    web.Context.ExecuteQueryRetry();
-                }
-            }
-
-            //Content type order and visibility should be done after removing all pre-existing content types.
-            //If the content type configuration matches the content type order on the list 
-            //a unique content type order is not required.
-            list.ShowContentTypesInNewButton(contentTypesToShowInNewButton);
-            list.HideContentTypesInNewButton(contentTypesToHideInNewButton);
-
-            if (defaultContentType != null)
-            {
-                defaultContentType.EnsureProperty(ct => ct.Id);
-                list.SetDefaultContentType(defaultContentType.Id);
             }
         }
 
@@ -1551,14 +1582,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (!string.IsNullOrEmpty(userCustomAction.Description) && userCustomAction.Description.ContainsResourceToken())
             {
                 newUserCustomAction.DescriptionResource.SetUserResourceValue(userCustomAction.Description, parser);
-            }            
-            if(userCustomAction.ClientSideComponentId != null && userCustomAction.ClientSideComponentId != Guid.Empty)
-            {
-                newUserCustomAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
-            }
-            if (!string.IsNullOrEmpty(userCustomAction.ClientSideComponentProperties))
-            {
-                newUserCustomAction.ClientSideComponentProperties = parser.ParseString(userCustomAction.ClientSideComponentProperties);
             }
 #endif
 
@@ -1612,7 +1635,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     createdList.Update();
                     web.Context.ExecuteQueryRetry();
                 }
-
             }
             else
             {
@@ -1626,7 +1648,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 listCreate.QuickLaunchOption = list.OnQuickLaunch ? QuickLaunchOptions.On : QuickLaunchOptions.Off;
 
                 listCreate.Url = parser.ParseString(list.Url);
-                listCreate.TemplateFeatureId = list.TemplateFeatureID;                
+                listCreate.TemplateFeatureId = list.TemplateFeatureID;
 
                 createdList = web.Lists.Add(listCreate);
                 createdList.Update();
@@ -1788,12 +1810,77 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.Context.Load(createdList, l => l.Id);
             web.Context.Load(createdList, l => l.RootFolder.ServerRelativeUrl);
             web.Context.Load(createdList.ContentTypes);
+            web.Context.Load(createdList.Fields);
             web.Context.ExecuteQueryRetry();
-
 
             if (createdList.BaseTemplate != (int)ListTemplateType.Survey)
             {
-                ConfigureContentTypes(web, createdList, list, true);
+                // Remove existing content types only if there are custom content type bindings
+                var contentTypesToRemove = new List<ContentType>();
+                if (list.RemoveExistingContentTypes && list.ContentTypeBindings.Count > 0)
+                {
+                    contentTypesToRemove.AddRange(createdList.ContentTypes);
+                }
+
+                ContentTypeBinding defaultCtBinding = null;
+                foreach (var ctBinding in list.ContentTypeBindings)
+                {
+                    var tempCT = web.GetContentTypeById(
+                        ctBinding.ContentTypeId,
+                        true, cts => cts.Include(
+                            ct => ct.Id,
+                            ct => ct.Name,
+                            ct => ct.FieldLinks.Include(fl => fl.Id, fl => fl.Hidden)
+                            ));
+                    if (tempCT != null)
+                    {
+                        // Get the name of the existing CT
+                        var name = tempCT.Name;
+
+                        // If the CT does not exist in the target list, and we don't have to remove it
+                        if (!createdList.ContentTypeExistsByName(name) && !ctBinding.Remove)
+                        {
+                            AddContentTypeHiddenFieldsToList(tempCT, createdList);
+                            // Then add it to the target list
+                            createdList.AddContentTypeToListById(ctBinding.ContentTypeId, searchContentTypeInSiteHierarchy: true);
+                        }
+                        // Else if the CT exists in the target list, and we have to remove it
+                        else if (createdList.ContentTypeExistsByName(name) && ctBinding.Remove)
+                        {
+                            // Then remove it from the target list
+                            createdList.RemoveContentTypeByName(name);
+                        }
+
+                        if (ctBinding.Default)
+                        {
+                            defaultCtBinding = ctBinding;
+                        }
+                    }
+                }
+
+                // default ContentTypeBinding should be set last because
+                // list extension .SetDefaultContentTypeToList() re-sets
+                // the list.RootFolder UniqueContentTypeOrder property
+                // which may cause missing CTs from the "New Button"
+                if (defaultCtBinding != null)
+                {
+                    createdList.SetDefaultContentTypeToList(defaultCtBinding.ContentTypeId);
+                }
+
+                // Effectively remove existing content types, if any
+                foreach (var ct in contentTypesToRemove)
+                {
+                    var shouldDelete = true;
+                    shouldDelete &= ((createdList.BaseTemplate != (int)ListTemplateType.DocumentLibrary
+                        && createdList.BaseTemplate != 851)
+                        || !ct.StringId.StartsWith(BuiltInContentTypeId.Folder + "00"));
+
+                    if (shouldDelete)
+                    {
+                        ct.DeleteObject();
+                        web.Context.ExecuteQueryRetry();
+                    }
+                }
             }
 
             // Add any custom action
@@ -1831,43 +1918,60 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return Tuple.Create(createdList, parser);
         }
 
+        private void AddContentTypeHiddenFieldsToList(ContentType tempCT, List createdList)
+        {
+            var ctx = (ClientContext)createdList.Context;
+            var web = ctx.Web;
+            foreach (var fieldLink in tempCT.FieldLinks)
+            {
+                if (fieldLink.Hidden && !createdList.FieldExistsById(fieldLink.Id))
+                {
+                    var siteField = web.AvailableFields.First(f => f.Id == fieldLink.Id);
+
+                    var fieldSchema = XElement.Parse(siteField.SchemaXmlWithResourceTokens);
+                    var displayNameBackup = (string)fieldSchema.Attribute("DisplayName") ?? (string)fieldSchema.Attribute("Name");
+
+                    fieldSchema.SetAttributeValue("DisplayName", (string)fieldSchema.Attribute("Name"));
+
+                    var createdField = createdList.Fields.AddFieldAsXml(fieldSchema.ToString(), false, AddFieldOptions.AddToNoContentType);
+                    ctx.ExecuteQuery();
+                    var createdFieldSchema = XElement.Parse(createdField.EnsureProperty(f => f.SchemaXml));
+                    createdFieldSchema.SetAttributeValue("DisplayName", displayNameBackup);
+                    createdField.SchemaXml = createdFieldSchema.ToString();
+                    ctx.ExecuteQuery();
+                }
+            }
+        }
+
 #if !ONPREMISES
         private void AddOrUpdateListWebHook(List list, Webhook webhook, PnPMonitoredScope scope, bool isListUpdate = false)
         {
             if (webhook.ExpiresInDays > 0)
             {
-                try
+                // for a new list immediately add the webhook
+                if (!isListUpdate)
                 {
-                    // for a new list immediately add the webhook
-                    if (!isListUpdate)
+                    var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
+                }
+                // for existing lists add a new webhook or update existing webhook
+                else
+                {
+                    // get the webhooks defined on the list
+                    var addedWebhooks = Task.Run(() => list.GetWebhookSubscriptionsAsync()).Result;
+
+                    var existingWebhook = addedWebhooks.Where(p => p.NotificationUrl.Equals(webhook.ServerNotificationUrl, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                    if (existingWebhook != null)
                     {
-                        var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
+                        // refresh the expiration date of the existing webhook
+                        existingWebhook.ExpirationDateTime = DateTime.Now.AddDays(webhook.ExpiresInDays);
+                        // update the existing webhook
+                        list.UpdateWebhookSubscription(existingWebhook);
                     }
-                    // for existing lists add a new webhook or update existing webhook
                     else
                     {
-                        // get the webhooks defined on the list
-                        var addedWebhooks = Task.Run(() => list.GetWebhookSubscriptionsAsync()).Result;
-
-                        var existingWebhook = addedWebhooks.Where(p => p.NotificationUrl.Equals(webhook.ServerNotificationUrl, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-                        if (existingWebhook != null)
-                        {
-                            // refresh the expiration date of the existing webhook
-                            existingWebhook.ExpirationDateTime = DateTime.Now.AddDays(webhook.ExpiresInDays);
-                            // update the existing webhook
-                            list.UpdateWebhookSubscription(existingWebhook);
-                        }
-                        else
-                        {
-                            // add as new webhook
-                            var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
-                        }
+                        // add as new webhook
+                        var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
                     }
-                }
-                catch (Exception ex)
-                {
-                    // Eat all webhook exceptions, we don't want to stop the provisioning flow is an exported file happended to have a reference to a stale webhook
-                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_Webhook_Error, ex.Message);
                 }
             }
             else
@@ -1944,7 +2048,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var serverRelativeUrl = web.ServerRelativeUrl;
 
-
                 // For each list in the site
                 var lists = web.Lists;
 
@@ -2016,7 +2119,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 catch (ServerException)
                 {
-                    // If there is no workflow service present in the farm this method will throw an error. 
+                    // If there is no workflow service present in the farm this method will throw an error.
                     // Swallow the exception
                 }
 
@@ -2132,7 +2235,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         template.Lists.Add(list);
                     }
                 }
-
             }
             WriteMessage("Done processing lists", ProvisioningMessageType.Completed);
             return template;
@@ -2228,9 +2330,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     // Removed this - so that we are getting full list of content types and if it's oob content type,
                     // We are taking parent - VesaJ.
-                    //if (!BuiltInContentTypeId.Contains(ct.Parent.StringId)) 
+                    //if (!BuiltInContentTypeId.Contains(ct.Parent.StringId))
                     //{
-
                     // Exclude System Content Type to prevent getting exception during import
                     if (!ct.Parent.StringId.Equals(BuiltInContentTypeId.System))
                     {
@@ -2396,7 +2497,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             var fieldTitle = $"{{res:Field_{escapedFieldTitle}_DisplayName}}";
                             fieldElement.SetAttributeValue("DisplayName", fieldTitle);
-
                         }
                         if (UserResourceExtensions.PersistResourceValue(field.DescriptionResource, $"Field_{escapedFieldTitle}_Description", template, creationInfo))
                         {
@@ -2442,11 +2542,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         noteSchemaXml.Attribute("SourceID")?.Remove();
                         list.Fields.Insert(0, new Model.Field { SchemaXml = ParseFieldSchema(noteSchemaXml.ToString(), web, lists) });
                     }
-
                 }
             }
             return list;
         }
+
         private static ListInstance ExtractInformationRightsManagement(Web web, List siteList, ListInstance list, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
             if (siteList.BaseTemplate != (int)ListTemplateType.PictureLibrary && siteList.IrmEnabled)
@@ -2503,8 +2603,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 };
 
 #if !ONPREMISES
-                customAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
-                customAction.ClientSideComponentProperties = userCustomAction.ClientSideComponentProperties;
                 if (creationInfo.PersistMultiLanguageResources)
                 {
                     siteList.EnsureProperty(l => l.Title);
@@ -2515,7 +2613,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         var customActionTitle = $"{{res:List_{listKey}_CustomAction_{resourceKey}_Title}}";
                         customAction.Title = customActionTitle;
-
                     }
                     if (UserResourceExtensions.PersistResourceValue(userCustomAction.DescriptionResource, $"List_{listKey}_CustomAction_{resourceKey}_Description", template, creationInfo))
                     {

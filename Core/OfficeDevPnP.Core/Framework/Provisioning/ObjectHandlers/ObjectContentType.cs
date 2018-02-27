@@ -14,14 +14,28 @@ using System.Xml.Linq;
 using System.Xml.XPath;
 using System.Xml;
 using System.Text;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectContentType : ObjectHandlerBase
     {
+        private FieldStage _stage;
+
+        public ObjectContentType(FieldStage stage)
+        {
+            this._stage = stage;
+        }
+
+        internal enum ObjectContentTypeStage
+        {
+            Default,
+            LookupFields,
+            DependentLookupFields
+        }
         public override string Name
         {
-            get { return "Content Types"; }
+            get { return $"Content Types ({_stage} stage)"; }
         }
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
@@ -33,7 +47,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 web.Context.Load(web.ContentTypes, ct => ct.IncludeWithDefaultProperties(c => c.StringId, c => c.FieldLinks,
                                                                                          c => c.FieldLinks.Include(fl => fl.Id, fl => fl.Required, fl => fl.Hidden)));
-                web.Context.Load(web.Fields, fld => fld.IncludeWithDefaultProperties(f => f.Id));
+                web.Context.Load(web.Fields, fld => fld.IncludeWithDefaultProperties(f => f.Id, f=>f.SchemaXml));
 
                 web.Context.ExecuteQueryRetry();
 
@@ -57,7 +71,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (existingCT == null)
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_, ct.Id, ct.Name);
-                            var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, scope, existingCTs, existingFields, isNoScriptSite);
+                            var newCT = CreateContentType(web, template, ct, parser, template.Connector ?? null, scope, existingCTs, existingFields, isNoScriptSite);
                             if (newCT != null)
                             {
                                 existingCTs.Add(newCT);
@@ -71,7 +85,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 existingCT.DeleteObject();
                                 web.Context.ExecuteQueryRetry();
-                                var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, scope, existingCTs, existingFields, isNoScriptSite);
+                                var newCT = CreateContentType(web, template, ct, parser, template.Connector ?? null, scope, existingCTs, existingFields, isNoScriptSite);
                                 if (newCT != null)
                                 {
                                     existingCTs.Add(newCT);
@@ -83,7 +97,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 if (!existingCT.Sealed || !ct.Sealed)
                                 {
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
-                                    UpdateContentType(web, existingCT, ct, parser, scope);
+                                    UpdateContentType(web, template, existingCT, ct, parser, scope);
                                 }
                                 else
                                 {
@@ -99,7 +113,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 
-        private static void UpdateContentType(Web web, Microsoft.SharePoint.Client.ContentType existingContentType, ContentType templateContentType, TokenParser parser, PnPMonitoredScope scope, bool isNoScriptSite = false)
+        private  void UpdateContentType(Web web, ProvisioningTemplate template, Microsoft.SharePoint.Client.ContentType existingContentType, ContentType templateContentType, TokenParser parser, PnPMonitoredScope scope, bool isNoScriptSite = false)
         {
             var isDirty = false;
             var reOrderFields = false;
@@ -220,7 +234,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var fieldId in fieldsNotPresentInTarget)
                 {
                     var fieldRef = templateContentType.FieldRefs.Find(fr => fr.Id == fieldId);
-                    var field = web.AvailableFields.GetById(fieldRef.Id);
+                    var templateField = template.SiteFields.FirstOrDefault(tf => (Guid)XElement.Parse(parser.ParseString(tf.SchemaXml)).Attribute("ID") == fieldRef.Id);
+                    var fieldStage = templateField?.GetFieldStage(parser);
+                    if (fieldStage.GetValueOrDefault(FieldStage.ListAndStandardFields) != _stage) continue;
+
+
+                    Microsoft.SharePoint.Client.Field field = null;
+                    if (_stage != FieldStage.DependentLookupFields || templateField == null || fieldRef.Id == Guid.Empty)
+                    {
+                        field = web.AvailableFields.GetById(fieldRef.Id);
+                    }
+                    else
+                    {
+                        // Because the id of dependent lookup cannot be set and is autogenerated, we have to retrieve the actual field id
+                        var mappedFieldId = Guid.Parse(parser.ParseString(fieldRef.Id.ToString("D")));
+                        field = web.AvailableFields.GetById(mappedFieldId);
+                    }
+
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldId);
                     web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden);
                 }
@@ -279,8 +309,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static Microsoft.SharePoint.Client.ContentType CreateContentType(Web web, ContentType templateContentType, TokenParser parser, FileConnectorBase connector, PnPMonitoredScope scope,
-            List<Microsoft.SharePoint.Client.ContentType> existingCTs = null, List<Microsoft.SharePoint.Client.Field> existingFields = null, bool isNoScriptSite = false)
+        private Microsoft.SharePoint.Client.ContentType CreateContentType(
+            Web web,
+            ProvisioningTemplate template,
+            ContentType templateContentType, 
+            TokenParser parser, 
+            FileConnectorBase connector,
+            PnPMonitoredScope scope,
+            List<Microsoft.SharePoint.Client.ContentType> existingCTs = null, 
+            List<Microsoft.SharePoint.Client.Field> existingFields = null,
+            bool isNoScriptSite = false
+            )
         {
             var name = parser.ParseString(templateContentType.Name);
             var description = parser.ParseString(templateContentType.Description);
@@ -290,17 +329,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var createdCT = web.CreateContentType(name, description, id, group);
             foreach (var fieldRef in templateContentType.FieldRefs)
             {
+                var templateField = template.SiteFields.FirstOrDefault(tf => (Guid)XElement.Parse(parser.ParseString(tf.SchemaXml)).Attribute("ID") == fieldRef.Id);
+                var fieldStage = templateField?.GetFieldStage(parser);
+                if (fieldStage.GetValueOrDefault(FieldStage.ListAndStandardFields) != _stage) continue;
+
                 Microsoft.SharePoint.Client.Field field = null;
-                try
+                if (_stage != FieldStage.DependentLookupFields || templateField == null || fieldRef.Id == Guid.Empty)
                 {
-                    field = web.AvailableFields.GetById(fieldRef.Id);
-                }
-                catch (ArgumentException)
-                {
-                    if (!string.IsNullOrEmpty(fieldRef.Name))
+                    try
                     {
-                        field = web.AvailableFields.GetByInternalNameOrTitle(fieldRef.Name);
+                        field = web.AvailableFields.GetById(fieldRef.Id);
                     }
+                    catch (ArgumentException)
+                    {
+                        if (!string.IsNullOrEmpty(fieldRef.Name))
+                        {
+                            field = web.AvailableFields.GetByInternalNameOrTitle(fieldRef.Name);
+                        }
+                    }
+                }
+                else
+                {
+                    // Because the id of dependent lookup cannot be set and is autogenerated, we have to retrieve the actual field id
+                    var mappedFieldId = Guid.Parse( parser.ParseString(fieldRef.Id.ToString("D")));
+                    field = web.AvailableFields.GetById(mappedFieldId);
                 }
                 // Add it to the target content type
                 // Notice that this code will fail if the field does not exist

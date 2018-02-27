@@ -9,6 +9,7 @@ using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
+    [Obsolete("Logic related to lookup fields have been moved to ObjectField, ObjectContentType and ObjectListInstance, running three times (at different stages) to ensure artefact order creationg.")]
     internal class ObjectLookupFields : ObjectHandlerBase
     {
         public override string Name

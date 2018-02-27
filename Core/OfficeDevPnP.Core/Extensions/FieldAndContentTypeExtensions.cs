@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client.DocumentSet;
+using System.Linq.Expressions;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -1497,6 +1498,36 @@ namespace Microsoft.SharePoint.Client
             var ctCol = searchInSiteHierarchy ? web.AvailableContentTypes : web.ContentTypes;
 
             web.Context.Load(ctCol);
+            web.Context.ExecuteQueryRetry();
+            foreach (var item in ctCol)
+            {
+                if (item.Id.StringValue.Equals(contentTypeId, StringComparison.OrdinalIgnoreCase))
+                {
+                    return item;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Return content type by Id
+        /// </summary>
+        /// <param name="web">Web to be processed</param>
+        /// <param name="contentTypeId">Complete ID for the content type</param>
+        /// <param name="searchInSiteHierarchy">Searches accross all content types in the site up to the root site</param>
+        /// <param name="retrievals">Optional list of retrievals</param>
+        /// <returns>Content type object or null if was not found</returns>
+        public static ContentType GetContentTypeById(this Web web, string contentTypeId, bool searchInSiteHierarchy = false, params Expression<Func<ContentTypeCollection, object>>[] retrievals)
+        {
+            if (string.IsNullOrEmpty(contentTypeId))
+            {
+                throw new ArgumentNullException(nameof(contentTypeId));
+            }
+
+            var ctCol = searchInSiteHierarchy ? web.AvailableContentTypes : web.ContentTypes;
+
+            web.Context.Load(ctCol, retrievals);
             web.Context.ExecuteQueryRetry();
             foreach (var item in ctCol)
             {
