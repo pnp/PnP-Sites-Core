@@ -37,10 +37,12 @@ Below all the supported tokens are listed:
 |{sitecollection}|{sitecollection}|/sites/demo|Will return the server relative URL of the current site collection rootweb|
 |{siteid}|{siteid}|cb779dae-0b29-4cec-b3ac-9983d3389ad0|Returns the id of the current web.|
 |{sitename}|{sitename}|My Demo Site|Returns the title of the current web.|
+|{sitetitle}|{sitetitle}|My Demo Site|Returns the title of the current web.|
 |{siteowner}|{siteowner}|i:0#.f\|membership\|user@domain.com|Returns the login name of the current owner of the site.|
 |{site}|{site}|/sites/demo/test|Will returm the server relative URL of the current web.|
 |{termsetid:&lt;Group&gt;:&lt;Set&gt;}|{termsetid:TestGroup:TestSet}|FDF19D89-A82F-4AB9-9BB5-B49E6CA5212|Will return the ID of the termset that is residing under the specified group. If you want a ID with { } around the value, use the token as follows: {{termsetid:TestGroup:TestSet}}.|
 |{termstoreid:&lt;name&gt;}|{termstoreid:ExtraStore}|d42bcad2-0603-4b86-8e3d-72177f4519ca|Returns the id of a termstore by its name.|
 |{themecatalog}|{themecatalog}|/sites/demo/_catalogs/theme|Will return the server relative url of the current site theme catalog.|
 |{webpartid:&lt;name&gt;}|{webpartid:MyWebPart}|767245f6-5f47-4cb5-b558-bcc04956bb7b|Returns the id of a webpart by its name.|
+|{webname}|{webname}|testsite|Returns the Name property value of the current web. The name part is the last part of the URL, e.g. given a web with /sites/testsite/subweb1/subweb2 this token will return 'subweb2'| 
 <img src="https://telemetry.sharepointpnp.com/pnp-sites-core/core/provisioningenginetokens" /> 
