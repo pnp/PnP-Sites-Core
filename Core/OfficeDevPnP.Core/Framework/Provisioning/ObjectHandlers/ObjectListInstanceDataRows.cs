@@ -6,6 +6,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using Field = Microsoft.SharePoint.Client.Field;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using Microsoft.SharePoint.Client.Taxonomy;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -242,6 +243,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                             listitem[parser.ParseString(dataValue.Key)] = dateTime;
                                                         }
                                                         break;
+                                                    case FieldType.Invalid:
+                                                        switch (dataField.TypeAsString)
+                                                        {
+                                                            case "TaxonomyFieldType":
+                                                                // Single value field - Expected format: term label|term GUID
+                                                            case "TaxonomyFieldTypeMulti":
+                                                                // Multi value field - Expected format: term label|term GUID;term label|term GUID;term label|term GUID...
+
+                                                                TaxonomyField taxonomyField = web.Context.CastTo<TaxonomyField>(dataField);
+                                                                taxonomyField.SetFieldValueByLabelGuidPair(listitem, fieldValue);
+                                                                break;
+                                                        }
+                                                        break;
+
                                                     default:
                                                         listitem[parser.ParseString(dataValue.Key)] = fieldValue;
                                                         break;
