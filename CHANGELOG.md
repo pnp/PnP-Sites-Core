@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Fix #1595 - Fixed provisioning issue when the AppCatalog is missing. [gautamdsheth]
 - Updated DataRow handler in provisioning engine to not update readonly fields, and to allow for emptying fields by leaving the element value empty of a DataValue element.
 - Support extraction of "empty" client side pages when using an extensibility provider that extracts more than the default home page
 - Improved detection of illegal characters in folder and file names [aslanovsergey]
