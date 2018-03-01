@@ -152,8 +152,7 @@ alert(""Hello!"");
                 roleAssignment.Principal = currentUser.LoginName;
                 roleAssignment.Remove = true;
 
-                //roleAssignment.RoleDefinition = "{roledefinition:Administrator}";               
-                roleAssignment.RoleDefinition = "Full Control"; //TODO: Replace with above line when PR#1529 is approved
+                roleAssignment.RoleDefinition = "{roledefinition:Administrator}";               
 
                 page.Security.RoleAssignments.Add(roleAssignment);
 
