@@ -110,7 +110,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Launches a site collection creation and waits for the creation to finish 
+        /// Launches a site collection creation and waits for the creation to finish
         /// </summary>
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
         /// <param name="siteFullUrl">The SPO url</param>
@@ -151,7 +151,7 @@ namespace Microsoft.SharePoint.Client
 
 #region Site status checks
         /// <summary>
-        /// Returns if a site collection is in a particular status. If the url contains a sub site then returns true is the sub site exists, false if not. 
+        /// Returns if a site collection is in a particular status. If the url contains a sub site then returns true is the sub site exists, false if not.
         /// Status is irrelevant for sub sites
         /// </summary>
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
@@ -340,7 +340,7 @@ namespace Microsoft.SharePoint.Client
             {
                 if (!useRecycleBin && IsCannotRemoveSiteException(ex))
                 {
-                    //eat exception as the site might be in the recycle bin and we allowed deletion from recycle bin 
+                    //eat exception as the site might be in the recycle bin and we allowed deletion from recycle bin
                 }
                 else
                 {
@@ -514,7 +514,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site (i.e. https://[tenant]-admin.sharepoint.com)</param>
         /// <param name="siteFullUrl">The target site to change the lock state.</param>
         /// <param name="lockState">The target state the site should be changed to.</param>
-        /// <param name="wait">If true, processing will halt until the site collection lock state has been implemented</param>      
+        /// <param name="wait">If true, processing will halt until the site collection lock state has been implemented</param>
         /// <param name="timeoutFunction">An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.</param>
         public static void SetSiteLockState(this Tenant tenant, string siteFullUrl, SiteLockState lockState, bool wait = false, Func<TenantOperationMessage, bool> timeoutFunction = null)
         {
@@ -581,7 +581,7 @@ namespace Microsoft.SharePoint.Client
 
 #region Site enumeration
         /// <summary>
-        /// Returns all site collections in the current Tenant based on a startIndex. IncludeDetail adds additional properties to the SPSite object. 
+        /// Returns all site collections in the current Tenant based on a startIndex. IncludeDetail adds additional properties to the SPSite object.
         /// </summary>
         /// <param name="tenant">Tenant object to operate against</param>
         /// <param name="startIndex">Not relevant anymore</param>
@@ -828,7 +828,7 @@ namespace Microsoft.SharePoint.Client
 #region Site Classification configuration
 
         /// <summary>
-        /// Enables Site Classifications for the target tenant 
+        /// Enables Site Classifications for the target tenant
         /// </summary>
         /// <param name="tenant">The target tenant</param>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
@@ -839,7 +839,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Enables Site Classifications for the target tenant 
+        /// Enables Site Classifications for the target tenant
         /// </summary>
         /// <param name="tenant">The target tenant</param>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
@@ -852,7 +852,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Enables Site Classifications for the target tenant 
+        /// Enables Site Classifications for the target tenant
         /// </summary>
         /// <param name="tenant">The target tenant</param>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
