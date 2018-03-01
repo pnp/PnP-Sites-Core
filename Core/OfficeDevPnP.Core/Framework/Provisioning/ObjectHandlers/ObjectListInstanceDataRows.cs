@@ -87,6 +87,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                     bool processItem = true;
                                     ListItem listitem = null;
+                                    var updateValues = new List<FieldUpdateValue>();
+
                                     if (!string.IsNullOrEmpty(listInstance.DataRows.KeyColumn))
                                     {
                                         // Get value from key column
@@ -141,7 +143,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             {
                                                 if (dataValue.Value == null)
                                                 {
-                                                    listitem[parser.ParseString(dataValue.Key)] = null;
+                                                    updateValues.Add(new FieldUpdateValue(dataValue.Key, null));
                                                 }
                                                 else
                                                 {
@@ -161,11 +163,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                                     Longitude = Double.Parse(geolocationArray[2]),
                                                                     Measure = Double.Parse(geolocationArray[3]),
                                                                 };
-                                                                listitem[parser.ParseString(dataValue.Key)] = geolocationValue;
+                                                                updateValues.Add(new FieldUpdateValue(dataValue.Key, geolocationValue));
                                                             }
                                                             else
                                                             {
-                                                                listitem[parser.ParseString(dataValue.Key)] = fieldValue;
+                                                                updateValues.Add(new FieldUpdateValue(dataValue.Key, fieldValue));
                                                             }
                                                             break;
                                                         case FieldType.Lookup:
@@ -181,7 +183,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                                     });
                                                                     return true;
                                                                 });
-                                                                listitem[parser.ParseString(dataValue.Key)] = lookupValues.ToArray();
+                                                                updateValues.Add(new FieldUpdateValue(dataValue.Key, lookupValues.ToArray()));
                                                             }
                                                             else
                                                             {
@@ -189,7 +191,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                                 {
                                                                     LookupId = int.Parse(fieldValue),
                                                                 };
-                                                                listitem[parser.ParseString(dataValue.Key)] = lookupValue;
+                                                                updateValues.Add(new FieldUpdateValue(dataValue.Key, lookupValue));
                                                             }
                                                             break;
                                                         case FieldType.URL:
@@ -206,7 +208,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                                 linkValue.Url = urlArray[0];
                                                                 linkValue.Description = urlArray[0];
                                                             }
-                                                            listitem[parser.ParseString(dataValue.Key)] = linkValue;
+                                                            updateValues.Add(new FieldUpdateValue(dataValue.Key, linkValue));
                                                             break;
                                                         case FieldType.User:
                                                             // FieldUserValue - Expected format: loginName or loginName,loginName,loginName...
@@ -227,7 +229,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                                     }
                                                                     return true;
                                                                 });
-                                                                listitem[parser.ParseString(dataValue.Key)] = userValues.ToArray();
+                                                                updateValues.Add(new FieldUpdateValue(dataValue.Key, userValues.ToArray()));
                                                             }
                                                             else
                                                             {
@@ -240,11 +242,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                                     {
                                                                         LookupId = user.Id,
                                                                     };
-                                                                    listitem[parser.ParseString(dataValue.Key)] = userValue;
+                                                                    updateValues.Add(new FieldUpdateValue(dataValue.Key, userValue));
                                                                 }
                                                                 else
                                                                 {
-                                                                    listitem[parser.ParseString(dataValue.Key)] = fieldValue;
+                                                                    updateValues.Add(new FieldUpdateValue(dataValue.Key, fieldValue));
                                                                 }
                                                             }
                                                             break;
@@ -252,32 +254,60 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                             var dateTime = DateTime.MinValue;
                                                             if (DateTime.TryParse(fieldValue, out dateTime))
                                                             {
-                                                                listitem[parser.ParseString(dataValue.Key)] = dateTime;
+                                                                updateValues.Add(new FieldUpdateValue(dataValue.Key, dateTime));
                                                             }
                                                             break;
                                                         case FieldType.Invalid:
                                                             switch (dataField.TypeAsString)
                                                             {
                                                                 case "TaxonomyFieldType":
-                                                                // Single value field - Expected format: term label|term GUID
                                                                 case "TaxonomyFieldTypeMulti":
-                                                                    // Multi value field - Expected format: term label|term GUID;term label|term GUID;term label|term GUID...
-
-                                                                    TaxonomyField taxonomyField = web.Context.CastTo<TaxonomyField>(dataField);
-                                                                    taxonomyField.SetFieldValueByLabelGuidPair(listitem, fieldValue);
-                                                                    break;
+                                                                    {
+                                                                        // IMPORTANT
+                                                                        //updateValues.Add(new FieldUpdateValue(dataValue.Key, TaxonomyFieldValue/TaxonomyFieldValueCollection, dataField.TypeAsString))
+                                                                        break;
+                                                                    }
                                                             }
                                                             break;
 
                                                         default:
-                                                            listitem[parser.ParseString(dataValue.Key)] = fieldValue;
+                                                            updateValues.Add(new FieldUpdateValue(dataValue.Key, fieldValue));
                                                             break;
                                                     }
                                                 }
                                             }
                                         }
 
+                                        foreach (var itemValue in updateValues)
+                                        {
+                                            if (string.IsNullOrEmpty(itemValue.FieldTypeString))
+                                            {
+                                                listitem[itemValue.Key] = itemValue.Value;
+                                            }
+                                            else
+                                            {
+                                                switch (itemValue.FieldTypeString)
+                                                {
+                                                    case "TaxonomyFieldTypeMulti":
+                                                        {
+                                                            var field = fields.FirstOrDefault(f => f.InternalName == itemValue.Key as string || f.Title == itemValue.Key as string);
+                                                            var taxField = web.Context.CastTo<TaxonomyField>(field);
+                                                            taxField.SetFieldValueByValueCollection(listitem, itemValue.Value as TaxonomyFieldValueCollection);
+                                                            break;
+                                                        }
+                                                    case "TaxonomyFieldType":
+                                                        {
+                                                            var field = fields.FirstOrDefault(f => f.InternalName == itemValue.Key as string || f.Title == itemValue.Key as string);
+                                                            var taxField = web.Context.CastTo<TaxonomyField>(field);
+                                                            taxField.SetFieldValueByValue(listitem, itemValue.Value as TaxonomyFieldValue);
+                                                            break;
+                                                        }
+                                                }
+                                            }
+                                        }
+
                                         listitem.Update();
+
                                         web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
 
                                         if (dataRow.Security != null && (dataRow.Security.ClearSubscopes == true || dataRow.Security.CopyRoleAssignments == true || dataRow.Security.RoleAssignments.Count > 0))
@@ -337,6 +367,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return _willExtract.Value;
         }
+
+        private class FieldUpdateValue
+        {
+            public string Key { get; set; }
+            public object Value { get; set; }
+            public string FieldTypeString { get; set; }
+
+            public FieldUpdateValue(string key, object value)
+            {
+                Key = key;
+                Value = value;
+            }
+            public FieldUpdateValue(string key, object value, string fieldTypeString)
+            {
+                Key = key;
+                Value = value;
+                FieldTypeString = fieldTypeString;
+            }
+        }
     }
+
+
 }
 
