@@ -46,7 +46,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             // Retrieve the fields' types from the list
                             Microsoft.SharePoint.Client.FieldCollection fields = list.Fields;
-                            web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind, f => f.TypeAsString, f => f.ReadOnlyField));
+                            web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind, f => f.TypeAsString, f => f.ReadOnlyField, f => f.Title));
                             web.Context.ExecuteQueryRetry();
 
                             var keyColumnType = "Text";
@@ -261,15 +261,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                             switch (dataField.TypeAsString)
                                                             {
                                                                 case "TaxonomyFieldType":
-                                                                    // Single value field - Expected format: term label|term GUID
+                                                                    // Single value field - Expected format: term GUID|term label
                                                                 case "TaxonomyFieldTypeMulti":
+                                                                    // Multi value field - Expected format: term GUID|term path;term GUID|term path;term GUID|term path...
                                                                     {
                                                                         // IMPORTANT
                                                                         //updateValues.Add(new FieldUpdateValue(dataValue.Key, TaxonomyFieldValue/TaxonomyFieldValueCollection, dataField.TypeAsString))
-                                                                        // Multi value field - Expected format: term label|term GUID;term label|term GUID;term label|term GUID...
+                                                                        if (fieldValue != null)
+                                                                        {
+                                                                            var context = ((ClientContext)web.Context);
+                                                                            TaxonomyFieldValueCollection taxonomyValues = new TaxonomyFieldValueCollection(context, null, dataField);
+                                                                            taxonomyValues.PopulateFromLabelGuidPairs(fieldValue.Trim(new char[] { ';' }));
 
-                                                                        //TaxonomyField taxonomyField = web.Context.CastTo<TaxonomyField>(dataField);
-                                                                        //taxonomyField.SetFieldValueByLabelGuidPair(listitem, fieldValue);
+                                                                            if (dataField.TypeAsString == "TaxonomyFieldType")
+                                                                            {
+                                                                                context.Load(taxonomyValues);
+                                                                                context.ExecuteQueryRetry();
+
+                                                                                updateValues.Add(new FieldUpdateValue(dataValue.Key, taxonomyValues[0], dataField.TypeAsString));
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                updateValues.Add(new FieldUpdateValue(dataValue.Key, taxonomyValues, dataField.TypeAsString));
+                                                                            }
+                                                                        }
                                                                         break;
                                                                     }
                                                             }
