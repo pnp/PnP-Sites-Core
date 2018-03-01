@@ -261,27 +261,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                             switch (dataField.TypeAsString)
                                                             {
                                                                 case "TaxonomyFieldType":
-                                                                    // Single value field - Expected format: term label|term GUID
+                                                                // Single value field - Expected format: term label|term GUID
                                                                 case "TaxonomyFieldTypeMulti":
                                                                     // Multi value field - Expected format: term label|term GUID;term label|term GUID;term label|term GUID;...
                                                                     {
                                                                         if (fieldValue != null)
                                                                         {
-                                                                            var context = ((ClientContext)web.Context);
-                                                                            TaxonomyFieldValueCollection taxonomyValues = new TaxonomyFieldValueCollection(context, null, dataField);
-                                                                            taxonomyValues.PopulateFromLabelGuidPairs(fieldValue.Trim(new char[] { ';' }));
+                                                                            var termStrings = new List<string>();
 
-                                                                            if (dataField.TypeAsString == "TaxonomyFieldType")
+                                                                            var termsArray = fieldValue.Split(new char[] { ';' });
+                                                                            foreach (var term in termsArray)
                                                                             {
-                                                                                context.Load(taxonomyValues);
-                                                                                context.ExecuteQueryRetry();
-
-                                                                                updateValues.Add(new FieldUpdateValue(dataValue.Key, taxonomyValues[0], dataField.TypeAsString));
+                                                                                termStrings.Add($"-1;#{term}");
                                                                             }
-                                                                            else
-                                                                            {
-                                                                                updateValues.Add(new FieldUpdateValue(dataValue.Key, taxonomyValues, dataField.TypeAsString));
-                                                                            }
+                                                                            updateValues.Add(new FieldUpdateValue(dataValue.Key, termStrings, dataField.TypeAsString));
                                                                         }
                                                                         break;
                                                                     }
@@ -296,38 +289,62 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             }
                                         }
 
-                                        foreach (var itemValue in updateValues)
+                                        foreach (var itemValue in updateValues.Where(u => u.FieldTypeString != "TaxonomyFieldTypeMulti" && u.FieldTypeString != "TaxonomyFieldType"))
                                         {
                                             if (string.IsNullOrEmpty(itemValue.FieldTypeString))
                                             {
                                                 listitem[itemValue.Key] = itemValue.Value;
                                             }
-                                            else
+                                        }
+                                        listitem.Update();
+                                        web.Context.Load(listitem);
+                                        web.Context.ExecuteQueryRetry();
+                                        var itemId = listitem.Id;
+                                        foreach (var itemValue in updateValues.Where(u => u.FieldTypeString == "TaxonomyFieldTypeMulti" || u.FieldTypeString == "TaxonomyFieldType"))
+                                        {
+                                            switch (itemValue.FieldTypeString)
                                             {
-                                                switch (itemValue.FieldTypeString)
-                                                {
-                                                    case "TaxonomyFieldTypeMulti":
+                                                case "TaxonomyFieldTypeMulti":
+                                                    {
+
+                                                        var field = fields.FirstOrDefault(f => f.InternalName == itemValue.Key as string || f.Title == itemValue.Key as string);
+                                                        var taxField = web.Context.CastTo<TaxonomyField>(field);
+                                                        if (itemValue.Value != null)
                                                         {
-                                                            var field = fields.FirstOrDefault(f => f.InternalName == itemValue.Key as string || f.Title == itemValue.Key as string);
-                                                            var taxField = web.Context.CastTo<TaxonomyField>(field);
-                                                            taxField.SetFieldValueByValueCollection(listitem, itemValue.Value as TaxonomyFieldValueCollection);
-                                                            break;
+                                                            var valueCollection = new TaxonomyFieldValueCollection(web.Context, string.Join(";#", itemValue.Value as List<string>), taxField);
+                                                            taxField.SetFieldValueByValueCollection(listitem, valueCollection);
+
                                                         }
-                                                    case "TaxonomyFieldType":
+                                                        else
                                                         {
-                                                            var field = fields.FirstOrDefault(f => f.InternalName == itemValue.Key as string || f.Title == itemValue.Key as string);
-                                                            var taxField = web.Context.CastTo<TaxonomyField>(field);
-                                                            taxField.SetFieldValueByValue(listitem, itemValue.Value as TaxonomyFieldValue);
-                                                            break;
+                                                            var valueCollection = new TaxonomyFieldValueCollection(web.Context, null, taxField);
+                                                            taxField.SetFieldValueByValueCollection(listitem, valueCollection);
                                                         }
-                                                }
+                                                        listitem.Update();
+                                                        web.Context.Load(listitem);
+                                                        web.Context.ExecuteQueryRetry();
+                                                        break;
+                                                    }
+                                                case "TaxonomyFieldType":
+                                                    {
+                                                        var field = fields.FirstOrDefault(f => f.InternalName == itemValue.Key as string || f.Title == itemValue.Key as string);
+                                                        var taxField = web.Context.CastTo<TaxonomyField>(field);
+                                                        var taxValue = new TaxonomyFieldValue();
+                                                        if (itemValue.Value != null)
+                                                        {
+                                                            var termString = (itemValue.Value as List<string>).First();
+                                                            taxValue.Label = termString.Split(new string[] { ";#" }, StringSplitOptions.None)[1].Split(new char[] { '|' })[0];
+                                                            taxValue.TermGuid = termString.Split(new string[] { ";#" }, StringSplitOptions.None)[1].Split(new char[] { '|' })[1];
+                                                            taxValue.WssId = -1;
+                                                        }
+                                                        taxField.SetFieldValueByValue(listitem, taxValue);
+                                                        listitem.Update();
+                                                        web.Context.Load(listitem);
+                                                        web.Context.ExecuteQueryRetry();
+                                                        break;
+                                                    }
                                             }
                                         }
-
-                                        listitem.Update();
-
-                                        web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
-
                                         if (dataRow.Security != null && (dataRow.Security.ClearSubscopes == true || dataRow.Security.CopyRoleAssignments == true || dataRow.Security.RoleAssignments.Count > 0))
                                         {
                                             listitem.SetSecurity(parser, dataRow.Security);
