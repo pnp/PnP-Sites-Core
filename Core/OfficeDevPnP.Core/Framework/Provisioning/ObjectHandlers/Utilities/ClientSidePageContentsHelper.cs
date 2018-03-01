@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             {
                 var pageToExtract = web.LoadClientSidePage(pageName);
 
-                if (pageToExtract.Sections.Count == 0 && pageToExtract.Controls.Count == 0)
+                if (pageToExtract.Sections.Count == 0 && pageToExtract.Controls.Count == 0 && isHomePage)
                 {
                     // This is default home page which was not customized...and as such there's no page definition stored in the list item. We don't need to extact this page.
                     scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ClientSidePageContents_DefaultHomePage);
