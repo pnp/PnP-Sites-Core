@@ -146,6 +146,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             string htmlGroupName = string.Format("Test_HTML_{0}", DateTime.Now.Ticks);
             string plainTextDescription = "Testing plain text";
             string richHtmlDescription = "Testing HTML with link to <a href=\"/\">Root Site</a>";
+            string richHtmlDescriptionPlainTextVersion = "Testing HTML with link to Root Site";
 
             var template = new ProvisioningTemplate();
 
@@ -183,7 +184,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.AreEqual(plainTextDescription, plainTextGroup.Description);
                 Assert.AreEqual(plainTextDescription, plainTextGroupItem["Notes"]);
 
-                Assert.AreEqual(PnPHttpUtility.ConvertSimpleHtmlToText(richHtmlDescription, int.MaxValue), htmlGroup.Description);
+                Assert.AreEqual(richHtmlDescriptionPlainTextVersion, htmlGroup.Description);
                 Assert.AreEqual(richHtmlDescription, htmlGroupItem["Notes"]);
             }
         }
