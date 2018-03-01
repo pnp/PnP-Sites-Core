@@ -261,12 +261,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                             switch (dataField.TypeAsString)
                                                             {
                                                                 case "TaxonomyFieldType":
-                                                                    // Single value field - Expected format: term GUID|term label
+                                                                    // Single value field - Expected format: term label|term GUID
                                                                 case "TaxonomyFieldTypeMulti":
-                                                                    // Multi value field - Expected format: term GUID|term path;term GUID|term path;term GUID|term path...
+                                                                    // Multi value field - Expected format: term label|term GUID;term label|term GUID;term label|term GUID;...
                                                                     {
-                                                                        // IMPORTANT
-                                                                        //updateValues.Add(new FieldUpdateValue(dataValue.Key, TaxonomyFieldValue/TaxonomyFieldValueCollection, dataField.TypeAsString))
                                                                         if (fieldValue != null)
                                                                         {
                                                                             var context = ((ClientContext)web.Context);
