@@ -1111,4 +1111,7 @@
   <data name="Provisioning_ObjectHandlers_ListInstances_Webhook_Error" xml:space="preserve">
     <value>Error during webhook add/update: {0}.</value>
   </data>
+  <data name="TimerJob_DoWork_NoClientContext" xml:space="preserve">
+    <value>Failed to obtain a ClientContext instance: {0}.</value>
+  </data>
 </root>
