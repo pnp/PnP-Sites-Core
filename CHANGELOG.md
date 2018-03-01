@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix #1059 - SharePoint 2013 on premise issues with ApplyProvisioningTemplate when publishing activated
 - Switched to CSOM version 7414.1200
 - Groupify method supports the "keep existing homepage" scenario
+- Fixed behavior while adding/updating datarows with the Provisioning Engine [craig-blowfield]
 
 ### Deprecated
 
