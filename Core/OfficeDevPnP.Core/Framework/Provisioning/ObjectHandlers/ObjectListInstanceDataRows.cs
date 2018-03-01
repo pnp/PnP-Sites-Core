@@ -85,7 +85,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_list_item__0_, listInstance.DataRows.IndexOf(dataRow) + 1);
 
 
-                                    bool create = true;
+                                    bool processItem = true;
                                     ListItem listitem = null;
                                     if (!string.IsNullOrEmpty(listInstance.DataRows.KeyColumn))
                                     {
@@ -107,18 +107,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             {
                                                 if (listInstance.DataRows.UpdateBehavior == UpdateBehavior.Skip)
                                                 {
-                                                    create = false;
+                                                    processItem = false;
                                                 }
                                                 else
                                                 {
                                                     listitem = existingItems[0];
-                                                    create = true;
+                                                    processItem = true;
                                                 }
                                             }
                                         }
                                     }
 
-                                    if (create)
+                                    if (processItem)
                                     {
                                         if (listitem == null)
                                         {
