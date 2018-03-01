@@ -132,7 +132,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             Field dataField = fields.FirstOrDefault(
                                                 f => f.InternalName == parser.ParseString(dataValue.Key));
 
-                                            if (dataField.ReadOnlyField)
+                                            if (dataField != null && dataField.ReadOnlyField)
                                             {
                                                 // skip read only fields
                                                 continue;
@@ -259,7 +259,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                             switch (dataField.TypeAsString)
                                                             {
                                                                 case "TaxonomyFieldType":
-                                                                // Single value field - Expected format: term label|term GUID
+                                                                    // Single value field - Expected format: term label|term GUID
                                                                 case "TaxonomyFieldTypeMulti":
                                                                     // Multi value field - Expected format: term label|term GUID;term label|term GUID;term label|term GUID...
 
