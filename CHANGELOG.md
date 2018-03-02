@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Fix #1585 - Correctly handle Overwrite=false with the new pre-create of pages
 - TimerJob framework reliability improvements (avoid breaking when clientcontext could not be obtained)
 - Fix #1595 - Fixed provisioning issue when the AppCatalog is missing. [gautamdsheth]
 - Updated DataRow handler in provisioning engine to not update readonly fields, and to allow for emptying fields by leaving the element value empty of a DataValue element.
