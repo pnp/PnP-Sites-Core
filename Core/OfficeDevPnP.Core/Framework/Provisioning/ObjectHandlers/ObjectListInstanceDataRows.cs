@@ -143,7 +143,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             {
                                                 if (dataValue.Value == null)
                                                 {
-                                                    updateValues.Add(new FieldUpdateValue(dataValue.Key, null));
+                                                    if (dataField.FieldTypeKind == FieldType.Invalid)
+                                                    {
+                                                        updateValues.Add(new FieldUpdateValue(dataValue.Key, null, dataField.TypeAsString));
+                                                    }
+                                                    else
+                                                    {
+                                                        updateValues.Add(new FieldUpdateValue(dataValue.Key, null));
+                                                    }
                                                 }
                                                 else
                                                 {
@@ -329,6 +336,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                     {
                                                         var field = fields.FirstOrDefault(f => f.InternalName == itemValue.Key as string || f.Title == itemValue.Key as string);
                                                         var taxField = web.Context.CastTo<TaxonomyField>(field);
+                                                        taxField.EnsureProperty(f => f.TextField);
                                                         var taxValue = new TaxonomyFieldValue();
                                                         if (itemValue.Value != null)
                                                         {
@@ -336,8 +344,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                             taxValue.Label = termString.Split(new string[] { ";#" }, StringSplitOptions.None)[1].Split(new char[] { '|' })[0];
                                                             taxValue.TermGuid = termString.Split(new string[] { ";#" }, StringSplitOptions.None)[1].Split(new char[] { '|' })[1];
                                                             taxValue.WssId = -1;
+                                                            taxField.SetFieldValueByValue(listitem, taxValue);
                                                         }
-                                                        taxField.SetFieldValueByValue(listitem, taxValue);
+                                                        else
+                                                        {
+                                                            taxValue.Label = string.Empty;
+                                                            taxValue.TermGuid = "11111111-1111-1111-1111-111111111111";
+                                                            taxValue.WssId = -1;
+                                                            Field hiddenField = list.Fields.GetById(taxField.TextField);
+                                                            listitem.Context.Load(hiddenField, tf => tf.InternalName);
+                                                            listitem.Context.ExecuteQueryRetry();
+                                                            taxField.SetFieldValueByValue(listitem, taxValue); // this order of updates is important.
+                                                            listitem[hiddenField.InternalName] = string.Empty; // this order of updates is important.
+                                                        }
                                                         listitem.Update();
                                                         web.Context.Load(listitem);
                                                         web.Context.ExecuteQueryRetry();
