@@ -61,6 +61,19 @@ namespace Microsoft.SharePoint.Client
             return clientContext.Clone(new Uri(siteUrl));
         }
 
+#if !ONPREMISES
+        /// <summary>
+        /// Executes the current set of data retrieval queries and method invocations and retries it if needed using the Task Library.
+        /// </summary>
+        /// <param name="clientContext">clientContext to operate on</param>
+        /// <param name="retryCount">Number of times to retry the request</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
+        /// <param name="userAgent">UserAgent string value to insert for this request. You can define this value in your app's config file using key="SharePointPnPUserAgent" value="PnPRocks"></param>
+        public static async Task ExecuteQueryRetryAsync(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
+        {
+            await ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
+        }
+#endif
 
         /// <summary>
         /// Executes the current set of data retrieval queries and method invocations and retries it if needed.
@@ -71,10 +84,17 @@ namespace Microsoft.SharePoint.Client
         /// <param name="userAgent">UserAgent string value to insert for this request. You can define this value in your app's config file using key="SharePointPnPUserAgent" value="PnPRocks"></param>
         public static void ExecuteQueryRetry(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
         {
+#if !ONPREMISES
+            ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent).GetAwaiter().GetResult();
+#else
             ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
+#endif
         }
-
+#if !ONPREMISES
+        private static async Task ExecuteQueryImplementation(ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
+#else
         private static void ExecuteQueryImplementation(ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
+#endif
         {
             var clientTag = string.Empty;
             if (clientContext is PnPClientContext)
@@ -137,7 +157,11 @@ namespace Microsoft.SharePoint.Client
                     clientContext.ExecutingWebRequest += appDecorationHandler;
 
                     // DO NOT CHANGE THIS TO EXECUTEQUERYRETRY
+#if !ONPREMISES
+                    await clientContext.ExecuteQueryAsync();
+#else
                     clientContext.ExecuteQuery();
+#endif
 
                     // Remove the app decoration event handler after the executequery
                     clientContext.ExecutingWebRequest -= appDecorationHandler;
@@ -152,9 +176,12 @@ namespace Microsoft.SharePoint.Client
                     if (response != null && (response.StatusCode == (HttpStatusCode)429 || response.StatusCode == (HttpStatusCode)503))
                     {
                         Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, backoffInterval);
-
                         //Add delay for retry
+#if !ONPREMISES
+                        await Task.Delay(backoffInterval);
+#else
                         Thread.Sleep(backoffInterval);
+#endif
 
                         //Add to retry count and increase delay.
                         retryAttempts++;
