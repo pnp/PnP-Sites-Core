@@ -1614,8 +1614,6 @@ namespace Microsoft.SharePoint.Client
             {
                 taxField.SetFieldValueByLabelGuidPair(item, $"{label}|{termGuid.ToString()}");
             }
-            item.Update();
-            clientContext.ExecuteQueryRetry();
         }
 
         /// <summary>
@@ -1651,8 +1649,6 @@ namespace Microsoft.SharePoint.Client
                 }
 
                 taxField.SetFieldValueByLabelGuidPair(item, termValuesStringbuilder.ToString());
-                item.Update();
-                clientContext.ExecuteQueryRetry();
             }
             else
             {
@@ -1714,6 +1710,8 @@ namespace Microsoft.SharePoint.Client
                     item[hiddenField.InternalName] = string.Empty;
                 }
             }
+            item.Update();
+            item.Context.ExecuteQueryRetry();
         }
 
         private static void CleanupTaxonomyHiddenField(Web web, FieldCollection fields, TaxonomyFieldCreationInformation fieldCreationInformation)
