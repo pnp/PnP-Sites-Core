@@ -17,17 +17,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private DesignPackage _designPackage = null;
         private AvailableWebTemplateCollection _availableWebTemplates;
         private PageLayoutCollection _pageLayouts;
+        private ImageRenditionCollection _imageRenditions;
 
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for Publishing class
+        /// </summary>
         public Publishing()
         {
             this._availableWebTemplates = new AvailableWebTemplateCollection(this.ParentTemplate);
             this._pageLayouts = new PageLayoutCollection(this.ParentTemplate);
+            this._imageRenditions = new ImageRenditionCollection(this.ParentTemplate);
         }
 
+        /// <summary>
+        /// Constructor for Publishing class
+        /// </summary>
+        /// <param name="autoCheckRequirements">AutoCheckRequirementsOption object</param>
+        /// <param name="designPackage">Design Package for publishing</param>
+        /// <param name="availableWebTemplates">Available WebTemplates for publishing</param>
+        /// <param name="pageLayouts">PageLayouts for publishing</param>
         public Publishing(AutoCheckRequirementsOptions autoCheckRequirements, DesignPackage designPackage = null, IEnumerable<AvailableWebTemplate> availableWebTemplates = null, IEnumerable<PageLayout> pageLayouts = null) 
             : this()
         {
@@ -88,20 +99,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public AutoCheckRequirementsOptions AutoCheckRequirements { get; set; }
 
+        public ImageRenditionCollection ImageRenditions
+        {
+            get { return this._imageRenditions; }
+            private set { this._imageRenditions = value; }
+        }
+
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
                 this.AutoCheckRequirements.GetHashCode(),
                 this.AvailableWebTemplates.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 (this.DesignPackage != null ? this.DesignPackage.GetHashCode() : 0),
-                this.PageLayouts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.PageLayouts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.ImageRenditions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with Publishing
+        /// </summary>
+        /// <param name="obj">Object that represents Publishing</param>
+        /// <returns>true if the current object is equal to the Publishing</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is Publishing))
@@ -111,6 +137,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((Publishing)obj));
         }
 
+        /// <summary>
+        /// Compares Publishing object based on AutoCheckRequirements, AvailableWebTemplates, DesignPackage and PageLayout properties.
+        /// </summary>
+        /// <param name="other">Publishing object</param>
+        /// <returns>true if the Publishing object is equal to the current object; otherwise, false.</returns>
         public bool Equals(Publishing other)
         {
             if (other == null)
@@ -122,7 +153,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.AutoCheckRequirements == other.AutoCheckRequirements &&
                 this.AvailableWebTemplates.DeepEquals(other.AvailableWebTemplates) &&
                 this.DesignPackage == other.DesignPackage &&
-                this.PageLayouts.DeepEquals(other.PageLayouts)
+                this.PageLayouts.DeepEquals(other.PageLayouts) &&
+                this.ImageRenditions.DeepEquals(other.ImageRenditions)
                 );
         }
 

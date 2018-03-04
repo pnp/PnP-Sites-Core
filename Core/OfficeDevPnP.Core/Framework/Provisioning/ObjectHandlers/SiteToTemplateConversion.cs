@@ -85,14 +85,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Files)) objectHandlers.Add(new ObjectFiles());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Pages)) objectHandlers.Add(new ObjectPages());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.PageContents)) objectHandlers.Add(new ObjectPageContents());
+#if !ONPREMISES
+                if (creationInfo.HandlersToProcess.HasFlag(Handlers.PageContents)) objectHandlers.Add(new ObjectClientSidePageContents());
+#endif
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.PropertyBagEntries)) objectHandlers.Add(new ObjectPropertyBagEntry());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Publishing)) objectHandlers.Add(new ObjectPublishing());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Workflows)) objectHandlers.Add(new ObjectWorkflows());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Navigation)) objectHandlers.Add(new ObjectNavigation());
+                if (creationInfo.HandlersToProcess.HasFlag(Handlers.ImageRenditions)) objectHandlers.Add(new ObjectImageRenditions());
                 objectHandlers.Add(new ObjectLocalization()); // Always add this one, check is done in the handler
+#if !ONPREMISES
+                if (creationInfo.HandlersToProcess.HasFlag(Handlers.Tenant)) objectHandlers.Add(new ObjectTenant());
+                if (creationInfo.HandlersToProcess.HasFlag(Handlers.ApplicationLifecycleManagement)) objectHandlers.Add(new ObjectApplicationLifecycleManagement());
+#endif
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders)) objectHandlers.Add(new ObjectExtensibilityHandlers());
-                
+
                 objectHandlers.Add(new ObjectRetrieveTemplateInfo());
 
                 int step = 1;
@@ -121,11 +129,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
-
-                //if (creationInfo.PersistMultiLanguageResources)
-                //{
-                //    template = UserResourceExtensions.SaveResourceValues(template, creationInfo);
-                //}
 
                 return template;
             }
@@ -167,6 +170,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     provisioningInfo.HandlersToProcess = Handlers.All;
                 }
 
+                // Check if scope is present and if so, matches the current site. When scope was not set the returned value will be ProvisioningTemplateScope.Undefined
+                if (template.Scope == ProvisioningTemplateScope.RootSite)
+                {
+                    if (web.IsSubSite())
+                    {
+                        scope.LogError(CoreResources.SiteToTemplateConversion_ScopeOfTemplateDoesNotMatchTarget);
+                        throw new Exception(CoreResources.SiteToTemplateConversion_ScopeOfTemplateDoesNotMatchTarget);
+                    }
+                }
+                var currentCultureInfoValue = System.Threading.Thread.CurrentThread.CurrentCulture.LCID;
+                if (!string.IsNullOrEmpty(template.TemplateCultureInfo))
+                {
+                    int cultureInfoValue = System.Threading.Thread.CurrentThread.CurrentCulture.LCID;
+                    if (int.TryParse(template.TemplateCultureInfo, out cultureInfoValue))
+                    {
+                        System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(cultureInfoValue);
+                    }
+                    else
+                    {
+                        System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(template.TemplateCultureInfo);
+                    }
+                }
+
                 // Check if the target site shares the same base template with the template's source site
                 var targetSiteTemplateId = web.GetBaseTemplateId();
                 if (!String.IsNullOrEmpty(targetSiteTemplateId) && !String.IsNullOrEmpty(template.BaseSiteTemplate))
@@ -175,7 +201,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         var templatesNotMatchingWarning = String.Format(CoreResources.Provisioning_Asymmetric_Base_Templates, template.BaseSiteTemplate, targetSiteTemplateId);
                         scope.LogWarning(templatesNotMatchingWarning);
-                        if (provisioningInfo.MessagesDelegate!= null)
+                        if (provisioningInfo.MessagesDelegate != null)
                         {
                             provisioningInfo.MessagesDelegate(templatesNotMatchingWarning, ProvisioningMessageType.Warning);
                         }
@@ -185,6 +211,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Always ensure the Url property is loaded. In the tokens we need this and we don't want to call ExecuteQuery as this can 
                 // impact delta scenarions (calling ExecuteQuery before the planned update is called)
                 web.EnsureProperty(w => w.Url);
+
 
                 List<ObjectHandlerBase> objectHandlers = new List<ObjectHandlerBase>();
 
@@ -204,6 +231,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Files)) objectHandlers.Add(new ObjectFiles());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Pages)) objectHandlers.Add(new ObjectPages());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.PageContents)) objectHandlers.Add(new ObjectPageContents());
+#if !ONPREMISES
+                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Tenant)) objectHandlers.Add(new ObjectTenant());
+                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ApplicationLifecycleManagement)) objectHandlers.Add(new ObjectApplicationLifecycleManagement());
+                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Pages)) objectHandlers.Add(new ObjectClientSidePages());
+#endif
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.CustomActions)) objectHandlers.Add(new ObjectCustomActions());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Publishing)) objectHandlers.Add(new ObjectPublishing());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ComposedLook)) objectHandlers.Add(new ObjectComposedLook());
@@ -211,6 +243,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.PropertyBagEntries)) objectHandlers.Add(new ObjectPropertyBagEntry());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Navigation)) objectHandlers.Add(new ObjectNavigation());
+                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ImageRenditions)) objectHandlers.Add(new ObjectImageRenditions());
                 objectHandlers.Add(new ObjectLocalization()); // Always add this one, check is done in the handler
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders)) objectHandlers.Add(new ObjectExtensibilityHandlers());
 
@@ -230,11 +263,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 int step = 1;
 
-                var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(web, template));
+                var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(web, template, provisioningInfo));
+
+                // Remove potentially unsupported artifacts
+
+                var cleaner = new NoScriptTemplateCleaner(web);
+                if (messagesDelegate != null)
+                {
+                    cleaner.MessagesDelegate = messagesDelegate;
+                }
+                template = cleaner.CleanUpBeforeProvisioning(template);
 
                 foreach (var handler in objectHandlers)
                 {
-                    if (handler.WillProvision(web, template))
+                    if (handler.WillProvision(web, template, provisioningInfo))
                     {
                         if (messagesDelegate != null)
                         {
@@ -248,6 +290,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         tokenParser = handler.ProvisionObjects(web, template, tokenParser, provisioningInfo);
                     }
                 }
+
+                System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(currentCultureInfoValue);
+
             }
         }
     }

@@ -11,6 +11,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class ListInstanceCollection : ProvisioningTemplateCollection<ListInstance>
     {
+        /// <summary>
+        /// Constructor for ListInstanceCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public ListInstanceCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 

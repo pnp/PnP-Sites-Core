@@ -10,7 +10,7 @@ namespace Microsoft.SharePoint.Client
 {
 
     /// <summary>
-    /// Class that holds the deprecated branding methods
+    /// Class that deals with branding features
     /// </summary>
     public static partial class BrandingExtensions
     {

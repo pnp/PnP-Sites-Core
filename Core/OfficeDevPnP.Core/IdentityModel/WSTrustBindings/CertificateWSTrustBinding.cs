@@ -1,5 +1,5 @@
 /* Based on reflectored code coming from Microsoft.IdentityModel.Protocols.WSTrust.Bindings.UserNameWSTrustBinding class */
-
+#if !NETSTANDARD2_0
 using System;
 using System.Net;
 using System.ServiceModel;
@@ -7,16 +7,26 @@ using System.ServiceModel.Channels;
 
 namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
 {
+    /// <summary>
+    /// Class holds methods and properties for certificate trust binding
+    /// </summary>
     public class CertificateWSTrustBinding : WSTrustBinding
     {
         // Fields
         private HttpClientCredentialType _clientCredentialType;
 
         // Methods
+        /// <summary>
+        /// Deafult Constructor
+        /// </summary>
         public CertificateWSTrustBinding() : this(SecurityMode.Message, HttpClientCredentialType.None)
         {
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="securityMode"></param>
         public CertificateWSTrustBinding(SecurityMode securityMode) : base(securityMode)
         {
             if (SecurityMode.Message == securityMode)
@@ -25,6 +35,11 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
             }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="mode"></param>
+        /// <param name="clientCredentialType"></param>
         public CertificateWSTrustBinding(SecurityMode mode, HttpClientCredentialType clientCredentialType) : base(mode)
         {
             if (!IsHttpClientCredentialTypeDefined(clientCredentialType))
@@ -84,6 +99,9 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
         }
 
         // Properties
+        /// <summary>
+        /// Gets or sets Http client credential type
+        /// </summary>
         public HttpClientCredentialType ClientCredentialType
         {
             get
@@ -105,4 +123,4 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
         }
     }
 }
-
+#endif

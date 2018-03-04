@@ -11,6 +11,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class UserCollection : ProvisioningTemplateCollection<User>
     {
+        /// <summary>
+        /// Constructor for UserCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public UserCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 

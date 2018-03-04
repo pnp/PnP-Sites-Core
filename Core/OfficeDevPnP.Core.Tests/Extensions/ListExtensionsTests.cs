@@ -17,18 +17,29 @@ namespace Microsoft.SharePoint.Client.Tests
         private string _termSetName; // For easy reference. Set in the Initialize method
         private string _termName; // For easy reference. Set in the Initialize method
         private string _textFieldName; // For easy reference. Set in the Initialize method
+        private string _textFieldName2; // For easy reference. Set in the Initialize method
 
         private Guid _termGroupId;
         private Guid _termSetId;
         private Guid _termId;
         private Guid _textFieldId;
+        private Guid _textFieldId2;
 
         private Guid _listId; // For easy reference
+        private Guid webHookListId;
 
         #region Test initialize and cleanup
         [TestInitialize()]
         public void Initialize()
         {
+            // Let's do webhook testing for both app-only as credential flows
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var list = clientContext.Web.CreateList(ListTemplateType.DocumentLibrary, "Test_list_" + DateTime.Now.ToFileTime(), false);
+                list.EnsureProperty(p => p.Id);
+                webHookListId = list.Id;
+            }
+
             if (!TestCommon.AppOnlyTesting())
             {
                 /*** Make sure that the user defined in the App.config has permissions to Manage Terms ***/
@@ -39,6 +50,7 @@ namespace Microsoft.SharePoint.Client.Tests
                     _termSetName = "Test_Termset_" + DateTime.Now.ToFileTime();
                     _termName = "Test_Term_" + DateTime.Now.ToFileTime();
                     _textFieldName = "Test_Text_Field_" + DateTime.Now.ToFileTime();
+                    _textFieldName2 = "Test_Text_Field2_" + DateTime.Now.ToFileTime();
 
                     _termGroupId = Guid.NewGuid();
                     _termSetId = Guid.NewGuid();
@@ -63,6 +75,7 @@ namespace Microsoft.SharePoint.Client.Tests
                     // List
 
                     _textFieldId = Guid.NewGuid();
+                    _textFieldId2 = Guid.NewGuid();
 
                     var fieldCI = new FieldCreationInformation(FieldType.Text)
                     {
@@ -72,7 +85,16 @@ namespace Microsoft.SharePoint.Client.Tests
                         Group = "Test Group"
                     };
 
+                    var fieldCI2 = new FieldCreationInformation(FieldType.Text)
+                    {
+                        Id = _textFieldId2,
+                        InternalName = _textFieldName2,
+                        DisplayName = "Test Text Field 2",
+                        Group = "Test Group"
+                    };
+
                     var textfield = clientContext.Web.CreateField(fieldCI);
+                    var textfield2 = clientContext.Web.CreateField(fieldCI2);
 
                     var list = clientContext.Web.CreateList(ListTemplateType.DocumentLibrary, "Test_list_" + DateTime.Now.ToFileTime(), false);
 
@@ -80,6 +102,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
                     list.Fields.Add(field);
                     list.Fields.Add(textfield);
+                    list.Fields.Add(textfield2);
 
                     list.Update();
                     clientContext.Load(list);
@@ -93,6 +116,14 @@ namespace Microsoft.SharePoint.Client.Tests
         [TestCleanup]
         public void Cleanup()
         {
+            // Let's do webhook testing for both app-only as credential flows
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var list = clientContext.Web.Lists.GetById(webHookListId);
+                list.DeleteObject();
+                clientContext.ExecuteQueryRetry();
+            }
+
             if (!TestCommon.AppOnlyTesting())
             {
                 using (var clientContext = TestCommon.CreateClientContext())
@@ -240,7 +271,7 @@ namespace Microsoft.SharePoint.Client.Tests
                     false);
 
                 Assert.IsNotNull(list);
-                Assert.IsTrue(clientContext.Web.ListExists(new Uri(siteRelativePath,UriKind.Relative)));
+                Assert.IsTrue(clientContext.Web.ListExists(new Uri(siteRelativePath, UriKind.Relative)));
 
                 //Delete List
                 list.DeleteObject();
@@ -304,7 +335,257 @@ namespace Microsoft.SharePoint.Client.Tests
                 list.SetDefaultColumnValues(defaultValues);
             }
         }
+
+        [TestMethod()]
+        public void ClearOneDefaultColumnValuesTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                // arrange
+                List<IDefaultColumnValue> defaultValues = new List<IDefaultColumnValue>();
+
+                var testFooDefaultValue = new DefaultColumnTextValue();
+                testFooDefaultValue.Text = "Foo";
+                testFooDefaultValue.FieldInternalName = _textFieldName;
+                testFooDefaultValue.FolderRelativePath = "/"; // Root folder
+
+                var testBarDefaultValue = new DefaultColumnTextValue();
+                testBarDefaultValue.Text = "Bar";
+                testBarDefaultValue.FieldInternalName = _textFieldName2;
+                testBarDefaultValue.FolderRelativePath = "/"; // Root folder
+
+                defaultValues.Add(testFooDefaultValue);
+                defaultValues.Add(testBarDefaultValue);
+
+                var list = clientContext.Web.Lists.GetById(_listId);
+
+                list.SetDefaultColumnValues(defaultValues);
+                var result = list.GetDefaultColumnValues();
+                var itemToRemove = result.First(d => d["Field"] == _textFieldName);
+                result.Remove(itemToRemove);
+                var expected = result;
+
+                // act
+                list.ClearDefaultColumnValues(new List<IDefaultColumnValue> { testFooDefaultValue });
+                var actual = list.GetDefaultColumnValues();
+
+                // assert
+                CollectionAssert.AreEqual(actual[0], expected[0]);
+            }
+        }
+
+        [TestMethod()]
+        public void ClearAllDefaultColumnValuesTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                // arrange
+                List<IDefaultColumnValue> defaultValues = new List<IDefaultColumnValue>();
+
+                var testFooDefaultValue = new DefaultColumnTextValue();
+                testFooDefaultValue.Text = "Foo";
+                testFooDefaultValue.FieldInternalName = _textFieldName;
+                testFooDefaultValue.FolderRelativePath = "/"; // Root folder
+
+                var testBarDefaultValue = new DefaultColumnTextValue();
+                testBarDefaultValue.Text = "Bar";
+                testBarDefaultValue.FieldInternalName = _textFieldName2;
+                testBarDefaultValue.FolderRelativePath = "/"; // Root folder
+
+                defaultValues.Add(testFooDefaultValue);
+                defaultValues.Add(testBarDefaultValue);
+
+                var list = clientContext.Web.Lists.GetById(_listId);
+
+                list.SetDefaultColumnValues(defaultValues);
+
+                // act
+                list.ClearDefaultColumnValues();
+                var actual = list.GetDefaultColumnValues();
+
+                // assert
+                Assert.IsNull(actual);
+            }
+        }
+
+        [TestMethod()]
+        public void OverwriteDefaultColumnValuesTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                // arrange
+                List<IDefaultColumnValue> defaultValues = new List<IDefaultColumnValue>();
+
+                var testFooDefaultValue = new DefaultColumnTextValue();
+                testFooDefaultValue.Text = "Foo";
+                testFooDefaultValue.FieldInternalName = _textFieldName;
+                testFooDefaultValue.FolderRelativePath = "/"; // Root folder
+
+                var testBarDefaultValue = new DefaultColumnTextValue();
+                testBarDefaultValue.Text = "Bar";
+                testBarDefaultValue.FieldInternalName = _textFieldName2;
+                testBarDefaultValue.FolderRelativePath = "/"; // Root folder
+
+                defaultValues.Add(testFooDefaultValue);
+                defaultValues.Add(testBarDefaultValue);
+
+                var list = clientContext.Web.Lists.GetById(_listId);
+
+                list.SetDefaultColumnValues(defaultValues);
+                var result = list.GetDefaultColumnValues();
+                var itemToRemove = result.First(d => d["Field"] == _textFieldName);
+                result.Remove(itemToRemove);
+                var expected = result;
+
+                // act
+                list.SetDefaultColumnValues(new List<IDefaultColumnValue> { testBarDefaultValue }, true);
+                var actual = list.GetDefaultColumnValues();
+
+                // assert
+                CollectionAssert.AreEqual(actual[0], expected[0]);
+            }
+        }
         #endregion
+
+        #region Webhooks tests
+#if !ONPREMISES
+        [TestMethod]
+        public void AddWebhookTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
+                clientContext.Load(testList);
+                clientContext.ExecuteQueryRetry();
+
+                WebhookSubscription expectedSubscription = new WebhookSubscription()
+                {
+                    ExpirationDateTime = DateTime.Today.AddMonths(3),
+                    NotificationUrl = TestCommon.TestWebhookUrl,
+                    Resource = TestCommon.DevSiteUrl + string.Format("/_api/lists('{0}')", webHookListId)
+                };
+                WebhookSubscription actualSubscription = testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 3);
+
+                // Compare properties of expected and actual
+                Assert.IsTrue(Equals(expectedSubscription.ClientState, actualSubscription.ClientState) 
+                    && Equals(expectedSubscription.ExpirationDateTime.Date, actualSubscription.ExpirationDateTime.Date)
+                    && Equals(expectedSubscription.NotificationUrl, actualSubscription.NotificationUrl)
+                    && expectedSubscription.Resource.Contains(actualSubscription.Resource));
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void AddWebhookWithInvalidExpirationDateTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
+                clientContext.Load(testList);
+                clientContext.ExecuteQueryRetry();
+                
+                testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 12);
+            }
+        }
+
+        [TestMethod]
+        public void AddWebhookWithVeryLastValidExpirationDateTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
+                clientContext.Load(testList);
+                clientContext.ExecuteQueryRetry();
+                
+                DateTime veryLastValidExpiration = DateTime.UtcNow.AddDays(180);
+
+                WebhookSubscription expectedSubscription = new WebhookSubscription()
+                {
+                    ExpirationDateTime = veryLastValidExpiration,
+                    NotificationUrl = TestCommon.TestWebhookUrl,
+                    Resource = TestCommon.DevSiteUrl + string.Format("/_api/lists('{0}')", webHookListId)
+                };
+                WebhookSubscription actualSubscription = testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, veryLastValidExpiration);
+
+                // Compare properties of expected and actual
+                Assert.IsTrue(Equals(expectedSubscription.ClientState, actualSubscription.ClientState)
+                    && Equals(expectedSubscription.ExpirationDateTime.Date, actualSubscription.ExpirationDateTime.Date)
+                    && Equals(expectedSubscription.NotificationUrl, actualSubscription.NotificationUrl)
+                    && expectedSubscription.Resource.Contains(actualSubscription.Resource));
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException))]
+        public void AddWebhookWithBarelyInvalidExpirationDateTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
+                clientContext.Load(testList);
+                clientContext.ExecuteQueryRetry();
+
+                DateTime barelyInvalidExpiration = DateTime.UtcNow.AddDays(180).AddMinutes(1);
+
+                testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, barelyInvalidExpiration);
+            }
+        }
+
+        [TestMethod]
+        public void UpdateWebhookTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
+                clientContext.Load(testList);
+                clientContext.ExecuteQueryRetry();
+
+                WebhookSubscription actualSubscription = testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 3);
+
+                // Change the expiration time
+                actualSubscription.ExpirationDateTime = actualSubscription.ExpirationDateTime.AddDays(7);
+
+                bool result = testList.UpdateWebhookSubscription(actualSubscription);
+
+                Assert.IsTrue(result);
+            }
+        }
+
+        [TestMethod]
+        public void RemoveWebhookTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
+                clientContext.Load(testList);
+                clientContext.ExecuteQueryRetry();
+
+                WebhookSubscription actualSubscription = testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 3);
+
+                bool result = testList.RemoveWebhookSubscription(actualSubscription.Id);
+
+                Assert.IsTrue(result);
+            }
+        }
+
+        [TestMethod]
+        public void GetAllWebhookSubscriptionsTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
+                clientContext.Load(testList);
+                clientContext.ExecuteQueryRetry();
+
+                WebhookSubscription createdSubscription = testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 3);
+
+                IList<WebhookSubscription> actualSubscriptions = Task.Run(()=> testList.GetWebhookSubscriptionsAsync()).Result;
+
+                Assert.IsTrue(actualSubscriptions.Count > 0);
+            }
+        }
+#endif
+    #endregion
 
     }
 }

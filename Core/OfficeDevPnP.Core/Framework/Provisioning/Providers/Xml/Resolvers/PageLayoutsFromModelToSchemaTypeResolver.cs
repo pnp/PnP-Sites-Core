@@ -14,10 +14,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// </summary>
     internal class PageLayoutsFromModelToSchemaTypeResolver: ITypeResolver
     {
-        public string Name
-        {
-            get { return (this.GetType().Name); }
-        }
+        public string Name => this.GetType().Name;
+        public bool CustomCollectionResolver => false;
+
 
         public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {

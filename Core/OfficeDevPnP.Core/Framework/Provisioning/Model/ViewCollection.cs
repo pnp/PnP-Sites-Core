@@ -11,6 +11,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class ViewCollection : ProvisioningTemplateCollection<View>
     {
+        /// <summary>
+        /// Constructor for ViewCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public ViewCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 

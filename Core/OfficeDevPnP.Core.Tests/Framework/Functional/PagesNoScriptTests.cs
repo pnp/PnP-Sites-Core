@@ -48,6 +48,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             new PagesImplementation().SiteCollectionPages(centralSiteCollectionUrl);
         }
+
+        /// <summary>
+        /// Client side pages Test
+        /// </summary>
+        [TestMethod]
+        [Timeout(15 * 60 * 1000)]
+        public void SiteCollectionClientSidePagesTest()
+        {
+            new PagesImplementation().SiteCollectionClientSidePages(centralSiteCollectionUrl);
+        }
         #endregion
 
         #region Web test cases
@@ -59,6 +69,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public void WebPagesTest()
         {
             new PagesImplementation().WebPages(centralSubSiteUrl);
+        }
+
+        /// <summary>
+        /// Client side pages Test
+        /// </summary>
+        [TestMethod]
+        [Timeout(15 * 60 * 1000)]
+        public void WebClientSidePagesTest()
+        {
+            new PagesImplementation().WebClientSidePages(centralSubSiteUrl);
         }
         #endregion
     }

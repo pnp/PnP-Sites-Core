@@ -9,11 +9,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         #region Constructors
 
+        /// <summary>
+        /// Constructor for ComposedLook class
+        /// </summary>
         static ComposedLook()
         {
             Empty = new ComposedLook();
         }
 
+        /// <summary>
+        /// Constructor for ComposedLook class
+        /// </summary>
         public ComposedLook()
         {
         }
@@ -58,6 +64,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Comparison code
 
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}",
@@ -69,6 +79,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with ComposedLook
+        /// </summary>
+        /// <param name="obj">Object that represents ComposedLook</param>
+        /// <returns>true if the current object is equal to the ComposedLook</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ComposedLook))
@@ -78,6 +93,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((ComposedLook)obj));
         }
 
+        /// <summary>
+        /// Compares ComposedLook object based on BackgroundFile, ColorFile, FontFile, Name and Version.
+        /// </summary>
+        /// <param name="other">ComposedLook object</param>
+        /// <returns>true if the ComposedLook object is equal to the current object; otherwise, false.</returns>
         public bool Equals(ComposedLook other)
         {
             if (other == null)

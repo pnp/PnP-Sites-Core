@@ -60,15 +60,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
+        /// <summary>
+        /// Declares whether the tree view has to be enabled at the site level or not, optional attribute.
+        /// </summary>
+        public Boolean EnableTreeView { get; set; }
+
+        /// <summary>
+        /// Declares whether the New Page ribbon command will automatically create a navigation item for the newly created page, optional attribute.
+        /// </summary>
+        public Boolean AddNewPagesToNavigation { get; set; }
+
+        /// <summary>
+        /// Declares whether the New Page ribbon command will automatically create a friendly URL for the newly created page, optional attribute.
+        /// </summary>
+        public Boolean CreateFriendlyUrlsForNewPages { get; set; }
+
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for Navigation class
+        /// </summary>
         public Navigation()
         {
 
         }
 
+        /// <summary>
+        /// Constructor for Navigation class
+        /// </summary>
+        /// <param name="globalNavigation">GlobalNavigation object</param>
+        /// <param name="currentNavigation">CurrentNavigation object</param>
         public Navigation(GlobalNavigation globalNavigation = null, CurrentNavigation currentNavigation = null)
         {
             this.GlobalNavigation = globalNavigation;
@@ -78,15 +100,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
                 (this.GlobalNavigation != null ? this.GlobalNavigation.GetHashCode() : 0),
-                (this.CurrentNavigation != null ? this.CurrentNavigation.GetHashCode() : 0)
+                (this.CurrentNavigation != null ? this.CurrentNavigation.GetHashCode() : 0),
+                this.EnableTreeView.GetHashCode(),
+                this.AddNewPagesToNavigation.GetHashCode(),
+                this.CreateFriendlyUrlsForNewPages.GetHashCode()
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with Navigation
+        /// </summary>
+        /// <param name="obj">Object that represents Navigation</param>
+        /// <returns>true if the current object is equal to the Navigation</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is Navigation))
@@ -96,6 +129,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((Navigation)obj));
         }
 
+        /// <summary>
+        /// Compares Navigation object based on GlobalNavigation and CurrentNavigation properties.
+        /// </summary>
+        /// <param name="other">Navigation object</param>
+        /// <returns>true if the Navigation object is equal to the current object; otherwise, false.</returns>
         public bool Equals(Navigation other)
         {
             if (other == null)
@@ -103,9 +141,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return (false);
             }
 
-            return (this.GlobalNavigation == other.GlobalNavigation &&
-                this.CurrentNavigation == other.CurrentNavigation
-                );
+            return (this.GlobalNavigation.Equals(other.GlobalNavigation) &&
+                    this.CurrentNavigation.Equals(other.CurrentNavigation) &&
+                    this.EnableTreeView == other.EnableTreeView &&
+                    this.AddNewPagesToNavigation == other.AddNewPagesToNavigation &&
+                    this.CreateFriendlyUrlsForNewPages == other.CreateFriendlyUrlsForNewPages
+                    );
         }
 
         #endregion

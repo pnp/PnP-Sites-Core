@@ -9,6 +9,8 @@ using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using System.IO;
 using OfficeDevPnP.Core.Utilities;
+using System.Text.RegularExpressions;
+using System.Web;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -35,6 +37,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.SiteLogoUrl,
                     w => w.RootFolder,
                     w => w.AlternateCssUrl,
+                    w => w.ServerRelativeUrl,
                     w => w.Url);
 
                 var webSettings = new WebSettings();
@@ -47,11 +50,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 //webSettings.Description = Tokenize(web.Description, web.Url);
                 webSettings.MasterPageUrl = Tokenize(web.MasterUrl, web.Url);
                 webSettings.CustomMasterPageUrl = Tokenize(web.CustomMasterUrl, web.Url);
-                webSettings.SiteLogo = Tokenize(web.SiteLogoUrl, web.Url);
+                webSettings.SiteLogo = TokenizeHost(web, Tokenize(web.SiteLogoUrl, web.Url));
                 // Notice. No tokenization needed for the welcome page, it's always relative for the site
                 webSettings.WelcomePage = web.RootFolder.WelcomePage;
                 webSettings.AlternateCSS = Tokenize(web.AlternateCssUrl, web.Url);
-                template.WebSettings = webSettings;
 
                 if (creationInfo.PersistBrandingFiles)
                 {
@@ -78,11 +80,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                     }
-                    if (!string.IsNullOrEmpty(web.SiteLogoUrl))
+                    // Extract site logo if property has been set and it's not dynamic image from _api URL
+                    if (!string.IsNullOrEmpty(web.SiteLogoUrl) && (!web.SiteLogoUrl.ToLowerInvariant().Contains("_api/")))
                     {
-                        if (PersistFile(web, creationInfo, scope, web.SiteLogoUrl))
+                        // Convert to server relative URL if needed (web.SiteLogoUrl can be set to FQDN url of a file hosted in the site (e.g. for communication sites))
+                        Uri webUri = new Uri(web.Url);
+                        string webUrl = $"{webUri.Scheme}://{webUri.DnsSafeHost}";
+                        string siteLogoServerRelativeUrl = web.SiteLogoUrl.Replace(webUrl, "");
+
+                        if (PersistFile(web, creationInfo, scope, siteLogoServerRelativeUrl))
                         {
-                            template.Files.Add(GetTemplateFile(web, web.SiteLogoUrl));
+                            template.Files.Add(GetTemplateFile(web, siteLogoServerRelativeUrl));
                         }
                     }
                     if (!string.IsNullOrEmpty(web.AlternateCssUrl))
@@ -92,11 +100,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             template.Files.Add(GetTemplateFile(web, web.AlternateCssUrl));
                         }
                     }
+                    var files = template.Files.Distinct().ToList();
+                    template.Files.Clear();
+                    template.Files.AddRange(files);
                 }
 
-                var files = template.Files.Distinct().ToList();
-                template.Files.Clear();
-                template.Files.AddRange(files);
+                if (!creationInfo.PersistBrandingFiles)
+                {
+                    if (creationInfo.BaseTemplate != null)
+                    {
+                        if (!webSettings.Equals(creationInfo.BaseTemplate.WebSettings))
+                        {
+                            template.WebSettings = webSettings;
+                        }
+                    }
+                    else
+                    {
+                        template.WebSettings = webSettings;
+                    }
+                }
+                else
+                {
+                    template.WebSettings = webSettings;
+                }
             }
             return template;
         }
@@ -113,10 +139,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
             var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
 
+            // store as site relative path
+            folderPath = folderPath.Replace(web.ServerRelativeUrl, "").Trim('/');
             var templateFile = new Model.File()
             {
                 Folder = Tokenize(folderPath, web.Url),
-                Src = fileName,
+                Src = !string.IsNullOrEmpty(folderPath) ? $"{folderPath}/{fileName}" : fileName,
                 Overwrite = true,
             };
 
@@ -153,11 +181,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         ClientResult<Stream> stream = file.OpenBinaryStream();
                         web.Context.ExecuteQueryRetry();
 
+                        var baseUri = new Uri(web.Url);
+                        var fullUri = new Uri(baseUri, file.ServerRelativeUrl);
+                        var folderPath = HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
+                        
+                        // Configure the filename to use 
+                        fileName = HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
+                        
+                        // Build up a site relative container url...might end up empty as well
+                        String container = HttpUtility.UrlDecode(folderPath.Replace(web.ServerRelativeUrl, "")).Trim('/').Replace("/", "\\");
+
                         using (Stream memStream = new MemoryStream())
                         {
                             CopyStream(stream.Value, memStream);
                             memStream.Position = 0;
-                            creationInfo.FileConnector.SaveFileStream(fileName, memStream);
+                            if (!string.IsNullOrEmpty(container))
+                            {
+                                creationInfo.FileConnector.SaveFileStream(fileName, container, memStream);
+                            }
+                            else
+                            {
+                                creationInfo.FileConnector.SaveFileStream(fileName, memStream);
+                            }
                         }
                         success = true;
                     }
@@ -186,6 +231,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return success;
         }
+
+        private string TokenizeHost(Web web, string json)
+        {
+            // HostUrl token replacement
+            var uri = new Uri(web.Url);
+            json = Regex.Replace(json, $"{uri.Scheme}://{uri.DnsSafeHost}:{uri.Port}", "{hosturl}", RegexOptions.IgnoreCase);
+            json = Regex.Replace(json, $"{uri.Scheme}://{uri.DnsSafeHost}", "{hosturl}", RegexOptions.IgnoreCase);
+            return json;
+        }
+
 
         private void CopyStream(Stream source, Stream destination)
         {
@@ -297,7 +352,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return true;
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             return template.WebSettings != null;
         }

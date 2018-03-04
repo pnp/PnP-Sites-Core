@@ -10,6 +10,10 @@ using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using System.IO;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using System.Xml.Linq;
+using System.Xml.XPath;
+using System.Xml;
+using System.Text;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -451,6 +455,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 documentSetTemplate.Update(true);
                 web.Context.ExecuteQueryRetry();
             }
+            else if (templateContentType.Id.StartsWith(BuiltInContentTypeId.Workflow2013Task + "00"))
+            {
+                // If the Workflow Task (SP2013) contains more than one outcomeChoice, the Form UI will not show
+                // the buttons associated each to choices, but fallback to classic Save and Cancel buttons.
+                // +"00" is used to target only inherited content types and not alter OOB
+                var outcomeFields = web.Context.LoadQuery(
+                    createdCT.Fields.Where(f => f.TypeAsString == "OutcomeChoice"));
+                web.Context.ExecuteQueryRetry();
+
+                if (outcomeFields.Count() > 1)
+                {
+                    // 2 OutcomeChoice specified means the user has certainly push its own.
+                    // Let's remove the default outcome field
+                    var field = outcomeFields.FirstOrDefault(f => f.StaticName == "TaskOutcome");
+                    if (field != null)
+                    {
+                        var fl = createdCT.FieldLinks.GetById(field.Id);
+                        fl.DeleteObject();
+                        createdCT.Update(true);
+                        web.Context.ExecuteQueryRetry();
+                    }
+                }
+            }
 
             web.Context.Load(createdCT);
             web.Context.ExecuteQueryRetry();
@@ -476,7 +503,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private IEnumerable<ContentType> GetEntities(Web web, PnPMonitoredScope scope, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
             var cts = web.ContentTypes;
-            web.Context.Load(cts, ctCollection => ctCollection.IncludeWithDefaultProperties(ct => ct.FieldLinks));
+            web.Context.Load(cts, ctCollection => ctCollection.IncludeWithDefaultProperties(ct => ct.FieldLinks, ct=>ct.SchemaXmlWithResourceTokens));
             web.Context.ExecuteQueryRetry();
 
             if (cts.Count > 0 && web.IsSubSite())
@@ -493,6 +520,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (!BuiltInContentTypeId.Contains(ct.StringId) && 
                     (creationInfo.ContentTypeGroupsToInclude.Count == 0 || creationInfo.ContentTypeGroupsToInclude.Contains(ct.Group)))
                 {
+
+                    // Exclude the content type if it's from syndication, and if the flag is not set
+                    if(!creationInfo.IncludeContentTypesFromSyndication && IsContentTypeFromSyndication(ct))
+                    {
+                        scope.LogInfo($"Content type {ct.Name} excluded from export because it's a syndicated content type.");
+
+                        continue;
+                    }
+
                     string ctDocumentTemplate = null;
                     if (!string.IsNullOrEmpty(ct.DocumentTemplate))
                     {
@@ -596,6 +632,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return ctsToReturn;
         }
 
+        private static bool IsContentTypeFromSyndication(Microsoft.SharePoint.Client.ContentType ct)
+        {
+            if (ct == null) throw new ArgumentNullException(nameof(ct));
+
+            var schema = XElement.Parse(ct.SchemaXmlWithResourceTokens);
+            var xmlNsMgr = new XmlNamespaceManager(new NameTable());
+            xmlNsMgr.AddNamespace("cts", "Microsoft.SharePoint.Taxonomy.ContentTypeSync");
+            var contentTypeSyncB64 = schema.XPathSelectElement("/XmlDocuments/XmlDocument[@NamespaceURI='Microsoft.SharePoint.Taxonomy.ContentTypeSync']", xmlNsMgr)?.Value;
+
+            if (contentTypeSyncB64 == null) return false;
+
+            var contentTypeSyncString = Encoding.UTF8.GetString(Convert.FromBase64String(contentTypeSyncB64));
+
+            var contentTypeXml = XElement.Parse(contentTypeSyncString);
+
+            // If id is different, that means the ContentTypeSync document is inherited from its parent.
+            // That means this content type is not syndicated
+            return (string)contentTypeXml.Attribute("ContentTypeId") == ct.Id.StringValue;
+        }
+
+
         private ProvisioningTemplate CleanupEntities(ProvisioningTemplate template, ProvisioningTemplate baseTemplate, PnPMonitoredScope scope)
         {
             foreach (var ct in baseTemplate.ContentTypes)
@@ -615,7 +672,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             if (!_willProvision.HasValue)
             {

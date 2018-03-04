@@ -11,6 +11,11 @@ namespace OfficeDevPnP.Core.Utilities.WebParts
     /// </summary>
     public class WebPartPostProcessorFactory
     {
+        /// <summary>
+        /// Resolves webpart by parsing web part schema xml
+        /// </summary>
+        /// <param name="wpXml">WebPart schema xml</param>
+        /// <returns>Returns PassThroughProcessor object</returns>
         public static IWebPartPostProcessor Resolve(string wpXml)
         {
             //don't care about web parts with old schema version (v2)

@@ -30,8 +30,8 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Returns cookie contents as a string
         /// </summary>
-        /// <param name="url"></param>
-        /// <returns></returns>
+        /// <param name="url">Url to get cookie</param>
+        /// <returns>Returns Cookie contents as a string</returns>
         public static string GetCookie(string url)
         {
 

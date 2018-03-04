@@ -21,12 +21,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for GlobalNavigation class
+        /// </summary>
         public GlobalNavigation()
         {
 
         }
 
+        /// <summary>
+        /// Constructor for GlobalNavigation class
+        /// </summary>
+        /// <param name="navigationType">Global Navigation Type</param>
+        /// <param name="structuralNavigation">StructuralNavigation object</param>
+        /// <param name="managedNavigation">ManagedNavigation object</param>
         public GlobalNavigation(GlobalNavigationType navigationType, StructuralNavigation structuralNavigation = null, ManagedNavigation managedNavigation = null):
             base(structuralNavigation, managedNavigation)
         {
@@ -36,7 +44,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}",
@@ -45,6 +56,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with GlobalNavigation
+        /// </summary>
+        /// <param name="obj">Object that represents GlobalNavigation</param>
+        /// <returns>true if the current object is equal to the GlobalNavigation</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is GlobalNavigation))
@@ -54,6 +70,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((GlobalNavigation)obj));
         }
 
+        /// <summary>
+        /// Compares GlobalNavigation object based on BaseNavigationKind object and NavigationType property.
+        /// </summary>
+        /// <param name="other">GlobalNavigation object</param>
+        /// <returns>true if the GlobalNavigation object is equal to the current object; otherwise, false.</returns>
         public bool Equals(GlobalNavigation other)
         {
             if (other == null)
@@ -61,7 +82,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return (false);
             }
 
-            return ((BaseNavigationKind)this == (BaseNavigationKind)other &&
+            return (((BaseNavigationKind)this).Equals((BaseNavigationKind)other) &&
                 this.NavigationType == other.NavigationType
                 );
         }

@@ -21,31 +21,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 
             var groups = context.LoadQuery(context.Web.SiteGroups.Include(g => g.LoginName));
             var webRoleDefinitions = context.LoadQuery(context.Web.RoleDefinitions);
+            var securableRoleAssignments = context.LoadQuery(securable.RoleAssignments);
 
             context.ExecuteQueryRetry();
-
             securable.BreakRoleInheritance(security.CopyRoleAssignments, security.ClearSubscopes);
 
             foreach (var roleAssignment in security.RoleAssignments)
             {
-                var roleAssignmentPrincipal = parser.ParseString(roleAssignment.Principal);
-                Principal principal = groups.FirstOrDefault(g => g.LoginName == roleAssignmentPrincipal);
-                if (principal == null)
+                if (!roleAssignment.Remove)
                 {
-                    principal = context.Web.EnsureUser(roleAssignmentPrincipal);
-                }
-
-                if (principal != null)
-                {
-                    var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(context);
-
-                    var roleAssignmentRoleDefinition = parser.ParseString(roleAssignment.RoleDefinition);
-                    var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == roleAssignmentRoleDefinition);
-
-                    if (roleDefinition != null)
+                    var roleAssignmentPrincipal = parser.ParseString(roleAssignment.Principal);
+                    Principal principal = groups.FirstOrDefault(g => g.LoginName == roleAssignmentPrincipal);
+                    if (principal == null)
                     {
-                        roleDefinitionBindingCollection.Add(roleDefinition);
-                        securable.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
+                        principal = context.Web.EnsureUser(roleAssignmentPrincipal);
+                    }
+
+                    if (principal != null)
+                    {
+                        var roleDefinitionBindingCollection = new RoleDefinitionBindingCollection(context);
+
+                        var roleAssignmentRoleDefinition = parser.ParseString(roleAssignment.RoleDefinition);
+                        var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == roleAssignmentRoleDefinition);
+
+                        if (roleDefinition != null)
+                        {
+                            roleDefinitionBindingCollection.Add(roleDefinition);
+                            securable.RoleAssignments.Add(principal, roleDefinitionBindingCollection);
+                        }
+                    }
+                } else
+                {
+                    var roleAssignmentPrincipal = parser.ParseString(roleAssignment.Principal);
+                    Principal principal = groups.FirstOrDefault(g => g.LoginName == roleAssignmentPrincipal);
+                    if (principal == null)
+                    {
+                        principal = context.Web.EnsureUser(roleAssignmentPrincipal);
+                    }
+                    principal.EnsureProperty(p => p.Id);
+
+                    if (principal != null)
+                    {
+                        var assignmentsForPrincipal = securableRoleAssignments.Where(t => t.PrincipalId == principal.Id);
+                        foreach (var assignmentForPrincipal in assignmentsForPrincipal)
+                        {
+                            var roleAssignmentRoleDefinition = parser.ParseString(roleAssignment.RoleDefinition);
+                            var binding = assignmentForPrincipal.EnsureProperty(r => r.RoleDefinitionBindings).FirstOrDefault(b => b.Name == roleAssignmentRoleDefinition);
+                            if (binding != null)
+                            {
+                                assignmentForPrincipal.DeleteObject();
+                                context.ExecuteQueryRetry();
+                                break;
+                            }
+                        }
                     }
                 }
             }

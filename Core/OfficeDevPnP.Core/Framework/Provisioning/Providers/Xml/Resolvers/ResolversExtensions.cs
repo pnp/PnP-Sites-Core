@@ -46,6 +46,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
         /// </summary>
         /// <param name="source">The source object</param>
         /// <param name="propertyName">The property name, case insensitive</param>
+        /// <param name="value">The value to set</param>
         public static void SetPublicInstancePropertyValue(this Object source, String propertyName, object value)
         {
             source?.GetType()?.GetProperty(propertyName,

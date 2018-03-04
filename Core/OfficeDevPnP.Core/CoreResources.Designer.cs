@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class CoreResources {
@@ -337,6 +337,15 @@ namespace OfficeDevPnP.Core {
         internal static string FieldAndContentTypeExtensions_ContentType01AlreadyExists {
             get {
                 return ResourceManager.GetString("FieldAndContentTypeExtensions_ContentType01AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Content Type with ID {0} does not exist in the list {1}.
+        /// </summary>
+        internal static string FieldAndContentTypeExtensions_ContentTypeMissing {
+            get {
+                return ResourceManager.GetString("FieldAndContentTypeExtensions_ContentTypeMissing", resourceCulture);
             }
         }
         
@@ -1020,6 +1029,51 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to This page is an uncustomized, default home page, so no need to extract it..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePageContents_DefaultHomePage {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePageContents_DefaultHomePage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error during automatic client side page connected file export: {0}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePageContents_ErrorDuringFileExport {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePageContents_ErrorDuringFileExport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This page is not a valid client side page and can&apos;t be extracted. Underlying error = {0}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePageContents_NoValidPage {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePageContents_NoValidPage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find the control with either ID = {0} or Name = {1} to install. Did you install your client side web part to this site?.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePages_BaseControlNotFound {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePages_BaseControlNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Page with name {0} did already exist and the overwrite flag was not set, so nothing happended.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePages_NoOverWrite {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePages_NoOverWrite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Downloading asset: {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ComposedLooks_DownLoadFile_Downloading_asset___0_ {
@@ -1380,6 +1434,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Updating field {0} received a timeout when pushing changes to lists.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Fields_Updating_field__0__timeout {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Fields_Updating_field__0__timeout", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adding webpart &apos;{0}&apos; to page.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_Files_Adding_webpart___0___to_page {
@@ -1572,11 +1635,30 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ListInstance {0} is a Style Library of a site with NoScript enabled and will be skipped.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_List__0__is_Style_Library_of_NoScript_will_Skip {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_List__0__is_Style_Library_of_NoScript_w" +
+                        "ill_Skip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Skip adding/updating custom actions because the site has &quot;noscript&quot; enabled..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Webhook {0} has been expired and will be skipped during creation/update of list {1}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook", resourceCulture);
             }
         }
         
@@ -1613,6 +1695,15 @@ namespace OfficeDevPnP.Core {
         internal static string Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_ {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error during webhook add/update: {0}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_Webhook_Error {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_Webhook_Error", resourceCulture);
             }
         }
         
@@ -2130,6 +2221,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Scope of template does not match target.
+        /// </summary>
+        internal static string SiteToTemplateConversion_ScopeOfTemplateDoesNotMatchTarget {
+            get {
+                return ResourceManager.GetString("SiteToTemplateConversion_ScopeOfTemplateDoesNotMatchTarget", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to /**
         /// * PnP SharePoint - Responsiveness
         /// * @see {@link https://github.com/SharePoint/PnP-Guidance/blob/master/articles/Embedding-JavaScript-into-SharePoint.md|PnP Guidance}
@@ -2480,6 +2580,15 @@ namespace OfficeDevPnP.Core {
         internal static string TimerJob_DoWork_Done {
             get {
                 return ResourceManager.GetString("TimerJob_DoWork_Done", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to obtain a ClientContext instance: {0}..
+        /// </summary>
+        internal static string TimerJob_DoWork_NoClientContext {
+            get {
+                return ResourceManager.GetString("TimerJob_DoWork_NoClientContext", resourceCulture);
             }
         }
         

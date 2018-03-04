@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="OfficeDevPnP.Core.Pages.ClientSidePage">
+    <Position X="13" Y="0.5" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AhECgMBAQgANQEwGRkIIiQAgISkkSCMZAEEgUAAQEWA=</HashCode>
+      <FileName>Pages\ClientSidePageCanvas.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeDevPnP.Core.Pages.CanvasSection">
+    <Position X="18.25" Y="0.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAASAAAAEAAAAAAAAAAAAAAACQAgACgAAAA=</HashCode>
+      <FileName>Pages\ClientSidePageCanvas.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeDevPnP.Core.Pages.CanvasColumn">
+    <Position X="16" Y="0.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>gAMAAAAABAEAAAAAACAAAAAABAAAQAAAAAAgAIAAAAA=</HashCode>
+      <FileName>Pages\ClientSidePageCanvas.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeDevPnP.Core.Pages.AvailableClientSideComponents">
+    <Position X="18.5" Y="4.25" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAA=</HashCode>
+      <FileName>Pages\ClientSidePageCanvas.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeDevPnP.Core.Pages.ClientSideComponent">
+    <Position X="16" Y="7.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAEAAAQAAAAAAAAAAUAAAAAAAAAAAAAAAACAAA=</HashCode>
+      <FileName>Pages\ClientSidePageCanvas.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeDevPnP.Core.Pages.CanvasControl">
+    <Position X="4.5" Y="0.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>gAMBAQQBAYEEAAAAACBAAAAAQAkAQAEIAQBAQIAAQAA=</HashCode>
+      <FileName>Pages\ClientSidePageControls.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeDevPnP.Core.Pages.ClientSideText">
+    <Position X="7.25" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAAAAgAAAAIAAAACEAAAABAAAQAASAAAAAA=</HashCode>
+      <FileName>Pages\ClientSidePageControls.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeDevPnP.Core.Pages.ClientSideWebPart">
+    <Position X="9.75" Y="0.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAMAAiQAQAEgB0ABJAYAAAQAAAAAAAAAQQAAQQQCQEI=</HashCode>
+      <FileName>Pages\ClientSidePageControls.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeDevPnP.Core.Pages.ClientSideCanvasData">
+    <Position X="0.75" Y="0.75" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Pages\ClientSidePagesControlData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeDevPnP.Core.Pages.ClientSideTextControlData">
+    <Position X="0.75" Y="3.75" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAA=</HashCode>
+      <FileName>Pages\ClientSidePagesControlData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeDevPnP.Core.Pages.ClientSideWebPartControlData">
+    <Position X="0.75" Y="2" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Pages\ClientSidePagesControlData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="OfficeDevPnP.Core.Pages.ClientSideWebPartData">
+    <Position X="16" Y="5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAACAAAAAAEgAEAAAAAAAAAAAAAAAAAAAAAAAAACQAA=</HashCode>
+      <FileName>Pages\ClientSidePagesControlData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Enum Name="OfficeDevPnP.Core.Pages.DefaultClientSideWebParts" Collapsed="true">
+    <Position X="18.5" Y="7" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAEAAAAgIIIAAQBAEAAAAIAgAwAAJBQABIgAAAAAAAI=</HashCode>
+      <FileName>Pages\ClientSidePageCanvas.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Enum Name="OfficeDevPnP.Core.Pages.CanvasSectionTemplate">
+    <Position X="18.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAGAAQAAAAAEAIAAAAAAAAAAAAAAAAAAAAAAAAAACAA=</HashCode>
+      <FileName>Pages\ClientSidePageCanvas.cs</FileName>
+    </TypeIdentifier>
+  </Enum>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

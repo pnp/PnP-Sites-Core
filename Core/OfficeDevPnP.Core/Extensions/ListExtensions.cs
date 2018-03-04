@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
@@ -14,6 +15,11 @@ using Microsoft.SharePoint.Client.WebParts;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+
+#if !ONPREMISES
+using OfficeDevPnP.Core.Utilities.Webhooks;
+#endif
 
 namespace Microsoft.SharePoint.Client
 {
@@ -93,8 +99,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns an event receiver definition
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="id"></param>
+        /// <param name="list">The target list</param>
+        /// <param name="id">Id of the event receiver</param>
         /// <returns></returns>
         public static EventReceiverDefinition GetEventReceiverById(this List list, Guid id)
         {
@@ -117,7 +123,7 @@ namespace Microsoft.SharePoint.Client
         /// Returns an event receiver definition
         /// </summary>
         /// <param name="list">The list to process</param>
-        /// <param name="name"></param>
+        /// <param name="name">Name of the event receiver</param>
         /// <returns></returns>
         public static EventReceiverDefinition GetEventReceiverByName(this List list, string name)
         {
@@ -136,6 +142,238 @@ namespace Microsoft.SharePoint.Client
             return null;
         }
 
+        #endregion
+
+        #region Webhooks
+#if !ONPREMISES
+        /// <summary>
+        /// Add the a Webhook subscription to a list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to add a Webhook subscription to</param>
+        /// <param name="notificationUrl">The Webhook endpoint URL</param>
+        /// <param name="expirationDate">The expiration date of the subscription</param>
+        /// <param name="clientState">The client state to use in the Webhook subscription</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns>The added subscription object</returns>
+        public static WebhookSubscription AddWebhookSubscription(this List list, string notificationUrl, DateTime expirationDate, string clientState = null, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ?? list.Context.GetAccessToken();
+
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                return WebhookUtility.AddWebhookSubscriptionAsync(list.Context.Url,
+                               WebHookResourceType.List, accessToken, list.Context as ClientContext, new WebhookSubscription()
+                               {
+                                   Resource = listId.ToString(),
+                                   ExpirationDateTime = expirationDate,
+                                   NotificationUrl = notificationUrl,
+                                   ClientState = clientState
+                               }).Result;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
+        }
+
+        /// <summary>
+        /// Add the a Webhook subscription to a list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to add a Webhook subscription to</param>
+        /// <param name="notificationUrl">The Webhook endpoint URL</param>
+        /// <param name="validityInMonths">The validity of the subscriptions in months</param>
+        /// <param name="clientState">The client state to use in the Webhook subscription</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns>The added subscription object</returns>
+        public static WebhookSubscription AddWebhookSubscription(this List list, string notificationUrl, int validityInMonths = 6, string clientState = null, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ?? list.Context.GetAccessToken();
+
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                return WebhookUtility.AddWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, accessToken, list.Context as ClientContext, listId.ToString(), notificationUrl, clientState, validityInMonths).Result;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
+        }
+
+        /// <summary>
+        /// Updates a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscriptionId">The id of the subscription to remove</param>
+        /// <param name="webHookEndPoint">Url of the web hook service endpoint (the one that will be called during an event)</param>
+        /// <param name="expirationDateTime">New web hook expiration date</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        public static bool UpdateWebhookSubscription(this List list, string subscriptionId, string webHookEndPoint, DateTime expirationDateTime, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ?? list.Context.GetAccessToken();
+
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                return WebhookUtility.UpdateWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), subscriptionId, webHookEndPoint, expirationDateTime, accessToken, list.Context as ClientContext).Result;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
+        }
+
+        /// <summary>
+        /// Updates a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscriptionId">The id of the subscription to remove</param>
+        /// <param name="webHookEndPoint">Url of the web hook service endpoint (the one that will be called during an event)</param>
+        /// <param name="expirationDateTime">New web hook expiration date</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        public static bool UpdateWebhookSubscription(this List list, Guid subscriptionId, string webHookEndPoint, DateTime expirationDateTime, string accessToken = null)
+        {
+            return UpdateWebhookSubscription(list, subscriptionId.ToString(), webHookEndPoint, expirationDateTime, accessToken);
+        }
+
+        /// <summary>
+        /// Updates a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscription">The subscription to update</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        public static bool UpdateWebhookSubscription(this List list, WebhookSubscription subscription, string accessToken = null)
+        {
+            return UpdateWebhookSubscription(list, subscription.Id, subscription.NotificationUrl, subscription.ExpirationDateTime, accessToken);
+        }
+
+        /// <summary>
+        /// Remove a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscriptionId">The id of the subscription to remove</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        public static bool RemoveWebhookSubscription(this List list, string subscriptionId, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ?? list.Context.GetAccessToken();
+
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                return WebhookUtility.RemoveWebhookSubscriptionAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), subscriptionId, accessToken, list.Context as ClientContext).Result;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
+        }
+
+        /// <summary>
+        /// Remove a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscriptionId">The id of the subscription to remove</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        public static bool RemoveWebhookSubscription(this List list, Guid subscriptionId, string accessToken = null)
+        {
+            return RemoveWebhookSubscription(list, subscriptionId.ToString(), accessToken);
+        }
+
+        /// <summary>
+        /// Remove a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscription">The subscription to remove</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        public static bool RemoveWebhookSubscription(this List list, WebhookSubscription subscription, string accessToken = null)
+        {
+            return RemoveWebhookSubscription(list, subscription.Id, accessToken);
+        }
+
+        /// <summary>
+        /// Get all the existing Webhooks subscriptions of the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to get the subscriptions of</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns>The collection of Webhooks subscriptions of the list</returns>
+        public static IList<WebhookSubscription> GetWebhookSubscriptions(this List list, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ?? list.Context.GetAccessToken();
+
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                return WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), accessToken, list.Context as ClientContext).Result.Value;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
+        }
+
+        /// <summary>
+        /// Async get all the existing Webhooks subscriptions of the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to get the subscriptions of</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns>The collection of Webhooks subscriptions of the list</returns>
+        public static async Task<IList<WebhookSubscription>> GetWebhookSubscriptionsAsync(this List list, string accessToken = null)
+        {
+            // Get the access from the client context if not specified.
+            accessToken = accessToken ?? list.Context.GetAccessToken();
+
+            // Ensure the list Id is known
+            Guid listId = list.EnsureProperty(l => l.Id);
+
+            try
+            {
+                ResponseModel<WebhookSubscription> webHookSubscriptionResponse = await WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), accessToken, list.Context as ClientContext).ConfigureAwait(false);
+                return webHookSubscriptionResponse.Value;
+            }
+            catch (AggregateException ex)
+            {
+                // Rethrow the inner exception of the AggregateException thrown by the async method
+                throw ex.InnerException ?? ex;
+            }
+        }
+#endif
         #endregion
 
         #region List Properties
@@ -187,7 +425,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="list">List to read the property bag value from</param>
         /// <param name="key">Key of the property bag entry to return</param>
-        /// <param name="defaultValue"></param>
+        /// <param name="defaultValue">Default value of the property bag</param>
         /// <returns>Value of the property bag entry as integer</returns>
         public static int? GetPropertyBagValueInt(this List list, string key, int defaultValue)
         {
@@ -207,7 +445,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="list">List to read the property bag value from</param>
         /// <param name="key">Key of the property bag entry to return</param>
-        /// <param name="defaultValue"></param>
+        /// <param name="defaultValue">Default value of the property bag</param>
         /// <returns>Value of the property bag entry as string</returns>
         public static string GetPropertyBagValueString(this List list, string key, string defaultValue)
         {
@@ -303,7 +541,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="listName">Name of the library</param>
         /// <param name="enableVersioning">Enable versioning on the list</param>
-        /// <param name="urlPath"></param>
+        /// <param name="urlPath">Path of the url</param>
         /// <exception cref="System.ArgumentException">Thrown when listName is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">listName is null</exception>
         public static List CreateDocumentLibrary(this Web web, string listName, bool enableVersioning = false, string urlPath = "")
@@ -402,10 +640,11 @@ namespace Microsoft.SharePoint.Client
         /// <param name="updateAndExecuteQuery">(Optional) Perform list update and executequery, defaults to true</param>
         /// <param name="urlPath">(Optional) URL to use for the list</param>
         /// <param name="enableContentTypes">(Optional) Enable content type management</param>
+        /// <param name="hidden">(Optional) Hide the list from the SharePoint UI</param>
         /// <returns>The newly created list</returns>
-        public static List CreateList(this Web web, ListTemplateType listType, string listName, bool enableVersioning, bool updateAndExecuteQuery = true, string urlPath = "", bool enableContentTypes = false)
+        public static List CreateList(this Web web, ListTemplateType listType, string listName, bool enableVersioning, bool updateAndExecuteQuery = true, string urlPath = "", bool enableContentTypes = false, bool hidden = false)
         {
-            return CreateListInternal(web, null, (int)listType, listName, enableVersioning, updateAndExecuteQuery, urlPath, enableContentTypes);
+            return CreateListInternal(web, null, (int)listType, listName, enableVersioning, updateAndExecuteQuery, urlPath, enableContentTypes, hidden);
         }
 
         /// <summary>
@@ -425,7 +664,7 @@ namespace Microsoft.SharePoint.Client
             return CreateListInternal(web, featureId, listType, listName, enableVersioning, updateAndExecuteQuery, urlPath, enableContentTypes);
         }
 
-        private static List CreateListInternal(this Web web, Guid? templateFeatureId, int templateType, string listName, bool enableVersioning, bool updateAndExecuteQuery = true, string urlPath = "", bool enableContentTypes = false)
+        private static List CreateListInternal(this Web web, Guid? templateFeatureId, int templateType, string listName, bool enableVersioning, bool updateAndExecuteQuery = true, string urlPath = "", bool enableContentTypes = false, bool hidden = false)
         {
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.ListExtensions_CreateList0Template12, listName, templateType, templateFeatureId.HasValue ? " (feature " + templateFeatureId.Value.ToString() + ")" : "");
 
@@ -457,6 +696,10 @@ namespace Microsoft.SharePoint.Client
             if (enableContentTypes)
             {
                 newList.ContentTypesEnabled = true;
+            }
+            if (hidden)
+            {
+                newList.Hidden = true;
             }
             if (updateAndExecuteQuery)
             {
@@ -615,7 +858,7 @@ namespace Microsoft.SharePoint.Client
                 var wp = wpd.WebPart;
 
                 if (wp.Properties.FieldValues.Keys.Contains("JSLink"))
-                { 
+                {
                     wp.Properties["JSLink"] = jslink;
                     wpd.SaveWebPartChanges();
 
@@ -714,6 +957,42 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Get List by using Id
+        /// </summary>
+        /// <param name="web">The web containing the list</param>
+        /// <param name="listId">The Id of the list</param>
+        /// <param name="expressions">Additional list of lambda expressions of properties to load alike l => l.BaseType</param>
+        /// <returns>Loaded list instance matching specified Id</returns>
+        /// <exception cref="System.ArgumentException">Thrown when listId is an empty Guid</exception>
+        /// <exception cref="System.ArgumentNullException">listId is null</exception>
+        public static List GetListById(this Web web, Guid listId, params Expression<Func<List, object>>[] expressions)
+        {
+            var baseExpressions = new List<Expression<Func<List, object>>> { l => l.DefaultViewUrl, l => l.Id, l => l.BaseTemplate, l => l.OnQuickLaunch, l => l.DefaultViewUrl, l => l.Title, l => l.Hidden, l => l.RootFolder };
+
+            if (expressions != null && expressions.Any())
+            {
+                baseExpressions.AddRange(expressions);
+            }
+
+            if (listId == null)
+            {
+                throw new ArgumentNullException(nameof(listId));
+            }
+
+            if (listId == Guid.Empty)
+            {
+                throw new ArgumentException(nameof(listId));
+            }
+
+            var query = web.Lists.IncludeWithDefaultProperties(baseExpressions.ToArray());
+            var lists = web.Context.LoadQuery(query.Where(l => l.Id == listId));
+
+            web.Context.ExecuteQueryRetry();
+
+            return lists.FirstOrDefault();
+        }
+
+        /// <summary>
         /// Get list by using Title
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
@@ -737,7 +1016,7 @@ namespace Microsoft.SharePoint.Client
                     : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(listTitle));
             }
             var query = web.Lists.IncludeWithDefaultProperties(baseExpressions.ToArray());
-            var lists = web.Context.LoadQuery(query).Where(l => l.Title.Equals(listTitle, StringComparison.InvariantCultureIgnoreCase));
+            var lists = web.Context.LoadQuery(query.Where(l => l.Title == listTitle));
             web.Context.ExecuteQueryRetry();
             return lists.FirstOrDefault();
         }
@@ -748,7 +1027,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Web (site) to be processed</param>
         /// <param name="webRelativeUrl">Url of list relative to the web (site), e.g. lists/testlist</param>
         /// <param name="expressions">Additional list of lambda expressions of properties to load alike l => l.BaseType</param>
-        /// <returns></returns>
+        /// <returns>Returns list if found, null if no list is found.</returns>
         public static List GetListByUrl(this Web web, string webRelativeUrl, params Expression<Func<List, object>>[] expressions)
         {
             var baseExpressions = new List<Expression<Func<List, object>>> { l => l.DefaultViewUrl, l => l.Id, l => l.BaseTemplate, l => l.OnQuickLaunch, l => l.DefaultViewUrl, l => l.Title, l => l.Hidden, l => l.RootFolder };
@@ -803,7 +1082,7 @@ namespace Microsoft.SharePoint.Client
             var context = web.Context;
             int language = (int)web.EnsureProperty(w => w.Language);
 
-            var result = Utilities.Utility.GetLocalizedString(context, "$Resources:List_Pages_UrlName", "cmscore", language);
+            var result = Utilities.Utility.GetLocalizedString(context, "$Resources:List_Pages_UrlName", "osrvcore", language);
             context.ExecuteQueryRetry();
             string pagesLibraryName = new Regex(@"['´`]").Replace(result.Value, "");
 
@@ -876,9 +1155,13 @@ namespace Microsoft.SharePoint.Client
                     }
                 case BuiltInIdentity.EveryoneButExternalUsers:
                     {
+#if !NETSTANDARD2_0
                         string userIdentity = $"c:0-.f|rolemanager|spo-grid-all-users/{web.GetAuthenticationRealm()}";
                         permissionEntity = web.EnsureUser(userIdentity);
                         break;
+#else
+                        throw new Exception("Not Supported");
+#endif
                     }
             }
 
@@ -903,23 +1186,23 @@ namespace Microsoft.SharePoint.Client
 
             // Get role type
             var roleDefinition = web.RoleDefinitions.GetByType(roleType);
-            var rdbColl = new RoleDefinitionBindingCollection(web.Context) {roleDefinition};
+            var rdbColl = new RoleDefinitionBindingCollection(web.Context) { roleDefinition };
 
             // Set custom permission to the list
             list.RoleAssignments.Add(principal, rdbColl);
             list.Context.ExecuteQueryRetry();
         }
 
-        #endregion
+#endregion
 
-        #region List view
+#region List view
 
         /// <summary>
         /// Creates list views based on specific xml structure from file
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="listUrl"></param>
-        /// <param name="filePath"></param>
+        /// <param name="web">Web to process</param>
+        /// <param name="listUrl">List Url</param>
+        /// <param name="filePath">Path of the file</param>
         public static void CreateViewsFromXMLFile(this Web web, string listUrl, string filePath)
         {
             if (string.IsNullOrEmpty(listUrl))
@@ -936,9 +1219,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Creates views based on specific xml structure from string
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="listUrl"></param>
-        /// <param name="xmlString"></param>
+        /// <param name="web">Web to process</param>
+        /// <param name="listUrl">List Url</param>
+        /// <param name="xmlString">Path of the file</param>
         public static void CreateViewsFromXMLString(this Web web, string listUrl, string xmlString)
         {
             if (string.IsNullOrEmpty(listUrl))
@@ -955,9 +1238,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Create list views based on xml structure loaded to memory
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="listUrl"></param>
-        /// <param name="xmlDoc"></param>
+        /// <param name="web">Web to process</param>
+        /// <param name="listUrl">List Url</param>
+        /// <param name="xmlDoc">XmlDocument object</param>
         public static void CreateViewsFromXML(this Web web, string listUrl, XmlDocument xmlDoc)
         {
             if (string.IsNullOrEmpty(listUrl))
@@ -978,8 +1261,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Create list views based on specific xml structure in external file
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="filePath"></param>
+        /// <param name="list">List to process</param>
+        /// <param name="filePath">Path of the file</param>
         public static void CreateViewsFromXMLFile(this List list, string filePath)
         {
             if (string.IsNullOrEmpty(filePath))
@@ -996,8 +1279,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Create list views based on specific xml structure in string 
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="xmlString"></param>
+        /// <param name="list">List to process</param>
+        /// <param name="xmlString">XML string to create view</param>
         public static void CreateViewsFromXMLString(this List list, string xmlString)
         {
             if (string.IsNullOrEmpty(xmlString))
@@ -1011,8 +1294,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Actual implementation of the view creation logic based on given xml
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="xmlDoc"></param>
+        /// <param name="list">List to process</param>
+        /// <param name="xmlDoc">XmlDocument object</param>
         public static void CreateViewsFromXML(this List list, XmlDocument xmlDoc)
         {
             if (xmlDoc == null)
@@ -1040,15 +1323,15 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Create view to existing list
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="viewName"></param>
-        /// <param name="viewType"></param>
-        /// <param name="viewFields"></param>
-        /// <param name="rowLimit"></param>
-        /// <param name="setAsDefault"></param>
-        /// <param name="query"></param>        
-        /// <param name="personal"></param>
-        /// <param name="paged"></param>        
+        /// <param name="list">List to process</param>
+        /// <param name="viewName">Name of the view</param>
+        /// <param name="viewType">Type of the view</param>
+        /// <param name="viewFields">Fields of the view</param>
+        /// <param name="rowLimit">Row limit of the view</param>
+        /// <param name="setAsDefault">Set as default view</param>
+        /// <param name="query">Query for view creation</param>        
+        /// <param name="personal">Personal View</param>
+        /// <param name="paged">Paged view</param>        
         public static View CreateView(this List list,
             string viewName,
             ViewType viewType,
@@ -1087,8 +1370,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Gets a view by Id
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="id"></param>
+        /// <param name="list">List to process</param>
+        /// <param name="id">Id to the view to extract</param>
         /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>returns null if not found</returns>
         public static View GetViewById(this List list, Guid id, params Expression<Func<View, object>>[] expressions)
@@ -1120,8 +1403,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Gets a view by Name
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="name"></param>
+        /// <param name="list">List to process</param>
+        /// <param name="name">Name of the view</param>
         /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>returns null if not found</returns>
         public static View GetViewByName(this List list, string name, params Expression<Func<View, object>>[] expressions)
@@ -1149,8 +1432,7 @@ namespace Microsoft.SharePoint.Client
             }
 
         }
-
-        #endregion
+#endregion
 
         private static void SetDefaultColumnValuesImplementation(this List list, IEnumerable<IDefaultColumnValue> columnValues)
         {
@@ -1160,8 +1442,7 @@ namespace Microsoft.SharePoint.Client
                 {
                     var values = columnValues.ToList<IDefaultColumnValue>();
 
-                    clientContext.Load(list.RootFolder);
-                    clientContext.Load(list.RootFolder.Folders);
+                    clientContext.Load(list.RootFolder, r => r.ServerRelativeUrl);
                     clientContext.ExecuteQueryRetry();
 
                     var xMetadataDefaults = new XElement("MetadataDefaults");
@@ -1169,21 +1450,14 @@ namespace Microsoft.SharePoint.Client
                     while (values.Any())
                     {
                         // Get the first entry 
-                        var defaultColumnValue = values.First();
+                        IDefaultColumnValue defaultColumnValue = values.First();
                         var path = defaultColumnValue.FolderRelativePath;
                         if (string.IsNullOrEmpty(path))
                         {
                             // Assume root folder
                             path = "/";
                         }
-                        if (path.Equals("/"))
-                        {
-                            path = list.RootFolder.ServerRelativeUrl;
-                        }
-                        else
-                        {
-                            path = UrlUtility.Combine(list.RootFolder.ServerRelativeUrl, path);
-                        }
+                        path = path.Equals("/") ? list.RootFolder.ServerRelativeUrl : UrlUtility.Combine(list.RootFolder.ServerRelativeUrl, path);
                         // Find all in the same path:
                         var defaultColumnValuesInSamePath = columnValues.Where(x => x.FolderRelativePath == defaultColumnValue.FolderRelativePath);
                         path = Uri.EscapeUriString(path);
@@ -1194,18 +1468,28 @@ namespace Microsoft.SharePoint.Client
                         {
                             var fieldName = defaultColumnValueInSamePath.FieldInternalName;
                             var fieldStringBuilder = new StringBuilder();
-                            if (defaultColumnValueInSamePath.GetType() == typeof(DefaultColumnTermValue))
+
+                            var termValue = defaultColumnValueInSamePath as DefaultColumnTermValue;
+                            if (termValue != null)
                             {
                                 // Term value
-                                foreach (var term in ((DefaultColumnTermValue)defaultColumnValueInSamePath).Terms)
+                                foreach (var term in termValue.Terms)
                                 {
-                                    term.EnsureProperties(t => t.Id, t => t.Name);
+                                    string wssId = string.Empty;
+                                    if (!term.IsPropertyAvailable("Id"))
+                                    {
+                                        term.EnsureProperties(t => t.Id, t => t.Name);
+                                    }
+                                    if (term.IsPropertyAvailable("CustomProperties"))
+                                    {
+                                        term.CustomProperties.TryGetValue("WssId", out wssId);
+                                    }
 
-                                    var wssId = list.ParentWeb.GetWssIdForTerm(term);
+                                    if (string.IsNullOrEmpty(wssId)) wssId = "-1";
                                     fieldStringBuilder.AppendFormat("{0};#{1}|{2};#", wssId, term.Name, term.Id);
                                 }
                                 var xDefaultValue = new XElement("DefaultValue", new XAttribute("FieldName", fieldName));
-                                var fieldString = fieldStringBuilder.ToString().TrimEnd(new char[] { ';', '#' });
+                                var fieldString = fieldStringBuilder.ToString().TrimEnd(';', '#');
                                 xDefaultValue.SetValue(fieldString);
                                 xATag.Add(xDefaultValue);
                             }
@@ -1223,7 +1507,7 @@ namespace Microsoft.SharePoint.Client
                         xMetadataDefaults.Add(xATag);
                     }
 
-                    var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
+                    var formsFolder = GetFormsFolderFromList(list, clientContext);
                     if (formsFolder != null)
                     {
                         var xmlSb = new StringBuilder();
@@ -1290,11 +1574,217 @@ namespace Microsoft.SharePoint.Client
         /// <para></para>
         /// <para>Supported column types: Metadata, Text, Choice, MultiChoice, People, Boolean, DateTime, Number, Currency</para>
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="columnValues"></param>
+        /// <param name="list">List to process</param>
+        /// <param name="columnValues">Column Values</param>
         public static void SetDefaultColumnValues(this List list, IEnumerable<IDefaultColumnValue> columnValues)
         {
 
+            using (var clientContext = (ClientContext)list.Context)
+            {
+                clientContext.Load(list.RootFolder, r => r.ServerRelativeUrl);
+                clientContext.ExecuteQueryRetry();
+                // Check if default values file is present
+                var formsFolder = GetFormsFolderFromList(list, clientContext);
+                List<IDefaultColumnValue> existingValues = new List<IDefaultColumnValue>();
+
+                if (formsFolder != null)
+                {
+                    var configFile = formsFolder.Files.GetByUrl("client_LocationBasedDefaults.html");
+                    clientContext.Load(configFile, c => c.Exists);
+                    bool fileExists = false;
+                    try
+                    {
+                        clientContext.ExecuteQueryRetry();
+                        fileExists = true;
+                    }
+                    catch { }
+
+                    if (fileExists)
+                    {
+                        var streamResult = configFile.OpenBinaryStream();
+                        clientContext.ExecuteQueryRetry();
+                        XDocument document = XDocument.Load(streamResult.Value);
+                        var values = from a in document.Descendants("a") select a;
+                        Dictionary<string, Field> fieldCache = new Dictionary<string, Field>();
+
+                        foreach (var value in values)
+                        {
+                            var href = value.Attribute("href").Value;
+                            href = Uri.UnescapeDataString(href);
+                            href = href.Replace(list.RootFolder.ServerRelativeUrl, "/").Replace("//", "/");
+                            var defaultValues = from d in value.Descendants("DefaultValue") select d;
+                            foreach (var defaultValue in defaultValues)
+                            {
+                                var fieldName = defaultValue.Attribute("FieldName").Value;
+                                Field field;
+                                if (!fieldCache.TryGetValue(fieldName, out field))
+                                {
+                                    field = list.Fields.GetByInternalNameOrTitle(fieldName);
+                                    clientContext.Load(field);
+                                    clientContext.ExecuteQueryRetry();
+                                    fieldCache.Add(fieldName, field);
+                                }
+
+                                if (field.FieldTypeKind == FieldType.Text ||
+                                    field.FieldTypeKind == FieldType.Choice ||
+                                    field.FieldTypeKind == FieldType.MultiChoice ||
+                                    field.FieldTypeKind == FieldType.User ||
+                                    field.FieldTypeKind == FieldType.Boolean ||
+                                    field.FieldTypeKind == FieldType.DateTime ||
+                                    field.FieldTypeKind == FieldType.Number ||
+                                    field.FieldTypeKind == FieldType.Currency
+                                    )
+                                {
+                                    var textValue = defaultValue.Value;
+
+                                    if (field.FieldTypeKind == FieldType.User && !textValue.Contains(";#"))
+                                    {
+                                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ListExtensions_IncorrectValueFormat);
+                                        continue;
+                                    }
+
+                                    var defaultColumnTextValue = new DefaultColumnTextValue()
+                                    {
+                                        FieldInternalName = fieldName,
+                                        FolderRelativePath = href,
+                                        Text = textValue
+                                    };
+                                    existingValues.Add(defaultColumnTextValue);
+                                }
+                                else
+                                {
+                                    var termsIdentifier = defaultValue.Value;
+
+                                    var terms = termsIdentifier.Split(new[] { ";#" }, StringSplitOptions.None);
+                                    var existingTerms = new List<Term>();
+                                    for (int q = 0; q < terms.Length; q += 2)
+                                    {
+                                        var wssId = terms[q];
+                                        var splitData = terms[q + 1].Split(new char[] { '|' });
+
+                                        var termName = splitData[0];
+                                        var termIdString = splitData[1];
+
+                                        Term perfTerm = HydrateTermFromText(clientContext, termIdString, termName, wssId);
+                                        existingTerms.Add(perfTerm);
+                                    }
+
+                                    var defaultColumnTermValue = new DefaultColumnTermValue()
+                                    {
+                                        FieldInternalName = fieldName,
+                                        FolderRelativePath = href
+                                    };
+                                    existingTerms.ForEach(t => defaultColumnTermValue.Terms.Add(t));
+
+                                    existingValues.Add(defaultColumnTermValue);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var termsList = columnValues.Union(existingValues, new DefaultColumnTermValueComparer()).ToList();
+                list.SetDefaultColumnValuesImplementation(termsList);
+            }
+        }
+
+        private static Term HydrateTermFromText(ClientContext clientContext, string termIdString, string termName, string wssId)
+        {
+            if (string.IsNullOrEmpty(wssId)) wssId = "-1";
+            Term perfTerm = new Term(clientContext, null);
+            var prop = perfTerm.GetType().GetProperty("ObjectData", BindingFlags.Instance | BindingFlags.NonPublic);
+            ClientObjectData data = (ClientObjectData)prop.GetValue(perfTerm);
+            data.Properties["Id"] = Guid.Parse(termIdString);
+            data.Properties["Name"] = termName;
+            data.Properties["CustomProperties"] = new Dictionary<string, string>();
+            perfTerm.CustomProperties.Add("WssId", wssId);
+            return perfTerm;
+        }
+
+        private static Folder GetFormsFolderFromList(List list, ClientContext clientContext)
+        {
+            Folder formsFolder = null;
+            try
+            {
+                formsFolder = clientContext.Web.GetFolderByServerRelativeUrl(list.RootFolder.ServerRelativeUrl + "/Forms");
+                clientContext.ExecuteQueryRetry();
+            }
+            catch (FileNotFoundException)
+            {
+            }
+            return formsFolder;
+        }
+
+        /// <summary>
+        /// <para>Sets default values for column values.</para>
+        /// <para>In order to for instance set the default Enterprise Metadata keyword field to a term, add the enterprise metadata keyword to a library (internal name "TaxKeyword")</para>
+        /// <para> </para>
+        /// <para>Column values are defined by the DefaultColumnValue class that has 3 properties:</para>
+        /// <para>RelativeFolderPath : / to set a default value for the root of the document library, or /foldername to specify a subfolder</para>
+        /// <para>FieldInternalName : The name of the field to set. For instance "TaxKeyword" to set the Enterprise Metadata field</para>
+        /// <para>Terms : A collection of Taxonomy terms to set</para>
+        /// <para></para>
+        /// <para>Supported column types: Metadata, Text, Choice, MultiChoice, People, Boolean, DateTime, Number, Currency</para>
+        /// </summary>
+        /// <param name="list">The list to process.</param>
+        /// <param name="columnValues">The default column values.</param>
+        /// <param name="overwriteExistingDefaultColumnValues">If true, the currrent default column values will be overwritten.</param>
+        public static void SetDefaultColumnValues(this List list, IEnumerable<IDefaultColumnValue> columnValues, bool overwriteExistingDefaultColumnValues)
+        {
+            if (overwriteExistingDefaultColumnValues)
+            {
+                list.SetDefaultColumnValuesImplementation(columnValues);
+            }
+            else
+            {
+                list.SetDefaultColumnValues(columnValues);
+            }               
+        }
+
+        /// <summary>
+        /// Remove all default column values that are defined for this list.
+        /// </summary>
+        /// <param name="list">The list to process.</param>
+        public static void ClearDefaultColumnValues(this List list)
+        {
+            var defaultValuesFileName = "client_LocationBasedDefaults.html";
+            using (var clientContext = (ClientContext)list.Context)
+            {
+                clientContext.Load(list.RootFolder);
+                clientContext.Load(list.RootFolder.Folders);
+                clientContext.ExecuteQueryRetry();
+
+                // Check if default values file is present
+                var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
+                var configFile = formsFolder.Files.GetByUrl(defaultValuesFileName);
+                clientContext.Load(configFile, c => c.Exists);
+                bool fileExists = false;
+                try
+                {
+                    clientContext.ExecuteQueryRetry();
+                    fileExists = true;
+                }
+                catch
+                {
+                    // Do nothing here
+                }
+
+                if (fileExists)
+                {
+                    configFile.DeleteObject();
+                    clientContext.ExecuteQueryRetry();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes the provided default column values from the specified folder(s) from list, if they were set.
+        /// </summary>
+        /// <param name="list">The list to process.</param>
+        /// <param name="columnValues">The default column values that must be cleared.</param>
+        public static void ClearDefaultColumnValues(this List list, IEnumerable<IDefaultColumnValue> columnValues)
+        {
+            var defaultValuesFileName = "client_LocationBasedDefaults.html";
             using (var clientContext = (ClientContext)list.Context)
             {
                 clientContext.Load(list.RootFolder);
@@ -1303,11 +1793,11 @@ namespace Microsoft.SharePoint.Client
                 TaxonomySession taxSession = TaxonomySession.GetTaxonomySession(clientContext);
                 // Check if default values file is present
                 var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
-                List<IDefaultColumnValue> existingValues = new List<IDefaultColumnValue>();
+                List<IDefaultColumnValue> remainingValues = new List<IDefaultColumnValue>();
 
                 if (formsFolder != null)
                 {
-                    var configFile = formsFolder.Files.GetByUrl("client_LocationBasedDefaults.html");
+                    var configFile = formsFolder.Files.GetByUrl(defaultValuesFileName);
                     clientContext.Load(configFile, c => c.Exists);
                     bool fileExists = false;
                     try
@@ -1361,7 +1851,15 @@ namespace Microsoft.SharePoint.Client
                                         FolderRelativePath = href,
                                         Text = textValue
                                     };
-                                    existingValues.Add(defaultColumnTextValue);
+
+                                    bool shouldBeKept = columnValues
+                                        .FirstOrDefault(c =>
+                                            c.FieldInternalName == defaultColumnTextValue.FieldInternalName && c.FolderRelativePath == defaultColumnTextValue.FolderRelativePath
+                                        ) == null;
+                                    if (shouldBeKept == true)
+                                    {
+                                        remainingValues.Add(defaultColumnTextValue);
+                                    }
                                 }
                                 else
                                 {
@@ -1387,7 +1885,14 @@ namespace Microsoft.SharePoint.Client
                                     };
                                     existingTerms.ForEach(t => defaultColumnTermValue.Terms.Add(t));
 
-                                    existingValues.Add(defaultColumnTermValue);
+                                    bool shouldBeKept = columnValues
+                                        .FirstOrDefault(c =>
+                                            c.FieldInternalName == defaultColumnTermValue.FieldInternalName && c.FolderRelativePath == defaultColumnTermValue.FolderRelativePath
+                                        ) == null;
+                                    if (shouldBeKept == true)
+                                    {
+                                        remainingValues.Add(defaultColumnTermValue);
+                                    }
                                 }
                             }
 
@@ -1395,8 +1900,7 @@ namespace Microsoft.SharePoint.Client
                     }
                 }
 
-                var termsList = columnValues.Union(existingValues, new DefaultColumnTermValueComparer()).ToList();
-                list.SetDefaultColumnValuesImplementation(termsList);
+                list.SetDefaultColumnValuesImplementation(remainingValues);
             }
         }
 
@@ -1410,16 +1914,15 @@ namespace Microsoft.SharePoint.Client
         /// <para>Field: Internal name of the field which has a default value</para>
         /// <para>Value: The default value for the field</para>
         /// </summary>
-        /// <param name="list"></param>
+        /// <param name="list">List to process</param>
         public static List<Dictionary<string, string>> GetDefaultColumnValues(this List list)
         {
             using (var clientContext = (ClientContext)list.Context)
             {
                 clientContext.Load(list.RootFolder);
-                clientContext.Load(list.RootFolder.Folders);
                 clientContext.ExecuteQueryRetry();
 
-                var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
+                var formsFolder = GetFormsFolderFromList(list, clientContext);
                 if (formsFolder != null)
                 {
                     var configFile = formsFolder.Files.GetByUrl("client_LocationBasedDefaults.html");
@@ -1496,7 +1999,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Queues a list for a full crawl the next incremental crawl
         /// </summary>
-        /// <param name="list"></param>
+        /// <param name="list">List to process</param>
         public static void ReIndexList(this List list)
         {
             list.EnsureProperties(l => l.NoCrawl);

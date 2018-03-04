@@ -4,15 +4,29 @@ using System.ComponentModel;
 
 namespace OfficeDevPnP.Core.Diagnostics.Tree
 {
+    /// <summary>
+    /// Holds methods for Tree node
+    /// </summary>
+    /// <typeparam name="T">Generic type</typeparam>
     public class TreeNodeList<T> : List<ITreeNode<T>>, ITreeNodeList<T>, INotifyPropertyChanged
     {
+        /// <summary>
+        /// Gets or sets Parent node
+        /// </summary>
         public ITreeNode<T> Parent { get; set; }
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="parent">Generic type parent node</param>
         public TreeNodeList(ITreeNode<T> parent)
         {
             Parent = parent;
         }
-
+        /// <summary>
+        /// Adds node to a tree
+        /// </summary>
+        /// <param name="node">Node to be added to the tree</param>
+        /// <returns>Returns TreeNode interface</returns>
         public new ITreeNode<T> Add(ITreeNode<T> node)
         {
             return Add(node, true);
@@ -31,7 +45,11 @@ namespace OfficeDevPnP.Core.Diagnostics.Tree
             OnPropertyChanged("Count");
             return node;
         }
-
+        /// <summary>
+        /// Removes node from a tree
+        /// </summary>
+        /// <param name="node">Tree node to be removed from a tree</param>
+        /// <returns>Returns status of Node removal from tree</returns>
         public new bool Remove(ITreeNode<T> node)
         {
             return Remove(node, true);
@@ -59,14 +77,19 @@ namespace OfficeDevPnP.Core.Diagnostics.Tree
             OnPropertyChanged("Count");
             return result;
         }
-
+        /// <summary>
+        /// Reprensets PropertyChangedEventHandler on a tree node
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string PropertyName)
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(PropertyName));
         }
-
+        /// <summary>
+        /// Retuns count of child nodes as a string
+        /// </summary>
+        /// <returns>Retuns count of child nodes as a string</returns>
         public override string ToString()
         {
             return "Count=" + Count;

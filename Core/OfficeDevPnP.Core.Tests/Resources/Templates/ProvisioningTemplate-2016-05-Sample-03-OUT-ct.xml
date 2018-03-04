@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.20.1711.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Templates ID="CONTAINER-ProvisioningTemplate-2016-05-Sample-03-OUT-ct">
+    <pnp:ProvisioningTemplate ID="ProvisioningTemplate-2016-05-Sample-03-OUT-ct" Version="0">
+      <pnp:ContentTypes>
+        <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types" Hidden="true" Sealed="true" ReadOnly="true" Overwrite="true" NewFormUrl="/Forms/NewForm.aspx" EditFormUrl="/Forms/EditForm.aspx" DisplayFormUrl="/Forms/DisplayForm.aspx">
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" Name="TestField" Required="true" Hidden="true" />
+            <pnp:FieldRef ID="00000000-0000-0000-0000-000000000000" Name="TestField1" />
+            <pnp:FieldRef ID="00000000-0000-0000-0000-000000000000" Name="TestField2" />
+            <pnp:FieldRef ID="00000000-0000-0000-0000-000000000000" Name="TestField3" />
+          </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="DocumentTemplate.dotx" />
+          <pnp:DocumentSetTemplate WelcomePage="home.aspx">
+            <pnp:AllowedContentTypes>
+              <pnp:AllowedContentType ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E002" />
+            </pnp:AllowedContentTypes>
+            <pnp:DefaultDocuments>
+              <pnp:DefaultDocument Name="DefaultDocument" ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E001" FileSourcePath="document.dotx" />
+            </pnp:DefaultDocuments>
+            <pnp:SharedFields>
+              <pnp:SharedField ID="f6e7bdd5-bdcb-4c72-9f18-2bd8c27003d3" />
+              <pnp:SharedField ID="a8df65ec-0d06-4df1-8edf-55d48b3936dc" />
+            </pnp:SharedFields>
+            <pnp:WelcomePageFields>
+              <pnp:WelcomePageField ID="c69d2ffc-0c86-474a-9cc7-dcd7774da531" />
+              <pnp:WelcomePageField ID="b9132b30-2b9e-47d4-b0fc-1ac34a61506f" />
+            </pnp:WelcomePageFields>
+          </pnp:DocumentSetTemplate>
+        </pnp:ContentType>
+      </pnp:ContentTypes>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

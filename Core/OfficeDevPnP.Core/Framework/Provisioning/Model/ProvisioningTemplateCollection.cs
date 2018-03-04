@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Custom constructor to manage the ParentTemplate for the collection 
         /// and all the children of the collection
         /// </summary>
-        /// <param name="parentTemplate"></param>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public ProvisioningTemplateCollection(ProvisioningTemplate parentTemplate)
         {
             this.ParentTemplate = parentTemplate;
@@ -68,6 +68,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             base.ClearItems();
         }
 
+        /// <summary>
+        /// Adds item to the collection
+        /// </summary>
+        /// <param name="collection">IEnumerable type object</param>
         public virtual void AddRange(IEnumerable<T> collection)
         {
             if (collection != null)
@@ -89,16 +93,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (this.FirstOrDefault(item => match(item)));
         }
+
+        /// <summary>
+        /// Finds index of the item matching the search predicate
+        /// </summary>
+        /// <param name="match">The matching predicate to use for finding any target item</param>
+        /// <returns>Returns matching index</returns>
         public Int32 FindIndex(Predicate<T> match)
         {
             return (this.FindIndex(0, this.Count, match));
         }
 
+        /// <summary>
+        /// Finds index of the item matching the search predicate based on start index provided.
+        /// </summary>
+        /// <param name="startIndex">Starting index</param>
+        /// <param name="match">The matching predicate to use for finding any target item</param>
+        /// <returns>Returns matching index</returns>
         public int FindIndex(int startIndex, Predicate<T> match)
         {
             return (this.FindIndex(startIndex, this.Count - startIndex, match));
         }
 
+        /// <summary>
+        /// Finds index of the item matching the search predicate based on start index and count.
+        /// </summary>
+        /// <param name="startIndex">Starting index</param>
+        /// <param name="count">Index Count</param>
+        /// <param name="match">The matching predicate to use for finding any target item</param>
+        /// <returns>Returns matching index</returns>
         public int FindIndex(int startIndex, int count, Predicate<T> match)
         {
             if (startIndex > this.Count)
@@ -125,6 +148,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return -1;
         }
 
+        /// <summary>
+        /// Removes all the matching indexes
+        /// </summary>
+        /// <param name="match">The matching predicate to use for removing target item</param>
+        /// <returns>Returns count of the matches after removing</returns>
         public int RemoveAll(Predicate<T> match)
         {
             if (match == null)

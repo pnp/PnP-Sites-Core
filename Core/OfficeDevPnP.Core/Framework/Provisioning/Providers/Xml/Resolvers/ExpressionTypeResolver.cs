@@ -11,6 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     internal class ExpressionTypeResolver<T> : ITypeResolver
     {
         public string Name => this.GetType().Name;
+        public bool CustomCollectionResolver => false;
 
         private Action<T, Dictionary<String, IResolver>, bool, object> expression = null;
 

@@ -13,6 +13,9 @@ using OfficeDevPnP.Core.Diagnostics;
 
 namespace Microsoft.SharePoint.Client
 {
+    /// <summary>
+    /// Class for taxonomy extension methods
+    /// </summary>
     [Guid("8A8AEA7A-7C25-4138-9C83-2584028868C5")]
     public static partial class TaxonomyExtensions
     {
@@ -178,8 +181,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="lcid">(Optional) Default language of the term set; if not provided the default of the associate term store is used</param>
         /// <param name="description">(Optional) Description of the term set; if null or not provided the parameter is ignored, otherwise the term set is updated as necessary to match the description; passing an empty string will clear the description</param>
         /// <param name="isOpen">(Optional) Whether the term store is open for new term creation or not</param>
-        /// <param name="termSetContact"></param>
-        /// <param name="termSetOwner"></param>
+        /// <param name="termSetContact">(Optional) E-mail address for term suggestions and feedback</param>
+        /// <param name="termSetOwner">Owner of termset</param>
         /// <returns>The required term set</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static TermSet EnsureTermSet(this TermGroup parentGroup, string termSetName, Guid termSetId = default(Guid), int? lcid = null, string description = null, bool? isOpen = null, string termSetContact = null, string termSetOwner = null)
@@ -296,7 +299,7 @@ namespace Microsoft.SharePoint.Client
         /// Private method used for resolving taxonomy term set for taxonomy field
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
-        /// <returns></returns>
+        /// <returns>Returns TermStore object</returns>
         private static TermStore GetDefaultTermStore(Web web)
         {
             TermStore termStore = null;
@@ -321,8 +324,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns a new taxonomy session for the current site
         /// </summary>
-        /// <param name="site"></param>
-        /// <returns></returns>
+        /// <param name="site">Site to be processed</param>
+        /// <returns>Returns TaxonomySession object</returns>
         public static TaxonomySession GetTaxonomySession(this Site site)
         {
             TaxonomySession tSession = TaxonomySession.GetTaxonomySession(site.Context);
@@ -334,8 +337,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns the default keywords termstore for the current site
         /// </summary>
-        /// <param name="site"></param>
-        /// <returns></returns>
+        /// <param name="site">Site to be processed</param>
+        /// <returns>Returns TermStore object</returns>
         public static TermStore GetDefaultKeywordsTermStore(this Site site)
         {
             TaxonomySession session = TaxonomySession.GetTaxonomySession(site.Context);
@@ -349,8 +352,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns the default site collection termstore
         /// </summary>
-        /// <param name="site"></param>
-        /// <returns></returns>
+        /// <param name="site">Site to be processed</param>
+        /// <returns>Returns TermStore object</returns>
         public static TermStore GetDefaultSiteCollectionTermStore(this Site site)
         {
             TaxonomySession session = TaxonomySession.GetTaxonomySession(site.Context);
@@ -368,7 +371,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="site">The current site</param>
         /// <param name="name">The name of the termset</param>
         /// <param name="lcid">The locale ID for the termset to return, defaults to 1033</param>
-        /// <returns></returns>
+        /// <returns>Returns collection of TermSet</returns>
         public static TermSetCollection GetTermSetsByName(this Site site, string name, int lcid = 1033)
         {
             if (string.IsNullOrEmpty(name))
@@ -388,7 +391,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="site">The current site</param>
         /// <param name="name">The name of the termgroup</param>
-        /// <returns></returns>
+        /// <returns>Returns TermGroup object</returns>
         public static TermGroup GetTermGroupByName(this Site site, string name)
         {
             if (string.IsNullOrEmpty(name))
@@ -427,7 +430,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="site">The current site</param>
         /// <param name="termGroupId">The ID of the termgroup</param>
-        /// <returns></returns>
+        /// <returns>Returns TermGroup object</returns>
         public static TermGroup GetTermGroupById(this Site site, Guid termGroupId)
         {
             if (termGroupId == null || termGroupId.Equals(Guid.Empty))
@@ -446,9 +449,9 @@ namespace Microsoft.SharePoint.Client
         /// Gets a Taxonomy Term by Name
         /// </summary>
         /// <param name="site">The site to process</param>
-        /// <param name="termSetId"></param>
-        /// <param name="term"></param>
-        /// <returns></returns>
+        /// <param name="termSetId">Guid of a TermSet</param>
+        /// <param name="term">Term name</param>
+        /// <returns>Returns Term object</returns>
         public static Term GetTermByName(this Site site, Guid termSetId, string term)
         {
             if (string.IsNullOrEmpty(term))
@@ -464,7 +467,7 @@ namespace Microsoft.SharePoint.Client
 
             var lmi = new LabelMatchInformation(site.Context);
 
-            lmi.Lcid = 1033;
+            lmi.Lcid = ts.EnsureProperty(tstore => tstore.DefaultLanguage);
             lmi.TrimUnavailable = true;
             lmi.TermLabel = term;
 
@@ -492,7 +495,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="site">The current site</param>
         /// <param name="termSetId">The ID of the termset</param>
         /// <param name="term">The label of the new term to create</param>
-        /// <returns></returns>
+        /// <returns>Returns Term object</returns>
         public static Term AddTermToTermset(this Site site, Guid termSetId, string term)
         {
             return AddTermToTermset(site, termSetId, term, Guid.NewGuid());
@@ -505,7 +508,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="termSetId">The ID of the termset</param>
         /// <param name="term">The label of the new term to create</param>
         /// <param name="termId">The ID of the term to create</param>
-        /// <returns></returns>
+        /// <returns>Returns Term object</returns>
         public static Term AddTermToTermset(this Site site, Guid termSetId, string term, Guid termId)
         {
             if (string.IsNullOrEmpty(term))
@@ -516,7 +519,7 @@ namespace Microsoft.SharePoint.Client
             TermStore ts = tSession.GetDefaultSiteCollectionTermStore();
             TermSet tset = ts.GetTermSet(termSetId);
 
-            t = tset.CreateTerm(term, 1033, termId);
+            t = tset.CreateTerm(term, ts.EnsureProperty(tstore => tstore.DefaultLanguage), termId);
             //site.Context.Load(tSession);
             //site.Context.Load(ts);
             //site.Context.Load(tset);
@@ -534,10 +537,10 @@ namespace Microsoft.SharePoint.Client
         ///  E.g. "Locations|Nordics|Sweden"
         ///  
         /// </summary>
-        /// <param name="site"></param>
-        /// <param name="termLines"></param>
-        /// <param name="lcid"></param>
-        /// <param name="delimiter"></param>
+        /// <param name="site">The current site</param>
+        /// <param name="termLines">Array of TermLines</param>
+        /// <param name="lcid">Locale identifier (LCID) for the language</param>
+        /// <param name="delimiter">delimeter which seperates terms</param>
         /// <param name="synchronizeDeletions">Remove tags that are not present in the import</param>
         public static void ImportTerms(this Site site, string[] termLines, int lcid, string delimiter = "|", bool synchronizeDeletions = false)
         {
@@ -558,11 +561,11 @@ namespace Microsoft.SharePoint.Client
         ///  E.g. "Locations|Nordics|Sweden"
         ///  
         /// </summary>
-        /// <param name="site"></param>
-        /// <param name="termLines"></param>
-        /// <param name="lcid"></param>
+        /// <param name="site">The current site</param>
+        /// <param name="termLines">Array of TermLines</param>
+        /// <param name="lcid">Locale identifier (LCID) for the language</param>
         /// <param name="termStore">The termstore to import the terms into</param>
-        /// <param name="delimiter"></param>
+        /// <param name="delimiter">delimeter which seperates terms</param>
         /// <param name="synchronizeDeletions">Remove tags that are not present in the import</param>
         public static void ImportTerms(this Site site, string[] termLines, int lcid, TermStore termStore, string delimiter = "|", bool synchronizeDeletions = false)
         {
@@ -1284,7 +1287,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="termSetId">The ID of the termset to export</param>
         /// <param name="includeId">if true, Ids of the the taxonomy items will be included</param>
         /// <param name="delimiter">if specified, this delimiter will be used. Notice that IDs will be delimited with ;# from the label</param>
-        /// <returns></returns>
+        /// <returns>Returns list of Termset strings</returns>
         public static List<string> ExportTermSet(this Site site, Guid termSetId, bool includeId, string delimiter = "|")
         {
             var termStore = site.GetDefaultSiteCollectionTermStore();
@@ -1300,7 +1303,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="includeId">if true, Ids of the the taxonomy items will be included</param>
         /// <param name="termStore">The term store to export the termset from</param>
         /// <param name="delimiter">if specified, this delimiter will be used. Notice that IDs will be delimited with ;# from the label</param>
-        /// <returns></returns>
+        /// <returns>Returns list of Termset strings</returns>
         public static List<string> ExportTermSet(this Site site, Guid termSetId, bool includeId, TermStore termStore, string delimiter = "|")
         {
             var clientContext = site.Context;
@@ -1349,7 +1352,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="site">The site to process</param>
         /// <param name="includeId">if true, Ids of the the taxonomy items will be included</param>
         /// <param name="delimiter">if specified, this delimiter will be used. Notice that IDs will be delimited with ;# from the label</param>
-        /// <returns></returns>
+        /// <returns>Returns list of Term strings</returns>
         public static List<string> ExportAllTerms(this Site site, bool includeId, string delimiter = "|")
         {
             var clientContext = site.Context;
@@ -1421,7 +1424,12 @@ namespace Microsoft.SharePoint.Client
             return items;
         }
 
-        private static string NormalizeName(string name)
+        /// <summary>
+        /// Normalizes a Taxonomy name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string NormalizeName(string name)
         {
             if (name == null) return (string)null;
             name = TrimSpacesRegex.Replace(name, " ").Replace('&', '＆');
@@ -1433,7 +1441,12 @@ namespace Microsoft.SharePoint.Client
             return name;
         }
 
-        private static string DenormalizeName(string name)
+        /// <summary>
+        /// Denormalizes a Taxonomy name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static string DenormalizeName(string name)
         {
             if (name == null)
                 return (string)null;
@@ -1452,7 +1465,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="site">The current site</param>
         /// <param name="path">The path of the item to return</param>
         /// <param name="delimiter">The delimeter separating groups, sets and term in the path. Defaults to |</param>
-        /// <returns></returns>
+        /// <returns>Returns TaxonomyItem object</returns>
         public static TaxonomyItem GetTaxonomyItemByPath(this Site site, string path, string delimiter = "|")
         {
             var context = site.Context;
@@ -1527,6 +1540,33 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
+        /// <summary>
+        /// Ensures the specified label for the specified lcid exists.
+        /// </summary>
+        /// <param name="term">The term to ensure the label for</param>
+        /// <param name="lcid">The LCID of the label to ensure</param>
+        /// <param name="labelName">The name of the label to ensure</param>
+        /// <param name="isDefault">Determines if the label should be the default</param>
+        public static void EnsureLabel(this Term term, int lcid, string labelName, bool isDefault)
+        {
+            var clientContext = term.Context;
+
+            if (term.ServerObjectIsNull == true)
+            {
+                clientContext.Load(term);
+                clientContext.ExecuteQueryRetry();
+            }
+
+            clientContext.Load(term.Labels);
+            clientContext.ExecuteQueryRetry();
+
+            if (!term.Labels.Where(l => l.Language == lcid).Any(l => l.Value == labelName))
+            {
+                term.CreateLabel(labelName, lcid, isDefault);
+                clientContext.ExecuteQueryRetry();
+            }
+        }
+
         #endregion
 
         #region Fields
@@ -1552,7 +1592,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Sets a value of a taxonomy field
+        /// Sets a value of a taxonomy field. To set an empty value set label to an empty string and termGuid to an empty GUID.
         /// </summary>
         /// <param name="item">The item to process</param>
         /// <param name="fieldId">The ID of the field to set</param>
@@ -1562,32 +1602,18 @@ namespace Microsoft.SharePoint.Client
         {
             ClientContext clientContext = item.Context as ClientContext;
 
-            List list = item.ParentList;
-
-            clientContext.Load(list);
+            var field = item.ParentList.Fields.GetById(fieldId);
+            TaxonomyField taxField = clientContext.CastTo<TaxonomyField>(field);
             clientContext.ExecuteQueryRetry();
 
-            IEnumerable<Field> fieldQuery = clientContext.LoadQuery(
-              list.Fields
-              .Include(
-                fieldArg => fieldArg.TypeAsString,
-                fieldArg => fieldArg.Id,
-                fieldArg => fieldArg.InternalName
-              )
-            ).Where(fieldArg => fieldArg.Id == fieldId);
-
-            clientContext.ExecuteQueryRetry();
-
-            TaxonomyField taxField = fieldQuery.Cast<TaxonomyField>().FirstOrDefault();
-
-            clientContext.Load(taxField);
-            clientContext.ExecuteQueryRetry();
-
-            TaxonomyFieldValue fieldValue = new TaxonomyFieldValue();
-            fieldValue.Label = label;
-            fieldValue.TermGuid = termGuid.ToString();
-            fieldValue.WssId = -1;
-            taxField.SetFieldValueByValue(item, fieldValue);
+            if (string.IsNullOrEmpty(label) && termGuid.Equals(Guid.Empty))
+            {
+                taxField.SetFieldValueByLabelGuidPair(item, string.Empty);
+            }
+            else
+            {
+                taxField.SetFieldValueByLabelGuidPair(item, $"{label}|{termGuid.ToString()}");
+            }
             item.Update();
             clientContext.ExecuteQueryRetry();
         }
@@ -1602,46 +1628,91 @@ namespace Microsoft.SharePoint.Client
         {
             ClientContext clientContext = item.Context as ClientContext;
 
-            List list = item.ParentList;
-
-            clientContext.Load(list);
-            clientContext.ExecuteQueryRetry();
-
-            IEnumerable<Field> fieldQuery = clientContext.LoadQuery(
-              list.Fields
-              .Include(
-                fieldArg => fieldArg.TypeAsString,
-                fieldArg => fieldArg.Id,
-                fieldArg => fieldArg.InternalName
-              )
-            ).Where(fieldArg => fieldArg.Id == fieldId);
-
-            clientContext.ExecuteQueryRetry();
-
-            TaxonomyField taxField = fieldQuery.Cast<TaxonomyField>().FirstOrDefault();
-
-            clientContext.Load(taxField);
+            var field = item.ParentList.Fields.GetById(fieldId);
+            TaxonomyField taxField = clientContext.CastTo<TaxonomyField>(field);
+            clientContext.Load(taxField, tf => tf.AllowMultipleValues);
             clientContext.ExecuteQueryRetry();
 
             if (taxField.AllowMultipleValues)
             {
-                var termValuesString = String.Empty;
+                StringBuilder termValuesStringbuilder = new StringBuilder();
+                bool skipSeperator = true;
                 foreach (var term in termValues)
                 {
-                    termValuesString += "-1;#" + term.Value + "|" + term.Key.ToString("D") + ";#";
+                    if (skipSeperator)
+                    {
+                        skipSeperator = false;
+                    }
+                    else
+                    {
+                        termValuesStringbuilder.Append(';');
+                    }
+                    termValuesStringbuilder.Append(term.Value + "|" + term.Key.ToString());
                 }
 
-                termValuesString = termValuesString.Substring(0, termValuesString.Length - 2);
-
-                var newTaxFieldValue = new TaxonomyFieldValueCollection(clientContext, termValuesString, taxField);
-                taxField.SetFieldValueByValueCollection(item, newTaxFieldValue);
-
+                taxField.SetFieldValueByLabelGuidPair(item, termValuesStringbuilder.ToString());
                 item.Update();
                 clientContext.ExecuteQueryRetry();
             }
             else
             {
                 throw new ArgumentException(CoreResources.TaxonomyExtensions_Field_Is_Not_Multivalues, taxField.StaticName);
+            }
+        }
+
+        /// <summary>
+        /// Sets a value of a taxonomy field.
+        /// Value parameter is one or more label GUID pairs:
+        /// Single value field (TaxonomyFieldType) - term label|term GUID
+        /// Multi value field (TaxonomyFieldTypeMulti) - term label|term GUID;term label|term GUID;term label|term GUID...
+        /// </summary>
+        /// <param name="taxonomyField">The field to set</param>
+        /// <param name="item">The item to process</param>
+        /// <param name="value">The value to set on the taxonomy field</param>
+        public static void SetFieldValueByLabelGuidPair(this TaxonomyField taxonomyField, ListItem item, string value)
+        {
+            taxonomyField.EnsureProperties(f => f.TextField, f => f.AllowMultipleValues);
+
+            //TaxonomyFieldValue.PopulateFromLabelGuidPairs(string) has not been exposed to CSOM.
+            //This trick uses TaxonomyFieldValueCollection to get the same result for single value taxonomy fields.
+            TaxonomyFieldValueCollection taxonomyValues = new TaxonomyFieldValueCollection(item.Context, null, taxonomyField);
+            taxonomyValues.PopulateFromLabelGuidPairs(value);
+
+            if (taxonomyField.AllowMultipleValues)
+            {
+                taxonomyField.SetFieldValueByValueCollection(item, taxonomyValues);
+            }
+            else
+            {
+                item.Context.Load(taxonomyValues);
+                item.Context.ExecuteQueryRetry();
+                if (taxonomyValues.Count > 0)
+                {
+                    taxonomyField.SetFieldValueByValue(item, taxonomyValues[0]);
+                }
+                else
+                {
+                    //Empty single value taxonomy value specified. Clear out existing value.
+                    //It's not possible to clear out the value using an empty TaxonomyFieldValue directly.
+                    //This is due to the fact that SetFieldValueByValue requires TermGuid or creatingField to be set on server side.
+                    //It is not possible to set creatingField, so the only possible workaround is to use the predefined Guid with all 1's.
+                    //This will leave data in the hidden field that must be cleared in the same query on the server.
+                    //This approach is necessary to maintain data in TaxCatchAll field for other taxonomy fields in the list item.
+
+                    Field hiddenField = item.ParentList.Fields.GetById(taxonomyField.TextField);
+                    item.Context.Load(hiddenField,
+                        tf => tf.InternalName
+                        );
+                    item.Context.ExecuteQueryRetry();
+
+                    TaxonomyFieldValue taxonomyValue = new TaxonomyFieldValue();
+                    taxonomyValue.Label = string.Empty;
+                    taxonomyValue.TermGuid = "11111111-1111-1111-1111-111111111111";
+                    taxonomyValue.WssId = -1;
+                    taxonomyField.SetFieldValueByValue(item, taxonomyValue);
+
+                    item[hiddenField.InternalName] = string.Empty;
+                }
             }
         }
 
@@ -1683,7 +1754,6 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="fieldCreationInformation">Creation Information of the field</param>
         /// <returns>New taxonomy field</returns>
-
         public static Field CreateTaxonomyField(this Web web, TaxonomyFieldCreationInformation fieldCreationInformation)
         {
             fieldCreationInformation.InternalName.ValidateNotNullOrEmpty("internalName");

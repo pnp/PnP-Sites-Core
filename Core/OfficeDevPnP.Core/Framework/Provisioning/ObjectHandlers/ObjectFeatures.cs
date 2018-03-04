@@ -25,16 +25,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (!web.IsSubSite())
                 {
                     var siteFeatures = template.Features.SiteFeatures;
-                    ProvisionFeaturesImplementation<Site>(context.Site, siteFeatures, scope);
+                    parser = ProvisionFeaturesImplementation<Site>(context.Site, siteFeatures, parser, scope);
                 }
 
                 var webFeatures = template.Features.WebFeatures;
-                ProvisionFeaturesImplementation<Web>(web, webFeatures, scope);
+                parser = ProvisionFeaturesImplementation<Web>(web, webFeatures, parser, scope);
             }
             return parser;
         }
 
-        private static void ProvisionFeaturesImplementation<T>(T parent, IEnumerable<Feature> features, PnPMonitoredScope scope)
+        private static TokenParser ProvisionFeaturesImplementation<T>(T parent, IEnumerable<Feature> features, TokenParser parser, PnPMonitoredScope scope)
         {
             var activeFeatures = new List<Microsoft.SharePoint.Client.Feature>();
             Web web = null;
@@ -86,7 +86,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                             }
                         }
-
                     }
                     else
                     {
@@ -119,6 +118,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
+            if(parent is Site)
+            {
+                parser.AddListTokens((parent as Site).RootWeb);
+            } else
+            {
+                parser.AddListTokens(parent as Web);
+            }
+            return parser;
         }
 
 
@@ -218,11 +225,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = template.Features.SiteFeatures.Any() || template.Features.WebFeatures.Any();
+                _willProvision = template.Features != null && (template.Features.SiteFeatures.Any() || template.Features.WebFeatures.Any());
             }
             return _willProvision.Value;
         }

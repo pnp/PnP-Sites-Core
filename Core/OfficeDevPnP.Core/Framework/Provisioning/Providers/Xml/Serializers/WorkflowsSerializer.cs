@@ -16,11 +16,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(SerializationSequence = 1800, DeserializationSequence = 1800,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         Default = true)]
-    internal class WorkflowsActionsSerializer : PnPBaseSchemaSerializer<Workflows>
+    internal class WorkflowsSerializer : PnPBaseSchemaSerializer<Workflows>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var workflows = persistence.GetPublicInstancePropertyValue("Workflows");
+
             if (workflows != null)
             {
                 template.Workflows = new Workflows();
@@ -41,6 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     (bool)s.GetPublicInstancePropertyValue("ItemUpdatedEvent") ? "ItemUpdated" : null,
                     (bool)s.GetPublicInstancePropertyValue("WorkflowStartEvent") ? "WorkflowStart" : null }).Where(e => e != null).ToList();
                 }));
+                expressions.Add(w => w.WorkflowSubscriptions[0].PropertyDefinitions, new FromArrayToDictionaryValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
 
                 PnPObjectsMapper.MapProperties(workflows, template.Workflows, expressions, true);
             }
@@ -73,10 +75,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add($"{workflowSubscriptionType}.ItemAddedEvent", new ExpressionValueResolver<WorkflowSubscription>((s, v) => s.EventTypes.Contains("ItemAdded")));
                 expressions.Add($"{workflowSubscriptionType}.ItemUpdatedEvent", new ExpressionValueResolver<WorkflowSubscription>((s, v) => s.EventTypes.Contains("ItemUpdated")));
                 expressions.Add($"{workflowSubscriptionType}.WorkflowStartEvent", new ExpressionValueResolver<WorkflowSubscription>((s, v) => s.EventTypes.Contains("WorkflowStart")));
+                expressions.Add($"{workflowSubscriptionType}.PropertyDefinitions", new FromDictionaryToArrayValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
 
                 PnPObjectsMapper.MapProperties(template.Workflows, target, expressions, recursive: true);
 
-                persistence.GetPublicInstanceProperty("Workflows").SetValue(persistence, target);
+                if (target.GetPublicInstancePropertyValue("WorkflowDefinitions") != null ||
+                    target.GetPublicInstancePropertyValue("WorkflowSubscriptions") != null)
+                {
+                    persistence.GetPublicInstanceProperty("Workflows").SetValue(persistence, target);
+                }
             }
         }
     }

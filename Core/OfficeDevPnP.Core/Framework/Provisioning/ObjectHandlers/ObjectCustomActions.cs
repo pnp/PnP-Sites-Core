@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Entities;
@@ -63,7 +63,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             foreach (var customAction in customActions)
             {
 
-                if (isNoScriptSite)
+                if (isNoScriptSite && Guid.Empty == customAction.ClientSideComponentId)
                 {
                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript, customAction.Name);
                     continue;
@@ -85,13 +85,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Then we add it to the target
                     var customActionEntity = new CustomActionEntity()
                     {
+#if !ONPREMISES
+                        ClientSideComponentId = customAction.ClientSideComponentId,                        
+                        ClientSideComponentProperties = customAction.ClientSideComponentProperties != null ? parser.ParseString(customAction.ClientSideComponentProperties) : customAction.ClientSideComponentProperties,
+#endif 
                         CommandUIExtension = customAction.CommandUIExtension != null ? parser.ParseString(customAction.CommandUIExtension.ToString()) : string.Empty,
                         Description = parser.ParseString(customAction.Description),
                         Group = customAction.Group,
                         ImageUrl = parser.ParseString(customAction.ImageUrl),
                         Location = customAction.Location,
                         Name = customAction.Name,
-                        RegistrationId = customAction.RegistrationId,
+                        RegistrationId = parser.ParseString(customAction.RegistrationId),
                         RegistrationType = customAction.RegistrationType,
                         Remove = customAction.Remove,
                         Rights = customAction.Rights,
@@ -111,7 +115,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if ((!string.IsNullOrEmpty(customAction.Title) && customAction.Title.ContainsResourceToken()) ||
                             (!string.IsNullOrEmpty(customAction.Description) && customAction.Description.ContainsResourceToken()))
                         {
-                            var uca = site.GetCustomActions().Where(uc => uc.Name == customAction.Name).FirstOrDefault();
+                            var uca = site.GetCustomActions().FirstOrDefault(uc => uc.Name == customAction.Name);
                             SetCustomActionResourceValues(parser, customAction, uca);
                         }
 #endif
@@ -123,7 +127,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
                         if (customAction.Title.ContainsResourceToken() || customAction.Description.ContainsResourceToken())
                         {
-                            var uca = web.GetCustomActions().Where(uc => uc.Name == customAction.Name).FirstOrDefault();
+                            var uca = web.GetCustomActions().FirstOrDefault(uc => uc.Name == customAction.Name);
                             SetCustomActionResourceValues(parser, customAction, uca);
                         }
 #endif
@@ -131,7 +135,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 else
                 {
-                    UserCustomAction existingCustomAction = null;
+                    UserCustomAction existingCustomAction;
                     if (site != null)
                     {
                         existingCustomAction = site.GetCustomActions().FirstOrDefault(c => c.Name == customAction.Name);
@@ -189,6 +193,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
+#if !ONPREMISES
+            if (customAction.ClientSideComponentId != null && customAction.ClientSideComponentId != Guid.Empty)
+            {
+                if  (existingCustomAction.ClientSideComponentId != customAction.ClientSideComponentId)
+                {
+                    existingCustomAction.ClientSideComponentId = customAction.ClientSideComponentId;
+                }
+            }
+
+            if (!String.IsNullOrEmpty(customAction.ClientSideComponentProperties))
+            {
+                if (existingCustomAction.ClientSideComponentProperties != parser.ParseString(customAction.ClientSideComponentProperties))
+                {
+                    existingCustomAction.ClientSideComponentProperties = parser.ParseString(customAction.ClientSideComponentProperties);
+                }
+            }
+#endif
+
             if (existingCustomAction.Description != customAction.Description)
             {
                 scope.LogPropertyUpdate("Description");
@@ -222,10 +244,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingCustomAction.Location = customAction.Location;
                 isDirty = true;
             }
-            if (existingCustomAction.RegistrationId != customAction.RegistrationId)
+            if (existingCustomAction.RegistrationId != parser.ParseString(customAction.RegistrationId))
             {
                 scope.LogPropertyUpdate("RegistrationId");
-                existingCustomAction.RegistrationId = customAction.RegistrationId;
+                existingCustomAction.RegistrationId = parser.ParseString(customAction.RegistrationId);
                 isDirty = true;
             }
             if (existingCustomAction.RegistrationType != customAction.RegistrationType)
@@ -315,7 +337,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                var context = web.Context as ClientContext;
+                var context = (ClientContext)web.Context;
                 bool isSubSite = web.IsSubSite();
                 var webCustomActions = web.GetCustomActions();
                 var siteCustomActions = context.Site.GetCustomActions();
@@ -395,6 +417,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             customAction.Url = userCustomAction.Url;
             customAction.RegistrationId = userCustomAction.RegistrationId;
             customAction.RegistrationType = userCustomAction.RegistrationType;
+
+#if !ONPREMISES
+            customAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
+            customAction.ClientSideComponentProperties = userCustomAction.ClientSideComponentProperties;
+#endif 
+
             customAction.CommandUIExtension = !System.String.IsNullOrEmpty(userCustomAction.CommandUIExtension) ?
                 XElement.Parse(userCustomAction.CommandUIExtension) : null;
 
@@ -419,11 +447,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return customAction;
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = template.CustomActions != null ? template.CustomActions.SiteCustomActions.Any() || template.CustomActions.WebCustomActions.Any() : false;
+                _willProvision = template.CustomActions != null && (template.CustomActions.SiteCustomActions.Any() || template.CustomActions.WebCustomActions.Any());
             }
             return _willProvision.Value;
         }
@@ -432,7 +460,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willExtract.HasValue)
             {
-                var context = web.Context as ClientContext;
+                var context = (ClientContext)web.Context;
                 var webCustomActions = web.GetCustomActions();
                 var siteCustomActions = context.Site.GetCustomActions();
 

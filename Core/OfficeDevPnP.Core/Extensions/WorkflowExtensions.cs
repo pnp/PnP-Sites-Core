@@ -6,15 +6,18 @@ using Microsoft.SharePoint.Client.WorkflowServices;
 
 namespace Microsoft.SharePoint.Client
 {
+    /// <summary>
+    /// Class for workflow extension methods
+    /// </summary>
     public static partial class WorkflowExtensions
     {
         #region Subscriptions
         /// <summary>
         /// Returns a workflow subscription for a site.
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="web">The web to get workflow subscription</param>
+        /// <param name="name">The name of the workflow subscription</param>
+        /// <returns>Returns a WorkflowSubscription object</returns>
         public static WorkflowSubscription GetWorkflowSubscription(this Web web, string name)
         {
             var servicesManager = new WorkflowServicesManager(web.Context, web);
@@ -31,9 +34,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns a workflow subscription
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="web">The web to get workflow subscription</param>
+        /// <param name="id">The id of the workflow subscription</param>
+        /// <returns>Returns a WorkflowSubscription object</returns>
         public static WorkflowSubscription GetWorkflowSubscription(this Web web, Guid id)
         {
             var servicesManager = new WorkflowServicesManager(web.Context, web);
@@ -47,9 +50,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns a workflow subscription (associations) for a list
         /// </summary>
-        /// <param name="list"></param>
-        /// <param name="name"></param>
-        /// <returns></returns>
+        /// <param name="list">The target list</param>
+        /// <param name="name">Name of workflow subscription to get</param>
+        /// <returns>Returns a WorkflowSubscription object</returns>
         public static WorkflowSubscription GetWorkflowSubscription(this List list, string name)
         {
             var servicesManager = new WorkflowServicesManager(list.Context, list.ParentWeb);
@@ -66,7 +69,7 @@ namespace Microsoft.SharePoint.Client
         /// Returns all the workflow subscriptions (associations) for the web and the lists of that web
         /// </summary>
         /// <param name="web">The target Web</param>
-        /// <returns></returns>
+        /// <returns>Returns all WorkflowSubscriptions</returns>
         public static WorkflowSubscription[] GetWorkflowSubscriptions(this Web web)
         {
             // Get a reference to infrastructural services
@@ -83,7 +86,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Adds a workflow subscription
         /// </summary>
-        /// <param name="list"></param>
+        /// <param name="list">The target list</param>
         /// <param name="workflowDefinitionName">The name of the workflow definition <seealso>
         ///         <cref>WorkflowExtensions.GetWorkflowDefinition</cref>
         ///     </seealso>
@@ -94,7 +97,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="startOnChange">if True the workflow will be started on item change</param>
         /// <param name="historyListName">the name of the history list. If not available it will be created</param>
         /// <param name="taskListName">the name of the task list. If not available it will be created</param>
-        /// <param name="associationValues"></param>
+        /// <param name="associationValues">the name-value pairs for workflow definition</param>
         /// <returns>Guid of the workflow subscription</returns>
         public static Guid AddWorkflowSubscription(this List list, string workflowDefinitionName, string subscriptionName, bool startManually, bool startOnCreate, bool startOnChange, string historyListName, string taskListName, Dictionary<string, string> associationValues = null)
         {
@@ -106,7 +109,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Adds a workflow subscription to a list
         /// </summary>
-        /// <param name="list"></param>
+        /// <param name="list">The target list</param>
         /// <param name="workflowDefinition">The workflow definition. <seealso>
         ///         <cref>WorkflowExtensions.GetWorkflowDefinition</cref>
         ///     </seealso>
@@ -117,7 +120,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="startOnChange">if True the workflow will be started on item change</param>
         /// <param name="historyListName">the name of the history list. If not available it will be created</param>
         /// <param name="taskListName">the name of the task list. If not available it will be created</param>
-        /// <param name="associationValues"></param>
+        /// <param name="associationValues">the name-value pairs for workflow definition</param>
         /// <returns>Guid of the workflow subscription</returns>
         public static Guid AddWorkflowSubscription(this List list, WorkflowDefinition workflowDefinition, string subscriptionName, bool startManually, bool startOnCreate, bool startOnChange, string historyListName, string taskListName, Dictionary<string, string> associationValues = null)
         {
@@ -130,11 +133,13 @@ namespace Microsoft.SharePoint.Client
             if (historyList == null)
             {
                 historyList = list.ParentWeb.CreateList(ListTemplateType.WorkflowHistory, historyListName, false);
+                historyList.EnsureProperty(l => l.Id);
             }
             var taskList = list.ParentWeb.GetListByTitle(taskListName);
             if (taskList == null)
             {
                 taskList = list.ParentWeb.CreateList(ListTemplateType.Tasks, taskListName, false);
+                taskList.EnsureProperty(l => l.Id);
             }
 
 
@@ -178,7 +183,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Deletes the subscription
         /// </summary>
-        /// <param name="subscription"></param>
+        /// <param name="subscription">the workflow subscription to delete</param>
         public static void Delete(this WorkflowSubscription subscription)
         {
             var clientContext = subscription.Context as ClientContext;
@@ -196,10 +201,10 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns a workflow definition for a site
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="displayName"></param>
-        /// <param name="publishedOnly"></param>
-        /// <returns></returns>
+        /// <param name="web">the target web</param>
+        /// <param name="displayName">the workflow definition display name, which is displayed to users</param>
+        /// <param name="publishedOnly">Defines whether to include only published definition, or all the definitions</param>
+        /// <returns>Returns a WorkflowDefinition object</returns>
         public static WorkflowDefinition GetWorkflowDefinition(this Web web, string displayName, bool publishedOnly = true)
         {
             var servicesManager = new WorkflowServicesManager(web.Context, web);
@@ -215,9 +220,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns a workflow definition
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
+        /// <param name="web">the target web</param>
+        /// <param name="id">the id of workflow definition</param>
+        /// <returns>Returns a WorkflowDefinition object</returns>
         public static WorkflowDefinition GetWorkflowDefinition(this Web web, Guid id)
         {
             var servicesManager = new WorkflowServicesManager(web.Context, web);
@@ -234,7 +239,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The target Web</param>
         /// <param name="publishedOnly">Defines whether to include only published definition, or all the definitions</param>
-        /// <returns></returns>
+        /// <returns>Returns all WorkflowDefinitions</returns>
         public static WorkflowDefinition[] GetWorkflowDefinitions(this Web web, Boolean publishedOnly)
         {
             // Get a reference to infrastructural services
@@ -247,6 +252,13 @@ namespace Microsoft.SharePoint.Client
             return definitions.ToArray();
         }
 
+        /// <summary>
+        /// Adds a workflow definition
+        /// </summary>
+        /// <param name="web">the target web</param>
+        /// <param name="definition">the workflow definition to add</param>
+        /// <param name="publish">specify true to publish workflow definition</param>
+        /// <returns></returns>
         public static Guid AddWorkflowDefinition(this Web web, WorkflowDefinition definition, bool publish = true)
         {
             var servicesManager = new WorkflowServicesManager(web.Context, web);
@@ -283,7 +295,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Deletes a workflow definition
         /// </summary>
-        /// <param name="definition"></param>
+        /// <param name="definition">the workflow defition to delete</param>
         public static void Delete(this WorkflowDefinition definition)
         {
             var clientContext = definition.Context as ClientContext;
@@ -298,8 +310,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns alls workflow instances for a site
         /// </summary>
-        /// <param name="web"></param>
-        /// <returns></returns>
+        /// <param name="web">the target web</param>
+        /// <returns>Returns a WorkflowInstanceCollection object</returns>
         public static WorkflowInstanceCollection GetWorkflowInstances(this Web web)
         {
             var servicesManager = new WorkflowServicesManager(web.Context, web);
@@ -313,9 +325,9 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns alls workflow instances for a list item
         /// </summary>
-        /// <param name="web"></param>
-        /// <param name="item"></param>
-        /// <returns></returns>
+        /// <param name="web">the target web</param>
+        /// <param name="item">the target list item to get workflow instances</param>
+        /// <returns>Returns a WorkflowInstanceCollection object</returns>
         public static WorkflowInstanceCollection GetWorkflowInstances(this Web web, ListItem item)
         {
             var servicesManager = new WorkflowServicesManager(web.Context, web);
@@ -329,8 +341,8 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Returns all instances of a workflow for this subscription
         /// </summary>
-        /// <param name="subscription"></param>
-        /// <returns></returns>
+        /// <param name="subscription">the workflow subscription to get instances</param>
+        /// <returns>Returns a WorkflowInstanceCollection object</returns>
         public static WorkflowInstanceCollection GetInstances(this WorkflowSubscription subscription)
         {
             var clientContext = subscription.Context as ClientContext;
@@ -345,7 +357,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Cancels a workflow instance
         /// </summary>
-        /// <param name="instance"></param>
+        /// <param name="instance">the workflow instance to cancel</param>
         public static void CancelWorkFlow(this WorkflowInstance instance)
         {
             var clientContext = instance.Context as ClientContext;
@@ -358,7 +370,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Resumes a workflow
         /// </summary>
-        /// <param name="instance"></param>
+        /// <param name="instance">the workflow instance to resume</param>
         public static void ResumeWorkflow(this WorkflowInstance instance)
         {
             var clientContext = instance.Context as ClientContext;
@@ -374,7 +386,7 @@ namespace Microsoft.SharePoint.Client
         /// <summary>
         /// Publish a custom event to a target workflow instance
         /// </summary>
-        /// <param name="instance"></param>
+        /// <param name="instance">the workflow instance to publish event</param>
         /// <param name="eventName">The name of the target event</param>
         /// <param name="payload">The payload that will be sent to the event</param>
         public static void PublishCustomEvent(this WorkflowInstance instance, String eventName, String payload)

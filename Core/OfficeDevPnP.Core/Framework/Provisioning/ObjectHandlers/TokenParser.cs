@@ -10,9 +10,13 @@ using System.Collections;
 using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using OfficeDevPnP.Core.ALM;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
+    /// <summary>
+    /// Handles methods for token parser
+    /// </summary>
     public class TokenParser
     {
         public Web _web;
@@ -20,6 +24,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private List<TokenDefinition> _tokens;
         private List<Localization> _localizations = new List<Localization>();
 
+        /// <summary>
+        /// List of token definitions
+        /// </summary>
         public List<TokenDefinition> Tokens
         {
             get { return _tokens; }
@@ -29,6 +36,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        /// <summary>
+        /// adds token definition
+        /// </summary>
+        /// <param name="tokenDefinition">A TokenDefinition object</param>
         public void AddToken(TokenDefinition tokenDefinition)
         {
 
@@ -41,6 +52,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens = sortedTokens.ToList();
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="web">A SharePoint site or subsite</param>
+        /// <param name="template">a provisioning template</param>
         public TokenParser(Web web, ProvisioningTemplate template)
         {
             web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Language);
@@ -51,14 +67,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             _tokens.Add(new SiteCollectionToken(web));
             _tokens.Add(new SiteCollectionIdToken(web));
+            _tokens.Add(new SiteCollectionIdEncodedToken(web));
             _tokens.Add(new SiteToken(web));
             _tokens.Add(new MasterPageCatalogToken(web));
             _tokens.Add(new SiteCollectionTermStoreIdToken(web));
             _tokens.Add(new KeywordsTermStoreIdToken(web));
             _tokens.Add(new ThemeCatalogToken(web));
-            _tokens.Add(new SiteNameToken(web));
+            _tokens.Add(new WebNameToken(web));
             _tokens.Add(new SiteIdToken(web));
+            _tokens.Add(new SiteIdEncodedToken(web));
             _tokens.Add(new SiteOwnerToken(web));
+            _tokens.Add(new SiteTitleToken(web));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.members));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.visitors));
@@ -68,50 +87,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new CurrentUserLoginNameToken(web));
             _tokens.Add(new CurrentUserFullNameToken(web));
             _tokens.Add(new AuthenticationRealmToken(web));
+            _tokens.Add(new HostUrlToken(web));
+#if !ONPREMISES
+            _tokens.Add(new SiteCollectionConnectedOffice365GroupId(web));
+#endif
 
             // Add lists
-            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views));
-            web.Context.ExecuteQueryRetry();
-            foreach (var list in web.Lists)
-            {
-                _tokens.Add(new ListIdToken(web, list.Title, list.Id));
-                _tokens.Add(new ListUrlToken(web, list.Title, list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
-
-                foreach (var view in list.Views)
-                {
-                    _tokens.Add(new ListViewIdToken(web, list.Title, view.Title, view.Id));
-                }
-            }
-
-            if (web.IsSubSite())
-            {
-                // Add lists from rootweb
-                var rootWeb = (web.Context as ClientContext).Site.RootWeb;
-                rootWeb.EnsureProperty(w => w.ServerRelativeUrl);
-                rootWeb.Context.Load(rootWeb.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl));
-                rootWeb.Context.ExecuteQueryRetry();
-                foreach (var rootList in rootWeb.Lists)
-                {
-                    // token already there? Skip the list
-                    if (web.Lists.FirstOrDefault(l => l.Title == rootList.Title) == null)
-                    {
-                        _tokens.Add(new ListIdToken(web, rootList.Title, rootList.Id));
-                        _tokens.Add(new ListUrlToken(web, rootList.Title, rootList.RootFolder.ServerRelativeUrl.Substring(rootWeb.ServerRelativeUrl.Length + 1)));
-                    }
-                }
-            }
-
+            AddListTokens(web);
             // Add ContentTypes
-            web.Context.Load(web.AvailableContentTypes, cs => cs.Include(ct => ct.StringId, ct => ct.Name));
-            web.Context.ExecuteQueryRetry();
-            foreach (var ct in web.AvailableContentTypes)
-            {
-                _tokens.Add(new ContentTypeIdToken(web, ct.Name, ct.StringId));
-            }
+            AddContentTypeTokens(web);
             // Add parameters
             foreach (var parameter in template.Parameters)
             {
-                _tokens.Add(new ParameterToken(web, parameter.Key, parameter.Value));
+                _tokens.Add(new ParameterToken(web, parameter.Key, parameter.Value ?? string.Empty));
             }
 
             // Add TermSetIds
@@ -166,6 +154,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
+                catch (ServerUnauthorizedAccessException)
+                {
+                    // If we don't have permission to access the TermGroup, just skip it
+                }
                 catch (NullReferenceException)
                 {
                     // If there isn't a default TermGroup for the Site Collection, we skip the terms in token handler
@@ -206,7 +198,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (stream != null)
                         {
+#if !NETSTANDARD2_0
                             using (ResXResourceReader resxReader = new ResXResourceReader(stream))
+#else
+                            using (ResourceReader resxReader = new ResourceReader(stream))
+#endif
                             {
                                 foreach (DictionaryEntry entry in resxReader)
                                 {
@@ -229,10 +225,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             // OOTB Roledefs
-            web.EnsureProperty(w => w.RoleDefinitions.Include(r => r.RoleTypeKind));
+            web.EnsureProperty(w => w.RoleDefinitions.Include(r => r.RoleTypeKind, r => r.Name, r => r.Id));
             foreach (var roleDef in web.RoleDefinitions.AsEnumerable().Where(r => r.RoleTypeKind != RoleType.None))
             {
                 _tokens.Add(new RoleDefinitionToken(web, roleDef));
+            }
+            foreach (var roleDef in web.RoleDefinitions)
+            {
+                _tokens.Add(new RoleDefinitionIdToken(web, roleDef.Name, roleDef.Id));
             }
 
             // Groups
@@ -257,6 +257,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 _tokens.Add(new GroupIdToken(web, "associatedownergroup", web.AssociatedOwnerGroup.Id));
             }
+
+            // AppPackages tokens
+#if !ONPREMISES
+            AddAppPackagesTokens(web);
+#endif
             var sortedTokens = from t in _tokens
                                orderby t.GetTokenLength() descending
                                select t;
@@ -264,8 +269,90 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens = sortedTokens.ToList();
         }
 
+#if !ONPREMISES
+        private void AddAppPackagesTokens(Web web)
+        {
+            _tokens.RemoveAll(t => t.GetType() == typeof(AppPackageIdToken));
 
+            var manager = new AppManager(web.Context as ClientContext);
 
+            try
+            {
+                var appPackages = manager.GetAvailable();
+
+                foreach (var app in appPackages)
+                {
+                    _tokens.Add(new AppPackageIdToken(web, app.Title, app.Id));
+                }
+            }
+            catch (Exception)
+            {
+                // In case of any failure, just skip creating AppPackageIdToken instances
+                // and move forward. It means that there is no AppCatalog or no ALM APIs
+            }
+        }
+#endif
+
+        private void AddContentTypeTokens(Web web)
+        {
+            _tokens.RemoveAll(t => t.GetType() == typeof(ContentTypeIdToken));
+
+            web.Context.Load(web.AvailableContentTypes, cs => cs.Include(ct => ct.StringId, ct => ct.Name));
+            web.Context.ExecuteQueryRetry();
+            foreach (var ct in web.AvailableContentTypes)
+            {
+                _tokens.Add(new ContentTypeIdToken(web, ct.Name, ct.StringId));
+            }
+        }
+
+        internal void AddListTokens(Web web)
+        {
+            _tokens.RemoveAll(t => t.GetType() == typeof(ListIdToken));
+            _tokens.RemoveAll(t => t.GetType() == typeof(ListUrlToken));
+            _tokens.RemoveAll(t => t.GetType() == typeof(ListViewIdToken));
+
+            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views));
+            web.Context.ExecuteQueryRetry();
+            foreach (var list in web.Lists)
+            {
+                _tokens.Add(new ListIdToken(web, list.Title, list.Id));
+                _tokens.Add(new ListUrlToken(web, list.Title, list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+
+                foreach (var view in list.Views)
+                {
+                    _tokens.Add(new ListViewIdToken(web, list.Title, view.Title, view.Id));
+                }
+            }
+
+            if (web.IsSubSite())
+            {
+                // Add lists from rootweb
+                var rootWeb = (web.Context as ClientContext).Site.RootWeb;
+                rootWeb.EnsureProperty(w => w.ServerRelativeUrl);
+                rootWeb.Context.Load(rootWeb.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views));
+                rootWeb.Context.ExecuteQueryRetry();
+                foreach (var rootList in rootWeb.Lists)
+                {
+                    // token already there? Skip the list
+                    if (web.Lists.FirstOrDefault(l => l.Title == rootList.Title) == null)
+                    {
+                        _tokens.Add(new ListIdToken(web, rootList.Title, rootList.Id));
+                        _tokens.Add(new ListUrlToken(web, rootList.Title, rootList.RootFolder.ServerRelativeUrl.Substring(rootWeb.ServerRelativeUrl.Length + 1)));
+
+                        foreach(var view in rootList.Views)
+                        {
+                            _tokens.Add(new ListViewIdToken(rootWeb, rootList.Title, view.Title, view.Id));
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets list of token resource values
+        /// </summary>
+        /// <param name="tokenValue">Token value</param>
+        /// <returns>Returns list of token resource values</returns>
         public List<Tuple<string, string>> GetResourceTokenResourceValues(string tokenValue)
         {
             List<Tuple<string, string>> resourceValues = new List<Tuple<string, string>>();
@@ -282,6 +369,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return resourceValues;
         }
 
+        /// <summary>
+        /// Clears cache of tokens
+        /// </summary>
+        /// <param name="web">A SharePoint site or subsite</param>
         public void Rebase(Web web)
         {
             web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Language);
@@ -295,11 +386,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        /// <summary>
+        /// Parses the string
+        /// </summary>
+        /// <param name="input">input string to parse</param>
+        /// <returns>Returns parsed string</returns>
         public string ParseString(string input)
         {
             return ParseString(input, null);
         }
 
+        /// <summary>
+        /// Gets left over tokens
+        /// </summary>
+        /// <param name="input">input string</param>
+        /// <returns>Returns collections of left over tokens</returns>
         public IEnumerable<string> GetLeftOverTokens(string input)
         {
             List<string> values = new List<string>();
@@ -315,71 +416,71 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return values;
         }
 
+        /// <summary>
+        /// Parses given string
+        /// </summary>
+        /// <param name="input">input string</param>
+        /// <param name="tokensToSkip">array of tokens to skip</param>
+        /// <returns>Returns parsed string</returns>
         public string ParseString(string input, params string[] tokensToSkip)
         {
-            var origInput = input;
-            if (!string.IsNullOrEmpty(input))
-            {
-                foreach (var token in _tokens)
-                {
-                    if (tokensToSkip != null)
-                    {
-                        var filteredTokens = token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase);
-                        if (filteredTokens.Any())
-                        {
-                            foreach (var filteredToken in filteredTokens)
-                            {
-                                var regex = token.GetRegexForToken(filteredToken);
-                                if (regex.IsMatch(input))
-                                {
-                                    input = regex.Replace(input, token.GetReplaceValue());
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        var matchingTokens = token.GetRegex().Where(regex => regex.IsMatch(input));
-                        foreach (var regex in matchingTokens)
-                        {
-                            input = regex.Replace(input, token.GetReplaceValue());
-                        }
-                    }
-                }
-            }
+            var tokenChars = new[] { '{', '~' };
+            if (string.IsNullOrEmpty(input) || input.IndexOfAny(tokenChars) == -1) return input;
 
-            while (origInput != input)
+            var tokensToSkipList = tokensToSkip?.ToList() ?? new List<string>();
+            string origInput;
+
+            do
             {
+                origInput = input;
                 foreach (var token in _tokens)
                 {
-                    origInput = input;
-                    if (tokensToSkip != null)
+                    foreach (var filteredToken in token.GetTokens().Except(tokensToSkipList, StringComparer.InvariantCultureIgnoreCase))
                     {
-                        var filteredTokens = token.GetTokens().Except(tokensToSkip, StringComparer.InvariantCultureIgnoreCase);
-                        if (filteredTokens.Any())
+                        var regex = token.GetRegexForToken(filteredToken);
+                        if (regex.IsMatch(input))
                         {
-                            foreach (var filteredToken in filteredTokens)
-                            {
-                                var regex = token.GetRegexForToken(filteredToken);
-                                if (regex.IsMatch(input))
-                                {
-                                    input = regex.Replace(input, token.GetReplaceValue());
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        foreach (var regex in token.GetRegex().Where(regex => regex.IsMatch(input)))
-                        {
-                            origInput = input;
-                            input = regex.Replace(input, token.GetReplaceValue());
+                            input = regex.Replace(input, ParseString(token.GetReplaceValue(), tokensToSkipList.Concat(new[] { filteredToken }).ToArray()));
                         }
                     }
                 }
-            }
+            } while (origInput != input && input.IndexOfAny(tokenChars) >= 0);
 
             return input;
+        }
+
+        public string ParseXmlString(string inputXml, params string[] tokensToSkip)
+        {
+            var xmlDoc = new System.Xml.XmlDocument();
+            xmlDoc.LoadXml(inputXml);
+
+            // Swap out tokens in the attributes of all nodes.
+            var nodes = xmlDoc.SelectNodes("//*");
+            if (nodes != null)
+            {
+                foreach (var node in nodes.OfType<System.Xml.XmlElement>().Where(n => n.HasAttributes))
+                {
+                    foreach (var attribute in node.Attributes.OfType<System.Xml.XmlAttribute>().Where(a => !a.Name.Equals("xmlns", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(a.Value)))
+                    {
+                        attribute.Value = ParseString(attribute.Value, tokensToSkip);
+                    }
+                }
+            }
+
+            // Swap out tokens in the values of any elements with a text value.
+            nodes = xmlDoc.SelectNodes("//*[text()]");
+            if (nodes != null)
+            {
+                foreach (var node in nodes.OfType<System.Xml.XmlElement>())
+                {
+                    if (!string.IsNullOrEmpty(node.InnerText))
+                    {
+                        node.InnerText = ParseString(node.InnerText, tokensToSkip);
+                    }
+                }
+            }
+
+            return xmlDoc.OuterXml;
         }
     }
 }

@@ -168,9 +168,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (creationInfo.FileConnector != null)
             {
+                var fileConnector = creationInfo.FileConnector;
                 SharePointConnector connector = new SharePointConnector(web.Context, web.Url, "dummy");
-
-                
                 Uri u = new Uri(web.Url);
 
                 if (u.PathAndQuery != "/")
@@ -183,6 +182,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 String container = folderPath.Trim('/').Replace("%20", " ").Replace("/", "\\");
                 String persistenceFileName = (decodeFileName ? HttpUtility.UrlDecode(fileName) : fileName).Replace("%20", " ");
+
+                if (fileConnector.Parameters.ContainsKey(FileConnectorBase.CONTAINER))
+                {
+                    container = string.Concat(fileConnector.GetContainer(), container);
+                }
 
                 using (Stream s = connector.GetFileStream(fileName, folderPath))
                 {
