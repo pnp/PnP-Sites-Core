@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Added ExecuteQueryRetryAsync method [baywet and SharePointRadi]
 - Added EnsureLabel extension method to the taxonomy extensions [paulpascha]
 - Added SetDefaultContentType extension methods on List objects. Notice that this method behaves different from the deprecated SetDefaultContentTypeToList method. See the Deprecated section.
 - Added AliasExistsAsync extension method to verify if an Office 365 Group alias is available for use
