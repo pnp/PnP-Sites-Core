@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Don't tokenize ~sitecollection in web parts XML [paulpascha]
 - Updated base templates for March 2018 release
 - Fix #1585 - Correctly handle Overwrite=false with the new pre-create of pages
 - TimerJob framework reliability improvements (avoid breaking when clientcontext could not be obtained)
