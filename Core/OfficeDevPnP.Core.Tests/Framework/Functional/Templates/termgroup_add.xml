@@ -43,9 +43,9 @@ Base template: goal is to verify that all the term properties work as expected.
                 <pnp:Property Key="TS_2_2_2_P1_Local" Value="TS_2_2_2"/>
               </pnp:LocalCustomProperties>
               <pnp:Labels>
+                <pnp:Label IsDefaultForLanguage="true" Language="1043" Value="TS_2_2_2_L1_1043"/>
                 <pnp:Label Language="1033" Value="TS_2_2_2_L1_1033"/>
                 <pnp:Label Language="1033" Value="TS_2_2_2_L2_1033"/>
-                <pnp:Label IsDefaultForLanguage="true" Language="1043" Value="TS_2_2_2_L1_1043"/>
                 <pnp:Label Language="1043" Value="TS_2_2_2_L2_1043"/>
               </pnp:Labels>
             </pnp:Term>

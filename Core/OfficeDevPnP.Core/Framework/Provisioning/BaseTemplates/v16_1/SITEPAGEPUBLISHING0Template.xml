@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2018/01/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.23.1802.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.24.1803.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-SITEPAGEPUBLISHING0template">
     <pnp:ProvisioningTemplate ID="SITEPAGEPUBLISHING0template" Version="1" BaseSiteTemplate="SITEPAGEPUBLISHING#0" Scope="RootSite">
       <pnp:WebSettings RequestAccessEmail="someone@example.com" NoCrawl="false" WelcomePage="SitePages/Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
@@ -62,7 +62,7 @@
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="vti_associategroups" Value="6;5;4" Overwrite="false" />
         <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_RouterJobLastRun" Value="23/01/2018 0:23:44" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_RouterJobLastRun" Value="10/02/2018 23:39:54" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="4" Overwrite="false" />
         <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser" Overwrite="false" />
         <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="" Overwrite="false" />
@@ -70,14 +70,14 @@
         <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="38c81193-9575-4737-a482-fd1dfca37f4f" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_ExpirationLastRun" Value="22/01/2018 2:24:44" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_ExpirationLastRun" Value="26/02/2018 0:03:18" Overwrite="false" />
         <pnp:PropertyBagEntry Key="profileschemaversion" Value="5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.6927" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_sitemasterid" Value="f8b2e18f-d190-4a1b-a3da-ab24093aff57" Overwrite="false" />
         <pnp:PropertyBagEntry Key="metadatatimestamp" Value="437b86fc125845a985ea87a29156ce3c|2015-03-27T08:10:01.077Z" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="4;5;6" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_PolicyUpdateLastRun" Value="21/01/2018 0:03:46" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_PolicyUpdateLastRun" Value="24/02/2018 23:03:55" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
       </pnp:PropertyBagEntries>
       <pnp:Security>
@@ -519,24 +519,6 @@
                 <FieldRef Name="fAllDayEvent" />
               </ViewFields>
             </View>
-            <View Name="{77AD41F6-CD1C-41EA-B4D7-DDC023AC4D5C}" MobileView="TRUE" Type="HTML" DisplayName="All Events" Url="/sites/templateSITEPAGEPUBLISHING0/Lists/Events/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/events.png?rev=44">
-              <Query>
-                <OrderBy>
-                  <FieldRef Name="EventDate" />
-                </OrderBy>
-              </Query>
-              <ViewFields>
-                <FieldRef Name="fRecurrence" />
-                <FieldRef Name="WorkspaceLink" />
-                <FieldRef Name="LinkTitle" />
-                <FieldRef Name="Location" />
-                <FieldRef Name="EventDate" />
-                <FieldRef Name="EndDate" />
-                <FieldRef Name="fAllDayEvent" />
-              </ViewFields>
-              <RowLimit Paged="TRUE">30</RowLimit>
-              <JSLink>clienttemplates.js</JSLink>
-            </View>
             <View Name="{65547B99-EA92-412F-98F4-2EA0E829AE3F}" MobileView="TRUE" Type="HTML" RecurrenceRowset="TRUE" DisplayName="Current Events" Url="/sites/templateSITEPAGEPUBLISHING0/Lists/Events/MyItems.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/events.png?rev=44">
               <Query>
                 <Where>
@@ -562,6 +544,24 @@
                 <FieldRef Name="EndDate" />
                 <FieldRef Name="fAllDayEvent" />
               </ViewFields>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+            <View Name="{77AD41F6-CD1C-41EA-B4D7-DDC023AC4D5C}" MobileView="TRUE" Type="HTML" DisplayName="All Events" Url="/sites/templateSITEPAGEPUBLISHING0/Lists/Events/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/events.png?rev=44">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="EventDate" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="fRecurrence" />
+                <FieldRef Name="WorkspaceLink" />
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="Location" />
+                <FieldRef Name="EventDate" />
+                <FieldRef Name="EndDate" />
+                <FieldRef Name="fAllDayEvent" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
           </pnp:Views>
@@ -684,10 +684,18 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{F60FA999-0A68-4258-920C-C260F396CBED}" Type="HTML" DisplayName="All Pages" Url="/sites/templateSITEPAGEPUBLISHING0/SitePages/Forms/AllPages.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{54E1DD06-EBE0-42D5-847E-1CA78E449502}" Type="HTML" DisplayName="Created By Me" Url="/sites/templateSITEPAGEPUBLISHING0/SitePages/Forms/CreatedByMe.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
+                <Where>
+                  <Eq>
+                    <FieldRef Name="Author" />
+                    <Value Type="Integer">
+                      <UserID />
+                    </Value>
+                  </Eq>
+                </Where>
                 <OrderBy>
-                  <FieldRef Name="Modified" Ascending="FALSE" />
+                  <FieldRef Name="FileLeafRef" />
                 </OrderBy>
               </Query>
               <ViewFields>
@@ -721,18 +729,10 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{54E1DD06-EBE0-42D5-847E-1CA78E449502}" Type="HTML" DisplayName="Created By Me" Url="/sites/templateSITEPAGEPUBLISHING0/SitePages/Forms/CreatedByMe.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{F60FA999-0A68-4258-920C-C260F396CBED}" Type="HTML" DisplayName="All Pages" Url="/sites/templateSITEPAGEPUBLISHING0/SitePages/Forms/AllPages.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
-                <Where>
-                  <Eq>
-                    <FieldRef Name="Author" />
-                    <Value Type="Integer">
-                      <UserID />
-                    </Value>
-                  </Eq>
-                </Where>
                 <OrderBy>
-                  <FieldRef Name="FileLeafRef" />
+                  <FieldRef Name="Modified" Ascending="FALSE" />
                 </OrderBy>
               </Query>
               <ViewFields>
@@ -821,7 +821,6 @@
           <pnp:Feature ID="f39dad74-ea79-46ef-9ef7-fe2370754f6f" />
         </pnp:WebFeatures>
       </pnp:Features>
-      <pnp:ComposedLook Name="Office" ColorFile="" FontFile="" BackgroundFile="" Version="0" />
     </pnp:ProvisioningTemplate>
   </pnp:Templates>
 </pnp:Provisioning>

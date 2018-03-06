@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using OfficeDevPnP.Core.Utilities.CanvasControl;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using System.Collections.Generic;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -26,6 +27,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // determine pages library
                 string pagesLibrary = "SitePages";
+
+                List<string> preCreatedPages = new List<string>();
 
                 // pre create the needed pages so we can fill the needed tokens which might be used later on when we put web parts on those pages
                 foreach (var clientSidePage in template.ClientSidePages)
@@ -67,6 +70,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Fill token
                         parser.AddToken(new PageUniqueIdToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
                         parser.AddToken(new PageUniqueIdEncodedToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+
+                        // Track that we pre-added this page
+                        preCreatedPages.Add(url);
                     }
                 }
 
@@ -96,7 +102,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     Pages.ClientSidePage page = null;
                     if (exists)
                     {
-                        if (clientSidePage.Overwrite)
+                        if (clientSidePage.Overwrite || preCreatedPages.Contains(url))
                         {
                             // Get the existing page
                             page = web.LoadClientSidePage(pageName);
