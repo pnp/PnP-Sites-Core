@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Improved test reliability by scoping out tests that should not execute during app-only test runs
 - Correctly set the lookup list for fields of type User [pschaeflein]
 - Don't tokenize ~sitecollection in web parts XML [paulpascha]
 - Updated base templates for March 2018 release

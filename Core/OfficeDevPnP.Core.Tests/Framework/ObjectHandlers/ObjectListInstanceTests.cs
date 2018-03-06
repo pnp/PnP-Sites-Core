@@ -74,30 +74,38 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     isDirty = true;
                 }
 
-                // Clean up Taxonomy
-                if (!Guid.Empty.Equals(termGroupId))
-                {
-                    var taxSession = TaxonomySession.GetTaxonomySession(ctx);
-                    var termStore = taxSession.GetDefaultSiteCollectionTermStore();
-                    var termGroup = termStore.GetGroup(termGroupId);
-                    ctx.ExecuteQueryRetry();
-                    isDirty = false;
-                    if (!termGroup.ServerObjectIsNull.Value)
-                    {
-                        var termSets = termGroup.TermSets;
-                        ctx.Load(termSets);
-                        ctx.ExecuteQueryRetry();                        
-                        foreach (var termSet in termSets)
-                        {
-                            termSet.DeleteObject();
-                        }
-                        termGroup.DeleteObject();
-                        isDirty = true;
-                    }
-                }
                 if (isDirty)
                 {
                     ctx.ExecuteQueryRetry();
+                }
+
+                if (!TestCommon.AppOnlyTesting())
+                {
+                    // Clean up Taxonomy
+                    if (!Guid.Empty.Equals(termGroupId))
+                    {
+                        var taxSession = TaxonomySession.GetTaxonomySession(ctx);
+                        var termStore = taxSession.GetDefaultSiteCollectionTermStore();
+                        var termGroup = termStore.GetGroup(termGroupId);
+                        ctx.ExecuteQueryRetry();
+                        isDirty = false;
+                        if (!termGroup.ServerObjectIsNull.Value)
+                        {
+                            var termSets = termGroup.TermSets;
+                            ctx.Load(termSets);
+                            ctx.ExecuteQueryRetry();
+                            foreach (var termSet in termSets)
+                            {
+                                termSet.DeleteObject();
+                            }
+                            termGroup.DeleteObject();
+                            isDirty = true;
+                        }
+                        if (isDirty)
+                        {
+                            ctx.ExecuteQueryRetry();
+                        }
+                    }
                 }
             }
         }
@@ -120,6 +128,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod]
         public void CanProvisionObjects()
         {
+            if (TestCommon.AppOnlyTesting())
+            {
+                Assert.Inconclusive("Taxonomy tests are not supported when testing using app-only");
+            }
+
             var template = new ProvisioningTemplate();
             var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
 
