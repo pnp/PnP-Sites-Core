@@ -533,7 +533,7 @@ namespace Microsoft.SharePoint.Client
                     {
                         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
                     }
-                    HttpResponseMessage response = await httpClient.SendAsync(request);
+                    HttpResponseMessage response = await httpClient.SendAsync(request).ConfigureAwait(false);
 
                     if (response.IsSuccessStatusCode)
                     {
