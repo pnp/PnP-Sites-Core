@@ -2584,6 +2584,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to obtain a ClientContext instance: {0}..
+        /// </summary>
+        internal static string TimerJob_DoWork_NoClientContext {
+            get {
+                return ResourceManager.GetString("TimerJob_DoWork_NoClientContext", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No event receiver connected to the TimerJobRun event.
         /// </summary>
         internal static string TimerJob_DoWork_NoEventHandler {
