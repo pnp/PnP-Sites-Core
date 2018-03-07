@@ -52,7 +52,7 @@ namespace OfficeDevPnP.Core
         /// <summary>
         /// Creates a ClientContext allowing you to override the default retry and delay values of ExecuteQueryRetry
         /// </summary>
-        /// <param name="url">A SharePoint site url</param>
+        /// <param name="url">A SharePoint site URL</param>
         /// <param name="retryCount">Maximum amount of retries before giving up</param>
         /// <param name="delay">Initial delay in milliseconds</param>
         public PnPClientContext(string url, int retryCount = 10, int delay = 500) : base(url)
@@ -64,7 +64,7 @@ namespace OfficeDevPnP.Core
         /// <summary>
         /// Creates a ClientContext allowing you to override the default retry and delay values of ExecuteQueryRetry
         /// </summary>
-        /// <param name="uri">A SharePoint site/web full url</param>
+        /// <param name="uri">A SharePoint site/web full URL</param>
         /// <param name="retryCount">Maximum amount of retries before giving up</param>
         /// <param name="delay">Initial delay in milliseconds</param>
         public PnPClientContext(Uri uri, int retryCount = 10, int delay = 500) : base(uri)
@@ -76,8 +76,8 @@ namespace OfficeDevPnP.Core
         /// <summary>
         /// Clones a PnPClientContext object while "taking over" the security context of the existing PnPClientContext instance
         /// </summary>
-        /// <param name="siteUrl">Site url to be used for cloned ClientContext</param>
-        /// <returns>A PnPClientContext object created for the passed site url</returns>
+        /// <param name="siteUrl">Site URL to be used for cloned ClientContext</param>
+        /// <returns>A PnPClientContext object created for the passed site URL</returns>
         public PnPClientContext Clone(string siteUrl)
         {
             if (string.IsNullOrWhiteSpace(siteUrl))
@@ -90,8 +90,8 @@ namespace OfficeDevPnP.Core
         /// <summary>
         /// Clones a PnPClientContext object while "taking over" the security context of the existing PnPClientContext instance
         /// </summary>
-        /// <param name="siteUri">Site url to be used for cloned ClientContext</param>
-        /// <returns>A PnPClientContext object created for the passed site url</returns>
+        /// <param name="siteUri">Site URL to be used for cloned ClientContext</param>
+        /// <returns>A PnPClientContext object created for the passed site URL</returns>
         public PnPClientContext Clone(Uri siteUri)
         {
             if (siteUri == null)

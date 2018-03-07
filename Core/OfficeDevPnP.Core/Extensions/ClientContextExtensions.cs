@@ -49,8 +49,8 @@ namespace Microsoft.SharePoint.Client
         /// Clones a ClientContext object while "taking over" the security context of the existing ClientContext instance
         /// </summary>
         /// <param name="clientContext">ClientContext to be cloned</param>
-        /// <param name="siteUrl">Site url to be used for cloned ClientContext</param>
-        /// <returns>A ClientContext object created for the passed site url</returns>
+        /// <param name="siteUrl">Site URL to be used for cloned ClientContext</param>
+        /// <returns>A ClientContext object created for the passed site URL</returns>
         public static ClientContext Clone(this ClientRuntimeContext clientContext, string siteUrl)
         {
             if (string.IsNullOrWhiteSpace(siteUrl))
@@ -224,8 +224,8 @@ namespace Microsoft.SharePoint.Client
         /// Clones a ClientContext object while "taking over" the security context of the existing ClientContext instance
         /// </summary>
         /// <param name="clientContext">ClientContext to be cloned</param>
-        /// <param name="siteUrl">Site url to be used for cloned ClientContext</param>
-        /// <returns>A ClientContext object created for the passed site url</returns>
+        /// <param name="siteUrl">Site URL to be used for cloned ClientContext</param>
+        /// <returns>A ClientContext object created for the passed site URL</returns>
         public static ClientContext Clone(this ClientRuntimeContext clientContext, Uri siteUrl)
         {
             if (siteUrl == null)
