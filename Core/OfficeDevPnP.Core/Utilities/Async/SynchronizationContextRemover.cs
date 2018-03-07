@@ -4,6 +4,9 @@ using System.Threading;
 
 namespace OfficeDevPnP.Core.Utilities.Async
 {
+    /// <summary>
+    /// Based upon https://blogs.msdn.microsoft.com/benwilli/2017/02/09/an-alternative-to-configureawaitfalse-everywhere/
+    /// </summary>
     public struct SynchronizationContextRemover : INotifyCompletion
     {
         public bool IsCompleted
