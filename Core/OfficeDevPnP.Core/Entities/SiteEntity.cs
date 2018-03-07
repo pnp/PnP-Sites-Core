@@ -8,7 +8,7 @@ namespace OfficeDevPnP.Core.Entities
     public class SiteEntity
     {
         /// <summary>
-        /// The SPO url
+        /// The SPO URL
         /// </summary>
         public string Url
         {

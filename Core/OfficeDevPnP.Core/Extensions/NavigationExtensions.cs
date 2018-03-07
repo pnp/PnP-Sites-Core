@@ -525,7 +525,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="nodeTitle">the title of node to add</param>
-        /// <param name="nodeUri">the url of node to add</param>
+        /// <param name="nodeUri">the URL of node to add</param>
         /// <param name="parentNodeTitle">if string.Empty, then will add this node as top level node</param>
         /// <param name="navigationType">the type of navigation, quick launch, top navigation or search navigation</param>
         /// <param name="isExternal">true if the link is an external link</param>

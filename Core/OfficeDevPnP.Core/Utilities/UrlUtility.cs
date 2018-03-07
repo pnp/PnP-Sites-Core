@@ -24,8 +24,8 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Combines a path and a relative path.
         /// </summary>
-        /// <param name="path">A SharePoint url</param>
-        /// <param name="relativePaths">SharePoint relative urls</param>
+        /// <param name="path">A SharePoint URL</param>
+        /// <param name="relativePaths">SharePoint relative URLs</param>
         /// <returns>Returns comibed path with a relative paths</returns>
         public static string Combine(string path, params string[] relativePaths) {
             string pathBuilder = path ?? string.Empty;
@@ -41,8 +41,8 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Combines a path and a relative path.
         /// </summary>
-        /// <param name="path">A SharePoint url</param>
-        /// <param name="relative">SharePoint relative url</param>
+        /// <param name="path">A SharePoint URL</param>
+        /// <param name="relative">SharePoint relative URL</param>
         /// <returns>Returns comibed path with a relative path</returns>
         public static string Combine(string path, string relative) 
         {
@@ -72,9 +72,9 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Adds query string parameters to the end of a querystring and guarantees the proper concatenation with <b>?</b> and <b>&amp;.</b>
         /// </summary>
-        /// <param name="path">A SharePoint url</param>
-        /// <param name="queryString">Query string value that need to append to the url</param>
-        /// <returns>Returns url along with appended query string</returns>
+        /// <param name="path">A SharePoint URL</param>
+        /// <param name="queryString">Query string value that need to append to the URL</param>
+        /// <returns>Returns URL along with appended query string</returns>
         public static string AppendQueryString(string path, string queryString)
         {
             string url = path;
@@ -90,17 +90,17 @@ namespace OfficeDevPnP.Core.Utilities
 
         #region [ RelativeUrl ]
         /// <summary>
-        /// Returns realtive url of given url
+        /// Returns realtive URL of given URL
         /// </summary>
-        /// <param name="urlToProcess">SharePoint url to process</param>
-        /// <returns>Returns realtive url of given url</returns>
+        /// <param name="urlToProcess">SharePoint URL to process</param>
+        /// <returns>Returns realtive URL of given URL</returns>
         public static string MakeRelativeUrl(string urlToProcess) {
             Uri uri = new Uri(urlToProcess);
             return uri.AbsolutePath;
         }
 
         /// <summary>
-        /// Ensures that there is a trailing slash at the end of the url
+        /// Ensures that there is a trailing slash at the end of the URL
         /// </summary>
         /// <param name="urlToProcess"></param>
         /// <returns></returns>
@@ -116,10 +116,10 @@ namespace OfficeDevPnP.Core.Utilities
         #endregion
 
         /// <summary>
-        /// Checks if url contains invalid characters or not
+        /// Checks if URL contains invalid characters or not
         /// </summary>
         /// <param name="content">Url value</param>
-        /// <returns>Returns true if url contains invalid characters. Otherwise returns false.</returns>
+        /// <returns>Returns true if URL contains invalid characters. Otherwise returns false.</returns>
         public static bool ContainsInvalidUrlChars(this string content)
         {
 	        return Regex.IsMatch(content, INVALID_CHARS_REGEX);
@@ -139,7 +139,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// Removes invalid characters
         /// </summary>
         /// <param name="content">Url value</param>
-        /// <returns>Returns url without invalid characters</returns>
+        /// <returns>Returns URL without invalid characters</returns>
         public static string StripInvalidUrlChars(this string content)
         {
             return ReplaceInvalidUrlChars(content, "");
@@ -149,17 +149,17 @@ namespace OfficeDevPnP.Core.Utilities
         /// </summary>
         /// <param name="content">Url value</param>
         /// <param name="replacer">string need to replace with invalid characters</param>
-        /// <returns>Returns replaced invalid charcters from url</returns>
+        /// <returns>Returns replaced invalid charcters from URL</returns>
         public static string ReplaceInvalidUrlChars(this string content, string replacer)
         {
 	    return new Regex(INVALID_CHARS_REGEX).Replace(content, replacer);
         }
 
         /// <summary>
-        /// Tells url is virtual directory or not
+        /// Tells URL is virtual directory or not
         /// </summary>
-        /// <param name="url">SharePoint url</param>
-        /// <returns>Returns true if url is virtual directory. Otherwise returns false.</returns>
+        /// <param name="url">SharePoint URL</param>
+        /// <returns>Returns true if URL is virtual directory. Otherwise returns false.</returns>
         public static bool IsIisVirtualDirectory(string url)
         {
             return Regex.IsMatch(url, IIS_MAPPED_PATHS_REGEX, RegexOptions.IgnoreCase);

@@ -1157,7 +1157,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.spPagesLibrary = this.Context.Web.GetListByUrl(this.PagesLibrary, p => p.RootFolder);
             }
 
-            // Build up server relative page url
+            // Build up server relative page URL
             if (string.IsNullOrEmpty(this.sitePagesServerRelativeUrl))
             {
                 this.sitePagesServerRelativeUrl = this.spPagesLibrary.RootFolder.ServerRelativeUrl;

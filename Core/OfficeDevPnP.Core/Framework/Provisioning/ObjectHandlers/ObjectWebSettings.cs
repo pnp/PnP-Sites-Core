@@ -83,7 +83,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Extract site logo if property has been set and it's not dynamic image from _api URL
                     if (!string.IsNullOrEmpty(web.SiteLogoUrl) && (!web.SiteLogoUrl.ToLowerInvariant().Contains("_api/")))
                     {
-                        // Convert to server relative URL if needed (web.SiteLogoUrl can be set to FQDN url of a file hosted in the site (e.g. for communication sites))
+                        // Convert to server relative URL if needed (web.SiteLogoUrl can be set to FQDN URL of a file hosted in the site (e.g. for communication sites))
                         Uri webUri = new Uri(web.Url);
                         string webUrl = $"{webUri.Scheme}://{webUri.DnsSafeHost}";
                         string siteLogoServerRelativeUrl = web.SiteLogoUrl.Replace(webUrl, "");
@@ -188,7 +188,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Configure the filename to use 
                         fileName = HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
                         
-                        // Build up a site relative container url...might end up empty as well
+                        // Build up a site relative container URL...might end up empty as well
                         String container = HttpUtility.UrlDecode(folderPath.Replace(web.ServerRelativeUrl, "")).Trim('/').Replace("/", "\\");
 
                         using (Stream memStream = new MemoryStream())

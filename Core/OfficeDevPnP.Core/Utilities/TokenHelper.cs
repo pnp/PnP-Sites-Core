@@ -85,7 +85,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// HostedAppHostNameOverride, HostedAppHostName, ClientSecret, and Realm (if it is specified). If HostedAppHostNameOverride is present,
         /// it will be used for validation. Otherwise, if the <paramref name="appHostName"/> is not 
         /// null, it is used for validation instead of the web.config's HostedAppHostName. If the token is invalid, an 
-        /// exception is thrown. If the token is valid, TokenHelper's static STS metadata url is updated based on the token contents
+        /// exception is thrown. If the token is valid, TokenHelper's static STS metadata URL is updated based on the token contents
         /// and a JsonWebSecurityToken based on the context token is returned.
         /// </summary>
         /// <param name="contextTokenString">The context token to validate</param>
@@ -461,7 +461,7 @@ namespace OfficeDevPnP.Core.Utilities
         }
 
         /// <summary>
-        /// Returns the SharePoint url to which the app should redirect the browser to request consent and get back
+        /// Returns the SharePoint URL to which the app should redirect the browser to request consent and get back
         /// an authorization code.
         /// </summary>
         /// <param name="contextUrl">Absolute Url of the SharePoint site</param>
@@ -479,7 +479,7 @@ namespace OfficeDevPnP.Core.Utilities
         }
 
         /// <summary>
-        /// Returns the SharePoint url to which the app should redirect the browser to request consent and get back
+        /// Returns the SharePoint URL to which the app should redirect the browser to request consent and get back
         /// an authorization code.
         /// </summary>
         /// <param name="contextUrl">Absolute Url of the SharePoint site</param>
@@ -500,7 +500,7 @@ namespace OfficeDevPnP.Core.Utilities
         }
 
         /// <summary>
-        /// Returns the SharePoint url to which the app should redirect the browser to request a new context token.
+        /// Returns the SharePoint URL to which the app should redirect the browser to request a new context token.
         /// </summary>
         /// <param name="contextUrl">Absolute Url of the SharePoint site</param>
         /// <param name="redirectUri">Uri to which SharePoint should redirect the browser to with a context token</param>
@@ -648,8 +648,8 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Ensures that the specified URL ends with '/' if it is not null or empty.
         /// </summary>
-        /// <param name="url">The url.</param>
-        /// <returns>The url ending with '/' if it is not null or empty.</returns>
+        /// <param name="url">The URL.</param>
+        /// <returns>The URL ending with '/' if it is not null or empty.</returns>
         public static string EnsureTrailingSlash(string url)
         {
             if (!string.IsNullOrEmpty(url) && url[url.Length - 1] != '/')
@@ -1204,7 +1204,7 @@ namespace OfficeDevPnP.Core.Utilities
                     return s2sEndpoint.location;
                 }
 
-                throw new Exception("Metadata document does not contain STS endpoint url");
+                throw new Exception("Metadata document does not contain STS endpoint URL");
             }
 
             private class JsonMetadataDocument
@@ -2105,7 +2105,7 @@ namespace OfficeDevPnP.Core.Utilities
                     return s2sEndpoint.location;
                 }
 
-                throw new Exception("Metadata document does not contain STS endpoint url");
+                throw new Exception("Metadata document does not contain STS endpoint URL");
             }
 
             private class JsonMetadataDocument
