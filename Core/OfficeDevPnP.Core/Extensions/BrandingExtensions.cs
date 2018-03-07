@@ -243,7 +243,7 @@ namespace Microsoft.SharePoint.Client
                 query.ViewXml = string.Format(CAML_QUERY_FIND_BY_FILENAME, lookName);
                 var existingCollection = composedLooksList.GetItems(query);
                 web.Context.Load(existingCollection);
-                web.Context.ExecuteQueryRetry();
+                await web.Context.ExecuteQueryRetryAsync();
                 var item = existingCollection.FirstOrDefault();
 
                 if (item != null)
