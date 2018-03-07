@@ -14,6 +14,7 @@ using SharePointPnP.IdentityModel.Extensions.S2S.Tokens;
 using Microsoft.SharePoint.Client;
 using Log = OfficeDevPnP.Core.Diagnostics.Log;
 using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Async;
 
 namespace OfficeDevPnP.Core.WebAPI
 {
@@ -145,6 +146,8 @@ namespace OfficeDevPnP.Core.WebAPI
             
             if (string.IsNullOrEmpty(apiRequest))
                 throw new ArgumentNullException("apiRequest");
+
+            await new SynchronizationContextRemover();
 
             if (!page.IsPostBack)
             {

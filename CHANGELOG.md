@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Better support for async methods, avoiding deadlocks
 - Updated spelling across various files [fowl2]
 
 ### Deprecated

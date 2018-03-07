@@ -8,6 +8,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
+using System.Threading.Tasks;
 #if !ONPREMISES
 using OfficeDevPnP.Core.Pages;
 #endif
@@ -123,6 +124,20 @@ namespace OfficeDevPnP.Core.Tests.Authentication
 
         //        newPage.Save("B1.aspx");
 
+        //    }
+        //}
+
+
+        //[TestMethod]
+        //public async Task GetAvailableClientSideComponentsTestAsync()
+        //{
+        //    using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/bert1"))
+        //    {
+        //        var newPage = new Pages.ClientSidePage(cc);
+
+        //        var components = await newPage.AvailableClientSideComponentsAsync("");
+
+        //        Assert.IsTrue(components.Count() > 0);
         //    }
         //}
 

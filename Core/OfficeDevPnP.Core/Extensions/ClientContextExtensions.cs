@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens;
+using OfficeDevPnP.Core.Utilities.Async;
 #if NETSTANDARD2_0
 using System.IdentityModel.Tokens.Jwt;
 #endif
@@ -71,6 +72,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="userAgent">UserAgent string value to insert for this request. You can define this value in your app's config file using key="SharePointPnPUserAgent" value="PnPRocks"></param>
         public static async Task ExecuteQueryRetryAsync(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
         {
+            await new SynchronizationContextRemover();
+
             await ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
         }
 #endif
@@ -510,6 +513,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns></returns>
         public static async Task<string> GetRequestDigest(this ClientContext context)
         {
+            await new SynchronizationContextRemover();
+
             //InitializeSecurity(context);
 
             using (var handler = new HttpClientHandler())
@@ -568,6 +573,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns></returns>
         public static async Task<ClientContext> CreateSiteAsync(this ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
+            await new SynchronizationContextRemover();
+
             return await SiteCollection.CreateAsync(clientContext, siteCollectionCreationInformation);
         }
 
@@ -579,6 +586,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns></returns>
         public static async Task<ClientContext> CreateSiteAsync(this ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
+            await new SynchronizationContextRemover();
+
             return await SiteCollection.CreateAsync(clientContext, siteCollectionCreationInformation);
         }
 
@@ -590,6 +599,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The clientcontext of the groupified site</returns>
         public static async Task<ClientContext> GroupifySiteAsync(this ClientContext clientContext, TeamSiteCollectionGroupifyInformation siteCollectionGroupifyInformation)
         {
+            await new SynchronizationContextRemover();
+
             return await SiteCollection.GroupifyAsync(clientContext, siteCollectionGroupifyInformation);
         }
 
@@ -601,6 +612,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if in use, false otherwise</returns>
         public static async Task<bool> AliasExistsAsync(this ClientContext clientContext, string alias)
         {
+            await new SynchronizationContextRemover();
+
             return await SiteCollection.AliasExistsAsync(clientContext, alias);
         }
 #endif
