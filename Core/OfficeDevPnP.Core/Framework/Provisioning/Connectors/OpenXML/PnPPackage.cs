@@ -39,7 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         public const string CT_ORIGIN = "application/pnpprovisioningtemplate.origin";
         public const string CT_FILE = "application/unknown";
 
-        // urls
+        // URLs
         public static string U_PROVISIONINGTEMPLATE_MANIFEST = "/manifest.xml";
 
         public static string U_DIR_PROVISIONINGTEMPLATE = "/ProvisioningTemplate/";

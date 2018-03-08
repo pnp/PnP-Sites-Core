@@ -111,6 +111,49 @@ namespace Microsoft.SharePoint.Client.Tests
                     _listId = list.Id;
                 }
             }
+            else
+            {
+                using (var clientContext = TestCommon.CreateClientContext())
+                {
+                    _textFieldName = "Test_Text_Field_" + DateTime.Now.ToFileTime();
+                    _textFieldName2 = "Test_Text_Field2_" + DateTime.Now.ToFileTime();
+
+                    // List
+                    _textFieldId = Guid.NewGuid();
+                    _textFieldId2 = Guid.NewGuid();
+
+                    var fieldCI = new FieldCreationInformation(FieldType.Text)
+                    {
+                        Id = _textFieldId,
+                        InternalName = _textFieldName,
+                        DisplayName = "Test Text Field",
+                        Group = "Test Group"
+                    };
+
+                    var fieldCI2 = new FieldCreationInformation(FieldType.Text)
+                    {
+                        Id = _textFieldId2,
+                        InternalName = _textFieldName2,
+                        DisplayName = "Test Text Field 2",
+                        Group = "Test Group"
+                    };
+
+                    var textfield = clientContext.Web.CreateField(fieldCI);
+                    var textfield2 = clientContext.Web.CreateField(fieldCI2);
+
+                    var list = clientContext.Web.CreateList(ListTemplateType.DocumentLibrary, "Test_list_" + DateTime.Now.ToFileTime(), false);
+
+                    list.Fields.Add(textfield);
+                    list.Fields.Add(textfield2);
+
+                    list.Update();
+                    clientContext.Load(list);
+                    clientContext.ExecuteQueryRetry();
+
+                    _listId = list.Id;
+                }
+
+            }
         }
 
         [TestCleanup]
@@ -124,9 +167,9 @@ namespace Microsoft.SharePoint.Client.Tests
                 clientContext.ExecuteQueryRetry();
             }
 
-            if (!TestCommon.AppOnlyTesting())
+            using (var clientContext = TestCommon.CreateClientContext())
             {
-                using (var clientContext = TestCommon.CreateClientContext())
+                if (!TestCommon.AppOnlyTesting())
                 {
                     // Clean up Taxonomy
                     var taxSession = TaxonomySession.GetTaxonomySession(clientContext);
@@ -141,22 +184,22 @@ namespace Microsoft.SharePoint.Client.Tests
                     }
                     termGroup.DeleteObject(); // Will delete underlying termset
                     clientContext.ExecuteQueryRetry();
-
-                    // Clean up list
-                    var list = clientContext.Web.Lists.GetById(_listId);
-                    list.DeleteObject();
-                    clientContext.ExecuteQueryRetry();
-
-                    // Clean up fields
-                    var fields = clientContext.LoadQuery(clientContext.Web.Fields);
-                    clientContext.ExecuteQueryRetry();
-                    var testFields = fields.Where(f => f.InternalName.StartsWith("Test_", StringComparison.OrdinalIgnoreCase));
-                    foreach (var field in testFields)
-                    {
-                        field.DeleteObject();
-                    }
-                    clientContext.ExecuteQueryRetry();
                 }
+
+                // Clean up list
+                var list = clientContext.Web.Lists.GetById(_listId);
+                list.DeleteObject();
+                clientContext.ExecuteQueryRetry();
+
+                // Clean up fields
+                var fields = clientContext.LoadQuery(clientContext.Web.Fields);
+                clientContext.ExecuteQueryRetry();
+                var testFields = fields.Where(f => f.InternalName.StartsWith("Test_", StringComparison.OrdinalIgnoreCase));
+                foreach (var field in testFields)
+                {
+                    field.DeleteObject();
+                }
+                clientContext.ExecuteQueryRetry();
             }
         }
         #endregion
@@ -584,8 +627,26 @@ namespace Microsoft.SharePoint.Client.Tests
                 Assert.IsTrue(actualSubscriptions.Count > 0);
             }
         }
+
+        [TestMethod]
+        public async Task GetAllWebhookSubscriptionsTestAsync()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
+                clientContext.Load(testList);
+                await clientContext.ExecuteQueryRetryAsync();
+
+                WebhookSubscription createdSubscription = testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 3);
+
+                IList<WebhookSubscription> actualSubscriptions = await testList.GetWebhookSubscriptionsAsync();
+
+                Assert.IsTrue(actualSubscriptions.Count > 0);
+            }
+        }
+
 #endif
-    #endregion
+        #endregion
 
     }
 }

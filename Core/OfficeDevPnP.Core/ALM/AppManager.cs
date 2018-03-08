@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Async;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -72,6 +73,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(filename));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseAddRequest(file, filename, overwrite, true);
         }
 
@@ -95,6 +99,9 @@ namespace OfficeDevPnP.Core.ALM
 
             var bytes = System.IO.File.ReadAllBytes(path);
             var fileInfo = new FileInfo(path);
+
+            await new SynchronizationContextRemover();
+
             return await BaseAddRequest(bytes, fileInfo.Name, overwrite, true);
         }
 
@@ -123,6 +130,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(appMetadata.Id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await InstallAsync(appMetadata.Id);
         }
 
@@ -147,6 +157,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(id, "Install");
         }
 
@@ -175,6 +188,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(appMetadata.Id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await UninstallAsync(appMetadata.Id);
         }
 
@@ -199,6 +215,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(id, "Uninstall");
         }
 
@@ -227,6 +246,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(appMetadata.Id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await UpgradeAsync(appMetadata.Id);
         }
 
@@ -251,6 +273,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(id, "Upgrade");
         }
 
@@ -285,6 +310,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 { "skipFeatureDeployment", skipFeatureDeployment }
             };
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(appMetadata.Id, "Deploy", true, postObj);
         }
 
@@ -315,6 +343,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 { "skipFeatureDeployment", skipFeatureDeployment }
             };
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(id, "Deploy", true, postObj);
         }
 
@@ -343,6 +374,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(appMetadata.Id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(appMetadata.Id, "Retract", true);
         }
 
@@ -367,6 +401,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(id, "Retract", true);
         }
 
@@ -395,6 +432,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(appMetadata.Id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(appMetadata.Id, "Remove", true);
         }
 
@@ -419,6 +459,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(id, "Remove", true);
         }
 
@@ -437,6 +480,8 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public async Task<List<AppMetadata>> GetAvailableAsync()
         {
+            await new SynchronizationContextRemover();
+
             return await BaseGetAvailableAsync(Guid.Empty);
         }
 
@@ -452,6 +497,8 @@ namespace OfficeDevPnP.Core.ALM
 
         public async Task<AppMetadata> GetAvailableAsync(Guid id)
         {
+            await new SynchronizationContextRemover();
+
             return await BaseGetAvailableAsync(id);
         }
 
@@ -467,6 +514,8 @@ namespace OfficeDevPnP.Core.ALM
 
         public async Task<AppMetadata> GetAvailableAsync(string title)
         {
+            await new SynchronizationContextRemover();
+
             return await BaseGetAvailableAsync(Guid.Empty, title);
         }
 

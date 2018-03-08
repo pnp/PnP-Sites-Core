@@ -883,6 +883,7 @@
     <Compile Include="IdentityModel\WSTrustBindings\CertificateWSTrustBinding.cs" />
     <Compile Include="Sites\SiteCollection.cs" />
     <Compile Include="Sites\SiteCollectionCreationInformation.cs" />
+    <Compile Include="Utilities\Async\SynchronizationContextRemover.cs" />
     <Compile Include="Utilities\Cache\ICacheProvider.cs" />
     <Compile Include="Utilities\Cache\InMemoryCacheProvider.cs" />
     <Compile Include="Utilities\Cache\SimpleAspNetCacheProvider.cs" />

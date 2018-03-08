@@ -14,23 +14,23 @@
         /// </summary>
         public bool IsCustomComposedLook { get; set; }
         /// <summary>
-        /// Master page url
+        /// Master page URL
         /// </summary>
         public string MasterPage { get; set; }
         /// <summary>
-        /// Custom master page url
+        /// Custom master page URL
         /// </summary>
         public string CustomMasterPage { get; set; }
         /// <summary>
-        /// Theme url
+        /// Theme URL
         /// </summary>
         public string Theme { get; set; }
         /// <summary>
-        /// Background image url
+        /// Background image URL
         /// </summary>
         public string BackgroundImage { get; set; }
         /// <summary>
-        /// Font scheme url
+        /// Font scheme URL
         /// </summary>
         public string Font { get; set; }
     }
