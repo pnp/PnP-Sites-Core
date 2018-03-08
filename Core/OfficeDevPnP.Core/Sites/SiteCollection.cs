@@ -3,6 +3,7 @@ using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Async;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,8 @@ namespace OfficeDevPnP.Core.Sites
         /// <returns>ClientContext object for the created site collection</returns>
         public static async Task<ClientContext> CreateAsync(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
+            await new SynchronizationContextRemover();
+
             ClientContext responseContext = null;
 
             var accessToken = clientContext.GetAccessToken();
@@ -130,8 +133,10 @@ namespace OfficeDevPnP.Core.Sites
                 throw new ArgumentException("Alias cannot contain spaces", "Alias");
             }
 
-            ClientContext responseContext = null;
+            await new SynchronizationContextRemover();
 
+            ClientContext responseContext = null;
+            
             var accessToken = clientContext.GetAccessToken();
 
             if (clientContext.IsAppOnly())
@@ -232,6 +237,8 @@ namespace OfficeDevPnP.Core.Sites
             {
                 throw new ArgumentException("DisplayName is required", "DisplayName");
             }
+
+            await new SynchronizationContextRemover();
 
             ClientContext responseContext = null;
 
@@ -363,6 +370,8 @@ namespace OfficeDevPnP.Core.Sites
         /// <returns>True if in use, false otherwise</returns>
         public static async Task<bool> AliasExistsAsync(ClientContext context, string alias)
         {
+            await new SynchronizationContextRemover();
+
             bool aliasExists = true;
 
             var accessToken = context.GetAccessToken();

@@ -571,9 +571,9 @@ namespace Microsoft.SharePoint.Client
                     additionalAttributesList.Add(string.Format(Constants.FIELD_XML_PARAMETER_FORMAT, "ClientSideComponentId", fieldCreationInformation.ClientSideComponentId.ToString("D")));
                 }
             }
-            if(!additionalAttributesList.Contains("ClientSideComponentProperties"))
+            if (!additionalAttributesList.Contains("ClientSideComponentProperties"))
             {
-                if(fieldCreationInformation.ClientSideComponentProperties != null)
+                if (fieldCreationInformation.ClientSideComponentProperties != null)
                 {
                     additionalAttributesList.Add(string.Format(Constants.FIELD_XML_PARAMETER_FORMAT, "ClientSideComponentProperties", fieldCreationInformation.ClientSideComponentProperties));
                 }
@@ -1664,53 +1664,6 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Set default content type to list
-        /// </summary>
-        /// <param name="web">Site to be processed - can be root web or sub site</param>
-        /// <param name="list">List to update</param>
-        /// <param name="contentTypeId">Complete ID for the content type</param>        
-        public static void SetDefaultContentTypeToList(this Web web, List list, string contentTypeId)
-        {
-            list.SetDefaultContentType(contentTypeId);
-        }
-
-        /// <summary>
-        /// Set default content type to list
-        /// </summary>
-        /// <param name="web">Site to be processed - can be root web or sub site</param>
-        /// <param name="list">List to update</param>
-        /// <param name="contentType">Content type to make default</param>
-        public static void SetDefaultContentTypeToList(this Web web, List list, ContentType contentType)
-        {
-            list.SetDefaultContentType(contentType.Id);
-        }
-
-        /// <summary>
-        /// Set default content type to list
-        /// </summary>
-        /// <param name="web">Site to be processed - can be root web or sub site</param>
-        /// <param name="listTitle">Title of the list to be updated</param>
-        /// <param name="contentTypeId">Complete ID for the content type</param>
-        public static void SetDefaultContentTypeToList(this Web web, string listTitle, string contentTypeId)
-        {
-            var list = web.GetListByTitle(listTitle);
-            web.Context.Load(list);
-            web.Context.ExecuteQueryRetry();
-            list.SetDefaultContentType(contentTypeId);
-        }
-
-        /// <summary>
-        /// Set's default content type list. 
-        /// </summary>
-        /// <param name="web">Site to be processed - can be root web or sub site</param>
-        /// <param name="listTitle">Title of the list to be updated</param>
-        /// <param name="contentType">Content type to make default</param>
-        public static void SetDefaultContentTypeToList(this Web web, string listTitle, ContentType contentType)
-        {
-            SetDefaultContentTypeToList(web, listTitle, contentType.Id.ToString());
-        }
-
-        /// <summary>
         /// Sets the default content type in a list.
         /// </summary>
         /// <remarks>
@@ -1815,7 +1768,7 @@ namespace Microsoft.SharePoint.Client
             }
             else
             {
-                return (!parentContentTypeId.Equals(BuiltInContentTypeId.Folder, StringComparison.OrdinalIgnoreCase)) 
+                return (!parentContentTypeId.Equals(BuiltInContentTypeId.Folder, StringComparison.OrdinalIgnoreCase))
                     && !(parentContentTypeId.Equals(BuiltInContentTypeId.UntypedDocument, StringComparison.OrdinalIgnoreCase));
             }
         }
@@ -1840,7 +1793,7 @@ namespace Microsoft.SharePoint.Client
                 uniqueContentTypeOrder = uniqueContentTypeOrder.ToList();
                 bool isDirty = false;
                 foreach (ContentType contentType in contentTypes)
-                {                       
+                {
                     list.EnsureProperty(ct => ct.Id);
 
                     if (!uniqueContentTypeOrder.Contains(contentType.Id, new ContentTypeIdComparer()))

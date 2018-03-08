@@ -2,6 +2,7 @@
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.Entities;
+using OfficeDevPnP.Core.Utilities.Async;
 using OfficeDevPnP.Core.Utilities.Webhooks;
 using System;
 using System.Collections.Generic;
@@ -57,10 +58,12 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="subscription">The Webhook subscription to add</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when expiration date is out of valid range.</exception>
         /// <returns>The added subscription object</returns>
-        internal static async Task<WebhookSubscription> AddWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string accessToken, ClientContext context, WebhookSubscription subscription)
+        public static async Task<WebhookSubscription> AddWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string accessToken, ClientContext context, WebhookSubscription subscription)
         {
             if (!ValidateExpirationDateTime(subscription.ExpirationDateTime))
                 throw new ArgumentOutOfRangeException(nameof(subscription.ExpirationDateTime), "The specified expiration date is invalid. Should be greater than today and within 6 months");
+
+            await new SynchronizationContextRemover();
 
             string responseString = null;
             using (var handler = new HttpClientHandler())
@@ -121,9 +124,11 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="validityInMonths">The validity of the subscriptions in months</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when expiration date is out of valid range.</exception>
         /// <returns>The added subscription object</returns>
-        internal static async Task<WebhookSubscription> AddWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string accessToken, ClientContext context, string resourceId, string notificationUrl,
+        public static async Task<WebhookSubscription> AddWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string accessToken, ClientContext context, string resourceId, string notificationUrl,
             string clientState = null, int validityInMonths = MaximumValidityInMonths)
         {
+            await new SynchronizationContextRemover();
+
             // If validity in months is the Maximum, use the effective max allowed DateTime instead
             DateTime expirationDateTime = validityInMonths == MaximumValidityInMonths
                 ? MaxExpirationDateTime
@@ -153,11 +158,13 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="context">ClientContext instance to use for authentication</param>
         /// <exception cref="ArgumentOutOfRangeException">Thrown when expiration date is out of valid range.</exception>
         /// <returns>true if succesful, exception in case something went wrong</returns>
-        internal static async Task<bool> UpdateWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string resourceId, string subscriptionId,
+        public static async Task<bool> UpdateWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string resourceId, string subscriptionId,
             string webHookEndPoint, DateTime expirationDateTime, string accessToken, ClientContext context)
         {
             if (!ValidateExpirationDateTime(expirationDateTime))
                 throw new ArgumentOutOfRangeException(nameof(expirationDateTime), "The specified expiration date is invalid. Should be greater than today and within 6 months");
+
+            await new SynchronizationContextRemover();
 
             using (var handler = new HttpClientHandler())
             {
@@ -218,8 +225,10 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="accessToken">Access token to authenticate against SharePoint</param>
         /// <param name="context">ClientContext instance to use for authentication</param>
         /// <returns>true if succesful, exception in case something went wrong</returns>
-        internal static async Task<bool> RemoveWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string resourceId, string subscriptionId, string accessToken, ClientContext context)
+        public static async Task<bool> RemoveWebhookSubscriptionAsync(string webUrl, WebHookResourceType resourceType, string resourceId, string subscriptionId, string accessToken, ClientContext context)
         {
+            await new SynchronizationContextRemover();
+
             using (var handler = new HttpClientHandler())
             {
                 context.Web.EnsureProperty(p => p.Url);
@@ -272,9 +281,12 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="accessToken">Access token to authenticate against SharePoint</param>
         /// <param name="context">ClientContext instance to use for authentication</param>
         /// <returns>Collection of <see cref="WebhookSubscription"/> instances, one per returned web hook</returns>
-        internal static async Task<ResponseModel<WebhookSubscription>> GetWebhooksSubscriptionsAsync(string webUrl, WebHookResourceType resourceType, string resourceId, string accessToken, ClientContext context)
+        public static async Task<ResponseModel<WebhookSubscription>> GetWebhooksSubscriptionsAsync(string webUrl, WebHookResourceType resourceType, string resourceId, string accessToken, ClientContext context)
         {
+            await new SynchronizationContextRemover();
+
             string responseString = null;
+
             using (var handler = new HttpClientHandler())
             {
                 context.Web.EnsureProperty(p => p.Url);

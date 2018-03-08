@@ -238,7 +238,7 @@ namespace Microsoft.SharePoint.Client
                 masterUrl = masterServerRelativeUrl;
             }
 
-            //URL decode retrieved url's
+            //URL decode retrieved URL's
             paletteUrl = System.Net.WebUtility.UrlDecode(paletteUrl);
             fontUrl = System.Net.WebUtility.UrlDecode(fontUrl);
             backgroundUrl = System.Net.WebUtility.UrlDecode(backgroundUrl);
@@ -919,7 +919,7 @@ namespace Microsoft.SharePoint.Client
                                     theme.Name = name;
                                     theme.IsCustomComposedLook = !defaultComposedLooks.Contains(theme.Name);
 
-                                    // Restore the default composed look image url
+                                    // Restore the default composed look image URL
                                     if (imageUrl != null)
                                     {
                                         theme.BackgroundImage = imageUrl;
@@ -991,7 +991,7 @@ namespace Microsoft.SharePoint.Client
                 return null;
             }
 
-            // Clean up the fully qualified urls
+            // Clean up the fully qualified URLs
             if (theme.BackgroundImage != null && theme.BackgroundImage.IndexOf(siteCollectionUrl, StringComparison.InvariantCultureIgnoreCase) > -1)
             {
                 theme.BackgroundImage = theme.BackgroundImage.Replace(siteCollectionUrl, "");

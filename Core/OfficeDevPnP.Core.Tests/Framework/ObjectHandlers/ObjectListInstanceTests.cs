@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using System.Xml.Linq;
+using Microsoft.SharePoint.Client.Taxonomy;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 {
@@ -14,6 +15,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
     {
         private const string ElementSchema = @"<Field xmlns=""http://schemas.microsoft.com/sharepoint/v3"" Name=""DemoField"" StaticName=""DemoField"" DisplayName=""Test Field"" Type=""Text"" ID=""{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}"" Group=""PnP"" Required=""true""/>";
         private Guid fieldId = Guid.Parse("{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}");
+        private Guid termGroupId = Guid.Empty;
 
         private const string CalculatedFieldElementSchema = @"<Field Name=""CalculatedField"" StaticName=""CalculatedField"" DisplayName=""Test Calculated Field"" Type=""Calculated"" ResultType=""Text"" ID=""{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}"" Group=""PnP"" ReadOnly=""TRUE"" ><Formula>=DemoField&amp;""DemoField""</Formula><FieldRefs><FieldRef Name=""DemoField"" ID=""{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}"" /></FieldRefs></Field>";
         private const string TokenizedCalculatedFieldElementSchema = @"<Field Name=""CalculatedField"" StaticName=""CalculatedField"" DisplayName=""Test Calculated Field"" Type=""Calculated"" ResultType=""Text"" ID=""{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}"" Group=""PnP"" ReadOnly=""TRUE"" ><Formula>=[{fieldtitle:DemoField}]&amp;""DemoField""</Formula></Field>";
@@ -76,6 +78,35 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 {
                     ctx.ExecuteQueryRetry();
                 }
+
+                if (!TestCommon.AppOnlyTesting())
+                {
+                    // Clean up Taxonomy
+                    if (!Guid.Empty.Equals(termGroupId))
+                    {
+                        var taxSession = TaxonomySession.GetTaxonomySession(ctx);
+                        var termStore = taxSession.GetDefaultSiteCollectionTermStore();
+                        var termGroup = termStore.GetGroup(termGroupId);
+                        ctx.ExecuteQueryRetry();
+                        isDirty = false;
+                        if (!termGroup.ServerObjectIsNull.Value)
+                        {
+                            var termSets = termGroup.TermSets;
+                            ctx.Load(termSets);
+                            ctx.ExecuteQueryRetry();
+                            foreach (var termSet in termSets)
+                            {
+                                termSet.DeleteObject();
+                            }
+                            termGroup.DeleteObject();
+                            isDirty = true;
+                        }
+                        if (isDirty)
+                        {
+                            ctx.ExecuteQueryRetry();
+                        }
+                    }
+                }
             }
         }
 
@@ -97,23 +128,48 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod]
         public void CanProvisionObjects()
         {
+            if (TestCommon.AppOnlyTesting())
+            {
+                Assert.Inconclusive("Taxonomy tests are not supported when testing using app-only");
+            }
+
             var template = new ProvisioningTemplate();
             var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
 
             listInstance.Url = string.Format("lists/{0}", listName);
             listInstance.Title = listName;
             listInstance.TemplateType = (int)ListTemplateType.GenericList;
-
-            Dictionary<string, string> dataValues = new Dictionary<string, string>();
-            dataValues.Add("Title", "Test");
-            DataRow dataRow = new DataRow(dataValues);
-
-            listInstance.DataRows.Add(dataRow);
-
-            template.Lists.Add(listInstance);
+            listInstance.FieldRefs.Add(new FieldRef() { Id = new Guid("23f27201-bee3-471e-b2e7-b64fd8b7ca38") });
 
             using (var ctx = TestCommon.CreateClientContext())
             {
+                //Create term
+                var taxSession = TaxonomySession.GetTaxonomySession(ctx);
+                var termStore = taxSession.GetDefaultSiteCollectionTermStore();
+
+                // Termgroup
+                termGroupId = Guid.NewGuid();
+                var termGroup = termStore.CreateGroup("Test_Group_" + DateTime.Now.ToFileTime(), termGroupId);
+                ctx.Load(termGroup);
+
+                var termSet = termGroup.CreateTermSet("Test_Termset_" + DateTime.Now.ToFileTime(), Guid.NewGuid(), 1033);
+                ctx.Load(termSet);
+
+                Guid termId = Guid.NewGuid();
+                string termName = "Test_Term_" + DateTime.Now.ToFileTime();
+
+                termSet.CreateTerm(termName, 1033, termId);
+
+                Dictionary<string, string> dataValues = new Dictionary<string, string>();
+                dataValues.Add("Title", "Test");
+                dataValues.Add("TaxKeyword", $"{termName}|{termId.ToString()}");
+                DataRow dataRow = new DataRow(dataValues);
+
+                listInstance.DataRows.Add(dataRow);
+
+                template.Lists.Add(listInstance);
+
+
                 var parser = new TokenParser(ctx.Web, template);
 
                 // Create the List
@@ -126,11 +182,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsNotNull(list);
 
                 var items = list.GetItems(CamlQuery.CreateAllItemsQuery());
-                ctx.Load(items, itms => itms.Include(item => item["Title"]));
+                ctx.Load(items, itms => itms.Include(item => item["Title"], i => i["TaxKeyword"]));
                 ctx.ExecuteQueryRetry();
 
                 Assert.IsTrue(items.Count == 1);
                 Assert.IsTrue(items[0]["Title"].ToString() == "Test");
+
+                //Validate taxonomy field data
+                var value = items[0]["TaxKeyword"] as TaxonomyFieldValueCollection;
+                Assert.IsNotNull(value);
+                Assert.IsTrue(value[0].WssId > 0, "Term WSS ID not set correctly");
+                Assert.AreEqual(termName, value[0].Label, "Term label not set correctly");
+                Assert.AreEqual(termId.ToString(), value[0].TermGuid, "Term GUID not set correctly");
+
             }
         }
 
