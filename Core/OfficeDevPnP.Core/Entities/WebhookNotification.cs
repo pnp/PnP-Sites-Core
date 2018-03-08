@@ -40,7 +40,7 @@ namespace OfficeDevPnP.Core.Entities
         public string TenantId { get; set; }
 
         /// <summary>
-        /// SharePoint site url
+        /// SharePoint site URL
         /// </summary>
         [JsonProperty(PropertyName = "siteUrl")]
         public string SiteUrl { get; set; }
