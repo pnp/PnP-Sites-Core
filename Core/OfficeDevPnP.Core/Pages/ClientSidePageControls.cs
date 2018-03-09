@@ -546,6 +546,7 @@ namespace OfficeDevPnP.Core.Pages
         private string webPartId;
         private string webPartData;
         private string title;
+        private bool supportsFullBleed;
         private string description;
         private string propertiesJson;
         private ClientSideWebPartControlData spControlData;
@@ -565,6 +566,7 @@ namespace OfficeDevPnP.Core.Pages
             this.htmlProperties = "";
             this.title = "";
             this.description = "";
+            this.supportsFullBleed = false;
             this.SetPropertiesJson("{}");
         }
 
@@ -625,6 +627,17 @@ namespace OfficeDevPnP.Core.Pages
             get
             {
                 return webPartId;
+            }
+        }
+
+        /// <summary>
+        /// Supports full bleed display experience
+        /// </summary>
+        public bool SupportsFullBleed
+        {
+            get
+            {
+                return supportsFullBleed;
             }
         }
 
@@ -749,6 +762,15 @@ namespace OfficeDevPnP.Core.Pages
             JObject wpJObject = JObject.Parse(component.Manifest);
             this.title = wpJObject["preconfiguredEntries"][0]["title"]["default"].Value<string>();
             this.description = wpJObject["preconfiguredEntries"][0]["title"]["default"].Value<string>();
+            if (wpJObject["supportsFullBleed"]!=null)
+            {
+                this.supportsFullBleed = wpJObject["supportsFullBleed"].Value<bool>();
+            }
+            else
+            {
+                this.supportsFullBleed = false;
+            }
+            
             this.SetPropertiesJson(wpJObject["preconfiguredEntries"][0]["properties"].ToString(Formatting.None));
 
             if (clientSideWebPartPropertiesUpdater != null)
@@ -767,8 +789,7 @@ namespace OfficeDevPnP.Core.Pages
             // Can this control be hosted in this section type?
             if (this.Section.Type == CanvasSectionTemplate.OneColumnFullWidth)
             {
-                if (!(this.WebPartId.Equals(ClientSidePage.ClientSideWebPartEnumToName(DefaultClientSideWebParts.Image), StringComparison.InvariantCultureIgnoreCase) ||
-                      this.WebPartId.Equals(ClientSidePage.ClientSideWebPartEnumToName(DefaultClientSideWebParts.Hero), StringComparison.InvariantCultureIgnoreCase)))
+                if (!this.SupportsFullBleed)
                 {
                     throw new Exception("You cannot host this web part inside a one column full width section, only an image web part or hero web part are allowed");
                 }
