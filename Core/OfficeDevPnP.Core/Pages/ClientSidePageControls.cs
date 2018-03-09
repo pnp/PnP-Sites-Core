@@ -791,7 +791,7 @@ namespace OfficeDevPnP.Core.Pages
             {
                 if (!this.SupportsFullBleed)
                 {
-                    throw new Exception("You cannot host this web part inside a one column full width section, only an image web part or hero web part are allowed");
+                    throw new Exception("You cannot host this web part inside a one column full width section, only webparts that support full bleed are allowed");
                 }
             }
 
