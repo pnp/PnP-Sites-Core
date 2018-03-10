@@ -2,6 +2,7 @@
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Async;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -946,6 +947,18 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// Gets an out of the box, default, client side web parts to use
+        /// </summary>
+        /// <param name="webPart">Get one of the default, out of the box client side web parts</param>
+        /// <returns>List of available <see cref="ClientSideComponent"/></returns>
+        public async Task<System.Collections.Generic.IEnumerable<ClientSideComponent>> AvailableClientSideComponentsAsync(DefaultClientSideWebParts webPart)
+        {
+            await new SynchronizationContextRemover();
+
+            return await this.AvailableClientSideComponentsAsync(ClientSidePage.ClientSideWebPartEnumToName(webPart));
+        }
+
+        /// <summary>
         /// Gets a list of available client side web parts to use having a given name
         /// </summary>
         /// <param name="name">Name of the web part to retrieve</param>
@@ -971,6 +984,48 @@ namespace OfficeDevPnP.Core.Pages
                 MissingMemberHandling = MissingMemberHandling.Ignore
             };
             var clientSideComponents = ((System.Collections.Generic.IEnumerable<ClientSideComponent>)JsonConvert.DeserializeObject<AvailableClientSideComponents>(availableClientSideComponentsJson.Result, jsonSerializerSettings).value);
+
+            if (clientSideComponents.Count() == 0)
+            {
+                throw new ArgumentException("No client side components could be returned for this web...should not happen but it did...");
+            }
+
+            if (!String.IsNullOrEmpty(name))
+            {
+                return clientSideComponents.Where(p => p.Name == name);
+            }
+
+            return clientSideComponents;
+        }
+
+        /// <summary>
+        /// Gets a list of available client side web parts to use having a given name
+        /// </summary>
+        /// <param name="name">Name of the web part to retrieve</param>
+        /// <returns>List of available <see cref="ClientSideComponent"/></returns>
+        public async Task<System.Collections.Generic.IEnumerable<ClientSideComponent>> AvailableClientSideComponentsAsync(string name)
+        {
+            await new SynchronizationContextRemover();
+
+            if (!this.securityInitialized)
+            {
+                await this.InitializeSecurityAsync();
+            }
+
+            // Request information about the available client side components from SharePoint
+            string availableClientSideComponentsJson = await GetClientSideWebPartsAsync(this.accessToken, this.Context);
+
+            if (String.IsNullOrEmpty(availableClientSideComponentsJson))
+            {
+                throw new ArgumentException("No client side components could be returned for this web...should not happen but it did...");
+            }
+
+            // Deserialize the returned data
+            var jsonSerializerSettings = new JsonSerializerSettings()
+            {
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
+            var clientSideComponents = ((System.Collections.Generic.IEnumerable<ClientSideComponent>)JsonConvert.DeserializeObject<AvailableClientSideComponents>(availableClientSideComponentsJson, jsonSerializerSettings).value);
 
             if (clientSideComponents.Count() == 0)
             {
@@ -1157,7 +1212,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.spPagesLibrary = this.Context.Web.GetListByUrl(this.PagesLibrary, p => p.RootFolder);
             }
 
-            // Build up server relative page url
+            // Build up server relative page URL
             if (string.IsNullOrEmpty(this.sitePagesServerRelativeUrl))
             {
                 this.sitePagesServerRelativeUrl = this.spPagesLibrary.RootFolder.ServerRelativeUrl;
@@ -1381,6 +1436,16 @@ namespace OfficeDevPnP.Core.Pages
             this.Context.Load(this.Context.Web, w => w.Url);
             this.context.ExecuteQueryRetry();
             this.Context.ExecutingWebRequest -= Context_ExecutingWebRequest;
+        }
+
+        private async Task<bool> InitializeSecurityAsync()
+        {
+            // Let's try to grab an access token, will work when we're in app-only or user+app model
+            this.Context.ExecutingWebRequest += Context_ExecutingWebRequest;
+            this.Context.Load(this.Context.Web, w => w.Url);
+            await this.context.ExecuteQueryRetryAsync();
+            this.Context.ExecutingWebRequest -= Context_ExecutingWebRequest;
+            return true;
         }
 
         private void Context_ExecutingWebRequest(object sender, WebRequestEventArgs e)

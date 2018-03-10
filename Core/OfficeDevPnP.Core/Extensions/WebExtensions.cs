@@ -1203,7 +1203,7 @@ namespace Microsoft.SharePoint.Client
         #region Output Cache
 
         /// <summary>
-        /// Sets output cache on publishing web. The settings can be maintained from UI by visiting url /_layouts/15/sitecachesettings.aspx
+        /// Sets output cache on publishing web. The settings can be maintained from UI by visiting URL /_layouts/15/sitecachesettings.aspx
         /// </summary>
         /// <param name="web">SharePoint web</param>
         /// <param name="enableOutputCache">Specify true to enable output cache. False otherwise.</param>
@@ -1352,7 +1352,7 @@ namespace Microsoft.SharePoint.Client
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
         /// </summary>
         /// <param name="web">Web to operate against</param>
-        /// <returns>The Uri holding the app catalog site url</returns>
+        /// <returns>The Uri holding the app catalog site URL</returns>
         public static Uri GetAppCatalog(this Web web)
         {
             var tenantSettings = TenantSettings.GetCurrent(web.Context);
@@ -1410,13 +1410,13 @@ namespace Microsoft.SharePoint.Client
         {
             if (String.IsNullOrEmpty(appCatalogSiteUrl))
             {
-                throw new ArgumentException("Please specify a app catalog site url");
+                throw new ArgumentException("Please specify a app catalog site URL");
             }
 
             Uri catalogUri;
             if (!Uri.TryCreate(appCatalogSiteUrl, UriKind.Absolute, out catalogUri))
             {
-                throw new ArgumentException("Please specify a valid app catalog site url");
+                throw new ArgumentException("Please specify a valid app catalog site URL");
             }
 
             if (String.IsNullOrEmpty(spPkgName))

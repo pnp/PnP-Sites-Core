@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Sites
     public class CommunicationSiteCollectionCreationInformation
     {
         /// <summary>
-        /// The fully qualified url (e.g. https://yourtenant.sharepoint.com/sites/mysitecollection) of the site.
+        /// The fully qualified URL (e.g. https://yourtenant.sharepoint.com/sites/mysitecollection) of the site.
         /// </summary>
         public string Url { get; set; }
 

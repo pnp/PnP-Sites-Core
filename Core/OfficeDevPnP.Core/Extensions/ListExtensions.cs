@@ -16,6 +16,7 @@ using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Utilities.Async;
 
 #if !ONPREMISES
 using OfficeDevPnP.Core.Utilities.Webhooks;
@@ -356,6 +357,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The collection of Webhooks subscriptions of the list</returns>
         public static async Task<IList<WebhookSubscription>> GetWebhookSubscriptionsAsync(this List list, string accessToken = null)
         {
+            await new SynchronizationContextRemover();
+
             // Get the access from the client context if not specified.
             accessToken = accessToken ?? list.Context.GetAccessToken();
 
@@ -364,7 +367,7 @@ namespace Microsoft.SharePoint.Client
 
             try
             {
-                ResponseModel<WebhookSubscription> webHookSubscriptionResponse = await WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), accessToken, list.Context as ClientContext).ConfigureAwait(false);
+                ResponseModel<WebhookSubscription> webHookSubscriptionResponse = await WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), accessToken, list.Context as ClientContext);
                 return webHookSubscriptionResponse.Value;
             }
             catch (AggregateException ex)

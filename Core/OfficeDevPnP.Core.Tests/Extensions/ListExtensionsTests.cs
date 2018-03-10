@@ -627,8 +627,26 @@ namespace Microsoft.SharePoint.Client.Tests
                 Assert.IsTrue(actualSubscriptions.Count > 0);
             }
         }
+
+        [TestMethod]
+        public async Task GetAllWebhookSubscriptionsTestAsync()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
+                clientContext.Load(testList);
+                await clientContext.ExecuteQueryRetryAsync();
+
+                WebhookSubscription createdSubscription = testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 3);
+
+                IList<WebhookSubscription> actualSubscriptions = await testList.GetWebhookSubscriptionsAsync();
+
+                Assert.IsTrue(actualSubscriptions.Count > 0);
+            }
+        }
+
 #endif
-    #endregion
+        #endregion
 
     }
 }
