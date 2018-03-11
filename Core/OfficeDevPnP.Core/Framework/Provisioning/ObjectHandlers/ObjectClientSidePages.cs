@@ -76,11 +76,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
+                var currentPageIndex = 0;
                 // Iterate over the pages and create/update them
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(clientSidePage.PageName)}.aspx";
                     string url = $"{pagesLibrary}/{pageName}";
+
+                    // Write page level status messages, needed in case many pages are provisioned
+                    currentPageIndex++;
+                    WriteMessage($"ClientSidePage|{pageName}|{currentPageIndex}|{template.ClientSidePages.Count}", ProvisioningMessageType.Progress);
 
                     url = UrlUtility.Combine(web.ServerRelativeUrl, url);
 
@@ -397,6 +402,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 }
             }
+
+            WriteMessage("Done processing Client Side Pages", ProvisioningMessageType.Completed);
             return parser;
         }
 
