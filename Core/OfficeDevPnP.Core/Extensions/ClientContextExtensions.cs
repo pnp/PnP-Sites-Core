@@ -87,8 +87,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="userAgent">UserAgent string value to insert for this request. You can define this value in your app's config file using key="SharePointPnPUserAgent" value="PnPRocks"></param>
         public static void ExecuteQueryRetry(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
         {
-#if !ONPREMISES
-            ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent).GetAwaiter().GetResult();
+#if !ONPREMISES            
+            //ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent).ConfigureAwait(false).GetAwaiter().GetResult();
+            Task.WhenAll(ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent));
 #else
             ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
 #endif
