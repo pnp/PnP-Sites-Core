@@ -30,11 +30,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 List<string> preCreatedPages = new List<string>();
 
+                var currentPageIndex = 0;
                 // pre create the needed pages so we can fill the needed tokens which might be used later on when we put web parts on those pages
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(clientSidePage.PageName)}.aspx";
                     string url = $"{pagesLibrary}/{pageName}";
+
+                    // Write page level status messages, needed in case many pages are provisioned
+                    currentPageIndex++;
+                    WriteMessage($"ClientSidePage|Create {pageName}|{currentPageIndex}|{template.ClientSidePages.Count}", ProvisioningMessageType.Progress);
 
                     url = UrlUtility.Combine(web.ServerRelativeUrl, url);
 
@@ -54,6 +59,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (ex.ServerErrorTypeName == "System.IO.FileNotFoundException")
                         {
                             exists = false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex.InnerException != null && (ex.InnerException is ServerException) && (ex.InnerException as ServerException).ServerErrorTypeName == "System.IO.FileNotFoundException")
+                        {
+                            exists = false;
+                        }
+                        else
+                        {
+                            throw;
                         }
                     }
 
@@ -76,11 +92,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
+                currentPageIndex = 0;
                 // Iterate over the pages and create/update them
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(clientSidePage.PageName)}.aspx";
                     string url = $"{pagesLibrary}/{pageName}";
+
+                    // Write page level status messages, needed in case many pages are provisioned
+                    currentPageIndex++;
+                    WriteMessage($"ClientSidePage|{pageName}|{currentPageIndex}|{template.ClientSidePages.Count}", ProvisioningMessageType.Progress);
 
                     url = UrlUtility.Combine(web.ServerRelativeUrl, url);
 
@@ -96,6 +117,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (ex.ServerErrorTypeName == "System.IO.FileNotFoundException")
                         {
                             exists = false;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        if (ex.InnerException != null && (ex.InnerException is ServerException) && (ex.InnerException as ServerException).ServerErrorTypeName == "System.IO.FileNotFoundException")
+                        {
+                            exists = false;
+                        }
+                        else
+                        {
+                            throw;
                         }
                     }
 
@@ -397,6 +429,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 }
             }
+
+            WriteMessage("Done processing Client Side Pages", ProvisioningMessageType.Completed);
             return parser;
         }
 
