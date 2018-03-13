@@ -88,8 +88,9 @@ namespace Microsoft.SharePoint.Client
         public static void ExecuteQueryRetry(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
         {
 #if !ONPREMISES            
-            //ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent).ConfigureAwait(false).GetAwaiter().GetResult();
-            Task.WhenAll(ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent));
+            //ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent).GetAwaiter().GetResult();
+            //Task.WhenAll(ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent));
+            Task.Run(() => ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent)).Wait();
 #else
             ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
 #endif
