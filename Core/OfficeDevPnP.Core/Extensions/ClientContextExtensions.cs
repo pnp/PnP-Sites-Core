@@ -100,6 +100,7 @@ namespace Microsoft.SharePoint.Client
         private static void ExecuteQueryImplementation(ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
 #endif
         {
+            await new SynchronizationContextRemover();
             var clientTag = string.Empty;
             if (clientContext is PnPClientContext)
             {
