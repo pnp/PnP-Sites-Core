@@ -280,9 +280,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             // Support for ContentBySearchWebParts
             if (webpartType != null && webpartType.ToLower().Contains("Microsoft.Office.Server.Search.WebControls.ContentBySearchWebPart".ToLower()))
-            {
                 xml = Regex.Replace(xml, ">~sitecollection/(.)*<", (Match m) => m.ToString().Replace("~sitecollection", "{sitecollection}"), RegexOptions.IgnoreCase);
-            }
             else
                 xml = Regex.Replace(xml, ">~sitecollection/(.)*<", ">{site}<", RegexOptions.IgnoreCase);
 
