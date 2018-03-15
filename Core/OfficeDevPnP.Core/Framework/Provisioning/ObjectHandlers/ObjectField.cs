@@ -225,7 +225,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (formulaElement != null)
             {
-                var formulastring = formulaElement.Value;
+                field.EnsureProperty(f => f.Formula);
+
+                var formulastring = field.Formula;
+
                 if (formulastring != null)
                 {
                     var fieldRefs = schemaElement.Descendants("FieldRef");
@@ -613,7 +616,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _willExtract = true;
             }
             return _willExtract.Value;
-        }
+        }        
     }
 
     internal static class XElementStringExtensions
