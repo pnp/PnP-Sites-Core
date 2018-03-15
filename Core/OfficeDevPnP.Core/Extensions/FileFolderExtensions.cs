@@ -1020,14 +1020,6 @@ namespace Microsoft.SharePoint.Client
                 }
                 throw;
             }
-            catch (Exception ex)
-            {
-                if (ex.InnerException != null && (ex.InnerException is ServerException) && (ex.InnerException as ServerException).ServerErrorTypeName == "System.IO.FileNotFoundException")
-                {
-                    return null;
-                }
-                throw;
-            }
         }
 
         /// <summary>

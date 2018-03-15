@@ -61,17 +61,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             exists = false;
                         }
                     }
-                    catch (Exception ex)
-                    {
-                        if (ex.InnerException != null && (ex.InnerException is ServerException) && (ex.InnerException as ServerException).ServerErrorTypeName == "System.IO.FileNotFoundException")
-                        {
-                            exists = false;
-                        }
-                        else
-                        {
-                            throw;
-                        }
-                    }
 
                     if (!exists)
                     {
@@ -117,17 +106,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (ex.ServerErrorTypeName == "System.IO.FileNotFoundException")
                         {
                             exists = false;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        if (ex.InnerException != null && (ex.InnerException is ServerException) && (ex.InnerException as ServerException).ServerErrorTypeName == "System.IO.FileNotFoundException")
-                        {
-                            exists = false;
-                        }
-                        else
-                        {
-                            throw;
                         }
                     }
 
