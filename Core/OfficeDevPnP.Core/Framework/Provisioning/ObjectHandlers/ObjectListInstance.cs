@@ -74,6 +74,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                             }
                         }
+
+                        // check if there is a parameter available for webhook server notification url and use it
+                        foreach (var webhook in templateList.Webhooks)
+                        {
+                            webhook.ServerNotificationUrl = parser.ParseString(webhook.ServerNotificationUrl);
+                        }
+
                         // check if the List exists by url or by title
                         var index = existingLists.FindIndex(x => x.Title.Equals(parser.ParseString(templateList.Title), StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, parser.ParseString(templateList.Url)), StringComparison.OrdinalIgnoreCase));
 
