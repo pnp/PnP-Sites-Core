@@ -37,62 +37,70 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (template.Tenant.AppCatalog != null && template.Tenant.AppCatalog.Packages.Count > 0)
                     {
-                        foreach (var app in template.Tenant.AppCatalog.Packages)
+                        var appCatalogUri = web.GetAppCatalog();
+                        if (appCatalogUri != null)
                         {
-                            AppMetadata appMetadata = null;
-
-                            if (app.Action == PackageAction.Upload ||
-                                app.Action == PackageAction.UploadAndPublish)
+                            foreach (var app in template.Tenant.AppCatalog.Packages)
                             {
-                                using (var packageStream = GetPackageStream(template, app))
+                                AppMetadata appMetadata = null;
+
+                                if (app.Action == PackageAction.Upload ||
+                                    app.Action == PackageAction.UploadAndPublish)
                                 {
-                                    var memStream = new MemoryStream();
-                                    packageStream.CopyTo(memStream);
-                                    memStream.Position = 0;
+                                    using (var packageStream = GetPackageStream(template, app))
+                                    {
+                                        var memStream = new MemoryStream();
+                                        packageStream.CopyTo(memStream);
+                                        memStream.Position = 0;
 
-                                    var appFilename = app.Src.Substring(app.Src.LastIndexOf('\\') + 1);
-                                    appMetadata = manager.Add(memStream.ToArray(),
-                                        appFilename,
-                                        app.Overwrite);
+                                        var appFilename = app.Src.Substring(app.Src.LastIndexOf('\\') + 1);
+                                        appMetadata = manager.Add(memStream.ToArray(),
+                                            appFilename,
+                                            app.Overwrite);
 
-                                    parser.Tokens.Add(new AppPackageIdToken(web, appFilename, appMetadata.Id));
+                                        parser.Tokens.Add(new AppPackageIdToken(web, appFilename, appMetadata.Id));
+                                    }
+                                }
+
+                                if (app.Action == PackageAction.Publish || app.Action == PackageAction.UploadAndPublish)
+                                {
+                                    if (appMetadata == null)
+                                    {
+                                        appMetadata = manager.GetAvailable()
+                                            .FirstOrDefault(a => a.Id == Guid.Parse(parser.ParseString(app.PackageId)));
+                                    }
+                                    if (appMetadata != null)
+                                    {
+                                        manager.Deploy(appMetadata, app.SkipFeatureDeployment);
+                                    }
+                                    else
+                                    {
+                                        scope.LogError("Referenced App Package {0} not available", app.PackageId);
+                                        throw new Exception($"Referenced App Package {app.PackageId} not available");
+                                    }
+                                }
+
+                                if (app.Action == PackageAction.Remove)
+                                {
+                                    var appId = Guid.Parse(parser.ParseString(app.PackageId));
+
+                                    // Get the apps already installed in the site
+                                    var appExists = manager.GetAvailable()?.Any(a => a.Id == appId);
+
+                                    if (appExists.HasValue && appExists.Value)
+                                    {
+                                        manager.Remove(appId);
+                                    }
+                                    else
+                                    {
+                                        WriteMessage($"App Package with ID {appId} does not exist in the AppCatalog and cannot be removed!", ProvisioningMessageType.Warning);
+                                    }
                                 }
                             }
-
-                            if (app.Action == PackageAction.Publish || app.Action == PackageAction.UploadAndPublish)
-                            {
-                                if (appMetadata == null)
-                                {
-                                    appMetadata = manager.GetAvailable()
-                                        .FirstOrDefault(a => a.Id == Guid.Parse(parser.ParseString(app.PackageId)));
-                                }
-                                if (appMetadata != null)
-                                {
-                                    manager.Deploy(appMetadata, app.SkipFeatureDeployment);
-                                }
-                                else
-                                {
-                                    scope.LogError("Referenced App Package {0} not available", app.PackageId);
-                                    throw new Exception($"Referenced App Package {app.PackageId} not available");
-                                }
-                            }
-
-                            if (app.Action == PackageAction.Remove)
-                            {
-                                var appId = Guid.Parse(parser.ParseString(app.PackageId));
-
-                                // Get the apps already installed in the site
-                                var appExists = manager.GetAvailable()?.Any(a => a.Id == appId);
-
-                                if (appExists.HasValue && appExists.Value)
-                                {
-                                    manager.Remove(appId);
-                                }
-                                else
-                                {
-                                    WriteMessage($"App Package with ID {appId} does not exist in the AppCatalog and cannot be removed!", ProvisioningMessageType.Warning);
-                                }
-                            }
+                        }
+                        else
+                        {
+                            WriteMessage($"Tenant app catalog doesn't exist. ALM step will be skipped!", ProvisioningMessageType.Warning);
                         }
                     }
 
@@ -140,6 +148,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         container = container.TrimStart("/".ToCharArray());
                     }
 
+#if !NETSTANDARD2_0
                     if (template.Connector.GetType() == typeof(Connectors.AzureStorageConnector))
                     {
                         if (template.Connector.GetContainer().EndsWith("/"))
@@ -155,6 +164,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         container = $@"{template.Connector.GetContainer()}\{container}";
                     }
+#else
+                    container = $@"{template.Connector.GetContainer()}\{container}";
+#endif
                 }
             }
             else

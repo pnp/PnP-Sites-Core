@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using OfficeDevPnP.Core.Utilities.CanvasControl;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using System.Collections.Generic;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -27,11 +28,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // determine pages library
                 string pagesLibrary = "SitePages";
 
+                List<string> preCreatedPages = new List<string>();
+
+                var currentPageIndex = 0;
                 // pre create the needed pages so we can fill the needed tokens which might be used later on when we put web parts on those pages
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(clientSidePage.PageName)}.aspx";
                     string url = $"{pagesLibrary}/{pageName}";
+
+                    // Write page level status messages, needed in case many pages are provisioned
+                    currentPageIndex++;
+                    WriteMessage($"ClientSidePage|Create {pageName}|{currentPageIndex}|{template.ClientSidePages.Count}", ProvisioningMessageType.Progress);
 
                     url = UrlUtility.Combine(web.ServerRelativeUrl, url);
 
@@ -67,14 +75,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Fill token
                         parser.AddToken(new PageUniqueIdToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
                         parser.AddToken(new PageUniqueIdEncodedToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+
+                        // Track that we pre-added this page
+                        preCreatedPages.Add(url);
                     }
                 }
 
+                currentPageIndex = 0;
                 // Iterate over the pages and create/update them
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(clientSidePage.PageName)}.aspx";
                     string url = $"{pagesLibrary}/{pageName}";
+
+                    // Write page level status messages, needed in case many pages are provisioned
+                    currentPageIndex++;
+                    WriteMessage($"ClientSidePage|{pageName}|{currentPageIndex}|{template.ClientSidePages.Count}", ProvisioningMessageType.Progress);
 
                     url = UrlUtility.Combine(web.ServerRelativeUrl, url);
 
@@ -96,7 +112,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     Pages.ClientSidePage page = null;
                     if (exists)
                     {
-                        if (clientSidePage.Overwrite)
+                        if (clientSidePage.Overwrite || preCreatedPages.Contains(url))
                         {
                             // Get the existing page
                             page = web.LoadClientSidePage(pageName);
@@ -372,15 +388,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             page.PromoteAsNewsArticle();
                         }
+                    }
 
-                        if (clientSidePage.EnableComments)
-                        {
-                            page.EnableComments();
-                        }
-                        else
-                        {
-                            page.DisableComments();
-                        }
+                    if (clientSidePage.EnableComments)
+                    {
+                        page.EnableComments();
+                    }
+                    else
+                    {
+                        page.DisableComments();
                     }
 
                     // Publish page 
@@ -391,6 +407,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 }
             }
+
+            WriteMessage("Done processing Client Side Pages", ProvisioningMessageType.Completed);
             return parser;
         }
 

@@ -7,7 +7,7 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
 {
 #if !ONPREMISES
     /// <summary>
-    /// Updates list id for List web part, to allow provision based on url in a dynamic provisioning scenario
+    /// Updates list id for List web part, to allow provision based on URL in a dynamic provisioning scenario
     /// </summary>
     public class ListControlPostProcessor : ICanvasControlPostProcessor
     {
@@ -48,7 +48,7 @@ namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
 
         private List GetList(Web web)
         {
-            // grab list based on url
+            // grab list based on URL
             var listUrlProperty = GetProperty("selectedListUrl") as string;
             if (!string.IsNullOrWhiteSpace(listUrlProperty))
             {

@@ -2,6 +2,7 @@
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Async;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -9,7 +10,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+#if !NETSTANDARD2_0
 using System.Web.UI;
+#endif
 
 namespace OfficeDevPnP.Core.Pages
 {
@@ -407,7 +410,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
                 else
                 {
-                    throw new Exception("You first need to save the page before you check for CommentsEnabled status");
+                    throw new InvalidOperationException("You first need to save the page before you check for CommentsEnabled status");
                 }
             }
         }
@@ -419,12 +422,12 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void ClearPage()
         {
-            foreach(var section in this.sections)
+            foreach (var section in this.sections)
             {
-                foreach(var control in section.Controls)
+                foreach (var control in section.Controls)
                 {
                     control.Delete();
-                }                
+                }
             }
 
             this.sections.Clear();
@@ -633,6 +636,24 @@ namespace OfficeDevPnP.Core.Pages
         public string ToHtml()
         {
             StringBuilder html = new StringBuilder(100);
+#if NETSTANDARD2_0
+            html.Append($@"<div>");
+            // Normalize section order by starting from 1, users could have started from 0 or left gaps in the numbering
+            var sectionsToOrder = this.sections.OrderBy(p => p.Order).ToList();
+            int i = 1;
+            foreach (var section in sectionsToOrder)
+            {
+                section.Order = i;
+                i++;
+            }
+
+            foreach (var section in this.sections.OrderBy(p => p.Order))
+            {
+                html.Append(section.ToHtml());
+
+            }
+            html.Append("</div>");
+#else
             using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
             {
                 htmlWriter.NewLine = string.Empty;
@@ -642,7 +663,7 @@ namespace OfficeDevPnP.Core.Pages
                 // Normalize section order by starting from 1, users could have started from 0 or left gaps in the numbering
                 var sectionsToOrder = this.sections.OrderBy(p => p.Order).ToList();
                 int i = 1;
-                foreach(var section in sectionsToOrder)
+                foreach (var section in sectionsToOrder)
                 {
                     section.Order = i;
                     i++;
@@ -655,7 +676,7 @@ namespace OfficeDevPnP.Core.Pages
 
                 htmlWriter.RenderEndTag();
             }
-
+#endif
             return html.ToString();
         }
 
@@ -683,7 +704,7 @@ namespace OfficeDevPnP.Core.Pages
             };
 
             var pagesLibrary = page.Context.Web.GetListByUrl(page.PagesLibrary, p => p.RootFolder);
-            
+
             // Not all sites do have a pages library, throw a nice exception in that case
             if (pagesLibrary == null)
             {
@@ -717,7 +738,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
                 else
                 {
-                    throw new Exception($"Page layout type could not be determined for page {pageName}");                    
+                    throw new Exception($"Page layout type could not be determined for page {pageName}");
                 }
 
                 // If the canvasfield1 field is present and filled then let's parse it
@@ -926,6 +947,18 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// Gets an out of the box, default, client side web parts to use
+        /// </summary>
+        /// <param name="webPart">Get one of the default, out of the box client side web parts</param>
+        /// <returns>List of available <see cref="ClientSideComponent"/></returns>
+        public async Task<System.Collections.Generic.IEnumerable<ClientSideComponent>> AvailableClientSideComponentsAsync(DefaultClientSideWebParts webPart)
+        {
+            await new SynchronizationContextRemover();
+
+            return await this.AvailableClientSideComponentsAsync(ClientSidePage.ClientSideWebPartEnumToName(webPart));
+        }
+
+        /// <summary>
         /// Gets a list of available client side web parts to use having a given name
         /// </summary>
         /// <param name="name">Name of the web part to retrieve</param>
@@ -938,7 +971,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Request information about the available client side components from SharePoint
-            Task<String> availableClientSideComponentsJson = Task.Run(() => GetClientSideWebPartsAsync(this.accessToken, this.Context).Result);
+            Task<String> availableClientSideComponentsJson = Task.Run(() => GetClientSideWebPartsAsync(this.accessToken, this.Context).GetAwaiter().GetResult());
 
             if (String.IsNullOrEmpty(availableClientSideComponentsJson.Result))
             {
@@ -951,6 +984,48 @@ namespace OfficeDevPnP.Core.Pages
                 MissingMemberHandling = MissingMemberHandling.Ignore
             };
             var clientSideComponents = ((System.Collections.Generic.IEnumerable<ClientSideComponent>)JsonConvert.DeserializeObject<AvailableClientSideComponents>(availableClientSideComponentsJson.Result, jsonSerializerSettings).value);
+
+            if (clientSideComponents.Count() == 0)
+            {
+                throw new ArgumentException("No client side components could be returned for this web...should not happen but it did...");
+            }
+
+            if (!String.IsNullOrEmpty(name))
+            {
+                return clientSideComponents.Where(p => p.Name == name);
+            }
+
+            return clientSideComponents;
+        }
+
+        /// <summary>
+        /// Gets a list of available client side web parts to use having a given name
+        /// </summary>
+        /// <param name="name">Name of the web part to retrieve</param>
+        /// <returns>List of available <see cref="ClientSideComponent"/></returns>
+        public async Task<System.Collections.Generic.IEnumerable<ClientSideComponent>> AvailableClientSideComponentsAsync(string name)
+        {
+            await new SynchronizationContextRemover();
+
+            if (!this.securityInitialized)
+            {
+                await this.InitializeSecurityAsync();
+            }
+
+            // Request information about the available client side components from SharePoint
+            string availableClientSideComponentsJson = await GetClientSideWebPartsAsync(this.accessToken, this.Context);
+
+            if (String.IsNullOrEmpty(availableClientSideComponentsJson))
+            {
+                throw new ArgumentException("No client side components could be returned for this web...should not happen but it did...");
+            }
+
+            // Deserialize the returned data
+            var jsonSerializerSettings = new JsonSerializerSettings()
+            {
+                MissingMemberHandling = MissingMemberHandling.Ignore
+            };
+            var clientSideComponents = ((System.Collections.Generic.IEnumerable<ClientSideComponent>)JsonConvert.DeserializeObject<AvailableClientSideComponents>(availableClientSideComponentsJson, jsonSerializerSettings).value);
 
             if (clientSideComponents.Count() == 0)
             {
@@ -1069,9 +1144,9 @@ namespace OfficeDevPnP.Core.Pages
             this.Context.Web.RootFolder.Update();
             this.Context.ExecuteQueryRetry();
         }
-        #endregion
+#endregion
 
-        #region Internal and private methods
+            #region Internal and private methods
         private void EnableCommentsImplementation(bool enable)
         {
             // ensure we do have the page list item loaded
@@ -1137,7 +1212,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.spPagesLibrary = this.Context.Web.GetListByUrl(this.PagesLibrary, p => p.RootFolder);
             }
 
-            // Build up server relative page url
+            // Build up server relative page URL
             if (string.IsNullOrEmpty(this.sitePagesServerRelativeUrl))
             {
                 this.sitePagesServerRelativeUrl = this.spPagesLibrary.RootFolder.ServerRelativeUrl;
@@ -1177,7 +1252,7 @@ namespace OfficeDevPnP.Core.Pages
                 // clear sections as we're constructing them from the loaded html
                 this.sections.Clear();
 
-                int controlOrder = 0;                
+                int controlOrder = 0;
                 foreach (var clientSideControl in clientSideControls)
                 {
                     var controlData = clientSideControl.GetAttribute(CanvasControl.ControlDataAttribute);
@@ -1216,7 +1291,7 @@ namespace OfficeDevPnP.Core.Pages
                             MissingMemberHandling = MissingMemberHandling.Ignore
                         };
                         var sectionData = JsonConvert.DeserializeObject<ClientSideCanvasData>(controlData, jsonSerializerSettings);
-                        
+
                         var currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).FirstOrDefault();
                         if (currentSection == null)
                         {
@@ -1237,7 +1312,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Perform section type detection
-            foreach(var section in this.sections)
+            foreach (var section in this.sections)
             {
                 if (section.Columns.Count == 1)
                 {
@@ -1363,6 +1438,16 @@ namespace OfficeDevPnP.Core.Pages
             this.Context.ExecutingWebRequest -= Context_ExecutingWebRequest;
         }
 
+        private async Task<bool> InitializeSecurityAsync()
+        {
+            // Let's try to grab an access token, will work when we're in app-only or user+app model
+            this.Context.ExecutingWebRequest += Context_ExecutingWebRequest;
+            this.Context.Load(this.Context.Web, w => w.Url);
+            await this.context.ExecuteQueryRetryAsync();
+            this.Context.ExecutingWebRequest -= Context_ExecutingWebRequest;
+            return true;
+        }
+
         private void Context_ExecutingWebRequest(object sender, WebRequestEventArgs e)
         {
             if (!String.IsNullOrEmpty(e.WebRequestExecutor.RequestHeaders.Get("Authorization")))
@@ -1370,7 +1455,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
         }
-        #endregion
+            #endregion
     }
 
     /// <summary>
@@ -1385,7 +1470,7 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// One column, full browser width. This one only works for communication sites in combination with image or hero webparts
         /// </summary>
-        OneColumnFullWidth =1,
+        OneColumnFullWidth = 1,
         /// <summary>
         /// Two columns of the same size
         /// </summary>
@@ -1410,12 +1495,12 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public class CanvasSection
     {
-        #region variables
+            #region variables
         private System.Collections.Generic.List<CanvasColumn> columns = new System.Collections.Generic.List<CanvasColumn>(3);
         private ClientSidePage page;
-        #endregion
+            #endregion
 
-        #region construction
+            #region construction
         internal CanvasSection(ClientSidePage page)
         {
             if (page == null)
@@ -1471,11 +1556,11 @@ namespace OfficeDevPnP.Core.Pages
                 default:
                     this.columns.Add(new CanvasColumn(this, 1, 12));
                     break;
-            }            
+            }
         }
-        #endregion
+            #endregion
 
-        #region Properties
+            #region Properties
         /// <summary>
         /// Type of the section
         /// </summary>
@@ -1534,9 +1619,9 @@ namespace OfficeDevPnP.Core.Pages
                 return this.columns.First();
             }
         }
-        #endregion
+            #endregion
 
-        #region public methods
+            #region public methods
         /// <summary>
         /// Renders this section as a HTML fragment
         /// </summary>
@@ -1544,21 +1629,27 @@ namespace OfficeDevPnP.Core.Pages
         public string ToHtml()
         {
             StringBuilder html = new StringBuilder(100);
+#if !NETSTANDARD2_0
             using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
             {
                 htmlWriter.NewLine = string.Empty;
-
-                foreach (var column in this.columns.OrderBy(z => z.Order))
+#endif
+            foreach (var column in this.columns.OrderBy(z => z.Order))
                 {
-                    htmlWriter.Write(column.ToHtml());
+#if NETSTANDARD2_0
+                html.Append(column.ToHtml());
+#else
+                htmlWriter.Write(column.ToHtml());
+#endif
                 }
-            }
-
+#if !NETSTANDARD2_0
+        }
+#endif
             return html.ToString();
         }
-        #endregion
+#endregion
 
-        #region internal and private methods
+            #region internal and private methods
         internal void AddColumn(CanvasColumn column)
         {
             if (column == null)
@@ -1568,7 +1659,7 @@ namespace OfficeDevPnP.Core.Pages
 
             this.columns.Add(column);
         }
-        #endregion
+            #endregion
     }
 
     /// <summary>
@@ -1576,7 +1667,7 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public class CanvasColumn
     {
-        #region variables
+            #region variables
         public const string CanvasControlAttribute = "data-sp-canvascontrol";
         public const string CanvasDataVersionAttribute = "data-sp-canvasdataversion";
         public const string ControlDataAttribute = "data-sp-controldata";
@@ -1584,10 +1675,10 @@ namespace OfficeDevPnP.Core.Pages
         private int columnFactor;
         private CanvasSection section;
         private string DataVersion = "1.0";
-        #endregion
+            #endregion
 
         // internal constructors as we don't want users to manually create sections
-        #region construction
+            #region construction
         internal CanvasColumn(CanvasSection section)
         {
             if (section == null)
@@ -1623,9 +1714,9 @@ namespace OfficeDevPnP.Core.Pages
             // if the sectionFactor was undefined is was not defined as there was no section in the original markup. Since we however provision back as one column page let's set the sectionFactor to 12.
             this.columnFactor = sectionFactor.HasValue ? sectionFactor.Value : 12;
         }
-        #endregion
+            #endregion
 
-        #region Properties
+            #region Properties
         internal int Order { get; set; }
 
         /// <summary>
@@ -1660,9 +1751,9 @@ namespace OfficeDevPnP.Core.Pages
                 return this.Section.Page.Controls.Where(p => p.Section == this.Section && p.Column == this).ToList<CanvasControl>();
             }
         }
-        #endregion
+            #endregion
 
-        #region public methods
+            #region public methods
         /// <summary>
         /// Renders a HTML presentation of this section
         /// </summary>
@@ -1670,16 +1761,21 @@ namespace OfficeDevPnP.Core.Pages
         public string ToHtml()
         {
             StringBuilder html = new StringBuilder(100);
+#if !NETSTANDARD2_0
             using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
             {
                 htmlWriter.NewLine = string.Empty;
-
+#endif
                 bool controlWrittenToSection = false;
                 int controlIndex = 0;
                 foreach (var control in this.Section.Page.Controls.Where(p => p.Section == this.Section && p.Column == this).OrderBy(z => z.Order))
                 {
                     controlIndex++;
+#if NETSTANDARD2_0
+                    html.Append(control.ToHtml(controlIndex));
+#else
                     htmlWriter.Write(control.ToHtml(controlIndex));
+#endif
                     controlWrittenToSection = true;
                 }
 
@@ -1699,23 +1795,29 @@ namespace OfficeDevPnP.Core.Pages
 
                     var jsonControlData = JsonConvert.SerializeObject(clientSideCanvasPosition);
 
-                    htmlWriter.NewLine = string.Empty;
+#if NETSTANDARD2_0
+                html.Append($@"<div {CanvasControlAttribute}="""" {CanvasDataVersionAttribute}=""{this.DataVersion}"" {ControlDataAttribute}=""{jsonControlData.Replace("\"", "&quot;")}""></div>");
+#else
+                htmlWriter.NewLine = string.Empty;
 
                     htmlWriter.AddAttribute(CanvasControlAttribute, "");
                     htmlWriter.AddAttribute(CanvasDataVersionAttribute, this.DataVersion);
                     htmlWriter.AddAttribute(ControlDataAttribute, jsonControlData);
                     htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
                     htmlWriter.RenderEndTag();
+#endif
                 }
-            }
+#if !NETSTANDARD2_0
+        }
+#endif
 
             return html.ToString();
         }
-        #endregion
+            #endregion
     }
-    #endregion
+#endregion
 
-    #region Available web part collection retrieved via _api/web/GetClientSideWebParts REST call
+            #region Available web part collection retrieved via _api/web/GetClientSideWebParts REST call
     /// <summary>
     /// Class holding a collection of client side webparts (retrieved via the _api/web/GetClientSideWebParts REST call)
     /// </summary>
@@ -1754,6 +1856,6 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public int Status { get; set; }
     }
-    #endregion
+            #endregion
 #endif
-}
+        }
