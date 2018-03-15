@@ -48,7 +48,7 @@ namespace OfficeDevPnP.Core.Pages
 
         #region Properties
         /// <summary>
-        /// The <see cref="CanvasSection"/> hosting this control
+        /// The <see cref="CanvasSection"/> hosting  this control
         /// </summary>
         public CanvasSection Section
         {
