@@ -229,7 +229,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var formulastring = field.Formula;
 
-                if (formulastring != null)
+                if (!string.IsNullOrEmpty(formulastring))
                 {
                     var fieldRefs = schemaElement.Descendants("FieldRef");
                     foreach (var fieldRef in fieldRefs)
@@ -243,6 +243,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     formulaElement.Value = formulastring;
                 }
+                else
+                {
+                    // Specify a default formula, because creating a calculated field with an empty formula is not allowed (updating is allowed)
+                    // The formula could have possibly been set empty when through CSOM code or manually
+                    formulaElement.Value = "=1";
+                }
+            }
+            else
+            {
+                // If there's no formula field, provide one.
+                var emptyFormulaElement = new XElement("Formula");
+                emptyFormulaElement.SetValue("=1");
+                schemaElement.Add(emptyFormulaElement);
             }
             return schemaElement.ToString();
         }
@@ -295,8 +308,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var field = web.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
                 web.Context.Load(field, f => f.TypeAsString, f => f.DefaultValue, f => f.InternalName, f => f.Title);
-                web.Context.ExecuteQueryRetry();
+                try
+                {
+                    web.Context.ExecuteQueryRetry();
+                }
+                catch (Exception ex)
+                {
+                    // When creating a new calculated sitefield the formula language is expected to be 1033/english
+                    // When updating a calculated field the formula language is expected to be i.e. Dutch 1043
+                    // We can detect this type of error if the exception message contains a syntax error --> not sure if this will work for all language's,
+                    //  because these types of errors are thrown in the language the web is created with.
+                    XElement element = XElement.Parse(fieldXml);
+                    if (ex.Message.Contains("syntax") && element.Attribute("Type").Value == "Calculated")
+                    {
+                        var formulaElement = element.Descendants("Formula").FirstOrDefault();
 
+                        if (formulaElement != null)
+                        {
+                            // Create the field with a default formula and then update the field with the correct formula
+                            formulaElement.SetValue("=1");
+                            field = web.Fields.AddFieldAsXml(element.ToString(), false, AddFieldOptions.AddFieldInternalNameHint);
+                            web.Context.Load(field, f => f.TypeAsString, f => f.DefaultValue, f => f.InternalName, f => f.Title, f => f.Id);
+                            web.Context.ExecuteQueryRetry();
+                            // Update the created field with the correct language
+                            field.SchemaXml = fieldXml;
+                            field.Update();
+                            web.Context.Load(field, f => f.TypeAsString, f => f.DefaultValue, f => f.InternalName, f => f.Title, f => f.Id);
+                            web.Context.ExecuteQueryRetry();
+                        }
+                    }
+                    else { throw; }
+                }
                 // Add newly created field to token set, this allows to create a field + use it in a formula in the same provisioning template
                 parser.AddToken(new FieldTitleToken(web, field.InternalName, field.Title));
 
