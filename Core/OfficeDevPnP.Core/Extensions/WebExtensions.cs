@@ -1312,6 +1312,34 @@ namespace Microsoft.SharePoint.Client
 #endif
         #endregion
 
+        #region Site Audit settings extension
+
+        /// <summary>
+        /// Gets the audit log reports storage location
+        /// </summary>
+        /// <param name="site">SharePoint site collection</param>
+        /// <returns></returns>
+        public static String GetAuditLogReportsStorageLocation(this Site site)
+        {            
+            return Convert.ToString(GetPropertyBagValueInternal(site.RootWeb, "_auditlogreportstoragelocation"));
+        }
+
+        /// <summary>
+        /// Sets the audit log reports storage location
+        /// </summary>
+        /// <param name="site">SharePoint site collection</param>
+        /// <param name="value">Specify the location(server-relative url) of the document library where you want to store audit log reports</param>
+        public static void SetAuditLogReportsStorageLocation(this Site site, string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
+            site.RootWeb.SetPropertyBagValue("_auditlogreportstoragelocation", value);
+        }
+
+        #endregion        
+
         /// <summary>
         /// Gets the name part of the URL of the Server Relative URL of the Web.
         /// </summary>
