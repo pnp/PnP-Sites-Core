@@ -70,12 +70,11 @@ namespace Microsoft.SharePoint.Client
         /// <param name="retryCount">Number of times to retry the request</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <param name="userAgent">UserAgent string value to insert for this request. You can define this value in your app's config file using key="SharePointPnPUserAgent" value="PnPRocks"></param>
-        public static async Task ExecuteQueryRetryAsync(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
+        public static Task ExecuteQueryRetryAsync(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
         {
-            await new SynchronizationContextRemover();
-
-            await ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
+            return ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
         }
+
 #endif
 
         /// <summary>
