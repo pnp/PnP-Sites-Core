@@ -1703,7 +1703,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     else
                     {
                         // get the webhooks defined on the list
-                        var addedWebhooks = Task.Run(() => list.GetWebhookSubscriptionsAsync()).Result;
+                        var addedWebhooks = Task.Run(() => list.GetWebhookSubscriptionsAsync()).GetAwaiter().GetResult();
 
                         var existingWebhook = addedWebhooks.Where(p => p.NotificationUrl.Equals(webhook.ServerNotificationUrl, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
                         if (existingWebhook != null)
@@ -1997,7 +1997,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static ListInstance ExtractWebhooks(List siteList, ListInstance list)
         {
-            var addedWebhooks = Task.Run(() => siteList.GetWebhookSubscriptionsAsync()).Result;
+            var addedWebhooks = Task.Run(() => siteList.GetWebhookSubscriptionsAsync()).GetAwaiter().GetResult();
 
             if (addedWebhooks.Any())
             {

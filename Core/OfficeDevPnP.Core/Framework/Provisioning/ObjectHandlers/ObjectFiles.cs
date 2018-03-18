@@ -496,6 +496,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 //Decode the URL and try again
                 fileName = WebUtility.UrlDecode(fileName);
+                container = WebUtility.UrlDecode(container);
                 stream = template.Connector.GetFileStream(fileName, container);
             }
 
