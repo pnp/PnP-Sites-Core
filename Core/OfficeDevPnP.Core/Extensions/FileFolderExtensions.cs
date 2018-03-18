@@ -1012,9 +1012,9 @@ namespace Microsoft.SharePoint.Client
                 web.Context.ExecuteQueryRetry();
                 return file;
             }
-            catch (ServerException sex)
+            catch (ServerException ex)
             {
-                if (sex.ServerErrorTypeName == "System.IO.FileNotFoundException")
+                if (ex.ServerErrorTypeName == "System.IO.FileNotFoundException")
                 {
                     return null;
                 }
