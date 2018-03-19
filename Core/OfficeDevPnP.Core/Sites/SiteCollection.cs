@@ -3,6 +3,7 @@ using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Async;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,8 @@ namespace OfficeDevPnP.Core.Sites
         /// <returns>ClientContext object for the created site collection</returns>
         public static async Task<ClientContext> CreateAsync(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
+            await new SynchronizationContextRemover();
+
             ClientContext responseContext = null;
 
             var accessToken = clientContext.GetAccessToken();
@@ -92,7 +95,11 @@ namespace OfficeDevPnP.Core.Sites
                             try
                             {
                                 var responseJson = JObject.Parse(responseString);
+#if !NETSTANDARD2_0
                                 if (Convert.ToInt32(responseJson["d"]["Create"]["SiteStatus"]) == 2)
+#else
+                                if(responseJson["d"]["Create"]["SiteStatus"].Value<int>() == 2)
+#endif
                                 {
                                     responseContext = clientContext.Clone(responseJson["d"]["Create"]["SiteUrl"].ToString());
                                 }
@@ -130,8 +137,10 @@ namespace OfficeDevPnP.Core.Sites
                 throw new ArgumentException("Alias cannot contain spaces", "Alias");
             }
 
-            ClientContext responseContext = null;
+            await new SynchronizationContextRemover();
 
+            ClientContext responseContext = null;
+            
             var accessToken = clientContext.GetAccessToken();
 
             if (clientContext.IsAppOnly())
@@ -191,7 +200,11 @@ namespace OfficeDevPnP.Core.Sites
                         // If value empty, URL is taken
                         var responseString = await response.Content.ReadAsStringAsync();
                         var responseJson = JObject.Parse(responseString);
+#if !NETSTANDARD2_0
                         if (Convert.ToInt32(responseJson["d"]["CreateGroupEx"]["SiteStatus"]) == 2)
+#else
+                        if (responseJson["d"]["CreateGroupEx"]["SiteStatus"].Value<int>() == 2)
+#endif
                         {
                             responseContext = clientContext.Clone(responseJson["d"]["CreateGroupEx"]["SiteUrl"].ToString());
                         }
@@ -232,6 +245,8 @@ namespace OfficeDevPnP.Core.Sites
             {
                 throw new ArgumentException("DisplayName is required", "DisplayName");
             }
+
+            await new SynchronizationContextRemover();
 
             ClientContext responseContext = null;
 
@@ -363,6 +378,8 @@ namespace OfficeDevPnP.Core.Sites
         /// <returns>True if in use, false otherwise</returns>
         public static async Task<bool> AliasExistsAsync(ClientContext context, string alias)
         {
+            await new SynchronizationContextRemover();
+
             bool aliasExists = true;
 
             var accessToken = context.GetAccessToken();

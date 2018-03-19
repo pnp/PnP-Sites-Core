@@ -92,7 +92,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Type of the control: 3 is a text part, 4 is a client side web part
+        /// Type of the control: 4 is a text part, 3 is a client side web part
         /// </summary>
         public int ControlType
         {
