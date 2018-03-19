@@ -1,11 +1,10 @@
-using Microsoft.SharePoint.Client;
+﻿using Microsoft.SharePoint.Client;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    internal class SiteNameToken : TokenDefinition
+    internal class SiteTitleToken : TokenDefinition
     {
-        public SiteNameToken(Web web)
-            : base(web, "~sitename", "{sitename}")
+        public SiteTitleToken(Web web) : base(web, "{sitetitle}", "~sitename", "{sitename}")
         {
         }
 

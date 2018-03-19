@@ -296,7 +296,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 modelTerm.Id = Guid.NewGuid();
             }
-            
+
             // We have to verify that the Term does not exist at all before creating it. One scenario that slips through
             // is e.g. if two terms have been merged in the termstore. The merged term will never be returned when iterating all
             // terms and its easy for any logic elsewhere to assume the term does not exist. We have to explicitly request the term
@@ -313,7 +313,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     return null;
                 }
             }
-
+            
 
             if (parent is Term)
             {
@@ -832,7 +832,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 customSortOrder = ((Term)parent).CustomSortOrder;
             }
             context.Load(terms, tms => tms.IncludeWithDefaultProperties(t => t.Labels, t => t.CustomSortOrder,
-                t => t.IsReused, t => t.IsSourceTerm, t => t.SourceTerm, t => t.IsDeprecated));
+                t => t.IsReused, t => t.IsSourceTerm, t => t.SourceTerm, t => t.IsDeprecated, t => t.Description, t => t.Owner));
             context.ExecuteQueryRetry();
 
             foreach (var term in terms)
@@ -848,6 +848,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 modelTerm.IsSourceTerm = term.IsSourceTerm;
                 modelTerm.SourceTermId = (term.SourceTerm != null) ? term.SourceTerm.Id : Guid.Empty;
                 modelTerm.IsDeprecated = term.IsDeprecated;
+                modelTerm.Description = term.Description;
+                modelTerm.Owner = term.Owner;
 
                 if ((!term.IsReused || term.IsSourceTerm) && term.Labels.Any())
                 {
@@ -917,7 +919,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 
-        public override bool WillProvision(Web web, Model.ProvisioningTemplate template)
+        public override bool WillProvision(Web web, Model.ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             if (!_willProvision.HasValue)
             {

@@ -39,9 +39,9 @@ Core component solution structure follows the generic structure like all PnP pro
 ## Additional documentation ##
 Additional PnP Core component documentation.  
 - [Class and method documentation](Documentation.md)
-- [SAML support](SAML authentication.md)
+- [SAML support](SAML%20authentication.md)
 - [PnP Core nuget package](nuget.md)
-- [Timer job framework](TimerJob Framework.md)
+- [Timer job framework](TimerJob%20Framework.md)
 
 ## AppModelExtensions ##
 [Extension methods](http://msdn.microsoft.com/en-us/library/bb383977.aspx) are a .Net construct that allow to extend an existing type with additional methods. This approach is extensively used in the core library. Below you'll see a method that extends the SharePoint.Client.Web type with a method named CreateContentType:
@@ -155,7 +155,7 @@ If the operation requires a specific type of context, consider extending from so
 caller).
 
 ## Clarify the type of URL ##
-Clarify if a URL is a FullUrl, ServerRelativeUrl, SiteCollectionRelativeUrl, or LeafUrl.  This avoids ambiguity where users of the API have a different default understanding of what 'url' means.
+Clarify if a URL is a FullUrl, ServerRelativeUrl, SiteCollectionRelativeUrl, or LeafUrl.  This avoids ambiguity where users of the API have a different default understanding of what 'URL' means.
 
 Prefer using the Uri class for clarity, but generally provide overloads that use string.
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Linq;
@@ -15,6 +16,7 @@ using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Utilities.Async;
 
 #if !ONPREMISES
 using OfficeDevPnP.Core.Utilities.Webhooks;
@@ -355,6 +357,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The collection of Webhooks subscriptions of the list</returns>
         public static async Task<IList<WebhookSubscription>> GetWebhookSubscriptionsAsync(this List list, string accessToken = null)
         {
+            await new SynchronizationContextRemover();
+
             // Get the access from the client context if not specified.
             accessToken = accessToken ?? list.Context.GetAccessToken();
 
@@ -363,7 +367,7 @@ namespace Microsoft.SharePoint.Client
 
             try
             {
-                ResponseModel<WebhookSubscription> webHookSubscriptionResponse = await WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), accessToken, list.Context as ClientContext).ConfigureAwait(false);
+                ResponseModel<WebhookSubscription> webHookSubscriptionResponse = await WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), accessToken, list.Context as ClientContext);
                 return webHookSubscriptionResponse.Value;
             }
             catch (AggregateException ex)
@@ -954,7 +958,7 @@ namespace Microsoft.SharePoint.Client
 
             return listToQuery.Id;
         }
-        
+
         /// <summary>
         /// Get List by using Id
         /// </summary>
@@ -975,7 +979,7 @@ namespace Microsoft.SharePoint.Client
 
             if (listId == null)
             {
-                throw new ArgumentNullException(nameof(listId));                    
+                throw new ArgumentNullException(nameof(listId));
             }
 
             if (listId == Guid.Empty)
@@ -1154,9 +1158,13 @@ namespace Microsoft.SharePoint.Client
                     }
                 case BuiltInIdentity.EveryoneButExternalUsers:
                     {
+#if !NETSTANDARD2_0
                         string userIdentity = $"c:0-.f|rolemanager|spo-grid-all-users/{web.GetAuthenticationRealm()}";
                         permissionEntity = web.EnsureUser(userIdentity);
                         break;
+#else
+                        throw new Exception("Not Supported");
+#endif
                     }
             }
 
@@ -1188,9 +1196,9 @@ namespace Microsoft.SharePoint.Client
             list.Context.ExecuteQueryRetry();
         }
 
-        #endregion
+#endregion
 
-        #region List view
+#region List view
 
         /// <summary>
         /// Creates list views based on specific xml structure from file
@@ -1427,8 +1435,7 @@ namespace Microsoft.SharePoint.Client
             }
 
         }
-
-        #endregion
+#endregion
 
         private static void SetDefaultColumnValuesImplementation(this List list, IEnumerable<IDefaultColumnValue> columnValues)
         {
@@ -1438,8 +1445,7 @@ namespace Microsoft.SharePoint.Client
                 {
                     var values = columnValues.ToList<IDefaultColumnValue>();
 
-                    clientContext.Load(list.RootFolder);
-                    clientContext.Load(list.RootFolder.Folders);
+                    clientContext.Load(list.RootFolder, r => r.ServerRelativeUrl);
                     clientContext.ExecuteQueryRetry();
 
                     var xMetadataDefaults = new XElement("MetadataDefaults");
@@ -1447,21 +1453,14 @@ namespace Microsoft.SharePoint.Client
                     while (values.Any())
                     {
                         // Get the first entry 
-                        var defaultColumnValue = values.First();
+                        IDefaultColumnValue defaultColumnValue = values.First();
                         var path = defaultColumnValue.FolderRelativePath;
                         if (string.IsNullOrEmpty(path))
                         {
                             // Assume root folder
                             path = "/";
                         }
-                        if (path.Equals("/"))
-                        {
-                            path = list.RootFolder.ServerRelativeUrl;
-                        }
-                        else
-                        {
-                            path = UrlUtility.Combine(list.RootFolder.ServerRelativeUrl, path);
-                        }
+                        path = path.Equals("/") ? list.RootFolder.ServerRelativeUrl : UrlUtility.Combine(list.RootFolder.ServerRelativeUrl, path);
                         // Find all in the same path:
                         var defaultColumnValuesInSamePath = columnValues.Where(x => x.FolderRelativePath == defaultColumnValue.FolderRelativePath);
                         path = Uri.EscapeUriString(path);
@@ -1472,18 +1471,28 @@ namespace Microsoft.SharePoint.Client
                         {
                             var fieldName = defaultColumnValueInSamePath.FieldInternalName;
                             var fieldStringBuilder = new StringBuilder();
-                            if (defaultColumnValueInSamePath.GetType() == typeof(DefaultColumnTermValue))
+
+                            var termValue = defaultColumnValueInSamePath as DefaultColumnTermValue;
+                            if (termValue != null)
                             {
                                 // Term value
-                                foreach (var term in ((DefaultColumnTermValue)defaultColumnValueInSamePath).Terms)
+                                foreach (var term in termValue.Terms)
                                 {
-                                    term.EnsureProperties(t => t.Id, t => t.Name);
+                                    string wssId = string.Empty;
+                                    if (!term.IsPropertyAvailable("Id"))
+                                    {
+                                        term.EnsureProperties(t => t.Id, t => t.Name);
+                                    }
+                                    if (term.IsPropertyAvailable("CustomProperties"))
+                                    {
+                                        term.CustomProperties.TryGetValue("WssId", out wssId);
+                                    }
 
-                                    var wssId = list.ParentWeb.GetWssIdForTerm(term);
+                                    if (string.IsNullOrEmpty(wssId)) wssId = "-1";
                                     fieldStringBuilder.AppendFormat("{0};#{1}|{2};#", wssId, term.Name, term.Id);
                                 }
                                 var xDefaultValue = new XElement("DefaultValue", new XAttribute("FieldName", fieldName));
-                                var fieldString = fieldStringBuilder.ToString().TrimEnd(new char[] { ';', '#' });
+                                var fieldString = fieldStringBuilder.ToString().TrimEnd(';', '#');
                                 xDefaultValue.SetValue(fieldString);
                                 xATag.Add(xDefaultValue);
                             }
@@ -1501,7 +1510,7 @@ namespace Microsoft.SharePoint.Client
                         xMetadataDefaults.Add(xATag);
                     }
 
-                    var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
+                    var formsFolder = GetFormsFolderFromList(list, clientContext);
                     if (formsFolder != null)
                     {
                         var xmlSb = new StringBuilder();
@@ -1575,17 +1584,223 @@ namespace Microsoft.SharePoint.Client
 
             using (var clientContext = (ClientContext)list.Context)
             {
+                clientContext.Load(list.RootFolder, r => r.ServerRelativeUrl);
+                clientContext.ExecuteQueryRetry();
+                // Check if default values file is present
+                var formsFolder = GetFormsFolderFromList(list, clientContext);
+                List<IDefaultColumnValue> existingValues = new List<IDefaultColumnValue>();
+
+                if (formsFolder != null)
+                {
+                    var configFile = formsFolder.Files.GetByUrl("client_LocationBasedDefaults.html");
+                    clientContext.Load(configFile, c => c.Exists);
+                    bool fileExists = false;
+                    try
+                    {
+                        clientContext.ExecuteQueryRetry();
+                        fileExists = true;
+                    }
+                    catch { }
+
+                    if (fileExists)
+                    {
+                        var streamResult = configFile.OpenBinaryStream();
+                        clientContext.ExecuteQueryRetry();
+                        XDocument document = XDocument.Load(streamResult.Value);
+                        var values = from a in document.Descendants("a") select a;
+                        Dictionary<string, Field> fieldCache = new Dictionary<string, Field>();
+
+                        foreach (var value in values)
+                        {
+                            var href = value.Attribute("href").Value;
+                            href = Uri.UnescapeDataString(href);
+                            href = href.Replace(list.RootFolder.ServerRelativeUrl, "/").Replace("//", "/");
+                            var defaultValues = from d in value.Descendants("DefaultValue") select d;
+                            foreach (var defaultValue in defaultValues)
+                            {
+                                var fieldName = defaultValue.Attribute("FieldName").Value;
+                                Field field;
+                                if (!fieldCache.TryGetValue(fieldName, out field))
+                                {
+                                    field = list.Fields.GetByInternalNameOrTitle(fieldName);
+                                    clientContext.Load(field);
+                                    clientContext.ExecuteQueryRetry();
+                                    fieldCache.Add(fieldName, field);
+                                }
+
+                                if (field.FieldTypeKind == FieldType.Text ||
+                                    field.FieldTypeKind == FieldType.Choice ||
+                                    field.FieldTypeKind == FieldType.MultiChoice ||
+                                    field.FieldTypeKind == FieldType.User ||
+                                    field.FieldTypeKind == FieldType.Boolean ||
+                                    field.FieldTypeKind == FieldType.DateTime ||
+                                    field.FieldTypeKind == FieldType.Number ||
+                                    field.FieldTypeKind == FieldType.Currency
+                                    )
+                                {
+                                    var textValue = defaultValue.Value;
+
+                                    if (field.FieldTypeKind == FieldType.User && !textValue.Contains(";#"))
+                                    {
+                                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ListExtensions_IncorrectValueFormat);
+                                        continue;
+                                    }
+
+                                    var defaultColumnTextValue = new DefaultColumnTextValue()
+                                    {
+                                        FieldInternalName = fieldName,
+                                        FolderRelativePath = href,
+                                        Text = textValue
+                                    };
+                                    existingValues.Add(defaultColumnTextValue);
+                                }
+                                else
+                                {
+                                    var termsIdentifier = defaultValue.Value;
+
+                                    var terms = termsIdentifier.Split(new[] { ";#" }, StringSplitOptions.None);
+                                    var existingTerms = new List<Term>();
+                                    for (int q = 0; q < terms.Length; q += 2)
+                                    {
+                                        var wssId = terms[q];
+                                        var splitData = terms[q + 1].Split(new char[] { '|' });
+
+                                        var termName = splitData[0];
+                                        var termIdString = splitData[1];
+
+                                        Term perfTerm = HydrateTermFromText(clientContext, termIdString, termName, wssId);
+                                        existingTerms.Add(perfTerm);
+                                    }
+
+                                    var defaultColumnTermValue = new DefaultColumnTermValue()
+                                    {
+                                        FieldInternalName = fieldName,
+                                        FolderRelativePath = href
+                                    };
+                                    existingTerms.ForEach(t => defaultColumnTermValue.Terms.Add(t));
+
+                                    existingValues.Add(defaultColumnTermValue);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var termsList = columnValues.Union(existingValues, new DefaultColumnTermValueComparer()).ToList();
+                list.SetDefaultColumnValuesImplementation(termsList);
+            }
+        }
+
+        private static Term HydrateTermFromText(ClientContext clientContext, string termIdString, string termName, string wssId)
+        {
+            if (string.IsNullOrEmpty(wssId)) wssId = "-1";
+            Term perfTerm = new Term(clientContext, null);
+            var prop = perfTerm.GetType().GetProperty("ObjectData", BindingFlags.Instance | BindingFlags.NonPublic);
+            ClientObjectData data = (ClientObjectData)prop.GetValue(perfTerm);
+            data.Properties["Id"] = Guid.Parse(termIdString);
+            data.Properties["Name"] = termName;
+            data.Properties["CustomProperties"] = new Dictionary<string, string>();
+            perfTerm.CustomProperties.Add("WssId", wssId);
+            return perfTerm;
+        }
+
+        private static Folder GetFormsFolderFromList(List list, ClientContext clientContext)
+        {
+            Folder formsFolder = null;
+            try
+            {
+                formsFolder = clientContext.Web.GetFolderByServerRelativeUrl(list.RootFolder.ServerRelativeUrl + "/Forms");
+                clientContext.ExecuteQueryRetry();
+            }
+            catch (FileNotFoundException)
+            {
+            }
+            return formsFolder;
+        }
+
+        /// <summary>
+        /// <para>Sets default values for column values.</para>
+        /// <para>In order to for instance set the default Enterprise Metadata keyword field to a term, add the enterprise metadata keyword to a library (internal name "TaxKeyword")</para>
+        /// <para> </para>
+        /// <para>Column values are defined by the DefaultColumnValue class that has 3 properties:</para>
+        /// <para>RelativeFolderPath : / to set a default value for the root of the document library, or /foldername to specify a subfolder</para>
+        /// <para>FieldInternalName : The name of the field to set. For instance "TaxKeyword" to set the Enterprise Metadata field</para>
+        /// <para>Terms : A collection of Taxonomy terms to set</para>
+        /// <para></para>
+        /// <para>Supported column types: Metadata, Text, Choice, MultiChoice, People, Boolean, DateTime, Number, Currency</para>
+        /// </summary>
+        /// <param name="list">The list to process.</param>
+        /// <param name="columnValues">The default column values.</param>
+        /// <param name="overwriteExistingDefaultColumnValues">If true, the currrent default column values will be overwritten.</param>
+        public static void SetDefaultColumnValues(this List list, IEnumerable<IDefaultColumnValue> columnValues, bool overwriteExistingDefaultColumnValues)
+        {
+            if (overwriteExistingDefaultColumnValues)
+            {
+                list.SetDefaultColumnValuesImplementation(columnValues);
+            }
+            else
+            {
+                list.SetDefaultColumnValues(columnValues);
+            }               
+        }
+
+        /// <summary>
+        /// Remove all default column values that are defined for this list.
+        /// </summary>
+        /// <param name="list">The list to process.</param>
+        public static void ClearDefaultColumnValues(this List list)
+        {
+            var defaultValuesFileName = "client_LocationBasedDefaults.html";
+            using (var clientContext = (ClientContext)list.Context)
+            {
+                clientContext.Load(list.RootFolder);
+                clientContext.Load(list.RootFolder.Folders);
+                clientContext.ExecuteQueryRetry();
+
+                // Check if default values file is present
+                var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
+                var configFile = formsFolder.Files.GetByUrl(defaultValuesFileName);
+                clientContext.Load(configFile, c => c.Exists);
+                bool fileExists = false;
+                try
+                {
+                    clientContext.ExecuteQueryRetry();
+                    fileExists = true;
+                }
+                catch
+                {
+                    // Do nothing here
+                }
+
+                if (fileExists)
+                {
+                    configFile.DeleteObject();
+                    clientContext.ExecuteQueryRetry();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes the provided default column values from the specified folder(s) from list, if they were set.
+        /// </summary>
+        /// <param name="list">The list to process.</param>
+        /// <param name="columnValues">The default column values that must be cleared.</param>
+        public static void ClearDefaultColumnValues(this List list, IEnumerable<IDefaultColumnValue> columnValues)
+        {
+            var defaultValuesFileName = "client_LocationBasedDefaults.html";
+            using (var clientContext = (ClientContext)list.Context)
+            {
                 clientContext.Load(list.RootFolder);
                 clientContext.Load(list.RootFolder.Folders);
                 clientContext.ExecuteQueryRetry();
                 TaxonomySession taxSession = TaxonomySession.GetTaxonomySession(clientContext);
                 // Check if default values file is present
                 var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
-                List<IDefaultColumnValue> existingValues = new List<IDefaultColumnValue>();
+                List<IDefaultColumnValue> remainingValues = new List<IDefaultColumnValue>();
 
                 if (formsFolder != null)
                 {
-                    var configFile = formsFolder.Files.GetByUrl("client_LocationBasedDefaults.html");
+                    var configFile = formsFolder.Files.GetByUrl(defaultValuesFileName);
                     clientContext.Load(configFile, c => c.Exists);
                     bool fileExists = false;
                     try
@@ -1639,7 +1854,15 @@ namespace Microsoft.SharePoint.Client
                                         FolderRelativePath = href,
                                         Text = textValue
                                     };
-                                    existingValues.Add(defaultColumnTextValue);
+
+                                    bool shouldBeKept = columnValues
+                                        .FirstOrDefault(c =>
+                                            c.FieldInternalName == defaultColumnTextValue.FieldInternalName && c.FolderRelativePath == defaultColumnTextValue.FolderRelativePath
+                                        ) == null;
+                                    if (shouldBeKept == true)
+                                    {
+                                        remainingValues.Add(defaultColumnTextValue);
+                                    }
                                 }
                                 else
                                 {
@@ -1665,7 +1888,14 @@ namespace Microsoft.SharePoint.Client
                                     };
                                     existingTerms.ForEach(t => defaultColumnTermValue.Terms.Add(t));
 
-                                    existingValues.Add(defaultColumnTermValue);
+                                    bool shouldBeKept = columnValues
+                                        .FirstOrDefault(c =>
+                                            c.FieldInternalName == defaultColumnTermValue.FieldInternalName && c.FolderRelativePath == defaultColumnTermValue.FolderRelativePath
+                                        ) == null;
+                                    if (shouldBeKept == true)
+                                    {
+                                        remainingValues.Add(defaultColumnTermValue);
+                                    }
                                 }
                             }
 
@@ -1673,8 +1903,7 @@ namespace Microsoft.SharePoint.Client
                     }
                 }
 
-                var termsList = columnValues.Union(existingValues, new DefaultColumnTermValueComparer()).ToList();
-                list.SetDefaultColumnValuesImplementation(termsList);
+                list.SetDefaultColumnValuesImplementation(remainingValues);
             }
         }
 
@@ -1694,10 +1923,9 @@ namespace Microsoft.SharePoint.Client
             using (var clientContext = (ClientContext)list.Context)
             {
                 clientContext.Load(list.RootFolder);
-                clientContext.Load(list.RootFolder.Folders);
                 clientContext.ExecuteQueryRetry();
 
-                var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
+                var formsFolder = GetFormsFolderFromList(list, clientContext);
                 if (formsFolder != null)
                 {
                     var configFile = formsFolder.Files.GetByUrl("client_LocationBasedDefaults.html");

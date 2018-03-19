@@ -1,4 +1,5 @@
-﻿using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
+﻿#if !NETSTANDARD2_0
+using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
@@ -22,3 +23,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         }
     }
 }
+#endif

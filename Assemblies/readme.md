@@ -3,7 +3,7 @@
 
 It is normally updated with the latest release of [SharePoint Online CSOM components](http://www.nuget.org/packages/Microsoft.SharePointOnline.CSOM)
 
-Current version is based on CSOM version **16.1.6112.1200**
+Current version is based on CSOM version **16.1.7317.1200**
 
 # 16.0 folder - SharePoint 2016 (On-Premises) #
 [![SharePointPnPCore2016](https://img.shields.io/nuget/v/SharePointPnPCore2016.svg)](https://www.nuget.org/packages/SharePointPnPCore2016/)

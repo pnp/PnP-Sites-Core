@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class CoreResources {
@@ -337,6 +337,15 @@ namespace OfficeDevPnP.Core {
         internal static string FieldAndContentTypeExtensions_ContentType01AlreadyExists {
             get {
                 return ResourceManager.GetString("FieldAndContentTypeExtensions_ContentType01AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Content Type with ID {0} does not exist in the list {1}.
+        /// </summary>
+        internal static string FieldAndContentTypeExtensions_ContentTypeMissing {
+            get {
+                return ResourceManager.GetString("FieldAndContentTypeExtensions_ContentTypeMissing", resourceCulture);
             }
         }
         
@@ -984,7 +993,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Skipping view localization because we&apos;re running under a user context who has a prefered language set in it&apos;s profile. This setup will not allow to add the needed localized string versions..
+        ///   Looks up a localized string similar to Skipping view localization because we&apos;re running under a user context who has a preferred language set in it&apos;s profile. This setup will not allow to add the needed localized string versions..
         /// </summary>
         internal static string Provisioning_Extensions_ViewLocalization_Skip {
             get {
@@ -993,7 +1002,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Skipping web part localization because we&apos;re running under a user context who has a prefered language set in it&apos;s profile. This setup will not allow to add the needed localized string versions..
+        ///   Looks up a localized string similar to Skipping web part localization because we&apos;re running under a user context who has a preferred language set in it&apos;s profile. This setup will not allow to add the needed localized string versions..
         /// </summary>
         internal static string Provisioning_Extensions_WebPartLocalization_Skip {
             get {
@@ -1029,6 +1038,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Error during automatic client side page connected file export: {0}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ClientSidePageContents_ErrorDuringFileExport {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ClientSidePageContents_ErrorDuringFileExport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to This page is not a valid client side page and can&apos;t be extracted. Underlying error = {0}..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ClientSidePageContents_NoValidPage {
@@ -1047,7 +1065,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Page with name {0} did already exist and the overwrite flag was not set, so nothing happended.
+        ///   Looks up a localized string similar to Page with name {0} did already exist and the overwrite flag was not set, so nothing happened.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ClientSidePages_NoOverWrite {
             get {
@@ -1189,7 +1207,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Skipping custom form urls for contenttype &apos;{0}&apos; because we can&apos;t upload them on &apos;noscript&apos; sites..
+        ///   Looks up a localized string similar to Skipping custom form URLs for contenttype &apos;{0}&apos; because we can&apos;t upload them on &apos;noscript&apos; sites..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls {
             get {
@@ -1198,7 +1216,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Skipping adding default documements to document set &apos;{0}&apos; because this is not supported on &apos;noscript&apos; sites..
+        ///   Looks up a localized string similar to Skipping adding default documents to document set &apos;{0}&apos; because this is not supported on &apos;noscript&apos; sites..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments {
             get {
@@ -1636,6 +1654,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Webhook {0} has been expired and will be skipped during creation/update of list {1}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Updating field {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstances_Updating_field__0_ {
@@ -1668,6 +1695,15 @@ namespace OfficeDevPnP.Core {
         internal static string Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_ {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_Updating_list__0__failed___1_____2_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Error during webhook add/update: {0}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_Webhook_Error {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_Webhook_Error", resourceCulture);
             }
         }
         
@@ -2431,7 +2467,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Site {0} url/wildcard added.
+        ///   Looks up a localized string similar to Site {0} URL/wildcard added.
         /// </summary>
         internal static string TimerJob_AddSite_Done {
             get {
@@ -2440,7 +2476,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Site url ({0}) contains invalid characters.
+        ///   Looks up a localized string similar to Site URL ({0}) contains invalid characters.
         /// </summary>
         internal static string TimerJob_AddSite_InvalidUrl {
             get {
@@ -2485,7 +2521,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Retrieving credetials with name {0} from the Windows Credential Manager.
+        ///   Looks up a localized string similar to Retrieving credentials with name {0} from the Windows Credential Manager.
         /// </summary>
         internal static string TimerJob_Authentication_RetrieveFromCredMan {
             get {
@@ -2548,6 +2584,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to obtain a ClientContext instance: {0}..
+        /// </summary>
+        internal static string TimerJob_DoWork_NoClientContext {
+            get {
+                return ResourceManager.GetString("TimerJob_DoWork_NoClientContext", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to No event receiver connected to the TimerJobRun event.
         /// </summary>
         internal static string TimerJob_DoWork_NoEventHandler {
@@ -2566,7 +2611,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Enumeration credentials specified for on-premises enumeration with user {0} and demain {1}.
+        ///   Looks up a localized string similar to Enumeration credentials specified for on-premises enumeration with user {0} and domain {1}.
         /// </summary>
         internal static string TimerJob_Enumeration_Network {
             get {
@@ -2674,7 +2719,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Calling the eventhandler for site {0}.
+        ///   Looks up a localized string similar to Calling the event handler for site {0}.
         /// </summary>
         internal static string TimerJob_OnTimerJobRun_CallEventHandler {
             get {
@@ -2683,7 +2728,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Eventhandler called for site {0}.
+        ///   Looks up a localized string similar to Event handler called for site {0}.
         /// </summary>
         internal static string TimerJob_OnTimerJobRun_CallEventHandlerDone {
             get {
@@ -2692,7 +2737,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Error during timerjob execution of site {0}. Exception message = {1}.
+        ///   Looks up a localized string similar to Error during TimerJob execution of site {0}. Exception message = {1}.
         /// </summary>
         internal static string TimerJob_OnTimerJobRun_Error {
             get {
@@ -2872,7 +2917,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to After calling the virtual ResolveAddedSites method. Current count of site url&apos;s = {0}.
+        ///   Looks up a localized string similar to After calling the virtual ResolveAddedSites method. Current count of site URL&apos;s = {0}.
         /// </summary>
         internal static string TimerJob_Run_AfterResolveAddedSites {
             get {
@@ -2881,7 +2926,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to After calling the virtual UpdateAddedSites method. Current count of site url&apos;s = {0}.
+        ///   Looks up a localized string similar to After calling the virtual UpdateAddedSites method. Current count of site URL&apos;s = {0}.
         /// </summary>
         internal static string TimerJob_Run_AfterUpdateAddedSites {
             get {
@@ -2890,7 +2935,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Before calling the virtual ResolveAddedSites method. Current count of site url&apos;s = {0}.
+        ///   Looks up a localized string similar to Before calling the virtual ResolveAddedSites method. Current count of site URL&apos;s = {0}.
         /// </summary>
         internal static string TimerJob_Run_BeforeResolveAddedSites {
             get {
@@ -2908,7 +2953,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Before calling the virtual UpdateAddedSites method. Current count of site url&apos;s = {0}.
+        ///   Looks up a localized string similar to Before calling the virtual UpdateAddedSites method. Current count of site URL&apos;s = {0}.
         /// </summary>
         internal static string TimerJob_Run_BeforeUpdateAddedSites {
             get {

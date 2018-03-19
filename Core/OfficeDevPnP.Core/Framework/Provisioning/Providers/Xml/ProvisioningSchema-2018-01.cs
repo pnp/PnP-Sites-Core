@@ -7637,6 +7637,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         private ApplicationLifecycleManagementAppAction actionField;
         
+        private ApplicationLifecycleManagementAppSyncMode syncModeField;
+        
+        public ApplicationLifecycleManagementApp() {
+            this.syncModeField = ApplicationLifecycleManagementAppSyncMode.Synchronously;
+        }
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string AppId {
@@ -7658,6 +7664,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
                 this.actionField = value;
             }
         }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(ApplicationLifecycleManagementAppSyncMode.Synchronously)]
+        public ApplicationLifecycleManagementAppSyncMode SyncMode {
+            get {
+                return this.syncModeField;
+            }
+            set {
+                this.syncModeField = value;
+            }
+        }
     }
     
     /// <remarks/>
@@ -7674,6 +7692,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         /// <remarks/>
         Uninstall,
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2018/01/ProvisioningSchema")]
+    public enum ApplicationLifecycleManagementAppSyncMode {
+        
+        /// <remarks/>
+        Synchronously,
+        
+        /// <remarks/>
+        Asynchronously,
     }
     
     /// <remarks/>
@@ -7755,9 +7786,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         private bool enableCommentsField;
         
         public ClientSidePage() {
-            this.layoutField = "false";
-            this.publishField = false;
-            this.enableCommentsField = false;
+            this.layoutField = "Article";
+            this.publishField = true;
+            this.enableCommentsField = true;
         }
         
         /// <remarks/>
@@ -7828,7 +7859,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute("false")]
+        [System.ComponentModel.DefaultValueAttribute("Article")]
         public string Layout {
             get {
                 return this.layoutField;
@@ -7840,7 +7871,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(false)]
+        [System.ComponentModel.DefaultValueAttribute(true)]
         public bool Publish {
             get {
                 return this.publishField;
@@ -7852,7 +7883,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(false)]
+        [System.ComponentModel.DefaultValueAttribute(true)]
         public bool EnableComments {
             get {
                 return this.enableCommentsField;
@@ -8118,8 +8149,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201801 {
         
         /// <remarks/>
         QuickLinks,
+
+        /// <remarks/>
+        CustomMessageRegion,
+
+        /// <remarks/>
+        Divider,
+
+        /// <remarks/>
+        MicrosoftForms,
+
+        /// <remarks/>
+        Spacer,
     }
-    
+
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
     [System.SerializableAttribute()]

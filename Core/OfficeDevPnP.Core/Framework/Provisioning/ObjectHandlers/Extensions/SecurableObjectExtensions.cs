@@ -57,15 +57,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                     if (principal == null)
                     {
                         principal = context.Web.EnsureUser(roleAssignmentPrincipal);
-                        principal.EnsureProperty(p => p.Id);
                     }
+                    principal.EnsureProperty(p => p.Id);
 
                     if (principal != null)
                     {
                         var assignmentsForPrincipal = securableRoleAssignments.Where(t => t.PrincipalId == principal.Id);
                         foreach (var assignmentForPrincipal in assignmentsForPrincipal)
                         {
-                            var binding = assignmentForPrincipal.EnsureProperty(r => r.RoleDefinitionBindings).FirstOrDefault(b => b.Name == roleAssignment.RoleDefinition);
+                            var roleAssignmentRoleDefinition = parser.ParseString(roleAssignment.RoleDefinition);
+                            var binding = assignmentForPrincipal.EnsureProperty(r => r.RoleDefinitionBindings).FirstOrDefault(b => b.Name == roleAssignmentRoleDefinition);
                             if (binding != null)
                             {
                                 assignmentForPrincipal.DeleteObject();
