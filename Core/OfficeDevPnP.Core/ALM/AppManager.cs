@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Async;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -41,7 +42,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public AppMetadata Add(byte[] file, string filename, bool overwrite = false)
         {
-            return AddAsync(file, filename, overwrite).GetAwaiter().GetResult();
+            return Task.Run(() => AddAsync(file, filename, overwrite)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -52,7 +53,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public AppMetadata Add(string path, bool overwrite = false)
         {
-            return AddAsync(path, overwrite).GetAwaiter().GetResult();
+            return Task.Run(() => AddAsync(path, overwrite)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -72,6 +73,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(filename));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseAddRequest(file, filename, overwrite, true);
         }
 
@@ -95,6 +99,9 @@ namespace OfficeDevPnP.Core.ALM
 
             var bytes = System.IO.File.ReadAllBytes(path);
             var fileInfo = new FileInfo(path);
+
+            await new SynchronizationContextRemover();
+
             return await BaseAddRequest(bytes, fileInfo.Name, overwrite, true);
         }
 
@@ -105,7 +112,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Install(AppMetadata appMetadata)
         {
-            return InstallAsync(appMetadata).GetAwaiter().GetResult();
+            return Task.Run(() => InstallAsync(appMetadata)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -123,6 +130,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(appMetadata.Id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await InstallAsync(appMetadata.Id);
         }
 
@@ -133,7 +143,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Install(Guid id)
         {
-            return InstallAsync(id).GetAwaiter().GetResult();
+            return Task.Run(() => InstallAsync(id)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -147,6 +157,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(id, "Install");
         }
 
@@ -157,7 +170,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Uninstall(AppMetadata appMetadata)
         {
-            return UninstallAsync(appMetadata).GetAwaiter().GetResult();
+            return Task.Run(() => UninstallAsync(appMetadata)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -175,6 +188,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(appMetadata.Id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await UninstallAsync(appMetadata.Id);
         }
 
@@ -185,7 +201,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Uninstall(Guid id)
         {
-            return UninstallAsync(id).GetAwaiter().GetResult();
+            return Task.Run(() => UninstallAsync(id)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -199,6 +215,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(id, "Uninstall");
         }
 
@@ -209,7 +228,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Upgrade(AppMetadata appMetadata)
         {
-            return UpgradeAsync(appMetadata).GetAwaiter().GetResult();
+            return Task.Run(() => UpgradeAsync(appMetadata)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -227,6 +246,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(appMetadata.Id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await UpgradeAsync(appMetadata.Id);
         }
 
@@ -237,7 +259,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Upgrade(Guid id)
         {
-            return UpgradeAsync(id).GetAwaiter().GetResult();
+            return Task.Run(() => UpgradeAsync(id)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -251,6 +273,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(id, "Upgrade");
         }
 
@@ -262,7 +287,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Deploy(AppMetadata appMetadata, bool skipFeatureDeployment = true)
         {
-            return DeployAsync(appMetadata, skipFeatureDeployment).GetAwaiter().GetResult();
+            return Task.Run(() => DeployAsync(appMetadata, skipFeatureDeployment)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -285,6 +310,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 { "skipFeatureDeployment", skipFeatureDeployment }
             };
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(appMetadata.Id, "Deploy", true, postObj);
         }
 
@@ -296,7 +324,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Deploy(Guid id, bool skipFeatureDeployment = true)
         {
-            return DeployAsync(id, skipFeatureDeployment).GetAwaiter().GetResult();
+            return Task.Run(() => DeployAsync(id, skipFeatureDeployment)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -315,6 +343,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 { "skipFeatureDeployment", skipFeatureDeployment }
             };
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(id, "Deploy", true, postObj);
         }
 
@@ -325,7 +356,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Retract(AppMetadata appMetadata)
         {
-            return RetractAsync(appMetadata).GetAwaiter().GetResult();
+            return Task.Run(() => RetractAsync(appMetadata)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -343,6 +374,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(appMetadata.Id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(appMetadata.Id, "Retract", true);
         }
 
@@ -353,7 +387,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Retract(Guid id)
         {
-            return RetractAsync(id).GetAwaiter().GetResult();
+            return Task.Run(() => RetractAsync(id)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -367,6 +401,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(id, "Retract", true);
         }
 
@@ -377,7 +414,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Remove(AppMetadata appMetadata)
         {
-            return RemoveAsync(appMetadata).GetAwaiter().GetResult();
+            return Task.Run(() => RemoveAsync(appMetadata)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -395,6 +432,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(appMetadata.Id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(appMetadata.Id, "Remove", true);
         }
 
@@ -405,7 +445,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Remove(Guid id)
         {
-            return RemoveAsync(id).GetAwaiter().GetResult();
+            return Task.Run(() => RemoveAsync(id)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -419,6 +459,9 @@ namespace OfficeDevPnP.Core.ALM
             {
                 throw new ArgumentException(nameof(id));
             }
+
+            await new SynchronizationContextRemover();
+
             return await BaseRequest(id, "Remove", true);
         }
 
@@ -428,7 +471,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public List<AppMetadata> GetAvailable()
         {
-            return BaseGetAvailableAsync(Guid.Empty).GetAwaiter().GetResult();
+            return Task.Run(() => BaseGetAvailableAsync(Guid.Empty)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -437,6 +480,8 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public async Task<List<AppMetadata>> GetAvailableAsync()
         {
+            await new SynchronizationContextRemover();
+
             return await BaseGetAvailableAsync(Guid.Empty);
         }
 
@@ -447,11 +492,13 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public AppMetadata GetAvailable(Guid id)
         {
-            return BaseGetAvailableAsync(id).GetAwaiter().GetResult();
+            return Task.Run(() => BaseGetAvailableAsync(id)).GetAwaiter().GetResult();
         }
 
         public async Task<AppMetadata> GetAvailableAsync(Guid id)
         {
+            await new SynchronizationContextRemover();
+
             return await BaseGetAvailableAsync(id);
         }
 
@@ -462,11 +509,13 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public AppMetadata GetAvailable(string title)
         {
-            return BaseGetAvailableAsync(Guid.Empty, title).GetAwaiter().GetResult();
+            return Task.Run(() => BaseGetAvailableAsync(Guid.Empty, title)).GetAwaiter().GetResult();
         }
 
         public async Task<AppMetadata> GetAvailableAsync(string title)
         {
+            await new SynchronizationContextRemover();
+
             return await BaseGetAvailableAsync(Guid.Empty, title);
         }
 
