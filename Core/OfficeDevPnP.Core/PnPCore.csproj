@@ -29,7 +29,9 @@
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.xsd" />
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.xsd" />
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-01.xsd" />
+    <None Remove="OfficeDevPnP.Core.csproj.DotSettings" />
     <None Remove="Properties\Settings.settings" />
+    <None Remove="Version.txt" />
   </ItemGroup>
 
   <ItemGroup>
