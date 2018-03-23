@@ -14,10 +14,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <DefineConstants>TRACE;DEBUG;NETSTANDARD2_0</DefineConstants>
     <OutputPath>bin\DebugCore\</OutputPath>
+    <BaseIntermediateOutputPath>$(SolutionDir)\OfficeDevPnP.Core.Tests\obj\DebugCore</BaseIntermediateOutputPath>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>bin\ReleaseCore\</OutputPath>
+    <BaseIntermediateOutputPath>$(SolutionDir)\OfficeDevPnP.Core.Tests\obj\ReleaseCore</BaseIntermediateOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
