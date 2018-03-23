@@ -95,7 +95,11 @@ namespace OfficeDevPnP.Core.Sites
                             try
                             {
                                 var responseJson = JObject.Parse(responseString);
+#if !NETSTANDARD2_0
                                 if (Convert.ToInt32(responseJson["d"]["Create"]["SiteStatus"]) == 2)
+#else
+                                if(responseJson["d"]["Create"]["SiteStatus"].Value<int>() == 2)
+#endif
                                 {
                                     responseContext = clientContext.Clone(responseJson["d"]["Create"]["SiteUrl"].ToString());
                                 }
@@ -196,7 +200,11 @@ namespace OfficeDevPnP.Core.Sites
                         // If value empty, URL is taken
                         var responseString = await response.Content.ReadAsStringAsync();
                         var responseJson = JObject.Parse(responseString);
+#if !NETSTANDARD2_0
                         if (Convert.ToInt32(responseJson["d"]["CreateGroupEx"]["SiteStatus"]) == 2)
+#else
+                        if (responseJson["d"]["CreateGroupEx"]["SiteStatus"].Value<int>() == 2)
+#endif
                         {
                             responseContext = clientContext.Clone(responseJson["d"]["CreateGroupEx"]["SiteUrl"].ToString());
                         }

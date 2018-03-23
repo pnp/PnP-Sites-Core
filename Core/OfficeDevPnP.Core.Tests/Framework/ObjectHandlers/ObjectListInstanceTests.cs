@@ -327,6 +327,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
         }
 
+#if !NETSTANDARD2_0
         [TestMethod]
         public void UpdatedListTitleShouldBeAvailableAsToken()
         {
@@ -372,7 +373,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 ConfigurationData = configurationData;
             }
         }
-
+#endif
         [TestMethod]
         public void CanProvisionCalculatedFieldRefInListInstance()
         {
