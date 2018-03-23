@@ -6,13 +6,27 @@
     <AssemblyName>OfficeDevPnP.Core</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>bin\DebugCore\</OutputPath>
+    <BaseIntermediateOutputPath>$(SolutionDir)\OfficeDevPnP.Core\obj\DebugCore</BaseIntermediateOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>bin\ReleaseCore\</OutputPath>
+    <BaseIntermediateOutputPath>$(SolutionDir)\OfficeDevPnP.Core\obj\ReleaseCore</BaseIntermediateOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="obj\**" />
     <Compile Remove="Web References\**" />
     <Compile Remove="WebAPI\**" />
+    <EmbeddedResource Remove="obj\**" />
     <EmbeddedResource Remove="Web References\**" />
     <EmbeddedResource Remove="WebAPI\**" />
+    <None Remove="obj\**" />
     <None Remove="Web References\**" />
     <None Remove="WebAPI\**" />
   </ItemGroup>
