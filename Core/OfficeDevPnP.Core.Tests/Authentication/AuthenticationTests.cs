@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using OfficeDevPnP.Core.Entities;
 using System.Linq;
 
+#if !NETSTANDARD2_0
 namespace OfficeDevPnP.Core.Tests.Authentication
 {
 #if !ONPREMISES
@@ -13,7 +14,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
     {
         private static string UserName;
 
-        #region Test initialization
+#region Test initialization
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
@@ -32,7 +33,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
                 DeleteListsImplementation(clientContext);
             }
         }
-        #endregion
+#endregion
 
         /// <summary>
         /// Important: the Azure AD you're using here needs to be consented first, otherwise you'll get an access denied.
@@ -91,7 +92,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
             }
         }
 
-        #region Helper methods
+#region Helper methods
         private static void DeleteListsImplementation(ClientContext cc)
         {
             cc.Load(cc.Web.Lists, f => f.Include(t => t.Title));
@@ -106,7 +107,8 @@ namespace OfficeDevPnP.Core.Tests.Authentication
             }
             cc.ExecuteQueryRetry();
         }
-        #endregion
+#endregion
     }
 #endif
 }
+#endif
