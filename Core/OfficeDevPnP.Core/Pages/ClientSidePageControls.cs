@@ -797,7 +797,7 @@ namespace OfficeDevPnP.Core.Pages
             StringBuilder html = new StringBuilder(100);
 #if NETSTANDARD2_0
             html.Append($@"<div {CanvasControlAttribute}=""{this.CanvasControlData}"" {CanvasDataVersionAttribute}=""{this.DataVersion}"" {ControlDataAttribute}=""{this.JsonControlData.Replace("\"", "&quot;")}"">");
-            html.Append($@"<div {WebPartAttribute}=""{this.WebPartData}"" {WebPartDataVersionAttribute}=""{this.DataVersion}"" {WebPartDataAttribute}=""{this.JsonWebPartData}"">");
+            html.Append($@"<div {WebPartAttribute}=""{this.WebPartData}"" {WebPartDataVersionAttribute}=""{this.DataVersion}"" {WebPartDataAttribute}=""{this.JsonWebPartData.Replace("\"", "&quot;")}"">");
             html.Append($@"<div {WebPartComponentIdAttribute}=""""");
             html.Append(this.WebPartId);
             html.Append("/div>");
