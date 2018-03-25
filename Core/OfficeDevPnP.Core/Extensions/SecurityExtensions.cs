@@ -1312,6 +1312,7 @@ namespace Microsoft.SharePoint.Client
             else if (obj is ListItem)
             {
                 var item = obj as ListItem;
+                context.Load(obj, i => i.HasUniqueRoleAssignments);
                 context.Load(item.RoleAssignments);
                 context.Load(item.RoleAssignments.Groups);
                 context.ExecuteQueryRetry();
