@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Addition of PnPCore.Tests project for testing of the PnPCore .Net Standard 2.0 library
+
 ### Changed
 
 - Improvements to ExecuteQueryRetryAsync [OliverZeiser, biste5]
