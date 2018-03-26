@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#if !NETSTANDARD2_0
 namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
 {
     public class ExtensibilityMockProvider : IProvisioningExtensibilityProvider
@@ -25,3 +26,4 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
         }
     }
 }
+#endif

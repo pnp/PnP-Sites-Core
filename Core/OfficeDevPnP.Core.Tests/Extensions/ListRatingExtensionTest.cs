@@ -1,6 +1,5 @@
 using System;
 using System.Linq;
-using System.Security.Policy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Tests;

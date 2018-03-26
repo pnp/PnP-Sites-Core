@@ -141,7 +141,11 @@ namespace Microsoft.SharePoint.Client
 
                     // DO NOT CHANGE THIS TO EXECUTEQUERYRETRY
 #if !ONPREMISES
+#if !NETSTANDARD2_0
                     await clientContext.ExecuteQueryAsync();
+#else
+                    clientContext.ExecuteQuery();
+#endif
 #else
                     clientContext.ExecuteQuery();
 #endif

@@ -60,7 +60,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             customColorFilePath = Path.Combine(Path.GetTempPath(), "custom.spcolor");
             System.IO.File.WriteAllBytes(customColorFilePath, OfficeDevPnP.Core.Tests.Properties.Resources.custom);
             customBackgroundFilePath = Path.Combine(Path.GetTempPath(), "custombg.jpg");
-            Properties.Resources.custombg.Save(customBackgroundFilePath);
+            //Properties.Resources.custombg.Save(customBackgroundFilePath);
 
             testWebName = string.Format("Test_CL{0:yyyyMMddTHHmmss}", DateTimeOffset.Now);
             pageLayoutTestWeb = Setup();
