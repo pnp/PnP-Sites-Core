@@ -32,6 +32,7 @@ namespace OfficeDevPnP.Core.Tests.Utilities
             Assert.IsTrue(testString == insecureTestString);
         }
 
+#if !NETSTANDARD2_0
         [TestMethod]
         public void EncryptStringWithDPAPITest()
         {
@@ -56,5 +57,6 @@ namespace OfficeDevPnP.Core.Tests.Utilities
 
             Assert.IsTrue(insecureString == testString);
         }
+#endif
     }
 }

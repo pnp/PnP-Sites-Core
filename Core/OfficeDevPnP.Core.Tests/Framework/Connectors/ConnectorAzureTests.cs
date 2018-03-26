@@ -9,17 +9,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#if !NETSTANDARD2_0
 namespace OfficeDevPnP.Core.Tests.Framework.Connectors
 {
     [TestClass]
     public class ConnectorAzureTests
     {
-        #region Test variables
+#region Test variables
         static string testContainer = "pnptest";
         static string testContainerSecure = "pnptestsecure";
-        #endregion
+#endregion
 
-        #region Test initialize and cleanup
+#region Test initialize and cleanup
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
@@ -89,9 +90,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
                 containerSecure.DeleteIfExists();
             }
         }
-        #endregion
+#endregion
 
-        #region Azure connector tests
+#region Azure connector tests
 
         /// <summary>
         /// Pass the connection information as parameters
@@ -503,6 +504,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
 
             // Folder will be deleted in cleanup
         }
-        #endregion
+#endregion
     }
 }
+#endif

@@ -10,6 +10,7 @@ using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 
+#if !NETSTANDARD2_0
 namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
 {
     public class ExtensibilityMockHandler : IProvisioningExtensibilityHandler
@@ -39,3 +40,4 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
         }
     }
 }
+#endif

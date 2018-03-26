@@ -86,10 +86,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         {
             try
             {
-                string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
                 string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, sitecollectionName);
 
-                string siteOwnerLogin = ConfigurationManager.AppSettings["SPOUserName"];
+                string siteOwnerLogin = TestCommon.AppSetting("SPOUserName");
                 if (TestCommon.AppOnlyTesting())
                 {
                     using (var clientContext = TestCommon.CreateClientContext())
@@ -211,9 +211,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 #else
         private static string CreateTestSiteCollection(Tenant tenant, string sitecollectionName, bool isNoScriptSite = false)
         {
-            string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+            string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
 
-            string siteOwnerLogin = string.Format("{0}\\{1}", ConfigurationManager.AppSettings["OnPremDomain"], ConfigurationManager.AppSettings["OnPremUserName"]);
+            string siteOwnerLogin = string.Format("{0}\\{1}", TestCommon.AppSetting("OnPremDomain"), TestCommon.AppSetting("OnPremUserName"));
             if (TestCommon.AppOnlyTesting())
             {
                 using (var clientContext = TestCommon.CreateClientContext())
@@ -263,7 +263,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         private static void CleanupAllTestSiteCollections(ClientContext tenantContext)
         {
-            string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+            string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
                        
             var tenant = new Tenant(tenantContext);
             try
@@ -287,7 +287,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         private void CleanupCreatedTestSiteCollections(ClientContext tenantContext)
         {
-            string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+            string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
             String testSiteCollection = GetTestSiteCollectionName(devSiteUrl, sitecollectionName);
 
             //Ensure the test site collection was deleted and removed from recyclebin
