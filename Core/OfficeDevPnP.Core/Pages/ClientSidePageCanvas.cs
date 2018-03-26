@@ -971,7 +971,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Request information about the available client side components from SharePoint
-            Task<String> availableClientSideComponentsJson = Task.Run(() => GetClientSideWebPartsAsync(this.accessToken, this.Context).Result);
+            Task<String> availableClientSideComponentsJson = Task.Run(() => GetClientSideWebPartsAsync(this.accessToken, this.Context).GetAwaiter().GetResult());
 
             if (String.IsNullOrEmpty(availableClientSideComponentsJson.Result))
             {

@@ -147,7 +147,7 @@ namespace OfficeDevPnP.Core.Utilities.WebParts.Processors
                 }
 
                 var displayNameAttribute = viewSchemaElement.Attribute("DisplayName");
-                if (displayNameAttribute != null && TryGetView(() =>
+                if (!string.IsNullOrEmpty(displayNameAttribute?.Value) && TryGetView(() =>
                 {
                     var listView = list.Views.GetByTitle(displayNameAttribute.Value);
                     list.Context.Load(listView);

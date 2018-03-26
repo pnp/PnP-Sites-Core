@@ -70,12 +70,11 @@ namespace Microsoft.SharePoint.Client
         /// <param name="retryCount">Number of times to retry the request</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <param name="userAgent">UserAgent string value to insert for this request. You can define this value in your app's config file using key="SharePointPnPUserAgent" value="PnPRocks"></param>
-        public static async Task ExecuteQueryRetryAsync(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
+        public static Task ExecuteQueryRetryAsync(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
         {
-            await new SynchronizationContextRemover();
-
-            await ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
+            return ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
         }
+
 #endif
 
         /// <summary>
@@ -87,8 +86,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="userAgent">UserAgent string value to insert for this request. You can define this value in your app's config file using key="SharePointPnPUserAgent" value="PnPRocks"></param>
         public static void ExecuteQueryRetry(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
         {
-#if !ONPREMISES
-            ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent).GetAwaiter().GetResult();
+#if !ONPREMISES            
+            Task.Run(() => ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent)).GetAwaiter().GetResult();
 #else
             ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
 #endif
@@ -100,6 +99,11 @@ namespace Microsoft.SharePoint.Client
         private static void ExecuteQueryImplementation(ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
 #endif
         {
+
+#if !ONPREMISES
+            await new SynchronizationContextRemover();
+#endif
+
             var clientTag = string.Empty;
             if (clientContext is PnPClientContext)
             {
@@ -137,7 +141,11 @@ namespace Microsoft.SharePoint.Client
 
                     // DO NOT CHANGE THIS TO EXECUTEQUERYRETRY
 #if !ONPREMISES
+#if !NETSTANDARD2_0
                     await clientContext.ExecuteQueryAsync();
+#else
+                    clientContext.ExecuteQuery();
+#endif
 #else
                     clientContext.ExecuteQuery();
 #endif
