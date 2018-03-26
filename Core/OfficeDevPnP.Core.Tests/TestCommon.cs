@@ -41,7 +41,7 @@ namespace OfficeDevPnP.Core.Tests
             // Load configuration in a way that's compatible with a .Net Core test project as well
             ExeConfigurationFileMap fileMap = new ExeConfigurationFileMap
             {
-                ExeConfigFilename = @"..\..\..\App.config" //Path to your config file
+                ExeConfigFilename = @"..\..\App.config" //Path to your config file
             };
             configuration = ConfigurationManager.OpenMappedExeConfiguration(fileMap, ConfigurationUserLevel.None);
 #endif
