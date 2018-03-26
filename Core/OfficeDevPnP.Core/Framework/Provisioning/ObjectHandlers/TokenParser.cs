@@ -424,6 +424,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>Returns parsed string</returns>
         public string ParseString(string input, params string[] tokensToSkip)
         {
+            if (string.IsNullOrWhiteSpace(input)) return input;
+
             var tokenChars = new[] { '{', '~' };
             if (string.IsNullOrEmpty(input) || input.IndexOfAny(tokenChars) == -1) return input;
 
