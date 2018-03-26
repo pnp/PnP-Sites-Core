@@ -987,6 +987,13 @@ namespace OfficeDevPnP.Core.Pages
             this.description = wpJObject["description"] != null ? wpJObject["description"].Value<string>() : "";
             // Set property to trigger correct loading of properties 
             this.PropertiesJson = wpJObject["properties"].ToString(Formatting.None);
+
+            // Check for fullbleed supporting web parts
+            if (wpJObject["properties"] != null && wpJObject["properties"]["isFullWidth"] != null)
+            {
+                this.supportsFullBleed = wpJObject["properties"]["isFullWidth"].Value<Boolean>();
+            }
+
             // Store the server processed content as that's needed for full fidelity
             if (wpJObject["serverProcessedContent"] != null)
             {
