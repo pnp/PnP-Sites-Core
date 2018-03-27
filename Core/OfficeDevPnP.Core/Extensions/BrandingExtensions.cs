@@ -9,6 +9,7 @@ using OfficeDevPnP.Core.Entities;
 using LanguageTemplateHash = System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<string>>;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
+using System.Threading.Tasks;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -47,7 +48,17 @@ namespace Microsoft.SharePoint.Client
         /// <returns>true if it exists; otherwise false</returns>
         public static bool ComposedLookExists(this Web web, string composedLookName)
         {
-            var found = GetComposedLook(web, composedLookName);
+            return ComposedLookExistsAsync(web, composedLookName).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Checks if a composed look exists.
+        /// </summary>
+        /// <param name="web">Web to check</param>
+        /// <param name="composedLookName">Name of the composed look</param>
+        /// <returns>true if it exists; otherwise false</returns>
+        public static async Task<bool> ComposedLookExistsAsync(this Web web, string composedLookName)
+        {
+            var found = await GetComposedLookAsync(web, composedLookName);
             return (found != null);
         }
 
@@ -63,6 +74,21 @@ namespace Microsoft.SharePoint.Client
         /// <param name="displayOrder">Display order of the composed look</param>
         /// <param name="replaceContent">Replace composed look if it already exists (default true)</param>
         public static void CreateComposedLookByName(this Web web, string lookName, string paletteFileName, string fontFileName, string backgroundFileName, string masterFileName, int displayOrder = 1, bool replaceContent = true)
+        {
+            CreateComposedLookByNameAsync(web, lookName, paletteFileName, fontFileName, backgroundFileName, masterFileName, displayOrder, replaceContent).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Creates (or updates) a composed look in the web site; usually this is done in the root site of the collection.
+        /// </summary>
+        /// <param name="web">Web to create the composed look in</param>
+        /// <param name="lookName">Name of the theme</param>
+        /// <param name="paletteFileName">File name of the palette file in the theme catalog of the site collection; path component ignored.</param>
+        /// <param name="fontFileName">File name of the font file in the theme catalog of the site collection; path component ignored.</param>
+        /// <param name="backgroundFileName">File name of the background image file in the theme catalog of the site collection; path component ignored.</param>
+        /// <param name="masterFileName">File name of the master page in the mastepage catalog of the web site; path component ignored.</param>
+        /// <param name="displayOrder">Display order of the composed look</param>
+        /// <param name="replaceContent">Replace composed look if it already exists (default true)</param>
+        public static async Task CreateComposedLookByNameAsync(Web web, string lookName, string paletteFileName, string fontFileName, string backgroundFileName, string masterFileName, int displayOrder, bool replaceContent)
         {
             var paletteUrl = default(string);
             var fontUrl = default(string);
@@ -89,9 +115,8 @@ namespace Microsoft.SharePoint.Client
                 masterUrl = UrlUtility.Combine(web.ServerRelativeUrl, string.Format(Constants.MASTERPAGE_DIRECTORY, Path.GetFileName(masterFileName)));
             }
 
-            CreateComposedLookByUrl(web, lookName, paletteUrl, fontUrl, backgroundUrl, masterUrl, displayOrder, replaceContent);
+            await CreateComposedLookByUrlAsync(web, lookName, paletteUrl, fontUrl, backgroundUrl, masterUrl, displayOrder, replaceContent);
         }
-
         /// <summary>
         /// Creates (or updates) a composed look in the web site; usually this is done in the root site of the collection.
         /// </summary>
@@ -105,6 +130,21 @@ namespace Microsoft.SharePoint.Client
         /// <param name="replaceContent">Replace composed look if it already exists (default true)</param>
         public static void CreateComposedLookByUrl(this Web web, string lookName, string paletteServerRelativeUrl, string fontServerRelativeUrl, string backgroundServerRelativeUrl, string masterServerRelativeUrl, int displayOrder = 1, bool replaceContent = true)
         {
+            web.CreateComposedLookByUrlAsync(lookName, paletteServerRelativeUrl, fontServerRelativeUrl, backgroundServerRelativeUrl, masterServerRelativeUrl, displayOrder, replaceContent).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Creates (or updates) a composed look in the web site; usually this is done in the root site of the collection.
+        /// </summary>
+        /// <param name="web">Web to create the composed look in</param>
+        /// <param name="lookName">Name of the theme</param>
+        /// <param name="paletteServerRelativeUrl">URL of the palette file, usually in the theme catalog of the site collection</param>
+        /// <param name="fontServerRelativeUrl">URL of the font file, usually in the theme catalog of the site collection</param>
+        /// <param name="backgroundServerRelativeUrl">URL of the background image file, usually in /_layouts/15/images</param>
+        /// <param name="masterServerRelativeUrl">URL of the master page, usually in the masterpage catalog of the web site</param>
+        /// <param name="displayOrder">Display order of the composed look</param>
+        /// <param name="replaceContent">Replace composed look if it already exists (default true)</param>
+        public static async Task CreateComposedLookByUrlAsync(this Web web, string lookName, string paletteServerRelativeUrl, string fontServerRelativeUrl, string backgroundServerRelativeUrl, string masterServerRelativeUrl, int displayOrder = 1, bool replaceContent = true)
+        {
             web.EnsureProperties(w => w.ServerRelativeUrl);
 
             var composedLooksList = web.GetCatalog((int)ListTemplateType.DesignCatalog);
@@ -114,7 +154,7 @@ namespace Microsoft.SharePoint.Client
             query.ViewXml = string.Format(CAML_QUERY_FIND_BY_FILENAME, lookName);
             var existingCollection = composedLooksList.GetItems(query);
             web.Context.Load(existingCollection);
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
             ListItem item = existingCollection.FirstOrDefault();
 
             if (item == null)
@@ -158,7 +198,7 @@ namespace Microsoft.SharePoint.Client
 
             item["DisplayOrder"] = displayOrder;
             item.Update();
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
         }
 
         /// <summary>
@@ -174,6 +214,21 @@ namespace Microsoft.SharePoint.Client
         /// <param name="updateRootOnly">false to apply to subsites; true (default) to only apply to specified site</param>
         public static void SetComposedLookByUrl(this Web web, string lookName, string paletteServerRelativeUrl = null, string fontServerRelativeUrl = null, string backgroundServerRelativeUrl = null, string masterServerRelativeUrl = null, bool resetSubsitesToInherit = false, bool updateRootOnly = true)
         {
+            web.SetComposedLookByUrlAsync(lookName, paletteServerRelativeUrl, fontServerRelativeUrl, backgroundServerRelativeUrl, masterServerRelativeUrl, resetSubsitesToInherit, updateRootOnly).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Retrieves the named composed look, overrides with specified palette, font, background and master page, and then recursively sets the specified values.
+        /// </summary>
+        /// <param name="web">Web to apply composed look to</param>
+        /// <param name="lookName">Name of the composed look to apply; null will apply the override values only</param>
+        /// <param name="paletteServerRelativeUrl">Override palette file URL to use</param>
+        /// <param name="fontServerRelativeUrl">Override font file URL to use</param>
+        /// <param name="backgroundServerRelativeUrl">Override background image file URL to use</param>
+        /// <param name="masterServerRelativeUrl">Override master page file URL to use</param>
+        /// <param name="resetSubsitesToInherit">false (default) to apply to currently inheriting subsites only; true to force all subsites to inherit</param>
+        /// <param name="updateRootOnly">false to apply to subsites; true (default) to only apply to specified site</param>
+        public static async Task SetComposedLookByUrlAsync(this Web web, string lookName, string paletteServerRelativeUrl = null, string fontServerRelativeUrl = null, string backgroundServerRelativeUrl = null, string masterServerRelativeUrl = null, bool resetSubsitesToInherit = false, bool updateRootOnly = true)
+        {
             var paletteUrl = default(string);
             var fontUrl = default(string);
             var backgroundUrl = default(string);
@@ -188,7 +243,7 @@ namespace Microsoft.SharePoint.Client
                 query.ViewXml = string.Format(CAML_QUERY_FIND_BY_FILENAME, lookName);
                 var existingCollection = composedLooksList.GetItems(query);
                 web.Context.Load(existingCollection);
-                web.Context.ExecuteQueryRetry();
+                await web.Context.ExecuteQueryRetryAsync();
                 var item = existingCollection.FirstOrDefault();
 
                 if (item != null)
@@ -244,13 +299,13 @@ namespace Microsoft.SharePoint.Client
             backgroundUrl = System.Net.WebUtility.UrlDecode(backgroundUrl);
             masterUrl = System.Net.WebUtility.UrlDecode(masterUrl);
 
-            web.SetMasterPageByUrl(masterUrl, resetSubsitesToInherit, updateRootOnly);
-            web.SetCustomMasterPageByUrl(masterUrl, resetSubsitesToInherit, updateRootOnly);
-            web.SetThemeByUrl(paletteUrl, fontUrl, backgroundUrl, resetSubsitesToInherit, updateRootOnly);
+            await web.SetMasterPageByUrlAsync(masterUrl, resetSubsitesToInherit, updateRootOnly);
+            await web.SetCustomMasterPageByUrlAsync(masterUrl, resetSubsitesToInherit, updateRootOnly);
+            await web.SetThemeByUrlAsync(paletteUrl, fontUrl, backgroundUrl, resetSubsitesToInherit, updateRootOnly);
 
             // Update/create the "Current" reference in the composed looks gallery
-            string currentLookName = GetLocalizedCurrentValue(web);
-            web.CreateComposedLookByUrl(currentLookName, paletteUrl, fontUrl, backgroundUrl, masterUrl, displayOrder: 0);
+            string currentLookName = await GetLocalizedCurrentValueAsync(web);
+            await web.CreateComposedLookByUrlAsync(currentLookName, paletteUrl, fontUrl, backgroundUrl, masterUrl, displayOrder: 0);
         }
 
         /// <summary>
@@ -265,18 +320,22 @@ namespace Microsoft.SharePoint.Client
         [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static void SetThemeByUrl(this Web web, string paletteServerRelativeUrl, string fontServerRelativeUrl, string backgroundServerRelativeUrl, bool resetSubsitesToInherit = false, bool updateRootOnly = false)
         {
+            web.SetThemeByUrlAsync(paletteServerRelativeUrl, fontServerRelativeUrl, backgroundServerRelativeUrl, resetSubsitesToInherit, updateRootOnly).GetAwaiter().GetResult();
+        }
+        public static async Task SetThemeByUrlAsync(this Web web, string paletteServerRelativeUrl, string fontServerRelativeUrl, string backgroundServerRelativeUrl, bool resetSubsitesToInherit = false, bool updateRootOnly = false)
+        {
             var websToUpdate = new List<Web>();
             web.Context.Load(web, w => w.AllProperties, w => w.ServerRelativeUrl);
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.BrandingExtension_ApplyTheme, paletteServerRelativeUrl, web.ServerRelativeUrl);
 
-            if(!web.IsNoScriptSite())
+            if (!web.IsNoScriptSite())
             {
                 web.AllProperties[InheritTheme] = "False";
                 web.Update();
             }
             web.ApplyTheme(paletteServerRelativeUrl, fontServerRelativeUrl, backgroundServerRelativeUrl, shareGenerated: true);
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
             //web.Context.Load(web, w => w.ThemedCssFolderUrl);
             //var themedCssFolderUrl = childWeb.ThemedCssFolderUrl;
             websToUpdate.Add(web);
@@ -289,7 +348,7 @@ namespace Microsoft.SharePoint.Client
                     var currentWeb = websToUpdate[index];
                     var websCollection = currentWeb.Webs;
                     web.Context.Load(websCollection, wc => wc.Include(w => w.AllProperties, w => w.ServerRelativeUrl));
-                    web.Context.ExecuteQueryRetry();
+                    await web.Context.ExecuteQueryRetryAsync();
                     foreach (var childWeb in websCollection)
                     {
                         var inheritThemeProperty = childWeb.GetPropertyBagValueString(InheritTheme, "");
@@ -311,7 +370,7 @@ namespace Microsoft.SharePoint.Client
                             // TODO: CSOM does not support the ThemedCssFolderUrl property yet (Nov 2014), so must call ApplyTheme at each level.
                             // This is very slow, so replace with simply setting the ThemedCssFolderUrl property instead once available.
                             childWeb.ApplyTheme(paletteServerRelativeUrl, fontServerRelativeUrl, backgroundServerRelativeUrl, shareGenerated: true);
-                            web.Context.ExecuteQueryRetry();
+                            await web.Context.ExecuteQueryRetryAsync();
                             websToUpdate.Add(childWeb);
                         }
                     }
@@ -403,6 +462,20 @@ namespace Microsoft.SharePoint.Client
         {
             web.DeployMasterPageGalleryItem(sourceFilePath, title, description, associatedContentTypeID, Constants.PAGE_LAYOUT_CONTENT_TYPE, folderHierarchy);
         }
+        /// <summary>
+        /// Can be used to deploy page layouts to master page gallery. 
+        /// <remarks>Should be only used with root web of site collection where publishing features are enabled.</remarks>
+        /// </summary>
+        /// <param name="web">Web as the root site of the publishing site collection</param>
+        /// <param name="sourceFilePath">Full path to the file which will be uploaded</param>
+        /// <param name="title">Title for the page layout</param>
+        /// <param name="description">Description for the page layout</param>
+        /// <param name="associatedContentTypeID">Associated content type ID</param>
+        /// <param name="folderHierarchy">Folder hierarchy where the page layouts will be deployed</param>
+        public static async Task DeployPageLayoutAsync(this Web web, string sourceFilePath, string title, string description, string associatedContentTypeID, string folderHierarchy = "")
+        {
+            await web.DeployMasterPageGalleryItemAsync(sourceFilePath, title, description, associatedContentTypeID, Constants.PAGE_LAYOUT_CONTENT_TYPE, folderHierarchy);
+        }
 
         /// <summary>
         /// Can be used to deploy html page layouts to master page gallery. 
@@ -418,6 +491,20 @@ namespace Microsoft.SharePoint.Client
         {
             web.DeployMasterPageGalleryItem(sourceFilePath, title, description, associatedContentTypeID, Constants.HTMLPAGE_LAYOUT_CONTENT_TYPE, folderHierarchy);
         }
+        /// <summary>
+        /// Can be used to deploy html page layouts to master page gallery. 
+        /// <remarks>Should be only used with root web of site collection where publishing features are enabled.</remarks>
+        /// </summary>
+        /// <param name="web">Web as the root site of the publishing site collection</param>
+        /// <param name="sourceFilePath">Full path to the file which will be uploaded</param>
+        /// <param name="title">Title for the page layout</param>
+        /// <param name="description">Description for the page layout</param>
+        /// <param name="associatedContentTypeID">Associated content type ID</param>
+        /// <param name="folderHierarchy">Folder hierarchy where the html page layouts will be deployed</param>
+        public static async Task DeployHtmlPageLayoutAsync(this Web web, string sourceFilePath, string title, string description, string associatedContentTypeID, string folderHierarchy = "")
+        {
+            await web.DeployMasterPageGalleryItemAsync(sourceFilePath, title, description, associatedContentTypeID, Constants.HTMLPAGE_LAYOUT_CONTENT_TYPE, folderHierarchy);
+        }
 
         /// <summary>
         /// Private method to support all kinds of file uploads to the master page gallery
@@ -430,6 +517,20 @@ namespace Microsoft.SharePoint.Client
         /// <param name="itemContentTypeId">Content type id for the item.</param>
         /// <param name="folderHierarchy">Folder hierarchy where the file will be uploaded</param>
         private static void DeployMasterPageGalleryItem(this Web web, string sourceFilePath, string title, string description, string associatedContentTypeID, string itemContentTypeId, string folderHierarchy = "")
+        {
+            DeployMasterPageGalleryItemAsync(web, sourceFilePath, title, description, associatedContentTypeID, itemContentTypeId, folderHierarchy).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Private method to support all kinds of file uploads to the master page gallery
+        /// </summary>
+        /// <param name="web">Web as the root site of the publishing site collection</param>
+        /// <param name="sourceFilePath">Full path to the file which will be uploaded</param>
+        /// <param name="title">Title for the page layout</param>
+        /// <param name="description">Description for the page layout</param>
+        /// <param name="associatedContentTypeID">Associated content type ID</param>
+        /// <param name="itemContentTypeId">Content type id for the item.</param>
+        /// <param name="folderHierarchy">Folder hierarchy where the file will be uploaded</param>
+        public static async Task DeployMasterPageGalleryItemAsync(this Web web, string sourceFilePath, string title, string description, string associatedContentTypeID, string itemContentTypeId, string folderHierarchy = "")
         {
             if (string.IsNullOrEmpty(sourceFilePath))
             {
@@ -449,7 +550,7 @@ namespace Microsoft.SharePoint.Client
             Folder rootFolder = masterPageGallery.RootFolder;
             web.Context.Load(masterPageGallery);
             web.Context.Load(rootFolder);
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
 
             // Create folder structure inside master page gallery, if does not exists
             // For e.g.: _catalogs/masterpage/contoso/
@@ -465,7 +566,7 @@ namespace Microsoft.SharePoint.Client
 
             File uploadFile = rootFolder.Files.Add(newFile);
             web.Context.Load(uploadFile);
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
 
             // Check out the file if needed
             if (masterPageGallery.ForceCheckout || masterPageGallery.EnableVersioning)
@@ -498,8 +599,7 @@ namespace Microsoft.SharePoint.Client
                     listItem.File.Publish(string.Empty);
                 }
             }
-            web.Context.ExecuteQueryRetry();
-
+            await web.Context.ExecuteQueryRetryAsync();
         }
 
         /// <summary>
@@ -513,6 +613,20 @@ namespace Microsoft.SharePoint.Client
         /// <param name="defaultCSSFile">DefaultCSSFile of the masterpage</param>
         /// <param name="folderPath">FolderPath of the masterpage</param>
         public static File DeployMasterPage(this Web web, string sourceFilePath, string title, string description, string uiVersion = "15", string defaultCSSFile = "", string folderPath = "")
+        {
+            return web.DeployMasterPageAsync(sourceFilePath, title, description, uiVersion, folderPath).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Deploys a new masterpage
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="sourceFilePath">The path to the source file</param>
+        /// <param name="title">The title of the masterpage</param>
+        /// <param name="description">The description of the masterpage</param>
+        /// <param name="uiVersion">UIVersion of the masterpage</param>
+        /// <param name="defaultCSSFile">DefaultCSSFile of the masterpage</param>
+        /// <param name="folderPath">FolderPath of the masterpage</param>
+        public static async Task<File> DeployMasterPageAsync(this Web web, string sourceFilePath, string title, string description, string uiVersion = "15", string defaultCSSFile = "", string folderPath = "")
         {
             if (string.IsNullOrEmpty(sourceFilePath))
                 throw new ArgumentNullException(nameof(sourceFilePath));
@@ -528,7 +642,7 @@ namespace Microsoft.SharePoint.Client
             Folder rootFolder = masterPageGallery.RootFolder;
             web.Context.Load(masterPageGallery);
             web.Context.Load(rootFolder);
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
 
             // Create folder if does not exists
             if (!String.IsNullOrEmpty(folderPath))
@@ -547,7 +661,7 @@ namespace Microsoft.SharePoint.Client
 
             File uploadFile = rootFolder.Files.Add(newFile);
             web.Context.Load(uploadFile);
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
 
 
             var listItem = uploadFile.ListItemAllFields;
@@ -574,7 +688,7 @@ namespace Microsoft.SharePoint.Client
                 }
             }
             web.Context.Load(listItem);
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
 
             return uploadFile;
         }
@@ -589,6 +703,18 @@ namespace Microsoft.SharePoint.Client
         /// <exception cref="System.ArgumentNullException">Thrown when masterPageName or customMasterPageName is null</exception>
         public static void SetMasterPagesByName(this Web web, string masterPageName, string customMasterPageName)
         {
+            web.SetMasterPagesByNameAsync(masterPageName, customMasterPageName).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Can be used to set master page and custom master page in single command
+        /// </summary>
+        /// <param name="web">Current web</param>
+        /// <param name="masterPageName">Name of the master page</param>
+        /// <param name="customMasterPageName">Name of the custom master page</param>
+        /// <exception cref="System.ArgumentException">Thrown when masterPageName or customMasterPageName is a zero-length string or contains only white space</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when masterPageName or customMasterPageName is null</exception>
+        private static async Task SetMasterPagesByNameAsync(this Web web, string masterPageName, string customMasterPageName)
+        {
             if (string.IsNullOrEmpty(masterPageName))
             {
                 throw (masterPageName == null)
@@ -602,8 +728,8 @@ namespace Microsoft.SharePoint.Client
                   : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(customMasterPageName));
             }
 
-            web.SetMasterPageByName(masterPageName);
-            web.SetCustomMasterPageByName(customMasterPageName);
+            await web.SetMasterPageByNameAsync(masterPageName);
+            await web.SetCustomMasterPageByNameAsync(customMasterPageName);
         }
 
 
@@ -616,6 +742,18 @@ namespace Microsoft.SharePoint.Client
         /// <exception cref="System.ArgumentException">Thrown when masterPageName or customMasterPageName is a zero-length string or contains only white space</exception>
         /// <exception cref="System.ArgumentNullException">Thrown when masterPageName or customMasterPageName is null</exception>
         public static void SetMasterPagesByUrl(this Web web, string masterPageUrl, string customMasterPageUrl)
+        {
+            SetMasterPagesByUrlAsync(web, masterPageUrl, customMasterPageUrl).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Can be used to set master page and custom master page in single command
+        /// </summary>
+        /// <param name="web">Current web</param>
+        /// <param name="masterPageUrl">Url of the master page</param>
+        /// <param name="customMasterPageUrl">Url of the custom master page</param>
+        /// <exception cref="System.ArgumentException">Thrown when masterPageName or customMasterPageName is a zero-length string or contains only white space</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when masterPageName or customMasterPageName is null</exception>
+        public static async Task SetMasterPagesByUrlAsync(this Web web, string masterPageUrl, string customMasterPageUrl)
         {
             if (string.IsNullOrEmpty(masterPageUrl))
             {
@@ -630,8 +768,8 @@ namespace Microsoft.SharePoint.Client
                   : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(customMasterPageUrl));
             }
 
-            web.SetMasterPageByUrl(masterPageUrl);
-            web.SetCustomMasterPageByUrl(customMasterPageUrl);
+            await web.SetMasterPageByUrlAsync(masterPageUrl);
+            await web.SetCustomMasterPageByUrlAsync(customMasterPageUrl);
         }
 
         /// <summary>
@@ -643,20 +781,29 @@ namespace Microsoft.SharePoint.Client
         /// <exception cref="System.ArgumentNullException">Thrown when masterPageName is null</exception>  
         public static void SetMasterPageByName(this Web web, string masterPageName)
         {
+            web.SetMasterPageByNameAsync(masterPageName).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Master page is set by using master page name. Master page is set from the current web.
+        /// </summary>
+        /// <param name="web">Current web</param>
+        /// <param name="masterPageName">Name of the master page. Path is resolved from this.</param>
+        /// <exception cref="System.ArgumentException">Thrown when masterPageName is a zero-length string or contains only white space</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when masterPageName is null</exception>
+        public static async Task SetMasterPageByNameAsync(this Web web, string masterPageName)
+        {
             if (string.IsNullOrEmpty(masterPageName))
             {
                 throw (masterPageName == null)
                   ? new ArgumentNullException(nameof(masterPageName))
                   : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(masterPageName));
             }
-            string masterPageUrl = GetRelativeUrlForMasterByName(web, masterPageName);
+            string masterPageUrl = await GetRelativeUrlForMasterByNameAsync(web, masterPageName);
             if (!string.IsNullOrEmpty(masterPageUrl))
             {
-                SetMasterPageByUrl(web, masterPageUrl);
+                await SetMasterPageByUrlAsync(web, masterPageUrl);
             }
         }
-
-
         /// <summary>
         /// Master page is set by using master page name. Master page is set from the current web.
         /// </summary>
@@ -666,6 +813,17 @@ namespace Microsoft.SharePoint.Client
         /// <exception cref="System.ArgumentNullException">Thrown when masterPageName is null</exception>  
         public static void SetCustomMasterPageByName(this Web web, string masterPageName)
         {
+            web.SetCustomMasterPageByNameAsync(masterPageName).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Master page is set by using master page name. Master page is set from the current web.
+        /// </summary>
+        /// <param name="web">Current web</param>
+        /// <param name="masterPageName">Name of the master page. Path is resolved from this.</param>
+        /// <exception cref="System.ArgumentException">Thrown when masterPageName is a zero-length string or contains only white space</exception>
+        /// <exception cref="System.ArgumentNullException">Thrown when masterPageName is null</exception>
+        public static async Task SetCustomMasterPageByNameAsync(this Web web, string masterPageName)
+        {
             if (string.IsNullOrEmpty(masterPageName))
             {
                 throw (masterPageName == null)
@@ -673,10 +831,10 @@ namespace Microsoft.SharePoint.Client
                   : new ArgumentException(CoreResources.Exception_Message_EmptyString_Arg, nameof(masterPageName));
             }
 
-            string masterPageUrl = GetRelativeUrlForMasterByName(web, masterPageName);
+            string masterPageUrl = await GetRelativeUrlForMasterByNameAsync(web, masterPageName);
             if (!string.IsNullOrEmpty(masterPageUrl))
             {
-                SetCustomMasterPageByUrl(web, masterPageUrl);
+                await SetCustomMasterPageByUrlAsync(web, masterPageUrl);
             }
         }
 
@@ -686,9 +844,19 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Web to process</param>
         /// <param name="masterPageName">The name of the masterpage, e.g. 'default' or 'seattle'</param>
         /// <returns></returns>
+        public static string GetRelativeUrlForMasterByName(this Web web, string masterPageName)
+        {
+            return web.GetRelativeUrlForMasterByNameAsync(masterPageName).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Returns the relative URL for a masterpage
+        /// </summary>
+        /// <param name="web">Web to process</param>
+        /// <param name="masterPageName">The name of the masterpage, e.g. 'default' or 'seattle'</param>
+        /// <returns></returns>
         [SuppressMessage("Microsoft.Globalization", "CA1308:NormalizeStringsToUppercase",
             Justification = "URLs are commonly standardised to lower case.")]
-        public static string GetRelativeUrlForMasterByName(this Web web, string masterPageName)
+        public static async Task<string> GetRelativeUrlForMasterByNameAsync(this Web web, string masterPageName)
         {
             if (string.IsNullOrEmpty(masterPageName))
                 throw new ArgumentNullException(nameof(masterPageName));
@@ -700,7 +868,7 @@ namespace Microsoft.SharePoint.Client
             ListItemCollection galleryItems = masterPageGallery.GetItems(query);
             web.Context.Load(masterPageGallery);
             web.Context.Load(galleryItems);
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
             foreach (var item in galleryItems)
             {
                 var fileRef = item["FileRef"].ToString();
@@ -712,14 +880,13 @@ namespace Microsoft.SharePoint.Client
             return string.Empty;
         }
 
-        private static string GetLocalizedCurrentValue(this Web web)
+        public static async Task<string> GetLocalizedCurrentValueAsync(this Web web)
         {
             web.EnsureProperties(w => w.Language);
             ClientResult<string> currentTranslated = Utilities.Utility.GetLocalizedString(web.Context, "$Resources:Current", "core", (int)web.Language);
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
             return currentTranslated.Value;
         }
-
 
         /// <summary>
         /// Returns the current theme of a web
@@ -728,8 +895,18 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Entity with attributes of current composed look, or null if none</returns>
         public static ThemeEntity GetCurrentComposedLook(this Web web)
         {
-            var themeName = GetLocalizedCurrentValue(web);
-            return GetComposedLook(web, themeName);
+            return web.GetCurrentComposedLookAsync().GetAwaiter().GetResult();
+        }
+
+        /// <summary>
+        /// Returns the current theme of a web
+        /// </summary>
+        /// <param name="web">Web to check</param>
+        /// <returns>Entity with attributes of current composed look, or null if none</returns>
+        public static async Task<ThemeEntity> GetCurrentComposedLookAsync(this Web web)
+        {
+            var themeName = await GetLocalizedCurrentValueAsync(web);
+            return await GetComposedLookAsync(web, themeName);
         }
 
         /// <summary>
@@ -739,6 +916,16 @@ namespace Microsoft.SharePoint.Client
         /// <param name="composedLookName">Name of the composed look to retrieve</param>
         /// <returns>Entity with the attributes of the composed look, or null if the composed look does not exists or cannot be determined</returns>
         public static ThemeEntity GetComposedLook(this Web web, string composedLookName)
+        {
+            return GetComposedLookAsync(web, composedLookName).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Returns the named composed look from the web gallery
+        /// </summary>
+        /// <param name="web">Web to check</param>
+        /// <param name="composedLookName">Name of the composed look to retrieve</param>
+        /// <returns>Entity with the attributes of the composed look, or null if the composed look does not exists or cannot be determined</returns>
+        public static async Task<ThemeEntity> GetComposedLookAsync(this Web web, string composedLookName)
         {
             // List of OOB composed looks
             List<string> defaultComposedLooks = new List<string>(new[] { "Orange", "Sea Monster", "Green", "Lime", "Nature", "Blossom", "Sketch", "City", "Orbit", "Grey", "Characters", "Office", "Breeze", "Immerse", "Red", "Purple", "Wood" });
@@ -769,19 +956,19 @@ namespace Microsoft.SharePoint.Client
             ListItemCollection themes = designCatalog.GetItems(camlQuery);
             web.Context.Load(themes);
             web.Context.Load(web, w => w.Url);
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
 
             var siteCollectionUrl = "";
             var subSitePath = "";
             using (var cc = web.Context.Clone(web.Url))
             {
                 cc.Load(cc.Site, s => s.Url);
-                cc.ExecuteQueryRetry();
+                await cc.ExecuteQueryRetryAsync();
                 siteCollectionUrl = cc.Site.Url;
                 subSitePath = web.Url.Replace(siteCollectionUrl, "");
             }
 
-            string currentLookName = GetLocalizedCurrentValue(web);
+            string currentLookName = await GetLocalizedCurrentValueAsync(web);
 
             if (themes.Count > 0)
             {
@@ -860,7 +1047,7 @@ namespace Microsoft.SharePoint.Client
                     theme.Font == null &&
                     theme.MasterPage == null &&
                     theme.Theme == null &&
-                    web.IsUsingOfficeTheme())
+                    await web.IsUsingOfficeTheme())
                 {
                     theme.Name = "Office";
                     theme.MasterPage = $"{subSitePath}/_catalogs/masterpage/seattle.master";
@@ -936,7 +1123,7 @@ namespace Microsoft.SharePoint.Client
                     // special case, theme files have been deployed via api and when applying the proper theme the "current" was not set
                     if (!string.IsNullOrEmpty(theme.Name) && theme.Name.Equals(currentLookName, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        if (!web.IsUsingOfficeTheme())
+                        if (!await web.IsUsingOfficeTheme())
                         {
                             // Assume the the last added custom theme is what the site is using
                             for (var i = themes.Count; i-- > 0;)
@@ -1085,7 +1272,7 @@ namespace Microsoft.SharePoint.Client
             return false;
         }
 
-        private static bool IsUsingOfficeTheme(this Web web)
+        private static async Task<bool> IsUsingOfficeTheme(this Web web)
         {
             try
             {
@@ -1094,7 +1281,7 @@ namespace Microsoft.SharePoint.Client
                 var accentText = ti.GetThemeShadeByName("AccentText");
                 var backgroundOverlay = ti.GetThemeShadeByName("BackgroundOverlay");
                 var bodyText = ti.GetThemeShadeByName("BodyText");
-                web.Context.ExecuteQueryRetry();
+                await web.Context.ExecuteQueryRetryAsync();
 
                 var accentTextRGB = accentText.Value.Substring(2);
                 var backgroundOverlayARGB = backgroundOverlay.Value.Substring(2);
@@ -1129,6 +1316,16 @@ namespace Microsoft.SharePoint.Client
         /// <returns>ListItem holding the page layout, null if not found</returns>
         public static ListItem GetPageLayoutListItemByName(this Web web, string pageLayoutName)
         {
+            return GetPageLayoutListItemByNameAsync(web, pageLayoutName).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Gets a page layout from the master page catalog. Can be called with paramter as "pagelayout.aspx" or as full path like "_catalog/masterpage/pagelayout.aspx"
+        /// </summary>
+        /// <param name="web">root web</param>
+        /// <param name="pageLayoutName">name of the page layout to retrieve</param>
+        /// <returns>ListItem holding the page layout, null if not found</returns>
+        public static async Task<ListItem> GetPageLayoutListItemByNameAsync(this Web web, string pageLayoutName)
+        {
             if (string.IsNullOrEmpty(pageLayoutName))
             {
                 throw new ArgumentNullException(nameof(pageLayoutName));
@@ -1151,7 +1348,7 @@ namespace Microsoft.SharePoint.Client
 
             var masterPageGallery = web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
             web.Context.Load(masterPageGallery, x => x.RootFolder.ServerRelativeUrl);
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
 
             var fileRefValue = $"{masterPageGallery.RootFolder.ServerRelativeUrl}/{pageLayoutNameWithoutPath}.aspx";
             var query = new CamlQuery();
@@ -1161,7 +1358,7 @@ namespace Microsoft.SharePoint.Client
             var galleryItems = masterPageGallery.GetItems(query);
             web.Context.Load(masterPageGallery);
             web.Context.Load(galleryItems);
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
             return galleryItems.Count > 0 ? galleryItems[0] : null;
         }
 
@@ -1172,20 +1369,31 @@ namespace Microsoft.SharePoint.Client
         /// <param name="masterPageServerRelativeUrl">URL to the master page.</param>
         /// <param name="resetSubsitesToInherit">false (default) to apply to currently inheriting subsites only; true to force all subsites to inherit</param>
         /// <param name="updateRootOnly">false (default) to apply to subsites; true to only apply to specified site</param>
-        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static void SetMasterPageByUrl(this Web web, string masterPageServerRelativeUrl, bool resetSubsitesToInherit = false, bool updateRootOnly = false)
+        {
+            SetMasterPageByUrlAsync(web, masterPageServerRelativeUrl, resetSubsitesToInherit, updateRootOnly).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Set master page by using given URL as parameter. Suitable for example in cases where you want sub sites to reference root site master page gallery. This is typical with publishing sites.
+        /// </summary>
+        /// <param name="web">Context web</param>
+        /// <param name="masterPageServerRelativeUrl">URL to the master page.</param>
+        /// <param name="resetSubsitesToInherit">false (default) to apply to currently inheriting subsites only; true to force all subsites to inherit</param>
+        /// <param name="updateRootOnly">false (default) to apply to subsites; true to only apply to specified site</param>
+        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
+        public static async Task SetMasterPageByUrlAsync(this Web web, string masterPageServerRelativeUrl, bool resetSubsitesToInherit = false, bool updateRootOnly = false)
         {
             if (string.IsNullOrEmpty(masterPageServerRelativeUrl)) { throw new ArgumentNullException(nameof(masterPageServerRelativeUrl)); }
 
             var websToUpdate = new List<Web>();
             web.Context.Load(web, w => w.AllProperties, w => w.ServerRelativeUrl);
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.BrandingExtension_SetMasterUrl, masterPageServerRelativeUrl, web.ServerRelativeUrl);
             web.AllProperties[InheritMaster] = "False";
             web.MasterUrl = masterPageServerRelativeUrl;
             web.Update();
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
             websToUpdate.Add(web);
 
             if (!updateRootOnly)
@@ -1196,7 +1404,7 @@ namespace Microsoft.SharePoint.Client
                     var currentWeb = websToUpdate[index];
                     var websCollection = currentWeb.Webs;
                     web.Context.Load(websCollection, wc => wc.Include(w => w.AllProperties, w => w.ServerRelativeUrl));
-                    web.Context.ExecuteQueryRetry();
+                    await web.Context.ExecuteQueryRetryAsync();
                     foreach (var childWeb in websCollection)
                     {
                         if (childWeb.GetBaseTemplateId() != "APP#0")
@@ -1214,7 +1422,7 @@ namespace Microsoft.SharePoint.Client
                                 childWeb.AllProperties[InheritMaster] = "True";
                                 childWeb.MasterUrl = masterPageServerRelativeUrl;
                                 childWeb.Update();
-                                web.Context.ExecuteQueryRetry();
+                                await web.Context.ExecuteQueryRetryAsync();
                                 websToUpdate.Add(childWeb);
                             }
                         }
@@ -1231,20 +1439,31 @@ namespace Microsoft.SharePoint.Client
         /// <param name="masterPageServerRelativeUrl">URL to the master page.</param>
         /// <param name="resetSubsitesToInherit">false (default) to apply to currently inheriting subsites only; true to force all subsites to inherit</param>
         /// <param name="updateRootOnly">false (default) to apply to subsites; true to only apply to specified site</param>
-        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static void SetCustomMasterPageByUrl(this Web web, string masterPageServerRelativeUrl, bool resetSubsitesToInherit = false, bool updateRootOnly = false)
+        {
+            SetCustomMasterPageByUrlAsync(web, masterPageServerRelativeUrl, resetSubsitesToInherit, updateRootOnly).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Set Custom master page by using given URL as parameter. Suitable for example in cases where you want sub sites to reference root site master page gallery. This is typical with publishing sites.
+        /// </summary>
+        /// <param name="web">Context web</param>
+        /// <param name="masterPageServerRelativeUrl">URL to the master page.</param>
+        /// <param name="resetSubsitesToInherit">false (default) to apply to currently inheriting subsites only; true to force all subsites to inherit</param>
+        /// <param name="updateRootOnly">false (default) to apply to subsites; true to only apply to specified site</param>
+        [SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
+        public static async Task SetCustomMasterPageByUrlAsync(this Web web, string masterPageServerRelativeUrl, bool resetSubsitesToInherit = false, bool updateRootOnly = false)
         {
             if (string.IsNullOrEmpty(masterPageServerRelativeUrl)) { throw new ArgumentNullException(nameof(masterPageServerRelativeUrl)); }
 
             var websToUpdate = new List<Web>();
             web.Context.Load(web, w => w.AllProperties, w => w.ServerRelativeUrl);
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.BrandingExtension_SetCustomMasterUrl, masterPageServerRelativeUrl, web.ServerRelativeUrl);
             web.AllProperties[InheritCustomMaster] = "False";
             web.CustomMasterUrl = masterPageServerRelativeUrl;
             web.Update();
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
             websToUpdate.Add(web);
 
             if (!updateRootOnly)
@@ -1255,7 +1474,7 @@ namespace Microsoft.SharePoint.Client
                     var currentWeb = websToUpdate[index];
                     var websCollection = currentWeb.Webs;
                     web.Context.Load(websCollection, wc => wc.Include(w => w.AllProperties, w => w.ServerRelativeUrl));
-                    web.Context.ExecuteQueryRetry();
+                    await web.Context.ExecuteQueryRetryAsync();
                     foreach (var childWeb in websCollection)
                     {
                         if (childWeb.GetBaseTemplateId() != "APP#0")
@@ -1273,7 +1492,7 @@ namespace Microsoft.SharePoint.Client
                                 childWeb.AllProperties[InheritCustomMaster] = "True";
                                 childWeb.CustomMasterUrl = masterPageServerRelativeUrl;
                                 childWeb.Update();
-                                web.Context.ExecuteQueryRetry();
+                                await web.Context.ExecuteQueryRetryAsync();
                                 websToUpdate.Add(childWeb);
                             }
                         }
@@ -1281,7 +1500,6 @@ namespace Microsoft.SharePoint.Client
                     index++;
                 }
             }
-
         }
 
         /// <summary>
@@ -1472,10 +1690,19 @@ namespace Microsoft.SharePoint.Client
         /// <param name="rootFolderRelativePath">The path relative to the root folder of the site, e.g. SitePages/Home.aspx</param>
         public static void SetHomePage(this Web web, string rootFolderRelativePath)
         {
+            SetHomePageAsync(web, rootFolderRelativePath).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Sets the web home page
+        /// </summary>
+        /// <param name="web">The Web to process</param>
+        /// <param name="rootFolderRelativePath">The path relative to the root folder of the site, e.g. SitePages/Home.aspx</param>
+        private static async Task SetHomePageAsync(this Web web, string rootFolderRelativePath)
+        {
             var folder = web.RootFolder;
             folder.WelcomePage = rootFolderRelativePath;
             folder.Update();
-            web.Context.ExecuteQueryRetry();
+            await web.Context.ExecuteQueryRetryAsync();
         }
 
         /// <summary>
@@ -1485,7 +1712,16 @@ namespace Microsoft.SharePoint.Client
         /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
         public static void EnableResponsiveUI(this Web web, string infrastructureUrl = null)
         {
-            EnableResponsiveUIImplementation(web, infrastructureUrl);
+            EnableResponsiveUIImplementationAsync(web, infrastructureUrl).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Enables the responsive UI of a classic SharePoint Web
+        /// </summary>
+        /// <param name="web">The Web to activate the Responsive UI to</param>
+        /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
+        public static async Task EnableResponsiveUIAsync(this Web web, string infrastructureUrl = null)
+        {
+            await EnableResponsiveUIImplementationAsync(web, infrastructureUrl);
         }
 
         /// <summary>
@@ -1495,7 +1731,16 @@ namespace Microsoft.SharePoint.Client
         /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
         public static void EnableResponsiveUI(this Site site, string infrastructureUrl = null)
         {
-            EnableResponsiveUIImplementation(site, infrastructureUrl);
+            EnableResponsiveUIImplementationAsync(site, infrastructureUrl).GetAwaiter().GetResult();
+        }
+        /// <summary>
+        /// Enables the responsive UI of a classic SharePoint Site
+        /// </summary>
+        /// <param name="site">The Site to activate the Responsive UI to</param>
+        /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
+        public static async Task EnableResponsiveUIAsync(this Site site, string infrastructureUrl = null)
+        {
+            await EnableResponsiveUIImplementationAsync(site, infrastructureUrl);
         }
 
         /// <summary>
@@ -1503,7 +1748,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="clientObject">The Web or Site to activate the Responsive UI to</param>
         /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
-        private static void EnableResponsiveUIImplementation(ClientObject clientObject, string infrastructureUrl = null)
+        private static async Task EnableResponsiveUIImplementationAsync(ClientObject clientObject, string infrastructureUrl = null)
         {
             // Double-check that we are targeting a Web or a Site
             if (clientObject is Web || clientObject is Site)
@@ -1539,7 +1784,7 @@ namespace Microsoft.SharePoint.Client
                             var jsFile = targetFolder.GetFile("SP-Responsive-UI.js");
                             if (jsFile == null)
                             {
-                                linkUrl = UploadStringAsFile(infrastructureContext.Web, targetFolder,
+                                linkUrl = await UploadStringAsFileAsync(infrastructureContext.Web, targetFolder,
                                     CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
                             }
                             else
@@ -1551,7 +1796,7 @@ namespace Microsoft.SharePoint.Client
                             // Check if the file is there, if so, don't upload it.
                             if (targetFolder.GetFile("SP-Responsive-UI.css") == null)
                             {
-                                UploadStringAsFile(infrastructureContext.Web, targetFolder,
+                                await UploadStringAsFileAsync(infrastructureContext.Web, targetFolder,
                                     CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
                             }
                         }
@@ -1560,8 +1805,8 @@ namespace Microsoft.SharePoint.Client
                     {
                         var targetFolder = web.EnsureFolderPath("Style Library/SP.Responsive.UI");
 
-                        linkUrl = UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
-                        UploadStringAsFile(web, targetFolder, CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
+                        linkUrl = await UploadStringAsFileAsync(web, targetFolder, CoreResources.SP_Responsive_UI, "SP-Responsive-UI.js");
+                        await UploadStringAsFileAsync(web, targetFolder, CoreResources.SP_Responsive_UI_CSS, "SP-Responsive-UI.css");
                     }
 
                     // Deactive mobile feature
@@ -1583,23 +1828,23 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-        private static string UploadStringAsFile(Web web, Folder folder, string contents, string fileName)
+        private static async Task<string> UploadStringAsFileAsync(Web web, Folder folder, string contents, string fileName)
         {
             var url = string.Empty;
             var targetFile = folder.GetFile(fileName);
             var checkedOut = false;
             if (targetFile != null)
             {
-                CheckOutIfNeeded(web, targetFile);
+                await CheckOutIfNeededAsync(web, targetFile);
             }
             using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(contents)))
             {
                 var file = folder.UploadFile(fileName, stream, true);
-                checkedOut = CheckOutIfNeeded(web, file);
+                checkedOut = await CheckOutIfNeededAsync(web, file);
                 if (checkedOut)
                 {
                     file.CheckIn("", CheckinType.MajorCheckIn);
-                    web.Context.ExecuteQueryRetry();
+                    await web.Context.ExecuteQueryRetryAsync();
                 }
                 file.EnsureProperty(f => f.ServerRelativeUrl);
                 url = file.ServerRelativeUrl;
@@ -1639,13 +1884,13 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-        private static bool CheckOutIfNeeded(Web web, File targetFile)
+        private static async Task<bool> CheckOutIfNeededAsync(Web web, File targetFile)
         {
             var checkedOut = false;
             try
             {
                 web.Context.Load(targetFile, f => f.CheckOutType, f => f.ListItemAllFields.ParentList.ForceCheckout);
-                web.Context.ExecuteQueryRetry();
+                await web.Context.ExecuteQueryRetryAsync();
                 if (targetFile.ListItemAllFields.ServerObjectIsNull.HasValue
                     && !targetFile.ListItemAllFields.ServerObjectIsNull.Value
                     && targetFile.ListItemAllFields.ParentList.ForceCheckout)

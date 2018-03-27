@@ -62,7 +62,6 @@ namespace Microsoft.SharePoint.Client
             return clientContext.Clone(new Uri(siteUrl));
         }
 
-#if !ONPREMISES
         /// <summary>
         /// Executes the current set of data retrieval queries and method invocations and retries it if needed using the Task Library.
         /// </summary>
@@ -72,10 +71,13 @@ namespace Microsoft.SharePoint.Client
         /// <param name="userAgent">UserAgent string value to insert for this request. You can define this value in your app's config file using key="SharePointPnPUserAgent" value="PnPRocks"></param>
         public static Task ExecuteQueryRetryAsync(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
         {
+#if ONPREMISES
+            return Task.Run(() => ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent));
+#else
             return ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
+#endif
         }
 
-#endif
 
         /// <summary>
         /// Executes the current set of data retrieval queries and method invocations and retries it if needed.
