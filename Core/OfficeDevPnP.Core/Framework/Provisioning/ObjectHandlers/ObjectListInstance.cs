@@ -293,7 +293,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     currentFieldIndex++;
                     WriteMessage($"List Columns for list {listInfo.TemplateList.Title}|{internalName ?? id}|{currentFieldIndex}|{total}", ProvisioningMessageType.Progress);
-                    if (!Guid.TryParse(id, out Guid fieldGuid))
+                    Guid fieldGuid;
+                    if (!Guid.TryParse(id, out fieldGuid))
                     {
                         scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_, field.SchemaXml);
                         throw new Exception(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_, id));
@@ -1030,6 +1031,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var isDirty = false;
 
+#if !SP2013
                 string newUrl = UrlUtility.Combine(web.ServerRelativeUrl, templateList.Url);
                 string oldUrl = existingList.RootFolder.ServerRelativeUrl;
                 if (!newUrl.Equals(oldUrl, StringComparison.OrdinalIgnoreCase))
@@ -1038,6 +1040,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     folder.MoveTo(newUrl);
                     folder.Update();
                 }
+#endif
 
                 if (parser.ParseString(templateList.Title) != existingList.Title)
                 {
@@ -1212,11 +1215,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 #endif
 
-                #region UserCustomActions
+#region UserCustomActions
 
                 isDirty |= UpdateCustomActions(web, existingList, templateList, parser, scope, isNoScriptSite);
 
-                #endregion UserCustomActions
+#endregion UserCustomActions
 
                 if (isDirty)
                 {
