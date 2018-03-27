@@ -90,6 +90,19 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //}
 
         //[TestMethod]
+        //public void BertTest5()
+        //{
+        //    using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/ComSiteDemo"))
+        //    {
+        //        var page = cc.Web.LoadClientSidePage("home.aspx");
+
+        //        page.Save("home2_normal.aspx");
+
+        //    }
+        //}
+
+
+        //[TestMethod]
         //public void BertTest4()
         //{
         //    using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/bert1"))

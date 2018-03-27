@@ -27,9 +27,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 // if this is a sub site then we're not provisioning fields. Technically this can be done but it's not a recommended practice
-                if (web.IsSubSite())
+                if (web.IsSubSite() && !applyingInformation.ProvisionFieldsToSubWebs)
                 {
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Fields_Context_web_is_subweb__skipping_site_columns);
+                    WriteMessage("This template contains fields and you are provisioning to a subweb. If you still want to provision these fields, set the ProvisionFieldsToSubWebs property to true.", ProvisioningMessageType.Warning);
                     return parser;
                 }
 
