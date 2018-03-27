@@ -1029,6 +1029,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (existingList.BaseTemplate == templateList.TemplateType)
             {
                 var isDirty = false;
+
+                string newUrl = UrlUtility.Combine(web.ServerRelativeUrl, templateList.Url);
+                string oldUrl = existingList.RootFolder.ServerRelativeUrl;
+                if (!newUrl.Equals(oldUrl, StringComparison.OrdinalIgnoreCase))
+                {
+                    Microsoft.SharePoint.Client.Folder folder = web.GetFolderByServerRelativeUrl(oldUrl);
+                    folder.MoveTo(newUrl);
+                    folder.Update();
+                }
+
                 if (parser.ParseString(templateList.Title) != existingList.Title)
                 {
                     var oldTitle = existingList.Title;
