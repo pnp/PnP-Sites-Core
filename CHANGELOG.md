@@ -10,10 +10,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Added async external sharing extension methods [baywet]
 - Added ProvisionFieldsToSubWebs option to ProvisioningTemplateApplyingInformation class [jensotto]
 - Addition of PnPCore.Tests project for testing of the PnPCore .Net Standard 2.0 library
 
 ### Changed
+
 - Added support for CDN Elements in Provisioning Engine
 - Support for FullBleed configuration for adding web parts in "Full Width column" section [OliverZeiser]
 - Improvements to ExecuteQueryRetryAsync [OliverZeiser, biste5]
