@@ -210,8 +210,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var publicCdn = provisioningTenant.ContentDeliveryNetwork.PublicCdn;
                     if (publicCdn != null)
                     {
-                        tenant.SetTenantCdnEnabled(SPOTenantCdnType.Public, publicCdn.Enabled);
-                        tenantContext.ExecuteQueryRetry();
+                        if (publicCdnEnabled.Value != publicCdn.Enabled)
+                        {
+                            tenant.SetTenantCdnEnabled(SPOTenantCdnType.Public, publicCdn.Enabled);
+                            tenantContext.ExecuteQueryRetry();
+                        }
                         if (publicCdn.Enabled)
                         {
                             ProcessOrigins(tenant, publicCdn, SPOTenantCdnType.Public, parser);
@@ -221,8 +224,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var privateCdn = provisioningTenant.ContentDeliveryNetwork.PrivateCdn;
                     if(privateCdn != null)
                     {
-                        tenant.SetTenantCdnEnabled(SPOTenantCdnType.Private, privateCdn.Enabled);
-                        tenantContext.ExecuteQueryRetry();
+                        if (privateCdnEnabled.Value != privateCdn.Enabled)
+                        {
+                            tenant.SetTenantCdnEnabled(SPOTenantCdnType.Private, privateCdn.Enabled);
+                            tenantContext.ExecuteQueryRetry();
+                        }
                         if (privateCdn.Enabled)
                         {
                             ProcessOrigins(tenant, publicCdn, SPOTenantCdnType.Public, parser);
