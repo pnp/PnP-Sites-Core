@@ -1053,13 +1053,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     isDirty = true;
                 }
-                isDirty |= existingList.Set(x => x.DocumentTemplateUrl, parser.ParseString(templateList.DocumentTemplate).NullIfEmpty());
-                isDirty |= existingList.Set(x => x.Description, parser.ParseString(templateList.Description));
+                isDirty |= existingList.Set(x => x.DocumentTemplateUrl, parser.ParseString(templateList.DocumentTemplate).NullIfEmpty(), false, false);
+                isDirty |= existingList.Set(x => x.Description, parser.ParseString(templateList.Description), false, false);
                 isDirty |= existingList.Set(x => x.Hidden, templateList.Hidden);
                 isDirty |= existingList.Set(x => x.OnQuickLaunch, templateList.OnQuickLaunch);
-                isDirty |= existingList.Set(x => x.DefaultDisplayFormUrl, parser.ParseString(templateList.DefaultDisplayFormUrl).NullIfEmpty());
-                isDirty |= existingList.Set(x => x.DefaultEditFormUrl, parser.ParseString(templateList.DefaultEditFormUrl).NullIfEmpty());
-                isDirty |= existingList.Set(x => x.DefaultNewFormUrl, parser.ParseString(templateList.DefaultNewFormUrl).NullIfEmpty());
+                isDirty |= existingList.Set(x => x.DefaultDisplayFormUrl, parser.ParseString(templateList.DefaultDisplayFormUrl).NullIfEmpty(), false);
+                isDirty |= existingList.Set(x => x.DefaultEditFormUrl, parser.ParseString(templateList.DefaultEditFormUrl).NullIfEmpty(), false);
+                isDirty |= existingList.Set(x => x.DefaultNewFormUrl, parser.ParseString(templateList.DefaultNewFormUrl).NullIfEmpty(), false);
 
                 if (existingList.Direction == "none" && templateList.Direction != ListReadingDirection.None)
                 {
@@ -1077,7 +1077,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = true;
                 }
 
-                isDirty |= existingList.Set(x => x.ImageUrl, parser.ParseString(templateList.ImageUrl));
+                isDirty |= existingList.Set(x => x.ImageUrl, parser.ParseString(templateList.ImageUrl), false);
                 isDirty |= existingList.Set(x => x.IsApplicationList, templateList.IsApplicationList);
 
 #if !ONPREMISES
@@ -1088,8 +1088,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 #endif
 
-                isDirty |= existingList.Set(x => x.ValidationFormula, parser.ParseString(templateList.ValidationFormula));
-                isDirty |= existingList.Set(x => x.ValidationMessage, parser.ParseString(templateList.ValidationMessage));
+                isDirty |= existingList.Set(x => x.ValidationFormula, parser.ParseString(templateList.ValidationFormula), false);
+                isDirty |= existingList.Set(x => x.ValidationMessage, parser.ParseString(templateList.ValidationMessage), false);
                 isDirty |= existingList.Set(x => x.IrmExpire, templateList.IrmExpire);
                 isDirty |= existingList.Set(x => x.IrmReject, templateList.IrmReject);
 
