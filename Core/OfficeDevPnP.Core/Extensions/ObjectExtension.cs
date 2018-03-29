@@ -22,14 +22,25 @@ namespace OfficeDevPnP.Core.Extensions
         /// <param name="target">target object </param>
         /// <param name="propertyToSet">Expression to the property or field of the object</param>
         /// <param name="valueToSet">new value to set</param>
+        /// <param name="allowNull">continue with set operation is null value is specified</param>
+        /// <param name="allowEmpty">continue with set operation is null or empty value is specified</param>
         /// <returns><c>true</c> if the value has changed, otherwise <c>false</c></returns>
-        public static bool Set<TObject, T>(this TObject target, Expression<Func<TObject, T>> propertyToSet, T valueToSet)
+        public static bool Set<TObject, T>(this TObject target, Expression<Func<TObject, T>> propertyToSet, T valueToSet, bool allowNull=true, bool allowEmpty=true)
         {
             // Taken from https://stackoverflow.com/a/29092675/588868
             var members = new List<MemberInfo>();
 
             var exp = propertyToSet.Body;
 
+            if (!allowNull && valueToSet == null)
+            {
+                return false;
+            }
+
+            if (!allowEmpty && (valueToSet is string) && (valueToSet == null || (valueToSet as string) == ""))
+            {
+                return false;
+            }
 
             while (exp != null)
             {
