@@ -1059,6 +1059,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (existingList.BaseTemplate == templateList.TemplateType)
             {
                 var isDirty = false;
+
+#if !SP2013
+                string newUrl = UrlUtility.Combine(web.ServerRelativeUrl, templateList.Url);
+                string oldUrl = existingList.RootFolder.ServerRelativeUrl;
+                if (!newUrl.Equals(oldUrl, StringComparison.OrdinalIgnoreCase))
+                {
+                    Microsoft.SharePoint.Client.Folder folder = web.GetFolderByServerRelativeUrl(oldUrl);
+                    folder.MoveTo(newUrl);
+                    folder.Update();
+                }
+#endif
+
                 if (parser.ParseString(templateList.Title) != existingList.Title)
                 {
                     var oldTitle = existingList.Title;
@@ -1070,13 +1082,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     isDirty = true;
                 }
-                isDirty |= existingList.Set(x => x.DocumentTemplateUrl, parser.ParseString(templateList.DocumentTemplate).NullIfEmpty());
-                isDirty |= existingList.Set(x => x.Description, parser.ParseString(templateList.Description));
+                isDirty |= existingList.Set(x => x.DocumentTemplateUrl, parser.ParseString(templateList.DocumentTemplate).NullIfEmpty(), false, false);
+                isDirty |= existingList.Set(x => x.Description, parser.ParseString(templateList.Description), false, false);
                 isDirty |= existingList.Set(x => x.Hidden, templateList.Hidden);
                 isDirty |= existingList.Set(x => x.OnQuickLaunch, templateList.OnQuickLaunch);
-                isDirty |= existingList.Set(x => x.DefaultDisplayFormUrl, parser.ParseString(templateList.DefaultDisplayFormUrl).NullIfEmpty());
-                isDirty |= existingList.Set(x => x.DefaultEditFormUrl, parser.ParseString(templateList.DefaultEditFormUrl).NullIfEmpty());
-                isDirty |= existingList.Set(x => x.DefaultNewFormUrl, parser.ParseString(templateList.DefaultNewFormUrl).NullIfEmpty());
+                isDirty |= existingList.Set(x => x.DefaultDisplayFormUrl, parser.ParseString(templateList.DefaultDisplayFormUrl).NullIfEmpty(), false);
+                isDirty |= existingList.Set(x => x.DefaultEditFormUrl, parser.ParseString(templateList.DefaultEditFormUrl).NullIfEmpty(), false);
+                isDirty |= existingList.Set(x => x.DefaultNewFormUrl, parser.ParseString(templateList.DefaultNewFormUrl).NullIfEmpty(), false);
 
                 if (existingList.Direction == "none" && templateList.Direction != ListReadingDirection.None)
                 {
@@ -1094,7 +1106,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = true;
                 }
 
-                isDirty |= existingList.Set(x => x.ImageUrl, parser.ParseString(templateList.ImageUrl));
+                isDirty |= existingList.Set(x => x.ImageUrl, parser.ParseString(templateList.ImageUrl), false);
                 isDirty |= existingList.Set(x => x.IsApplicationList, templateList.IsApplicationList);
 
 #if !ONPREMISES
@@ -1105,8 +1117,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 #endif
 
-                isDirty |= existingList.Set(x => x.ValidationFormula, parser.ParseString(templateList.ValidationFormula));
-                isDirty |= existingList.Set(x => x.ValidationMessage, parser.ParseString(templateList.ValidationMessage));
+                isDirty |= existingList.Set(x => x.ValidationFormula, parser.ParseString(templateList.ValidationFormula), false);
+                isDirty |= existingList.Set(x => x.ValidationMessage, parser.ParseString(templateList.ValidationMessage), false);
                 isDirty |= existingList.Set(x => x.IrmExpire, templateList.IrmExpire);
                 isDirty |= existingList.Set(x => x.IrmReject, templateList.IrmReject);
 
@@ -1232,11 +1244,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 #endif
 
-                #region UserCustomActions
+#region UserCustomActions
 
                 isDirty |= UpdateCustomActions(web, existingList, templateList, parser, scope, isNoScriptSite);
 
-                #endregion UserCustomActions
+#endregion UserCustomActions
 
                 if (isDirty)
                 {
