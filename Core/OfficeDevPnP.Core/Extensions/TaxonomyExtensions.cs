@@ -1576,14 +1576,15 @@ namespace Microsoft.SharePoint.Client
         /// <param name="item">The item to set the value to</param>
         /// <param name="TermPath">The path of the term in the shape of "TermGroupName|TermSetName|TermName"</param>
         /// <param name="fieldId">The id of the field</param>
+        /// <param name="systemUpdate">If set to true, will do a system udpate to the item. Default value is false.</param>
         /// <exception cref="KeyNotFoundException"/>
-        public static void SetTaxonomyFieldValueByTermPath(this ListItem item, string TermPath, Guid fieldId)
+        public static void SetTaxonomyFieldValueByTermPath(this ListItem item, string TermPath, Guid fieldId, bool systemUpdate = false)
         {
             var clientContext = item.Context as ClientContext;
             TaxonomyItem taxItem = clientContext.Site.GetTaxonomyItemByPath(TermPath);
             if (taxItem != null)
             {
-                item.SetTaxonomyFieldValue(fieldId, taxItem.Name, taxItem.Id);
+                item.SetTaxonomyFieldValue(fieldId, taxItem.Name, taxItem.Id, systemUpdate);
             }
             else
             {
@@ -1598,7 +1599,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fieldId">The ID of the field to set</param>
         /// <param name="label">The label of the term to set</param>
         /// <param name="termGuid">The id of the term to set</param>
-        public static void SetTaxonomyFieldValue(this ListItem item, Guid fieldId, string label, Guid termGuid)
+        /// <param name="systemUpdate">If set to true, will do a system udpate to the item. Default value is false.</param>
+        public static void SetTaxonomyFieldValue(this ListItem item, Guid fieldId, string label, Guid termGuid, bool systemUpdate = false)
         {
             ClientContext clientContext = item.Context as ClientContext;
 
@@ -1608,11 +1610,11 @@ namespace Microsoft.SharePoint.Client
 
             if (string.IsNullOrEmpty(label) && termGuid.Equals(Guid.Empty))
             {
-                taxField.SetFieldValueByLabelGuidPair(item, string.Empty);
+                taxField.SetFieldValueByLabelGuidPair(item, string.Empty, systemUpdate);
             }
             else
             {
-                taxField.SetFieldValueByLabelGuidPair(item, $"{label}|{termGuid.ToString()}");
+                taxField.SetFieldValueByLabelGuidPair(item, $"{label}|{termGuid.ToString()}", systemUpdate);
             }
         }
 
@@ -1622,7 +1624,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="item">The item to process</param>
         /// <param name="fieldId">The ID of the field to set</param>
         /// <param name="termValues">The key and values of terms to set</param>
-        public static void SetTaxonomyFieldValues(this ListItem item, Guid fieldId, IEnumerable<KeyValuePair<Guid, String>> termValues)
+        /// <param name="systemUpdate">If set to true, will do a system udpate to the item. Default value is false.</param>
+        public static void SetTaxonomyFieldValues(this ListItem item, Guid fieldId, IEnumerable<KeyValuePair<Guid, String>> termValues, bool systemUpdate = false)
         {
             ClientContext clientContext = item.Context as ClientContext;
 
@@ -1648,7 +1651,7 @@ namespace Microsoft.SharePoint.Client
                     termValuesStringbuilder.Append(term.Value + "|" + term.Key.ToString());
                 }
 
-                taxField.SetFieldValueByLabelGuidPair(item, termValuesStringbuilder.ToString());
+                taxField.SetFieldValueByLabelGuidPair(item, termValuesStringbuilder.ToString(), systemUpdate);
             }
             else
             {
@@ -1665,7 +1668,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="taxonomyField">The field to set</param>
         /// <param name="item">The item to process</param>
         /// <param name="value">The value to set on the taxonomy field</param>
-        public static void SetFieldValueByLabelGuidPair(this TaxonomyField taxonomyField, ListItem item, string value)
+        /// <param name="systemUpdate">If set to true, will do a system udpate to the item. Default value is false.</param>
+        public static void SetFieldValueByLabelGuidPair(this TaxonomyField taxonomyField, ListItem item, string value, bool systemUpdate = false)
         {
             taxonomyField.EnsureProperties(f => f.TextField, f => f.AllowMultipleValues);
 
@@ -1710,7 +1714,14 @@ namespace Microsoft.SharePoint.Client
                     item[hiddenField.InternalName] = string.Empty;
                 }
             }
-            item.Update();
+            if (systemUpdate)
+            {
+                item.SystemUpdate();
+            }
+            else
+            {
+                item.Update();
+            }
             item.Context.ExecuteQueryRetry();
         }
 
