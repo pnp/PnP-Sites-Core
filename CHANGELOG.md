@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 - Added ProvisionFieldsToSubWebs option to ProvisioningTemplateApplyingInformation class [jensotto]
 - Addition of PnPCore.Tests project for testing of the PnPCore .Net Standard 2.0 library
+- Added Scope parameter to ALM Manager methods allowing you to perform application lifecycle management tasks to the site collection scoped app catalog.
 
 ### Changed
 - Added support for CDN Elements in Provisioning Engine
