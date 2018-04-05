@@ -61,6 +61,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         // Pre-create the page    
                         Pages.ClientSidePage page = web.AddClientSidePage(pageName);
+
+                        // Set page layout now, because once it's set, it can't be changed.
+                        if (!string.IsNullOrEmpty(clientSidePage.Layout))
+                        {
+                            if (clientSidePage.Layout.Equals("Article", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                page.LayoutType = Pages.ClientSidePageLayoutType.Article;
+                            }
+                            else if (clientSidePage.Layout.Equals("Home", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                page.LayoutType = Pages.ClientSidePageLayoutType.Home;
+                            }
+                        }
+
                         page.Save(pageName);
 
                         var file = web.GetFileByServerRelativeUrl(url);
@@ -121,7 +135,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         page = web.AddClientSidePage(pageName);
                     }
 
-                    // Set page layout
+                    // Set page layout. Right now this does nothing if the page already exists (which it will because of the pre-creation code above)
+                    // because page layout can't be changed once set. It's harmless to try though, and if MS allows it to be changed in the future, we'll be set to go.
                     if (!string.IsNullOrEmpty(clientSidePage.Layout))
                     {
                         if (clientSidePage.Layout.Equals("Article", StringComparison.InvariantCultureIgnoreCase))
