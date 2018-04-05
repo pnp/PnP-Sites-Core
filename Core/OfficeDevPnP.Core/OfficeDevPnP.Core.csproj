@@ -389,6 +389,7 @@
     <Compile Include="Entities\UnifiedGroupUser.cs" />
     <Compile Include="Entities\WebhookNotification.cs" />
     <Compile Include="Entities\WebhookSubscription.cs" />
+    <Compile Include="Enums\AppCatalogScope.cs" />
     <Compile Include="Extensions\ClientContextExtensions.cs" />
     <Compile Include="Extensions\ClientObjectExtensions.cs" />
     <Compile Include="Extensions\Deprecated\BrandingExtensions.deprecated.cs" />
