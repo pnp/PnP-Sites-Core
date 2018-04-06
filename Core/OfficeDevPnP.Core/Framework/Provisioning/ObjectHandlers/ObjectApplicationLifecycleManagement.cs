@@ -84,7 +84,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 else if (app.Action == AppAction.Install && alreadyExists)
                                 {
-                                    WriteMessage($"App with ID {appId} already exists in the target site and it will be skipped!", ProvisioningMessageType.Warning);
+                                    WriteMessage($"App with ID {appId} already exists in the target site and will be skipped", ProvisioningMessageType.Warning);
                                 }
                                 else if (app.Action == AppAction.Uninstall && alreadyExists)
                                 {
@@ -93,7 +93,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 else if (app.Action == AppAction.Uninstall && !alreadyExists)
                                 {
-                                    WriteMessage($"App with ID {appId} does not exist in the target site and cannot be uninstalled!", ProvisioningMessageType.Warning);
+                                    WriteMessage($"App with ID {appId} does not exist in the target site and cannot be uninstalled", ProvisioningMessageType.Warning);
                                 }
                                 else if (app.Action == AppAction.Update && alreadyExists)
                                 {
@@ -102,7 +102,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 else if (app.Action == AppAction.Update && !alreadyExists)
                                 {
-                                    WriteMessage($"App with ID {appId} does not exist in the target site and cannot be updated!", ProvisioningMessageType.Warning);
+                                    WriteMessage($"App with ID {appId} does not exist in the target site and cannot be updated", ProvisioningMessageType.Warning);
                                 }
 
                                 if (app.SyncMode == SyncMode.Synchronously && working)
@@ -114,7 +114,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            WriteMessage($"Tenant app catalog doesn't exist. ALM step will be skipped!", ProvisioningMessageType.Warning);
+                            WriteMessage($"Tenant app catalog doesn't exist. ALM step will be skipped.", ProvisioningMessageType.Warning);
                         }                        
                     }
                 }

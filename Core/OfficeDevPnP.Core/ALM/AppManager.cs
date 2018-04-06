@@ -1,6 +1,7 @@
 ﻿using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Utilities.Async;
 using System;
@@ -20,6 +21,16 @@ namespace OfficeDevPnP.Core.ALM
     public class AppManager
     {
         private ClientContext _context;
+        private enum AppManagerAction
+        {
+            Install,
+            Retract,
+            Remove,
+            Deploy,
+            Upgrade,
+            Uninstall
+        }
+
         public AppManager(ClientContext context)
         {
             //_context = context ?? throw new ArgumentException(nameof(context));
@@ -39,10 +50,11 @@ namespace OfficeDevPnP.Core.ALM
         /// <param name="file">A byte array containing the file</param>
         /// <param name="filename">The filename (e.g. myapp.sppkg) of the file to upload</param>
         /// <param name="overwrite">If true will overwrite an existing entry</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public AppMetadata Add(byte[] file, string filename, bool overwrite = false)
+        public AppMetadata Add(byte[] file, string filename, bool overwrite = false, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => AddAsync(file, filename, overwrite)).GetAwaiter().GetResult();
+            return Task.Run(() => AddAsync(file, filename, overwrite, scope)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -50,10 +62,11 @@ namespace OfficeDevPnP.Core.ALM
         /// </summary>
         /// <param name="path"></param>
         /// <param name="overwrite">If true will overwrite an existing entry</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public AppMetadata Add(string path, bool overwrite = false)
+        public AppMetadata Add(string path, bool overwrite = false, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => AddAsync(path, overwrite)).GetAwaiter().GetResult();
+            return Task.Run(() => AddAsync(path, overwrite, scope)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -62,8 +75,9 @@ namespace OfficeDevPnP.Core.ALM
         /// <param name="file">A byte array containing the file</param>
         /// <param name="filename">The filename (e.g. myapp.sppkg) of the file to upload</param>
         /// <param name="overwrite">If true will overwrite an existing entry</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public async Task<AppMetadata> AddAsync(byte[] file, string filename, bool overwrite = false)
+        public async Task<AppMetadata> AddAsync(byte[] file, string filename, bool overwrite = false, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             if (file == null && file.Length == 0)
             {
@@ -76,7 +90,7 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await BaseAddRequest(file, filename, overwrite, true);
+            return await BaseAddRequest(file, filename, overwrite, scope);
         }
 
         /// <summary>
@@ -84,8 +98,9 @@ namespace OfficeDevPnP.Core.ALM
         /// </summary>
         /// <param name="path"></param>
         /// <param name="overwrite">If true will overwrite an existing entry</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public async Task<AppMetadata> AddAsync(string path, bool overwrite = false)
+        public async Task<AppMetadata> AddAsync(string path, bool overwrite = false, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -102,25 +117,27 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await BaseAddRequest(bytes, fileInfo.Name, overwrite, true);
+            return await BaseAddRequest(bytes, fileInfo.Name, overwrite, scope);
         }
 
         /// <summary>
         /// Installs an available app from the app catalog in a site.
         /// </summary>
         /// <param name="appMetadata">The app metadata object of the app to install</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public bool Install(AppMetadata appMetadata)
+        public bool Install(AppMetadata appMetadata, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => InstallAsync(appMetadata)).GetAwaiter().GetResult();
+            return Task.Run(() => InstallAsync(appMetadata, scope)).GetAwaiter().GetResult();
         }
 
         /// <summary>
         /// Installs an available app from the app catalog in a site.
         /// </summary>
         /// <param name="appMetadata">The app metadata object of the app to install</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public async Task<bool> InstallAsync(AppMetadata appMetadata)
+        public async Task<bool> InstallAsync(AppMetadata appMetadata, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             if (appMetadata == null)
             {
@@ -133,25 +150,27 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await InstallAsync(appMetadata.Id);
+            return await InstallAsync(appMetadata.Id, scope);
         }
 
         /// <summary>
         /// Installs an available app from the app catalog in a site.
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public bool Install(Guid id)
+        public bool Install(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => InstallAsync(id)).GetAwaiter().GetResult();
+            return Task.Run(() => InstallAsync(id, scope)).GetAwaiter().GetResult();
         }
 
         /// <summary>
         /// Installs an available app from the app catalog in a site.
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public async Task<bool> InstallAsync(Guid id)
+        public async Task<bool> InstallAsync(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             if (id == Guid.Empty)
             {
@@ -160,25 +179,27 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await BaseRequest(id, "Install");
+            return await BaseRequest(id, AppManagerAction.Install, false, null, scope);
         }
 
         /// <summary>
         /// Uninstalls an app from a site.
         /// </summary>
         /// <param name="appMetadata">The app metadata object of the app to uninstall.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public bool Uninstall(AppMetadata appMetadata)
+        public bool Uninstall(AppMetadata appMetadata, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => UninstallAsync(appMetadata)).GetAwaiter().GetResult();
+            return Task.Run(() => UninstallAsync(appMetadata, scope)).GetAwaiter().GetResult();
         }
 
         /// <summary>
         /// Uninstalls an app from a site.
         /// </summary>
         /// <param name="appMetadata">The app metadata object of the app to uninstall.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public async Task<bool> UninstallAsync(AppMetadata appMetadata)
+        public async Task<bool> UninstallAsync(AppMetadata appMetadata, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             if (appMetadata == null)
             {
@@ -191,25 +212,27 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await UninstallAsync(appMetadata.Id);
+            return await UninstallAsync(appMetadata.Id, scope);
         }
 
         /// <summary>
         /// Uninstalls an app from a site.
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public bool Uninstall(Guid id)
+        public bool Uninstall(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => UninstallAsync(id)).GetAwaiter().GetResult();
+            return Task.Run(() => UninstallAsync(id, scope)).GetAwaiter().GetResult();
         }
 
         /// <summary>
         /// Uninstalls an app from a site.
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public async Task<bool> UninstallAsync(Guid id)
+        public async Task<bool> UninstallAsync(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             if (id == Guid.Empty)
             {
@@ -218,25 +241,27 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await BaseRequest(id, "Uninstall");
+            return await BaseRequest(id, AppManagerAction.Uninstall, false, null, scope);
         }
 
         /// <summary>
         /// Upgrades an app in a site
         /// </summary>
         /// <param name="appMetadata">The app metadata object of the app to upgrade.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public bool Upgrade(AppMetadata appMetadata)
+        public bool Upgrade(AppMetadata appMetadata, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => UpgradeAsync(appMetadata)).GetAwaiter().GetResult();
+            return Task.Run(() => UpgradeAsync(appMetadata, scope)).GetAwaiter().GetResult();
         }
 
         /// <summary>
         /// Upgrades an app in a site
         /// </summary>
         /// <param name="appMetadata">The app metadata object of the app to upgrade.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public async Task<bool> UpgradeAsync(AppMetadata appMetadata)
+        public async Task<bool> UpgradeAsync(AppMetadata appMetadata, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             if (appMetadata == null)
             {
@@ -249,15 +274,16 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await UpgradeAsync(appMetadata.Id);
+            return await UpgradeAsync(appMetadata.Id, scope);
         }
 
         /// <summary>
         /// Upgrades an app in a site
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public bool Upgrade(Guid id)
+        public bool Upgrade(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             return Task.Run(() => UpgradeAsync(id)).GetAwaiter().GetResult();
         }
@@ -266,8 +292,9 @@ namespace OfficeDevPnP.Core.ALM
         /// Upgrades an app in a site
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public async Task<bool> UpgradeAsync(Guid id)
+        public async Task<bool> UpgradeAsync(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             if (id == Guid.Empty)
             {
@@ -276,7 +303,7 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await BaseRequest(id, "Upgrade");
+            return await BaseRequest(id, AppManagerAction.Upgrade, false, null, scope);
         }
 
         /// <summary>
@@ -284,10 +311,11 @@ namespace OfficeDevPnP.Core.ALM
         /// </summary>
         /// <param name="appMetadata">The app metadata object of the app to deploy.</param>
         /// <param name="skipFeatureDeployment">If set to true will skip the feature deployed for tenant scoped apps.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public bool Deploy(AppMetadata appMetadata, bool skipFeatureDeployment = true)
+        public bool Deploy(AppMetadata appMetadata, bool skipFeatureDeployment = true, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => DeployAsync(appMetadata, skipFeatureDeployment)).GetAwaiter().GetResult();
+            return Task.Run(() => DeployAsync(appMetadata, skipFeatureDeployment, scope)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -295,8 +323,9 @@ namespace OfficeDevPnP.Core.ALM
         /// </summary>
         /// <param name="appMetadata">The app metadata object of the app to deploy.</param>
         /// <param name="skipFeatureDeployment">If set to true will skip the feature deployed for tenant scoped apps.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public async Task<bool> DeployAsync(AppMetadata appMetadata, bool skipFeatureDeployment = true)
+        public async Task<bool> DeployAsync(AppMetadata appMetadata, bool skipFeatureDeployment = true, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             if (appMetadata == null)
             {
@@ -313,7 +342,7 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await BaseRequest(appMetadata.Id, "Deploy", true, postObj);
+            return await BaseRequest(appMetadata.Id, AppManagerAction.Deploy, true, postObj, scope);
         }
 
         /// <summary>
@@ -321,10 +350,11 @@ namespace OfficeDevPnP.Core.ALM
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
         /// <param name="skipFeatureDeployment">If set to true will skip the feature deployed for tenant scoped apps.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public bool Deploy(Guid id, bool skipFeatureDeployment = true)
+        public bool Deploy(Guid id, bool skipFeatureDeployment = true, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => DeployAsync(id, skipFeatureDeployment)).GetAwaiter().GetResult();
+            return Task.Run(() => DeployAsync(id, skipFeatureDeployment, scope)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -332,8 +362,9 @@ namespace OfficeDevPnP.Core.ALM
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
         /// <param name="skipFeatureDeployment">If set to true will skip the feature deployed for tenant scoped apps.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public async Task<bool> DeployAsync(Guid id, bool skipFeatureDeployment = true)
+        public async Task<bool> DeployAsync(Guid id, bool skipFeatureDeployment = true, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             if (id == Guid.Empty)
             {
@@ -346,25 +377,27 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await BaseRequest(id, "Deploy", true, postObj);
+            return await BaseRequest(id, AppManagerAction.Deploy, true, postObj, scope);
         }
 
         /// <summary>
         /// Retracts an app in the app catalog. Notice that this will not remove the app from the app catalog.
         /// </summary>
         /// <param name="appMetadata">The app metadata object of the app to retract.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public bool Retract(AppMetadata appMetadata)
+        public bool Retract(AppMetadata appMetadata, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => RetractAsync(appMetadata)).GetAwaiter().GetResult();
+            return Task.Run(() => RetractAsync(appMetadata, scope)).GetAwaiter().GetResult();
         }
 
         /// <summary>
         /// Retracts an app in the app catalog. Notice that this will not remove the app from the app catalog.
         /// </summary>
         /// <param name="appMetadata">The app metadata object of the app to retract.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public async Task<bool> RetractAsync(AppMetadata appMetadata)
+        public async Task<bool> RetractAsync(AppMetadata appMetadata, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             if (appMetadata == null)
             {
@@ -377,25 +410,27 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await BaseRequest(appMetadata.Id, "Retract", true);
+            return await BaseRequest(appMetadata.Id, AppManagerAction.Retract, true, null, scope);
         }
 
         /// <summary>
         /// Retracts an app in the app catalog. Notice that this will not remove the app from the app catalog.
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public bool Retract(Guid id)
+        public bool Retract(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => RetractAsync(id)).GetAwaiter().GetResult();
+            return Task.Run(() => RetractAsync(id, scope)).GetAwaiter().GetResult();
         }
 
         /// <summary>
         /// Retracts an app in the app catalog. Notice that this will not remove the app from the app catalog.
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public async Task<bool> RetractAsync(Guid id)
+        public async Task<bool> RetractAsync(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             if (id == Guid.Empty)
             {
@@ -404,25 +439,27 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await BaseRequest(id, "Retract", true);
+            return await BaseRequest(id, AppManagerAction.Retract, true, null, scope);
         }
 
         /// <summary>
         /// Removes an app from the app catalog
         /// </summary>
         /// <param name="appMetadata">The app metadata object of the app to remove.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public bool Remove(AppMetadata appMetadata)
+        public bool Remove(AppMetadata appMetadata, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => RemoveAsync(appMetadata)).GetAwaiter().GetResult();
+            return Task.Run(() => RemoveAsync(appMetadata, scope)).GetAwaiter().GetResult();
         }
 
         /// <summary>
         /// Removes an app from the app catalog
         /// </summary>
         /// <param name="appMetadata">The app metadata object of the app to remove.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public async Task<bool> RemoveAsync(AppMetadata appMetadata)
+        public async Task<bool> RemoveAsync(AppMetadata appMetadata, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             if (appMetadata == null)
             {
@@ -435,25 +472,27 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await BaseRequest(appMetadata.Id, "Remove", true);
+            return await BaseRequest(appMetadata.Id, AppManagerAction.Remove, true, null, scope);
         }
 
         /// <summary>
         /// Removes an app from the app catalog
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public bool Remove(Guid id)
+        public bool Remove(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => RemoveAsync(id)).GetAwaiter().GetResult();
+            return Task.Run(() => RemoveAsync(id, scope)).GetAwaiter().GetResult();
         }
 
         /// <summary>
         /// Removes an app from the app catalog
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public async Task<bool> RemoveAsync(Guid id)
+        public async Task<bool> RemoveAsync(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             if (id == Guid.Empty)
             {
@@ -462,70 +501,89 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await BaseRequest(id, "Remove", true);
+            return await BaseRequest(id, AppManagerAction.Remove, true, null, scope);
         }
 
         /// <summary>
         /// Returns all available apps.
         /// </summary>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public List<AppMetadata> GetAvailable()
+        public List<AppMetadata> GetAvailable(AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => BaseGetAvailableAsync(Guid.Empty)).GetAwaiter().GetResult();
+            return Task.Run(() => BaseGetAvailableAsync(scope, Guid.Empty)).GetAwaiter().GetResult();
         }
 
         /// <summary>
         /// Returns all available apps.
         /// </summary>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public async Task<List<AppMetadata>> GetAvailableAsync()
+        public async Task<List<AppMetadata>> GetAvailableAsync(AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             await new SynchronizationContextRemover();
 
-            return await BaseGetAvailableAsync(Guid.Empty);
+            return await BaseGetAvailableAsync(scope, Guid.Empty);
         }
 
         /// <summary>
         /// Returns an available app
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public AppMetadata GetAvailable(Guid id)
+        public AppMetadata GetAvailable(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => BaseGetAvailableAsync(id)).GetAwaiter().GetResult();
+            return Task.Run(() => BaseGetAvailableAsync(scope, id)).GetAwaiter().GetResult();
         }
 
-        public async Task<AppMetadata> GetAvailableAsync(Guid id)
+        /// <summary>
+        /// Returns an available app
+        /// </summary>
+        /// <param name="id">The id of the app</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
+        /// <returns></returns>
+        public async Task<AppMetadata> GetAvailableAsync(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             await new SynchronizationContextRemover();
 
-            return await BaseGetAvailableAsync(id);
+            return await BaseGetAvailableAsync(scope, id);
         }
 
         /// <summary>
         /// Returns an available app
         /// </summary>
         /// <param name="title">The title of the app.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        public AppMetadata GetAvailable(string title)
+        public AppMetadata GetAvailable(string title, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => BaseGetAvailableAsync(Guid.Empty, title)).GetAwaiter().GetResult();
+            return Task.Run(() => BaseGetAvailableAsync(scope, Guid.Empty, title)).GetAwaiter().GetResult();
         }
 
-        public async Task<AppMetadata> GetAvailableAsync(string title)
+        /// <summary>
+        /// REturns an avialable app
+        /// </summary>
+        /// <param name="title">The title of the app.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
+        /// <returns></returns>
+        public async Task<AppMetadata> GetAvailableAsync(string title, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
             await new SynchronizationContextRemover();
 
-            return await BaseGetAvailableAsync(Guid.Empty, title);
+            return await BaseGetAvailableAsync(scope, Guid.Empty, title);
         }
+
+        #region Private Methods
 
         /// <summary>
         /// Returns an available app
         /// </summary>
         /// <param name="id">The unique id of the app. Notice that this is not the product id as listed in the app catalog.</param>
         /// <param name="title">The title of the app.</param>
+        /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
         /// <returns></returns>
-        private async Task<dynamic> BaseGetAvailableAsync(Guid id = default(Guid), string title = "")
+        private async Task<dynamic> BaseGetAvailableAsync(AppCatalogScope scope, Guid id = default(Guid), string title = "")
         {
             dynamic addins = null;
 
@@ -543,10 +601,11 @@ namespace OfficeDevPnP.Core.ALM
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
-                    string requestUrl = $"{_context.Web.Url}/_api/web/tenantappcatalog/AvailableApps";
+
+                    string requestUrl = $"{_context.Web.Url}/_api/web/{(scope == AppCatalogScope.Tenant ? "tenant" : "sitecollection")}appcatalog/AvailableApps";
                     if (Guid.Empty != id)
                     {
-                        requestUrl = $"{_context.Web.Url}/_api/web/tenantappcatalog/AvailableApps/GetById('{id}')";
+                        requestUrl = $"{_context.Web.Url}/_api/web/{(scope == AppCatalogScope.Tenant ? "tenant" : "sitecollection")}appcatalog/AvailableApps/GetById('{id}')";
                     }
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=verbose");
@@ -603,11 +662,11 @@ namespace OfficeDevPnP.Core.ALM
             return await Task.Run(() => addins);
         }
 
-        #region Private Methods
-        private async Task<bool> BaseRequest(Guid id, string method, bool appCatalog = false, Dictionary<string, object> postObject = null)
+
+        private async Task<bool> BaseRequest(Guid id, AppManagerAction action, bool switchToAppCatalogContext, Dictionary<string, object> postObject, AppCatalogScope scope)
         {
             var context = _context;
-            if (appCatalog == true)
+            if (switchToAppCatalogContext == true && scope == AppCatalogScope.Tenant)
             {
                 // switch context to appcatalog
                 var appcatalogUri = _context.Web.GetAppCatalog();
@@ -628,7 +687,8 @@ namespace OfficeDevPnP.Core.ALM
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
-                    string requestUrl = $"{context.Web.Url}/_api/web/tenantappcatalog/AvailableApps/GetByID('{id}')/{method}";
+                    var method = action.ToString();
+                    string requestUrl = $"{context.Web.Url}/_api/web/{(scope == AppCatalogScope.Tenant ? "tenant" : "sitecollection")}appcatalog/AvailableApps/GetByID('{id}')/{method}";
 
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=nometadata");
@@ -675,12 +735,12 @@ namespace OfficeDevPnP.Core.ALM
             return await Task.Run(() => returnValue);
         }
 
-        private async Task<AppMetadata> BaseAddRequest(byte[] file, string filename, bool overwrite = false, bool appCatalog = true)
+        private async Task<AppMetadata> BaseAddRequest(byte[] file, string filename, bool overwrite, AppCatalogScope scope)
         {
             AppMetadata returnValue = null;
 
             var context = _context;
-            if (appCatalog == true)
+            if (scope == AppCatalogScope.Tenant)
             {
                 // switch context to appcatalog
                 var appcatalogUri = _context.Web.GetAppCatalog();
@@ -701,7 +761,8 @@ namespace OfficeDevPnP.Core.ALM
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
-                    string requestUrl = $"{context.Web.Url}/_api/web/tenantappcatalog/Add(overwrite={(overwrite.ToString().ToLower())}, url='{filename}')";
+
+                    string requestUrl = $"{context.Web.Url}/_api/web/{(scope == AppCatalogScope.Tenant ? "tenant" : "sitecollection")}appcatalog/Add(overwrite={(overwrite.ToString().ToLower())}, url='{filename}')";
 
                     var requestDigest = await context.GetRequestDigest();
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
@@ -726,7 +787,7 @@ namespace OfficeDevPnP.Core.ALM
                             var responseJson = JObject.Parse(responseString);
                             var id = responseJson["d"]["UniqueId"].ToString();
 
-                            var metadataRequestUrl = $"{context.Web.Url}/_api/web/tenantappcatalog/AvailableApps/GetById('{id}')";
+                            var metadataRequestUrl = $"{context.Web.Url}/_api/web/{(scope == AppCatalogScope.Tenant ? "tenant" : "sitecollection")}appcatalog/AvailableApps/GetById('{id}')";
 
                             HttpRequestMessage metadataRequest = new HttpRequestMessage(HttpMethod.Post, metadataRequestUrl);
                             metadataRequest.Headers.Add("accept", "application/json;odata=verbose");
