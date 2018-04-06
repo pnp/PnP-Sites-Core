@@ -605,7 +605,7 @@ namespace OfficeDevPnP.Core.ALM
                     string requestUrl = $"{_context.Web.Url}/_api/web/{(scope == AppCatalogScope.Tenant ? "tenant" : "sitecollection")}appcatalog/AvailableApps";
                     if (Guid.Empty != id)
                     {
-                        requestUrl = $"{_context.Web.Url}/_api/web/{(scope == AppCatalogScope.Tenant ? "tenant" : "sitecollection")}/AvailableApps/GetById('{id}')";
+                        requestUrl = $"{_context.Web.Url}/_api/web/{(scope == AppCatalogScope.Tenant ? "tenant" : "sitecollection")}appcatalog/AvailableApps/GetById('{id}')";
                     }
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=verbose");
