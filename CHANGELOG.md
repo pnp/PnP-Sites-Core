@@ -5,8 +5,15 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
+## [2.26.1805.0 - Unreleased]
 
-## [2.25.1804.0 - Unreleased]
+### Added
+
+### Changed
+
+### Deprecated
+
+## [2.25.1804.0 - April 2018 release]
 
 ### Added
 
