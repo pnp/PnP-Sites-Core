@@ -109,12 +109,13 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="members">A list of UPNs for group members, if any</param>
         /// <param name="groupLogo">The binary stream of the logo for the Office 365 Group</param>
         /// <param name="isPrivate">Defines whether the group will be private or public, optional with default false (i.e. public)</param>
+        /// <param name="createTeam">Create a team associated with Office 365 group</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <returns>The just created Office 365 Group</returns>
         public static UnifiedGroupEntity CreateUnifiedGroup(string displayName, string description, string mailNickname,
             string accessToken, string[] owners = null, string[] members = null, Stream groupLogo = null,
-            bool isPrivate = false, int retryCount = 10, int delay = 500)
+            bool isPrivate = false, bool createTeam = false, int retryCount = 10, int delay = 500)
         {
             UnifiedGroupEntity result = null;
 
@@ -261,6 +262,15 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                     #endregion
 
+                    #region Handle Team creation
+
+                    if (createTeam)
+                    {
+                        await CreateTeam(group.GroupId, accessToken);
+                    }
+
+                    #endregion
+
                     return (group);
 
                 }).GetAwaiter().GetResult();
@@ -387,7 +397,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
             var fullListOfOwners = await graphClient.Groups[targetGroup.Id].Owners.Request().Select("userPrincipalName, Id").GetAsync();
             var pageExists = true;
 
-            while(pageExists)
+            while (pageExists)
             {
                 foreach (var owner in fullListOfOwners)
                 {
@@ -436,13 +446,14 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="isPrivate">Defines whether the group will be private or public, optional with default false (i.e. public)</param>
         /// <param name="groupLogo">The binary stream of the logo for the Office 365 Group</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="createTeam">Create a team associated with Office 365 group</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <returns>Declares whether the Office 365 Group has been updated or not</returns>
         public static bool UpdateUnifiedGroup(string groupId,
             string accessToken, int retryCount = 10, int delay = 500,
             string displayName = null, string description = null, string[] owners = null, string[] members = null,
-            Stream groupLogo = null, bool isPrivate = false)
+            Stream groupLogo = null, bool isPrivate = false, bool createTeam = false)
         {
             bool result;
             try
@@ -499,6 +510,13 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         updateGroup = true;
                     }
 
+                    //Check if we need to create Team
+                    if (createTeam)
+                    {
+                        await CreateTeam(groupId, accessToken);
+                        updateGroup = true;
+                    }
+
                     // If the Group has to be updated, just do it
                     if (updateGroup)
                     {
@@ -547,12 +565,13 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="members">A list of UPNs for group members, if any</param>
         /// <param name="groupLogoPath">The path of the logo for the Office 365 Group</param>
         /// <param name="isPrivate">Defines whether the group will be private or public, optional with default false (i.e. public)</param>
+        /// <param name="createTeam">Create a team associated with Office 365 group</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <returns>The just created Office 365 Group</returns>
         public static UnifiedGroupEntity CreateUnifiedGroup(string displayName, string description, string mailNickname,
             string accessToken, string[] owners = null, string[] members = null, String groupLogoPath = null,
-            bool isPrivate = false, int retryCount = 10, int delay = 500)
+            bool isPrivate = false, bool createTeam = false, int retryCount = 10, int delay = 500)
         {
             if (!String.IsNullOrEmpty(groupLogoPath) && !System.IO.File.Exists(groupLogoPath))
             {
@@ -565,7 +584,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     return (CreateUnifiedGroup(displayName, description,
                         mailNickname, accessToken, owners, members,
                         groupLogo: groupLogoStream, isPrivate: isPrivate,
-                        retryCount: retryCount, delay: delay));
+                        createTeam: createTeam, retryCount: retryCount, delay: delay));
                 }
             }
             else
@@ -573,7 +592,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 return (CreateUnifiedGroup(displayName, description,
                     mailNickname, accessToken, owners, members,
                     groupLogo: null, isPrivate: isPrivate,
-                    retryCount: retryCount, delay: delay));
+                    createTeam: createTeam, retryCount: retryCount, delay: delay));
             }
         }
 
@@ -587,17 +606,18 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="owners">A list of UPNs for group owners, if any</param>
         /// <param name="members">A list of UPNs for group members, if any</param>
         /// <param name="isPrivate">Defines whether the group will be private or public, optional with default false (i.e. public)</param>
+        /// <param name="createTeam">Create a team associated with Office 365 group</param> 
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <returns>The just created Office 365 Group</returns>
         public static UnifiedGroupEntity CreateUnifiedGroup(string displayName, string description, string mailNickname,
             string accessToken, string[] owners = null, string[] members = null,
-            bool isPrivate = false, int retryCount = 10, int delay = 500)
+            bool isPrivate = false, bool createTeam = false, int retryCount = 10, int delay = 500)
         {
             return (CreateUnifiedGroup(displayName, description,
                 mailNickname, accessToken, owners, members,
                 groupLogo: null, isPrivate: isPrivate,
-                retryCount: retryCount, delay: delay));
+                createTeam: createTeam, retryCount: retryCount, delay: delay));
         }
 
         /// <summary>
@@ -835,7 +855,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     {
                         unifiedGroupGraphUsers = new List<User>();
 
-                        GenerateGraphUserCollection(groupUsers.CurrentPage,unifiedGroupGraphUsers);
+                        GenerateGraphUserCollection(groupUsers.CurrentPage, unifiedGroupGraphUsers);
                     }
 
                     // Retrieve users when the results are paged.
@@ -957,6 +977,40 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
 
             return unifiedGroupGraphUsers;
+        }
+
+        /// <summary>
+        /// Creates a team associated with an Office 365 group
+        /// </summary>
+        /// <param name="groupId">The ID of the Office 365 Group</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <returns></returns>
+        public static async Task CreateTeam(String groupId, String accessToken)
+        {
+            if (String.IsNullOrEmpty(groupId))
+            {
+                throw new ArgumentNullException(nameof(groupId));
+            }
+
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            var createTeamEndPoint = GraphHttpClient.MicrosoftGraphBetaBaseUri + $"groups/{groupId}/team";
+
+            try
+            {
+                await Task.Run(() =>
+                {
+                    GraphHttpClient.MakePutRequest(createTeamEndPoint, new { }, "application/json", accessToken);
+                });
+            }
+            catch (ServiceException ex)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
+            }
         }
     }
 }
