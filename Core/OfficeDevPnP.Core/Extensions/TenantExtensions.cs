@@ -518,7 +518,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="timeoutFunction">An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.</param>
         public static void SetSiteLockState(this Tenant tenant, string siteFullUrl, SiteLockState lockState, bool wait = false, Func<TenantOperationMessage, bool> timeoutFunction = null)
         {
-            var siteProps = tenant.GetSitePropertiesByUrl(siteFullUrl, true);
+            var siteProps = tenant.GetSitePropertiesByUrl(siteFullUrl, false);
             tenant.Context.Load(siteProps);
             tenant.Context.ExecuteQueryRetry();
 
