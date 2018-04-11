@@ -473,6 +473,9 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionConnectedOffice365GroupId.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionIdEncodedToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteIdEncodedToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteDesignIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\StorageEntityValueToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteScriptIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteTitleToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ClientSidePageContentsHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AppPackageIdToken.cs" />
