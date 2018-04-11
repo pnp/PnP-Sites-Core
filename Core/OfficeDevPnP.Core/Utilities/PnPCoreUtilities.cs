@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.SharePoint.Client;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -48,5 +49,21 @@ namespace OfficeDevPnP.Core.Utilities
                 return (result);
             },
             true);
+
+        /// <summary>
+        /// Returns the tenant administration url based upon the URL of the web
+        /// </summary>
+        /// <param name="web"></param>
+        /// <returns></returns>
+        public static string GetTenantAdministrationUrl(this Web web)
+        {
+            var url = web.EnsureProperty(w => w.Url);
+            var uri = new Uri(url);
+            var uriParts = uri.Host.Split('.');
+            if (uriParts[0].EndsWith("-admin")) return uri.OriginalString;
+            if (!uriParts[0].EndsWith("-admin"))
+                return $"https://{uriParts[0]}-admin.{string.Join(".", uriParts.Skip(1))}";
+            return null;
+        }
     }
 }
