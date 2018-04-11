@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2018
     /// <summary>
     /// Resolves the CDN settings at the Tenant level from the Schema to the Model
     /// </summary>
-    public class CdnFromSchemaToModelTypeResolver : ITypeResolver
+    internal class CdnFromSchemaToModelTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
 
