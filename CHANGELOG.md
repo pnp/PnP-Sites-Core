@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [2.26.1805.0 - Unreleased]
 
 ### Added
+- Added ClientSidePage Title support in the provisioning engine.
 - Added CommentsOnSitePagesDisabled property on web settings element in the provisioning engine.
 - Added support for StorageEntities to the Tenant element in the Provisioning Engine. The user applying the template needs appropriate access rights to the tenant scoped App Catalog.
 - Added SiteScripts and SiteDesigns elements to the Tenant element in the Provisioning Engine. The user applying the template needs to be tenant administrator.
