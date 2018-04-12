@@ -20,6 +20,28 @@
   </pnp:Localizations>
 
   <pnp:Tenant>
+    <pnp:SiteDesigns>
+      <pnp:SiteDesign IsDefault="true" Title="PnP Site Design" Description="Just a sample" PreviewImageUrl="PnPSiteDesign.png" PreviewImageAltText="PnP Site Design Preview" WebTemplate="CommunicationSite" Overwrite="false">
+        <pnp:SiteScripts>
+          <pnp:SiteScriptRef ID="{SiteScriptID:PnP Site Script 01}"/>
+          <pnp:SiteScriptRef ID="{SiteScriptID:PnP Site Script 03}"/>
+        </pnp:SiteScripts>
+        <pnp:Grants>
+          <pnp:Grant Principal="user1@contoso.com" Right="View" />
+          <pnp:Grant Principal="user2@contoso.com" Right="View" />
+          <pnp:Grant Principal="user3@contoso.com" Right="None" />
+        </pnp:Grants>
+      </pnp:SiteDesign>
+    </pnp:SiteDesigns>
+    <pnp:SiteScripts>
+      <pnp:SiteScript Title="PnP Site Script 01" Description="PnP Site Script Sample 01" JsonFilePath=".\pnp-site-script-01.json" Overwrite="true" />
+      <pnp:SiteScript Title="PnP Site Script 02" Description="PnP Site Script Sample 02" JsonFilePath=".\pnp-site-script-02.json" Overwrite="false" />
+      <pnp:SiteScript Title="PnP Site Script 03" Description="PnP Site Script Sample 03" JsonFilePath=".\pnp-site-script-03.json" />
+    </pnp:SiteScripts>
+    <pnp:StorageEntities>
+      <pnp:StorageEntity Key="PnPKey01" Value="My custom tenant-wide value 01" Comment="Comment 01" Description="Description 01" />
+      <pnp:StorageEntity Key="PnPKey02" Value="{ Id: 1, Property: 'Some text here'}" Description="Description 02" />
+    </pnp:StorageEntities>
     <pnp:AppCatalog>
       <pnp:Package Src="solution\spfx-discuss-now.sppkg" Action="UploadAndPublish" SkipFeatureDeployment="true" Overwrite="true" />
       <pnp:Package PackageId="d0816f0a-fda4-4a98-8e61-1bbe1f2b5b27" Action="Publish" />
@@ -43,23 +65,6 @@
         <pnp:ExcludeRestrictedSiteClassifications>HIB,GDPR</pnp:ExcludeRestrictedSiteClassifications>
       </pnp:Private>
     </pnp:ContentDeliveryNetwork>
-    <pnp:SiteDesigns>
-      <pnp:SiteDesign IsDefault="true" Title="PnP Site Design" Description="Just a sample" PreviewImageUrl="PnPSiteDesign.png" PreviewImageAltText="PnP Site Design Preview" WebTemplate="CommunicationSite">
-        <pnp:SiteScripts>
-          <pnp:SiteScriptRef ID="{SiteScriptID:PnP Site Script 01}"/>
-          <pnp:SiteScriptRef ID="{SiteScriptID:PnP Site Script 03}"/>
-        </pnp:SiteScripts> 
-      </pnp:SiteDesign>
-    </pnp:SiteDesigns>
-    <pnp:SiteScripts>
-      <pnp:SiteScript Title="PnP Site Script 01" Description="PnP Site Script Sample 01" JsonFilePath=".\pnp-site-script-01.json" />
-      <pnp:SiteScript Title="PnP Site Script 02" Description="PnP Site Script Sample 02" JsonFilePath=".\pnp-site-script-02.json" />
-      <pnp:SiteScript Title="PnP Site Script 03" Description="PnP Site Script Sample 03" JsonFilePath=".\pnp-site-script-03.json" />
-    </pnp:SiteScripts>
-    <pnp:StorageEntities>
-      <pnp:StorageEntity Key="PnPKey01" Value="My custom tenant-wide value 01" Comment="Comment 01" Description="Description 01" />
-      <pnp:StorageEntity Key="PnPKey02" Value="{ Id: 1, Property: 'Some text here'}" Description="Description 02" />
-    </pnp:StorageEntities>
   </pnp:Tenant>
   
   <pnp:Templates ID="SAMPLE-TEMPLATES">

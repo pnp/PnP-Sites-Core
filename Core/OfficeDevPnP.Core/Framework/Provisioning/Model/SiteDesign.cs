@@ -7,8 +7,17 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public partial class SiteDesign: BaseModel, IEquatable<SiteDesign>
+    /// <summary>
+    /// Domain Object to define a tenant Site Design
+    /// </summary>
+    public partial class SiteDesign : BaseModel, IEquatable<SiteDesign>
     {
+        #region Private Members
+
+        private SiteDesignGrantCollection _grants;
+
+        #endregion
+
         #region Properties
 
         /// <summary>
@@ -46,6 +55,50 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public List<string> SiteScripts { get; set; } = new List<string>();
 
+        /// <summary>
+        /// Defines whether to overwrite the SiteDesign or not
+        /// </summary>
+        public Boolean Overwrite { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of Site Design Permission Right Grants
+        /// </summary>
+        public SiteDesignGrantCollection Grants
+        {
+            get
+            {
+                if (this._grants == null)
+                {
+                    this._grants = new SiteDesignGrantCollection(this.ParentTemplate);
+                }
+                return this._grants;
+            }
+            private set
+            {
+                if (this._grants != null)
+                {
+                    this._grants.ParentTemplate = null;
+                }
+                this._grants = value;
+                if (this._grants != null)
+                {
+                    this._grants.ParentTemplate = this.ParentTemplate;
+                }
+            }
+        }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public SiteDesign()
+        {
+            this.Grants = new SiteDesignGrantCollection(this.ParentTemplate);
+        }
+
         #endregion
 
         #region Comparison code
@@ -55,14 +108,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|",
                 (this.Title != null ? this.Title.GetHashCode() : 0),
                 (this.Description != null ? this.Description.GetHashCode() : 0),
                 this.IsDefault.GetHashCode(),
                 this.WebTemplate.GetHashCode(),
                 (this.PreviewImageUrl != null ? this.PreviewImageUrl.GetHashCode() : 0),
                 (this.PreviewImageAltText != null ? this.PreviewImageAltText.GetHashCode() : 0),
-                this.SiteScripts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.SiteScripts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Overwrite.GetHashCode(),
+                this.Grants.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
@@ -81,7 +136,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares SiteDesign object based on Title, Description, IsDefault, WebTemplate, PreviewImageUrl, and PreviewImageAltText properties.
+        /// Compares SiteDesign object based on Title, Description, IsDefault, WebTemplate, PreviewImageUrl, PreviewImageAltText, Overwrite, and Grants properties.
         /// </summary>
         /// <param name="other">SiteDesign object</param>
         /// <returns>true if the SiteDesign object is equal to the current object; otherwise, false.</returns>
@@ -98,7 +153,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.WebTemplate == other.WebTemplate &&
                 this.PreviewImageUrl == other.PreviewImageUrl &&
                 this.PreviewImageAltText == other.PreviewImageAltText &&
-                this.SiteScripts.DeepEquals(other.SiteScripts)
+                this.SiteScripts.DeepEquals(other.SiteScripts) &&
+                this.Overwrite == other.Overwrite &&
+                this.Grants.DeepEquals(other.Grants)
                 );
         }
 

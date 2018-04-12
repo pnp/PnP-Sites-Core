@@ -450,6 +450,8 @@
     <Compile Include="Framework\Provisioning\Model\ImageRenditionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\IRMSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteDesignCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteDesignGrant.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteDesignGrantCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteScriptCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\StorageEntityCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteDesign.cs" />

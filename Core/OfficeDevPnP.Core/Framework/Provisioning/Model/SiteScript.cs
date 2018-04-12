@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
     /// <summary>
-    /// Defines a SiteScript to provision
+    /// Domain object to define a SiteScript to provision
     /// </summary>
     public partial class SiteScript : BaseModel, IEquatable<SiteScript>
     {
@@ -28,6 +28,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public string JsonFilePath { get; set; }
 
+        /// <summary>
+        /// Defines whether to overwrite the SiteDesign or not
+        /// </summary>
+        public Boolean Overwrite { get; set; }
+
         #endregion
 
         #region Comparison code
@@ -37,10 +42,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|",
+            return (String.Format("{0}|{1}|{2}|{3}|",
                 (this.Title != null ? this.Title.GetHashCode() : 0),
                 (this.Description != null ? this.Description.GetHashCode() : 0),
-                (this.JsonFilePath != null ? this.JsonFilePath.GetHashCode() : 0)
+                (this.JsonFilePath != null ? this.JsonFilePath.GetHashCode() : 0),
+                this.Overwrite.GetHashCode()
             ).GetHashCode());
         }
 
@@ -72,7 +78,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             return (this.Title == other.Title &&
                 this.Description == other.Description &&
-                this.JsonFilePath == other.JsonFilePath
+                this.JsonFilePath == other.JsonFilePath &&
+                this.Overwrite == other.Overwrite
                 );
         }
 

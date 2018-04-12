@@ -8952,6 +8952,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
         
         private SiteDesignsSiteDesignSiteScriptRef[] siteScriptsField;
         
+        private SiteDesignsSiteDesignGrant[] grantsField;
+        
         private string titleField;
         
         private string descriptionField;
@@ -8964,8 +8966,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
         
         private string previewImageAltTextField;
         
+        private bool overwriteField;
+        
         public SiteDesignsSiteDesign() {
             this.isDefaultField = false;
+            this.overwriteField = true;
         }
         
         /// <remarks/>
@@ -8976,6 +8981,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
             }
             set {
                 this.siteScriptsField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute("Grant", IsNullable=false)]
+        public SiteDesignsSiteDesignGrant[] Grants {
+            get {
+                return this.grantsField;
+            }
+            set {
+                this.grantsField = value;
             }
         }
         
@@ -9045,6 +9061,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
                 this.previewImageAltTextField = value;
             }
         }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(true)]
+        public bool Overwrite {
+            get {
+                return this.overwriteField;
+            }
+            set {
+                this.overwriteField = value;
+            }
+        }
     }
     
     /// <remarks/>
@@ -9067,6 +9095,54 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
                 this.idField = value;
             }
         }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2018/05/ProvisioningSchema")]
+    public partial class SiteDesignsSiteDesignGrant {
+        
+        private string principalField;
+        
+        private SiteDesignsSiteDesignGrantRight rightField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Principal {
+            get {
+                return this.principalField;
+            }
+            set {
+                this.principalField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public SiteDesignsSiteDesignGrantRight Right {
+            get {
+                return this.rightField;
+            }
+            set {
+                this.rightField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2018/05/ProvisioningSchema")]
+    public enum SiteDesignsSiteDesignGrantRight {
+        
+        /// <remarks/>
+        None,
+        
+        /// <remarks/>
+        View,
     }
     
     /// <remarks/>
@@ -9095,6 +9171,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
         private string descriptionField;
         
         private string jsonFilePathField;
+        
+        private bool overwriteField;
+        
+        public SiteScriptsSiteScript() {
+            this.overwriteField = true;
+        }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -9126,6 +9208,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
             }
             set {
                 this.jsonFilePathField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(true)]
+        public bool Overwrite {
+            get {
+                return this.overwriteField;
+            }
+            set {
+                this.overwriteField = value;
             }
         }
     }

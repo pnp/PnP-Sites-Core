@@ -42,16 +42,21 @@
       </pnp:Private>
     </pnp:ContentDeliveryNetwork>
     <pnp:SiteDesigns>
-      <pnp:SiteDesign Title="PnP Site Design" Description="Just a sample" IsDefault="true" WebTemplate="CommunicationSite" PreviewImageUrl="PnPSiteDesign.png" PreviewImageAltText="PnP Site Design Preview">
+      <pnp:SiteDesign Title="PnP Site Design" Description="Just a sample" IsDefault="true" WebTemplate="CommunicationSite" PreviewImageUrl="PnPSiteDesign.png" PreviewImageAltText="PnP Site Design Preview" Overwrite="false">
         <pnp:SiteScripts>
           <pnp:SiteScriptRef ID="{SiteScriptID:PnP Site Script 01}" />
           <pnp:SiteScriptRef ID="{SiteScriptID:PnP Site Script 03}" />
         </pnp:SiteScripts>
+        <pnp:Grants>
+          <pnp:Grant Principal="user1@contoso.com" Right="View" />
+          <pnp:Grant Principal="user2@contoso.com" Right="View" />
+          <pnp:Grant Principal="user3@contoso.com" Right="None" />
+        </pnp:Grants>
       </pnp:SiteDesign>
     </pnp:SiteDesigns>
     <pnp:SiteScripts>
       <pnp:SiteScript Title="PnP Site Script 01" Description="PnP Site Script Sample 01" JsonFilePath=".\pnp-site-script-01.json" />
-      <pnp:SiteScript Title="PnP Site Script 02" Description="PnP Site Script Sample 02" JsonFilePath=".\pnp-site-script-02.json" />
+      <pnp:SiteScript Title="PnP Site Script 02" Description="PnP Site Script Sample 02" JsonFilePath=".\pnp-site-script-02.json" Overwrite="false" />
       <pnp:SiteScript Title="PnP Site Script 03" Description="PnP Site Script Sample 03" JsonFilePath=".\pnp-site-script-03.json" />
     </pnp:SiteScripts>
     <pnp:StorageEntities>

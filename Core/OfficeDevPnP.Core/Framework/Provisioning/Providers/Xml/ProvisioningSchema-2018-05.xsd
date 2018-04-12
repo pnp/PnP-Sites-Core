@@ -202,7 +202,7 @@
       </xsd:documentation>
     </xsd:annotation>
 
-    <xsd:sequence>
+    <xsd:all>
 
       <xsd:element name="AppCatalog" type="pnp:AppCatalog" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
@@ -249,7 +249,7 @@
         </xsd:annotation>
       </xsd:element>
 
-    </xsd:sequence>
+    </xsd:all>
 
   </xsd:complexType>
 
@@ -271,8 +271,8 @@
         </xsd:annotation>
         <xsd:complexType>
 
-          <xsd:sequence>
-            <xsd:element name="SiteScripts">
+          <xsd:all>
+            <xsd:element name="SiteScripts" minOccurs="0" maxOccurs="1">
               <xsd:annotation>
                 <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
                 <xsd:documentation xml:lang="en">
@@ -302,7 +302,65 @@
                 </xsd:sequence>
               </xsd:complexType>
             </xsd:element>
-          </xsd:sequence>
+            <xsd:element name="Grants" minOccurs="0" maxOccurs="1">
+              <xsd:annotation>
+                <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+                <xsd:documentation xml:lang="en">
+                  A collection of Grants for the Site Design
+                </xsd:documentation>
+              </xsd:annotation>
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element name="Grant" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:annotation>
+                      <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+                      <xsd:documentation xml:lang="en">
+                        A single permission Grant for the current Site Design
+                      </xsd:documentation>
+                    </xsd:annotation>
+                    <xsd:complexType>
+                      <xsd:attribute name="Principal" type="xsd:string" use="required">
+                        <xsd:annotation>
+                          <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+                          <xsd:documentation xml:lang="en">
+                            The Principal for the Grant for the Site Design, required attribute.
+                          </xsd:documentation>
+                        </xsd:annotation>
+                      </xsd:attribute>
+                      <xsd:attribute name="Right" use="required">
+                        <xsd:annotation>
+                          <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+                          <xsd:documentation xml:lang="en">
+                            The Right for the Grant for the Site Design, required attribute.
+                          </xsd:documentation>
+                        </xsd:annotation>
+                        <xsd:simpleType>
+                          <xsd:restriction base="xsd:string">
+                            <xsd:enumeration value="None">
+                              <xsd:annotation>
+                                <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+                                <xsd:documentation xml:lang="en">
+                                  The Right "None" for the Grant for the Site Design, required attribute.
+                                </xsd:documentation>
+                              </xsd:annotation>
+                            </xsd:enumeration>
+                            <xsd:enumeration value="View">
+                              <xsd:annotation>
+                                <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+                                <xsd:documentation xml:lang="en">
+                                  The Right "View" for the Grant for the Site Design, required attribute.
+                                </xsd:documentation>
+                              </xsd:annotation>
+                            </xsd:enumeration>
+                          </xsd:restriction>
+                        </xsd:simpleType>
+                      </xsd:attribute>
+                    </xsd:complexType>
+                  </xsd:element>
+                </xsd:sequence>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:all>
           
           <xsd:attribute name="Title" type="xsd:string" use="required">
             <xsd:annotation>
@@ -372,6 +430,14 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
+          <xsd:attribute name="Overwrite" type="xsd:boolean" use="optional" default="true">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Defines whether the Site Design should be overwritten in case of existence, optional attribute (default:true).
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
@@ -416,6 +482,14 @@
               <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
               <xsd:documentation xml:lang="en">
                 The path of the JSON file defining the Site Script, required attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="Overwrite" type="xsd:boolean" use="optional" default="true">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Defines whether the Site Script should be overwritten in case of existence, optional attribute (default:true).
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
