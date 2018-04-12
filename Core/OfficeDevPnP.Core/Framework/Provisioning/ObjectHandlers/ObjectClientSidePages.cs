@@ -87,7 +87,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(clientSidePage.PageName)}.aspx";
                     string url = $"{pagesLibrary}/{pageName}";
-
                     // Write page level status messages, needed in case many pages are provisioned
                     currentPageIndex++;
                     WriteMessage($"ClientSidePage|{pageName}|{currentPageIndex}|{template.ClientSidePages.Count}", ProvisioningMessageType.Progress);
@@ -130,7 +129,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Create new client side page
                         page = web.AddClientSidePage(pageName);
                     }
-
+                    
+                    // Set page title
+                    if(page.PageTitle != clientSidePage.Title)
+                    {
+                        page.PageTitle = clientSidePage.Title;
+                    }
+                    
                     // Set page layout
                     if (!string.IsNullOrEmpty(clientSidePage.Layout))
                     {
