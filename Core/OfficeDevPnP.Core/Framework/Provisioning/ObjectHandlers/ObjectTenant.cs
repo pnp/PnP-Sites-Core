@@ -151,7 +151,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var scriptTitle = parser.ParseString(siteScript.Title);
                         var scriptDescription = parser.ParseString(siteScript.Description);
                         var scriptContent = parser.ParseString(System.Text.Encoding.UTF8.GetString(GetFileBytes(template, parser.ParseString(siteScript.JsonFilePath))));
-                        if (existingScripts.FirstOrDefault(s => s.Title == scriptTitle) == null)
+                        var existingScript = existingScripts.FirstOrDefault(s => s.Title == scriptTitle);
+
+                        if (existingScript == null)
                         {
                             TenantSiteScriptCreationInfo siteScriptCreationInfo = new TenantSiteScriptCreationInfo
                             {
@@ -162,7 +164,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var script = tenant.CreateSiteScript(siteScriptCreationInfo);
                             tenantContext.Load(script);
                             tenantContext.ExecuteQueryRetry();
-                            parser.AddToken(new SiteScriptIdToken(web, script.Title, script.Id));
+                            parser.AddToken(new SiteScriptIdToken(web, scriptTitle, script.Id));
+                        }
+                        else
+                        {
+                            if (siteScript.Overwrite)
+                            {
+                                var existingId = existingScript.Id;
+                                existingScript = Tenant.GetSiteScript(tenantContext, existingId);
+                                tenantContext.ExecuteQueryRetry();
+
+                                existingScript.Content = scriptContent;
+                                existingScript.Title = scriptTitle;
+                                existingScript.Description = scriptDescription;
+                                tenant.UpdateSiteScript(existingScript);
+                                tenantContext.ExecuteQueryRetry();
+                                var existingToken = parser.Tokens.OfType<SiteScriptIdToken>().FirstOrDefault(t => t.GetReplaceValue() == existingId.ToString());
+                                if (existingToken != null)
+                                {
+                                    parser.Tokens.Remove(existingToken);
+                                }
+                                parser.AddToken(new SiteScriptIdToken(web, scriptTitle, existingId));
+                            }
                         }
                     }
                 }
@@ -188,7 +211,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var designPreviewImageUrl = parser.ParseString(siteDesign.PreviewImageUrl);
                         var designPreviewImageAltText = parser.ParseString(siteDesign.PreviewImageAltText);
 
-                        if (existingDesigns.FirstOrDefault(d => d.Title == designTitle) == null)
+                        var existingSiteDesign = existingDesigns.FirstOrDefault(d => d.Title == designTitle);
+                        if (existingSiteDesign == null)
                         {
                             TenantSiteDesignCreationInfo siteDesignCreationInfo = new TenantSiteDesignCreationInfo()
                             {
@@ -211,7 +235,60 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var design = tenant.CreateSiteDesign(siteDesignCreationInfo);
                             tenantContext.Load(design);
                             tenantContext.ExecuteQueryRetry();
+
+                            if (siteDesign.Grants != null && siteDesign.Grants.Any())
+                            {
+                                foreach (var grant in siteDesign.Grants)
+                                {
+                                    var rights = (TenantSiteDesignPrincipalRights)Enum.Parse(typeof(TenantSiteDesignPrincipalRights), grant.Right.ToString());
+                                    tenant.GrantSiteDesignRights(design.Id, new[] { grant.Principal }, rights);
+                                }
+                                tenantContext.ExecuteQueryRetry();
+                            }
                             parser.AddToken(new SiteDesignIdToken(web, design.Title, design.Id));
+                        }
+                        else
+                        {
+                            if (siteDesign.Overwrite)
+                            {
+                                var existingId = existingSiteDesign.Id;
+                                existingSiteDesign = Tenant.GetSiteDesign(tenantContext, existingId);
+                                tenantContext.ExecuteQueryRetry();
+
+                                existingSiteDesign.Title = designTitle;
+                                existingSiteDesign.Description = designDescription;
+                                existingSiteDesign.PreviewImageUrl = designPreviewImageUrl;
+                                existingSiteDesign.PreviewImageAltText = designPreviewImageAltText;
+                                existingSiteDesign.IsDefault = siteDesign.IsDefault;
+                                existingSiteDesign.WebTemplate = ((int)siteDesign.WebTemplate).ToString(); // convert TeamSite to 64, CommunicationSite to 68
+
+                                tenant.UpdateSiteDesign(existingSiteDesign);
+                                tenantContext.ExecuteQueryRetry();
+
+                                var existingToken = parser.Tokens.OfType<SiteDesignIdToken>().FirstOrDefault(t => t.GetReplaceValue() == existingId.ToString());
+                                if (existingToken != null)
+                                {
+                                    parser.Tokens.Remove(existingToken);
+                                }
+                                parser.AddToken(new SiteScriptIdToken(web, designTitle, existingId));
+
+                                if (siteDesign.Grants != null && siteDesign.Grants.Any())
+                                {
+                                    var existingRights = Tenant.GetSiteDesignRights(tenantContext, existingId);
+                                    tenantContext.Load(existingRights);
+                                    tenantContext.ExecuteQueryRetry();
+                                    foreach (var existingRight in existingRights)
+                                    {
+                                        Tenant.RevokeSiteDesignRights(tenantContext, existingId, new[] { existingRight.PrincipalName });
+                                    }
+                                    foreach (var grant in siteDesign.Grants)
+                                    {
+                                        var rights = (TenantSiteDesignPrincipalRights)Enum.Parse(typeof(TenantSiteDesignPrincipalRights), grant.Right.ToString());
+                                        tenant.GrantSiteDesignRights(existingId, new[] { parser.ParseString(grant.Principal) }, rights);
+                                    }
+                                    tenantContext.ExecuteQueryRetry();
+                                }
+                            }
                         }
                     }
                 }
