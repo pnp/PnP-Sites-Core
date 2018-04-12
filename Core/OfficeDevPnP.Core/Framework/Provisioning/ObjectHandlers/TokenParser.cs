@@ -11,6 +11,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.ALM;
+using OfficeDevPnP.Core.Utilities;
+using Microsoft.Online.SharePoint.TenantAdministration;
+using Newtonsoft.Json;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -92,78 +95,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new SiteCollectionConnectedOffice365GroupId(web));
 #endif
 
-            // Add lists
             AddListTokens(web);
-            // Add ContentTypes
             AddContentTypeTokens(web);
+
             // Add parameters
             foreach (var parameter in template.Parameters)
             {
                 _tokens.Add(new ParameterToken(web, parameter.Key, parameter.Value ?? string.Empty));
             }
 
-            // Add TermSetIds
-            TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
+            AddTermStoreTokens(web);
 
-            var termStores = session.EnsureProperty(s => s.TermStores);
-            foreach (var ts in termStores)
-            {
-                _tokens.Add(new TermStoreIdToken(web, ts.Name, ts.Id));
-            }
-            var termStore = session.GetDefaultSiteCollectionTermStore();
-            web.Context.Load(termStore);
-            web.Context.ExecuteQueryRetry();
-            if (!termStore.ServerObjectIsNull.Value)
-            {
-                web.Context.Load(termStore.Groups,
-                    g => g.Include(
-                        tg => tg.Name,
-                        tg => tg.TermSets.Include(
-                            ts => ts.Name,
-                            ts => ts.Id)
-                    ));
-                web.Context.ExecuteQueryRetry();
-                foreach (var termGroup in termStore.Groups)
-                {
-                    foreach (var termSet in termGroup.TermSets)
-                    {
-                        _tokens.Add(new TermSetIdToken(web, termGroup.Name, termSet.Name, termSet.Id));
-                    }
-                }
-            }
-
-            _tokens.Add(new SiteCollectionTermGroupIdToken(web));
-            _tokens.Add(new SiteCollectionTermGroupNameToken(web));
-
-            // SiteCollection TermSets, only when we're not working in app-only
-            if (!web.Context.IsAppOnly())
-            {
-                var site = (web.Context as ClientContext).Site;
-                var siteCollectionTermGroup = termStore.GetSiteCollectionGroup(site, true);
-                web.Context.Load(siteCollectionTermGroup);
-                try
-                {
-                    web.Context.ExecuteQueryRetry();
-                    if (null != siteCollectionTermGroup && !siteCollectionTermGroup.ServerObjectIsNull.Value)
-                    {
-                        web.Context.Load(siteCollectionTermGroup, group => group.TermSets.Include(ts => ts.Name, ts => ts.Id));
-                        web.Context.ExecuteQueryRetry();
-                        foreach (var termSet in siteCollectionTermGroup.TermSets)
-                        {
-                            _tokens.Add(new SiteCollectionTermSetIdToken(web, termSet.Name, termSet.Id));
-                        }
-                    }
-                }
-                catch (ServerUnauthorizedAccessException)
-                {
-                    // If we don't have permission to access the TermGroup, just skip it
-                }
-                catch (NullReferenceException)
-                {
-                    // If there isn't a default TermGroup for the Site Collection, we skip the terms in token handler
-                }
-            }
-
+#if !ONPREMISES
+            AddSiteDesignTokens(web);
+            AddSiteScriptTokens(web);
+            AddStorageEntityTokens(web);
+#endif
             // Fields
             var fields = web.Fields;
             web.Context.Load(fields, flds => flds.Include(f => f.Title, f => f.InternalName));
@@ -269,6 +216,70 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens = sortedTokens.ToList();
         }
 
+        private void AddTermStoreTokens(Web web)
+        {
+            TaxonomySession session = TaxonomySession.GetTaxonomySession(web.Context);
+
+            var termStores = session.EnsureProperty(s => s.TermStores);
+            foreach (var ts in termStores)
+            {
+                _tokens.Add(new TermStoreIdToken(web, ts.Name, ts.Id));
+            }
+            var termStore = session.GetDefaultSiteCollectionTermStore();
+            web.Context.Load(termStore);
+            web.Context.ExecuteQueryRetry();
+            if (!termStore.ServerObjectIsNull.Value)
+            {
+                web.Context.Load(termStore.Groups,
+                    g => g.Include(
+                        tg => tg.Name,
+                        tg => tg.TermSets.Include(
+                            ts => ts.Name,
+                            ts => ts.Id)
+                    ));
+                web.Context.ExecuteQueryRetry();
+                foreach (var termGroup in termStore.Groups)
+                {
+                    foreach (var termSet in termGroup.TermSets)
+                    {
+                        _tokens.Add(new TermSetIdToken(web, termGroup.Name, termSet.Name, termSet.Id));
+                    }
+                }
+            }
+
+            _tokens.Add(new SiteCollectionTermGroupIdToken(web));
+            _tokens.Add(new SiteCollectionTermGroupNameToken(web));
+
+            // SiteCollection TermSets, only when we're not working in app-only
+            if (!web.Context.IsAppOnly())
+            {
+                var site = (web.Context as ClientContext).Site;
+                var siteCollectionTermGroup = termStore.GetSiteCollectionGroup(site, true);
+                web.Context.Load(siteCollectionTermGroup);
+                try
+                {
+                    web.Context.ExecuteQueryRetry();
+                    if (null != siteCollectionTermGroup && !siteCollectionTermGroup.ServerObjectIsNull.Value)
+                    {
+                        web.Context.Load(siteCollectionTermGroup, group => group.TermSets.Include(ts => ts.Name, ts => ts.Id));
+                        web.Context.ExecuteQueryRetry();
+                        foreach (var termSet in siteCollectionTermGroup.TermSets)
+                        {
+                            _tokens.Add(new SiteCollectionTermSetIdToken(web, termSet.Name, termSet.Id));
+                        }
+                    }
+                }
+                catch (ServerUnauthorizedAccessException)
+                {
+                    // If we don't have permission to access the TermGroup, just skip it
+                }
+                catch (NullReferenceException)
+                {
+                    // If there isn't a default TermGroup for the Site Collection, we skip the terms in token handler
+                }
+            }
+        }
+
 #if !ONPREMISES
         private void AddAppPackagesTokens(Web web)
         {
@@ -289,6 +300,104 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 // In case of any failure, just skip creating AppPackageIdToken instances
                 // and move forward. It means that there is no AppCatalog or no ALM APIs
+            }
+        }
+#endif
+
+#if !ONPREMISES
+
+        private void AddStorageEntityTokens(Web web)
+        {
+            try
+            {
+                // First retrieve the entities from the app catalog
+                var tenantEntities = new List<StorageEntity>();
+                var siteEntities = new List<StorageEntity>();
+                var appCatalogUri = web.GetAppCatalog();
+                using (var clonedContext = web.Context.Clone(appCatalogUri))
+                {
+                    var storageEntitiesIndex = clonedContext.Web.GetPropertyBagValueString("storageentitiesindex", "");
+                    tenantEntities = ParseStorageEntitiesString(storageEntitiesIndex);
+                }
+                var appcatalog = (web.Context as ClientContext).Site.RootWeb.SiteCollectionAppCatalog;
+                web.Context.Load(appcatalog);
+                web.Context.ExecuteQueryRetry();
+                if (appcatalog.ServerObjectIsNull == false)
+                {
+                    var storageEntitiesIndex = (web.Context as ClientContext).Site.RootWeb.GetPropertyBagValueString("storageentitiesindex", "");
+                    siteEntities = ParseStorageEntitiesString(storageEntitiesIndex);
+                }
+                var combinedEntities = siteEntities.Concat(tenantEntities).GroupBy(x => x.Key).Select(x => x.First());
+        
+                foreach(var entity in combinedEntities)
+                {
+                    _tokens.Add(new StorageEntityValueToken(web, entity.Key, entity.Value));
+                }
+            }
+            catch { }
+        } 
+
+        private List<StorageEntity> ParseStorageEntitiesString(string storageEntitiesIndex)
+        {
+            var storageEntitiesDict = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, string>>>(storageEntitiesIndex);
+
+            var storageEntities = new List<StorageEntity>();
+            foreach (var key in storageEntitiesDict.Keys)
+            {
+                var storageEntity = new StorageEntity
+                {
+                    Key = key,
+                    Value = storageEntitiesDict[key]["Value"],
+                    Comment = storageEntitiesDict[key]["Comment"],
+                    Description = storageEntitiesDict[key]["Description"]
+                };
+                storageEntities.Add(storageEntity);
+            }
+
+            return storageEntities;
+        }
+
+        private void AddSiteDesignTokens(Web web)
+        {
+            try
+            {
+                using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
+                {
+                    var tenant = new Tenant(tenantContext);
+                    var designs = tenant.GetSiteDesigns();
+                    tenantContext.Load(designs);
+                    tenantContext.ExecuteQueryRetry();
+                    foreach (var design in designs)
+                    {
+                        _tokens.Add(new SiteDesignIdToken(web, design.Title, design.Id));
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+        }
+
+        private void AddSiteScriptTokens(Web web)
+        {
+            try
+            {
+                using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
+                {
+                    var tenant = new Tenant(tenantContext);
+                    var scripts = tenant.GetSiteScripts();
+                    tenantContext.Load(scripts);
+                    tenantContext.ExecuteQueryRetry();
+                    foreach (var script in scripts)
+                    {
+                        _tokens.Add(new SiteDesignIdToken(web, script.Title, script.Id));
+                    }
+                }
+            }
+            catch
+            {
+
             }
         }
 #endif
@@ -339,7 +448,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         _tokens.Add(new ListIdToken(web, rootList.Title, rootList.Id));
                         _tokens.Add(new ListUrlToken(web, rootList.Title, rootList.RootFolder.ServerRelativeUrl.Substring(rootWeb.ServerRelativeUrl.Length + 1)));
 
-                        foreach(var view in rootList.Views)
+                        foreach (var view in rootList.Views)
                         {
                             _tokens.Add(new ListViewIdToken(rootWeb, rootList.Title, view.Title, view.Id));
                         }

@@ -59,6 +59,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public Boolean EnableComments { get; set; }
 
+        /// <summary>
+        /// Defines the Description for the client-side page
+        /// </summary>
+        public String Description { get; set; }
+
+        /// <summary>
+        /// Defines the BannerImageUrl for the client-side page
+        /// </summary>
+        public String BannerImageUrl { get; set; }
+
+        /// <summary>
+        /// Defines the Title for the client-side page
+        /// </summary>
+        public String Title { get; set; }
+
         #endregion
 
         #region Constructors
@@ -81,11 +96,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|",
                 this.Sections.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                PageName?.GetHashCode() ?? 0,
-                PromoteAsNewsArticle.GetHashCode(),
-                Overwrite.GetHashCode()
+                this.PageName?.GetHashCode() ?? 0,
+                this.PromoteAsNewsArticle.GetHashCode(),
+                this.Overwrite.GetHashCode(),
+                this.Layout?.GetHashCode() ?? 0,
+                this.Publish.GetHashCode(),
+                this.EnableComments.GetHashCode(),
+                this.Description?.GetHashCode() ?? 0,
+                this.BannerImageUrl?.GetHashCode() ?? 0,
+                this.Title?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 
@@ -118,7 +139,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (this.Sections.DeepEquals(other.Sections)  &&
                 this.PageName == other.PageName &&
                 this.PromoteAsNewsArticle == other.PromoteAsNewsArticle &&
-                this.Overwrite == other.Overwrite
+                this.Overwrite == other.Overwrite &&
+                this.Layout == other.Layout &&
+                this.Publish == other.Publish &&
+                this.EnableComments == other.EnableComments &&
+                this.Description == other.Description &&
+                this.BannerImageUrl == other.BannerImageUrl &&
+                this.Title == other.Title
                 );
         }
 

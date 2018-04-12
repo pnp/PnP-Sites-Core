@@ -5,14 +5,29 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
+## [2.26.1805.0 - Unreleased]
 
-## [2.25.1804.0 - Unreleased]
+### Added
+- Added ClientSidePage Title support in the provisioning engine.
+- Added CommentsOnSitePagesDisabled property on web settings element in the provisioning engine.
+- Added support for StorageEntities to the Tenant element in the Provisioning Engine. The user applying the template needs appropriate access rights to the tenant scoped App Catalog.
+- Added SiteScripts and SiteDesigns elements to the Tenant element in the Provisioning Engine. The user applying the template needs to be tenant administrator.
+- Added HubSiteUrl to the WebSettings element for the Provisioning Engine. The user applying the template needs to be tenant administrator.
+- Added {SiteScriptId:[script title]} and {SiteDesignId:[design title]} tokens to the provisioning engine. This will only work if the user applying the template is tenant administrator.
+- Added {StorageEntityValue:[key]} token to retrieve values from tenant level or (when applicable) site collection level. If a key is present at site collection level this value will take preference over the one from tenant level, following the behavior of the CSOM APIs.
+
+### Changed
+
+### Deprecated
+
+## [2.25.1804.0 - April 2018 release]
 
 ### Added
 
 - Added async external sharing extension methods [baywet]
 - Added ProvisionFieldsToSubWebs option to ProvisioningTemplateApplyingInformation class [jensotto]
 - Addition of PnPCore.Tests project for testing of the PnPCore .Net Standard 2.0 library
+- Added Scope parameter to ALM Manager methods allowing you to perform application lifecycle management tasks to the site collection scoped app catalog.
 
 ### Changed
 
