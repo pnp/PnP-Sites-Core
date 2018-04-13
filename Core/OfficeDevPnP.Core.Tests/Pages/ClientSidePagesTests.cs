@@ -111,13 +111,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //        //newPage.AddZone(CanvasZoneTemplate.OneColumn, 1);
 
         //        var imageWebPart = newPage.InstantiateDefaultWebPart(DefaultClientSideWebParts.Image);
-        //        imageWebPart.Properties["imageSourceType"] = 2;
-        //        imageWebPart.Properties["siteId"] = "c827cb03-d059-4956-83d0-cd60e02e3b41";
-        //        imageWebPart.Properties["webId"] = "9fafd7c0-e8c3-4a3c-9e87-4232c481ca26";
-        //        imageWebPart.Properties["listId"] = "78d1b1ac-7590-49e7-b812-55f37c018c4b";
-        //        imageWebPart.Properties["uniqueId"] = "3C27A419-66D0-4C36-BF24-BD6147719052";
-        //        imageWebPart.Properties["imgWidth"] = 1002;
-        //        imageWebPart.Properties["imgHeight"] = 469;
+        //        imageWebPart.PropertiesJson = "{\"id\":\"cbe7b0a9-3504-44dd-a3a3-0e5cacd07788\",\"instanceId\":\"cbe7b0a9-3504-44dd-a3a3-0e5cacd07788\",\"title\":\"Title Region\",\"description\":\"Title Region Description\",\"serverProcessedContent\":{\"htmlStrings\":{},\"searchablePlainTexts\":{},\"imageSources\":{\"imageSource\":\"/sites/bert1/Images1/1749309F-A8C2-4DD1-B3C3-42344AA58120.jpg\"},\"links\":{}},\"dataVersion\":\"1.3\",\"properties\":{\"title\":\"Imagedefaultfocalpoint\",\"textAlignCenter\":false,\"imageSourceType\":2,\"siteId\":\"78eaf8ed-fb6c-4bcb-a8ba-b4e251a90910\",\"webId\":\"ac56a969-5ca1-45fd-aca3-9ee5819e418f\",\"listId\":\"5d7a3301-0760-4472-97dd-af57f9cdd6f2\",\"uniqueId\":\"{D95285D8-7257-450E-88FC-6FCB3A03F42C}\"}}";
         //        newPage.AddControl(imageWebPart);
 
 

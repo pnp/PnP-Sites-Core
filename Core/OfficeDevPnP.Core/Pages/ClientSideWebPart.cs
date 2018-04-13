@@ -296,6 +296,35 @@ namespace OfficeDevPnP.Core.Pages
                     ControlIndex = controlIndex,
                 },
             };
+
+            // Set the control's data version to the latest version...default was 1.0, but some controls use a higher version
+            var webPartType = ClientSidePage.NameToClientSideWebPartEnum(controlData.WebPartId);
+            
+            // if we read the control from the page then the value might already be set to something different than 1.0...if so, leave as is
+            if (this.DataVersion == "1.0")
+            {
+                if (webPartType == DefaultClientSideWebParts.Image)
+                {
+                    this.dataVersion = "1.8";
+                }
+                else if (webPartType == DefaultClientSideWebParts.ImageGallery)
+                {
+                    this.dataVersion = "1.6";
+                }
+                else if (webPartType == DefaultClientSideWebParts.People)
+                {
+                    this.dataVersion = "1.2";
+                }
+                else if (webPartType == DefaultClientSideWebParts.DocumentEmbed)
+                {
+                    this.dataVersion = "1.1";
+                }
+                else if (webPartType == DefaultClientSideWebParts.ContentRollup)
+                {
+                    this.dataVersion = "2.1";
+                }
+            }
+
             ClientSideWebPartData webpartData = new ClientSideWebPartData() { Id = controlData.WebPartId, InstanceId = controlData.Id, Title = this.Title, Description = this.Description, DataVersion = this.DataVersion, Properties = "jsonPropsToReplacePnPRules" };
 
             this.jsonControlData = JsonConvert.SerializeObject(controlData);
@@ -517,6 +546,17 @@ namespace OfficeDevPnP.Core.Pages
             else
             {
                 this.properties = parsedJson;
+            }
+
+            // Get the web part data version if supplied by the web part json properties
+            if (parsedJson["webPartData"] != null && parsedJson["webPartData"]["dataVersion"] != null)
+            {
+                this.dataVersion = parsedJson["webPartData"]["dataVersion"].ToString(Formatting.None).Trim('"');
+
+            }
+            else if (parsedJson["dataVersion"] != null)
+            {
+                this.dataVersion = parsedJson["dataVersion"].ToString(Formatting.None).Trim('"');
             }
 
             // If the web part has the serverProcessedContent property then keep this one as it might be needed as input to render the web part HTML later on

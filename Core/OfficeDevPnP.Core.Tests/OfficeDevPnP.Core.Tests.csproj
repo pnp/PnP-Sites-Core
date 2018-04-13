@@ -634,6 +634,7 @@
     <Content Include="Framework\Functional\Templates\workflows_add_1605.xml" />
     <Content Include="Pages\Samples\EmbedWebPart.html" />
     <Content Include="Pages\Samples\FileViewerWebPart.html" />
+    <Content Include="Pages\Samples\HeaderImage.txt" />
     <Content Include="Pages\Samples\StreamWebPart.html" />
     <Content Include="Pages\Samples\SpacerWebPart.html" />
     <Content Include="Pages\Samples\SiteActivityWebPart.html" />

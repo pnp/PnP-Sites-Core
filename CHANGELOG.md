@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Improved detection and configuration of the specific client side web part data version
+
 ### Deprecated
 
 ## [2.25.1804.0 - April 2018 release]
