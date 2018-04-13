@@ -407,7 +407,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Sets a key/value pair in the web property bag
+        /// Sets a key/value pair in the list property bag
         /// </summary>
         /// <param name="list">The list to process</param>
         /// <param name="key">Key for the property bag entry</param>
