@@ -66,6 +66,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         // Pre-create the page    
                         Pages.ClientSidePage page = web.AddClientSidePage(pageName);
+
+                        // Set page layout now, because once it's set, it can't be changed.
+                        if (!string.IsNullOrEmpty(clientSidePage.Layout))
+                        {
+                            if (clientSidePage.Layout.Equals("Article", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                page.LayoutType = Pages.ClientSidePageLayoutType.Article;
+                            }
+                            else if (clientSidePage.Layout.Equals("Home", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                page.LayoutType = Pages.ClientSidePageLayoutType.Home;
+                            }
+                        }
+
                         page.Save(pageName);
 
                         var file = web.GetFileByServerRelativeUrl(url);

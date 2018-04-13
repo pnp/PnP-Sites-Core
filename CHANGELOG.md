@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Fixed the setting of the page layout [TheJeffer] 
 - Improved detection and configuration of the specific client side web part data version
 
 ### Deprecated
