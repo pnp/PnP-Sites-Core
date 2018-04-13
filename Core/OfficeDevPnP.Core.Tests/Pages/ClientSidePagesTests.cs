@@ -111,7 +111,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //        //newPage.AddZone(CanvasZoneTemplate.OneColumn, 1);
 
         //        var imageWebPart = newPage.InstantiateDefaultWebPart(DefaultClientSideWebParts.Image);
-        //        imageWebPart.PropertiesJson = "{\"id\":\"cbe7b0a9-3504-44dd-a3a3-0e5cacd07788\",\"instanceId\":\"cbe7b0a9-3504-44dd-a3a3-0e5cacd07788\",\"title\":\"Title Region\",\"description\":\"Title Region Description\",\"serverProcessedContent\":{\"htmlStrings\":{},\"searchablePlainTexts\":{},\"imageSources\":{\"imageSource\":\"/sites/bert1/Images1/1749309F-A8C2-4DD1-B3C3-42344AA58120.jpg\"},\"links\":{}},\"dataVersion\":\"1.3\",\"properties\":{\"title\":\"Imagedefaultfocalpoint\",\"textAlignCenter\":false,\"imageSourceType\":2,\"siteId\":\"78eaf8ed-fb6c-4bcb-a8ba-b4e251a90910\",\"webId\":\"ac56a969-5ca1-45fd-aca3-9ee5819e418f\",\"listId\":\"5d7a3301-0760-4472-97dd-af57f9cdd6f2\",\"uniqueId\":\"{D95285D8-7257-450E-88FC-6FCB3A03F42C}\"}}";
+        //        imageWebPart.PropertiesJson = "{\"controlType\":3,\"displayMode\":2,\"id\":\"73f2310d-3d91-4458-b508-fbfb2fd0a524\",\"position\":{\"zoneIndex\":1,\"sectionIndex\":1,\"controlIndex\":1},\"webPartId\":\"d1d91016-032f-456d-98a4-721247c305e8\",\"webPartData\":{\"id\":\"d1d91016-032f-456d-98a4-721247c305e8\",\"instanceId\":\"73f2310d-3d91-4458-b508-fbfb2fd0a524\",\"title\":\"Image\",\"description\":\"Show an image on your page.\",\"serverProcessedContent\":{\"htmlStrings\":{},\"searchablePlainTexts\":{},\"imageSources\":{\"imageSource\":\"/sites/bert1/Images1/Gs9313d6d1-9a28-4ae0-86bc-16d9770cce7c.jpg\"},\"links\":{\"linkUrl\":\"\"}},\"dataVersion\":\"1.8\",\"properties\":{\"imageSourceType\":2,\"altText\":\"My black bike\",\"overlayText\":\"\",\"siteId\":\"78eaf8ed-fb6c-4bcb-a8ba-b4e251a90910\",\"webId\":\"ac56a969-5ca1-45fd-aca3-9ee5819e418f\",\"listId\":\"5d7a3301-0760-4472-97dd-af57f9cdd6f2\",\"uniqueId\":\"{37DE58D1-A666-4BC6-AB86-73A6792022EE}\",\"imgWidth\":960,\"imgHeight\":960,\"fixAspectRatio\":false}}}";
         //        newPage.AddControl(imageWebPart);
 
 
@@ -129,7 +129,13 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //        //newPage.AddControl(t1, newPage.Zones[0].Sections[0], 2);
         //        //newPage.AddControl(t2, newPage.Zones[0].Sections[0], 1);
 
-        //        newPage.Save("B1.aspx");
+        //        //newPage.RemovePageHeader();
+        //        //newPage.PageTitle = "no header page";
+        //        //newPage.Save("B3.aspx");
+
+        //        newPage.SetPageHeader("/sites/bert1/Images1/DE03E3D9-78DB-4EB2-A096-A9B3AA375217.jpg", "50", "90");
+        //        newPage.PageTitle = "header image";
+        //        newPage.Save("B5.aspx");
 
         //    }
         //}

@@ -1114,4 +1114,7 @@
   <data name="TimerJob_DoWork_NoClientContext" xml:space="preserve">
     <value>Failed to obtain a ClientContext instance: {0}.</value>
   </data>
+  <data name="ClientSidePageHeader_ImageNotFound" xml:space="preserve">
+    <value>The provided page header image '{0}' cannot be found. </value>
+  </data>
 </root>

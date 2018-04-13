@@ -25,6 +25,7 @@ namespace OfficeDevPnP.Core.Pages
         #region variables
         // fields
         public const string CanvasField = "CanvasContent1";
+        public const string PageLayoutContentField = "LayoutWebpartsContent";
         public const string PageLayoutType = "PageLayoutType";
         public const string ApprovalStatus = "_ModerationStatus";
         public const string ContentTypeId = "ContentTypeId";
@@ -51,6 +52,7 @@ namespace OfficeDevPnP.Core.Pages
         private ClientSidePageLayoutType layoutType;
         private bool keepDefaultWebParts;
         private string pageTitle;
+        private ClientSidePageHeader pageHeader;
         #endregion
 
         #region construction
@@ -69,6 +71,9 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             this.pagesLibrary = "SitePages";
+
+            // Attach default page header
+            this.pageHeader = new ClientSidePageHeader(null, null);
         }
 
         /// <summary>
@@ -83,6 +88,9 @@ namespace OfficeDevPnP.Core.Pages
                 throw new ArgumentNullException("Passed ClientContext object cannot be null");
             }
             this.context = cc;
+
+            // Attach default page header
+            this.pageHeader = new ClientSidePageHeader(cc, null);
         }
         #endregion
 
@@ -662,6 +670,24 @@ namespace OfficeDevPnP.Core.Pages
             {
                 item[ClientSidePage.CanvasField] = this.ToHtml();
             }
+
+            // If a custom header image is set then the page must first be saved, otherwise the page contents gets erased
+            if (this.pageHeader != null && !string.IsNullOrEmpty(this.pageHeader.ImageServerRelativeUrl))
+            {
+                item.Update();
+                this.Context.ExecuteQueryRetry();
+            }
+
+            // Persist the page header
+            if (this.pageHeader != null)
+            {
+                item[ClientSidePage.PageLayoutContentField] = this.pageHeader.ToHtml(this.PageTitle);
+            }
+            else
+            {
+                item[ClientSidePage.PageLayoutContentField] = ClientSidePageHeader.NoHeader(this.PageTitle);
+            }
+
             item.Update();
             this.Context.ExecuteQueryRetry();
 
@@ -997,6 +1023,41 @@ namespace OfficeDevPnP.Core.Pages
             this.Context.Web.RootFolder.WelcomePage = $"{this.PagesLibrary}/{this.PageListItem[ClientSidePage.FileLeafRef].ToString()}";
             this.Context.Web.RootFolder.Update();
             this.Context.ExecuteQueryRetry();
+        }
+
+        /// <summary>
+        /// Removes the set page header 
+        /// </summary>
+        public void RemovePageHeader()
+        {
+            this.pageHeader = null;
+        }
+
+        /// <summary>
+        /// Sets the page header image without custom focal point
+        /// </summary>
+        /// <param name="serverRelativeImageUrl">Server relative page header image url</param>
+        public void SetPageHeader(string serverRelativeImageUrl)
+        {
+            SetPageHeader(serverRelativeImageUrl, "", "");
+        }
+
+        /// <summary>
+        /// Sets page header with custom focal point
+        /// </summary>
+        /// <param name="serverRelativeImageUrl">Server relative page header image url</param>
+        /// <param name="translateX">X focal point for image</param>
+        /// <param name="translateY">Y focal point for image</param>
+        public void SetPageHeader(string serverRelativeImageUrl, string translateX, string translateY)
+        {
+            if (this.pageHeader == null)
+            {
+                this.pageHeader = new ClientSidePageHeader(this.context, serverRelativeImageUrl);
+            }
+
+            this.pageHeader.ImageServerRelativeUrl = serverRelativeImageUrl;
+            this.pageHeader.TranslateX = translateX;
+            this.pageHeader.TranslateY = translateY;
         }
         #endregion
 
