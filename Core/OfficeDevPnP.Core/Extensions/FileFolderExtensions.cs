@@ -27,12 +27,11 @@ namespace Microsoft.SharePoint.Client
         public static void ApproveFile(this Web web, string serverRelativeUrl, string comment)
         {
 #if ONPREMISES
-
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
-#endif
+#else
             ResourcePath filePath = ResourcePath.FromDecodedUrl(serverRelativeUrl);
             var file = web.GetFileByServerRelativePath(filePath);
-
+#endif
             web.Context.Load(file, x => x.Exists, x => x.CheckOutType);
             web.Context.ExecuteQueryRetry();
 
@@ -55,10 +54,10 @@ namespace Microsoft.SharePoint.Client
 #if ONPREMISES
 
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
-#endif
+#else
             ResourcePath filePath = ResourcePath.FromDecodedUrl(serverRelativeUrl);
             var file = web.GetFileByServerRelativePath(filePath);
-
+#endif
             var scope = new ConditionalScope(web.Context, () => file.ServerObjectIsNull.Value != true && file.Exists && file.CheckOutType != CheckOutType.None);
 
             using (scope.StartScope())
@@ -82,11 +81,11 @@ namespace Microsoft.SharePoint.Client
         public static void CheckOutFile(this Web web, string serverRelativeUrl)
         {
 #if ONPREMISES
-
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
-#endif
+#else
             ResourcePath filePath = ResourcePath.FromDecodedUrl(serverRelativeUrl);
             var file = web.GetFileByServerRelativePath(filePath);
+#endif
 
             var scope = new ConditionalScope(web.Context, () => file.ServerObjectIsNull.Value != true && file.Exists && file.CheckOutType == CheckOutType.None);
 
@@ -346,9 +345,10 @@ namespace Microsoft.SharePoint.Client
         {
 #if ONPREMISES
             Folder folder = web.GetFolderByServerRelativeUrl(serverRelativeFolderUrl);
-#endif
+#else
             ResourcePath folderPath = ResourcePath.FromDecodedUrl(serverRelativeFolderUrl);
             Folder folder = web.GetFolderByServerRelativePath(folderPath);
+#endif
 
             web.Context.Load(folder);
             bool exists = false;
@@ -733,11 +733,11 @@ namespace Microsoft.SharePoint.Client
             string returnString = string.Empty;
 
 #if ONPREMISES
-
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
-#endif
+#else
             ResourcePath filePath = ResourcePath.FromDecodedUrl(serverRelativeUrl);
             var file = web.GetFileByServerRelativePath(filePath);
+#endif
 
             web.Context.Load(file);
             web.Context.ExecuteQueryRetry();
@@ -785,11 +785,11 @@ namespace Microsoft.SharePoint.Client
         public static void PublishFile(this Web web, string serverRelativeUrl, string comment)
         {
 #if ONPREMISES
-
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
-#endif
+#else
             ResourcePath filePath = ResourcePath.FromDecodedUrl(serverRelativeUrl);
             var file = web.GetFileByServerRelativePath(filePath);
+#endif
 
             web.Context.Load(file, x => x.Exists, x => x.CheckOutType);
             web.Context.ExecuteQueryRetry();
@@ -842,11 +842,11 @@ namespace Microsoft.SharePoint.Client
             var clientContext = web.Context as ClientContext;
 
 #if ONPREMISES
-
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
-#endif
+#else
             ResourcePath filePath = ResourcePath.FromDecodedUrl(serverRelativeUrl);
             var file = web.GetFileByServerRelativePath(filePath);
+#endif
 
             clientContext.Load(file);
             clientContext.ExecuteQueryRetry();
@@ -1047,11 +1047,11 @@ namespace Microsoft.SharePoint.Client
                 var web = context.Web;
 
 #if ONPREMISES
-
                 var file = web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
-#endif
+#else
                 ResourcePath filePath = ResourcePath.FromDecodedUrl(fileServerRelativeUrl);
                 var file = web.GetFileByServerRelativePath(filePath);
+#endif
 
                 web.Context.Load(file);
                 web.Context.ExecuteQueryRetry();
