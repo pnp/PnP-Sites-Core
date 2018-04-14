@@ -39,6 +39,7 @@ namespace OfficeDevPnP.Core.Pages
         private ClientSideWebPartControlData spControlData;
         private JObject properties;
         private JObject serverProcessedContent;
+        private string webPartPreviewImage;
         #endregion
 
         #region construction
@@ -55,6 +56,7 @@ namespace OfficeDevPnP.Core.Pages
             this.description = "";
             this.supportsFullBleed = false;
             this.SetPropertiesJson("{}");
+            this.webPartPreviewImage = "";
         }
 
         /// <summary>
@@ -167,6 +169,17 @@ namespace OfficeDevPnP.Core.Pages
             set
             {
                 this.description = value;
+            }
+        }
+
+        /// <summary>
+        /// Preview image that can serve as page preview image when the page holding this web part is promoted to a news page
+        /// </summary>
+        public string WebPartPreviewImage
+        {
+            get
+            {
+                return this.webPartPreviewImage;
             }
         }
 
@@ -322,6 +335,19 @@ namespace OfficeDevPnP.Core.Pages
                 else if (webPartType == DefaultClientSideWebParts.ContentRollup)
                 {
                     this.dataVersion = "2.1";
+                }
+            }
+
+            // Set the web part preview image url
+            if (this.ServerProcessedContent != null && this.ServerProcessedContent["imageSources"] != null)
+            {
+                foreach (JProperty property in this.ServerProcessedContent["imageSources"])
+                {
+                    if (!string.IsNullOrEmpty(property.Value.ToString()))
+                    {
+                        this.webPartPreviewImage = property.Value.ToString().ToLower();
+                        break;
+                    }
                 }
             }
 

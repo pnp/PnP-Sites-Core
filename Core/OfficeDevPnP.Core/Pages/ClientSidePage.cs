@@ -35,6 +35,7 @@ namespace OfficeDevPnP.Core.Pages
         public const string BannerImageUrl = "BannerImageUrl";
         public const string FirstPublishedDate = "FirstPublishedDate";
         public const string FileLeafRef = "FileLeafRef";
+        public const string DescriptionField = "Description";
 
         // feature
         public const string SitePagesFeatureId = "b6917cb1-93a0-4b97-a84d-7cf49975d4ec";
@@ -690,6 +691,85 @@ namespace OfficeDevPnP.Core.Pages
 
             item.Update();
             this.Context.ExecuteQueryRetry();
+
+            // Try to set the page banner image url if not yet set
+            bool isDirty = false;
+            if (string.IsNullOrEmpty((item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url) || (item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url.IndexOf("/_layouts/15/images/sitepagethumbnail.png", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            {
+                string previewImageServerRelativeUrl = "";
+                if (this.pageHeader != null && !string.IsNullOrEmpty(this.pageHeader.ImageServerRelativeUrl))
+                {
+                    previewImageServerRelativeUrl = this.pageHeader.ImageServerRelativeUrl;
+                }
+                else
+                {
+                    // iterate the web parts...if we find an unique id then let's grab that information
+                    foreach(var control in this.Controls)
+                    {
+                        if (control is ClientSideWebPart)
+                        {
+                            var webPart = (ClientSideWebPart)control;
+
+                            if (!string.IsNullOrEmpty(webPart.WebPartPreviewImage))
+                            {
+                                previewImageServerRelativeUrl = webPart.WebPartPreviewImage;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // Validate the found preview image url
+                if (!string.IsNullOrEmpty(previewImageServerRelativeUrl))
+                {
+                    try
+                    {
+                        this.Context.Site.EnsureProperties(p => p.Id);
+                        this.Context.Web.EnsureProperties(p => p.Id, p => p.Url);
+
+                        var previewImage = this.Context.Web.GetFileByServerRelativeUrl(previewImageServerRelativeUrl);
+                        this.Context.Load(previewImage, p => p.UniqueId);
+                        this.Context.ExecuteQueryRetry();
+
+                        item[ClientSidePage.BannerImageUrl] = $"{this.Context.Web.Url}/_layouts/15/getpreview.ashx?guidSite={this.Context.Site.Id.ToString()}&guidWeb={this.Context.Web.Id.ToString()}&guidFile={previewImage.UniqueId.ToString()}";
+                        isDirty = true;
+                    }
+                    catch { }
+                }
+            }
+
+            // Try to set the page description if not yet set
+            if (item.FieldValues.ContainsKey(ClientSidePage.DescriptionField)) 
+            {
+                if (item[ClientSidePage.DescriptionField] == null || string.IsNullOrEmpty(item[ClientSidePage.DescriptionField].ToString()))
+                {
+                    string previewText = "";
+                    foreach (var control in this.Controls)
+                    {
+                        if (control is ClientSideText)
+                        {
+                            var textPart = (ClientSideText)control;
+
+                            if (!string.IsNullOrEmpty(textPart.PreviewText))
+                            {
+                                previewText = textPart.PreviewText;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Don't store more than 300 characters
+                    item[ClientSidePage.DescriptionField] = previewText.Length > 300 ? previewText.Substring(0, 300) : previewText;
+                    isDirty = true;
+                }
+
+            }
+
+            if (isDirty)
+            {
+                item.Update();
+                this.Context.ExecuteQueryRetry();
+            }
 
             this.pageListItem = item;
         }

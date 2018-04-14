@@ -117,15 +117,15 @@ namespace OfficeDevPnP.Core.Tests.Authentication
 
         //        //var t1 = new ClientSideText()
         //        //{
-        //        //    Text = "t1"
+        //        //    Text = "This is some plain text :-) <BR><p>The HTML DOM has a property called textContent (this is TextContent in <b>AngleSharp</b>) for node objects. Usually if you use this on e.g. the document root (HTML) element it should give you the whole textual content.But beware - there might be an unusual amount of spaces and newlines in there, since those are not getting stripped out by the parser - that you do not see most of them in rendered content is a feature of the HTML renderer.</p>"
         //        //};
-        //        //var t2 = new ClientSideText()
-        //        //{
-        //        //    Text = "t2"
-        //        //};
+        //        var t2 = new ClientSideText()
+        //        {
+        //            Text = "this is a short text!!"
+        //        };
 
         //        //newPage.AddControl(t1, 0);
-        //        //newPage.AddControl(t2, 1);
+        //        newPage.AddControl(t2, 1);
         //        //newPage.AddControl(t1, newPage.Zones[0].Sections[0], 2);
         //        //newPage.AddControl(t2, newPage.Zones[0].Sections[0], 1);
 
@@ -135,7 +135,8 @@ namespace OfficeDevPnP.Core.Tests.Authentication
 
         //        newPage.SetPageHeader("/sites/bert1/Images1/DE03E3D9-78DB-4EB2-A096-A9B3AA375217.jpg", "50", "90");
         //        newPage.PageTitle = "header image";
-        //        newPage.Save("B5.aspx");
+        //        newPage.Save("B11.aspx");
+        //        newPage.Publish();
 
         //    }
         //}
