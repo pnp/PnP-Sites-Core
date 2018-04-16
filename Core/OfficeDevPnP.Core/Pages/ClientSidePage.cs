@@ -17,152 +17,6 @@ using System.Web.UI;
 namespace OfficeDevPnP.Core.Pages
 {
 #if !ONPREMISES
-    #region Canvas page model classes   
-    /// <summary>
-    /// List of possible OOB web parts
-    /// </summary>
-    public enum DefaultClientSideWebParts
-    {
-        /// <summary>
-        /// Third party webpart
-        /// </summary>
-        ThirdParty,
-        /// <summary>
-        /// Content Rollup webpart
-        /// </summary>
-        ContentRollup,
-        /// <summary>
-        /// Bing Map webpart
-        /// </summary>
-        BingMap,
-        /// <summary>
-        /// Content Embed webpart
-        /// </summary>
-        ContentEmbed,
-        /// <summary>
-        /// Document Embed webpart
-        /// </summary>
-        DocumentEmbed,
-        /// <summary>
-        /// Image webpart
-        /// </summary>
-        Image,
-        /// <summary>
-        /// Image Gallery webpart
-        /// </summary>
-        ImageGallery,
-        /// <summary>
-        /// Link Preview webpart
-        /// </summary>
-        LinkPreview,
-        /// <summary>
-        /// News Feed webpart
-        /// </summary>
-        NewsFeed,
-        /// <summary>
-        /// News Reel webpart
-        /// </summary>
-        NewsReel,
-        /// <summary>
-        /// PowerBI Report Embed webpart
-        /// </summary>
-        PowerBIReportEmbed,
-        /// <summary>
-        /// Quick Chart webpart
-        /// </summary>
-        QuickChart,
-        /// <summary>
-        /// Site Activity webpart
-        /// </summary>
-        SiteActivity,
-        /// <summary>
-        /// Video Embed webpart 
-        /// </summary>
-        VideoEmbed,
-        /// <summary>
-        /// Yammer Embed webpart
-        /// </summary>
-        YammerEmbed,
-        /// <summary>
-        /// Events webpart
-        /// </summary>
-        Events,
-        /// <summary>
-        /// Group Calendar webpart
-        /// </summary>
-        GroupCalendar,
-        /// <summary>
-        /// Hero webpart
-        /// </summary>
-        Hero,
-        /// <summary>
-        /// List webpart
-        /// </summary>
-        List,
-        /// <summary>
-        /// Page Title webpart
-        /// </summary>
-        PageTitle,
-        /// <summary>
-        /// People webpart
-        /// </summary>
-        People,
-        /// <summary>
-        /// Quick Links webpart
-        /// </summary>
-        QuickLinks,
-        /// <summary>
-        /// Custom Message Region web part
-        /// </summary>
-        CustomMessageRegion,
-        /// <summary>
-        /// Divider web part
-        /// </summary>
-        Divider,
-        /// <summary>
-        /// Microsoft Forms web part
-        /// </summary>
-        MicrosoftForms,
-        /// <summary>
-        /// Spacer web part
-        /// </summary>
-        Spacer
-    }
-
-    /// <summary>
-    /// Types of client side pages that can be created
-    /// </summary>
-    public enum ClientSidePageLayoutType
-    {
-        /// <summary>
-        /// Custom article page, used for user created pages
-        /// </summary>
-        Article,
-        /// <summary>
-        /// Home page of modern team sites
-        /// </summary>
-        Home
-    }
-
-    /// <summary>
-    /// Page promotion state
-    /// </summary>
-    public enum PromotedState
-    {
-        /// <summary>
-        /// Regular client side page
-        /// </summary>
-        NotPromoted = 0,
-        /// <summary>
-        /// Page that will be promoted as news article after publishing
-        /// </summary>
-        PromoteOnPublish = 1,
-        /// <summary>
-        /// Page that is promoted as news article
-        /// </summary>
-        Promoted = 2
-    }
-
     /// <summary>
     /// Represents a modern client side page with all it's contents
     /// </summary>
@@ -171,6 +25,7 @@ namespace OfficeDevPnP.Core.Pages
         #region variables
         // fields
         public const string CanvasField = "CanvasContent1";
+        public const string PageLayoutContentField = "LayoutWebpartsContent";
         public const string PageLayoutType = "PageLayoutType";
         public const string ApprovalStatus = "_ModerationStatus";
         public const string ContentTypeId = "ContentTypeId";
@@ -180,6 +35,7 @@ namespace OfficeDevPnP.Core.Pages
         public const string BannerImageUrl = "BannerImageUrl";
         public const string FirstPublishedDate = "FirstPublishedDate";
         public const string FileLeafRef = "FileLeafRef";
+        public const string DescriptionField = "Description";
 
         // feature
         public const string SitePagesFeatureId = "b6917cb1-93a0-4b97-a84d-7cf49975d4ec";
@@ -197,6 +53,7 @@ namespace OfficeDevPnP.Core.Pages
         private ClientSidePageLayoutType layoutType;
         private bool keepDefaultWebParts;
         private string pageTitle;
+        private ClientSidePageHeader pageHeader;
         #endregion
 
         #region construction
@@ -215,6 +72,9 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             this.pagesLibrary = "SitePages";
+
+            // Attach default page header
+            this.pageHeader = new ClientSidePageHeader(null, ClientSidePageHeaderType.Default, null);
         }
 
         /// <summary>
@@ -229,6 +89,9 @@ namespace OfficeDevPnP.Core.Pages
                 throw new ArgumentNullException("Passed ClientContext object cannot be null");
             }
             this.context = cc;
+
+            // Attach default page header
+            this.pageHeader = new ClientSidePageHeader(cc, ClientSidePageHeaderType.Default, null);
         }
         #endregion
 
@@ -412,6 +275,17 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     throw new InvalidOperationException("You first need to save the page before you check for CommentsEnabled status");
                 }
+            }
+        }
+
+        /// <summary>
+        /// Returns the page header for this page
+        /// </summary>
+        public ClientSidePageHeader PageHeader
+        {
+            get
+            {
+                return this.pageHeader;
             }
         }
         #endregion
@@ -745,7 +619,8 @@ namespace OfficeDevPnP.Core.Pages
                 if (item.FieldValues.ContainsKey(ClientSidePage.CanvasField) && !(item[ClientSidePage.CanvasField] == null || string.IsNullOrEmpty(item[ClientSidePage.CanvasField].ToString())))
                 {
                     var html = item[ClientSidePage.CanvasField].ToString();
-                    page.LoadFromHtml(html);
+                    var pageHeaderHtml = item[ClientSidePage.PageLayoutContentField] != null ? item[ClientSidePage.PageLayoutContentField].ToString() : "";
+                    page.LoadFromHtml(html, pageHeaderHtml);
                 }
             }
             else
@@ -808,8 +683,105 @@ namespace OfficeDevPnP.Core.Pages
             {
                 item[ClientSidePage.CanvasField] = this.ToHtml();
             }
+
+            // If a custom header image is set then the page must first be saved, otherwise the page contents gets erased
+            if (this.pageHeader.Type == ClientSidePageHeaderType.Custom)
+            {
+                item.Update();
+                this.Context.ExecuteQueryRetry();
+            }
+
+            // Persist the page header
+            if (this.pageHeader.Type == ClientSidePageHeaderType.None)
+            {
+                item[ClientSidePage.PageLayoutContentField] = ClientSidePageHeader.NoHeader(this.PageTitle);
+            }
+            else
+            {
+                item[ClientSidePage.PageLayoutContentField] = this.pageHeader.ToHtml(this.PageTitle);
+            }
+
             item.Update();
             this.Context.ExecuteQueryRetry();
+
+            // Try to set the page banner image url if not yet set
+            bool isDirty = false;
+            if (string.IsNullOrEmpty((item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url) || (item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url.IndexOf("/_layouts/15/images/sitepagethumbnail.png", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            {
+                string previewImageServerRelativeUrl = "";
+                if (this.pageHeader.Type == ClientSidePageHeaderType.Custom && !string.IsNullOrEmpty(this.pageHeader.ImageServerRelativeUrl))
+                {
+                    previewImageServerRelativeUrl = this.pageHeader.ImageServerRelativeUrl;
+                }
+                else
+                {
+                    // iterate the web parts...if we find an unique id then let's grab that information
+                    foreach(var control in this.Controls)
+                    {
+                        if (control is ClientSideWebPart)
+                        {
+                            var webPart = (ClientSideWebPart)control;
+
+                            if (!string.IsNullOrEmpty(webPart.WebPartPreviewImage))
+                            {
+                                previewImageServerRelativeUrl = webPart.WebPartPreviewImage;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // Validate the found preview image url
+                if (!string.IsNullOrEmpty(previewImageServerRelativeUrl))
+                {
+                    try
+                    {
+                        this.Context.Site.EnsureProperties(p => p.Id);
+                        this.Context.Web.EnsureProperties(p => p.Id, p => p.Url);
+
+                        var previewImage = this.Context.Web.GetFileByServerRelativeUrl(previewImageServerRelativeUrl);
+                        this.Context.Load(previewImage, p => p.UniqueId);
+                        this.Context.ExecuteQueryRetry();
+
+                        item[ClientSidePage.BannerImageUrl] = $"{this.Context.Web.Url}/_layouts/15/getpreview.ashx?guidSite={this.Context.Site.Id.ToString()}&guidWeb={this.Context.Web.Id.ToString()}&guidFile={previewImage.UniqueId.ToString()}";
+                        isDirty = true;
+                    }
+                    catch { }
+                }
+            }
+
+            // Try to set the page description if not yet set
+            if (item.FieldValues.ContainsKey(ClientSidePage.DescriptionField)) 
+            {
+                if (item[ClientSidePage.DescriptionField] == null || string.IsNullOrEmpty(item[ClientSidePage.DescriptionField].ToString()))
+                {
+                    string previewText = "";
+                    foreach (var control in this.Controls)
+                    {
+                        if (control is ClientSideText)
+                        {
+                            var textPart = (ClientSideText)control;
+
+                            if (!string.IsNullOrEmpty(textPart.PreviewText))
+                            {
+                                previewText = textPart.PreviewText;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Don't store more than 300 characters
+                    item[ClientSidePage.DescriptionField] = previewText.Length > 300 ? previewText.Substring(0, 300) : previewText;
+                    isDirty = true;
+                }
+
+            }
+
+            if (isDirty)
+            {
+                item.Update();
+                this.Context.ExecuteQueryRetry();
+            }
 
             this.pageListItem = item;
         }
@@ -827,7 +799,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             ClientSidePage page = new ClientSidePage();
-            page.LoadFromHtml(html);
+            page.LoadFromHtml(html, null);
             return page;
         }
 
@@ -1144,9 +1116,50 @@ namespace OfficeDevPnP.Core.Pages
             this.Context.Web.RootFolder.Update();
             this.Context.ExecuteQueryRetry();
         }
-#endregion
 
-            #region Internal and private methods
+        /// <summary>
+        /// Removes the set page header 
+        /// </summary>
+        public void RemovePageHeader()
+        {
+            this.pageHeader = new ClientSidePageHeader(this.context, ClientSidePageHeaderType.None, null);
+        }
+
+        /// <summary>
+        /// Sets page header back to the default page header
+        /// </summary>
+        public void SetDefaultPageHeader()
+        {
+            this.pageHeader = new ClientSidePageHeader(this.context, ClientSidePageHeaderType.Default, null);
+        }
+
+        /// <summary>
+        /// Sets the page header image without custom focal point
+        /// </summary>
+        /// <param name="serverRelativeImageUrl">Server relative page header image url</param>
+        public void SetCustomPageHeader(string serverRelativeImageUrl)
+        {
+            SetCustomPageHeader(serverRelativeImageUrl, "", "");
+        }
+
+        /// <summary>
+        /// Sets page header with custom focal point
+        /// </summary>
+        /// <param name="serverRelativeImageUrl">Server relative page header image url</param>
+        /// <param name="translateX">X focal point for image</param>
+        /// <param name="translateY">Y focal point for image</param>
+        public void SetCustomPageHeader(string serverRelativeImageUrl, string translateX, string translateY)
+        {
+            this.pageHeader = new ClientSidePageHeader(this.context, ClientSidePageHeaderType.Custom, serverRelativeImageUrl)
+            {
+                ImageServerRelativeUrl = serverRelativeImageUrl,
+                TranslateX = translateX,
+                TranslateY = translateY
+            };
+        }
+        #endregion
+
+        #region Internal and private methods
         private void EnableCommentsImplementation(bool enable)
         {
             // ensure we do have the page list item loaded
@@ -1236,7 +1249,7 @@ namespace OfficeDevPnP.Core.Pages
             this.Context.Web.Context.ExecuteQueryRetry();
         }
 
-        private void LoadFromHtml(string html)
+        private void LoadFromHtml(string html, string pageHeaderHtml)
         {
             if (String.IsNullOrEmpty(html))
             {
@@ -1347,6 +1360,9 @@ namespace OfficeDevPnP.Core.Pages
             }
             // Reindex the control order. We're starting control order from 1 for each column.
             ReIndex();
+
+            // Load the page header
+            this.pageHeader.FromHtml(pageHeaderHtml);
         }
 
         private void ReIndex()
@@ -1455,407 +1471,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
         }
-            #endregion
+        #endregion
     }
-
-    /// <summary>
-    /// The type of canvas being used
-    /// </summary>
-    public enum CanvasSectionTemplate
-    {
-        /// <summary>
-        /// One column
-        /// </summary>
-        OneColumn = 0,
-        /// <summary>
-        /// One column, full browser width. This one only works for communication sites in combination with image or hero webparts
-        /// </summary>
-        OneColumnFullWidth = 1,
-        /// <summary>
-        /// Two columns of the same size
-        /// </summary>
-        TwoColumn = 2,
-        /// <summary>
-        /// Three columns of the same size
-        /// </summary>
-        ThreeColumn = 3,
-        /// <summary>
-        /// Two columns, left one is 2/3, right one 1/3
-        /// </summary>
-        TwoColumnLeft = 4,
-        /// <summary>
-        /// Two columns, left one is 1/3, right one 2/3
-        /// </summary>
-        TwoColumnRight = 5,
-
-    }
-
-    /// <summary>
-    /// Represents a section on the canvas
-    /// </summary>
-    public class CanvasSection
-    {
-            #region variables
-        private System.Collections.Generic.List<CanvasColumn> columns = new System.Collections.Generic.List<CanvasColumn>(3);
-        private ClientSidePage page;
-            #endregion
-
-            #region construction
-        internal CanvasSection(ClientSidePage page)
-        {
-            if (page == null)
-            {
-                throw new ArgumentNullException("Passed page cannot be null");
-            }
-
-            this.page = page;
-            Order = 0;
-        }
-
-        /// <summary>
-        /// Creates a new canvas section
-        /// </summary>
-        /// <param name="page"><see cref="ClientSidePage"/> instance that holds this section</param>
-        /// <param name="canvasSectionTemplate">Type of section to create</param>
-        /// <param name="order">Order of this section in the collection of sections on the page</param>
-        public CanvasSection(ClientSidePage page, CanvasSectionTemplate canvasSectionTemplate, float order)
-        {
-            if (page == null)
-            {
-                throw new ArgumentNullException("Passed page cannot be null");
-            }
-
-            this.page = page;
-            Type = canvasSectionTemplate;
-            Order = order;
-
-            switch (canvasSectionTemplate)
-            {
-                case CanvasSectionTemplate.OneColumn:
-                    goto default;
-                case CanvasSectionTemplate.OneColumnFullWidth:
-                    this.columns.Add(new CanvasColumn(this, 1, 0));
-                    break;
-                case CanvasSectionTemplate.TwoColumn:
-                    this.columns.Add(new CanvasColumn(this, 1, 6));
-                    this.columns.Add(new CanvasColumn(this, 2, 6));
-                    break;
-                case CanvasSectionTemplate.ThreeColumn:
-                    this.columns.Add(new CanvasColumn(this, 1, 4));
-                    this.columns.Add(new CanvasColumn(this, 2, 4));
-                    this.columns.Add(new CanvasColumn(this, 3, 4));
-                    break;
-                case CanvasSectionTemplate.TwoColumnLeft:
-                    this.columns.Add(new CanvasColumn(this, 1, 8));
-                    this.columns.Add(new CanvasColumn(this, 2, 4));
-                    break;
-                case CanvasSectionTemplate.TwoColumnRight:
-                    this.columns.Add(new CanvasColumn(this, 1, 4));
-                    this.columns.Add(new CanvasColumn(this, 2, 8));
-                    break;
-                default:
-                    this.columns.Add(new CanvasColumn(this, 1, 12));
-                    break;
-            }
-        }
-            #endregion
-
-            #region Properties
-        /// <summary>
-        /// Type of the section
-        /// </summary>
-        public CanvasSectionTemplate Type { get; set; }
-
-        /// <summary>
-        /// Order in which this section is presented on the page
-        /// </summary>
-        public float Order { get; set; }
-
-        /// <summary>
-        /// <see cref="CanvasColumn"/> instances that are part of this section
-        /// </summary>
-        public System.Collections.Generic.List<CanvasColumn> Columns
-        {
-            get
-            {
-                return this.columns;
-            }
-        }
-
-        /// <summary>
-        /// The <see cref="ClientSidePage"/> instance holding this section
-        /// </summary>
-        public ClientSidePage Page
-        {
-            get
-            {
-                return this.page;
-            }
-        }
-
-        /// <summary>
-        /// Controls hosted in this section
-        /// </summary>
-        public System.Collections.Generic.List<CanvasControl> Controls
-        {
-            get
-            {
-                return this.Page.Controls.Where(p => p.Section == this).ToList<CanvasControl>();
-            }
-        }
-
-        /// <summary>
-        /// The default <see cref="CanvasColumn"/> of this section
-        /// </summary>
-        public CanvasColumn DefaultColumn
-        {
-            get
-            {
-                if (this.columns.Count == 0)
-                {
-                    this.columns.Add(new CanvasColumn(this));
-                }
-
-                return this.columns.First();
-            }
-        }
-            #endregion
-
-            #region public methods
-        /// <summary>
-        /// Renders this section as a HTML fragment
-        /// </summary>
-        /// <returns>HTML string representing this section</returns>
-        public string ToHtml()
-        {
-            StringBuilder html = new StringBuilder(100);
-#if !NETSTANDARD2_0
-            using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
-            {
-                htmlWriter.NewLine = string.Empty;
 #endif
-            foreach (var column in this.columns.OrderBy(z => z.Order))
-                {
-#if NETSTANDARD2_0
-                html.Append(column.ToHtml());
-#else
-                htmlWriter.Write(column.ToHtml());
-#endif
-                }
-#if !NETSTANDARD2_0
-        }
-#endif
-            return html.ToString();
-        }
-#endregion
-
-            #region internal and private methods
-        internal void AddColumn(CanvasColumn column)
-        {
-            if (column == null)
-            {
-                throw new ArgumentNullException("Passed column cannot be null");
-            }
-
-            this.columns.Add(column);
-        }
-            #endregion
-    }
-
-    /// <summary>
-    /// Represents a column in a canvas section
-    /// </summary>
-    public class CanvasColumn
-    {
-            #region variables
-        public const string CanvasControlAttribute = "data-sp-canvascontrol";
-        public const string CanvasDataVersionAttribute = "data-sp-canvasdataversion";
-        public const string ControlDataAttribute = "data-sp-controldata";
-
-        private int columnFactor;
-        private CanvasSection section;
-        private string DataVersion = "1.0";
-            #endregion
-
-        // internal constructors as we don't want users to manually create sections
-            #region construction
-        internal CanvasColumn(CanvasSection section)
-        {
-            if (section == null)
-            {
-                throw new ArgumentNullException("Passed section cannot be null");
-            }
-
-            this.section = section;
-            this.columnFactor = 12;
-            this.Order = 0;
-        }
-
-        internal CanvasColumn(CanvasSection section, int order)
-        {
-            if (section == null)
-            {
-                throw new ArgumentNullException("Passed section cannot be null");
-            }
-
-            this.section = section;
-            this.Order = order;
-        }
-
-        internal CanvasColumn(CanvasSection section, int order, int? sectionFactor)
-        {
-            if (section == null)
-            {
-                throw new ArgumentNullException("Passed section cannot be null");
-            }
-
-            this.section = section;
-            this.Order = order;
-            // if the sectionFactor was undefined is was not defined as there was no section in the original markup. Since we however provision back as one column page let's set the sectionFactor to 12.
-            this.columnFactor = sectionFactor.HasValue ? sectionFactor.Value : 12;
-        }
-            #endregion
-
-            #region Properties
-        internal int Order { get; set; }
-
-        /// <summary>
-        /// <see cref="CanvasSection"/> this section belongs to
-        /// </summary>
-        public CanvasSection Section
-        {
-            get
-            {
-                return this.section;
-            }
-        }
-
-        /// <summary>
-        /// Column size factor. Max value is 12 (= one column), other options are 8,6,4 or 0
-        /// </summary>
-        public int ColumnFactor
-        {
-            get
-            {
-                return this.columnFactor;
-            }
-        }
-
-        /// <summary>
-        /// List of <see cref="CanvasControl"/> instances that are hosted in this section
-        /// </summary>
-        public System.Collections.Generic.List<CanvasControl> Controls
-        {
-            get
-            {
-                return this.Section.Page.Controls.Where(p => p.Section == this.Section && p.Column == this).ToList<CanvasControl>();
-            }
-        }
-            #endregion
-
-            #region public methods
-        /// <summary>
-        /// Renders a HTML presentation of this section
-        /// </summary>
-        /// <returns>The HTML presentation of this section</returns>
-        public string ToHtml()
-        {
-            StringBuilder html = new StringBuilder(100);
-#if !NETSTANDARD2_0
-            using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
-            {
-                htmlWriter.NewLine = string.Empty;
-#endif
-                bool controlWrittenToSection = false;
-                int controlIndex = 0;
-                foreach (var control in this.Section.Page.Controls.Where(p => p.Section == this.Section && p.Column == this).OrderBy(z => z.Order))
-                {
-                    controlIndex++;
-#if NETSTANDARD2_0
-                    html.Append(control.ToHtml(controlIndex));
-#else
-                    htmlWriter.Write(control.ToHtml(controlIndex));
-#endif
-                    controlWrittenToSection = true;
-                }
-
-                // if a section does not contain a control we still need to render it, otherwise it get's "lost"
-                if (!controlWrittenToSection)
-                {
-                    // Obtain the json data
-                    var clientSideCanvasPosition = new ClientSideCanvasData()
-                    {
-                        Position = new ClientSideCanvasPosition()
-                        {
-                            ZoneIndex = this.Section.Order,
-                            SectionIndex = this.Order,
-                            SectionFactor = this.ColumnFactor,
-                        }
-                    };
-
-                    var jsonControlData = JsonConvert.SerializeObject(clientSideCanvasPosition);
-
-#if NETSTANDARD2_0
-                html.Append($@"<div {CanvasControlAttribute}="""" {CanvasDataVersionAttribute}=""{this.DataVersion}"" {ControlDataAttribute}=""{jsonControlData.Replace("\"", "&quot;")}""></div>");
-#else
-                htmlWriter.NewLine = string.Empty;
-
-                    htmlWriter.AddAttribute(CanvasControlAttribute, "");
-                    htmlWriter.AddAttribute(CanvasDataVersionAttribute, this.DataVersion);
-                    htmlWriter.AddAttribute(ControlDataAttribute, jsonControlData);
-                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
-                    htmlWriter.RenderEndTag();
-#endif
-                }
-#if !NETSTANDARD2_0
-        }
-#endif
-
-            return html.ToString();
-        }
-            #endregion
-    }
-#endregion
-
-            #region Available web part collection retrieved via _api/web/GetClientSideWebParts REST call
-    /// <summary>
-    /// Class holding a collection of client side webparts (retrieved via the _api/web/GetClientSideWebParts REST call)
-    /// </summary>
-    public class AvailableClientSideComponents
-    {
-        public ClientSideComponent[] value { get; set; }
-    }
-
-    /// <summary>
-    /// Client side webpart object (retrieved via the _api/web/GetClientSideWebParts REST call)
-    /// </summary>
-    public class ClientSideComponent
-    {
-        /// <summary>
-        /// Component type for client side webpart object
-        /// </summary>
-        public int ComponentType { get; set; }
-        /// <summary>
-        /// Id for client side webpart object
-        /// </summary>
-        public string Id { get; set; }
-        /// <summary>
-        /// Manifest for client side webpart object
-        /// </summary>
-        public string Manifest { get; set; }
-        /// <summary>
-        /// Manifest type for client side webpart object
-        /// </summary>
-        public int ManifestType { get; set; }
-        /// <summary>
-        /// Name for client side webpart object
-        /// </summary>
-        public string Name { get; set; }
-        /// <summary>
-        /// Status for client side webpart object
-        /// </summary>
-        public int Status { get; set; }
-    }
-            #endregion
-#endif
-        }
+}
