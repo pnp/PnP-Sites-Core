@@ -29,8 +29,7 @@ namespace Microsoft.SharePoint.Client
 #if ONPREMISES
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
 #else
-            ResourcePath filePath = ResourcePath.FromDecodedUrl(serverRelativeUrl);
-            var file = web.GetFileByServerRelativePath(filePath);
+            var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
 #endif
             web.Context.Load(file, x => x.Exists, x => x.CheckOutType);
             web.Context.ExecuteQueryRetry();
@@ -55,8 +54,7 @@ namespace Microsoft.SharePoint.Client
 
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
 #else
-            ResourcePath filePath = ResourcePath.FromDecodedUrl(serverRelativeUrl);
-            var file = web.GetFileByServerRelativePath(filePath);
+            var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
 #endif
             var scope = new ConditionalScope(web.Context, () => file.ServerObjectIsNull.Value != true && file.Exists && file.CheckOutType != CheckOutType.None);
 
@@ -83,8 +81,7 @@ namespace Microsoft.SharePoint.Client
 #if ONPREMISES
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
 #else
-            ResourcePath filePath = ResourcePath.FromDecodedUrl(serverRelativeUrl);
-            var file = web.GetFileByServerRelativePath(filePath);
+            var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
 #endif
 
             var scope = new ConditionalScope(web.Context, () => file.ServerObjectIsNull.Value != true && file.Exists && file.CheckOutType == CheckOutType.None);
@@ -346,8 +343,7 @@ namespace Microsoft.SharePoint.Client
 #if ONPREMISES
             Folder folder = web.GetFolderByServerRelativeUrl(serverRelativeFolderUrl);
 #else
-            ResourcePath folderPath = ResourcePath.FromDecodedUrl(serverRelativeFolderUrl);
-            Folder folder = web.GetFolderByServerRelativePath(folderPath);
+            Folder folder = web.GetFolderByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeFolderUrl));
 #endif
 
             web.Context.Load(folder);
@@ -735,8 +731,7 @@ namespace Microsoft.SharePoint.Client
 #if ONPREMISES
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
 #else
-            ResourcePath filePath = ResourcePath.FromDecodedUrl(serverRelativeUrl);
-            var file = web.GetFileByServerRelativePath(filePath);
+            var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
 #endif
 
             web.Context.Load(file);
@@ -787,8 +782,7 @@ namespace Microsoft.SharePoint.Client
 #if ONPREMISES
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
 #else
-            ResourcePath filePath = ResourcePath.FromDecodedUrl(serverRelativeUrl);
-            var file = web.GetFileByServerRelativePath(filePath);
+            var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
 #endif
 
             web.Context.Load(file, x => x.Exists, x => x.CheckOutType);
@@ -844,8 +838,7 @@ namespace Microsoft.SharePoint.Client
 #if ONPREMISES
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
 #else
-            ResourcePath filePath = ResourcePath.FromDecodedUrl(serverRelativeUrl);
-            var file = web.GetFileByServerRelativePath(filePath);
+            var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
 #endif
 
             clientContext.Load(file);
@@ -1049,8 +1042,7 @@ namespace Microsoft.SharePoint.Client
 #if ONPREMISES
                 var file = web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
 #else
-                ResourcePath filePath = ResourcePath.FromDecodedUrl(fileServerRelativeUrl);
-                var file = web.GetFileByServerRelativePath(filePath);
+                var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(fileServerRelativeUrl));
 #endif
 
                 web.Context.Load(file);
