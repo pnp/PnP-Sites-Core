@@ -361,7 +361,7 @@
               </xsd:complexType>
             </xsd:element>
           </xsd:all>
-          
+
           <xsd:attribute name="Title" type="xsd:string" use="required">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
@@ -441,7 +441,7 @@
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
-        
+
   </xsd:complexType>
 
   <xsd:complexType name="SiteScripts">
@@ -497,7 +497,7 @@
 
       </xsd:element>
     </xsd:sequence>
-    
+
   </xsd:complexType>
 
   <xsd:complexType name="StorageEntities">
@@ -508,7 +508,7 @@
       </xsd:documentation>
     </xsd:annotation>
 
-    <xsd:sequence>      
+    <xsd:sequence>
       <xsd:element name="StorageEntity" minOccurs="0" maxOccurs="unbounded">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
@@ -1073,7 +1073,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    
+
   </xsd:complexType>
 
   <xsd:complexType name="RegionalSettings">
@@ -2329,7 +2329,7 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      
+
     </xsd:all>
 
     <xsd:attribute name="Title" type="xsd:string" use="required">
@@ -3178,7 +3178,7 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
-      
+
     </xsd:sequence>
 
     <xsd:attribute name="WelcomePage" type="xsd:string" use="optional">
@@ -3645,7 +3645,7 @@
       </xsd:documentation>
     </xsd:annotation>
 
-    <xsd:sequence>
+    <xsd:all>
 
       <xsd:element name="Sections" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
@@ -3668,7 +3668,81 @@
 
       </xsd:element>
 
-    </xsd:sequence>
+      <xsd:element name="Header" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Defines the layout of the Header for the current client side page
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:complexType>
+          <xsd:attribute name="Type" use="required">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Defines the layout of the Header for the current client side page
+              </xsd:documentation>
+            </xsd:annotation>
+            <xsd:simpleType>
+              <xsd:restriction base="xsd:string">
+                <xsd:enumeration value="None">
+                  <xsd:annotation>
+                    <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+                    <xsd:documentation xml:lang="en">
+                      Declares that the client side page will not have a page header.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:enumeration>
+                <xsd:enumeration value="Default">
+                  <xsd:annotation>
+                    <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+                    <xsd:documentation xml:lang="en">
+                      Declares that the client side page will have the default a page header.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:enumeration>
+                <xsd:enumeration value="Custom">
+                  <xsd:annotation>
+                    <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+                    <xsd:documentation xml:lang="en">
+                      Declares that the client side page will have a custom page header.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:enumeration>
+              </xsd:restriction>
+            </xsd:simpleType>
+          </xsd:attribute>
+          <xsd:attribute name="ServerRelativeImageUrl" type="xsd:string" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Defines the server-relative URL of the image for the header of the current client side page.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="TranslateX" type="xsd:int" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Defines the x-translate of the image for the header of the current client side page.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="TranslateY" type="xsd:int" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Defines the y-translate of of the image for the header of the current client side page.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+
+        </xsd:complexType>
+
+      </xsd:element>
+
+    </xsd:all>
 
     <xsd:attribute name="PageName" type="xsd:string" use="required">
       <xsd:annotation>
@@ -3720,24 +3794,6 @@
         <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
         <xsd:documentation xml:lang="en">
           Defines whether the page will have comments enabled or not, optional attribute (default: true).
-        </xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute>
-
-    <xsd:attribute name="Description" type="xsd:string" use="optional">
-      <xsd:annotation>
-        <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
-        <xsd:documentation xml:lang="en">
-          Defines the Description of the page, optional attribute.
-        </xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute>
-
-    <xsd:attribute name="BannerImageUrl" type="xsd:string" use="optional">
-      <xsd:annotation>
-        <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
-        <xsd:documentation xml:lang="en">
-          Defines the BannerImageUrl of the page, optional attribute.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
@@ -4702,7 +4758,7 @@
         </xsd:annotation>
 
       </xsd:element>
-      
+
       <xsd:element name="Apps" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
@@ -4792,7 +4848,7 @@
                       </xsd:enumeration>
                     </xsd:restriction>
                   </xsd:simpleType>
-                  
+
                 </xsd:attribute>
 
               </xsd:complexType>
@@ -4915,7 +4971,7 @@
     </xsd:annotation>
 
     <xsd:sequence>
-      
+
       <xsd:element name="Public" type="pnp:CdnSetting" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
@@ -4933,7 +4989,7 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-      
+
     </xsd:sequence>
 
   </xsd:complexType>
