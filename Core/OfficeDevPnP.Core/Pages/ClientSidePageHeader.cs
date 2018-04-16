@@ -3,11 +3,8 @@ using Microsoft.SharePoint.Client;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Diagnostics;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Pages
 {
@@ -30,6 +27,9 @@ namespace OfficeDevPnP.Core.Pages
         private Guid listId = Guid.Empty;
         private Guid uniqueId = Guid.Empty;
 
+        /// <summary>
+        /// Returns the type of header
+        /// </summary>
         public ClientSidePageHeaderType Type
         {
             get
