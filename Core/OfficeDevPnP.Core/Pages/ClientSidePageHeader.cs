@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Pages
 {
+#if !ONPREMISES
     /// <summary>
     /// Class that implements the client side page header
     /// </summary>
@@ -52,7 +53,7 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public string TranslateY { get; set; }
 
-        #region construction
+#region construction
         /// <summary>
         /// Creates a custom header with a custom image
         /// </summary>
@@ -76,7 +77,7 @@ namespace OfficeDevPnP.Core.Pages
             TranslateX = translateX;
             TranslateY = translateY;
         }
-        #endregion
+#endregion
 
         /// <summary>
         /// Returns the header value to set a "no header" 
@@ -161,4 +162,5 @@ namespace OfficeDevPnP.Core.Pages
         }
 
     }
+#endif
 }
