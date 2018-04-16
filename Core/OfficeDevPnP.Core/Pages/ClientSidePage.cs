@@ -74,7 +74,7 @@ namespace OfficeDevPnP.Core.Pages
             this.pagesLibrary = "SitePages";
 
             // Attach default page header
-            this.pageHeader = new ClientSidePageHeader(null, null);
+            this.pageHeader = new ClientSidePageHeader(null, ClientSidePageHeaderType.Default, null);
         }
 
         /// <summary>
@@ -91,7 +91,7 @@ namespace OfficeDevPnP.Core.Pages
             this.context = cc;
 
             // Attach default page header
-            this.pageHeader = new ClientSidePageHeader(cc, null);
+            this.pageHeader = new ClientSidePageHeader(cc, ClientSidePageHeaderType.Default, null);
         }
         #endregion
 
@@ -275,6 +275,17 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     throw new InvalidOperationException("You first need to save the page before you check for CommentsEnabled status");
                 }
+            }
+        }
+
+        /// <summary>
+        /// Returns the page header for this page
+        /// </summary>
+        public ClientSidePageHeader PageHeader
+        {
+            get
+            {
+                return this.pageHeader;
             }
         }
         #endregion
@@ -608,7 +619,8 @@ namespace OfficeDevPnP.Core.Pages
                 if (item.FieldValues.ContainsKey(ClientSidePage.CanvasField) && !(item[ClientSidePage.CanvasField] == null || string.IsNullOrEmpty(item[ClientSidePage.CanvasField].ToString())))
                 {
                     var html = item[ClientSidePage.CanvasField].ToString();
-                    page.LoadFromHtml(html);
+                    var pageHeaderHtml = item[ClientSidePage.PageLayoutContentField] != null ? item[ClientSidePage.PageLayoutContentField].ToString() : "";
+                    page.LoadFromHtml(html, pageHeaderHtml);
                 }
             }
             else
@@ -673,20 +685,20 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // If a custom header image is set then the page must first be saved, otherwise the page contents gets erased
-            if (this.pageHeader != null && !string.IsNullOrEmpty(this.pageHeader.ImageServerRelativeUrl))
+            if (this.pageHeader.Type == ClientSidePageHeaderType.Custom)
             {
                 item.Update();
                 this.Context.ExecuteQueryRetry();
             }
 
             // Persist the page header
-            if (this.pageHeader != null)
+            if (this.pageHeader.Type == ClientSidePageHeaderType.None)
             {
-                item[ClientSidePage.PageLayoutContentField] = this.pageHeader.ToHtml(this.PageTitle);
+                item[ClientSidePage.PageLayoutContentField] = ClientSidePageHeader.NoHeader(this.PageTitle);
             }
             else
             {
-                item[ClientSidePage.PageLayoutContentField] = ClientSidePageHeader.NoHeader(this.PageTitle);
+                item[ClientSidePage.PageLayoutContentField] = this.pageHeader.ToHtml(this.PageTitle);
             }
 
             item.Update();
@@ -697,7 +709,7 @@ namespace OfficeDevPnP.Core.Pages
             if (string.IsNullOrEmpty((item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url) || (item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url.IndexOf("/_layouts/15/images/sitepagethumbnail.png", StringComparison.InvariantCultureIgnoreCase) >= 0)
             {
                 string previewImageServerRelativeUrl = "";
-                if (this.pageHeader != null && !string.IsNullOrEmpty(this.pageHeader.ImageServerRelativeUrl))
+                if (this.pageHeader.Type == ClientSidePageHeaderType.Custom && !string.IsNullOrEmpty(this.pageHeader.ImageServerRelativeUrl))
                 {
                     previewImageServerRelativeUrl = this.pageHeader.ImageServerRelativeUrl;
                 }
@@ -787,7 +799,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             ClientSidePage page = new ClientSidePage();
-            page.LoadFromHtml(html);
+            page.LoadFromHtml(html, null);
             return page;
         }
 
@@ -1110,16 +1122,24 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void RemovePageHeader()
         {
-            this.pageHeader = null;
+            this.pageHeader = new ClientSidePageHeader(this.context, ClientSidePageHeaderType.None, null);
+        }
+
+        /// <summary>
+        /// Sets page header back to the default page header
+        /// </summary>
+        public void SetDefaultPageHeader()
+        {
+            this.pageHeader = new ClientSidePageHeader(this.context, ClientSidePageHeaderType.Default, null);
         }
 
         /// <summary>
         /// Sets the page header image without custom focal point
         /// </summary>
         /// <param name="serverRelativeImageUrl">Server relative page header image url</param>
-        public void SetPageHeader(string serverRelativeImageUrl)
+        public void SetCustomPageHeader(string serverRelativeImageUrl)
         {
-            SetPageHeader(serverRelativeImageUrl, "", "");
+            SetCustomPageHeader(serverRelativeImageUrl, "", "");
         }
 
         /// <summary>
@@ -1128,16 +1148,14 @@ namespace OfficeDevPnP.Core.Pages
         /// <param name="serverRelativeImageUrl">Server relative page header image url</param>
         /// <param name="translateX">X focal point for image</param>
         /// <param name="translateY">Y focal point for image</param>
-        public void SetPageHeader(string serverRelativeImageUrl, string translateX, string translateY)
+        public void SetCustomPageHeader(string serverRelativeImageUrl, string translateX, string translateY)
         {
-            if (this.pageHeader == null)
+            this.pageHeader = new ClientSidePageHeader(this.context, ClientSidePageHeaderType.Custom, serverRelativeImageUrl)
             {
-                this.pageHeader = new ClientSidePageHeader(this.context, serverRelativeImageUrl);
-            }
-
-            this.pageHeader.ImageServerRelativeUrl = serverRelativeImageUrl;
-            this.pageHeader.TranslateX = translateX;
-            this.pageHeader.TranslateY = translateY;
+                ImageServerRelativeUrl = serverRelativeImageUrl,
+                TranslateX = translateX,
+                TranslateY = translateY
+            };
         }
         #endregion
 
@@ -1231,7 +1249,7 @@ namespace OfficeDevPnP.Core.Pages
             this.Context.Web.Context.ExecuteQueryRetry();
         }
 
-        private void LoadFromHtml(string html)
+        private void LoadFromHtml(string html, string pageHeaderHtml)
         {
             if (String.IsNullOrEmpty(html))
             {
@@ -1342,6 +1360,9 @@ namespace OfficeDevPnP.Core.Pages
             }
             // Reindex the control order. We're starting control order from 1 for each column.
             ReIndex();
+
+            // Load the page header
+            this.pageHeader.FromHtml(pageHeaderHtml);
         }
 
         private void ReIndex()

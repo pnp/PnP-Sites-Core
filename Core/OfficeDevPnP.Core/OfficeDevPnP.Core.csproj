@@ -571,6 +571,7 @@
     <Compile Include="Pages\ClientSidePage.cs" />
     <Compile Include="Pages\ClientSideComponent.cs" />
     <Compile Include="Pages\ClientSidePageHeader.cs" />
+    <Compile Include="Pages\ClientSidePageHeaderType.cs" />
     <Compile Include="Pages\ClientSidePageLayoutType.cs" />
     <Compile Include="Entities\UnifiedGroupEntity.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
