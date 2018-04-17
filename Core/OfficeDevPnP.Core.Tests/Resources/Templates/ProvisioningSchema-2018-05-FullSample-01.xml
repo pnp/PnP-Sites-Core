@@ -780,8 +780,8 @@
         <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true" Title="Client Side Page Title">
           <pnp:Header Type="Custom"
               ServerRelativeImageUrl="./site%20assets/picture.png"
-              TranslateX="10"
-              TranslateY="15"
+              TranslateX="10.46"
+              TranslateY="15.123456"
             />
           <pnp:Sections>
             <pnp:Section Order="1" Type="OneColumn">

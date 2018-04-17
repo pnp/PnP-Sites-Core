@@ -107,8 +107,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 if (null != clientSidePageHeaderType)
                 {
                     expressions.Add($"{clientSidePageType}.Header", new ClientSidePageHeaderFromModelToSchema());
-                    expressions.Add($"{clientSidePageHeaderType}.TranslateX", new FromNullableToSpecifiedValueResolver<int>("TranslateXSpecified"));
-                    expressions.Add($"{clientSidePageHeaderType}.TranslateY", new FromNullableToSpecifiedValueResolver<int>("TranslateYSpecified"));
+                    expressions.Add($"{clientSidePageHeaderType}.TranslateX", new FromNullableToSpecifiedValueResolver<double>("TranslateXSpecified"));
+                    expressions.Add($"{clientSidePageHeaderType}.TranslateY", new FromNullableToSpecifiedValueResolver<double>("TranslateYSpecified"));
                 }
 
                 persistence.GetPublicInstanceProperty("ClientSidePages")

@@ -3721,7 +3721,7 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
-          <xsd:attribute name="TranslateX" type="xsd:int" use="optional">
+          <xsd:attribute name="TranslateX" type="xsd:double" use="optional">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
               <xsd:documentation xml:lang="en">
@@ -3729,7 +3729,7 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
-          <xsd:attribute name="TranslateY" type="xsd:int" use="optional">
+          <xsd:attribute name="TranslateY" type="xsd:double" use="optional">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
               <xsd:documentation xml:lang="en">
