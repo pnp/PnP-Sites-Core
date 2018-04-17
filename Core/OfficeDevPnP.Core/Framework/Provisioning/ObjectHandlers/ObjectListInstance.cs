@@ -1023,6 +1023,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
 , l => l.ListExperienceOptions
 , l => l.ReadSecurity
+, l => l.WriteSecurity
 #endif
 );
             web.Context.ExecuteQueryRetry();
@@ -1083,7 +1084,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
                 if (existingList.ReadSecurity != (templateList.ReadSecurity == 0 ? 1 : templateList.ReadSecurity))
                 {
+                    // 0 or 1 [Default] = Read all items
+                    // 2 = Read items that where created by the user
                     existingList.ReadSecurity = (templateList.ReadSecurity == 0 ? 1 : templateList.ReadSecurity);
+                    isDirty = true;
+                }
+                if(existingList.WriteSecurity != (templateList.WriteSecurity == 0 ? 1 : templateList.WriteSecurity))
+                {
+                    // 0 or 1 [Default] = Create and edit all items
+                    // 2 = Create items and edit items that where created by the user
+                    // 4 = None
+                    existingList.WriteSecurity = (templateList.WriteSecurity == 0 ? 1 : templateList.WriteSecurity);
                     isDirty = true;
                 }
 #endif
@@ -1541,6 +1552,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (list.ReadSecurity != default(int))
             {
                 createdList.ReadSecurity = list.ReadSecurity;
+            }
+            if(list.WriteSecurity != default(int))
+            {
+                createdList.WriteSecurity = list.WriteSecurity;
             }
 #endif
             if (!string.IsNullOrEmpty(parser.ParseString(list.ValidationFormula)))
