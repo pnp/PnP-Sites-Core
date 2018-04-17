@@ -1863,6 +1863,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
                         l => l.ListExperienceOptions,
                         l => l.ReadSecurity,
+                        l => l.WriteSecurity,
 #endif
                         l => l.Fields.IncludeWithDefaultProperties(
                             f => f.Id,
@@ -1953,6 +1954,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
                         ListExperience = (Model.ListExperience)Enum.Parse(typeof(Model.ListExperience), siteList.ListExperienceOptions.ToString()),
                         ReadSecurity = siteList.ReadSecurity,
+                        WriteSecurity = siteList.WriteSecurity,
 #endif
                         MaxVersionLimit =
                             siteList.IsPropertyAvailable("MajorVersionLimit") ? siteList.MajorVersionLimit : 0,
