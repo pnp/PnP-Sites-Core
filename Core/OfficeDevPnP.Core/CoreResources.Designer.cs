@@ -242,6 +242,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The provided page header image &apos;{0}&apos; cannot be found. .
+        /// </summary>
+        internal static string ClientSidePageHeader_ImageNotFound {
+            get {
+                return ResourceManager.GetString("ClientSidePageHeader_ImageNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The passed argument is a zero-length string or contains only whitespace..
         /// </summary>
         internal static string Exception_Message_EmptyString_Arg {

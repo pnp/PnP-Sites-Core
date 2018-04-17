@@ -1,4 +1,6 @@
 ﻿using AngleSharp.Dom;
+using AngleSharp.Extensions;
+using AngleSharp.Parser.Html;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
@@ -20,6 +22,7 @@ namespace OfficeDevPnP.Core.Pages
 
         private string rte;
         private ClientSideTextControlData spControlData;
+        private string previewText;
         #endregion
 
         #region construction
@@ -30,6 +33,7 @@ namespace OfficeDevPnP.Core.Pages
         {
             this.controlType = 4;
             this.rte = "";
+            this.previewText = "";
         }
         #endregion
 
@@ -47,6 +51,17 @@ namespace OfficeDevPnP.Core.Pages
             get
             {
                 return this.rte;
+            }
+        }
+
+        /// <summary>
+        /// Text used in page preview in news web part
+        /// </summary>
+        public string PreviewText
+        {
+            get
+            {
+                return this.previewText;
             }
         }
 
@@ -102,6 +117,13 @@ namespace OfficeDevPnP.Core.Pages
                 EditorType = "CKEditor"
             };
             jsonControlData = JsonConvert.SerializeObject(controlData);
+
+            try
+            {
+                var nodeList = new HtmlParser().ParseFragment(this.Text, null);
+                this.previewText = string.Concat(nodeList.Select(x => x.Text()));
+            }
+            catch { }
 
             StringBuilder html = new StringBuilder(100);
 #if NETSTANDARD2_0

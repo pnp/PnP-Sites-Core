@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 4/12/2018*
+* Topic automatically generated on 4/16/2018*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -2115,10 +2115,9 @@ Defines a single element of type ClientSidePage.
       Layout="xsd:string"
       Publish="xsd:boolean"
       EnableComments="xsd:boolean"
-      Description="xsd:string"
-      BannerImageUrl="xsd:string"
       Title="xsd:string">
    <pnp:Sections />
+   <pnp:Header />
 </pnp:ClientSidePage>
 ```
 
@@ -2129,6 +2128,7 @@ Here follow the available child elements for the ClientSidePage element.
 Element|Type|Description
 -------|----|-----------
 Sections|[Sections](#sections)|Defines the Canvas sections for a single ClientSidePage.
+Header|[Header](#header)|Defines the layout of the Header for the current client side page
 
 Here follow the available attributes for the ClientSidePage element.
 
@@ -2141,8 +2141,6 @@ Overwrite|xsd:boolean|Can the page be overwritten if it exists.
 Layout|xsd:string|Defines the target layout for the client-side page, optional attribute (default: Article).
 Publish|xsd:boolean|Defines whether the page will be published or not, optional attribute (default: true).
 EnableComments|xsd:boolean|Defines whether the page will have comments enabled or not, optional attribute (default: true).
-Description|xsd:string|Defines the Description of the page, optional attribute.
-BannerImageUrl|xsd:string|Defines the BannerImageUrl of the page, optional attribute.
 Title|xsd:string|Defines the Title of the page, optional attribute.
 <a name="sections"></a>
 ### Sections
@@ -2161,6 +2159,29 @@ Here follow the available child elements for the  element.
 Element|Type|Description
 -------|----|-----------
 Section|[CanvasSection](#canvassection)|Defines a Canvas section for a single ClientSidePage.
+<a name="header"></a>
+### Header
+Defines the layout of the Header for the current client side page
+
+```xml
+<pnp:Header
+      Type=""
+      ServerRelativeImageUrl="xsd:string"
+      TranslateX="xsd:int"
+      TranslateY="xsd:int">
+</pnp:Header>
+```
+
+
+Here follow the available attributes for the  element.
+
+
+Attibute|Type|Description
+--------|----|-----------
+Type||Defines the layout of the Header for the current client side page
+ServerRelativeImageUrl|xsd:string|Defines the server-relative URL of the image for the header of the current client side page.
+TranslateX|xsd:int|Defines the x-translate of the image for the header of the current client side page.
+TranslateY|xsd:int|Defines the y-translate of of the image for the header of the current client side page.
 <a name="canvassection"></a>
 ### CanvasSection
 A Canvas Section for a Client-side Page.

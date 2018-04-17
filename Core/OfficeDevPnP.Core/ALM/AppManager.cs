@@ -107,7 +107,7 @@ namespace OfficeDevPnP.Core.ALM
                 throw new ArgumentException(nameof(path));
             }
 
-            if (System.IO.File.Exists(path))
+            if (!System.IO.File.Exists(path))
             {
                 throw new IOException("File does not exist");
             }
