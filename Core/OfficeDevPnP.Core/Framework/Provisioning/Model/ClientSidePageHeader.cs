@@ -26,12 +26,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the x-translate of the image for the header of the current client side page.
         /// </summary>
-        public Int32? TranslateX { get; set; }
+        public Double? TranslateX { get; set; }
 
         /// <summary>
         /// Defines the y-translate of the image for the header of the current client side page.
         /// </summary>
-        public Int32? TranslateY { get; set; }
+        public Double? TranslateY { get; set; }
 
         #endregion
 

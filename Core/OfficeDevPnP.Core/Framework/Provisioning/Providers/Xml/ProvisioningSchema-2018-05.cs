@@ -8326,11 +8326,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
         
         private string serverRelativeImageUrlField;
         
-        private int translateXField;
+        private double translateXField;
         
         private bool translateXFieldSpecified;
         
-        private int translateYField;
+        private double translateYField;
         
         private bool translateYFieldSpecified;
         
@@ -8358,7 +8358,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public int TranslateX {
+        public double TranslateX {
             get {
                 return this.translateXField;
             }
@@ -8380,7 +8380,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public int TranslateY {
+        public double TranslateY {
             get {
                 return this.translateYField;
             }
