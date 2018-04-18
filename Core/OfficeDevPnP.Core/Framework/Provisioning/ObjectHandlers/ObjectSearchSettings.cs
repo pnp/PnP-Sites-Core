@@ -52,12 +52,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var site = (web.Context as ClientContext).Site;
                 if (!String.IsNullOrEmpty(template.SiteSearchSettings))
                 {
-                    site.SetSearchConfiguration(parser.ParseXmlString(template.SiteSearchSettings));
+                    site.SetSearchConfiguration(parser.ParseXmlString(template.SiteSearchSettings, "~sitecollection", "~site"));
                 }
 
                 if (!String.IsNullOrEmpty(template.WebSearchSettings))
                 {
-                    web.SetSearchConfiguration(parser.ParseXmlString(template.WebSearchSettings));
+                    web.SetSearchConfiguration(parser.ParseXmlString(template.WebSearchSettings, "~sitecollection", "~site"));
                 }
             }
 
