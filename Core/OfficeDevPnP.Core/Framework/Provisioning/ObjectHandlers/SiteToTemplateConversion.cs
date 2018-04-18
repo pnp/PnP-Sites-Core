@@ -253,7 +253,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     objectHandlers.Add(new ObjectPersistTemplateInfo());
                 }
+                var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(web, template, provisioningInfo)) + 1;
 
+                if (progressDelegate != null)
+                {
+                    progressDelegate("Initializing engine", 1, count); // handlers + initializing message)
+                }
                 var tokenParser = new TokenParser(web, template);
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders))
                 {
@@ -261,9 +266,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     extensibilityHandler.AddExtendedTokens(web, template, tokenParser, provisioningInfo);
                 }
 
-                int step = 1;
-
-                var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(web, template, provisioningInfo));
+                int step = 2;
 
                 // Remove potentially unsupported artifacts
 

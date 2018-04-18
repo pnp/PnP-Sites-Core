@@ -381,6 +381,7 @@
   <ItemGroup>
     <Compile Include="ALM\AppManager.cs" />
     <Compile Include="ALM\AppMetadata.cs" />
+    <Compile Include="Attributes\TokenDefinitionDescriptionAttribute.cs" />
     <Compile Include="CoreResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

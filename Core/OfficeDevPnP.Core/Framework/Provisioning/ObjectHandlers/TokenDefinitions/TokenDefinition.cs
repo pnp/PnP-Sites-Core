@@ -5,10 +5,11 @@ using Microsoft.SharePoint.Client;
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
     /// <summary>
-    /// Handles Token methods
+    /// Defines a provisioning engine Token. Make sure to only use the TokenContext property to execute queries in token methods.
     /// </summary>
     public abstract class TokenDefinition
     {
+        private ClientContext _context;
         protected string CacheValue;
         private readonly string[] _tokens;
 
@@ -23,12 +24,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             this.Web = web;
         }
 
-        public ClientContext Context
+        /// <summary>
+        /// Returns a cloned context which is separate from the current context, not affecting ongoing queries.
+        /// </summary>
+        public ClientContext TokenContext
         {
             get
             {
-                var webUrl = Web.EnsureProperty(w => w.Url);
-                return Web.Context.Clone(Web.Url);
+                if (_context == null)
+                {
+                    var webUrl = Web.EnsureProperty(w => w.Url);
+                    _context = Web.Context.Clone(Web.Url);
+                }
+                return _context;
             }
         }
         /// <summary>

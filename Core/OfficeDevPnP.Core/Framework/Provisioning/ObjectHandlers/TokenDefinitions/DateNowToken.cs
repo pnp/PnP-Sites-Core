@@ -1,10 +1,16 @@
 ﻿using System;
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
+    [TokenDefinitionDescription(
+       Token = "{now}",
+       Description = "Returns the current date in universal date time format: yyyy-MM-ddTHH:mm:ss.fffK",
+       Example = "{now}",
+       Returns = "2018-04-18T15:44:45.898+02:00")]
     /// <summary>
-    /// Gets curremt date time in universal date time format yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffK 
+    /// Gets current date time in universal date time format yyyy-MM-ddTHH:mm:ss.fffK 
     /// </summary>
     public class DateNowToken : TokenDefinition
     {
