@@ -23,6 +23,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             this.Web = web;
         }
 
+        public ClientContext Context
+        {
+            get
+            {
+                var webUrl = Web.EnsureProperty(w => w.Url);
+                return Web.Context.Clone(Web.Url);
+            }
+        }
         /// <summary>
         /// Gets tokens
         /// </summary>
