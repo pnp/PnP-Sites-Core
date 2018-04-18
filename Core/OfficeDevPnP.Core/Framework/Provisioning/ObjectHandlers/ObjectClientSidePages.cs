@@ -12,7 +12,7 @@ using System.Collections.Generic;
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
 #if !ONPREMISES
-    internal class ObjectClientSidePages: ObjectHandlerBase
+    internal class ObjectClientSidePages : ObjectHandlerBase
     {
         public override string Name
         {
@@ -143,13 +143,44 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Create new client side page
                         page = web.AddClientSidePage(pageName);
                     }
-                    
+
                     // Set page title
-                    if(page.PageTitle != clientSidePage.Title)
+                    if (page.PageTitle != clientSidePage.Title)
                     {
                         page.PageTitle = clientSidePage.Title;
                     }
-                    
+
+                    // Page Header
+                    if (clientSidePage.Header != null)
+                    {
+                        switch (clientSidePage.Header.Type)
+                        {
+                            case ClientSidePageHeaderType.None:
+                                {
+                                    page.RemovePageHeader();
+                                    break;
+                                }
+                            case ClientSidePageHeaderType.Default:
+                                {
+                                    page.SetDefaultPageHeader();
+                                    break;
+                                }
+                            case ClientSidePageHeaderType.Custom:
+                                {
+                                    var serverRelativeImageUrl = parser.ParseString(clientSidePage.Header.ServerRelativeImageUrl);
+                                    if (clientSidePage.Header.TranslateX.HasValue && clientSidePage.Header.TranslateY.HasValue)
+                                    {
+                                        page.SetCustomPageHeader(serverRelativeImageUrl, clientSidePage.Header.TranslateX.Value, clientSidePage.Header.TranslateY.Value);
+                                    }
+                                    else
+                                    {
+                                        page.SetCustomPageHeader(serverRelativeImageUrl);
+                                    }
+                                    break;
+                                }
+                        }
+                    }
+
                     // Set page layout
                     if (!string.IsNullOrEmpty(clientSidePage.Layout))
                     {
@@ -174,7 +205,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     int sectionCount = -1;
                     // Apply the "layout" and content
-                    foreach(var section in clientSidePage.Sections)
+                    foreach (var section in clientSidePage.Sections)
                     {
                         sectionCount++;
                         switch (section.Type)
@@ -201,17 +232,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order);
                                 break;
                         }
-                        
+
                         // Add controls to the section
                         if (section.Controls.Any())
                         {
                             // Safety measure: reset column order to 1 for columns marked with 0 or lower
-                            foreach(var control in section.Controls.Where(p => p.Column <= 0).ToList())
+                            foreach (var control in section.Controls.Where(p => p.Column <= 0).ToList())
                             {
                                 control.Column = 1;
                             }
 
-                            foreach(CanvasControl control in section.Controls)
+                            foreach (CanvasControl control in section.Controls)
                             {
                                 Pages.ClientSideComponent baseControl = null;
 
@@ -232,7 +263,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     // apply token parsing on the web part properties
                                     control.JsonControlData = parser.ParseString(control.JsonControlData);
-                                    
+
                                     // perform processing of web part properties (e.g. include listid property based list title property)
                                     var webPartPostProcessor = CanvasControlPostProcessorFactory.Resolve(control);
                                     webPartPostProcessor.Process(control, page);
@@ -393,7 +424,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     }
                                 }
                             }
-                        }                        
+                        }
                     }
 
                     // Persist the page

@@ -1,7 +1,13 @@
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
+    [TokenDefinitionDescription(
+    Token = "{currentuserid}",
+    Description = "Returns the ID of the current user e.g. the user using the engine.",
+    Example = "{currentuserid}",
+    Returns = "4")]
     internal class CurrentUserIdToken : TokenDefinition
     {
         public CurrentUserIdToken(Web web)
@@ -13,12 +19,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (CacheValue == null)
             {
-                this.Web.EnsureProperty(w => w.Url);
-                using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
-                {
-                    var currentUser = context.Web.EnsureProperty(w => w.CurrentUser);
-                    CacheValue = currentUser.Id.ToString();
-                }
+                var currentUser = TokenContext.Web.EnsureProperty(w => w.CurrentUser);
+                CacheValue = currentUser.Id.ToString();
             }
             return CacheValue;
         }

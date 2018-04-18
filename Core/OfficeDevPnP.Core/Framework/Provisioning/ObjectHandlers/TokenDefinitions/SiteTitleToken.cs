@@ -1,7 +1,13 @@
 ﻿using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
+    [TokenDefinitionDescription(
+      Token = "{sitename}",
+      Description = "Returns the title of the current site",
+      Example = "{sitename}",
+      Returns = "My Company Portal")]
     internal class SiteTitleToken : TokenDefinition
     {
         public SiteTitleToken(Web web) : base(web, "{sitetitle}", "~sitename", "{sitename}")
@@ -12,13 +18,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (CacheValue == null)
             {
-                this.Web.EnsureProperty(w => w.Url);
-                using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
-                {
-                    context.Load(context.Web, w => w.Title);
-                    context.ExecuteQueryRetry();
-                    CacheValue = context.Web.Title;
-                }
+                TokenContext.Load(TokenContext.Web, w => w.Title);
+                TokenContext.ExecuteQueryRetry();
+                CacheValue = TokenContext.Web.Title;
             }
             return CacheValue;
         }
