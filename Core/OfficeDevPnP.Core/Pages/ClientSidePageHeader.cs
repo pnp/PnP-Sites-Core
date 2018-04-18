@@ -58,12 +58,12 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Image focal point X coordinate
         /// </summary>
-        public string TranslateX { get; set; }
+        public double? TranslateX { get; set; }
 
         /// <summary>
         /// Image focal point Y coordinate
         /// </summary>
-        public string TranslateY { get; set; }
+        public double? TranslateY { get; set; }
 
 #region construction
         /// <summary>
@@ -87,7 +87,7 @@ namespace OfficeDevPnP.Core.Pages
         /// <param name="imageServerRelativeUrl">Server relative image url</param>
         /// <param name="translateX">X offset coordinate</param>
         /// <param name="translateY">Y offset coordinate</param>
-        public ClientSidePageHeader(ClientContext cc, ClientSidePageHeaderType pageHeaderType, string imageServerRelativeUrl, string translateX, string translateY): this(cc, pageHeaderType, imageServerRelativeUrl)
+        public ClientSidePageHeader(ClientContext cc, ClientSidePageHeaderType pageHeaderType, string imageServerRelativeUrl, double translateX, double translateY): this(cc, pageHeaderType, imageServerRelativeUrl)
         {
             TranslateX = translateX;
             TranslateY = translateY;
@@ -157,7 +157,7 @@ namespace OfficeDevPnP.Core.Pages
                                 {
                                     this.listId = result;
                                 }
-                                if (Guid.TryParse(wpJObject["properties"]["uniqueId"].ToString(), out result))
+                                if (wpJObject["properties"]["uniqueId"] != null && Guid.TryParse(wpJObject["properties"]["uniqueId"].ToString(), out result))
                                 {
                                     this.uniqueId = result;
                                 }
@@ -168,13 +168,21 @@ namespace OfficeDevPnP.Core.Pages
                                 }
                             }
 
+                            System.Globalization.CultureInfo englishCulture = new System.Globalization.CultureInfo("en-EN");
+
                             if (wpJObject["properties"]["translateX"] != null)
                             {
-                                this.TranslateX = wpJObject["properties"]["translateX"].ToString();
+                                double translateX = 0;
+                                var translateXEN = wpJObject["properties"]["translateX"].ToString();
+                                Double.TryParse(translateXEN, System.Globalization.NumberStyles.Float, englishCulture, out translateX);
+                                this.TranslateX = translateX;
                             }
                             if (wpJObject["properties"]["translateY"] != null)
                             {
-                                this.TranslateY = wpJObject["properties"]["translateY"].ToString();
+                                double translateY = 0;
+                                var translateYEN = wpJObject["properties"]["translateY"].ToString();
+                                Double.TryParse(translateYEN, System.Globalization.NumberStyles.Float, englishCulture, out translateY);
+                                this.TranslateY = translateY;
                             }
                         }
                         else
@@ -226,9 +234,12 @@ namespace OfficeDevPnP.Core.Pages
                 if (headerImageResolved)
                 {
                     string focalPoints = "";
-                    if (!string.IsNullOrEmpty(TranslateX) || !string.IsNullOrEmpty(TranslateY))
+                    if (TranslateX.HasValue || TranslateY.HasValue)
                     {
-                        focalPoints = $",&quot;translateX&quot;&#58;{TranslateX},&quot;translateY&quot;&#58;{TranslateY}";
+                        System.Globalization.CultureInfo englishCulture = new System.Globalization.CultureInfo("en-EN");
+                        var translateX = TranslateX.Value.ToString(englishCulture);
+                        var translateY = TranslateY.Value.ToString(englishCulture);
+                        focalPoints = $",&quot;translateX&quot;&#58;{translateX},&quot;translateY&quot;&#58;{translateY}";
                     }
 
                     return CustomPageHeader.Replace("@@siteId@@", this.siteId.ToString()).Replace("@@webId@@", this.webId.ToString()).Replace("@@listId@@", this.listId.ToString()).Replace("@@uniqueId@@", this.uniqueId.ToString()).Replace("@@focalPoints@@", focalPoints).Replace("@@title@@", pageTitle).Replace("@@imageSource@@", this.ImageServerRelativeUrl);

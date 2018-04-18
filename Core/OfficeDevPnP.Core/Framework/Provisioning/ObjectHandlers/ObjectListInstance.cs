@@ -1329,7 +1329,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (templateList.RemoveExistingContentTypes && existingContentTypes.Count > 0)
                 {
-                    WriteMessage($"You specified to remove existing content types for the list  with url '{list.RootFolder.ServerRelativeUrl}'. We found a list with the same url in the site. In case of a list update we cannot remove existing content types as they can be in use by existing list items and/or documents.", ProvisioningMessageType.Warning);
+                    WriteMessage($"You specified to remove existing content types for the list with url '{list.RootFolder.ServerRelativeUrl}'. We found a list with the same url in the site. In case of a list update we cannot remove existing content types as they can be in use by existing list items and/or documents.", ProvisioningMessageType.Warning);
                 }
             }
 

@@ -1134,21 +1134,12 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Sets the page header image without custom focal point
-        /// </summary>
-        /// <param name="serverRelativeImageUrl">Server relative page header image url</param>
-        public void SetCustomPageHeader(string serverRelativeImageUrl)
-        {
-            SetCustomPageHeader(serverRelativeImageUrl, "", "");
-        }
-
-        /// <summary>
         /// Sets page header with custom focal point
         /// </summary>
         /// <param name="serverRelativeImageUrl">Server relative page header image url</param>
         /// <param name="translateX">X focal point for image</param>
         /// <param name="translateY">Y focal point for image</param>
-        public void SetCustomPageHeader(string serverRelativeImageUrl, string translateX, string translateY)
+        public void SetCustomPageHeader(string serverRelativeImageUrl, double? translateX = null, double? translateY = null)
         {
             this.pageHeader = new ClientSidePageHeader(this.context, ClientSidePageHeaderType.Custom, serverRelativeImageUrl)
             {
