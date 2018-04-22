@@ -7,6 +7,8 @@ using System.Net.Http.Headers;
 using OfficeDevPnP.Core.Entities;
 using System.IO;
 using OfficeDevPnP.Core.Diagnostics;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
@@ -645,7 +647,8 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="includeSite">Defines whether to return details about the Modern SharePoint Site backing the group. Default is true.</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
-        public static UnifiedGroupEntity GetUnifiedGroup(String groupId, String accessToken, int retryCount = 10, int delay = 500, bool includeSite = true)
+        /// <param name="includeClassification">Defines whether to return classification value of the unified group. Default is true.</param>
+        public static UnifiedGroupEntity GetUnifiedGroup(String groupId, String accessToken, int retryCount = 10, int delay = 500, bool includeSite = true, bool includeClassification = false)
         {
             if (String.IsNullOrEmpty(groupId))
             {
@@ -688,6 +691,12 @@ namespace OfficeDevPnP.Core.Framework.Graph
                             group.SiteUrl = e.Error.Message;
                         }
                     }
+
+                    if (includeClassification)
+                    {
+                        group.Classification = GetGroupClassification(groupId, accessToken);
+                    }
+
                     return (group);
 
                 }).GetAwaiter().GetResult();
@@ -715,7 +724,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         public static List<UnifiedGroupEntity> ListUnifiedGroups(string accessToken,
             String displayName = null, string mailNickname = null,
             int startIndex = 0, int endIndex = 999, bool includeSite = true,
-            int retryCount = 10, int delay = 500)
+            int retryCount = 10, int delay = 500, bool includeClassification = false)
         {
             if (String.IsNullOrEmpty(accessToken))
             {
@@ -775,6 +784,12 @@ namespace OfficeDevPnP.Core.Framework.Graph
                                         group.SiteUrl = e.Error.Message;
                                     }
                                 }
+
+                                if (includeClassification)
+                                {
+                                    group.Classification = GetGroupClassification(g.Id, accessToken);
+                                }
+
                                 groups.Add(group);
                             }
                         }
@@ -957,6 +972,50 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
 
             return unifiedGroupGraphUsers;
+        }
+
+        /// <summary>
+        /// Returns the classification value of an Office 365 Group.
+        /// </summary>
+        /// <param name="groupId">ID of the unified Group</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <returns>Classification value of a Unified group</returns>
+        public static string GetGroupClassification(string groupId, string accessToken)
+        {
+            if (String.IsNullOrEmpty(groupId))
+            {
+                throw new ArgumentNullException(nameof(groupId));
+            }
+
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            string classification = string.Empty;
+
+            try
+            {
+                string getGroupUrl = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groups/{groupId}";
+
+                var getGroupResult = GraphHttpClient.MakeGetRequestForString(
+                    getGroupUrl,
+                    accessToken: accessToken);
+
+                JObject groupObject = JObject.Parse(getGroupResult);
+
+                if (groupObject["classification"] != null)
+                {
+                    classification = Convert.ToString(groupObject["classification"]);
+                }
+
+            }
+            catch (ServiceException e)
+            {
+                classification = e.Error.Message;
+            }
+            
+            return classification;
         }
     }
 }
