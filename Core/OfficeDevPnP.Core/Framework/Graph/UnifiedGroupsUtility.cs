@@ -724,7 +724,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         public static List<UnifiedGroupEntity> ListUnifiedGroups(string accessToken,
             String displayName = null, string mailNickname = null,
             int startIndex = 0, int endIndex = 999, bool includeSite = true,
-            int retryCount = 10, int delay = 500, bool includeClassification = true)
+            int retryCount = 10, int delay = 500, bool includeClassification = false)
         {
             if (String.IsNullOrEmpty(accessToken))
             {
