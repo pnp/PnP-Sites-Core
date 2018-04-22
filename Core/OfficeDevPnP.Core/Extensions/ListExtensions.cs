@@ -772,7 +772,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fieldInternalName">Internal name of field</param>
         /// <param name="groupGuid">TermGroup Guid</param>
         /// <param name="termSetGuid">TermSet Guid</param>
-        public static void UpdateTaxonomyFieldDefaultValue(this Web web, string termName, string listName, string fieldInternalName, Guid groupGuid, Guid termSetGuid)
+        /// <param name="systemUpdate">If set to true, will do a system udpate to the item. Default value is false.</param>
+        public static void UpdateTaxonomyFieldDefaultValue(this Web web, string termName, string listName, string fieldInternalName, Guid groupGuid, Guid termSetGuid, bool systemUpdate = false)
         {
             TaxonomySession taxonomySession = TaxonomySession.GetTaxonomySession(web.Context);
             TermStore termStore = taxonomySession.GetDefaultSiteCollectionTermStore();
@@ -799,7 +800,7 @@ namespace Microsoft.SharePoint.Client
                 LeafName = string.Concat("Temporary_Folder_For_WssId_Creation_", DateTime.Now.ToFileTime().ToString())
             });
 
-            item.SetTaxonomyFieldValue(taxField.Id, foundTerm.Name, foundTerm.Id);
+            item.SetTaxonomyFieldValue(taxField.Id, foundTerm.Name, foundTerm.Id, systemUpdate);
 
             web.Context.Load(item);
             web.Context.ExecuteQueryRetry();
@@ -1196,9 +1197,9 @@ namespace Microsoft.SharePoint.Client
             list.Context.ExecuteQueryRetry();
         }
 
-#endregion
+        #endregion
 
-#region List view
+        #region List view
 
         /// <summary>
         /// Creates list views based on specific xml structure from file
@@ -1435,7 +1436,7 @@ namespace Microsoft.SharePoint.Client
             }
 
         }
-#endregion
+        #endregion
 
         private static void SetDefaultColumnValuesImplementation(this List list, IEnumerable<IDefaultColumnValue> columnValues)
         {
@@ -1741,7 +1742,7 @@ namespace Microsoft.SharePoint.Client
             else
             {
                 list.SetDefaultColumnValues(columnValues);
-            }               
+            }
         }
 
         /// <summary>
