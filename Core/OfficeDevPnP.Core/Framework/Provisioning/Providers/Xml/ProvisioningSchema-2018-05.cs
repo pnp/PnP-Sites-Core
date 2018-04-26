@@ -8287,6 +8287,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
         
         /// <remarks/>
         Spacer,
+        
+        /// <remarks/>
+        ClientWebPart,
     }
     
     /// <remarks/>

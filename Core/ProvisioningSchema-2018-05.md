@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 4/16/2018*
+* Topic automatically generated on 4/26/2018*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -2167,8 +2167,8 @@ Defines the layout of the Header for the current client side page
 <pnp:Header
       Type=""
       ServerRelativeImageUrl="xsd:string"
-      TranslateX="xsd:int"
-      TranslateY="xsd:int">
+      TranslateX="xsd:double"
+      TranslateY="xsd:double">
 </pnp:Header>
 ```
 
@@ -2180,8 +2180,8 @@ Attibute|Type|Description
 --------|----|-----------
 Type||Defines the layout of the Header for the current client side page
 ServerRelativeImageUrl|xsd:string|Defines the server-relative URL of the image for the header of the current client side page.
-TranslateX|xsd:int|Defines the x-translate of the image for the header of the current client side page.
-TranslateY|xsd:int|Defines the y-translate of of the image for the header of the current client side page.
+TranslateX|xsd:double|Defines the x-translate of the image for the header of the current client side page.
+TranslateY|xsd:double|Defines the y-translate of of the image for the header of the current client side page.
 <a name="canvassection"></a>
 ### CanvasSection
 A Canvas Section for a Client-side Page.
