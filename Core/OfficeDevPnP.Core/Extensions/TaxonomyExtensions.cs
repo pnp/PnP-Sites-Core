@@ -1716,7 +1716,11 @@ namespace Microsoft.SharePoint.Client
             }
             if (systemUpdate)
             {
+#if !ONPREMISES
                 item.SystemUpdate();
+#else
+                item.Update();
+#endif
             }
             else
             {
@@ -2165,6 +2169,6 @@ namespace Microsoft.SharePoint.Client
                 clientContext.ExecuteQueryRetry();
             }
         }
-        #endregion
+#endregion
     }
 }
