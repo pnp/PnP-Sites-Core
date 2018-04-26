@@ -207,6 +207,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         case Pages.DefaultClientSideWebParts.Spacer:
                                             controlInstance.Type = WebPartType.Spacer;
                                             break;
+                                        case Pages.DefaultClientSideWebParts.ClientWebPart:
+                                            controlInstance.Type = WebPartType.ClientWebPart;
+                                            break;
                                         case Pages.DefaultClientSideWebParts.ThirdParty:
                                             controlInstance.Type = WebPartType.Custom;
                                             break;

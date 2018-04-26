@@ -3968,6 +3968,7 @@
           <xsd:enumeration value="Divider" />
           <xsd:enumeration value="MicrosoftForms" />
           <xsd:enumeration value="Spacer" />
+          <xsd:enumeration value="ClientWebPart" />
         </xsd:restriction>
       </xsd:simpleType>
 

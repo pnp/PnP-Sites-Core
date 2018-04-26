@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added support for loading the classification of a unified group.
 - Added GetPrincipalUniqueRoleAssignments web extension method. Get all unique role assignments for a user or a group in a web object and all its descendents down to document or list item level.
 - Added support for SystemUpdate of taxonomy fields on list extension and item extension methods.
+- Added support for using the ClientWebPart client side web part to host "classic" SharePoint Add-ins on client side pages
 
 ### Changed
 

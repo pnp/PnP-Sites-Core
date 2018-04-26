@@ -137,6 +137,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         CustomMessageRegion,
         Divider,
         MicrosoftForms,
-        Spacer
+        Spacer,
+        ClientWebPart
     }
 }

@@ -109,7 +109,11 @@
         /// <summary>
         /// Spacer web part
         /// </summary>
-        Spacer
+        Spacer,
+        /// <summary>
+        /// Web part to host SharePoint Add-In parts
+        /// </summary>
+        ClientWebPart
     }
 #endif
 }
