@@ -25,7 +25,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added support for new schema v.2018-05
 
 ### Changed
-
+- Fixed typo in TimeZone enum, and obsoleted incorrect value [gautamdsheth]
+- Web hook server notification url in the provisioning engine now supports tokens [krzysztofziemacki]
 - Fixed the setting of the page layout [TheJeffer] 
 - Improved detection and configuration of the specific client side web part data version
 
