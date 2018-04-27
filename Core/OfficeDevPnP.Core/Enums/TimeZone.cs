@@ -1,4 +1,6 @@
-﻿namespace OfficeDevPnP.Core.Enums
+﻿using System;
+
+namespace OfficeDevPnP.Core.Enums
 {
     /// <summary>
     /// Timezones to use when creating sitecollections
@@ -70,6 +72,11 @@
         /// Timezone for MIDWAY ISLAND and SAMOA
         /// </summary>
         UTCMINUS1100_MIDWAY_ISLAND_SAMOA = 16,
+        /// <summary>
+        /// Timezone for AUCKLAND and WELLINGTON
+        /// </summary>
+        [Obsolete("Use UTCPLUS1200_AUCKLAND_WELLINGTON instead")]
+        UTCPLUS1200_AUKLAND_WELLINGTON = 17,
         /// <summary>
         /// Timezone for AUCKLAND and WELLINGTON
         /// </summary>
