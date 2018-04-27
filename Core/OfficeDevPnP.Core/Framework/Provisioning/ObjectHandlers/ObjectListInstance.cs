@@ -567,7 +567,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // Default for content type
                 bool parsedDefaultViewForContentType;
-                var defaultViewForContentType = (string) viewElement.Attribute("DefaultViewForContentType");
+                var defaultViewForContentType = (string)viewElement.Attribute("DefaultViewForContentType");
                 if (!string.IsNullOrEmpty(defaultViewForContentType) && bool.TryParse(defaultViewForContentType, out parsedDefaultViewForContentType))
                 {
                     createdView.DefaultViewForContentType = parsedDefaultViewForContentType;
@@ -1089,7 +1089,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingList.ReadSecurity = (templateList.ReadSecurity == 0 ? 1 : templateList.ReadSecurity);
                     isDirty = true;
                 }
-                if(existingList.WriteSecurity != (templateList.WriteSecurity == 0 ? 1 : templateList.WriteSecurity))
+                if (existingList.WriteSecurity != (templateList.WriteSecurity == 0 ? 1 : templateList.WriteSecurity))
                 {
                     // 0 or 1 [Default] = Create and edit all items
                     // 2 = Create items and edit items that where created by the user
@@ -1221,16 +1221,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var webhook in templateList.Webhooks)
                     {
-                        AddOrUpdateListWebHook(existingList, webhook, scope, true);
+                        AddOrUpdateListWebHook(existingList, webhook, scope, parser, true);
                     }
                 }
 #endif
 
-#region UserCustomActions
+                #region UserCustomActions
 
                 isDirty |= UpdateCustomActions(web, existingList, templateList, parser, scope, isNoScriptSite);
 
-#endregion UserCustomActions
+                #endregion UserCustomActions
 
                 if (isDirty)
                 {
@@ -1553,7 +1553,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 createdList.ReadSecurity = list.ReadSecurity;
             }
-            if(list.WriteSecurity != default(int))
+            if (list.WriteSecurity != default(int))
             {
                 createdList.WriteSecurity = list.WriteSecurity;
             }
@@ -1703,7 +1703,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 foreach (var webhook in list.Webhooks)
                 {
-                    AddOrUpdateListWebHook(createdList, webhook, scope);
+                    AddOrUpdateListWebHook(createdList, webhook, scope, parser);
                 }
             }
 #endif
@@ -1716,8 +1716,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
 #if !ONPREMISES
 
-        private void AddOrUpdateListWebHook(List list, Webhook webhook, PnPMonitoredScope scope, bool isListUpdate = false)
+        private void AddOrUpdateListWebHook(List list, Webhook webhook, PnPMonitoredScope scope, TokenParser parser, bool isListUpdate = false)
         {
+            var webhookServerNotificationUrl = parser.ParseString(webhook.ServerNotificationUrl);
             if (webhook.ExpiresInDays > 0)
             {
                 try
@@ -1725,7 +1726,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // for a new list immediately add the webhook
                     if (!isListUpdate)
                     {
-                        var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
+                        var webhookSubscription = list.AddWebhookSubscription(webhookServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
                     }
                     // for existing lists add a new webhook or update existing webhook
                     else
@@ -1733,7 +1734,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // get the webhooks defined on the list
                         var addedWebhooks = Task.Run(() => list.GetWebhookSubscriptionsAsync()).GetAwaiter().GetResult();
 
-                        var existingWebhook = addedWebhooks.Where(p => p.NotificationUrl.Equals(webhook.ServerNotificationUrl, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                        var existingWebhook = addedWebhooks.Where(p => p.NotificationUrl.Equals(webhookServerNotificationUrl, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
                         if (existingWebhook != null)
                         {
                             // refresh the expiration date of the existing webhook
@@ -1744,7 +1745,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         else
                         {
                             // add as new webhook
-                            var webhookSubscription = list.AddWebhookSubscription(webhook.ServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
+                            var webhookSubscription = list.AddWebhookSubscription(webhookServerNotificationUrl, DateTime.Now.AddDays(webhook.ExpiresInDays));
                         }
                     }
                 }
@@ -1757,7 +1758,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             else
             {
                 list.EnsureProperty(l => l.Title);
-                scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook, webhook.ServerNotificationUrl, list.Title);
+                scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook, webhookServerNotificationUrl, list.Title);
             }
         }
 
