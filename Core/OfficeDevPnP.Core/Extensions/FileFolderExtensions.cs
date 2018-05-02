@@ -26,7 +26,11 @@ namespace Microsoft.SharePoint.Client
         /// <param name="comment">Message to be recorded with the approval</param>
         public static void ApproveFile(this Web web, string serverRelativeUrl, string comment)
         {
+#if ONPREMISES
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
+#else
+            var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+#endif
             web.Context.Load(file, x => x.Exists, x => x.CheckOutType);
             web.Context.ExecuteQueryRetry();
 
@@ -46,8 +50,12 @@ namespace Microsoft.SharePoint.Client
         /// <param name="comment">Message to be recorded with the approval</param>
         public static void CheckInFile(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
         {
-            var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
+#if ONPREMISES
 
+            var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
+#else
+            var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+#endif
             var scope = new ConditionalScope(web.Context, () => file.ServerObjectIsNull.Value != true && file.Exists && file.CheckOutType != CheckOutType.None);
 
             using (scope.StartScope())
@@ -70,7 +78,11 @@ namespace Microsoft.SharePoint.Client
         /// <param name="serverRelativeUrl">The server relative URL of the file to checkout</param>
         public static void CheckOutFile(this Web web, string serverRelativeUrl)
         {
+#if ONPREMISES
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
+#else
+            var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+#endif
 
             var scope = new ConditionalScope(web.Context, () => file.ServerObjectIsNull.Value != true && file.Exists && file.CheckOutType == CheckOutType.None);
 
@@ -328,7 +340,12 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Returns true if folder exists</returns>
         public static bool DoesFolderExists(this Web web, string serverRelativeFolderUrl)
         {
+#if ONPREMISES
             Folder folder = web.GetFolderByServerRelativeUrl(serverRelativeFolderUrl);
+#else
+            Folder folder = web.GetFolderByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeFolderUrl));
+#endif
+
             web.Context.Load(folder);
             bool exists = false;
 
@@ -711,7 +728,12 @@ namespace Microsoft.SharePoint.Client
         {
             string returnString = string.Empty;
 
+#if ONPREMISES
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
+#else
+            var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+#endif
+
             web.Context.Load(file);
             web.Context.ExecuteQueryRetry();
             ClientResult<Stream> stream = file.OpenBinaryStream();
@@ -757,7 +779,12 @@ namespace Microsoft.SharePoint.Client
         /// <param name="comment">Comment recorded with the publish action</param>
         public static void PublishFile(this Web web, string serverRelativeUrl, string comment)
         {
+#if ONPREMISES
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
+#else
+            var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+#endif
+
             web.Context.Load(file, x => x.Exists, x => x.CheckOutType);
             web.Context.ExecuteQueryRetry();
 
@@ -807,7 +834,12 @@ namespace Microsoft.SharePoint.Client
         public static void SaveFileToLocal(this Web web, string serverRelativeUrl, string localPath, string localFileName = null, Func<string, bool> fileExistsCallBack = null)
         {
             var clientContext = web.Context as ClientContext;
+
+#if ONPREMISES
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
+#else
+            var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+#endif
 
             clientContext.Load(file);
             clientContext.ExecuteQueryRetry();
@@ -1007,7 +1039,12 @@ namespace Microsoft.SharePoint.Client
 
                 var web = context.Web;
 
+#if ONPREMISES
                 var file = web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
+#else
+                var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(fileServerRelativeUrl));
+#endif
+
                 web.Context.Load(file);
                 web.Context.ExecuteQueryRetry();
                 return file;
