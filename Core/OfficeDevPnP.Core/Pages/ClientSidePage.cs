@@ -1399,6 +1399,8 @@ namespace OfficeDevPnP.Core.Pages
 
         private async Task<string> GetClientSideWebPartsAsync(string accessToken, ClientContext context)
         {
+            await new SynchronizationContextRemover();
+
             string responseString = null;
 
             using (var handler = new HttpClientHandler())
