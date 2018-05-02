@@ -280,7 +280,7 @@
             </xsd:documentation>
           </xsd:annotation>
 
-          <xsd:attribute name="resource" type="xsd:string" use="required">
+          <xsd:attribute name="Resource" type="xsd:string" use="required">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
               <xsd:documentation xml:lang="en">
@@ -289,7 +289,7 @@
             </xsd:annotation>
           </xsd:attribute>
 
-          <xsd:attribute name="scope" type="xsd:string" use="required">
+          <xsd:attribute name="Scope" type="xsd:string" use="required">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
               <xsd:documentation xml:lang="en">

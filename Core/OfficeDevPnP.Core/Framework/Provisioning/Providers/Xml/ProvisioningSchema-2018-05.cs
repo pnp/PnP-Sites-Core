@@ -9061,7 +9061,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string resource {
+        public string Resource {
             get {
                 return this.resourceField;
             }
@@ -9072,7 +9072,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string scope {
+        public string Scope {
             get {
                 return this.scopeField;
             }
