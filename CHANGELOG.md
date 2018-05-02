@@ -34,6 +34,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Allow webhooks expiration to be updated without specifying the original web hook notification url [tavikukko]
 - Fixed detecting of "The object specified does not belong to a list" error in the SetFileProperties extension method [Ralmenar]
 - Using ResourcePath.FromDecodedUrl to handle reading files and folders with special characters [gautamdsheth]
+- Fix async handling calling ClientSidePage.AvailableClientSideComponents [OliverZeiser]
 
 ### Deprecated
 
