@@ -462,6 +462,8 @@
     <Compile Include="Framework\Provisioning\Model\SiteWebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTenant.cs" />
     <Compile Include="Framework\Provisioning\Model\StorageEntity.cs" />
+    <Compile Include="Framework\Provisioning\Model\WebApiPermission.cs" />
+    <Compile Include="Framework\Provisioning\Model\WebApiPermissionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Webhook.cs" />
     <Compile Include="Framework\Provisioning\Model\WebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\NoScriptTemplateCleaner.cs" />

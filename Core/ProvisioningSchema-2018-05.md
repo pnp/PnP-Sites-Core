@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 4/26/2018*
+* Topic automatically generated on 5/2/2018*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -224,6 +224,7 @@ Element to manage tenant-wide settings.
 ```xml
 <pnp:Tenant>
    <pnp:AppCatalog />
+   <pnp:WebApiPermissions />
    <pnp:ContentDeliveryNetwork />
    <pnp:SiteDesigns />
    <pnp:SiteScripts />
@@ -238,10 +239,47 @@ Here follow the available child elements for the Tenant element.
 Element|Type|Description
 -------|----|-----------
 AppCatalog|[AppCatalog](#appcatalog)|Entry point for the tenant-wide AppCatalog
+WebApiPermissions|[WebApiPermissions](#webapipermissions)|Entry point for the tenant-wide Web API permissions
 ContentDeliveryNetwork|[ContentDeliveryNetwork](#contentdeliverynetwork)|Entry point for the tenant-wide Content Delivery Network
 SiteDesigns|[SiteDesigns](#sitedesigns)|Entry point for the tenant-wide Site Designs
 SiteScripts|[SiteScripts](#sitescripts)|Entry point for the tenant-wide Site Scripts
 StorageEntities|[StorageEntities](#storageentities)|Entry point for the tenant-wide properties (Storage Entities)
+<a name="webapipermissions"></a>
+### WebApiPermissions
+Collection of tenant-wide Web API permissions.
+
+```xml
+<pnp:WebApiPermissions>
+   <pnp:WebApiPermission />
+</pnp:WebApiPermissions>
+```
+
+
+Here follow the available child elements for the WebApiPermissions element.
+
+
+Element|Type|Description
+-------|----|-----------
+WebApiPermission|[WebApiPermission](#webapipermission)|
+<a name="webapipermission"></a>
+### WebApiPermission
+A single tenant-wide Web API permission.
+
+```xml
+<pnp:WebApiPermission
+      resource="xsd:string"
+      scope="xsd:string">
+</pnp:WebApiPermission>
+```
+
+
+Here follow the available attributes for the  element.
+
+
+Attibute|Type|Description
+--------|----|-----------
+resource|xsd:string|The target resource for a Web API permission, required attribute.
+scope|xsd:string|The target resource for a Web API permission, required attribute.
 <a name="sitedesigns"></a>
 ### SiteDesigns
 Collection of tenant-wide Site Designs

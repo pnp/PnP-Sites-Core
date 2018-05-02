@@ -8971,6 +8971,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
         
         private AppCatalogPackage[] appCatalogField;
         
+        private WebApiPermissionsWebApiPermission[] webApiPermissionsField;
+        
         private ContentDeliveryNetwork contentDeliveryNetworkField;
         
         private SiteDesignsSiteDesign[] siteDesignsField;
@@ -8987,6 +8989,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
             }
             set {
                 this.appCatalogField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute("WebApiPermission", IsNullable=false)]
+        public WebApiPermissionsWebApiPermission[] WebApiPermissions {
+            get {
+                return this.webApiPermissionsField;
+            }
+            set {
+                this.webApiPermissionsField = value;
             }
         }
         
@@ -9030,6 +9043,41 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
             }
             set {
                 this.storageEntitiesField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2018/05/ProvisioningSchema")]
+    public partial class WebApiPermissionsWebApiPermission {
+        
+        private string resourceField;
+        
+        private string scopeField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string resource {
+            get {
+                return this.resourceField;
+            }
+            set {
+                this.resourceField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string scope {
+            get {
+                return this.scopeField;
+            }
+            set {
+                this.scopeField = value;
             }
         }
     }

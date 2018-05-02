@@ -19,6 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private SiteDesignCollection _siteDesigns;
         private SiteScriptCollection _siteScripts;
         private StorageEntityCollection _storageEntities;
+        private WebApiPermissionCollection _webApiPermissions;
 
         #endregion
 
@@ -161,6 +162,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 if (this._storageEntities != null)
                 {
                     this._storageEntities.ParentTemplate = this.ParentTemplate;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets StorageEntities for the tenant
+        /// </summary>
+        public WebApiPermissionCollection WebApiPermissions
+        {
+            get
+            {
+                if (this._webApiPermissions == null)
+                {
+                    this._webApiPermissions = new WebApiPermissionCollection(this.ParentTemplate);
+                }
+                return this._webApiPermissions;
+            }
+            set
+            {
+                if (this._webApiPermissions != null)
+                {
+                    this._webApiPermissions.ParentTemplate = null;
+                }
+                this._webApiPermissions = value;
+                if (this._webApiPermissions != null)
+                {
+                    this._webApiPermissions.ParentTemplate = this.ParentTemplate;
                 }
             }
         }

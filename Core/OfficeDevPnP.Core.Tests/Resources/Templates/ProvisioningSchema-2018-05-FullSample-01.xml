@@ -47,6 +47,11 @@
       <pnp:Package PackageId="d0816f0a-fda4-4a98-8e61-1bbe1f2b5b27" Action="Publish" />
       <pnp:Package PackageId="9672a07b-c111-4a12-bb5b-8d43c2ddd256" Action="Remove" />
     </pnp:AppCatalog>
+    <pnp:WebApiPermissions>
+      <pnp:WebApiPermission resource="Microsoft.Graph" scope="User.ReadBasic.All"/>
+      <pnp:WebApiPermission resource="Microsoft.Graph" scope="Group.ReadWrite.All"/>
+      <pnp:WebApiPermission resource="MyCustomEnterpriseAPI" scope="Invoke.Custom.Action"/>
+    </pnp:WebApiPermissions>
     <pnp:ContentDeliveryNetwork>
       <pnp:Public Enabled="true">
         <pnp:Origins>

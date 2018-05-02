@@ -213,6 +213,15 @@
         </xsd:annotation>
       </xsd:element>
 
+      <xsd:element name="WebApiPermissions" type="pnp:WebApiPermissions" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Entry point for the tenant-wide Web API permissions
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
       <xsd:element name="ContentDeliveryNetwork" type="pnp:ContentDeliveryNetwork" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
@@ -250,6 +259,48 @@
       </xsd:element>
 
     </xsd:all>
+
+  </xsd:complexType>
+
+  <xsd:complexType name="WebApiPermissions">
+    <xsd:annotation>
+      <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+      <xsd:documentation xml:lang="en">
+        Collection of tenant-wide Web API permissions.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:sequence>
+      <xsd:element name="WebApiPermission" minOccurs="1" maxOccurs="unbounded">
+        <xsd:complexType>
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              A single tenant-wide Web API permission.
+            </xsd:documentation>
+          </xsd:annotation>
+
+          <xsd:attribute name="resource" type="xsd:string" use="required">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                The target resource for a Web API permission, required attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+
+          <xsd:attribute name="scope" type="xsd:string" use="required">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                The target resource for a Web API permission, required attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
 
   </xsd:complexType>
 
