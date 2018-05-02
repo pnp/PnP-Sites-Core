@@ -464,6 +464,7 @@
     <Compile Include="Framework\Provisioning\Model\StorageEntity.cs" />
     <Compile Include="Framework\Provisioning\Model\Webhook.cs" />
     <Compile Include="Framework\Provisioning\Model\WebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\FieldAndListProvisioningStepHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\NoScriptTemplateCleaner.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectApplicationLifecycleManagement.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTenant.cs" />
