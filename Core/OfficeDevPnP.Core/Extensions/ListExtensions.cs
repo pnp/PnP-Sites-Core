@@ -221,7 +221,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="webHookEndPoint">Url of the web hook service endpoint (the one that will be called during an event)</param>
         /// <param name="expirationDateTime">New web hook expiration date</param>
         /// <param name="accessToken">(optional) The access token to SharePoint</param>
-        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        /// <returns><c>true</c> if the update succeeded, <c>false</c> otherwise</returns>
         public static bool UpdateWebhookSubscription(this List list, string subscriptionId, string webHookEndPoint, DateTime expirationDateTime, string accessToken = null)
         {
             // Get the access from the client context if not specified.
