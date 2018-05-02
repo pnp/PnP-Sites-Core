@@ -24,12 +24,20 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added support for using the ClientWebPart client side web part to host "classic" SharePoint Add-ins on client side pages
 - Added support for new schema v.2018-05
 - Added support for Web API Permission in schema v.2018-05
-- Schema v.2018-05 is now the default schema for the PnP Provisioning Engine
+- Added support for new schema v.2018-05 ==> 2018-05 is the new default schema
+- Added async extension methods for feature handling and property retrieval [baywet]
+- Added extension methods to better support property handling on lists [gautamdsheth]
+- Added support for the implementation of the provisioning of dependent lookups fields [stevebeauge]
 
 ### Changed
-
+- Fixed typo in TimeZone enum, and obsoleted incorrect value [gautamdsheth]
+- Web hook server notification url in the provisioning engine now supports tokens [krzysztofziemacki]
 - Fixed the setting of the page layout [TheJeffer] 
 - Improved detection and configuration of the specific client side web part data version
+- Allow webhooks expiration to be updated without specifying the original web hook notification url [tavikukko]
+- Fixed detecting of "The object specified does not belong to a list" error in the SetFileProperties extension method [Ralmenar]
+- Using ResourcePath.FromDecodedUrl to handle reading files and folders with special characters [gautamdsheth]
+- Fix async handling calling ClientSidePage.AvailableClientSideComponents [OliverZeiser]
 
 ### Deprecated
 

@@ -706,52 +706,55 @@ namespace OfficeDevPnP.Core.Pages
 
             // Try to set the page banner image url if not yet set
             bool isDirty = false;
-            if (string.IsNullOrEmpty((item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url) || (item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url.IndexOf("/_layouts/15/images/sitepagethumbnail.png", StringComparison.InvariantCultureIgnoreCase) >= 0)
+            if (this.layoutType == ClientSidePageLayoutType.Article && item[ClientSidePage.BannerImageUrl] != null)
             {
-                string previewImageServerRelativeUrl = "";
-                if (this.pageHeader.Type == ClientSidePageHeaderType.Custom && !string.IsNullOrEmpty(this.pageHeader.ImageServerRelativeUrl))
+                if (string.IsNullOrEmpty((item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url) || (item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url.IndexOf("/_layouts/15/images/sitepagethumbnail.png", StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
-                    previewImageServerRelativeUrl = this.pageHeader.ImageServerRelativeUrl;
-                }
-                else
-                {
-                    // iterate the web parts...if we find an unique id then let's grab that information
-                    foreach(var control in this.Controls)
+                    string previewImageServerRelativeUrl = "";
+                    if (this.pageHeader.Type == ClientSidePageHeaderType.Custom && !string.IsNullOrEmpty(this.pageHeader.ImageServerRelativeUrl))
                     {
-                        if (control is ClientSideWebPart)
+                        previewImageServerRelativeUrl = this.pageHeader.ImageServerRelativeUrl;
+                    }
+                    else
+                    {
+                        // iterate the web parts...if we find an unique id then let's grab that information
+                        foreach (var control in this.Controls)
                         {
-                            var webPart = (ClientSideWebPart)control;
-
-                            if (!string.IsNullOrEmpty(webPart.WebPartPreviewImage))
+                            if (control is ClientSideWebPart)
                             {
-                                previewImageServerRelativeUrl = webPart.WebPartPreviewImage;
-                                break;
+                                var webPart = (ClientSideWebPart)control;
+
+                                if (!string.IsNullOrEmpty(webPart.WebPartPreviewImage))
+                                {
+                                    previewImageServerRelativeUrl = webPart.WebPartPreviewImage;
+                                    break;
+                                }
                             }
                         }
                     }
-                }
 
-                // Validate the found preview image url
-                if (!string.IsNullOrEmpty(previewImageServerRelativeUrl))
-                {
-                    try
+                    // Validate the found preview image url
+                    if (!string.IsNullOrEmpty(previewImageServerRelativeUrl))
                     {
-                        this.Context.Site.EnsureProperties(p => p.Id);
-                        this.Context.Web.EnsureProperties(p => p.Id, p => p.Url);
+                        try
+                        {
+                            this.Context.Site.EnsureProperties(p => p.Id);
+                            this.Context.Web.EnsureProperties(p => p.Id, p => p.Url);
 
-                        var previewImage = this.Context.Web.GetFileByServerRelativeUrl(previewImageServerRelativeUrl);
-                        this.Context.Load(previewImage, p => p.UniqueId);
-                        this.Context.ExecuteQueryRetry();
+                            var previewImage = this.Context.Web.GetFileByServerRelativeUrl(previewImageServerRelativeUrl);
+                            this.Context.Load(previewImage, p => p.UniqueId);
+                            this.Context.ExecuteQueryRetry();
 
-                        item[ClientSidePage.BannerImageUrl] = $"{this.Context.Web.Url}/_layouts/15/getpreview.ashx?guidSite={this.Context.Site.Id.ToString()}&guidWeb={this.Context.Web.Id.ToString()}&guidFile={previewImage.UniqueId.ToString()}";
-                        isDirty = true;
+                            item[ClientSidePage.BannerImageUrl] = $"{this.Context.Web.Url}/_layouts/15/getpreview.ashx?guidSite={this.Context.Site.Id.ToString()}&guidWeb={this.Context.Web.Id.ToString()}&guidFile={previewImage.UniqueId.ToString()}";
+                            isDirty = true;
+                        }
+                        catch { }
                     }
-                    catch { }
                 }
             }
 
             // Try to set the page description if not yet set
-            if (item.FieldValues.ContainsKey(ClientSidePage.DescriptionField)) 
+            if (this.layoutType == ClientSidePageLayoutType.Article && item.FieldValues.ContainsKey(ClientSidePage.DescriptionField)) 
             {
                 if (item[ClientSidePage.DescriptionField] == null || string.IsNullOrEmpty(item[ClientSidePage.DescriptionField].ToString()))
                 {
@@ -1396,6 +1399,8 @@ namespace OfficeDevPnP.Core.Pages
 
         private async Task<string> GetClientSideWebPartsAsync(string accessToken, ClientContext context)
         {
+            await new SynchronizationContextRemover();
+
             string responseString = null;
 
             using (var handler = new HttpClientHandler())
