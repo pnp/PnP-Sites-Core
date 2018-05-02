@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [2.26.1805.0 - Unreleased]
 
 ### Added
-
+- Added WebApiPermissions support to provisioning engine.
 - Added support to auto populate the BannerImageUrl and Description fields during save of a client side page based on the found web parts and text parts on the page
 - Added support for client side page header configuration (no header, header with image, default header)
 - Added ClientSidePage Title support in the provisioning engine.
