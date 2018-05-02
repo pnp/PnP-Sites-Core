@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 5/2/2018*
+* Topic automatically generated on 5/3/2018*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -267,8 +267,8 @@ A single tenant-wide Web API permission.
 
 ```xml
 <pnp:WebApiPermission
-      resource="xsd:string"
-      scope="xsd:string">
+      Resource="xsd:string"
+      Scope="xsd:string">
 </pnp:WebApiPermission>
 ```
 
@@ -278,8 +278,8 @@ Here follow the available attributes for the  element.
 
 Attibute|Type|Description
 --------|----|-----------
-resource|xsd:string|The target resource for a Web API permission, required attribute.
-scope|xsd:string|The target resource for a Web API permission, required attribute.
+Resource|xsd:string|The target resource for a Web API permission, required attribute.
+Scope|xsd:string|The target resource for a Web API permission, required attribute.
 <a name="sitedesigns"></a>
 ### SiteDesigns
 Collection of tenant-wide Site Designs
