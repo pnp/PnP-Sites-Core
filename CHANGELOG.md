@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added support for using the ClientWebPart client side web part to host "classic" SharePoint Add-ins on client side pages
 - Added support for new schema v.2018-05 ==> 2018-05 is the new default schema
 - Added async extension methods for feature handling and property retrieval [baywet]
+- Added extension methods to better support property handling on lists [gautamdsheth]
 
 ### Changed
 - Fixed typo in TimeZone enum, and obsoleted incorrect value [gautamdsheth]
