@@ -247,10 +247,24 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="list">The list to remove the Webhook subscription from</param>
         /// <param name="subscriptionId">The id of the subscription to remove</param>
+        /// <param name="expirationDateTime">New web hook expiration date</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the update succeeded, <c>false</c> otherwise</returns>
+        public static bool UpdateWebhookSubscription(this List list, Guid subscriptionId, DateTime expirationDateTime, string accessToken = null)
+        {
+            return UpdateWebhookSubscription(list, subscriptionId.ToString(), null, expirationDateTime, accessToken);
+        }
+
+        /// <summary>
+        /// Updates a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscriptionId">The id of the subscription to remove</param>
         /// <param name="webHookEndPoint">Url of the web hook service endpoint (the one that will be called during an event)</param>
         /// <param name="expirationDateTime">New web hook expiration date</param>
         /// <param name="accessToken">(optional) The access token to SharePoint</param>
-        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        /// <returns><c>true</c> if the update succeeded, <c>false</c> otherwise</returns>
         public static bool UpdateWebhookSubscription(this List list, Guid subscriptionId, string webHookEndPoint, DateTime expirationDateTime, string accessToken = null)
         {
             return UpdateWebhookSubscription(list, subscriptionId.ToString(), webHookEndPoint, expirationDateTime, accessToken);
@@ -263,7 +277,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="list">The list to remove the Webhook subscription from</param>
         /// <param name="subscription">The subscription to update</param>
         /// <param name="accessToken">(optional) The access token to SharePoint</param>
-        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        /// <returns><c>true</c> if the update succeeded, <c>false</c> otherwise</returns>
         public static bool UpdateWebhookSubscription(this List list, WebhookSubscription subscription, string accessToken = null)
         {
             return UpdateWebhookSubscription(list, subscription.Id, subscription.NotificationUrl, subscription.ExpirationDateTime, accessToken);

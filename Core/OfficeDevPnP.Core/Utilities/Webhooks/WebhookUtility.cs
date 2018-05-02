@@ -181,9 +181,8 @@ namespace OfficeDevPnP.Core.Utilities
                     {
                         throw new Exception("Identifier of the resource cannot be determined");
                     }
-
+                    
                     string requestUrl = string.Format("{0}/{1}('{2}')", identifierUrl, SubscriptionsUrlPart, subscriptionId);
-
                     HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUrl);
                     request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
                     request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -192,12 +191,25 @@ namespace OfficeDevPnP.Core.Utilities
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     }
 
-                    request.Content = new StringContent(JsonConvert.SerializeObject(
-                        new WebhookSubscription()
+                    WebhookSubscription webhookSubscription;
+
+                    if (string.IsNullOrEmpty(webHookEndPoint))
+                    {
+                        webhookSubscription = new WebhookSubscription()
+                        {
+                            ExpirationDateTime = expirationDateTime
+                        };
+                    }
+                    else
+                    {
+                        webhookSubscription = new WebhookSubscription()
                         {
                             NotificationUrl = webHookEndPoint,
                             ExpirationDateTime = expirationDateTime
-                        }),
+                        };
+                    }
+
+                    request.Content = new StringContent(JsonConvert.SerializeObject(webhookSubscription),
                         Encoding.UTF8, "application/json");
 
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
