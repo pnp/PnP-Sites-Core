@@ -473,6 +473,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWebApiPermissions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdTokenEncoded.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\HostUrlToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\PageUniqueIdEncodedToken.cs" />
