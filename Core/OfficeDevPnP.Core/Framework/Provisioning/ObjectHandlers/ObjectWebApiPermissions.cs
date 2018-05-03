@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !ONPREMISES
+using System;
 using System.Linq;
 using Microsoft.Online.SharePoint.TenantAdministration.Internal;
 using Microsoft.SharePoint.Client;
@@ -7,7 +8,6 @@ using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-#if !ONPREMISES
     internal class ObjectWebApiPermissions : ObjectHandlerBase
     {
         public override string Name => "Web API Permissions";
@@ -70,5 +70,5 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return (template.Tenant != null && template.Tenant.WebApiPermissions != null);
         }
     }
-#endif
 }
+#endif
