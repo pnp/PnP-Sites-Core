@@ -71,7 +71,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            if (ct.Overwrite)
+                            if (ct.Overwrite && this._step == FieldAndListProvisioningStepHelper.Step.ListAndStandardFields)
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Recreating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
 
