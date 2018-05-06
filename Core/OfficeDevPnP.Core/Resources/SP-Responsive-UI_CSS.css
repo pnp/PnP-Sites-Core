@@ -2,7 +2,9 @@
     display: none;
 }
 
-#sideNavBox, #contentRow, #siteIcon {
+#sideNavBox,
+#contentRow,
+#siteIcon {
     -webkit-transition: all 400ms ease;
     -moz-transition: all 400ms ease;
     -ms-transition: all 400ms ease;
@@ -14,7 +16,9 @@
     min-width: auto;
 }
 
+
 /* Make sure dialog windows don't break */
+
 .ms-dialog #contentRow {
     margin-left: 0;
 }
@@ -28,8 +32,10 @@
     font-size: 1em;
 }
 
+
 /* Tablet/smartphones common styles for collapsibles */
-@media only screen and (max-width : 768px) {
+
+@media only screen and (max-width: 768px) {
     .mobile-only {
         display: block;
     }
@@ -37,7 +43,6 @@
     .no-mobile {
         display: none;
     }
-
     /* Mobile and Table Burger styles */
     .burger {
         position: relative;
@@ -136,7 +141,7 @@
         left: 0;
         height: 30px;
         width: 100%;
-        z-index: 1;
+        z-index: 101;
     }
 
         #suiteBar-rwd.mobile-only.ms-hide {
@@ -166,7 +171,7 @@
             #suiteBar-rwd > #suiteBar-close:after {
                 -ms-transform: translate(0px, 5px) rotate(45deg);
                 -webkit-transform: translate(0px, 5px) rotate(45deg);
-                transform: translate(0px, 5px) rotate(45eg);
+                transform: translate(0px, 5px) rotate(45deg);
                 background: #fff;
                 height: 3px;
                 width: 20px;
@@ -209,15 +214,154 @@
     /*
     * Hide EDIT LINK from top navigation
     */
-    a[id*='TopNavigationMenu_NavMenu_EditLinks'],
-    a[id*='TopNavigationMenuV4_NavMenu_EditLinks'] {
+    #DeltaTopNavigation_mobileClone a[id*='_NavMenu_EditLinks'] {
         display: none;
+    }
+    /*
+    * Support Top Nav rwd as accordion
+    */
+    #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] {
+        width: 100%;
+    }
+        /*
+        * Change position and collapse sub nodes
+        */
+        #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] li.dynamic-children > ul {
+            position: inherit;
+            border: 0;
+            box-shadow: none;
+            padding: 0;
+            overflow: hidden;
+            height: 0;
+        }
+        /*
+        * Expand sub nodes
+        */
+        #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] li.dynamic-children.expand > ul {
+            height: auto;
+            padding-left: 15px;
+            border-top-width: 1px;
+            border-top-style: dotted;
+            background-color: inherit;
+        }
+        /*
+        * Nodes position
+        */
+        #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] li.dynamic-children .ms-core-listMenu-item {
+            padding: 0;
+            margin-right: 0;
+            line-height: 30px;
+            font-size: 1.1em;
+        }
+        /*
+        * Remove arrow background 
+        */
+        #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] .dynamic-children.additional-background,
+        #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] .dynamic .additional-background.dynamic-children {
+            background-image: none;
+            padding-right: 0;
+        }
+
+        #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] .dynamic-children > a {
+            display: inline;
+        }
+        /*
+        * Expand/Collapse button style
+        */
+        #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] .dynamic-children > button {
+            float: right;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            width: 20px;
+            height: 30px;
+            font-size: 0;
+            text-indent: -9999px;
+            box-shadow: none;
+            border-radius: none;
+            border: none;
+            cursor: pointer;
+            background-color: inherit;
+        }
+
+            #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] .dynamic-children > button:focus {
+                outline: none;
+            }
+
+            #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] .dynamic-children > button span {
+                display: block;
+                position: absolute;
+                top: 15px;
+                left: 3px;
+                right: 3px;
+                height: 1px;
+                background: #444;
+            }
+
+                #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] .dynamic-children > button span::before,
+                #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] .dynamic-children > button span::after {
+                    position: absolute;
+                    display: block;
+                    left: 0;
+                    width: 100%;
+                    height: 1px;
+                    background-color: #444;
+                    content: "";
+                    transition-duration: 0.3s, 0.3s;
+                    transition-delay: 0.3s, 0s;
+                }
+
+                #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] .dynamic-children > button span::before {
+                    top: -3px;
+                    transition-property: top, transform;
+                }
+
+                #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] .dynamic-children > button span::after {
+                    bottom: -3px;
+                    transition-property: bottom, transform;
+                }
+
+        #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] .dynamic-children.expand > button span {
+            background-color: inherit;
+        }
+
+            #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] .dynamic-children.expand > button span::before {
+                top: 0;
+                transform: rotate(45deg);
+            }
+
+            #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] .dynamic-children.expand > button span::after {
+                bottom: 0;
+                transform: rotate(-45deg);
+            }
+
+            #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] .dynamic-children.expand > button span::before,
+            #DeltaTopNavigation_mobileClone div[id*='TopNavigationMenu'] .dynamic-children.expand > button span::after {
+                transition-delay: 0s, 0.3s;
+            }
+
+    /*
+     * PnP Fix : Note Board horizontal scroll
+     */
+    .ms-socialCommentItem .socialcomment-contents {
+        max-width: 100%;
+        width: auto;
+    }
+
+    #siteIcon #DeltaSiteLogo img {
+        height: auto !important;
+        max-height: 75px !important;
+        display: inline-block;
+        vertical-align: middle;
     }
 }
 
-/* Tablets */
-@media only screen and (min-width: 481px) and (max-width : 768px) {
 
+/* Tablets */
+
+@media only screen and (min-width: 481px) and (max-width: 768px) {
     /* Sidebar navigation toggling */
     #titleAreaBox {
         position: relative;
@@ -264,9 +408,9 @@
     #DeltaTopNavigation {
         display: none;
     }
-
     /* Stack title area */
-    div#titleAreaBox, div#titleAreaRow {
+    div#titleAreaBox,
+    div#titleAreaRow {
         display: block;
         margin: 0;
     }
@@ -279,7 +423,10 @@
         display: block;
     }
 
-    #siteIcon, .ms-siteicon-img, .ms-siteicon-a, #s4-titlerow {
+    #siteIcon,
+    .ms-siteicon-img,
+    .ms-siteicon-a,
+    #s4-titlerow {
         height: 75px;
     }
 
@@ -292,16 +439,21 @@
         margin-bottom: 0;
     }
 
-    .ms-core-listMenu-horizontalBox ul, .ms-core-listMenu-horizontalBox li, .ms-core-listMenu-horizontalBox .ms-core-listMenu-item, .ms-core-listMenu-horizontalBox > ul > li > table {
+    .ms-core-listMenu-horizontalBox ul,
+    .ms-core-listMenu-horizontalBox li,
+    .ms-core-listMenu-horizontalBox .ms-core-listMenu-item,
+    .ms-core-listMenu-horizontalBox > ul > li > table {
         display: block;
     }
 
     .ms-breadcrumb-box {
         height: auto;
     }
-
     /* Main content panel */
-    table#layoutsTable, table#layoutsTable > tbody, table#layoutsTable > tbody > tr, table#layoutsTable > tbody > tr > td {
+    table#layoutsTable,
+    table#layoutsTable > tbody,
+    table#layoutsTable > tbody > tr,
+    table#layoutsTable > tbody > tr > td {
         display: block;
     }
 
@@ -329,18 +481,19 @@
     }
 }
 
-/* Smartphones */
-@media screen and (max-width: 480px) {
 
+/* Smartphones */
+
+@media screen and (max-width: 480px) {
     div#s4-bodyContainer {
         width: auto !important;
         margin-left: 10px;
         margin-right: 10px;
         font-size: 1.1em;
     }
-
     /* Stack logo, top nav and search */
-    div#titleAreaBox, div#titleAreaRow {
+    div#titleAreaBox,
+    div#titleAreaRow {
         display: block;
         margin: 0;
     }
@@ -370,7 +523,8 @@
         max-height: 100px;
     }
 
-    div#s4-titlerow, .ms-breadcrumb-box {
+    div#s4-titlerow,
+    .ms-breadcrumb-box {
         height: auto;
     }
 
@@ -386,13 +540,29 @@
         width: 80%;
     }
 
-    div#searchInputBox, div#searchInputBox div.ms-srch-sb {
+    div#searchInputBox,
+    div#searchInputBox div.ms-srch-sb {
         float: none;
         height: 22px;
         display: block;
     }
 
         div#searchInputBox div.ms-srch-sb > a {
+            float: right;
+        }
+
+    /*
+     * Fix Search Tool bar width in WebPart Page
+     */
+    .ms-srch-sb-border,
+    .ms-srch-sb.ms-srch-sb-borderFocused {
+        width: 100%;
+        float: none;
+        margin: 10px 0;
+    }
+
+        .ms-srch-sb-border > a,
+        .ms-srch-sb.ms-srch-sb-borderFocused > a {
             float: right;
         }
 
@@ -412,9 +582,11 @@
     #pageTitle #DeltaPlaceHolderPageDescription {
         display: none;
     }
-
     /* Breadcrumb navigation in title area */
-    .ms-core-listMenu-horizontalBox ul, .ms-core-listMenu-horizontalBox li, .ms-core-listMenu-horizontalBox .ms-core-listMenu-item, .ms-core-listMenu-horizontalBox > ul > li > table {
+    .ms-core-listMenu-horizontalBox ul,
+    .ms-core-listMenu-horizontalBox li,
+    .ms-core-listMenu-horizontalBox .ms-core-listMenu-item,
+    .ms-core-listMenu-horizontalBox > ul > li > table {
         display: block;
     }
 
@@ -426,7 +598,6 @@
         margin-bottom: 25px;
         display: block;
     }
-
     /* Sidebar navigation toggling */
     #navbar-toggle {
         margin: 0;
@@ -458,7 +629,6 @@
         max-height: 850px;
         overflow: visible;
     }
-
     /* Main content panel */
     #contentRow {
         padding-top: 0;
@@ -471,7 +641,10 @@
         min-width: 0;
     }
 
-    table#layoutsTable, table#layoutsTable > tbody, table#layoutsTable > tbody > tr, table#layoutsTable > tbody > tr > td {
+    table#layoutsTable,
+    table#layoutsTable > tbody,
+    table#layoutsTable > tbody > tr,
+    table#layoutsTable > tbody > tr > td {
         display: block;
     }
 
@@ -497,12 +670,10 @@
     td.ms-cellstyle .ms-list-itemLink {
         height: auto;
     }
-
     /* Fix excessive width of document list view */
     .ms-webpartPage-root {
         border-spacing: 0;
     }
-
     /* Remove text from icon+text action buttons for document list view */
     .ms-viewlsts .ms-vl-sectionHeaderRow .ms-splinkbutton-text {
         display: none;
@@ -511,9 +682,9 @@
     .ms-viewlsts .ms-vl-sectionHeaderRow .ms-vl-settingsmarginleft {
         margin-left: 5px;
     }
-
     /* Hide detail columns in document list view */
-    .ms-listviewtable thead tr th:nth-child(n+5), .ms-listviewtable tbody tr td:nth-child(n+5) {
+    .ms-listviewtable thead tr th:nth-child(n+5),
+    .ms-listviewtable tbody tr td:nth-child(n+5) {
         display: none;
     }
 
@@ -524,9 +695,12 @@
     div.ms-dragDropAttract-subtle {
         min-width: auto;
     }
-
     /* Newsfeed fixes for mobile less than 450px */
-    .ms-microfeed-fullMicrofeedDiv, .ms-microfeed-microblogpart, .ms-microfeed-attachmentPreviewDiv, .ms-microfeed-feedPart, .ms-microfeed-rootText {
+    .ms-microfeed-fullMicrofeedDiv,
+    .ms-microfeed-microblogpart,
+    .ms-microfeed-attachmentPreviewDiv,
+    .ms-microfeed-feedPart,
+    .ms-microfeed-rootText {
         min-width: 200px;
     }
 
@@ -540,7 +714,9 @@
     }
 }
 
+
 /* SETTINGS */
+
 .pnp-settingsdiv {
     width: 250px;
     display: inline-block;

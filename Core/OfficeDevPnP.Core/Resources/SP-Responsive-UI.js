@@ -192,9 +192,27 @@ PnPResponsiveApp.Main = (function () {
 
             /* Set up sidenav toggling */
             var topNav = document.getElementById('DeltaTopNavigation');
+            
+            /* No Top Nav */
+            if (topNav == undefined) { return; }
+
             var topNavClone = topNav.cloneNode(true);
             topNavClone.className = topNavClone.className + ' mobile-only';
             topNavClone = cloneSPIdNodes(topNavClone);
+            /* Sub nodes accordion */
+            var childs = topNavClone.querySelectorAll('a.dynamic-children');
+            for (var c = 0; c < childs.length; c++) {
+                /* Add button to preserve html link */
+                var expandBtn = document.createElement('button');
+                expandBtn.type = 'button';
+                var expandSpan = document.createElement('span');
+                expandBtn.appendChild(expandSpan);
+                childs[c].parentNode.insertBefore(expandBtn, childs[c]);
+                expandBtn.addEventListener('click', function () {
+                    toggleClass(this.parentNode, 'expand');
+                    return false;
+                });
+            }
             topNav.className = topNav.className + ' no-mobile';
             document.getElementById('sideNavBox').appendChild(topNavClone);
 
@@ -279,6 +297,7 @@ PnPResponsiveApp.Main = (function () {
 // Register Responsive Behavior after SP page is loaded
 _spBodyOnLoadFunctionNames.push("responsiveStartup");
 
+/* exported responsiveStartup */
 function responsiveStartup() {
     PnPResponsiveApp.Main.addViewport();
     PnPResponsiveApp.Main.init();
