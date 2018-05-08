@@ -6,10 +6,12 @@ using System.Linq.Expressions;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Async;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -27,17 +29,54 @@ namespace Microsoft.SharePoint.Client
         public static void ApproveFile(this Web web, string serverRelativeUrl, string comment)
         {
 #if ONPREMISES
+            web.ApproveFileImplementation(serverRelativeUrl, comment);
+#else
+            Task.Run(() => web.ApproveFileImplementation(serverRelativeUrl, comment)).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Approves a file
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL of the file to approve</param>
+        /// <param name="comment">Message to be recorded with the approval</param>
+        public static async Task ApproveFileAsync(this Web web, string serverRelativeUrl, string comment)
+        {
+            await new SynchronizationContextRemover();
+            await web.ApproveFileImplementation(serverRelativeUrl, comment);
+        }
+#endif
+        /// <summary>
+        /// Approves a file
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL of the file to approve</param>
+        /// <param name="comment">Message to be recorded with the approval</param>
+#if ONPREMISES
+        private static void ApproveFileImplementation(this Web web, string serverRelativeUrl, string comment)
+        { 
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
 #else
+        private static async Task ApproveFileImplementation(this Web web, string serverRelativeUrl, string comment)
+        {
             var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
 #endif
             web.Context.Load(file, x => x.Exists, x => x.CheckOutType);
+#if ONPREMISES
             web.Context.ExecuteQueryRetry();
+#else
+            await web.Context.ExecuteQueryRetryAsync();
+#endif
 
             if (file.Exists)
             {
                 file.Approve(comment);
+#if ONPREMISES
                 web.Context.ExecuteQueryRetry();
+#else
+                await web.Context.ExecuteQueryRetryAsync();
+#endif
             }
         }
 
@@ -51,23 +90,62 @@ namespace Microsoft.SharePoint.Client
         public static void CheckInFile(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
         {
 #if ONPREMISES
+            web.CheckInFileImplementation(serverRelativeUrl, checkinType, comment);
+#else
+            Task.Run(() => web.CheckInFileImplementation(serverRelativeUrl, checkinType, comment)).GetAwaiter().GetResult();
+#endif
+        }
 
+#if !ONPREMISES
+        /// <summary>
+        /// Checks in a file
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL of the file to checkin</param>
+        /// <param name="checkinType">The type of the checkin</param>
+        /// <param name="comment">Message to be recorded with the approval</param>
+        public static async Task CheckInFileAsync(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
+        {
+            await new SynchronizationContextRemover();
+            await web.CheckInFileImplementation(serverRelativeUrl, checkinType, comment);
+        }
+#endif
+        /// <summary>
+        /// Checks in a file
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL of the file to checkin</param>
+        /// <param name="checkinType">The type of the checkin</param>
+        /// <param name="comment">Message to be recorded with the approval</param>
+#if ONPREMISES
+        public static void CheckInFileImplementation(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
+        {
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
 #else
+        public static async Task CheckInFileImplementation(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
+        {
             var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
 #endif
-            var scope = new ConditionalScope(web.Context, () => file.ServerObjectIsNull.Value != true && file.Exists && file.CheckOutType != CheckOutType.None);
+            var scope = new ConditionalScope(web.Context, () => !file.ServerObjectIsNull.Value && file.Exists && file.CheckOutType != CheckOutType.None);
 
             using (scope.StartScope())
             {
                 web.Context.Load(file);
             }
+#if ONPREMISES
             web.Context.ExecuteQueryRetry();
+#else
+            await web.Context.ExecuteQueryAsync();
+#endif
 
             if (scope.TestResult.Value)
             {
                 file.CheckIn(comment, checkinType);
+#if ONPREMISES
                 web.Context.ExecuteQueryRetry();
+#else
+                await web.Context.ExecuteQueryAsync();
+#endif
             }
         }
 
