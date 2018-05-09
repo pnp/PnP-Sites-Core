@@ -1,7 +1,13 @@
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
+    [TokenDefinitionDescription(
+      Token = "{themecatalog}",
+      Description = "Returns the server relative url of the theme catalog",
+      Example = "{themecatalog}",
+      Returns = "/sites/sitecollection/_catalogs/theme")]
     internal class ThemeCatalogToken : TokenDefinition
     {
         public ThemeCatalogToken(Web web)

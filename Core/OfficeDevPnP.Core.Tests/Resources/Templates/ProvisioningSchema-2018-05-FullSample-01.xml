@@ -47,6 +47,11 @@
       <pnp:Package PackageId="d0816f0a-fda4-4a98-8e61-1bbe1f2b5b27" Action="Publish" />
       <pnp:Package PackageId="9672a07b-c111-4a12-bb5b-8d43c2ddd256" Action="Remove" />
     </pnp:AppCatalog>
+    <pnp:WebApiPermissions>
+      <pnp:WebApiPermission Resource="Microsoft.Graph" Scope="User.ReadBasic.All"/>
+      <pnp:WebApiPermission Resource="Microsoft.Graph" Scope="Group.ReadWrite.All"/>
+      <pnp:WebApiPermission Resource="MyCustomEnterpriseAPI" Scope="Invoke.Custom.Action"/>
+    </pnp:WebApiPermissions>
     <pnp:ContentDeliveryNetwork>
       <pnp:Public Enabled="true">
         <pnp:Origins>
@@ -66,7 +71,7 @@
       </pnp:Private>
     </pnp:ContentDeliveryNetwork>
   </pnp:Tenant>
-  
+
   <pnp:Templates ID="SAMPLE-TEMPLATES">
 
     <pnp:ProvisioningTemplateFile ID="WORKFLOWSITE" File="ProvisioningSchema-2015-05-ReferenceSample-01.xml" />
@@ -375,7 +380,7 @@
                   <pnp:PropertyBagEntries>
                     <pnp:PropertyBagEntry Key="Key1" Value="Value1" Indexed="false" Overwrite="true"/>
                   </pnp:PropertyBagEntries>
-                </pnp:Folder>                  
+                </pnp:Folder>
               </pnp:Folder>
               <pnp:Security>
                 <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="true">
@@ -777,7 +782,12 @@
       </pnp:SiteWebhooks>
 
       <pnp:ClientSidePages>
-        <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true" Description="Client Side Page Description" Title="Client Side Page Title" BannerImageUrl="ClientSidePage.png">
+        <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true" Title="Client Side Page Title">
+          <pnp:Header Type="Custom"
+              ServerRelativeImageUrl="./site%20assets/picture.png"
+              TranslateX="10.46"
+              TranslateY="15.123456"
+            />
           <pnp:Sections>
             <pnp:Section Order="1" Type="OneColumn">
               <pnp:Controls>
@@ -796,7 +806,7 @@
           </pnp:Sections>
         </pnp:ClientSidePage>
       </pnp:ClientSidePages>
-     
+
     </pnp:ProvisioningTemplate>
 
   </pnp:Templates>

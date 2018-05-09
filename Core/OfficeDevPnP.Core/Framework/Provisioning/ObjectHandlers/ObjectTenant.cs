@@ -125,7 +125,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var entity in template.Tenant.StorageEntities)
                     {
-                        appCatalogContext.Web.SetStorageEntity(entity.Key, entity.Value, entity.Description, entity.Comment);
+                        var key = parser.ParseString(entity.Key);
+                        var value = parser.ParseString(entity.Value);
+                        var description = parser.ParseString(entity.Description);
+                        var comment = parser.ParseString(entity.Comment);
+                        appCatalogContext.Web.SetStorageEntity(key, value, description, comment);
                     }
                     appCatalogContext.Web.Update();
                     appCatalogContext.ExecuteQueryRetry();

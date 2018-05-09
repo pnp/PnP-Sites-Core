@@ -39,6 +39,7 @@ namespace OfficeDevPnP.Core.Pages
         private ClientSideWebPartControlData spControlData;
         private JObject properties;
         private JObject serverProcessedContent;
+        private string webPartPreviewImage;
         #endregion
 
         #region construction
@@ -55,6 +56,7 @@ namespace OfficeDevPnP.Core.Pages
             this.description = "";
             this.supportsFullBleed = false;
             this.SetPropertiesJson("{}");
+            this.webPartPreviewImage = "";
         }
 
         /// <summary>
@@ -167,6 +169,17 @@ namespace OfficeDevPnP.Core.Pages
             set
             {
                 this.description = value;
+            }
+        }
+
+        /// <summary>
+        /// Preview image that can serve as page preview image when the page holding this web part is promoted to a news page
+        /// </summary>
+        public string WebPartPreviewImage
+        {
+            get
+            {
+                return this.webPartPreviewImage;
             }
         }
 
@@ -296,6 +309,48 @@ namespace OfficeDevPnP.Core.Pages
                     ControlIndex = controlIndex,
                 },
             };
+
+            // Set the control's data version to the latest version...default was 1.0, but some controls use a higher version
+            var webPartType = ClientSidePage.NameToClientSideWebPartEnum(controlData.WebPartId);
+            
+            // if we read the control from the page then the value might already be set to something different than 1.0...if so, leave as is
+            if (this.DataVersion == "1.0")
+            {
+                if (webPartType == DefaultClientSideWebParts.Image)
+                {
+                    this.dataVersion = "1.8";
+                }
+                else if (webPartType == DefaultClientSideWebParts.ImageGallery)
+                {
+                    this.dataVersion = "1.6";
+                }
+                else if (webPartType == DefaultClientSideWebParts.People)
+                {
+                    this.dataVersion = "1.2";
+                }
+                else if (webPartType == DefaultClientSideWebParts.DocumentEmbed)
+                {
+                    this.dataVersion = "1.1";
+                }
+                else if (webPartType == DefaultClientSideWebParts.ContentRollup)
+                {
+                    this.dataVersion = "2.1";
+                }
+            }
+
+            // Set the web part preview image url
+            if (this.ServerProcessedContent != null && this.ServerProcessedContent["imageSources"] != null)
+            {
+                foreach (JProperty property in this.ServerProcessedContent["imageSources"])
+                {
+                    if (!string.IsNullOrEmpty(property.Value.ToString()))
+                    {
+                        this.webPartPreviewImage = property.Value.ToString().ToLower();
+                        break;
+                    }
+                }
+            }
+
             ClientSideWebPartData webpartData = new ClientSideWebPartData() { Id = controlData.WebPartId, InstanceId = controlData.Id, Title = this.Title, Description = this.Description, DataVersion = this.DataVersion, Properties = "jsonPropsToReplacePnPRules" };
 
             this.jsonControlData = JsonConvert.SerializeObject(controlData);
@@ -517,6 +572,17 @@ namespace OfficeDevPnP.Core.Pages
             else
             {
                 this.properties = parsedJson;
+            }
+
+            // Get the web part data version if supplied by the web part json properties
+            if (parsedJson["webPartData"] != null && parsedJson["webPartData"]["dataVersion"] != null)
+            {
+                this.dataVersion = parsedJson["webPartData"]["dataVersion"].ToString(Formatting.None).Trim('"');
+
+            }
+            else if (parsedJson["dataVersion"] != null)
+            {
+                this.dataVersion = parsedJson["dataVersion"].ToString(Formatting.None).Trim('"');
             }
 
             // If the web part has the serverProcessedContent property then keep this one as it might be needed as input to render the web part HTML later on

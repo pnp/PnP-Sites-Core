@@ -54,6 +54,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         EnableComments = !pageToExtract.CommentsDisabled,
                     };
 
+                    if(pageToExtract.PageHeader != null)
+                    {
+                        var extractedHeader = new ClientSidePageHeader()
+                        {
+                            Type = (ClientSidePageHeaderType)Enum.Parse(typeof(Pages.ClientSidePageHeaderType),pageToExtract.PageHeader.Type.ToString()),
+                            ServerRelativeImageUrl = pageToExtract.PageHeader.ImageServerRelativeUrl,
+                            TranslateX = pageToExtract.PageHeader.TranslateX,
+                            TranslateY = pageToExtract.PageHeader.TranslateY
+                        };
+                        extractedPageInstance.Header = extractedHeader;
+                    }
+
                     // Add the sections
                     foreach (var section in pageToExtract.Sections)
                     {
@@ -194,6 +206,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             break;
                                         case Pages.DefaultClientSideWebParts.Spacer:
                                             controlInstance.Type = WebPartType.Spacer;
+                                            break;
+                                        case Pages.DefaultClientSideWebParts.ClientWebPart:
+                                            controlInstance.Type = WebPartType.ClientWebPart;
                                             break;
                                         case Pages.DefaultClientSideWebParts.ThirdParty:
                                             controlInstance.Type = WebPartType.Custom;

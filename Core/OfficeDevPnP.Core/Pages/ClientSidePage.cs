@@ -25,6 +25,7 @@ namespace OfficeDevPnP.Core.Pages
         #region variables
         // fields
         public const string CanvasField = "CanvasContent1";
+        public const string PageLayoutContentField = "LayoutWebpartsContent";
         public const string PageLayoutType = "PageLayoutType";
         public const string ApprovalStatus = "_ModerationStatus";
         public const string ContentTypeId = "ContentTypeId";
@@ -34,6 +35,7 @@ namespace OfficeDevPnP.Core.Pages
         public const string BannerImageUrl = "BannerImageUrl";
         public const string FirstPublishedDate = "FirstPublishedDate";
         public const string FileLeafRef = "FileLeafRef";
+        public const string DescriptionField = "Description";
 
         // feature
         public const string SitePagesFeatureId = "b6917cb1-93a0-4b97-a84d-7cf49975d4ec";
@@ -51,6 +53,7 @@ namespace OfficeDevPnP.Core.Pages
         private ClientSidePageLayoutType layoutType;
         private bool keepDefaultWebParts;
         private string pageTitle;
+        private ClientSidePageHeader pageHeader;
         #endregion
 
         #region construction
@@ -69,6 +72,9 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             this.pagesLibrary = "SitePages";
+
+            // Attach default page header
+            this.pageHeader = new ClientSidePageHeader(null, ClientSidePageHeaderType.Default, null);
         }
 
         /// <summary>
@@ -83,6 +89,9 @@ namespace OfficeDevPnP.Core.Pages
                 throw new ArgumentNullException("Passed ClientContext object cannot be null");
             }
             this.context = cc;
+
+            // Attach default page header
+            this.pageHeader = new ClientSidePageHeader(cc, ClientSidePageHeaderType.Default, null);
         }
         #endregion
 
@@ -266,6 +275,17 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     throw new InvalidOperationException("You first need to save the page before you check for CommentsEnabled status");
                 }
+            }
+        }
+
+        /// <summary>
+        /// Returns the page header for this page
+        /// </summary>
+        public ClientSidePageHeader PageHeader
+        {
+            get
+            {
+                return this.pageHeader;
             }
         }
         #endregion
@@ -599,7 +619,8 @@ namespace OfficeDevPnP.Core.Pages
                 if (item.FieldValues.ContainsKey(ClientSidePage.CanvasField) && !(item[ClientSidePage.CanvasField] == null || string.IsNullOrEmpty(item[ClientSidePage.CanvasField].ToString())))
                 {
                     var html = item[ClientSidePage.CanvasField].ToString();
-                    page.LoadFromHtml(html);
+                    var pageHeaderHtml = item[ClientSidePage.PageLayoutContentField] != null ? item[ClientSidePage.PageLayoutContentField].ToString() : "";
+                    page.LoadFromHtml(html, pageHeaderHtml);
                 }
             }
             else
@@ -662,8 +683,108 @@ namespace OfficeDevPnP.Core.Pages
             {
                 item[ClientSidePage.CanvasField] = this.ToHtml();
             }
+
+            // If a custom header image is set then the page must first be saved, otherwise the page contents gets erased
+            if (this.pageHeader.Type == ClientSidePageHeaderType.Custom)
+            {
+                item.Update();
+                this.Context.ExecuteQueryRetry();
+            }
+
+            // Persist the page header
+            if (this.pageHeader.Type == ClientSidePageHeaderType.None)
+            {
+                item[ClientSidePage.PageLayoutContentField] = ClientSidePageHeader.NoHeader(this.PageTitle);
+            }
+            else
+            {
+                item[ClientSidePage.PageLayoutContentField] = this.pageHeader.ToHtml(this.PageTitle);
+            }
+
             item.Update();
             this.Context.ExecuteQueryRetry();
+
+            // Try to set the page banner image url if not yet set
+            bool isDirty = false;
+            if (this.layoutType == ClientSidePageLayoutType.Article && item[ClientSidePage.BannerImageUrl] != null)
+            {
+                if (string.IsNullOrEmpty((item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url) || (item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url.IndexOf("/_layouts/15/images/sitepagethumbnail.png", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                {
+                    string previewImageServerRelativeUrl = "";
+                    if (this.pageHeader.Type == ClientSidePageHeaderType.Custom && !string.IsNullOrEmpty(this.pageHeader.ImageServerRelativeUrl))
+                    {
+                        previewImageServerRelativeUrl = this.pageHeader.ImageServerRelativeUrl;
+                    }
+                    else
+                    {
+                        // iterate the web parts...if we find an unique id then let's grab that information
+                        foreach (var control in this.Controls)
+                        {
+                            if (control is ClientSideWebPart)
+                            {
+                                var webPart = (ClientSideWebPart)control;
+
+                                if (!string.IsNullOrEmpty(webPart.WebPartPreviewImage))
+                                {
+                                    previewImageServerRelativeUrl = webPart.WebPartPreviewImage;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    // Validate the found preview image url
+                    if (!string.IsNullOrEmpty(previewImageServerRelativeUrl))
+                    {
+                        try
+                        {
+                            this.Context.Site.EnsureProperties(p => p.Id);
+                            this.Context.Web.EnsureProperties(p => p.Id, p => p.Url);
+
+                            var previewImage = this.Context.Web.GetFileByServerRelativeUrl(previewImageServerRelativeUrl);
+                            this.Context.Load(previewImage, p => p.UniqueId);
+                            this.Context.ExecuteQueryRetry();
+
+                            item[ClientSidePage.BannerImageUrl] = $"{this.Context.Web.Url}/_layouts/15/getpreview.ashx?guidSite={this.Context.Site.Id.ToString()}&guidWeb={this.Context.Web.Id.ToString()}&guidFile={previewImage.UniqueId.ToString()}";
+                            isDirty = true;
+                        }
+                        catch { }
+                    }
+                }
+            }
+
+            // Try to set the page description if not yet set
+            if (this.layoutType == ClientSidePageLayoutType.Article && item.FieldValues.ContainsKey(ClientSidePage.DescriptionField)) 
+            {
+                if (item[ClientSidePage.DescriptionField] == null || string.IsNullOrEmpty(item[ClientSidePage.DescriptionField].ToString()))
+                {
+                    string previewText = "";
+                    foreach (var control in this.Controls)
+                    {
+                        if (control is ClientSideText)
+                        {
+                            var textPart = (ClientSideText)control;
+
+                            if (!string.IsNullOrEmpty(textPart.PreviewText))
+                            {
+                                previewText = textPart.PreviewText;
+                                break;
+                            }
+                        }
+                    }
+
+                    // Don't store more than 300 characters
+                    item[ClientSidePage.DescriptionField] = previewText.Length > 300 ? previewText.Substring(0, 300) : previewText;
+                    isDirty = true;
+                }
+
+            }
+
+            if (isDirty)
+            {
+                item.Update();
+                this.Context.ExecuteQueryRetry();
+            }
 
             this.pageListItem = item;
         }
@@ -681,7 +802,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             ClientSidePage page = new ClientSidePage();
-            page.LoadFromHtml(html);
+            page.LoadFromHtml(html, null);
             return page;
         }
 
@@ -719,6 +840,7 @@ namespace OfficeDevPnP.Core.Pages
                 case DefaultClientSideWebParts.Divider: return "2161a1c6-db61-4731-b97c-3cdb303f7cbb";
                 case DefaultClientSideWebParts.MicrosoftForms: return "b19b3b9e-8d13-4fec-a93c-401a091c0707";
                 case DefaultClientSideWebParts.Spacer: return "8654b779-4886-46d4-8ffb-b5ed960ee986";
+                case DefaultClientSideWebParts.ClientWebPart: return "243166f5-4dc3-4fe2-9df2-a7971b546a0a";
                 default: return "";
             }
         }
@@ -759,6 +881,7 @@ namespace OfficeDevPnP.Core.Pages
                 case "2161a1c6-db61-4731-b97c-3cdb303f7cbb": return DefaultClientSideWebParts.Divider;
                 case "b19b3b9e-8d13-4fec-a93c-401a091c0707": return DefaultClientSideWebParts.MicrosoftForms;
                 case "8654b779-4886-46d4-8ffb-b5ed960ee986": return DefaultClientSideWebParts.Spacer;
+                case "243166f5-4dc3-4fe2-9df2-a7971b546a0a": return DefaultClientSideWebParts.ClientWebPart;
                 default: return DefaultClientSideWebParts.ThirdParty;
             }
         }
@@ -998,6 +1121,38 @@ namespace OfficeDevPnP.Core.Pages
             this.Context.Web.RootFolder.Update();
             this.Context.ExecuteQueryRetry();
         }
+
+        /// <summary>
+        /// Removes the set page header 
+        /// </summary>
+        public void RemovePageHeader()
+        {
+            this.pageHeader = new ClientSidePageHeader(this.context, ClientSidePageHeaderType.None, null);
+        }
+
+        /// <summary>
+        /// Sets page header back to the default page header
+        /// </summary>
+        public void SetDefaultPageHeader()
+        {
+            this.pageHeader = new ClientSidePageHeader(this.context, ClientSidePageHeaderType.Default, null);
+        }
+
+        /// <summary>
+        /// Sets page header with custom focal point
+        /// </summary>
+        /// <param name="serverRelativeImageUrl">Server relative page header image url</param>
+        /// <param name="translateX">X focal point for image</param>
+        /// <param name="translateY">Y focal point for image</param>
+        public void SetCustomPageHeader(string serverRelativeImageUrl, double? translateX = null, double? translateY = null)
+        {
+            this.pageHeader = new ClientSidePageHeader(this.context, ClientSidePageHeaderType.Custom, serverRelativeImageUrl)
+            {
+                ImageServerRelativeUrl = serverRelativeImageUrl,
+                TranslateX = translateX,
+                TranslateY = translateY
+            };
+        }
         #endregion
 
         #region Internal and private methods
@@ -1090,7 +1245,7 @@ namespace OfficeDevPnP.Core.Pages
             this.Context.Web.Context.ExecuteQueryRetry();
         }
 
-        private void LoadFromHtml(string html)
+        private void LoadFromHtml(string html, string pageHeaderHtml)
         {
             if (String.IsNullOrEmpty(html))
             {
@@ -1201,6 +1356,9 @@ namespace OfficeDevPnP.Core.Pages
             }
             // Reindex the control order. We're starting control order from 1 for each column.
             ReIndex();
+
+            // Load the page header
+            this.pageHeader.FromHtml(pageHeaderHtml);
         }
 
         private void ReIndex()
@@ -1241,6 +1399,8 @@ namespace OfficeDevPnP.Core.Pages
 
         private async Task<string> GetClientSideWebPartsAsync(string accessToken, ClientContext context)
         {
+            await new SynchronizationContextRemover();
+
             string responseString = null;
 
             using (var handler = new HttpClientHandler())

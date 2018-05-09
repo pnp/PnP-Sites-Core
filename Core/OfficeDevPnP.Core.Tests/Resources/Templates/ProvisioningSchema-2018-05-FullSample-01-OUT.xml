@@ -23,6 +23,11 @@
       <pnp:Package PackageId="d0816f0a-fda4-4a98-8e61-1bbe1f2b5b27" Action="Publish" />
       <pnp:Package PackageId="9672a07b-c111-4a12-bb5b-8d43c2ddd256" Action="Remove" />
     </pnp:AppCatalog>
+    <pnp:WebApiPermissions>
+      <pnp:WebApiPermission Resource="Microsoft.Graph" Scope="User.ReadBasic.All" />
+      <pnp:WebApiPermission Resource="Microsoft.Graph" Scope="Group.ReadWrite.All" />
+      <pnp:WebApiPermission Resource="MyCustomEnterpriseAPI" Scope="Invoke.Custom.Action" />
+    </pnp:WebApiPermissions>
     <pnp:ContentDeliveryNetwork>
       <pnp:Public Enabled="true">
         <pnp:Origins>
@@ -546,7 +551,7 @@
         <pnp:Webhook ServerNotificationUrl="http://myapp.azurewebsites.net/WebHookListener" ExpiresInDays="120" SiteWebhookType="WebDeleted" />
       </pnp:SiteWebhooks>
       <pnp:ClientSidePages>
-        <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" Overwrite="true" Description="Client Side Page Description" BannerImageUrl="ClientSidePage.png" Title="Client Side Page Title">
+        <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" Overwrite="true" Title="Client Side Page Title">
           <pnp:Sections>
             <pnp:Section Order="1" Type="OneColumn">
               <pnp:Controls>
@@ -558,6 +563,7 @@
               </pnp:Controls>
             </pnp:Section>
           </pnp:Sections>
+          <pnp:Header Type="Custom" ServerRelativeImageUrl="./site%20assets/picture.png" TranslateX="10.46" TranslateY="15.123456" />
         </pnp:ClientSidePage>
       </pnp:ClientSidePages>
     </pnp:ProvisioningTemplate>

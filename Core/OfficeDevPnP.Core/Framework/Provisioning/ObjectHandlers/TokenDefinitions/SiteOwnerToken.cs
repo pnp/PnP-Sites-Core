@@ -1,28 +1,30 @@
 ﻿using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-	internal class SiteOwnerToken : TokenDefinition
-	{
-		public SiteOwnerToken(Web web)
-			: base(web, "~siteowner", "{siteowner}")
-		{
-		}
+    [TokenDefinitionDescription(
+       Token = "{siteowner}",
+       Description = "Returns the login name of the current site owner",
+       Example = "{siteowner}",
+       Returns = "i:0#.f|membership|user@domain.com")]
+    internal class SiteOwnerToken : TokenDefinition
+    {
+        public SiteOwnerToken(Web web)
+            : base(web, "~siteowner", "{siteowner}")
+        {
+        }
 
-		public override string GetReplaceValue()
-		{
-			if (CacheValue == null)
-			{
-                this.Web.EnsureProperty(w => w.Url);
-                using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
-                {
-                    var site = context.Site;
-                    context.Load(site, s => s.Owner);
-                    context.ExecuteQueryRetry();
-                    CacheValue = site.Owner.LoginName;
-                }
-			}
-			return CacheValue;
-		}
-	}
+        public override string GetReplaceValue()
+        {
+            if (CacheValue == null)
+            {
+                var site = TokenContext.Site;
+                TokenContext.Load(site, s => s.Owner);
+                TokenContext.ExecuteQueryRetry();
+                CacheValue = site.Owner.LoginName;
+            }
+            return CacheValue;
+        }
+    }
 }

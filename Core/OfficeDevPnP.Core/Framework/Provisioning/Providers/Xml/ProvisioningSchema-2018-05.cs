@@ -7870,6 +7870,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
         
         private CanvasSection[] sectionsField;
         
+        private ClientSidePageHeader headerField;
+        
         private string pageNameField;
         
         private bool promoteAsNewsArticleField;
@@ -7885,10 +7887,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
         private bool publishField;
         
         private bool enableCommentsField;
-        
-        private string descriptionField;
-        
-        private string bannerImageUrlField;
         
         private string titleField;
         
@@ -7906,6 +7904,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
             }
             set {
                 this.sectionsField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public ClientSidePageHeader Header {
+            get {
+                return this.headerField;
+            }
+            set {
+                this.headerField = value;
             }
         }
         
@@ -7997,28 +8005,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
             }
             set {
                 this.enableCommentsField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Description {
-            get {
-                return this.descriptionField;
-            }
-            set {
-                this.descriptionField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string BannerImageUrl {
-            get {
-                return this.bannerImageUrlField;
-            }
-            set {
-                this.bannerImageUrlField = value;
             }
         }
         
@@ -8301,6 +8287,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
         
         /// <remarks/>
         Spacer,
+        
+        /// <remarks/>
+        ClientWebPart,
     }
     
     /// <remarks/>
@@ -8326,6 +8315,109 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
         
         /// <remarks/>
         TwoColumnRight,
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2018/05/ProvisioningSchema")]
+    public partial class ClientSidePageHeader {
+        
+        private ClientSidePageHeaderType typeField;
+        
+        private string serverRelativeImageUrlField;
+        
+        private double translateXField;
+        
+        private bool translateXFieldSpecified;
+        
+        private double translateYField;
+        
+        private bool translateYFieldSpecified;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public ClientSidePageHeaderType Type {
+            get {
+                return this.typeField;
+            }
+            set {
+                this.typeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ServerRelativeImageUrl {
+            get {
+                return this.serverRelativeImageUrlField;
+            }
+            set {
+                this.serverRelativeImageUrlField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public double TranslateX {
+            get {
+                return this.translateXField;
+            }
+            set {
+                this.translateXField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool TranslateXSpecified {
+            get {
+                return this.translateXFieldSpecified;
+            }
+            set {
+                this.translateXFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public double TranslateY {
+            get {
+                return this.translateYField;
+            }
+            set {
+                this.translateYField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool TranslateYSpecified {
+            get {
+                return this.translateYFieldSpecified;
+            }
+            set {
+                this.translateYFieldSpecified = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2018/05/ProvisioningSchema")]
+    public enum ClientSidePageHeaderType {
+        
+        /// <remarks/>
+        None,
+        
+        /// <remarks/>
+        Default,
+        
+        /// <remarks/>
+        Custom,
     }
     
     /// <remarks/>
@@ -8879,6 +8971,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
         
         private AppCatalogPackage[] appCatalogField;
         
+        private WebApiPermissionsWebApiPermission[] webApiPermissionsField;
+        
         private ContentDeliveryNetwork contentDeliveryNetworkField;
         
         private SiteDesignsSiteDesign[] siteDesignsField;
@@ -8895,6 +8989,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
             }
             set {
                 this.appCatalogField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute("WebApiPermission", IsNullable=false)]
+        public WebApiPermissionsWebApiPermission[] WebApiPermissions {
+            get {
+                return this.webApiPermissionsField;
+            }
+            set {
+                this.webApiPermissionsField = value;
             }
         }
         
@@ -8938,6 +9043,41 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201805 {
             }
             set {
                 this.storageEntitiesField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2018/05/ProvisioningSchema")]
+    public partial class WebApiPermissionsWebApiPermission {
+        
+        private string resourceField;
+        
+        private string scopeField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Resource {
+            get {
+                return this.resourceField;
+            }
+            set {
+                this.resourceField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Scope {
+            get {
+                return this.scopeField;
+            }
+            set {
+                this.scopeField = value;
             }
         }
     }

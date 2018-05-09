@@ -263,7 +263,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 catch (ServerException ex)
                 {
                     // If this throws ServerException (does not belong to list), then shouldn't be trying to set properties)
-                    if (ex.Message != "The object specified does not belong to a list.")
+                    if (ex.ServerErrorCode != -2146232832)
                     {
                         throw;
                     }

@@ -54,7 +54,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
             provisionTemplate.ContentTypes.Add(contentType);
             TokenParser parser = new TokenParser(clientContext.Web, provisionTemplate);
-            new ObjectContentType().ProvisionObjects(clientContext.Web, provisionTemplate, parser,
+            new ObjectContentType(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(clientContext.Web, provisionTemplate, parser,
                 new ProvisioningTemplateApplyingInformation());
         }
 

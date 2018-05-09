@@ -381,6 +381,7 @@
   <ItemGroup>
     <Compile Include="ALM\AppManager.cs" />
     <Compile Include="ALM\AppMetadata.cs" />
+    <Compile Include="Attributes\TokenDefinitionDescriptionAttribute.cs" />
     <Compile Include="CoreResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -438,6 +439,7 @@
     <Compile Include="Framework\Provisioning\Model\CanvasControlCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasSection.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasSectionCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ClientSidePageHeader.cs" />
     <Compile Include="Framework\Provisioning\Model\ContentDeliveryNetwork.cs" />
     <Compile Include="Framework\Provisioning\Model\CdnOrigin.cs" />
     <Compile Include="Framework\Provisioning\Model\CdnOriginCollection.cs" />
@@ -460,14 +462,18 @@
     <Compile Include="Framework\Provisioning\Model\SiteWebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTenant.cs" />
     <Compile Include="Framework\Provisioning\Model\StorageEntity.cs" />
+    <Compile Include="Framework\Provisioning\Model\WebApiPermission.cs" />
+    <Compile Include="Framework\Provisioning\Model\WebApiPermissionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Webhook.cs" />
     <Compile Include="Framework\Provisioning\Model\WebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\FieldAndListProvisioningStepHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\NoScriptTemplateCleaner.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectApplicationLifecycleManagement.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTenant.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWebApiPermissions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdTokenEncoded.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\HostUrlToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\PageUniqueIdEncodedToken.cs" />
@@ -508,6 +514,8 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\CdnFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\CdnFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\AppCatalogFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\ClientSidePageHeaderFromModelToSchema.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\ClientSidePageHeaderFromSchemaToModel.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\SiteScriptRefFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\SiteScriptRefFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\WorkHourFromSchemaToModelValueResolver.cs" />
@@ -570,6 +578,8 @@
     <Compile Include="Pages\ClientSideCanvasPosition.cs" />
     <Compile Include="Pages\ClientSidePage.cs" />
     <Compile Include="Pages\ClientSideComponent.cs" />
+    <Compile Include="Pages\ClientSidePageHeader.cs" />
+    <Compile Include="Pages\ClientSidePageHeaderType.cs" />
     <Compile Include="Pages\ClientSidePageLayoutType.cs" />
     <Compile Include="Entities\UnifiedGroupEntity.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />

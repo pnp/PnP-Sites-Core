@@ -5,9 +5,21 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
-## [2.26.1805.0 - Unreleased]
+
+## [2.27.1806.0 - Unreleased]
 
 ### Added
+
+### Changed
+
+### Deprecated
+
+## [2.26.1805.0 - May 2018 release]
+
+### Added
+- Added WebApiPermissions support to provisioning engine.
+- Added support to auto populate the BannerImageUrl and Description fields during save of a client side page based on the found web parts and text parts on the page
+- Added support for client side page header configuration (no header, header with image, default header)
 - Added ClientSidePage Title support in the provisioning engine.
 - Added CommentsOnSitePagesDisabled property on web settings element in the provisioning engine.
 - Added support for StorageEntities to the Tenant element in the Provisioning Engine. The user applying the template needs appropriate access rights to the tenant scoped App Catalog.
@@ -15,8 +27,26 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added HubSiteUrl to the WebSettings element for the Provisioning Engine. The user applying the template needs to be tenant administrator.
 - Added {SiteScriptId:[script title]} and {SiteDesignId:[design title]} tokens to the provisioning engine. This will only work if the user applying the template is tenant administrator.
 - Added {StorageEntityValue:[key]} token to retrieve values from tenant level or (when applicable) site collection level. If a key is present at site collection level this value will take preference over the one from tenant level, following the behavior of the CSOM APIs.
+- Added support for loading the classification of a unified group.
+- Added GetPrincipalUniqueRoleAssignments web extension method. Get all unique role assignments for a user or a group in a web object and all its descendents down to document or list item level.
+- Added support for SystemUpdate of taxonomy fields on list extension and item extension methods.
+- Added support for using the ClientWebPart client side web part to host "classic" SharePoint Add-ins on client side pages
+- Added support for new schema v.2018-05
+- Added support for Web API Permission in schema v.2018-05
+- Added support for new schema v.2018-05 ==> 2018-05 is the new default schema
+- Added async extension methods for feature handling and property retrieval [baywet]
+- Added extension methods to better support property handling on lists [gautamdsheth]
+- Added support for the implementation of the provisioning of dependent lookups fields [stevebeauge]
 
 ### Changed
+- Fixed typo in TimeZone enum, and obsoleted incorrect value [gautamdsheth]
+- Web hook server notification url in the provisioning engine now supports tokens [krzysztofziemacki]
+- Fixed the setting of the page layout [TheJeffer] 
+- Improved detection and configuration of the specific client side web part data version
+- Allow webhooks expiration to be updated without specifying the original web hook notification url [tavikukko]
+- Fixed detecting of "The object specified does not belong to a list" error in the SetFileProperties extension method [Ralmenar]
+- Using ResourcePath.FromDecodedUrl to handle reading files and folders with special characters [gautamdsheth]
+- Fix async handling calling ClientSidePage.AvailableClientSideComponents [OliverZeiser]
 
 ### Deprecated
 

@@ -1,11 +1,17 @@
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
+    [TokenDefinitionDescription(
+     Token = "{masterpagecatalog}",
+     Description = "Returns a server relative url of the master page catalog",
+     Example = "{masterpagecatalog}",
+     Returns = "/sites/mysite/_catalogs/masterpage")]
     internal class MasterPageCatalogToken : TokenDefinition
     {
         public MasterPageCatalogToken(Web web)
-            : base(web, "~masterpagecatalog","{masterpagecatalog}")
+            : base(web, "~masterpagecatalog", "{masterpagecatalog}")
         {
         }
 
@@ -13,26 +19,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (this.CacheValue == null)
             {
-                this.Web.EnsureProperty(w => w.Url);
-                using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
+                List catalog;
+                // Check if the current web is a sub-site
+                if (Web.IsSubSite())
                 {
-                    List catalog;
-                    // Check if the current web is a sub-site
-                    if (Web.IsSubSite())
-                    {
-                        // Master page URL needs to be retrieved from the rootweb
-                        var rootWeb = context.Site.RootWeb;
-                        catalog = rootWeb.GetCatalog((int)ListTemplateType.MasterPageCatalog);
-                    }
-                    else
-                    {
-                        catalog = context.Web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
-                    }
-
-                    context.Load(catalog, c => c.RootFolder.ServerRelativeUrl);
-                    context.ExecuteQueryRetry();
-                    CacheValue = catalog.RootFolder.ServerRelativeUrl;
+                    // Master page URL needs to be retrieved from the rootweb
+                    var rootWeb = TokenContext.Site.RootWeb;
+                    catalog = rootWeb.GetCatalog((int)ListTemplateType.MasterPageCatalog);
                 }
+                else
+                {
+                    catalog = TokenContext.Web.GetCatalog((int)ListTemplateType.MasterPageCatalog);
+                }
+
+                TokenContext.Load(catalog, c => c.RootFolder.ServerRelativeUrl);
+                TokenContext.ExecuteQueryRetry();
+                CacheValue = catalog.RootFolder.ServerRelativeUrl;
             }
             return CacheValue;
         }

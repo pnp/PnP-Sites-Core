@@ -391,7 +391,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     tenantContext.ExecuteQueryRetry();
                     foreach (var script in scripts)
                     {
-                        _tokens.Add(new SiteDesignIdToken(web, script.Title, script.Id));
+                        _tokens.Add(new SiteScriptIdToken(web, script.Title, script.Id));
                     }
                 }
             }

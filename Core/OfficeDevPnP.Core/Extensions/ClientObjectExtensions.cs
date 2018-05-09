@@ -1,6 +1,8 @@
-﻿using System;
+﻿using OfficeDevPnP.Core.Utilities.Async;
+using System;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Threading.Tasks;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -60,6 +62,35 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Property value</returns>
         public static TResult EnsureProperty<T, TResult>(this T clientObject, Expression<Func<T, TResult>> propertySelector) where T : ClientObject
         {
+#if !ONPREMISES
+            return Task.Run(() => EnsurePropertyImplementation(clientObject, propertySelector)).GetAwaiter().GetResult();
+#else
+            return EnsurePropertyImplementation(clientObject, propertySelector);
+#endif
+        }
+
+#if !ONPREMISES
+        /// <summary>
+        /// Ensures that particular property is loaded on the <see cref="ClientObject"/> and immediately returns this property
+        /// </summary>
+        /// <typeparam name="T"><see cref="ClientObject"/> type</typeparam>
+        /// <typeparam name="TResult">Property type</typeparam>
+        /// <param name="clientObject"><see cref="ClientObject"/></param>
+        /// <param name="propertySelector">Lamda expression containing the property to ensure (e.g. w => w.HasUniqueRoleAssignments)</param>
+        /// <returns>Property value</returns>
+        public static async Task<TResult> EnsurePropertyAsync<T, TResult>(this T clientObject, Expression<Func<T, TResult>> propertySelector) where T : ClientObject
+        {
+            await new SynchronizationContextRemover();
+            return await EnsurePropertyImplementation(clientObject, propertySelector);
+        }
+#endif
+
+#if !ONPREMISES
+        private async static Task<TResult> EnsurePropertyImplementation<T, TResult>(T clientObject, Expression<Func<T, TResult>> propertySelector) where T : ClientObject
+#else
+        private static TResult EnsurePropertyImplementation<T, TResult>(T clientObject, Expression<Func<T, TResult>> propertySelector) where T : ClientObject
+#endif
+        {
             if (propertySelector.Body.NodeType == ExpressionType.Call && propertySelector.Body is MethodCallExpression)
             {
                 var body = (MethodCallExpression)propertySelector.Body;
@@ -73,7 +104,11 @@ namespace Microsoft.SharePoint.Client
                     }
 
                     clientObject.Context.Load(clientObject, propertySelector.ToUntypedStaticMethodCallExpression());
+#if !ONPREMISES
+                    await clientObject.Context.ExecuteQueryRetryAsync();
+#else
                     clientObject.Context.ExecuteQueryRetry();
+#endif
 
                     var arg = (MemberExpression)(body.Arguments[0]);
                     var prop = (PropertyInfo)(Expression.Property(Expression.Constant(clientObject), arg.Member.Name).Member);
@@ -87,13 +122,21 @@ namespace Microsoft.SharePoint.Client
             if (!clientObject.IsPropertyAvailable(untypedExpresssion) && !clientObject.IsObjectPropertyInstantiated(untypedExpresssion))
             {
                 clientObject.Context.Load(clientObject, untypedExpresssion);
+#if !ONPREMISES
+                await clientObject.Context.ExecuteQueryRetryAsync();
+#else
                 clientObject.Context.ExecuteQueryRetry();
+#endif
             }
             else if (clientObject.IsObjectPropertyInstantiated(untypedExpresssion))
             {
                 if (EnsureCollectionLoaded(clientObject, untypedExpresssion))
                 {
+#if !ONPREMISES
+                    await clientObject.Context.ExecuteQueryRetryAsync();
+#else
                     clientObject.Context.ExecuteQueryRetry();
+#endif
                 }
             }
 
@@ -109,14 +152,42 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Property value</returns>
         public static void EnsureProperties<T>(this T clientObject, params Expression<Func<T, object>>[] propertySelector) where T : ClientObject
         {
+#if !ONPREMISES
+            Task.Run(() => EnsurePropertiesImplementation(clientObject, propertySelector)).GetAwaiter().GetResult();
+#else
+            EnsurePropertiesImplementation(clientObject, propertySelector);
+#endif
+        }
+
+#if !ONPREMISES
+        /// <summary>
+        /// Ensures that particular properties are loaded on the <see cref="ClientObject"/> 
+        /// </summary>
+        /// <typeparam name="T"><see cref="ClientObject"/> type</typeparam>
+        /// <param name="clientObject"><see cref="ClientObject"/></param>
+        /// <param name="propertySelector">Lamda expressions containing the properties to ensure (e.g. w => w.HasUniqueRoleAssignments, w => w.ServerRelativeUrl)</param>
+        /// <returns>Property value</returns>
+        public static async Task EnsurePropertiesAsync<T>(this T clientObject, params Expression<Func<T, object>>[] propertySelector) where T : ClientObject
+        {
+            await new SynchronizationContextRemover();
+            await EnsurePropertiesImplementation(clientObject, propertySelector);
+        }
+#endif
+
+#if !ONPREMISES
+        private static async Task EnsurePropertiesImplementation<T>(T clientObject, Expression<Func<T, object>>[] propertySelector) where T : ClientObject
+#else
+        private static void EnsurePropertiesImplementation<T>(T clientObject, Expression<Func<T, object>>[] propertySelector) where T : ClientObject
+#endif
+        {
             var dirty = false;
             foreach (Expression<Func<T, object>> expression in propertySelector)
             {
                 if (expression.Body.NodeType == ExpressionType.Call && expression.Body is MethodCallExpression)
                 {
-                    var body = (MethodCallExpression) expression.Body;
+                    var body = (MethodCallExpression)expression.Body;
                     if (body.Method.IsGenericMethod &&
-                        body.Method.DeclaringType == typeof (ClientObjectQueryableExtension) &&
+                        body.Method.DeclaringType == typeof(ClientObjectQueryableExtension) &&
                         (body.Method.Name == "Include" || body.Method.Name == "IncludeWithDefaultProperties"))
                     {
                         if (body.Arguments.Count != 2)
@@ -131,20 +202,25 @@ namespace Microsoft.SharePoint.Client
                     {
                         throw new Exception("Only 'Include' and 'IncludeWithDefaultProperties' methods are supported.");
                     }
-                } else if (!clientObject.IsPropertyAvailable(expression) && !clientObject.IsObjectPropertyInstantiated(expression))
+                }
+                else if (!clientObject.IsPropertyAvailable(expression) && !clientObject.IsObjectPropertyInstantiated(expression))
                 {
                     clientObject.Context.Load(clientObject, expression);
                     dirty = true;
                 }
                 else if (clientObject.IsObjectPropertyInstantiated(expression))
                 {
-                    dirty  = dirty || EnsureCollectionLoaded(clientObject, expression);
+                    dirty = dirty || EnsureCollectionLoaded(clientObject, expression);
                 }
             }
 
             if (dirty)
             {
+#if !ONPREMISES
+                await clientObject.Context.ExecuteQueryRetryAsync();
+#else
                 clientObject.Context.ExecuteQueryRetry();
+#endif
             }
         }
 
