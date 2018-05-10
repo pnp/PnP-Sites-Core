@@ -22,7 +22,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override string Name
         {
-            get { return $"Content Types ({_step} step)"; }
+#if DEBUG
+            get { return $"Content Types ({_step})"; }
+#else
+            get { return $"Content Types"; }
+#endif
         }
 
         public ObjectContentType(FieldAndListProvisioningStepHelper.Step step)
