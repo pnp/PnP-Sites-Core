@@ -21,7 +21,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override string Name
         {
-            get { return $"Fields ({_step} step)"; }
+#if DEBUG
+            get { return $"Fields ({_step})"; }
+#else
+            get { return $"Fields"; }
+#endif 
         }
 
         public ObjectField(FieldAndListProvisioningStepHelper.Step step)
