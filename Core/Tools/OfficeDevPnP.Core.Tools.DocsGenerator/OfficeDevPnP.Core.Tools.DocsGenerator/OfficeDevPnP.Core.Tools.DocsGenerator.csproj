@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="OfficeDevPnP.Core">
+      <HintPath>..\..\..\OfficeDevPnP.Core\bin\Debug\OfficeDevPnP.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -53,6 +56,8 @@
       <Link>ProvisioningSchema-2018-01.cs</Link>
       <DependentUpon>ProvisioningSchema-2018-01.xsd</DependentUpon>
     </Compile>
+    <Compile Include="EngineParameter.cs" />
+    <Compile Include="ParameterAnalyzer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
