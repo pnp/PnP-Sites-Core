@@ -23,7 +23,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     internal class ObjectListInstance : ObjectHandlerBase
     {
         private readonly FieldAndListProvisioningStepHelper.Step step;
-        private List<string> warningsShown = new List<string>();
         public override string Name
         {
 #if DEBUG
@@ -988,12 +987,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var fieldName = (string)existingFieldElement.Attribute("Name") ?? (string)existingFieldElement.Attribute("StaticName");
                     var warning = string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_Field__0____1___exists_in_list__2____3___but_is_of_different_type__Skipping_field_, fieldName, fieldId, listInfo.TemplateList.Title, listInfo.SiteList.Id);
-                    if (!warningsShown.Contains(warning))
-                    {
-                        scope.LogWarning(warning);
-                        WriteMessage(warning, ProvisioningMessageType.Warning);
-                        warningsShown.Add(warning);
-                    }
+                    scope.LogWarning(warning);
+                    WriteMessage(warning, ProvisioningMessageType.Warning);
                 }
             }
             return field;
@@ -1292,12 +1287,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             else
             {
                 var warning = string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_, templateList.Title, templateList.Url, existingList.Id);
-                if (!warningsShown.Contains(warning))
-                {
-                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_, templateList.Title, templateList.Url, existingList.Id);
-                    WriteMessage(warning, ProvisioningMessageType.Warning);
-                    warningsShown.Add(warning);
-                }
+                scope.LogWarning(warning);
+                WriteMessage(warning, ProvisioningMessageType.Warning);
                 return null;
             }
         }
@@ -1375,12 +1366,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (templateList.RemoveExistingContentTypes && existingContentTypes.Count > 0)
                 {
                     var warning = $"You specified to remove existing content types for the list with url '{list.RootFolder.ServerRelativeUrl}'. We found a list with the same url in the site. In case of a list update we cannot remove existing content types as they can be in use by existing list items and/or documents.";
-                    if (!warningsShown.Contains(warning))
-                    {
-                        scope.LogWarning(warning);
-                        WriteMessage(warning, ProvisioningMessageType.Warning);
-                        warningsShown.Add(warning);
-                    }
+                    scope.LogWarning(warning);
+                    WriteMessage(warning, ProvisioningMessageType.Warning);
                 }
             }
 
@@ -1680,12 +1667,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         else
                         {
                             var warning = string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_to_list_0_because_EnableModeration_is_not_set_to_true, templateList.Url);
-                            if (!warningsShown.Contains(warning))
-                            {
-                                scope.LogWarning(warning);
-                                WriteMessage(warning, ProvisioningMessageType.Warning);
-                                warningsShown.Add(warning);
-                            }
+                            scope.LogWarning(warning);
+                            WriteMessage(warning, ProvisioningMessageType.Warning);
                         }
                     }
                     else
