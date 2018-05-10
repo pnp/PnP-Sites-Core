@@ -226,7 +226,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 PreviewImageAltText = designPreviewImageAltText,
                                 IsDefault = siteDesign.IsDefault,
                                 WebTemplate = ((int)siteDesign.WebTemplate).ToString() // convert TeamSite to 64, CommunicationSite to 68
-                            };
+                        };
                             if (siteDesign.SiteScripts != null && siteDesign.SiteScripts.Any())
                             {
                                 List<Guid> ids = new List<Guid>();
