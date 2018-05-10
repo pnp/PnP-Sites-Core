@@ -22,16 +22,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectListInstance : ObjectHandlerBase
     {
-        private readonly FieldAndListProvisioningStepHelper.Step _step;
-
+        private readonly FieldAndListProvisioningStepHelper.Step step;
+        private List<string> warningsShown = new List<string>();
         public override string Name
         {
-            get { return $"List instances ({_step} step)"; }
+#if DEBUG
+            get { return $"List instances ({step})"; }
+#else
+            get { return $"List instances"; }
+#endif
         }
 
         public ObjectListInstance(FieldAndListProvisioningStepHelper.Step stage)
         {
-            this._step = stage;
+            this.step = stage;
         }
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
@@ -56,16 +60,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var total = template.Lists.Count;
 
-                    #region Lists and List Content Types
+#region Lists and List Content Types
 
                     var currentListIndex = 0;
                     foreach (var templateList in template.Lists)
                     {
+                        templateList.Url = parser.ParseString(templateList.Url);
                         currentListIndex++;
                         WriteMessage($"List|{templateList.Title}|{currentListIndex}|{total}", ProvisioningMessageType.Progress);
                         CheckContentTypes(web, template, scope, templateList);
                         // check if the List exists by url or by title
-                        var index = existingLists.FindIndex(x => x.Title.Equals(parser.ParseString(templateList.Title), StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, parser.ParseString(templateList.Url)), StringComparison.OrdinalIgnoreCase));
+                        var index = existingLists.FindIndex(x => x.Title.Equals(parser.ParseString(templateList.Title), StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, templateList.Url), StringComparison.OrdinalIgnoreCase));
 
                         if (index == -1)
                         {
@@ -120,49 +125,49 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    #endregion Lists and List Content Types
+#endregion Lists and List Content Types
 
-                    #region FieldRefs
+#region FieldRefs
 
                     foreach (var listInfo in processedLists)
                     {
                         ProcessFieldRefs(web, template, parser, scope, rootWeb, listInfo);
                     }
 
-                    #endregion FieldRefs
+#endregion FieldRefs
 
-                    #region Fields
+#region Fields
 
                     foreach (var listInfo in processedLists)
                     {
                         ProcessFields(web, parser, scope, listInfo);
                     }
 
-                    #endregion Fields
+#endregion Fields
 
                     // We stop here unless we reached the last provisioning stop of the list
-                    if (_step == FieldAndListProvisioningStepHelper.Step.ListSettings)
+                    if (step == FieldAndListProvisioningStepHelper.Step.ListSettings)
                     {
 
-                        #region Default Field Values
+#region Default Field Values
 
                         foreach (var listInfo in processedLists)
                         {
                             ProcessFieldDefaults(web, listInfo);
                         }
 
-                        #endregion Default Field Values
+#endregion Default Field Values
 
-                        #region Views
+#region Views
 
                         foreach (var listInfo in processedLists)
                         {
                             ProcessViews(web, parser, scope, listInfo);
                         }
 
-                        #endregion Views
+#endregion Views
 
-                        #region Folders
+#region Folders
 
                         // Folders are supported for document libraries and generic lists only
                         foreach (var list in processedLists)
@@ -170,9 +175,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             ProcessFolders(web, parser, scope, list);
                         }
 
-                        #endregion Folders
+#endregion Folders
 
-                        #region IRM Settings
+#region IRM Settings
 
                         // Configure IRM Settings
                         foreach (var list in processedLists)
@@ -180,7 +185,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             ProcessIRMSettings(web, list);
                         }
 
-                        #endregion IRM Settings
+#endregion IRM Settings
 
                         // If an existing view is updated, and the list is to be listed on the QuickLaunch, it is removed because the existing view will be deleted and recreated from scratch.
                         foreach (var listInfo in processedLists)
@@ -297,7 +302,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         FieldRef = (string)XElement.Parse(parser.ParseString(fld.SchemaXml)).Attribute("FieldRef"), // FieldRef means this is a dependent lookup
                         Step = fld.GetFieldProvisioningStep(parser)
                     })
-                    .Where(fldData => fldData.Step == _step) // Only include fields related to the current step
+                    .Where(fldData => fldData.Step == step) // Only include fields related to the current step
                     .OrderBy(fldData => fldData.FieldRef) // Ensure fields having fieldRef are handled after. This ensure lookups are created before dependent lookups
                     .Select(fldData => fldData.Field)
                     .ToArray();
@@ -378,7 +383,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     TemplateField = template.SiteFields.FirstOrDefault(tf => (Guid)XElement.Parse(parser.ParseString(tf.SchemaXml)).Attribute("ID") == fr.Id)
                 }).Where(frData =>
                     frData.TemplateField == null // Process fields refs if the target is not defined in the current template
-                    || frData.TemplateField.GetFieldProvisioningStep(parser) == _step // or process field ref only if the current step is matching
+                    || frData.TemplateField.GetFieldProvisioningStep(parser) == step // or process field ref only if the current step is matching
                 ).Select(fr=>fr.FieldRef).ToArray();
 
                 var total = fieldsRefsToProcess.Length;
@@ -1256,11 +1261,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 #endif
 
-                #region UserCustomActions
+#region UserCustomActions
 
                 isDirty |= UpdateCustomActions(web, existingList, templateList, parser, scope, isNoScriptSite);
 
-                #endregion UserCustomActions
+#endregion UserCustomActions
 
                 if (isDirty)
                 {
@@ -1359,7 +1364,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (templateList.RemoveExistingContentTypes && existingContentTypes.Count > 0)
                 {
-                    WriteMessage($"You specified to remove existing content types for the list with url '{list.RootFolder.ServerRelativeUrl}'. We found a list with the same url in the site. In case of a list update we cannot remove existing content types as they can be in use by existing list items and/or documents.", ProvisioningMessageType.Warning);
+                    var warning = $"You specified to remove existing content types for the list with url '{list.RootFolder.ServerRelativeUrl}'. We found a list with the same url in the site. In case of a list update we cannot remove existing content types as they can be in use by existing list items and/or documents.";
+                    if(!warningsShown.Contains(warning))
+                    {
+                        WriteMessage(warning, ProvisioningMessageType.Warning);
+                        warningsShown.Add(warning);
+                    }
                 }
             }
 
