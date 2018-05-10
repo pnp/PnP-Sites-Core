@@ -678,7 +678,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. Thus, there could be potential issues while applying the template..
+        ///   Looks up a localized string similar to The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. This could cause potential issues while applying the template..
         /// </summary>
         internal static string Provisioning_Asymmetric_Base_Templates {
             get {
