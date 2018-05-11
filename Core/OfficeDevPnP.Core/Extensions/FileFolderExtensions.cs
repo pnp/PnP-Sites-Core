@@ -157,23 +157,58 @@ namespace Microsoft.SharePoint.Client
         public static void CheckOutFile(this Web web, string serverRelativeUrl)
         {
 #if ONPREMISES
+            web.CheckOutFileImplementation(serverRelativeUrl);
+#else
+            Task.Run(() => web.CheckOutFileImplementation(serverRelativeUrl)).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Checks out a file
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL of the file to checkout</param>
+        public static async Task CheckOutFileAsync(this Web web, string serverRelativeUrl)
+        {
+            await new SynchronizationContextRemover();
+            await web.CheckOutFileImplementation(serverRelativeUrl);
+        }
+#endif
+        /// <summary>
+        /// Checks out a file
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL of the file to checkout</param>
+#if ONPREMISES
+        private static void CheckOutFileImplementation(this Web web, string serverRelativeUrl)
+        {
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
 #else
+        private static async Task CheckOutFileImplementation(this Web web, string serverRelativeUrl)
+        {
             var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
 #endif
 
-            var scope = new ConditionalScope(web.Context, () => file.ServerObjectIsNull.Value != true && file.Exists && file.CheckOutType == CheckOutType.None);
+            var scope = new ConditionalScope(web.Context, () => !file.ServerObjectIsNull.Value && file.Exists && file.CheckOutType == CheckOutType.None);
 
             using (scope.StartScope())
             {
                 web.Context.Load(file);
             }
+#if ONPREMISES
             web.Context.ExecuteQueryRetry();
+#else
+            await web.Context.ExecuteQueryAsync();
+#endif
 
             if (scope.TestResult.Value)
             {
                 file.CheckOut();
+#if ONPREMISES
                 web.Context.ExecuteQueryRetry();
+#else
+                await web.Context.ExecuteQueryAsync();
+#endif
             }
         }
 
@@ -204,6 +239,51 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder CreateDocumentSet(this Folder folder, string documentSetName, ContentTypeId contentTypeId)
         {
+#if ONPREMISES
+            return folder.CreateDocumentSetImplementation(documentSetName, contentTypeId);
+#else
+            return Task.Run(() => folder.CreateDocumentSetImplementation(documentSetName, contentTypeId)).GetAwaiter().GetResult();
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Creates a new document set as a child of an existing folder, with the specified content type ID.
+        /// </summary>
+        /// <param name="folder">Folder of the document set</param>
+        /// <param name="documentSetName">Name of the document set</param>
+        /// <param name="contentTypeId">Content type of the document set</param>
+        /// <returns>The created Folder representing the document set, so that additional operations (such as setting properties) can be done.</returns>
+        /// <remarks>
+        /// <example>
+        ///     var setContentType = list.BestMatchContentTypeId(BuiltInContentTypeId.DocumentSet);
+        ///     var set1 = list.RootFolder.CreateDocumentSet("Set 1", setContentType);
+        /// </example>
+        /// </remarks>
+        public static async Task<Folder> CreateDocumentSetAsync(this Folder folder, string documentSetName, ContentTypeId contentTypeId)
+        {
+            await new SynchronizationContextRemover();
+            return await folder.CreateDocumentSetImplementation(documentSetName, contentTypeId);
+        }
+#endif
+        /// <summary>
+        /// Creates a new document set as a child of an existing folder, with the specified content type ID.
+        /// </summary>
+        /// <param name="folder">Folder of the document set</param>
+        /// <param name="documentSetName">Name of the document set</param>
+        /// <param name="contentTypeId">Content type of the document set</param>
+        /// <returns>The created Folder representing the document set, so that additional operations (such as setting properties) can be done.</returns>
+        /// <remarks>
+        /// <example>
+        ///     var setContentType = list.BestMatchContentTypeId(BuiltInContentTypeId.DocumentSet);
+        ///     var set1 = list.RootFolder.CreateDocumentSet("Set 1", setContentType);
+        /// </example>
+        /// </remarks>
+#if ONPREMISES
+        private static Folder CreateDocumentSetImplementation(this Folder folder, string documentSetName, ContentTypeId contentTypeId)
+        {
+#else
+        private static async Task<Folder> CreateDocumentSetImplementation(this Folder folder, string documentSetName, ContentTypeId contentTypeId)
+        {
+#endif
             if (folder == null) { throw new ArgumentNullException(nameof(folder)); }
             if (documentSetName == null) { throw new ArgumentNullException(nameof(documentSetName)); }
             if (contentTypeId == null) { throw new ArgumentNullException(nameof(contentTypeId)); }
@@ -216,15 +296,17 @@ namespace Microsoft.SharePoint.Client
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FieldAndContentTypeExtensions_CreateDocumentSet, documentSetName);
 
             var result = DocumentSet.DocumentSet.Create(folder.Context, folder, documentSetName, contentTypeId);
+#if ONPREMISES
             folder.Context.ExecuteQueryRetry();
-
+#else
+            await folder.Context.ExecuteQueryAsync();
+#endif
             var fullUri = new Uri(result.Value);
             var serverRelativeUrl = fullUri.AbsolutePath;
             var documentSetFolder = folder.Folders.GetByUrl(serverRelativeUrl);
 
             return documentSetFolder;
         }
-
         /// <summary>
         /// Converts a folder with the given name as a child of the List RootFolder. 
         /// </summary>
@@ -384,9 +466,11 @@ namespace Microsoft.SharePoint.Client
             else
             {
                 // Create folder for generic list
-                ListItemCreationInformation newFolderInfo = new ListItemCreationInformation();
-                newFolderInfo.UnderlyingObjectType = FileSystemObjectType.Folder;
-                newFolderInfo.LeafName = folderName;
+                var newFolderInfo = new ListItemCreationInformation
+                {
+                    UnderlyingObjectType = FileSystemObjectType.Folder,
+                    LeafName = folderName
+                };
                 parentFolder.EnsureProperty(f => f.ServerRelativeUrl);
                 newFolderInfo.FolderUrl = parentFolder.ServerRelativeUrl;
                 ListItem newFolderItem = parentList.AddItem(newFolderInfo);
@@ -636,10 +720,12 @@ namespace Microsoft.SharePoint.Client
                         createPath = createPath.Substring(0, createPath.Length - folderName.Length).TrimEnd('/');
                         var listUrl =
                             containingList.EnsureProperty(f => f.RootFolder).EnsureProperty(r => r.ServerRelativeUrl);
-                        ListItemCreationInformation newFolderInfo = new ListItemCreationInformation();
-                        newFolderInfo.UnderlyingObjectType = FileSystemObjectType.Folder;
-                        newFolderInfo.LeafName = folderName;
-                        newFolderInfo.FolderUrl = UrlUtility.Combine(listUrl, createPath);
+                        var newFolderInfo = new ListItemCreationInformation
+                        {
+                            UnderlyingObjectType = FileSystemObjectType.Folder,
+                            LeafName = folderName,
+                            FolderUrl = UrlUtility.Combine(listUrl, createPath)
+                        };
                         ListItem newFolderItem = containingList.AddItem(newFolderInfo);
 
                         var titleField = web.Context.LoadQuery(containingList.Fields.Where(f => f.Id == BuiltInFieldId.Title));
