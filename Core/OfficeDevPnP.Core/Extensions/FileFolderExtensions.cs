@@ -243,6 +243,7 @@ namespace Microsoft.SharePoint.Client
             return folder.CreateDocumentSetImplementation(documentSetName, contentTypeId);
 #else
             return Task.Run(() => folder.CreateDocumentSetImplementation(documentSetName, contentTypeId)).GetAwaiter().GetResult();
+#endif
         }
 #if !ONPREMISES
         /// <summary>
