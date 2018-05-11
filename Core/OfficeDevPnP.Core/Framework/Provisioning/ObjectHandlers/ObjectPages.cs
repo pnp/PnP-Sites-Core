@@ -144,7 +144,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     WebPartEntity wpEntity = new WebPartEntity();
                                     wpEntity.WebPartTitle = parser.ParseString(webPart.Title);
-                                    wpEntity.WebPartXml = parser.ParseXmlString(webPart.Contents.Trim(new[] { '\n', ' ' }), "~sitecollection", "~site");
+                                    wpEntity.WebPartXml = parser.ParseXmlStringWebpart(webPart.Contents.Trim(new[] { '\n', ' ' }), web, "~sitecollection", "~site");
                                     var wpd = web.AddWebPartToWikiPage(url, wpEntity, (int)webPart.Row, (int)webPart.Column, false);
 #if !SP2013
                                     if (webPart.Title.ContainsResourceToken())
