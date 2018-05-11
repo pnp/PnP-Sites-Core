@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 - ClientComponentId and ClientComponentProperties are now updated when applying a template to a site where the customaction already exists [SchauDK]
 - Fixes issue with requiring tenant admin access while not provisioning tenant scoped artifacts
+- Fixed issue where a list would not be created based on a list template (TemplateFeatureId)
 
 ### Deprecated
 
