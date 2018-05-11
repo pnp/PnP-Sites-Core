@@ -323,10 +323,32 @@ namespace Microsoft.SharePoint.Client
         {
             var folder = list.RootFolder.ResolveSubFolder(folderName);
             if (folder == null) throw new ArgumentException(CoreResources.FileFolderExtensions_FolderMissing);
-
-            return ConvertFolderToDocumentSetImplementation(list, folder);
+#if ONPREMISES
+            return list.ConvertFolderToDocumentSetImplementation(folder);
+#else
+            return Task.Run(() => list.ConvertFolderToDocumentSetImplementation(folder)).GetAwaiter().GetResult();
+#endif
         }
-
+#if !ONPREMISES
+        /// <summary>
+        /// Converts a folder with the given name as a child of the List RootFolder. 
+        /// </summary>
+        /// <param name="list">List in which the folder exists</param>
+        /// <param name="folderName">Folder name to convert</param>
+        /// <returns>The newly converted Document Set, so that additional operations (such as setting properties) can be done.</returns>
+        /// <remarks>
+        /// <para>
+        /// Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
+        /// </para>
+        /// </remarks>
+        public static async Task<Folder> ConvertFolderToDocumentSetAsync(this List list, string folderName)
+        {
+            await new SynchronizationContextRemover();
+            var folder = list.RootFolder.ResolveSubFolder(folderName);
+            if (folder == null) throw new ArgumentException(CoreResources.FileFolderExtensions_FolderMissing);
+            return await list.ConvertFolderToDocumentSetImplementation(folder);
+        }
+#endif
         /// <summary>
         /// Converts a folder with the given name as a child of the List RootFolder. 
         /// </summary>
@@ -340,8 +362,30 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder ConvertFolderToDocumentSet(this List list, Folder folder)
         {
-            return ConvertFolderToDocumentSetImplementation(list, folder);
+#if ONPREMISES
+            return list.ConvertFolderToDocumentSetImplementation(folder);
+#else
+            return Task.Run(() => list.ConvertFolderToDocumentSetImplementation(folder)).GetAwaiter().GetResult();
+#endif
         }
+#if !ONPREMISES
+        /// <summary>
+        /// Converts a folder with the given name as a child of the List RootFolder. 
+        /// </summary>
+        /// <param name="list">List in which the folder exists</param>
+        /// <param name="folder">Folder to convert</param>
+        /// <returns>The newly converted Document Set, so that additional operations (such as setting properties) can be done.</returns>
+        /// <remarks>
+        /// <para>
+        /// Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
+        /// </para>
+        /// </remarks>
+        public static async Task<Folder> ConvertFolderToDocumentSetAsync(this List list, Folder folder)
+        {
+            await new SynchronizationContextRemover();
+            return await list.ConvertFolderToDocumentSetImplementation(folder);
+        }
+#endif
 
         /// <summary>
         /// Internal implementation of the Folder conversion to Document set
@@ -349,8 +393,13 @@ namespace Microsoft.SharePoint.Client
         /// <param name="list">Library in which the folder exists</param>
         /// <param name="folder">Folder to convert</param>
         /// <returns>The newly converted Document Set, so that additional operations (such as setting properties) can be done.</returns>
+#if ONPREMISES
         private static Folder ConvertFolderToDocumentSetImplementation(this List list, Folder folder)
         {
+#else
+        private static async Task<Folder> ConvertFolderToDocumentSetImplementation(this List list, Folder folder)
+        {
+#endif
             list.EnsureProperties(l => l.ContentTypes.Include(c => c.StringId));
             folder.Context.Load(folder.ListItemAllFields, l => l["ContentTypeId"]);
             folder.Context.ExecuteQueryRetry();
@@ -367,7 +416,11 @@ namespace Microsoft.SharePoint.Client
 
             listItem.Update();
             folder.Update();
+#if ONPREMISES
             list.Context.ExecuteQueryRetry();
+#else
+            await list.Context.ExecuteQueryRetryAsync();
+#endif
 
             //Refresh Folder, otherwise 'Version conflict' error might be thrown on changing properties
             folder = list.RootFolder.ResolveSubFolder(folder.Name);
