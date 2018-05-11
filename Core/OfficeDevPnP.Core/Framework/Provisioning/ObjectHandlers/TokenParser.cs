@@ -526,6 +526,46 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         /// <summary>
+        /// Parses given string for a webpart making sure we only parse the token for a given web
+        /// </summary>
+        /// <param name="input">input string</param>
+        /// <param name="web">filters the tokens on web id</param>
+        /// <param name="tokensToSkip">array of tokens to skip</param>
+        /// <returns>Returns parsed string for a webpart</returns>
+        public string ParseStringWebPart(string input, Web web, params string[] tokensToSkip)
+        {
+            web.EnsureProperty(x => x.Id);
+
+            var tokenChars = new[] { '{', '~' };
+            if (string.IsNullOrEmpty(input) || input.IndexOfAny(tokenChars) == -1) return input;
+
+            var tokensToSkipList = tokensToSkip?.ToList() ?? new List<string>();
+            string origInput;
+
+            do
+            {
+                origInput = input;
+
+                foreach (var token in _tokens)
+                {
+                    foreach (var filteredToken in token.GetTokens().Except(tokensToSkipList, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        var regex = token.GetRegexForToken(filteredToken);
+                        if (regex.IsMatch(input))
+                        {
+                            if (token is ListIdToken && !token.Web.Id.Equals(web.Id))
+                                continue;
+
+                            input = regex.Replace(input, ParseString(token.GetReplaceValue(), tokensToSkipList.Concat(new[] { filteredToken }).ToArray()));
+                        }
+                    }
+                }
+            } while (origInput != input && input.IndexOfAny(tokenChars) >= 0);
+
+            return input;
+        }
+
+        /// <summary>
         /// Parses given string
         /// </summary>
         /// <param name="input">input string</param>
@@ -558,6 +598,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             } while (origInput != input && input.IndexOfAny(tokenChars) >= 0);
 
             return input;
+        }
+
+        public string ParseXmlStringWebpart(string inputXml, Web web, params string[] tokensToSkip)
+        {
+            var xmlDoc = new System.Xml.XmlDocument();
+            xmlDoc.LoadXml(inputXml);
+
+            // Swap out tokens in the attributes of all nodes.
+            var nodes = xmlDoc.SelectNodes("//*");
+            if (nodes != null)
+            {
+                foreach (var node in nodes.OfType<System.Xml.XmlElement>().Where(n => n.HasAttributes))
+                {
+                    foreach (var attribute in node.Attributes.OfType<System.Xml.XmlAttribute>().Where(a => !a.Name.Equals("xmlns", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrEmpty(a.Value)))
+                    {
+                        attribute.Value = ParseStringWebPart(attribute.Value, web, tokensToSkip);
+                    }
+                }
+            }
+
+            // Swap out tokens in the values of any elements with a text value.
+            nodes = xmlDoc.SelectNodes("//*[text()]");
+            if (nodes != null)
+            {
+                foreach (var node in nodes.OfType<System.Xml.XmlElement>())
+                {
+                    if (!string.IsNullOrEmpty(node.InnerText))
+                    {
+                        node.InnerText = ParseStringWebPart(node.InnerText, web, tokensToSkip);
+                    }
+                }
+            }
+
+            return xmlDoc.OuterXml;
         }
 
         public string ParseXmlString(string inputXml, params string[] tokensToSkip)
