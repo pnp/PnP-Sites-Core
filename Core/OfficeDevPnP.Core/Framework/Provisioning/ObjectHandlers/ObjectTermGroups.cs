@@ -820,7 +820,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             foreach (var term in terms)
             {
                 var modelTerm = new Model.Term();
-                if (!isSiteCollectionTermGroup || term.IsReused)
+                if (term.IsReused)
                 {
                     modelTerm.Id = term.Id;
                 }
