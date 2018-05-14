@@ -225,8 +225,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 PreviewImageUrl = designPreviewImageUrl,
                                 PreviewImageAltText = designPreviewImageAltText,
                                 IsDefault = siteDesign.IsDefault,
-                                WebTemplate = ((int)siteDesign.WebTemplate).ToString() // convert TeamSite to 64, CommunicationSite to 68
-                        };
+                            };
+                            switch(siteDesign.WebTemplate)
+                            {
+                                case SiteDesignWebTemplate.TeamSite:
+                                    {
+                                        siteDesignCreationInfo.WebTemplate = "64";
+                                        break;
+                                    }
+                                case SiteDesignWebTemplate.CommunicationSite:
+                                    {
+                                        siteDesignCreationInfo.WebTemplate = "68";
+                                        break;
+                                    }
+                            }
                             if (siteDesign.SiteScripts != null && siteDesign.SiteScripts.Any())
                             {
                                 List<Guid> ids = new List<Guid>();
@@ -264,7 +276,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 existingSiteDesign.PreviewImageUrl = designPreviewImageUrl;
                                 existingSiteDesign.PreviewImageAltText = designPreviewImageAltText;
                                 existingSiteDesign.IsDefault = siteDesign.IsDefault;
-                                existingSiteDesign.WebTemplate = ((int)siteDesign.WebTemplate).ToString(); // convert TeamSite to 64, CommunicationSite to 68
+                                switch (siteDesign.WebTemplate)
+                                {
+                                    case SiteDesignWebTemplate.TeamSite:
+                                        {
+                                            existingSiteDesign.WebTemplate = "64";
+                                            break;
+                                        }
+                                    case SiteDesignWebTemplate.CommunicationSite:
+                                        {
+                                            existingSiteDesign.WebTemplate = "68";
+                                            break;
+                                        }
+                                }
 
                                 tenant.UpdateSiteDesign(existingSiteDesign);
                                 tenantContext.ExecuteQueryRetry();

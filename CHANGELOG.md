@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fixes issue with requiring tenant admin access while not provisioning tenant scoped artifacts
 - Fixed issue where a list would not be created based on a list template (TemplateFeatureId)
 - Fixes issue with double tokens in content by search webpart provisioning [KEMiCZA]
+- Fixes issue with sitedesigns not correctly being associated to web template
 
 ### Deprecated
 
