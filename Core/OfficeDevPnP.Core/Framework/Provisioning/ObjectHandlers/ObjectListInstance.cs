@@ -1544,7 +1544,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // the OnQuickLaunch property is re-set on the Created List object
                         QuickLaunchOption = templateList.OnQuickLaunch ? QuickLaunchOptions.On : QuickLaunchOptions.Off
                     };
-
+#if !ONPREMISES
                 if (templateList.TemplateFeatureID != Guid.Empty)
                 {
                     Site site = ((ClientContext)web.Context).Site;
@@ -1561,7 +1561,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     listCreate.TemplateType = templateList.TemplateType;
                 }
-
+#else
+                listCreate.TemplateType = templateList.TemplateType;
+#endif
                 createdList = web.Lists.Add(listCreate);
                 createdList.Update();
             }
