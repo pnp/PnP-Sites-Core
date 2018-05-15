@@ -279,6 +279,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         {
                                             baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals($"{{{control.ControlId.ToString()}}}", StringComparison.CurrentCultureIgnoreCase));
                                         }
+                                        if(baseControl == null)
+                                        {
+                                            baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals(control.ControlId.ToString(), StringComparison.InvariantCultureIgnoreCase));
+                                        }
                                     }
                                     // Is an OOB client side web part (1st party)
                                     else

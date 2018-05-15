@@ -90,7 +90,7 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await BaseAddRequest(file, filename, overwrite, scope);
+            return await BaseAddRequest(file, filename, overwrite, 200, scope);
         }
 
         /// <summary>
@@ -117,7 +117,7 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await BaseAddRequest(bytes, fileInfo.Name, overwrite, scope);
+            return await BaseAddRequest(bytes, fileInfo.Name, overwrite, 200, scope);
         }
 
         /// <summary>
@@ -735,7 +735,7 @@ namespace OfficeDevPnP.Core.ALM
             return await Task.Run(() => returnValue);
         }
 
-        private async Task<AppMetadata> BaseAddRequest(byte[] file, string filename, bool overwrite, AppCatalogScope scope)
+        private async Task<AppMetadata> BaseAddRequest(byte[] file, string filename, bool overwrite, int timeoutSeconds, AppCatalogScope scope)
         {
             AppMetadata returnValue = null;
 
@@ -774,7 +774,7 @@ namespace OfficeDevPnP.Core.ALM
                     request.Headers.Add("X-RequestDigest", requestDigest);
                     request.Headers.Add("binaryStringRequestBody", "true");
                     request.Content = new ByteArrayContent(file);
-
+                    httpClient.Timeout = new TimeSpan(0,0, timeoutSeconds);
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
