@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [2.27.1806.0 - Unreleased]
 
 ### Added
+- Added optional timeout value on AppManager.Add method
 
 ### Changed
 - ClientComponentId and ClientComponentProperties are now updated when applying a template to a site where the customaction already exists [SchauDK]

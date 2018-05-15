@@ -68,7 +68,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             var appBytes = GetFileBytes(template, app.Src);
 
                             var appFilename = app.Src.Substring(app.Src.LastIndexOf('\\') + 1);
-                            appMetadata = manager.Add(appBytes, appFilename, app.Overwrite);
+                            appMetadata = manager.Add(appBytes, appFilename, app.Overwrite, timeoutSeconds: 300);
 
                             parser.Tokens.Add(new AppPackageIdToken(web, appFilename, appMetadata.Id));
                         }
