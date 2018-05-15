@@ -258,8 +258,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     }
                                     else
                                     {
-                                        var json = JsonConvert.DeserializeObject<Dictionary<string, string>>(control.JsonControlData);
-                                        textControl.Text = parser.ParseString(json.First().Value);
+                                        if (!string.IsNullOrEmpty(control.JsonControlData))
+                                        {
+                                            var json = JsonConvert.DeserializeObject<Dictionary<string, string>>(control.JsonControlData);
+
+                                            if (json.Count > 0)
+                                            {
+                                                textControl.Text = parser.ParseString(json.First().Value);
+                                            }
+                                        }
                                     }
                                     // Reduce column number by 1 due 0 start indexing
                                     page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
@@ -285,10 +292,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         else if (control.ControlId != Guid.Empty)
                                         {
                                             baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals($"{{{control.ControlId.ToString()}}}", StringComparison.CurrentCultureIgnoreCase));
-                                        }
-                                        if (baseControl == null)
-                                        {
-                                            baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals(control.ControlId.ToString(), StringComparison.InvariantCultureIgnoreCase));
+
+                                            if (baseControl == null)
+                                            {
+                                                baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals(control.ControlId.ToString(), StringComparison.InvariantCultureIgnoreCase));
+                                            }
                                         }
                                     }
                                     // Is an OOB client side web part (1st party)
