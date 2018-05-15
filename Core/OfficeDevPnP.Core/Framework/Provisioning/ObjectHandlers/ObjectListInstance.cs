@@ -1534,18 +1534,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             else
             {
-                var listCreate = new ListCreationInformation();
-                listCreate.Description = parser.ParseString(templateList.Description);
+                ListCreationInformation listCreate =
+                    new ListCreationInformation
+                    {
+                        Title = parser.ParseString(templateList.Title),
+                        Description = parser.ParseString(templateList.Description),
+                        Url = parser.ParseString(templateList.Url),
+                        // the line of code below doesn't add the list to QuickLaunch
+                        // the OnQuickLaunch property is re-set on the Created List object
+                        QuickLaunchOption = templateList.OnQuickLaunch ? QuickLaunchOptions.On : QuickLaunchOptions.Off
+                    };
+#if !ONPREMISES
+                if (templateList.TemplateFeatureID != Guid.Empty)
+                {
+                    Site site = ((ClientContext)web.Context).Site;
+                    var listTemplates = site.GetCustomListTemplates(web);
+                    web.Context.Load(listTemplates);
+                    web.Context.ExecuteQueryRetry();
+                    var template = listTemplates.SingleOrDefault(t => t.FeatureId == templateList.TemplateFeatureID);
+                    if (template != null)
+                    {
+                        listCreate.ListTemplate = template;
+                    }
+                }
+                if (listCreate.ListTemplate == null)
+                {
+                    listCreate.TemplateType = templateList.TemplateType;
+                }
+#else
                 listCreate.TemplateType = templateList.TemplateType;
-                listCreate.Title = parser.ParseString(templateList.Title);
-
-                // the line of code below doesn't add the list to QuickLaunch
-                // the OnQuickLaunch property is re-set on the Created List object
-                listCreate.QuickLaunchOption = templateList.OnQuickLaunch ? QuickLaunchOptions.On : QuickLaunchOptions.Off;
-
-                listCreate.Url = parser.ParseString(templateList.Url);
-                listCreate.TemplateFeatureId = templateList.TemplateFeatureID;
-
+#endif
                 createdList = web.Lists.Add(listCreate);
                 createdList.Update();
             }

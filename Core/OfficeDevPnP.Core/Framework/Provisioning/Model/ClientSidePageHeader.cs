@@ -93,13 +93,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     public enum ClientSidePageHeaderType
     {
         /// <summary>
-        /// Default client side page header
-        /// </summary>
-        Default,
-        /// <summary>
         /// The client side page does not hava any header
         /// </summary>
         None,
+        /// <summary>
+        /// Default client side page header
+        /// </summary>
+        Default,
         /// <summary>
         /// The client side page has a custom header
         /// </summary>
