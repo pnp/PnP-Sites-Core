@@ -54,6 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (template.Tenant.AppCatalog != null && template.Tenant.AppCatalog.Packages.Count > 0)
             {
+                
                 var manager = new AppManager(web.Context as ClientContext);
 
                 var appCatalogUri = web.GetAppCatalog();
@@ -61,6 +62,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var app in template.Tenant.AppCatalog.Packages)
                     {
+                        WriteMessage("Apps/Addins", ProvisioningMessageType.Progress);
                         AppMetadata appMetadata = null;
 
                         if (app.Action == PackageAction.Upload || app.Action == PackageAction.UploadAndPublish)
@@ -120,6 +122,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (template.Tenant.StorageEntities != null && template.Tenant.StorageEntities.Any())
             {
+                WriteMessage($"Storage Entities", ProvisioningMessageType.Progress);
                 var appCatalogUri = web.GetAppCatalog();
                 using (var appCatalogContext = web.Context.Clone(appCatalogUri))
                 {
@@ -142,6 +145,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (template.Tenant.SiteScripts != null && template.Tenant.SiteScripts.Any())
             {
+                WriteMessage($"Site Scripts", ProvisioningMessageType.Progress);
                 using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
                 {
                     var tenant = new Tenant(tenantContext);
@@ -161,8 +165,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             TenantSiteScriptCreationInfo siteScriptCreationInfo = new TenantSiteScriptCreationInfo
                             {
-                                Title = siteScript.Title,
-                                Description = siteScript.Description,
+                                Title = scriptTitle,
+                                Description = scriptDescription,
                                 Content = scriptContent
                             };
                             var script = tenant.CreateSiteScript(siteScriptCreationInfo);
@@ -201,6 +205,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (template.Tenant.SiteDesigns != null && template.Tenant.SiteDesigns.Any())
             {
+                WriteMessage($"Site Designs", ProvisioningMessageType.Progress);
+
                 using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
                 {
                     var tenant = new Tenant(tenantContext);
@@ -226,14 +232,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 PreviewImageAltText = designPreviewImageAltText,
                                 IsDefault = siteDesign.IsDefault,
                             };
-                            switch(siteDesign.WebTemplate)
+                            switch((int)siteDesign.WebTemplate)
                             {
-                                case SiteDesignWebTemplate.TeamSite:
+                                case 0:
                                     {
                                         siteDesignCreationInfo.WebTemplate = "64";
                                         break;
                                     }
-                                case SiteDesignWebTemplate.CommunicationSite:
+                                case 1:
                                     {
                                         siteDesignCreationInfo.WebTemplate = "68";
                                         break;
@@ -276,14 +282,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 existingSiteDesign.PreviewImageUrl = designPreviewImageUrl;
                                 existingSiteDesign.PreviewImageAltText = designPreviewImageAltText;
                                 existingSiteDesign.IsDefault = siteDesign.IsDefault;
-                                switch (siteDesign.WebTemplate)
+                                switch ((int)siteDesign.WebTemplate)
                                 {
-                                    case SiteDesignWebTemplate.TeamSite:
+                                    case 0:
                                         {
                                             existingSiteDesign.WebTemplate = "64";
                                             break;
                                         }
-                                    case SiteDesignWebTemplate.CommunicationSite:
+                                    case 1:
                                         {
                                             existingSiteDesign.WebTemplate = "68";
                                             break;
@@ -391,12 +397,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return returnData;
         }
 
-        private static void ProcessCdns(Web web, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope)
+        private void ProcessCdns(Web web, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope)
         {
             if (provisioningTenant.ContentDeliveryNetwork != null)
             {
                 using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
                 {
+                    WriteMessage("Content Delivery Network Settings", ProvisioningMessageType.Progress);
+
                     var tenant = new Tenant(tenantContext);
                     var publicCdnEnabled = tenant.GetTenantCdnEnabled(SPOTenantCdnType.Public);
                     var privateCdnEnabled = tenant.GetTenantCdnEnabled(SPOTenantCdnType.Private);
