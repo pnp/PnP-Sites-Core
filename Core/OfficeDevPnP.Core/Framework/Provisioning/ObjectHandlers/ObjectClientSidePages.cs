@@ -146,9 +146,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     // Set page title
-                    if (page.PageTitle != clientSidePage.Title)
+                    string newTitle = parser.ParseString(clientSidePage.Title);
+                    if (page.PageTitle != newTitle)
                     {
-                        page.PageTitle = clientSidePage.Title;
+                        page.PageTitle = newTitle;
                     }
 
                     // Page Header
