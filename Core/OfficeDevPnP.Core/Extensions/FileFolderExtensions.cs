@@ -737,8 +737,11 @@ namespace Microsoft.SharePoint.Client
 #endif
             var parentWebRelativeUrl = parentFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length);
             var webRelativeUrl = parentWebRelativeUrl + (parentWebRelativeUrl.EndsWith("/") ? "" : "/") + folderPath;
-
-            return web.EnsureFolderPath(webRelativeUrl, expressions: expressions); //TODO: update when ensure folder path has an async
+#if ONPREMISES
+            return web.EnsureFolderPathImplementation(webRelativeUrl, expressions: expressions);
+#else
+            return await web.EnsureFolderPathImplementation(webRelativeUrl, expressions: expressions);
+#endif
         }
 
         /// <summary>
@@ -890,7 +893,6 @@ namespace Microsoft.SharePoint.Client
 
             return folder;
         }
-
         /// <summary>
         /// Check if a folder exists with the specified path (relative to the web), and if not creates it (inside a list if necessary)
         /// </summary>
@@ -908,6 +910,55 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder EnsureFolderPath(this Web web, string webRelativeUrl, params Expression<Func<Folder, object>>[] expressions)
         {
+#if ONPREMISES
+            return web.EnsureFolderPathImplementation(webRelativeUrl, expressions);
+#else
+            return web.EnsureFolderPathImplementation(webRelativeUrl, expressions).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Check if a folder exists with the specified path (relative to the web), and if not creates it (inside a list if necessary)
+        /// </summary>
+        /// <param name="web">Web to check for the specified folder</param>
+        /// <param name="webRelativeUrl">Path to the folder, relative to the web site</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
+        /// <returns>The existing or newly created folder</returns>
+        /// <remarks>
+        /// <para>
+        /// If the specified path is inside an existing list, then the folder is created inside that list.
+        /// </para>
+        /// <para>
+        /// Any existing folders are traversed, and then any remaining parts of the path are created as new folders.
+        /// </para>
+        /// </remarks>
+        public static async Task<Folder> EnsureFolderPathAsync(this Web web, string webRelativeUrl, params Expression<Func<Folder, object>>[] expressions)
+        {
+            await new SynchronizationContextRemover();
+            return await web.EnsureFolderPathImplementation(webRelativeUrl, expressions);
+        }
+#endif
+        /// <summary>
+        /// Check if a folder exists with the specified path (relative to the web), and if not creates it (inside a list if necessary)
+        /// </summary>
+        /// <param name="web">Web to check for the specified folder</param>
+        /// <param name="webRelativeUrl">Path to the folder, relative to the web site</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
+        /// <returns>The existing or newly created folder</returns>
+        /// <remarks>
+        /// <para>
+        /// If the specified path is inside an existing list, then the folder is created inside that list.
+        /// </para>
+        /// <para>
+        /// Any existing folders are traversed, and then any remaining parts of the path are created as new folders.
+        /// </para>
+        /// </remarks>
+#if ONPREMISES
+        private static Folder EnsureFolderPathImplementation(this Web web, string webRelativeUrl, params Expression<Func<Folder, object>>[] expressions)
+#else
+        private static async Task<Folder> EnsureFolderPathImplementation(this Web web, string webRelativeUrl, params Expression<Func<Folder, object>>[] expressions)
+#endif
+        {
             if (webRelativeUrl == null) { throw new ArgumentNullException(nameof(webRelativeUrl)); }
 
             //Web root folder should be returned if webRelativeUrl is empty
@@ -917,7 +968,11 @@ namespace Microsoft.SharePoint.Client
             if (!web.IsPropertyAvailable("ServerRelativeUrl"))
             {
                 web.Context.Load(web, w => w.ServerRelativeUrl);
+#if ONPREMISES
                 web.Context.ExecuteQueryRetry();
+#else
+                await web.Context.ExecuteQueryRetryAsync();
+#endif
             }
 
             var folderServerRelativeUrl = UrlUtility.Combine(web.ServerRelativeUrl, webRelativeUrl, "/");
@@ -925,7 +980,11 @@ namespace Microsoft.SharePoint.Client
             // Check if folder is inside a list
             var listCollection = web.Lists;
             web.Context.Load(listCollection, lc => lc.Include(l => l.RootFolder));
+#if ONPREMISES
             web.Context.ExecuteQueryRetry();
+#else
+            await web.Context.ExecuteQueryRetryAsync();
+#endif
 
             List containingList = null;
 
@@ -946,15 +1005,22 @@ namespace Microsoft.SharePoint.Client
             if (containingList == null)
             {
                 locationType = "Web";
+#if ONPREMISES
                 currentFolder = web.EnsureProperty(w => w.RootFolder);
+#else
+                currentFolder = await web.EnsurePropertyAsync(w => w.RootFolder);
+#endif
             }
             else
             {
                 locationType = "List";
                 currentFolder = containingList.RootFolder;
             }
-
+#if ONPREMISES
             currentFolder.EnsureProperty(f => f.ServerRelativeUrl);
+#else
+            await currentFolder.EnsurePropertyAsync(f => f.ServerRelativeUrl);
+#endif
             rootUrl = currentFolder.ServerRelativeUrl;
 
             // Get remaining parts of the path and split
@@ -969,7 +1035,11 @@ namespace Microsoft.SharePoint.Client
                 // Find next part of the path
                 var folderCollection = currentFolder.Folders;
                 folderCollection.Context.Load(folderCollection);
+#if ONPREMISES
                 folderCollection.Context.ExecuteQueryRetry();
+#else
+                await folderCollection.Context.ExecuteQueryRetryAsync();
+#endif
                 Folder nextFolder = null;
                 foreach (Folder existingFolder in folderCollection)
                 {
@@ -999,7 +1069,11 @@ namespace Microsoft.SharePoint.Client
                         ListItem newFolderItem = containingList.AddItem(newFolderInfo);
 
                         var titleField = web.Context.LoadQuery(containingList.Fields.Where(f => f.Id == BuiltInFieldId.Title));
+#if ONPREMISES
                         web.Context.ExecuteQueryRetry();
+#else
+                        await web.Context.ExecuteQueryRetryAsync();
+#endif
                         if (titleField.Any())
                         {
                             newFolderItem["Title"] = folderName;
@@ -1007,16 +1081,28 @@ namespace Microsoft.SharePoint.Client
 
                         newFolderItem.Update();
                         containingList.Context.Load(newFolderItem);
+#if ONPREMISES
                         containingList.Context.ExecuteQueryRetry();
+#else
+                        await containingList.Context.ExecuteQueryRetryAsync();
+#endif
                         nextFolder = web.GetFolderByServerRelativeUrl(UrlUtility.Combine(listUrl, createPath, folderName));
                         containingList.Context.Load(nextFolder);
+#if ONPREMISES
                         containingList.Context.ExecuteQueryRetry();
+#else
+                        await containingList.Context.ExecuteQueryRetryAsync();
+#endif
                     }
                     else
                     {
                         nextFolder = folderCollection.Add(folderName);
                         folderCollection.Context.Load(nextFolder);
+#if ONPREMISES
                         folderCollection.Context.ExecuteQueryRetry();
+#else
+                        await folderCollection.Context.ExecuteQueryRetryAsync();
+#endif
                     }
                 }
 
@@ -1025,7 +1111,11 @@ namespace Microsoft.SharePoint.Client
             if (expressions != null && expressions.Any())
             {
                 web.Context.Load(currentFolder, expressions);
+#if ONPREMISES
                 web.Context.ExecuteQueryRetry();
+#else
+                await web.Context.ExecuteQueryRetryAsync();
+#endif
             }
             return currentFolder;
         }
