@@ -447,9 +447,39 @@ namespace Microsoft.SharePoint.Client
             }
 
             var folderCollection = web.Folders;
+#if ONPREMISES
             var folder = CreateFolderImplementation(folderCollection, folderName);
+#else
+            var folder = CreateFolderImplementation(folderCollection, folderName).GetAwaiter().GetResult();
+#endif
             return folder;
         }
+#if !ONPREMISES
+        /// <summary>
+        /// Creates a folder with the given name as a child of the Web. 
+        /// Note it is more common to create folders within an existing Folder, such as the RootFolder of a List.
+        /// </summary>
+        /// <param name="web">Web to check for the named folder</param>
+        /// <param name="folderName">Folder name to retrieve or create</param>
+        /// <returns>The newly created Folder, so that additional operations (such as setting properties) can be done.</returns>
+        /// <remarks>
+        /// <para>
+        /// Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
+        /// </para>
+        /// </remarks>
+        public static async Task<Folder> CreateFolderAsync(this Web web, string folderName)
+        {
+            await new SynchronizationContextRemover();
+            if (folderName.ContainsInvalidFileFolderChars())
+            {
+                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
+            }
+
+            var folderCollection = web.Folders;
+            var folder = await CreateFolderImplementation(folderCollection, folderName);
+            return folder;
+        }
+#endif
 
         /// <summary>
         /// Creates a folder with the given name.
@@ -473,11 +503,46 @@ namespace Microsoft.SharePoint.Client
             }
 
             var folderCollection = parentFolder.Folders;
+#if ONPREMISES
             var folder = CreateFolderImplementation(folderCollection, folderName, parentFolder);
+#else
+            var folder = CreateFolderImplementation(folderCollection, folderName, parentFolder).GetAwaiter().GetResult();
+#endif
             return folder;
         }
+#if !ONPREMISES
+        /// <summary>
+        /// Creates a folder with the given name.
+        /// </summary>
+        /// <param name="parentFolder">Parent folder to create under</param>
+        /// <param name="folderName">Folder name to retrieve or create</param>
+        /// <returns>The newly created folder</returns>
+        /// <remarks>
+        /// <para>
+        /// Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
+        /// </para>
+        /// <example>
+        ///     var folder = list.RootFolder.CreateFolder("new-folder");
+        /// </example>
+        /// </remarks>
+        public static async Task<Folder> CreateFolderAsync(this Folder parentFolder, string folderName)
+        {
+            await new SynchronizationContextRemover();
+            if (folderName.ContainsInvalidFileFolderChars())
+            {
+                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
+            }
 
+            var folderCollection = parentFolder.Folders;
+            var folder = await CreateFolderImplementation(folderCollection, folderName, parentFolder);
+            return folder;
+        }
+#endif
+#if ONPREMISES
         private static Folder CreateFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null, params Expression<Func<Folder, object>>[] expressions)
+#else
+        private static async Task<Folder> CreateFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null, params Expression<Func<Folder, object>>[] expressions)
+#endif
         {
             ClientContext context = null;
             if (parentFolder != null)
@@ -490,15 +555,16 @@ namespace Microsoft.SharePoint.Client
             if (parentFolder != null)
             {
                 parentFolder.EnsureProperty(p => p.Properties);
-                if (parentFolder.Properties.FieldValues.ContainsKey("vti_listname"))
+                if (parentFolder.Properties.FieldValues.ContainsKey("vti_listname") && context != null)
                 {
-                    if (context != null)
-                    {
-                        Guid parentListId = Guid.Parse((String)parentFolder.Properties.FieldValues["vti_listname"]);
-                        parentList = context.Web.Lists.GetById(parentListId);
-                        context.Load(parentList, l => l.BaseType, l => l.Title);
-                        context.ExecuteQueryRetry();
-                    }
+                    Guid parentListId = Guid.Parse((String)parentFolder.Properties.FieldValues["vti_listname"]);
+                    parentList = context.Web.Lists.GetById(parentListId);
+                    context.Load(parentList, l => l.BaseType, l => l.Title);
+#if ONPREMISES
+                    context.ExecuteQueryRetry();
+#else
+                    await context.ExecuteQueryRetryAsync();
+#endif
                 }
             }
 
@@ -514,7 +580,11 @@ namespace Microsoft.SharePoint.Client
                 {
                     folderCollection.Context.Load(newFolder);
                 }
+#if ONPREMISES
                 folderCollection.Context.ExecuteQueryRetry();
+#else
+                await folderCollection.Context.ExecuteQueryRetryAsync();
+#endif
                 return newFolder;
             }
             else
@@ -530,7 +600,11 @@ namespace Microsoft.SharePoint.Client
                 ListItem newFolderItem = parentList.AddItem(newFolderInfo);
                 newFolderItem["Title"] = folderName;
                 newFolderItem.Update();
+#if ONPREMISES
                 context.ExecuteQueryRetry();
+#else
+                await context.ExecuteQueryRetryAsync();
+#endif
 
                 // Get the newly created folder
                 var newFolder = parentFolder.Folders.GetByUrl(folderName);
@@ -543,7 +617,11 @@ namespace Microsoft.SharePoint.Client
                 {
                     context.Load(newFolder);
                 }
+#if ONPREMISES
                 context.ExecuteQueryRetry();
+#else
+                await context.ExecuteQueryRetryAsync();
+#endif
                 return (newFolder);
             }
         }
@@ -557,8 +635,33 @@ namespace Microsoft.SharePoint.Client
         public static bool DoesFolderExists(this Web web, string serverRelativeFolderUrl)
         {
 #if ONPREMISES
+            return DoesFolderExistImplementation(web, serverRelativeFolderUrl);
+#else
+            return DoesFolderExistImplementation(web, serverRelativeFolderUrl).GetAwaiter().GetResult();
+#endif
+        }
+
+#if !ONPREMISES
+        /// <summary>
+        /// Checks if a specific folder exists
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="serverRelativeFolderUrl">Folder to check</param>
+        /// <returns>Returns true if folder exists</returns>
+        public static async Task<bool> DoesFolderExistsAsync(this Web web, string serverRelativeFolderUrl)
+        {
+            await new SynchronizationContextRemover();
+            return await DoesFolderExistImplementation(web, serverRelativeFolderUrl);
+        }
+#endif
+
+#if ONPREMISES
+        private static bool DoesFolderExistImplementation(this Web web, string serverRelativeFolderUrl)
+        {
             Folder folder = web.GetFolderByServerRelativeUrl(serverRelativeFolderUrl);
 #else
+        private static async Task<bool> DoesFolderExistImplementation(this Web web, string serverRelativeFolderUrl)
+        {
             Folder folder = web.GetFolderByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeFolderUrl));
 #endif
 
@@ -567,7 +670,11 @@ namespace Microsoft.SharePoint.Client
 
             try
             {
+#if ONPREMISES
                 web.Context.ExecuteQueryRetry();
+#else
+                await web.Context.ExecuteQueryRetryAsync();
+#endif
                 exists = true;
             }
             catch
@@ -588,13 +695,50 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The folder structure</returns>
         public static Folder EnsureFolder(this Web web, Folder parentFolder, string folderPath, params Expression<Func<Folder, object>>[] expressions)
         {
+#if ONPREMISES
+            return web.EnsureFolderImplementation(parentFolder, folderPath, expressions);
+#else
+            return web.EnsureFolderImplementation(parentFolder, folderPath, expressions).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Ensure that the folder structure is created. This also ensures hierarchy of folders.
+        /// </summary>
+        /// <param name="web">Web to be processed - can be root web or sub site</param>
+        /// <param name="parentFolder">Parent folder</param>
+        /// <param name="folderPath">Folder path</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
+        /// <returns>The folder structure</returns>
+        public static async Task<Folder> EnsureFolderAsync(this Web web, Folder parentFolder, string folderPath, params Expression<Func<Folder, object>>[] expressions)
+        {
+            await new SynchronizationContextRemover();
+            return await web.EnsureFolderImplementation(parentFolder, folderPath, expressions);
+        }
+#endif
+        /// <summary>
+        /// Ensure that the folder structure is created. This also ensures hierarchy of folders.
+        /// </summary>
+        /// <param name="web">Web to be processed - can be root web or sub site</param>
+        /// <param name="parentFolder">Parent folder</param>
+        /// <param name="folderPath">Folder path</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
+        /// <returns>The folder structure</returns>
+#if ONPREMISES
+        public static Folder EnsureFolderImplementation(this Web web, Folder parentFolder, string folderPath, params Expression<Func<Folder, object>>[] expressions)
+        {
             web.EnsureProperties(w => w.ServerRelativeUrl);
             parentFolder.EnsureProperties(f => f.ServerRelativeUrl);
-
+#else
+        public static async Task<Folder> EnsureFolderImplementation(this Web web, Folder parentFolder, string folderPath, params Expression<Func<Folder, object>>[] expressions)
+        {
+            await web.EnsurePropertiesAsync(w => w.ServerRelativeUrl);
+            await parentFolder.EnsurePropertiesAsync(f => f.ServerRelativeUrl);
+#endif
             var parentWebRelativeUrl = parentFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length);
             var webRelativeUrl = parentWebRelativeUrl + (parentWebRelativeUrl.EndsWith("/") ? "" : "/") + folderPath;
 
-            return web.EnsureFolderPath(webRelativeUrl, expressions: expressions);
+            return web.EnsureFolderPath(webRelativeUrl, expressions: expressions); //TODO: update when ensure folder path has an async
         }
 
         /// <summary>
@@ -618,9 +762,40 @@ namespace Microsoft.SharePoint.Client
             }
 
             var folderCollection = web.Folders;
+#if ONPREMISES
             var folder = EnsureFolderImplementation(folderCollection, folderName, expressions: expressions);
+#else
+            var folder = EnsureFolderImplementation(folderCollection, folderName, expressions: expressions).GetAwaiter().GetResult();
+#endif
             return folder;
         }
+#if !ONPREMISES
+        /// <summary>
+        /// Checks if the folder exists at the top level of the web site, and if it does not exist creates it.
+        /// Note it is more common to create folders within an existing Folder, such as the RootFolder of a List.
+        /// </summary>
+        /// <param name="web">Web to check for the named folder</param>
+        /// <param name="folderName">Folder name to retrieve or create</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
+        /// <returns>The existing or newly created folder</returns>
+        /// <remarks>
+        /// <para>
+        /// Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
+        /// </para>
+        /// </remarks>
+        public static async Task<Folder> EnsureFolderAsync(this Web web, string folderName, params Expression<Func<Folder, object>>[] expressions)
+        {
+            await new SynchronizationContextRemover();
+            if (folderName.ContainsInvalidFileFolderChars())
+            {
+                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
+            }
+
+            var folderCollection = web.Folders;
+            var folder = await EnsureFolderImplementation(folderCollection, folderName, expressions: expressions);
+            return folder;
+        }
+#endif
 
         /// <summary>
         /// Checks if the subfolder exists, and if it does not exist creates it.
@@ -642,11 +817,44 @@ namespace Microsoft.SharePoint.Client
             }
 
             var folderCollection = parentFolder.Folders;
+#if ONPREMISES
             var folder = EnsureFolderImplementation(folderCollection, folderName, parentFolder, expressions);
+#else
+            var folder = EnsureFolderImplementation(folderCollection, folderName, parentFolder, expressions).GetAwaiter().GetResult();
+#endif
             return folder;
         }
+#if !ONPREMISES
+        /// <summary>
+        /// Checks if the subfolder exists, and if it does not exist creates it.
+        /// </summary>
+        /// <param name="parentFolder">Parent folder to create under</param>
+        /// <param name="folderName">Folder name to retrieve or create</param>
+        /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
+        /// <returns>The existing or newly created folder</returns>
+        /// <remarks>
+        /// <para>
+        /// Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
+        /// </para>
+        /// </remarks>
+        public static async Task<Folder> EnsureFolderAsync(this Folder parentFolder, string folderName, params Expression<Func<Folder, object>>[] expressions)
+        {
+            await new SynchronizationContextRemover();
+            if (folderName.ContainsInvalidFileFolderChars())
+            {
+                throw new ArgumentException(CoreResources.FileFolderExtensions_CreateFolder_The_argument_must_be_a_single_folder_name_and_cannot_contain_path_characters_, nameof(folderName));
+            }
 
+            var folderCollection = parentFolder.Folders;
+            var folder = await EnsureFolderImplementation(folderCollection, folderName, parentFolder, expressions);
+            return folder;
+        }
+#endif
+#if ONPREMISES
         private static Folder EnsureFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null, params Expression<Func<Folder, object>>[] expressions)
+#else
+        private static async Task<Folder> EnsureFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null, params Expression<Func<Folder, object>>[] expressions)
+#endif
         {
             Folder folder = null;
             if (expressions != null && expressions.Any())
@@ -657,7 +865,11 @@ namespace Microsoft.SharePoint.Client
             {
                 folderCollection.Context.Load(folderCollection);
             }
+#if ONPREMISES
             folderCollection.Context.ExecuteQueryRetry();
+#else
+            await folderCollection.Context.ExecuteQueryRetryAsync();
+#endif
             foreach (Folder existingFolder in folderCollection)
             {
                 if (string.Equals(existingFolder.Name, folderName, StringComparison.InvariantCultureIgnoreCase))
@@ -669,7 +881,11 @@ namespace Microsoft.SharePoint.Client
 
             if (folder == null)
             {
+#if ONPREMISES
                 folder = CreateFolderImplementation(folderCollection, folderName, parentFolder, expressions);
+#else
+                folder = await CreateFolderImplementation(folderCollection, folderName, parentFolder, expressions);
+#endif
             }
 
             return folder;
