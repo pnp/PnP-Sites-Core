@@ -51,10 +51,11 @@ namespace OfficeDevPnP.Core.ALM
         /// <param name="filename">The filename (e.g. myapp.sppkg) of the file to upload</param>
         /// <param name="overwrite">If true will overwrite an existing entry</param>
         /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
+        /// <param name="timeoutSeconds">If specified will set the timeout on the request. Defaults to 200 seconds.</param>
         /// <returns></returns>
-        public AppMetadata Add(byte[] file, string filename, bool overwrite = false, AppCatalogScope scope = AppCatalogScope.Tenant)
+        public AppMetadata Add(byte[] file, string filename, bool overwrite = false, AppCatalogScope scope = AppCatalogScope.Tenant, int timeoutSeconds = 200)
         {
-            return Task.Run(() => AddAsync(file, filename, overwrite, scope)).GetAwaiter().GetResult();
+            return Task.Run(() => AddAsync(file, filename, overwrite, scope, timeoutSeconds)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -63,10 +64,11 @@ namespace OfficeDevPnP.Core.ALM
         /// <param name="path"></param>
         /// <param name="overwrite">If true will overwrite an existing entry</param>
         /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
+        /// <param name="timeoutSeconds">If specified will set the timeout on the request. Defaults to 200 seconds.</param>
         /// <returns></returns>
-        public AppMetadata Add(string path, bool overwrite = false, AppCatalogScope scope = AppCatalogScope.Tenant)
+        public AppMetadata Add(string path, bool overwrite = false, AppCatalogScope scope = AppCatalogScope.Tenant, int timeoutSeconds = 200)
         {
-            return Task.Run(() => AddAsync(path, overwrite, scope)).GetAwaiter().GetResult();
+            return Task.Run(() => AddAsync(path, overwrite, scope, timeoutSeconds)).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -76,8 +78,9 @@ namespace OfficeDevPnP.Core.ALM
         /// <param name="filename">The filename (e.g. myapp.sppkg) of the file to upload</param>
         /// <param name="overwrite">If true will overwrite an existing entry</param>
         /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
+        /// <param name="timeoutSeconds">If specified will set the timeout on the request. Defaults to 200 seconds.</param>
         /// <returns></returns>
-        public async Task<AppMetadata> AddAsync(byte[] file, string filename, bool overwrite = false, AppCatalogScope scope = AppCatalogScope.Tenant)
+        public async Task<AppMetadata> AddAsync(byte[] file, string filename, bool overwrite = false, AppCatalogScope scope = AppCatalogScope.Tenant, int timeoutSeconds = 200)
         {
             if (file == null && file.Length == 0)
             {
@@ -90,7 +93,7 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await BaseAddRequest(file, filename, overwrite, scope);
+            return await BaseAddRequest(file, filename, overwrite, timeoutSeconds, scope);
         }
 
         /// <summary>
@@ -99,8 +102,9 @@ namespace OfficeDevPnP.Core.ALM
         /// <param name="path"></param>
         /// <param name="overwrite">If true will overwrite an existing entry</param>
         /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>
+        /// <param name="timeoutSeconds">If specified will set the timeout on the request. Defaults to 200 seconds.</param>
         /// <returns></returns>
-        public async Task<AppMetadata> AddAsync(string path, bool overwrite = false, AppCatalogScope scope = AppCatalogScope.Tenant)
+        public async Task<AppMetadata> AddAsync(string path, bool overwrite = false, AppCatalogScope scope = AppCatalogScope.Tenant, int timeoutSeconds = 200)
         {
             if (string.IsNullOrEmpty(path))
             {
@@ -117,7 +121,7 @@ namespace OfficeDevPnP.Core.ALM
 
             await new SynchronizationContextRemover();
 
-            return await BaseAddRequest(bytes, fileInfo.Name, overwrite, scope);
+            return await BaseAddRequest(bytes, fileInfo.Name, overwrite, timeoutSeconds, scope);
         }
 
         /// <summary>
@@ -735,7 +739,7 @@ namespace OfficeDevPnP.Core.ALM
             return await Task.Run(() => returnValue);
         }
 
-        private async Task<AppMetadata> BaseAddRequest(byte[] file, string filename, bool overwrite, AppCatalogScope scope)
+        private async Task<AppMetadata> BaseAddRequest(byte[] file, string filename, bool overwrite, int timeoutSeconds, AppCatalogScope scope)
         {
             AppMetadata returnValue = null;
 
@@ -774,7 +778,7 @@ namespace OfficeDevPnP.Core.ALM
                     request.Headers.Add("X-RequestDigest", requestDigest);
                     request.Headers.Add("binaryStringRequestBody", "true");
                     request.Content = new ByteArrayContent(file);
-
+                    httpClient.Timeout = new TimeSpan(0, 0, timeoutSeconds);
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 

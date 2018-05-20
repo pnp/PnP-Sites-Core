@@ -678,7 +678,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. Thus, there could be potential issues while applying the template..
+        ///   Looks up a localized string similar to The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. This could cause potential issues while applying the template..
         /// </summary>
         internal static string Provisioning_Asymmetric_Base_Templates {
             get {
@@ -1569,12 +1569,12 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to DraftVersionVisibility not applied because EnableModeration is not set to true.
+        ///   Looks up a localized string similar to DraftVersionVisibility not applied to list {0} because EnableModeration is not set to true.
         /// </summary>
-        internal static string Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true {
+        internal static string Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_to_list_0_because_EnableModeration_is_not_set_to_true {
             get {
-                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_beca" +
-                        "use_EnableModeration_is_not_set_to_true", resourceCulture);
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_to_l" +
+                        "ist_0_because_EnableModeration_is_not_set_to_true", resourceCulture);
             }
         }
         
