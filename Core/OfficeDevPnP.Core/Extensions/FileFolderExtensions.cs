@@ -321,12 +321,14 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder ConvertFolderToDocumentSet(this List list, string folderName)
         {
-            var folder = list.RootFolder.ResolveSubFolder(folderName);
-            if (folder == null) throw new ArgumentException(CoreResources.FileFolderExtensions_FolderMissing);
 #if ONPREMISES
+            var folder = list.RootFolder.ResolveSubFolderImplementation(folderName);
+            if (folder == null) throw new ArgumentException(CoreResources.FileFolderExtensions_FolderMissing);
             return list.ConvertFolderToDocumentSetImplementation(folder);
 #else
-            return Task.Run(() => list.ConvertFolderToDocumentSetImplementation(folder)).GetAwaiter().GetResult();
+            var folder = list.RootFolder.ResolveSubFolderImplementation(folderName).GetAwaiter().GetResult();
+            if (folder == null) throw new ArgumentException(CoreResources.FileFolderExtensions_FolderMissing);
+            return list.ConvertFolderToDocumentSetImplementation(folder).GetAwaiter().GetResult();
 #endif
         }
 #if !ONPREMISES
@@ -344,7 +346,7 @@ namespace Microsoft.SharePoint.Client
         public static async Task<Folder> ConvertFolderToDocumentSetAsync(this List list, string folderName)
         {
             await new SynchronizationContextRemover();
-            var folder = list.RootFolder.ResolveSubFolder(folderName);
+            var folder = await list.RootFolder.ResolveSubFolderImplementation(folderName);
             if (folder == null) throw new ArgumentException(CoreResources.FileFolderExtensions_FolderMissing);
             return await list.ConvertFolderToDocumentSetImplementation(folder);
         }
@@ -418,12 +420,13 @@ namespace Microsoft.SharePoint.Client
             folder.Update();
 #if ONPREMISES
             list.Context.ExecuteQueryRetry();
+            folder = list.RootFolder.ResolveSubFolderImplementation(folder.Name);
 #else
             await list.Context.ExecuteQueryRetryAsync();
+            folder = await list.RootFolder.ResolveSubFolderImplementation(folder.Name);
 #endif
 
             //Refresh Folder, otherwise 'Version conflict' error might be thrown on changing properties
-            folder = list.RootFolder.ResolveSubFolder(folder.Name);
             return folder;
         }
 
@@ -1449,7 +1452,6 @@ namespace Microsoft.SharePoint.Client
             }
             return foundFiles;
         }
-
         /// <summary>
         /// Publishes a file existing on a server URL
         /// </summary>
@@ -1459,21 +1461,58 @@ namespace Microsoft.SharePoint.Client
         public static void PublishFile(this Web web, string serverRelativeUrl, string comment)
         {
 #if ONPREMISES
+            web.PublishFileImplementation(serverRelativeUrl, comment);
+#else
+            web.PublishFileImplementation(serverRelativeUrl, comment).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Publishes a file existing on a server URL
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="serverRelativeUrl">the server relative URL of the file to publish</param>
+        /// <param name="comment">Comment recorded with the publish action</param>
+        public static async Task PublishFileAsync(this Web web, string serverRelativeUrl, string comment)
+        {
+            await new SynchronizationContextRemover();
+            await web.PublishFileImplementation(serverRelativeUrl, comment);
+        }
+#endif
+
+        /// <summary>
+        /// Publishes a file existing on a server URL
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="serverRelativeUrl">the server relative URL of the file to publish</param>
+        /// <param name="comment">Comment recorded with the publish action</param>
+#if ONPREMISES
+        private static void PublishFileImplementation(this Web web, string serverRelativeUrl, string comment)
+        {
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
 #else
+        private static async Task PublishFileImplementation(this Web web, string serverRelativeUrl, string comment)
+        {
             var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
 #endif
 
             web.Context.Load(file, x => x.Exists, x => x.CheckOutType);
+#if ONPREMISES
             web.Context.ExecuteQueryRetry();
+#else
+            await web.Context.ExecuteQueryRetryAsync();
+#endif
 
             if (file.Exists)
             {
                 file.Publish(comment);
+#if ONPREMISES
                 web.Context.ExecuteQueryRetry();
+#else
+                await web.Context.ExecuteQueryRetryAsync();
+#endif
             }
         }
-
         /// <summary>
         /// Gets a folder with a given name in a given <see cref="Microsoft.SharePoint.Client.Folder"/>
         /// </summary>
@@ -1482,6 +1521,37 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The found <see cref="Microsoft.SharePoint.Client.Folder"/> if available, null otherwise</returns>
         public static Folder ResolveSubFolder(this Folder folder, string folderName)
         {
+#if ONPREMISES
+            return folder.ResolveSubFolderImplementation(folderName);
+#else
+            return folder.ResolveSubFolderImplementation(folderName).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Gets a folder with a given name in a given <see cref="Microsoft.SharePoint.Client.Folder"/>
+        /// </summary>
+        /// <param name="folder"><see cref="Microsoft.SharePoint.Client.Folder"/> in which to search for</param>
+        /// <param name="folderName">Name of the folder to search for</param>
+        /// <returns>The found <see cref="Microsoft.SharePoint.Client.Folder"/> if available, null otherwise</returns>
+        public static async Task<Folder> ResolveSubFolderAsync(this Folder folder, string folderName)
+        {
+            await new SynchronizationContextRemover();
+            return await folder.ResolveSubFolderImplementation(folderName);
+        }
+#endif
+/// <summary>
+/// Gets a folder with a given name in a given <see cref="Microsoft.SharePoint.Client.Folder"/>
+/// </summary>
+/// <param name="folder"><see cref="Microsoft.SharePoint.Client.Folder"/> in which to search for</param>
+/// <param name="folderName">Name of the folder to search for</param>
+/// <returns>The found <see cref="Microsoft.SharePoint.Client.Folder"/> if available, null otherwise</returns>
+#if ONPREMISES
+        private static Folder ResolveSubFolderImplementation(this Folder folder, string folderName)
+#else
+        private static async Task<Folder> ResolveSubFolderImplementation(this Folder folder, string folderName)
+#endif
+        {
             if (string.IsNullOrEmpty(folderName))
             {
                 throw new ArgumentNullException(nameof(folderName));
@@ -1489,7 +1559,11 @@ namespace Microsoft.SharePoint.Client
 
             folder.Context.Load(folder);
             folder.Context.Load(folder.Folders);
+#if ONPREMISES
             folder.Context.ExecuteQueryRetry();
+#else
+            await folder.Context.ExecuteQueryRetryAsync();
+#endif
 
             foreach (Folder subFolder in folder.Folders)
             {
