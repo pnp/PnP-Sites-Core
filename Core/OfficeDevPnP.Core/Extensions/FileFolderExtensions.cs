@@ -1130,12 +1130,28 @@ namespace Microsoft.SharePoint.Client
         {
             Folder rootFolder = web.RootFolder;
             match = WildcardToRegex(match);
-            List<File> files = new List<File>();
-
-            ParseFiles(rootFolder, match, web.Context as ClientContext, ref files);
-
-            return files;
+#if ONPREMISES
+            return ParseFiles(rootFolder, match, web.Context as ClientContext);
+#else
+            return ParseFiles(rootFolder, match, web.Context as ClientContext).GetAwaiter().GetResult();
+#endif
         }
+
+#if !ONPREMISES
+        /// <summary>
+        /// Finds files in the web. Can be slow.
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="match">a wildcard pattern to match</param>
+        /// <returns>A list with the found <see cref="Microsoft.SharePoint.Client.File"/> objects</returns>
+        public static async Task<List<File>> FindFilesAsync(this Web web, string match)
+        {
+            await new SynchronizationContextRemover();
+            Folder rootFolder = web.RootFolder;
+            match = WildcardToRegex(match);
+            return await ParseFiles(rootFolder, match, web.Context as ClientContext);
+        }
+#endif
 
         /// <summary>
         /// Find files in the list, Can be slow.
@@ -1148,12 +1164,28 @@ namespace Microsoft.SharePoint.Client
             Folder rootFolder = list.EnsureProperty(l => l.RootFolder);
 
             match = WildcardToRegex(match);
-            List<File> files = new List<File>();
-
-            ParseFiles(rootFolder, match, list.Context as ClientContext, ref files);
-
-            return files;
+#if ONPREMISES
+            return ParseFiles(rootFolder, match, list.Context as ClientContext);
+#else
+            return ParseFiles(rootFolder, match, list.Context as ClientContext).GetAwaiter().GetResult();
+#endif
         }
+#if !ONPREMISES
+        /// <summary>
+        /// Find files in the list, Can be slow.
+        /// </summary>
+        /// <param name="list">The list to process</param>
+        /// <param name="match">a wildcard pattern to match</param>
+        /// <returns>A list with the found <see cref="Microsoft.SharePoint.Client.File"/> objects</returns>
+        public static async Task<List<File>> FindFilesAsync(this List list, string match)
+        {
+            await new SynchronizationContextRemover();
+            Folder rootFolder = list.EnsureProperty(l => l.RootFolder);
+
+            match = WildcardToRegex(match);
+            return await ParseFiles(rootFolder, match, list.Context as ClientContext);
+        }
+#endif
 
         /// <summary>
         /// Find files in a specific folder
@@ -1164,12 +1196,26 @@ namespace Microsoft.SharePoint.Client
         public static List<File> FindFiles(this Folder folder, string match)
         {
             match = WildcardToRegex(match);
-            List<File> files = new List<File>();
-
-            ParseFiles(folder, match, folder.Context as ClientContext, ref files);
-
-            return files;
+#if ONPREMISES
+            return ParseFiles(folder, match, folder.Context as ClientContext);
+#else
+            return ParseFiles(folder, match, folder.Context as ClientContext).GetAwaiter().GetResult();
+#endif
         }
+#if !ONPREMISES
+        /// <summary>
+        /// Find files in a specific folder
+        /// </summary>
+        /// <param name="folder">The folder to process</param>
+        /// <param name="match">a wildcard pattern to match</param>
+        /// <returns>A list with the found <see cref="Microsoft.SharePoint.Client.File"/> objects</returns>
+        public static async Task<List<File>> FindFilesAsync(this Folder folder, string match)
+        {
+            await new SynchronizationContextRemover();
+            match = WildcardToRegex(match);
+            return await ParseFiles(folder, match, folder.Context as ClientContext);
+        }
+#endif
 
         /// <summary>
         /// Checks if the folder exists at the top level of the web site.
@@ -1185,9 +1231,33 @@ namespace Microsoft.SharePoint.Client
         public static bool FolderExists(this Web web, string folderName)
         {
             var folderCollection = web.Folders;
+#if ONPREMISES
             var exists = FolderExistsImplementation(folderCollection, folderName);
+#else
+            var exists = FolderExistsImplementation(folderCollection, folderName).GetAwaiter().GetResult();
+#endif
             return exists;
         }
+#if !ONPREMISES
+        /// <summary>
+        /// Checks if the folder exists at the top level of the web site.
+        /// </summary>
+        /// <param name="web">Web to check for the named folder</param>
+        /// <param name="folderName">Folder name to retrieve</param>
+        /// <returns>true if the folder exists; false otherwise</returns>
+        /// <remarks>
+        /// <para>
+        /// Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
+        /// </para>
+        /// </remarks>
+        public static async Task<bool> FolderExistsAsync(this Web web, string folderName)
+        {
+            await new SynchronizationContextRemover();
+            var folderCollection = web.Folders;
+            var exists = await FolderExistsImplementation(folderCollection, folderName);
+            return exists;
+        }
+#endif
 
         /// <summary>
         /// Checks if the subfolder exists.
@@ -1208,11 +1278,43 @@ namespace Microsoft.SharePoint.Client
             }
 
             var folderCollection = parentFolder.Folders;
+#if ONPREMISES
             var exists = FolderExistsImplementation(folderCollection, folderName);
+#else
+            var exists = FolderExistsImplementation(folderCollection, folderName).GetAwaiter().GetResult();
+#endif
             return exists;
         }
+#if !ONPREMISES
+        /// <summary>
+        /// Checks if the subfolder exists.
+        /// </summary>
+        /// <param name="parentFolder">Parent folder to check for the named subfolder</param>
+        /// <param name="folderName">Folder name to retrieve</param>
+        /// <returns>true if the folder exists; false otherwise</returns>
+        /// <remarks>
+        /// <para>
+        /// Note that this only checks one level of folder (the Folders collection) and cannot accept a name with path characters.
+        /// </para>
+        /// </remarks>
+        public static async Task<bool> FolderExistsAsync(this Folder parentFolder, string folderName)
+        {
+            await new SynchronizationContextRemover();
+            if (string.IsNullOrEmpty(folderName))
+            {
+                throw new ArgumentNullException(nameof(folderName));
+            }
 
+            var folderCollection = parentFolder.Folders;
+            var exists = await FolderExistsImplementation(folderCollection, folderName);
+            return exists;
+        }
+#endif
+#if ONPREMISES
         private static bool FolderExistsImplementation(FolderCollection folderCollection, string folderName)
+#else
+        private static async Task<bool> FolderExistsImplementation(FolderCollection folderCollection, string folderName)
+#endif
         {
             if (folderCollection == null)
             {
@@ -1230,7 +1332,11 @@ namespace Microsoft.SharePoint.Client
             }
 
             folderCollection.Context.Load(folderCollection);
+#if ONPREMISES
             folderCollection.Context.ExecuteQueryRetry();
+#else
+            await folderCollection.Context.ExecuteQueryRetryAsync();
+#endif
             foreach (Folder folder in folderCollection)
             {
                 if (folder.Name.Equals(folderName, StringComparison.InvariantCultureIgnoreCase))
@@ -1241,7 +1347,6 @@ namespace Microsoft.SharePoint.Client
 
             return false;
         }
-
         /// <summary>
         /// Returns a file as string
         /// </summary>
@@ -1250,19 +1355,56 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The file contents as a string</returns>
         public static string GetFileAsString(this Web web, string serverRelativeUrl)
         {
-            string returnString = string.Empty;
-
 #if ONPREMISES
+            return web.GetFileAsStringImplementation(serverRelativeUrl);
+#else
+            return web.GetFileAsStringImplementation(serverRelativeUrl).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Returns a file as string
+        /// </summary>
+        /// <param name="web">The Web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL to the file</param>
+        /// <returns>The file contents as a string</returns>
+        public static async Task<string> GetFileAsStringAsync(this Web web, string serverRelativeUrl)
+        {
+            await new SynchronizationContextRemover();
+            return await web.GetFileAsStringImplementation(serverRelativeUrl);
+        }
+#endif
+
+        /// <summary>
+        /// Returns a file as string
+        /// </summary>
+        /// <param name="web">The Web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL to the file</param>
+        /// <returns>The file contents as a string</returns>
+#if ONPREMISES
+        private static string GetFileAsStringImplementation(this Web web, string serverRelativeUrl)
+        {
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
 #else
+        private static async Task<string> GetFileAsStringImplementation(this Web web, string serverRelativeUrl)
+        {
             var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
 #endif
 
             web.Context.Load(file);
+#if ONPREMISES
             web.Context.ExecuteQueryRetry();
+#else
+            await web.Context.ExecuteQueryRetryAsync();
+#endif
             ClientResult<Stream> stream = file.OpenBinaryStream();
+#if ONPREMISES
             web.Context.ExecuteQueryRetry();
+#else
+            await web.Context.ExecuteQueryRetryAsync();
+#endif
 
+            string returnString = string.Empty;
             using (Stream memStream = new MemoryStream())
             {
                 CopyStream(stream.Value, memStream);
@@ -1273,13 +1415,21 @@ namespace Microsoft.SharePoint.Client
 
             return returnString;
         }
-
-        private static void ParseFiles(Folder folder, string match, ClientContext context, ref List<File> foundFiles)
+#if ONPREMISES
+        private static List<File> ParseFiles(Folder folder, string match, ClientContext context)
+#else
+        private static async Task<List<File>> ParseFiles(Folder folder, string match, ClientContext context)
+#endif
         {
+            var foundFiles = new List<File>();
             FileCollection files = folder.Files;
             context.Load(files, fs => fs.Include(f => f.ServerRelativeUrl, f => f.Name, f => f.Title, f => f.TimeCreated, f => f.TimeLastModified));
             context.Load(folder.Folders);
+#if ONPREMISES
             context.ExecuteQueryRetry();
+#else
+            await context.ExecuteQueryRetryAsync();
+#endif
 
             foreach (File file in files)
             {
@@ -1291,8 +1441,13 @@ namespace Microsoft.SharePoint.Client
 
             foreach (Folder subfolder in folder.Folders)
             {
-                ParseFiles(subfolder, match, context, ref foundFiles);
+#if ONPREMISES
+                foundFiles.AddRange(ParseFiles(subfolder, match, context));
+#else
+                foundFiles.AddRange(await ParseFiles(subfolder, match, context));
+#endif
             }
+            return foundFiles;
         }
 
         /// <summary>
