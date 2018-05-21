@@ -1575,7 +1575,6 @@ namespace Microsoft.SharePoint.Client
 
             return null;
         }
-
         /// <summary>
         /// Saves a remote file to a local folder
         /// </summary>
@@ -1586,19 +1585,58 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fileExistsCallBack">Optional callback function allowing to provide feedback if the file should be overwritten if it exists. The function requests a bool as return value and the string input contains the name of the file that exists.</param>
         public static void SaveFileToLocal(this Web web, string serverRelativeUrl, string localPath, string localFileName = null, Func<string, bool> fileExistsCallBack = null)
         {
-            var clientContext = web.Context as ClientContext;
-
 #if ONPREMISES
+            web.SaveFileToLocalImplementation(serverRelativeUrl, localPath, localFileName, fileExistsCallBack);
+#else
+            web.SaveFileToLocalImplementation(serverRelativeUrl, localPath, localFileName, fileExistsCallBack).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Saves a remote file to a local folder
+        /// </summary>
+        /// <param name="web">The Web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL to the file</param>
+        /// <param name="localPath">The local folder</param>
+        /// <param name="localFileName">The local filename. If null the filename of the file on the server will be used</param>
+        /// <param name="fileExistsCallBack">Optional callback function allowing to provide feedback if the file should be overwritten if it exists. The function requests a bool as return value and the string input contains the name of the file that exists.</param>
+        public static async Task SaveFileToLocalAsync(this Web web, string serverRelativeUrl, string localPath, string localFileName = null, Func<string, bool> fileExistsCallBack = null)
+        {
+            await new SynchronizationContextRemover();
+            await web.SaveFileToLocalImplementation(serverRelativeUrl, localPath, localFileName, fileExistsCallBack);
+        }
+#endif
+        /// <summary>
+        /// Saves a remote file to a local folder
+        /// </summary>
+        /// <param name="web">The Web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL to the file</param>
+        /// <param name="localPath">The local folder</param>
+        /// <param name="localFileName">The local filename. If null the filename of the file on the server will be used</param>
+        /// <param name="fileExistsCallBack">Optional callback function allowing to provide feedback if the file should be overwritten if it exists. The function requests a bool as return value and the string input contains the name of the file that exists.</param>
+#if ONPREMISES
+        public static void SaveFileToLocalImplementation(this Web web, string serverRelativeUrl, string localPath, string localFileName = null, Func<string, bool> fileExistsCallBack = null)
+        {
             var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
 #else
+        public static async Task SaveFileToLocalImplementation(this Web web, string serverRelativeUrl, string localPath, string localFileName = null, Func<string, bool> fileExistsCallBack = null)
+        {
             var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
 #endif
-
+            var clientContext = web.Context as ClientContext;
             clientContext.Load(file);
+#if ONPREMISES
             clientContext.ExecuteQueryRetry();
+#else
+            await clientContext.ExecuteQueryRetryAsync();
+#endif
 
             ClientResult<Stream> stream = file.OpenBinaryStream();
+#if ONPREMISES
             clientContext.ExecuteQueryRetry();
+#else
+            await clientContext.ExecuteQueryRetryAsync();
+#endif
 
             var fileOut = Path.Combine(localPath, !string.IsNullOrEmpty(localFileName) ? localFileName : file.Name);
 
