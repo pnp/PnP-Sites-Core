@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the custom properties for the client-side web part control.
         /// </summary>
-        public Dictionary<String, String> ControlProperties { get; set; }
+        public Dictionary<String, String> ControlProperties { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// Defines the Type of Client-side Web Part.
