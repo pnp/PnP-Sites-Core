@@ -2296,19 +2296,45 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
-
+        /// <summary>
+        /// Publishes a file based on the type of versioning required on the parent library.
+        /// </summary>
+        /// <param name="file">Target file to publish.</param>
+        /// <param name="level">Target publish direction (Draft and Published only apply, Checkout is ignored).</param>
+        public static void PublishFileToLevel(this File file, FileLevel level)
+        {
+#if ONPREMISES
+            file.PublishFileToLevelImplementation(level);
+#else
+            file.PublishFileToLevelImplementation(level).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Publishes a file based on the type of versioning required on the parent library.
+        /// </summary>
+        /// <param name="file">Target file to publish.</param>
+        /// <param name="level">Target publish direction (Draft and Published only apply, Checkout is ignored).</param>
+        public static async Task PublishFileToLevelAsync(this File file, FileLevel level)
+        {
+            await new SynchronizationContextRemover();
+            await file.PublishFileToLevelImplementation(level);
+        }
+#endif
         /// <summary>
         /// Publishes a file based on the type of versioning required on the parent library.
         /// </summary>
         /// <param name="file">Target file to publish.</param>
         /// <param name="level">Target publish direction (Draft and Published only apply, Checkout is ignored).</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
-        public static void PublishFileToLevel(this File file, FileLevel level)
+#if ONPREMISES
+        private static void PublishFileToLevelImplementation(this File file, FileLevel level)
+#else
+        private static async Task PublishFileToLevelImplementation(this File file, FileLevel level)
+#endif
         {
             if (file == null)
-            {
                 throw new ArgumentNullException(nameof(file));
-            }
 
             var publishingRequired = false;
             var approvalRequired = false;
@@ -2321,7 +2347,11 @@ namespace Microsoft.SharePoint.Client
                 // Ensure that ListItemAllFields.ServerObjectIsNull is loaded
                 try
                 {
-                    file.EnsureProperties(f => f.ListItemAllFields, f => f.CheckOutType, f => f.Name);
+#if ONPREMISES
+                    file.EnsurePropertiesImplementation<File>(f => f.ListItemAllFields, f => f.CheckOutType, f => f.Name);
+#else
+                    await file.EnsurePropertiesImplementation<File>(f => f.ListItemAllFields, f => f.CheckOutType, f => f.Name);
+#endif
                 }
                 catch
                 {
@@ -2372,7 +2402,11 @@ namespace Microsoft.SharePoint.Client
                 {
                     Log.Debug(Constants.LOGGING_SOURCE, "Checking in file '{0}'", file.Name);
                     file.CheckIn("Checked in by provisioning", publishingRequired ? CheckinType.MinorCheckIn : CheckinType.MajorCheckIn);
+#if ONPREMISES
                     context.ExecuteQueryRetry();
+#else
+                    await context.ExecuteQueryRetryAsync();
+#endif
                 }
 
                 if (level == FileLevel.Published)
@@ -2381,14 +2415,22 @@ namespace Microsoft.SharePoint.Client
                     {
                         Log.Debug(Constants.LOGGING_SOURCE, "Publishing file '{0}'", file.Name);
                         file.Publish("Published by provisioning");
+#if ONPREMISES
                         context.ExecuteQueryRetry();
+#else
+                        await context.ExecuteQueryRetryAsync();
+#endif
                     }
 
                     if (approvalRequired)
                     {
                         Log.Debug(Constants.LOGGING_SOURCE, "Approving file '{0}'", file.Name);
                         file.Approve("Approved by provisioning");
+#if ONPREMISES
                         context.ExecuteQueryRetry();
+#else
+                        await context.ExecuteQueryRetryAsync();
+#endif
                     }
                 }
             }
