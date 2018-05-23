@@ -1903,7 +1903,6 @@ namespace Microsoft.SharePoint.Client
 #endif
             return file;
         }
-
         /// <summary>
         /// Gets a file in a document library.
         /// </summary>
@@ -1912,15 +1911,42 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The target file if found, null if no file is found.</returns>
         public static File GetFile(this Folder folder, string fileName)
         {
+#if ONPREMISES
+            return folder.GetFileImplementation(fileName);
+#else
+            return folder.GetFileImplementation(fileName).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Gets a file in a document library.
+        /// </summary>
+        /// <param name="folder">Folder containing the target file.</param>
+        /// <param name="fileName">File name.</param>
+        /// <returns>The target file if found, null if no file is found.</returns>
+        public static async Task<File> GetFileAsync(this Folder folder, string fileName)
+        {
+            return await folder.GetFileImplementation(fileName);
+        }
+#endif
+
+        /// <summary>
+        /// Gets a file in a document library.
+        /// </summary>
+        /// <param name="folder">Folder containing the target file.</param>
+        /// <param name="fileName">File name.</param>
+        /// <returns>The target file if found, null if no file is found.</returns>
+#if ONPREMISES
+        private static File GetFileImplementation(this Folder folder, string fileName)
+#else
+        private static async Task<File> GetFileImplementation(this Folder folder, string fileName)
+#endif
+        {
             if (folder == null)
-            {
                 throw new ArgumentNullException(nameof(folder));
-            }
 
             if (string.IsNullOrEmpty(fileName))
-            {
                 throw new ArgumentNullException(nameof(fileName));
-            }
 
             try
             {
@@ -1933,12 +1959,14 @@ namespace Microsoft.SharePoint.Client
 
 #if ONPREMISES
                 var file = web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
-#else
-                var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(fileServerRelativeUrl));
-#endif
-
                 web.Context.Load(file);
                 web.Context.ExecuteQueryRetry();
+#else
+                var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(fileServerRelativeUrl));
+                web.Context.Load(file);
+                await web.Context.ExecuteQueryRetryAsync();
+#endif
+
                 return file;
             }
             catch (ServerException ex)
