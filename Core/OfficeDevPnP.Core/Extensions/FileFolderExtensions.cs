@@ -1988,19 +1988,36 @@ namespace Microsoft.SharePoint.Client
         public static bool VerifyIfUploadRequired(this File serverFile, string localFile)
         {
             if (localFile == null)
-            {
                 throw new ArgumentNullException(nameof(localFile));
-            }
-
             if (!System.IO.File.Exists(localFile))
-            {
                 throw new FileNotFoundException("Local file was not found.", localFile);
-            }
 
             using (var file = System.IO.File.OpenRead(localFile))
-                return serverFile.VerifyIfUploadRequired(file);
+#if ONPREMISES
+                return serverFile.VerifyIfUploadRequiredImplementation(file);
+#else
+                return serverFile.VerifyIfUploadRequiredImplementation(file).GetAwaiter().GetResult();
+#endif
         }
+#if !ONPREMISES
+        /// <summary>
+        /// Used to compare the server file to the local file.
+        /// This enables users with faster download speeds but slow upload speeds to evaluate if the server file should be overwritten.
+        /// </summary>
+        /// <param name="serverFile">File located on the server.</param>
+        /// <param name="localFile">File to validate against.</param>
+        public static async Task<bool> VerifyIfUploadRequiredAsync(this File serverFile, string localFile)
+        {
+            await new SynchronizationContextRemover();
+            if (localFile == null)
+                throw new ArgumentNullException(nameof(localFile));
+            if (!System.IO.File.Exists(localFile))
+                throw new FileNotFoundException("Local file was not found.", localFile);
 
+            using (var file = System.IO.File.OpenRead(localFile))
+                return await serverFile.VerifyIfUploadRequiredImplementation(file);
+        }
+#endif
         /// <summary>
         /// Used to compare the server file to the local file.
         /// This enables users with faster download speeds but slow upload speeds to evaluate if the server file should be overwritten.
@@ -2010,44 +2027,69 @@ namespace Microsoft.SharePoint.Client
         /// <returns></returns>
         public static bool VerifyIfUploadRequired(this File serverFile, Stream localStream)
         {
+#if ONPREMISES
+            return serverFile.VerifyIfUploadRequiredImplementation(localStream);
+#else
+            return serverFile.VerifyIfUploadRequiredImplementation(localStream).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Used to compare the server file to the local file.
+        /// This enables users with faster download speeds but slow upload speeds to evaluate if the server file should be overwritten.
+        /// </summary>
+        /// <param name="serverFile">File located on the server.</param>
+        /// <param name="localStream">Stream to validate against.</param>
+        /// <returns></returns>
+        public static async Task<bool> VerifyIfUploadRequiredAsync(this File serverFile, Stream localStream)
+        {
+            await new SynchronizationContextRemover();
+            return await serverFile.VerifyIfUploadRequiredImplementation(localStream);
+        }
+#endif
+        /// <summary>
+        /// Used to compare the server file to the local file.
+        /// This enables users with faster download speeds but slow upload speeds to evaluate if the server file should be overwritten.
+        /// </summary>
+        /// <param name="serverFile">File located on the server.</param>
+        /// <param name="localStream">Stream to validate against.</param>
+        /// <returns></returns>
+#if ONPREMISES
+        public static bool VerifyIfUploadRequiredImplementation(this File serverFile, Stream localStream)
+#else
+        public static async Task<bool> VerifyIfUploadRequiredImplementation(this File serverFile, Stream localStream)
+#endif
+        {
             if (serverFile == null)
-            {
                 throw new ArgumentNullException(nameof(serverFile));
-            }
-
             if (localStream == null)
-            {
                 throw new ArgumentNullException(nameof(localStream));
-            }
 
             byte[] serverHash = null;
             var streamResult = serverFile.OpenBinaryStream();
+#if ONPREMISES
             serverFile.Context.ExecuteQueryRetry();
+#else
+            await serverFile.Context.ExecuteQueryRetryAsync();
+#endif
 
             // Hash contents
             HashAlgorithm ha = HashAlgorithm.Create();
             using (var serverStream = streamResult.Value)
-            {
                 serverHash = ha.ComputeHash(serverStream);
-                //Console.WriteLine("Server hash: {0}", BitConverter.ToString(serverHash));
-            }
 
             // Check hash (& rewind)
             var localHash = ha.ComputeHash(localStream);
             localStream.Position = 0;
-            //Console.WriteLine("Local hash: {0}", BitConverter.ToString(localHash));
 
             // Compare hash
             var contentsMatch = true;
             for (var index = 0; index < serverHash.Length; index++)
-            {
                 if (serverHash[index] != localHash[index])
                 {
-                    //Console.WriteLine("Hash does not match");
                     contentsMatch = false;
                     break;
                 }
-            }
 
             localStream.Position = 0;
             return !contentsMatch;
