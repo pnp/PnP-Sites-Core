@@ -1660,24 +1660,73 @@ namespace Microsoft.SharePoint.Client
         public static File UploadFile(this Folder folder, string fileName, string localFilePath, bool overwriteIfExists)
         {
             if (folder == null)
-            {
                 throw new ArgumentNullException(nameof(folder));
-            }
-
             if (localFilePath == null)
-            {
                 throw new ArgumentNullException(nameof(localFilePath));
-            }
-
             if (!System.IO.File.Exists(localFilePath))
-            {
                 throw new FileNotFoundException("Local file was not found.", localFilePath);
-            }
 
             using (var stream = System.IO.File.OpenRead(localFilePath))
-                return folder.UploadFile(fileName, stream, overwriteIfExists);
+#if ONPREMISES
+                return folder.UploadFileImplementation(fileName, stream, overwriteIfExists);
+#else
+                return folder.UploadFileImplementation(fileName, stream, overwriteIfExists).GetAwaiter().GetResult();
+#endif
         }
+#if !ONPREMISES
+        /// <summary>
+        /// Uploads a file to the specified folder.
+        /// </summary>
+        /// <param name="folder">Folder to upload file to.</param>
+        /// <param name="fileName">Name of the file</param>
+        /// <param name="localFilePath">Location of the file to be uploaded.</param>
+        /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
+        /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
+        public static async Task<File> UploadFileAsync(this Folder folder, string fileName, string localFilePath, bool overwriteIfExists)
+        {
+            await new SynchronizationContextRemover();
+            if (folder == null)
+                throw new ArgumentNullException(nameof(folder));
+            if (localFilePath == null)
+                throw new ArgumentNullException(nameof(localFilePath));
+            if (!System.IO.File.Exists(localFilePath))
+                throw new FileNotFoundException("Local file was not found.", localFilePath);
 
+            using (var stream = System.IO.File.OpenRead(localFilePath))
+                return await folder.UploadFileImplementation(fileName, stream, overwriteIfExists);
+        }
+#endif
+        /// <summary>
+        /// Uploads a file to the specified folder.
+        /// </summary>
+        /// <param name="folder">Folder to upload file to.</param>
+        /// <param name="fileName">Location of the file to be uploaded.</param>
+        /// <param name="stream">A stream object that represents the file.</param>
+        /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
+        /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
+        public static File UploadFile(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
+        {
+#if ONPREMISES
+            return folder.UploadFileImplementation(fileName, stream, overwriteIfExists);
+#else
+            return folder.UploadFileImplementation(fileName, stream, overwriteIfExists).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Uploads a file to the specified folder.
+        /// </summary>
+        /// <param name="folder">Folder to upload file to.</param>
+        /// <param name="fileName">Location of the file to be uploaded.</param>
+        /// <param name="stream">A stream object that represents the file.</param>
+        /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
+        /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
+        public static async Task<File> UploadFileAsync(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
+        {
+            await new SynchronizationContextRemover();
+            return await folder.UploadFileImplementation(fileName, stream, overwriteIfExists);
+        }
+#endif
         /// <summary>
         /// Uploads a file to the specified folder.
         /// </summary>
@@ -1687,27 +1736,23 @@ namespace Microsoft.SharePoint.Client
         /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
         /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
-        public static File UploadFile(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
+#if ONPREMISES
+        private static File UploadFileImplementation(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
+#else
+        private static async Task<File> UploadFileImplementation(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
+#endif
         {
             if (fileName == null)
-            {
                 throw new ArgumentNullException(nameof(fileName));
-            }
 
             if (stream == null)
-            {
                 throw new ArgumentNullException(nameof(stream));
-            }
 
             if (string.IsNullOrWhiteSpace(fileName))
-            {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFile_Destination_file_name_is_required_, nameof(fileName));
-            }
 
             if (fileName.ContainsInvalidFileFolderChars())
-            {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_, nameof(fileName));
-            }
 
             // Create the file
             var newFileInfo = new FileCreationInformation()
@@ -1720,7 +1765,11 @@ namespace Microsoft.SharePoint.Client
             Log.Debug(Constants.LOGGING_SOURCE, "Creating file info with Url '{0}'", newFileInfo.Url);
             var file = folder.Files.Add(newFileInfo);
             folder.Context.Load(file);
+#if ONPREMISES
             folder.Context.ExecuteQueryRetry();
+#else
+            await folder.Context.ExecuteQueryRetryAsync();
+#endif
 
             return file;
         }
