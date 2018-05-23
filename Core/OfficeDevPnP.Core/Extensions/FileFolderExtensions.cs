@@ -1785,23 +1785,42 @@ namespace Microsoft.SharePoint.Client
         public static File UploadFileWebDav(this Folder folder, string fileName, string localFilePath, bool overwriteIfExists)
         {
             if (folder == null)
-            {
                 throw new ArgumentNullException(nameof(folder));
-            }
-
             if (localFilePath == null)
-            {
                 throw new ArgumentNullException(nameof(localFilePath));
-            }
-
             if (!System.IO.File.Exists(localFilePath))
-            {
                 throw new FileNotFoundException("Local file was not found.", localFilePath);
-            }
 
             using (var stream = System.IO.File.OpenRead(localFilePath))
-                return folder.UploadFileWebDav(fileName, stream, overwriteIfExists);
+#if ONPREMISES
+                return folder.UploadFileWebDavImplementation(fileName, stream, overwriteIfExists);
+#else
+                return folder.UploadFileWebDavImplementation(fileName, stream, overwriteIfExists).GetAwaiter().GetResult();
+#endif
         }
+#if !ONPREMISES
+        /// <summary>
+        /// Uploads a file to the specified folder by saving the binary directly (via webdav).
+        /// </summary>
+        /// <param name="folder">Folder to upload file to.</param>
+        /// <param name="fileName">Name of the file</param>
+        /// <param name="localFilePath">Location of the file to be uploaded.</param>
+        /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
+        /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
+        public static async Task<File> UploadFileWebDavAsync(this Folder folder, string fileName, string localFilePath, bool overwriteIfExists)
+        {
+            await new SynchronizationContextRemover();
+            if (folder == null)
+                throw new ArgumentNullException(nameof(folder));
+            if (localFilePath == null)
+                throw new ArgumentNullException(nameof(localFilePath));
+            if (!System.IO.File.Exists(localFilePath))
+                throw new FileNotFoundException("Local file was not found.", localFilePath);
+
+            using (var stream = System.IO.File.OpenRead(localFilePath))
+                return await folder.UploadFileWebDavImplementation(fileName, stream, overwriteIfExists);
+        }
+#endif
 
         /// <summary>
         /// Uploads a file to the specified folder by saving the binary directly (via webdav).
@@ -1812,28 +1831,54 @@ namespace Microsoft.SharePoint.Client
         /// <param name="stream">A stream object that represents the file.</param>
         /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
         /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
         public static File UploadFileWebDav(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
         {
+#if ONPREMISES
+            return folder.UploadFileWebDavImplementation(fileName, stream, overwriteIfExists);
+#else
+            return folder.UploadFileWebDavImplementation(fileName, stream, overwriteIfExists).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Uploads a file to the specified folder by saving the binary directly (via webdav).
+        /// Note: this method does not work using app only token.
+        /// </summary>
+        /// <param name="folder">Folder to upload file to.</param>
+        /// <param name="fileName">Location of the file to be uploaded.</param>
+        /// <param name="stream">A stream object that represents the file.</param>
+        /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
+        /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
+        public static async Task<File> UploadFileWebDavAsync(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
+        {
+            await new SynchronizationContextRemover();
+            return await folder.UploadFileWebDavImplementation(fileName, stream, overwriteIfExists);
+        }
+#endif
+        /// <summary>
+        /// Uploads a file to the specified folder by saving the binary directly (via webdav).
+        /// Note: this method does not work using app only token.
+        /// </summary>
+        /// <param name="folder">Folder to upload file to.</param>
+        /// <param name="fileName">Location of the file to be uploaded.</param>
+        /// <param name="stream">A stream object that represents the file.</param>
+        /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
+        /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
+#if ONPREMISES
+        private static File UploadFileWebDavImplementation(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
+#else
+        private static async Task<File> UploadFileWebDavImplementation(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
+#endif
+        {
             if (fileName == null)
-            {
                 throw new ArgumentNullException(nameof(fileName));
-            }
-
             if (stream == null)
-            {
                 throw new ArgumentNullException(nameof(stream));
-            }
-
             if (string.IsNullOrWhiteSpace(fileName))
-            {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFile_Destination_file_name_is_required_, nameof(fileName));
-            }
-
             if (fileName.ContainsInvalidFileFolderChars())
-            {
                 throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFileWebDav_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_, nameof(fileName));
-            }
 
             var serverRelativeUrl = UrlUtility.Combine(folder.ServerRelativeUrl, fileName);
 
@@ -1842,13 +1887,20 @@ namespace Microsoft.SharePoint.Client
             {
                 Log.Debug(Constants.LOGGING_SOURCE, "Save binary direct (via webdav) to '{0}'", serverRelativeUrl);
                 File.SaveBinaryDirect(uploadContext, serverRelativeUrl, stream, overwriteIfExists);
+#if ONPREMISES
                 uploadContext.ExecuteQueryRetry();
+#else
+                await uploadContext.ExecuteQueryRetryAsync();
+#endif
             }
 
             var file = folder.Files.GetByUrl(serverRelativeUrl);
             folder.Context.Load(file);
+#if ONPREMISES
             folder.Context.ExecuteQueryRetry();
-
+#else
+            await folder.Context.ExecuteQueryRetryAsync();
+#endif
             return file;
         }
 
