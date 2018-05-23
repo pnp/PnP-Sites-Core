@@ -2094,6 +2094,34 @@ namespace Microsoft.SharePoint.Client
             localStream.Position = 0;
             return !contentsMatch;
         }
+        /// <summary>
+        /// Sets file properties using a dictionary.
+        /// </summary>
+        /// <param name="file">Target file object.</param>
+        /// <param name="properties">Dictionary of properties to set.</param>
+        /// <param name="checkoutIfRequired">Check out the file if necessary to set properties.</param>
+        public static void SetFileProperties(this File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
+        {
+#if ONPREMISES
+            file.SetFilePropertiesImplementation(properties, checkoutIfRequired);
+#else
+            file.SetFilePropertiesImplementation(properties, checkoutIfRequired).GetAwaiter().GetResult();
+#endif
+        }
+
+#if !ONPREMISES
+        /// <summary>
+        /// Sets file properties using a dictionary.
+        /// </summary>
+        /// <param name="file">Target file object.</param>
+        /// <param name="properties">Dictionary of properties to set.</param>
+        /// <param name="checkoutIfRequired">Check out the file if necessary to set properties.</param>
+        public static async Task SetFilePropertiesAsync(this File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
+        {
+            await new SynchronizationContextRemover();
+            await file.SetFilePropertiesImplementation(properties, checkoutIfRequired);
+        }
+#endif
 
         /// <summary>
         /// Sets file properties using a dictionary.
@@ -2102,17 +2130,16 @@ namespace Microsoft.SharePoint.Client
         /// <param name="properties">Dictionary of properties to set.</param>
         /// <param name="checkoutIfRequired">Check out the file if necessary to set properties.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
-        public static void SetFileProperties(this File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
+#if ONPREMISES
+        private static void SetFilePropertiesImplementation(this File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
+#else
+        private static async Task SetFilePropertiesImplementation(this File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
+#endif
         {
             if (file == null)
-            {
                 throw new ArgumentNullException(nameof(file));
-            }
-
             if (properties == null)
-            {
                 throw new ArgumentNullException(nameof(properties));
-            }
 
             var changedProperties = new Dictionary<string, string>();
             var changedPropertiesString = new StringBuilder();
@@ -2128,7 +2155,11 @@ namespace Microsoft.SharePoint.Client
                 context.Load(file.ListItemAllFields.FieldValuesAsText);
                 try
                 {
+#if ONPREMISES
                     context.ExecuteQueryRetry();
+#else
+                    await context.ExecuteQueryRetryAsync();
+#endif
                 }
                 catch (ServerException ex)
                 {
@@ -2161,7 +2192,11 @@ namespace Microsoft.SharePoint.Client
                                 if (!currentValue.Equals(propertyValue, StringComparison.InvariantCultureIgnoreCase) && parentList != null)
                                 {
                                     ContentType targetCT = parentList.GetContentTypeByName(propertyValue);
+#if ONPREMISES
                                     context.ExecuteQueryRetry();
+#else
+                                    await context.ExecuteQueryRetryAsync();
+#endif
 
                                     if (targetCT != null)
                                     {
@@ -2236,7 +2271,11 @@ namespace Microsoft.SharePoint.Client
                     {
                         Log.Debug(Constants.LOGGING_SOURCE, "Checking out file '{0}'", file.Name);
                         file.CheckOut();
+#if ONPREMISES
                         context.ExecuteQueryRetry();
+#else
+                        await context.ExecuteQueryRetryAsync();
+#endif
                     }
 
                     Log.Debug(Constants.LOGGING_SOURCE, "Set properties: {0}", file.Name);
@@ -2249,7 +2288,11 @@ namespace Microsoft.SharePoint.Client
                         file.ListItemAllFields[propertyName] = propertyValue;
                     }
                     file.ListItemAllFields.Update();
+#if ONPREMISES
                     context.ExecuteQueryRetry();
+#else
+                    await context.ExecuteQueryRetryAsync();
+#endif
                 }
             }
         }
