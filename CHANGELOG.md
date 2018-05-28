@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fixes issue with double tokens in content by search webpart provisioning [KEMiCZA]
 - Fixes issue with sitedesigns not correctly being associated to web template
 - Fixes issue where you could not specify content type in a datarow element in a provisioning template
+- Fixes issue where you tried to modify a property of a default modern home page, and all web parts dissapeared
 
 ### Deprecated
 
