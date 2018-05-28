@@ -489,6 +489,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AppPackageIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUtilities.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.cs">
       <DependentUpon>ProvisioningSchema-2017-05.xsd</DependentUpon>
     </Compile>
