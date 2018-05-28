@@ -530,6 +530,8 @@ namespace OfficeDevPnP.Core.Pages
 #else
             using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
             {
+                if (this.sections.Count == 0) return string.Empty;
+
                 htmlWriter.NewLine = string.Empty;
 
                 htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
@@ -754,7 +756,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Try to set the page description if not yet set
-            if (this.layoutType == ClientSidePageLayoutType.Article && item.FieldValues.ContainsKey(ClientSidePage.DescriptionField)) 
+            if (this.layoutType == ClientSidePageLayoutType.Article && item.FieldValues.ContainsKey(ClientSidePage.DescriptionField))
             {
                 if (item[ClientSidePage.DescriptionField] == null || string.IsNullOrEmpty(item[ClientSidePage.DescriptionField].ToString()))
                 {
