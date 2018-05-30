@@ -1229,7 +1229,6 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region Request Access
-#if !ONPREMISES
         /// <summary>
         /// Disables the request access on the web.
         /// </summary>
@@ -1309,7 +1308,6 @@ namespace Microsoft.SharePoint.Client
 
             return emails;
         }
-#endif
         #endregion
 
         /// <summary>
