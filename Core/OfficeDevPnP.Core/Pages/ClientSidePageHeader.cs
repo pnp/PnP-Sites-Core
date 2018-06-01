@@ -168,7 +168,7 @@ namespace OfficeDevPnP.Core.Pages
                                 }
                             }
 
-                            System.Globalization.CultureInfo englishCulture = new System.Globalization.CultureInfo("en-EN");
+                            System.Globalization.CultureInfo usCulture = new System.Globalization.CultureInfo("en-US");
                             System.Globalization.CultureInfo europeanCulture = new System.Globalization.CultureInfo("nl-BE");
 
                             if (wpJObject["properties"]["translateX"] != null)
@@ -179,7 +179,7 @@ namespace OfficeDevPnP.Core.Pages
                                 System.Globalization.CultureInfo cultureToUse;
                                 if (translateXEN.Contains("."))
                                 {
-                                    cultureToUse = englishCulture;
+                                    cultureToUse = usCulture;
                                 }
                                 else if (translateXEN.Contains(","))
                                 {
@@ -187,7 +187,7 @@ namespace OfficeDevPnP.Core.Pages
                                 }
                                 else
                                 {
-                                    cultureToUse = englishCulture;
+                                    cultureToUse = usCulture;
                                 }
 
                                 Double.TryParse(translateXEN, System.Globalization.NumberStyles.Float, cultureToUse, out translateX);
@@ -201,7 +201,7 @@ namespace OfficeDevPnP.Core.Pages
                                 System.Globalization.CultureInfo cultureToUse;
                                 if (translateYEN.Contains("."))
                                 {
-                                    cultureToUse = englishCulture;
+                                    cultureToUse = usCulture;
                                 }
                                 else if (translateYEN.Contains(","))
                                 {
@@ -209,7 +209,7 @@ namespace OfficeDevPnP.Core.Pages
                                 }
                                 else
                                 {
-                                    cultureToUse = englishCulture;
+                                    cultureToUse = usCulture;
                                 }
 
                                 Double.TryParse(translateYEN, System.Globalization.NumberStyles.Float, cultureToUse, out translateY);
@@ -267,9 +267,9 @@ namespace OfficeDevPnP.Core.Pages
                     string focalPoints = "";
                     if (TranslateX.HasValue || TranslateY.HasValue)
                     {
-                        System.Globalization.CultureInfo englishCulture = new System.Globalization.CultureInfo("en-EN");
-                        var translateX = TranslateX.Value.ToString(englishCulture);
-                        var translateY = TranslateY.Value.ToString(englishCulture);
+                        System.Globalization.CultureInfo usCulture = new System.Globalization.CultureInfo("en-US");
+                        var translateX = TranslateX.Value.ToString(usCulture);
+                        var translateY = TranslateY.Value.ToString(usCulture);
                         focalPoints = $",&quot;translateX&quot;&#58;{translateX},&quot;translateY&quot;&#58;{translateY}";
                     }
 
