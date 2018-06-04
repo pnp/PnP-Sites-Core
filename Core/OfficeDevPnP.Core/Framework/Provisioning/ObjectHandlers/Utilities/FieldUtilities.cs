@@ -12,7 +12,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             if ((string)fieldElement.Attribute("Type") == "Lookup")
             {
                 var listAttr = (string)fieldElement.Attribute("List");
-                if (!Guid.TryParse(listAttr, out Guid _))
+                Guid g;
+                if (!Guid.TryParse(listAttr, out g))
                 {
                     var targetList = web.GetList($"{web.ServerRelativeUrl.TrimEnd('/')}/{listAttr}");
                     fieldElement.SetAttributeValue("List", targetList.EnsureProperty(l => l.Id).ToString("B"));
