@@ -356,7 +356,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // when we provision as external link, the server side URL validation won't kick-in
                     // This handles the "no such file or url found" error
 
-                    WriteMessage($"Provisioning of the navigation node failed, retrying for : {node.Title}", ProvisioningMessageType.Warning);
+                    WriteMessage(String.Format(CoreResources.Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed_Retry, node.Title), ProvisioningMessageType.Warning);
 
                     if (ex.ServerErrorCode == -2130247147)
                     {
@@ -372,12 +372,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         catch (Exception innerEx)
                         {
-                            WriteMessage($"Provisioning of the navigation node failed : {innerEx.Message}", ProvisioningMessageType.Warning);
+                            WriteMessage(String.Format(CoreResources.Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed, innerEx.Message), ProvisioningMessageType.Warning);
                         }
                     }
                     else
                     {
-                        WriteMessage($"Provisioning of the navigation node failed : {ex.Message}", ProvisioningMessageType.Warning);
+                        WriteMessage(String.Format(CoreResources.Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed, ex.Message), ProvisioningMessageType.Warning);
                     }
                 }
 
