@@ -819,8 +819,8 @@
   <data name="Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_" xml:space="preserve">
     <value>List {0} ({1}, {2}) exists but is of a different type. Skipping list.</value>
   </data>
-  <data name="Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true" xml:space="preserve">
-    <value>DraftVersionVisibility not applied because EnableModeration is not set to true</value>
+  <data name="Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_to_list_0_because_EnableModeration_is_not_set_to_true" xml:space="preserve">
+    <value>DraftVersionVisibility not applied to list {0} because EnableModeration is not set to true</value>
   </data>
   <data name="Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_" xml:space="preserve">
     <value>Adding list: {0} - {1}</value>
@@ -971,7 +971,7 @@
     <value>Missing Global Structural Navigation settings in the current template</value>
   </data>
   <data name="Provisioning_Asymmetric_Base_Templates" xml:space="preserve">
-    <value>The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. Thus, there could be potential issues while applying the template.</value>
+    <value>The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. This could cause potential issues while applying the template.</value>
   </data>
   <data name="ListExtensions_GetWebRelativeUrl" xml:space="preserve">
     <value>Cannot establish web relative URL from the {0} list root folder URI and the {1} parent web URI.</value>

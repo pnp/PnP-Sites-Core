@@ -9,8 +9,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [2.27.1806.0 - Unreleased]
 
 ### Added
+- Added optional timeout value on AppManager.Add method
 
 ### Changed
+- ClientComponentId and ClientComponentProperties are now updated when applying a template to a site where the customaction already exists [SchauDK]
+- Fixes issue with requiring tenant admin access while not provisioning tenant scoped artifacts
+- Fixed issue where a list would not be created based on a list template (TemplateFeatureId)
+- Fixed issue with double tokens in content by search webpart provisioning [KEMiCZA]
+- Fixed issue with sitedesigns not correctly being associated to web template
+- Fixed issue where you could not specify content type in a datarow element in a provisioning template
+- Fixed issue where you tried to modify a property of a default modern home page, and all web parts dissapeared
+- Fixed issue with Security Group names including HTML links (jensotto)
+- Fixed issue with UseShared property for Navigation Settings (TheJeffer)
 
 ### Deprecated
 

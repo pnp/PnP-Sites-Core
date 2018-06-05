@@ -168,20 +168,51 @@ namespace OfficeDevPnP.Core.Pages
                                 }
                             }
 
-                            System.Globalization.CultureInfo englishCulture = new System.Globalization.CultureInfo("en-EN");
+                            System.Globalization.CultureInfo usCulture = new System.Globalization.CultureInfo("en-US");
+                            System.Globalization.CultureInfo europeanCulture = new System.Globalization.CultureInfo("nl-BE");
 
                             if (wpJObject["properties"]["translateX"] != null)
                             {
                                 double translateX = 0;
                                 var translateXEN = wpJObject["properties"]["translateX"].ToString();
-                                Double.TryParse(translateXEN, System.Globalization.NumberStyles.Float, englishCulture, out translateX);
+
+                                System.Globalization.CultureInfo cultureToUse;
+                                if (translateXEN.Contains("."))
+                                {
+                                    cultureToUse = usCulture;
+                                }
+                                else if (translateXEN.Contains(","))
+                                {
+                                    cultureToUse = europeanCulture;
+                                }
+                                else
+                                {
+                                    cultureToUse = usCulture;
+                                }
+
+                                Double.TryParse(translateXEN, System.Globalization.NumberStyles.Float, cultureToUse, out translateX);
                                 this.TranslateX = translateX;
                             }
                             if (wpJObject["properties"]["translateY"] != null)
                             {
                                 double translateY = 0;
                                 var translateYEN = wpJObject["properties"]["translateY"].ToString();
-                                Double.TryParse(translateYEN, System.Globalization.NumberStyles.Float, englishCulture, out translateY);
+
+                                System.Globalization.CultureInfo cultureToUse;
+                                if (translateYEN.Contains("."))
+                                {
+                                    cultureToUse = usCulture;
+                                }
+                                else if (translateYEN.Contains(","))
+                                {
+                                    cultureToUse = europeanCulture;
+                                }
+                                else
+                                {
+                                    cultureToUse = usCulture;
+                                }
+
+                                Double.TryParse(translateYEN, System.Globalization.NumberStyles.Float, cultureToUse, out translateY);
                                 this.TranslateY = translateY;
                             }
                         }
@@ -236,9 +267,9 @@ namespace OfficeDevPnP.Core.Pages
                     string focalPoints = "";
                     if (TranslateX.HasValue || TranslateY.HasValue)
                     {
-                        System.Globalization.CultureInfo englishCulture = new System.Globalization.CultureInfo("en-EN");
-                        var translateX = TranslateX.Value.ToString(englishCulture);
-                        var translateY = TranslateY.Value.ToString(englishCulture);
+                        System.Globalization.CultureInfo usCulture = new System.Globalization.CultureInfo("en-US");
+                        var translateX = TranslateX.Value.ToString(usCulture);
+                        var translateY = TranslateY.Value.ToString(usCulture);
                         focalPoints = $",&quot;translateX&quot;&#58;{translateX},&quot;translateY&quot;&#58;{translateY}";
                     }
 
