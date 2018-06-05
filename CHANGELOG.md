@@ -19,6 +19,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fixes issue with sitedesigns not correctly being associated to web template
 - Fixes issue where you could not specify content type in a datarow element in a provisioning template
 - Fixes issue where you tried to modify a property of a default modern home page, and all web parts dissapeared
+- Correctly extract modern page title [SchauDK]
+- Fixes issue with using culture in page header persisting [guillaume-kizilian]
+- Fixes lookup column support by supporting list web relative urls [stevebeauge]
+- Support version 1.4 of page header data structure
 
 ### Deprecated
 

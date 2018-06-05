@@ -580,6 +580,8 @@
     <Compile Include="Pages\ClientSidePage.cs" />
     <Compile Include="Pages\ClientSideComponent.cs" />
     <Compile Include="Pages\ClientSidePageHeader.cs" />
+    <Compile Include="Pages\ClientSidePageHeaderLayoutType.cs" />
+    <Compile Include="Pages\ClientSidePageHeaderTitleAlignment.cs" />
     <Compile Include="Pages\ClientSidePageHeaderType.cs" />
     <Compile Include="Pages\ClientSidePageLayoutType.cs" />
     <Compile Include="Entities\UnifiedGroupEntity.cs" />
