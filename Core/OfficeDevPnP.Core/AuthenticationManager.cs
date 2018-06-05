@@ -87,7 +87,6 @@ namespace OfficeDevPnP.Core
             return ctx;
         }
 
-#if !NETSTANDARD2_0
         /// <summary>
         /// Returns an app only ClientContext object
         /// </summary>
@@ -99,9 +98,7 @@ namespace OfficeDevPnP.Core
         {
             return GetAppOnlyAuthenticatedContext(siteUrl, TokenHelper.GetRealmFromTargetUrl(new Uri(siteUrl)), appId, appSecret);
         }
-#endif
 
-#if !NETSTANDARD2_0
         /// <summary>
         /// Returns an app only ClientContext object
         /// </summary>
@@ -114,9 +111,7 @@ namespace OfficeDevPnP.Core
         {
             return GetAppOnlyAuthenticatedContext(siteUrl, TokenHelper.GetRealmFromTargetUrl(new Uri(siteUrl)), appId, appSecret, GetAzureADACSEndPoint(environment), GetAzureADACSEndPointPrefix(environment));
         }
-#endif
 
-#if !NETSTANDARD2_0
         /// <summary>
         /// Returns an app only ClientContext object
         /// </summary>
@@ -133,7 +128,6 @@ namespace OfficeDevPnP.Core
             ClientContext clientContext = Utilities.TokenHelper.GetClientContextWithAccessToken(siteUrl, appOnlyAccessToken);
             return clientContext;
         }
-#endif
 
         /// <summary>
         /// Get's the Azure ASC login end point for the given environment
@@ -207,7 +201,6 @@ namespace OfficeDevPnP.Core
             }
         }
 
-#if !NETSTANDARD2_0
         /// <summary>
         /// Ensure that AppAccessToken is filled with a valid string representation of the OAuth AccessToken. This method will launch handle with token cleanup after the token expires
         /// </summary>
@@ -268,7 +261,6 @@ namespace OfficeDevPnP.Core
                 }
             }
         }
-#endif
 
         /// <summary>
         /// Get the access token lease time span.

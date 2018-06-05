@@ -86,9 +86,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var customActionEntity = new CustomActionEntity()
                     {
 #if !ONPREMISES
-                        ClientSideComponentId = customAction.ClientSideComponentId,                        
+                        ClientSideComponentId = customAction.ClientSideComponentId,
                         ClientSideComponentProperties = customAction.ClientSideComponentProperties != null ? parser.ParseString(customAction.ClientSideComponentProperties) : customAction.ClientSideComponentProperties,
-#endif 
+#endif
                         CommandUIExtension = customAction.CommandUIExtension != null ? parser.ParseString(customAction.CommandUIExtension.ToString()) : string.Empty,
                         Description = parser.ParseString(customAction.Description),
                         Group = customAction.Group,
@@ -199,6 +199,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if  (existingCustomAction.ClientSideComponentId != customAction.ClientSideComponentId)
                 {
                     existingCustomAction.ClientSideComponentId = customAction.ClientSideComponentId;
+                    isDirty = true;
                 }
             }
 
@@ -207,6 +208,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (existingCustomAction.ClientSideComponentProperties != parser.ParseString(customAction.ClientSideComponentProperties))
                 {
                     existingCustomAction.ClientSideComponentProperties = parser.ParseString(customAction.ClientSideComponentProperties);
+                    isDirty = true;
                 }
             }
 #endif
@@ -421,7 +423,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
             customAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
             customAction.ClientSideComponentProperties = userCustomAction.ClientSideComponentProperties;
-#endif 
+#endif
 
             customAction.CommandUIExtension = !System.String.IsNullOrEmpty(userCustomAction.CommandUIExtension) ?
                 XElement.Parse(userCustomAction.CommandUIExtension) : null;

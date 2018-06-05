@@ -467,7 +467,7 @@ namespace Microsoft.SharePoint.Client
 
             var lmi = new LabelMatchInformation(site.Context);
 
-            lmi.Lcid = 1033;
+            lmi.Lcid = ts.EnsureProperty(tstore => tstore.DefaultLanguage);
             lmi.TrimUnavailable = true;
             lmi.TermLabel = term;
 
@@ -519,7 +519,7 @@ namespace Microsoft.SharePoint.Client
             TermStore ts = tSession.GetDefaultSiteCollectionTermStore();
             TermSet tset = ts.GetTermSet(termSetId);
 
-            t = tset.CreateTerm(term, 1033, termId);
+            t = tset.CreateTerm(term, ts.EnsureProperty(tstore => tstore.DefaultLanguage), termId);
             //site.Context.Load(tSession);
             //site.Context.Load(ts);
             //site.Context.Load(tset);
@@ -1540,6 +1540,33 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
+        /// <summary>
+        /// Ensures the specified label for the specified lcid exists.
+        /// </summary>
+        /// <param name="term">The term to ensure the label for</param>
+        /// <param name="lcid">The LCID of the label to ensure</param>
+        /// <param name="labelName">The name of the label to ensure</param>
+        /// <param name="isDefault">Determines if the label should be the default</param>
+        public static void EnsureLabel(this Term term, int lcid, string labelName, bool isDefault)
+        {
+            var clientContext = term.Context;
+
+            if (term.ServerObjectIsNull == true)
+            {
+                clientContext.Load(term);
+                clientContext.ExecuteQueryRetry();
+            }
+
+            clientContext.Load(term.Labels);
+            clientContext.ExecuteQueryRetry();
+
+            if (!term.Labels.Where(l => l.Language == lcid).Any(l => l.Value == labelName))
+            {
+                term.CreateLabel(labelName, lcid, isDefault);
+                clientContext.ExecuteQueryRetry();
+            }
+        }
+
         #endregion
 
         #region Fields
@@ -1549,14 +1576,15 @@ namespace Microsoft.SharePoint.Client
         /// <param name="item">The item to set the value to</param>
         /// <param name="TermPath">The path of the term in the shape of "TermGroupName|TermSetName|TermName"</param>
         /// <param name="fieldId">The id of the field</param>
+        /// <param name="systemUpdate">If set to true, will do a system udpate to the item. Default value is false.</param>
         /// <exception cref="KeyNotFoundException"/>
-        public static void SetTaxonomyFieldValueByTermPath(this ListItem item, string TermPath, Guid fieldId)
+        public static void SetTaxonomyFieldValueByTermPath(this ListItem item, string TermPath, Guid fieldId, bool systemUpdate = false)
         {
             var clientContext = item.Context as ClientContext;
             TaxonomyItem taxItem = clientContext.Site.GetTaxonomyItemByPath(TermPath);
             if (taxItem != null)
             {
-                item.SetTaxonomyFieldValue(fieldId, taxItem.Name, taxItem.Id);
+                item.SetTaxonomyFieldValue(fieldId, taxItem.Name, taxItem.Id, systemUpdate);
             }
             else
             {
@@ -1565,44 +1593,29 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Sets a value of a taxonomy field
+        /// Sets a value of a taxonomy field. To set an empty value set label to an empty string and termGuid to an empty GUID.
         /// </summary>
         /// <param name="item">The item to process</param>
         /// <param name="fieldId">The ID of the field to set</param>
         /// <param name="label">The label of the term to set</param>
         /// <param name="termGuid">The id of the term to set</param>
-        public static void SetTaxonomyFieldValue(this ListItem item, Guid fieldId, string label, Guid termGuid)
+        /// <param name="systemUpdate">If set to true, will do a system udpate to the item. Default value is false.</param>
+        public static void SetTaxonomyFieldValue(this ListItem item, Guid fieldId, string label, Guid termGuid, bool systemUpdate = false)
         {
             ClientContext clientContext = item.Context as ClientContext;
 
-            List list = item.ParentList;
-
-            clientContext.Load(list);
+            var field = item.ParentList.Fields.GetById(fieldId);
+            TaxonomyField taxField = clientContext.CastTo<TaxonomyField>(field);
             clientContext.ExecuteQueryRetry();
 
-            IEnumerable<Field> fieldQuery = clientContext.LoadQuery(
-              list.Fields
-              .Include(
-                fieldArg => fieldArg.TypeAsString,
-                fieldArg => fieldArg.Id,
-                fieldArg => fieldArg.InternalName
-              )
-            ).Where(fieldArg => fieldArg.Id == fieldId);
-
-            clientContext.ExecuteQueryRetry();
-
-            TaxonomyField taxField = fieldQuery.Cast<TaxonomyField>().FirstOrDefault();
-
-            clientContext.Load(taxField);
-            clientContext.ExecuteQueryRetry();
-
-            TaxonomyFieldValue fieldValue = new TaxonomyFieldValue();
-            fieldValue.Label = label;
-            fieldValue.TermGuid = termGuid.ToString();
-            fieldValue.WssId = -1;
-            taxField.SetFieldValueByValue(item, fieldValue);
-            item.Update();
-            clientContext.ExecuteQueryRetry();
+            if (string.IsNullOrEmpty(label) && termGuid.Equals(Guid.Empty))
+            {
+                taxField.SetFieldValueByLabelGuidPair(item, string.Empty, systemUpdate);
+            }
+            else
+            {
+                taxField.SetFieldValueByLabelGuidPair(item, $"{label}|{termGuid.ToString()}", systemUpdate);
+            }
         }
 
         /// <summary>
@@ -1611,51 +1624,109 @@ namespace Microsoft.SharePoint.Client
         /// <param name="item">The item to process</param>
         /// <param name="fieldId">The ID of the field to set</param>
         /// <param name="termValues">The key and values of terms to set</param>
-        public static void SetTaxonomyFieldValues(this ListItem item, Guid fieldId, IEnumerable<KeyValuePair<Guid, String>> termValues)
+        /// <param name="systemUpdate">If set to true, will do a system udpate to the item. Default value is false.</param>
+        public static void SetTaxonomyFieldValues(this ListItem item, Guid fieldId, IEnumerable<KeyValuePair<Guid, String>> termValues, bool systemUpdate = false)
         {
             ClientContext clientContext = item.Context as ClientContext;
 
-            List list = item.ParentList;
-
-            clientContext.Load(list);
-            clientContext.ExecuteQueryRetry();
-
-            IEnumerable<Field> fieldQuery = clientContext.LoadQuery(
-              list.Fields
-              .Include(
-                fieldArg => fieldArg.TypeAsString,
-                fieldArg => fieldArg.Id,
-                fieldArg => fieldArg.InternalName
-              )
-            ).Where(fieldArg => fieldArg.Id == fieldId);
-
-            clientContext.ExecuteQueryRetry();
-
-            TaxonomyField taxField = fieldQuery.Cast<TaxonomyField>().FirstOrDefault();
-
-            clientContext.Load(taxField);
+            var field = item.ParentList.Fields.GetById(fieldId);
+            TaxonomyField taxField = clientContext.CastTo<TaxonomyField>(field);
+            clientContext.Load(taxField, tf => tf.AllowMultipleValues);
             clientContext.ExecuteQueryRetry();
 
             if (taxField.AllowMultipleValues)
             {
-                var termValuesString = String.Empty;
+                StringBuilder termValuesStringbuilder = new StringBuilder();
+                bool skipSeperator = true;
                 foreach (var term in termValues)
                 {
-                    termValuesString += "-1;#" + term.Value + "|" + term.Key.ToString("D") + ";#";
+                    if (skipSeperator)
+                    {
+                        skipSeperator = false;
+                    }
+                    else
+                    {
+                        termValuesStringbuilder.Append(';');
+                    }
+                    termValuesStringbuilder.Append(term.Value + "|" + term.Key.ToString());
                 }
 
-                termValuesString = termValuesString.Substring(0, termValuesString.Length - 2);
-
-                var newTaxFieldValue = new TaxonomyFieldValueCollection(clientContext, termValuesString, taxField);
-                taxField.SetFieldValueByValueCollection(item, newTaxFieldValue);
-
-                item.Update();
-                clientContext.ExecuteQueryRetry();
+                taxField.SetFieldValueByLabelGuidPair(item, termValuesStringbuilder.ToString(), systemUpdate);
             }
             else
             {
                 throw new ArgumentException(CoreResources.TaxonomyExtensions_Field_Is_Not_Multivalues, taxField.StaticName);
             }
+        }
+
+        /// <summary>
+        /// Sets a value of a taxonomy field.
+        /// Value parameter is one or more label GUID pairs:
+        /// Single value field (TaxonomyFieldType) - term label|term GUID
+        /// Multi value field (TaxonomyFieldTypeMulti) - term label|term GUID;term label|term GUID;term label|term GUID...
+        /// </summary>
+        /// <param name="taxonomyField">The field to set</param>
+        /// <param name="item">The item to process</param>
+        /// <param name="value">The value to set on the taxonomy field</param>
+        /// <param name="systemUpdate">If set to true, will do a system udpate to the item. Default value is false.</param>
+        public static void SetFieldValueByLabelGuidPair(this TaxonomyField taxonomyField, ListItem item, string value, bool systemUpdate = false)
+        {
+            taxonomyField.EnsureProperties(f => f.TextField, f => f.AllowMultipleValues);
+
+            //TaxonomyFieldValue.PopulateFromLabelGuidPairs(string) has not been exposed to CSOM.
+            //This trick uses TaxonomyFieldValueCollection to get the same result for single value taxonomy fields.
+            TaxonomyFieldValueCollection taxonomyValues = new TaxonomyFieldValueCollection(item.Context, null, taxonomyField);
+            taxonomyValues.PopulateFromLabelGuidPairs(value);
+
+            if (taxonomyField.AllowMultipleValues)
+            {
+                taxonomyField.SetFieldValueByValueCollection(item, taxonomyValues);
+            }
+            else
+            {
+                item.Context.Load(taxonomyValues);
+                item.Context.ExecuteQueryRetry();
+                if (taxonomyValues.Count > 0)
+                {
+                    taxonomyField.SetFieldValueByValue(item, taxonomyValues[0]);
+                }
+                else
+                {
+                    //Empty single value taxonomy value specified. Clear out existing value.
+                    //It's not possible to clear out the value using an empty TaxonomyFieldValue directly.
+                    //This is due to the fact that SetFieldValueByValue requires TermGuid or creatingField to be set on server side.
+                    //It is not possible to set creatingField, so the only possible workaround is to use the predefined Guid with all 1's.
+                    //This will leave data in the hidden field that must be cleared in the same query on the server.
+                    //This approach is necessary to maintain data in TaxCatchAll field for other taxonomy fields in the list item.
+
+                    Field hiddenField = item.ParentList.Fields.GetById(taxonomyField.TextField);
+                    item.Context.Load(hiddenField,
+                        tf => tf.InternalName
+                        );
+                    item.Context.ExecuteQueryRetry();
+
+                    TaxonomyFieldValue taxonomyValue = new TaxonomyFieldValue();
+                    taxonomyValue.Label = string.Empty;
+                    taxonomyValue.TermGuid = "11111111-1111-1111-1111-111111111111";
+                    taxonomyValue.WssId = -1;
+                    taxonomyField.SetFieldValueByValue(item, taxonomyValue);
+
+                    item[hiddenField.InternalName] = string.Empty;
+                }
+            }
+            if (systemUpdate)
+            {
+#if !ONPREMISES
+                item.SystemUpdate();
+#else
+                item.Update();
+#endif
+            }
+            else
+            {
+                item.Update();
+            }
+            item.Context.ExecuteQueryRetry();
         }
 
         private static void CleanupTaxonomyHiddenField(Web web, FieldCollection fields, TaxonomyFieldCreationInformation fieldCreationInformation)
@@ -2098,6 +2169,6 @@ namespace Microsoft.SharePoint.Client
                 clientContext.ExecuteQueryRetry();
             }
         }
-        #endregion
+#endregion
     }
 }

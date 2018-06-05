@@ -313,10 +313,10 @@
     <value>SetSiteLockState: Current: {0} Target: {1}</value>
   </data>
   <data name="TimerJob_AddSite_Done" xml:space="preserve">
-    <value>Site {0} url/wildcard added</value>
+    <value>Site {0} URL/wildcard added</value>
   </data>
   <data name="TimerJob_AddSite_InvalidUrl" xml:space="preserve">
-    <value>Site url ({0}) contains invalid characters</value>
+    <value>Site URL ({0}) contains invalid characters</value>
   </data>
   <data name="TimerJob_Authentication_AppOnly" xml:space="preserve">
     <value>Timer job authentication set to type App-Only with clientId {0}</value>
@@ -328,7 +328,7 @@
     <value>Timer job authentication set to type Office 365 with user {0}</value>
   </data>
   <data name="TimerJob_Authentication_RetrieveFromCredMan" xml:space="preserve">
-    <value>Retrieving credetials with name {0} from the Windows Credential Manager</value>
+    <value>Retrieving credentials with name {0} from the Windows Credential Manager</value>
   </data>
   <data name="TimerJob_Authentication_RetrieveFromCredManFailed" xml:space="preserve">
     <value>Failed to retrieve credential manager credentials with name {0} or retrieved credentials don't have user or password set</value>
@@ -352,7 +352,7 @@
     <value>Doing work for site {0}</value>
   </data>
   <data name="TimerJob_Enumeration_Network" xml:space="preserve">
-    <value>Enumeration credentials specified for on-premises enumeration with user {0} and demain {1}</value>
+    <value>Enumeration credentials specified for on-premises enumeration with user {0} and domain {1}</value>
   </data>
   <data name="TimerJob_Enumeration_NoDomain" xml:space="preserve">
     <value>No domain specified that can be used for site enumeration. Use the SetEnumerationNetworkCredentials method to provide credentials as app-only does not work with search</value>
@@ -388,13 +388,13 @@
     <value>MaximumThreads set to {0}</value>
   </data>
   <data name="TimerJob_OnTimerJobRun_CallEventHandler" xml:space="preserve">
-    <value>Calling the eventhandler for site {0}</value>
+    <value>Calling the event handler for site {0}</value>
   </data>
   <data name="TimerJob_OnTimerJobRun_CallEventHandlerDone" xml:space="preserve">
-    <value>Eventhandler called for site {0}</value>
+    <value>Event handler called for site {0}</value>
   </data>
   <data name="TimerJob_OnTimerJobRun_Error" xml:space="preserve">
-    <value>Error during timerjob execution of site {0}. Exception message = {1}</value>
+    <value>Error during TimerJob execution of site {0}. Exception message = {1}</value>
   </data>
   <data name="TimerJob_OnTimerJobRun_PrevRunRead" xml:space="preserve">
     <value>Timerjob for site {1}, PreviousRun = {0}</value>
@@ -451,19 +451,19 @@
     <value>Done waiting for all site expanding threads</value>
   </data>
   <data name="TimerJob_Run_AfterResolveAddedSites" xml:space="preserve">
-    <value>After calling the virtual ResolveAddedSites method. Current count of site url's = {0}</value>
+    <value>After calling the virtual ResolveAddedSites method. Current count of site URL's = {0}</value>
   </data>
   <data name="TimerJob_Run_AfterUpdateAddedSites" xml:space="preserve">
-    <value>After calling the virtual UpdateAddedSites method. Current count of site url's = {0}</value>
+    <value>After calling the virtual UpdateAddedSites method. Current count of site URL's = {0}</value>
   </data>
   <data name="TimerJob_Run_BeforeResolveAddedSites" xml:space="preserve">
-    <value>Before calling the virtual ResolveAddedSites method. Current count of site url's = {0}</value>
+    <value>Before calling the virtual ResolveAddedSites method. Current count of site URL's = {0}</value>
   </data>
   <data name="TimerJob_Run_BeforeStartWorkBatches" xml:space="preserve">
     <value>Ready to start a thread for each of the {0} work batches</value>
   </data>
   <data name="TimerJob_Run_BeforeUpdateAddedSites" xml:space="preserve">
-    <value>Before calling the virtual UpdateAddedSites method. Current count of site url's = {0}</value>
+    <value>Before calling the virtual UpdateAddedSites method. Current count of site URL's = {0}</value>
   </data>
   <data name="TimerJob_Run_Done" xml:space="preserve">
     <value>Run of timer job has ended</value>
@@ -819,8 +819,8 @@
   <data name="Provisioning_ObjectHandlers_ListInstances_List__0____1____2___exists_but_is_of_a_different_type__Skipping_list_" xml:space="preserve">
     <value>List {0} ({1}, {2}) exists but is of a different type. Skipping list.</value>
   </data>
-  <data name="Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_because_EnableModeration_is_not_set_to_true" xml:space="preserve">
-    <value>DraftVersionVisibility not applied because EnableModeration is not set to true</value>
+  <data name="Provisioning_ObjectHandlers_ListInstances_DraftVersionVisibility_not_applied_to_list_0_because_EnableModeration_is_not_set_to_true" xml:space="preserve">
+    <value>DraftVersionVisibility not applied to list {0} because EnableModeration is not set to true</value>
   </data>
   <data name="Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_" xml:space="preserve">
     <value>Adding list: {0} - {1}</value>
@@ -971,7 +971,7 @@
     <value>Missing Global Structural Navigation settings in the current template</value>
   </data>
   <data name="Provisioning_Asymmetric_Base_Templates" xml:space="preserve">
-    <value>The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. Thus, there could be potential issues while applying the template.</value>
+    <value>The source site from which the template was generated had a base template ID value of {0}, while the current target site has a base template ID value of {1}. This could cause potential issues while applying the template.</value>
   </data>
   <data name="ListExtensions_GetWebRelativeUrl" xml:space="preserve">
     <value>Cannot establish web relative URL from the {0} list root folder URI and the {1} parent web URI.</value>
@@ -995,10 +995,10 @@
     <value>Skipping upload of file '{0}' to '{1}'.</value>
   </data>
   <data name="Provisioning_ObjectHandlers_ContentTypes_SkipCustomFormUrls" xml:space="preserve">
-    <value>Skipping custom form urls for contenttype '{0}' because we can't upload them on 'noscript' sites.</value>
+    <value>Skipping custom form URLs for contenttype '{0}' because we can't upload them on 'noscript' sites.</value>
   </data>
   <data name="Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments" xml:space="preserve">
-    <value>Skipping adding default documements to document set '{0}' because this is not supported on 'noscript' sites.</value>
+    <value>Skipping adding default documents to document set '{0}' because this is not supported on 'noscript' sites.</value>
   </data>
   <data name="Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions" xml:space="preserve">
     <value>Skip adding/updating custom actions because the site has "noscript" enabled.</value>
@@ -1046,10 +1046,10 @@
     <value>Content Type {0} does not exist in target list!</value>
   </data>
   <data name="Provisioning_Extensions_WebPartLocalization_Skip" xml:space="preserve">
-    <value>Skipping web part localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions.</value>
+    <value>Skipping web part localization because we're running under a user context who has a preferred language set in it's profile. This setup will not allow to add the needed localized string versions.</value>
   </data>
   <data name="Provisioning_Extensions_ViewLocalization_Skip" xml:space="preserve">
-    <value>Skipping view localization because we're running under a user context who has a prefered language set in it's profile. This setup will not allow to add the needed localized string versions.</value>
+    <value>Skipping view localization because we're running under a user context who has a preferred language set in it's profile. This setup will not allow to add the needed localized string versions.</value>
   </data>
   <data name="ListExtensions_SkipNoCrawlLists" xml:space="preserve">
     <value>Skipping reindexing of the list because it's marked as a 'no crawl' list.</value>
@@ -1088,7 +1088,7 @@
     <value>Could not find the control with either ID = {0} or Name = {1} to install. Did you install your client side web part to this site?</value>
   </data>
   <data name="Provisioning_ObjectHandlers_ClientSidePages_NoOverWrite" xml:space="preserve">
-    <value>Page with name {0} did already exist and the overwrite flag was not set, so nothing happended</value>
+    <value>Page with name {0} did already exist and the overwrite flag was not set, so nothing happened</value>
   </data>
   <data name="Provisioning_ObjectHandlers_ClientSidePageContents_DefaultHomePage" xml:space="preserve">
     <value>This page is an uncustomized, default home page, so no need to extract it.</value>
@@ -1104,5 +1104,17 @@
   </data>
   <data name="Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook" xml:space="preserve">
     <value>Webhook {0} has been expired and will be skipped during creation/update of list {1}.</value>
+  </data>
+  <data name="FieldAndContentTypeExtensions_ContentTypeMissing" xml:space="preserve">
+    <value>Content Type with ID {0} does not exist in the list {1}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Webhook_Error" xml:space="preserve">
+    <value>Error during webhook add/update: {0}.</value>
+  </data>
+  <data name="TimerJob_DoWork_NoClientContext" xml:space="preserve">
+    <value>Failed to obtain a ClientContext instance: {0}.</value>
+  </data>
+  <data name="ClientSidePageHeader_ImageNotFound" xml:space="preserve">
+    <value>The provided page header image '{0}' cannot be found. </value>
   </data>
 </root>

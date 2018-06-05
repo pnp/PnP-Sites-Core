@@ -141,31 +141,33 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod]
         public void CanProvisionSiteGroupDescription()
         {
-
-            string plainTextGroupName = string.Format("Test_PlainText_{0}", DateTime.Now.Ticks);
-            string htmlGroupName = string.Format("Test_HTML_{0}", DateTime.Now.Ticks);
-            string plainTextDescription = "Testing plain text";
-            string richHtmlDescription = "Testing HTML with link to <a href=\"/\">Root Site</a>";
-            string richHtmlDescriptionPlainTextVersion = "Testing HTML with link to Root Site";
-
-            var template = new ProvisioningTemplate();
-
-            template.Security.SiteGroups.Add(new SiteGroup()
-            {
-                Title = plainTextGroupName,
-                Description = plainTextDescription,
-                Owner = plainTextGroupName,
-            });
-
-            template.Security.SiteGroups.Add(new SiteGroup()
-            {
-                Title = htmlGroupName,
-                Description = richHtmlDescription,
-                Owner = htmlGroupName,
-            });
-
             using (var ctx = TestCommon.CreateClientContext())
             {
+                var currentUser = ctx.Web.EnsureProperty(w => w.CurrentUser);
+                var currentUserLoginName = currentUser.EnsureProperty(u => u.LoginName);
+
+                string plainTextGroupName = string.Format("Test_PlainText_{0}", DateTime.Now.Ticks);
+                string htmlGroupName = string.Format("Test_HTML_{0}", DateTime.Now.Ticks);
+                string plainTextDescription = "Testing plain text";
+                string richHtmlDescription = "Testing HTML with link to <a href=\"/\">Root Site</a>";
+                string richHtmlDescriptionPlainTextVersion = "Testing HTML with link to Root Site";
+
+                var template = new ProvisioningTemplate();
+
+                template.Security.SiteGroups.Add(new SiteGroup()
+                {
+                    Title = plainTextGroupName,
+                    Description = plainTextDescription,
+                    Owner = currentUserLoginName,
+                });
+
+                template.Security.SiteGroups.Add(new SiteGroup()
+                {
+                    Title = htmlGroupName,
+                    Description = richHtmlDescription,
+                    Owner = currentUserLoginName,
+                });
+
                 var parser = new TokenParser(ctx.Web, template);
                 new ObjectSiteSecurity().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 

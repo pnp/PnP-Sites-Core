@@ -49,7 +49,7 @@ namespace Microsoft.SharePoint.Client.Tests
         {
 
 #if !ONPREMISES
-            _userLogin = ConfigurationManager.AppSettings["SPOUserName"];
+            _userLogin = TestCommon.AppSetting("SPOUserName");
             if (TestCommon.AppOnlyTesting())
             {
                 using (var clientContext = TestCommon.CreateClientContext())
@@ -59,7 +59,7 @@ namespace Microsoft.SharePoint.Client.Tests
                 }
             }
 #else
-            _userLogin = String.Format(@"{0}\{1}", ConfigurationManager.AppSettings["OnPremDomain"], ConfigurationManager.AppSettings["OnPremUserName"]);            
+            _userLogin = String.Format(@"{0}\{1}", TestCommon.AppSetting("OnPremDomain"), TestCommon.AppSetting("OnPremUserName"));            
             if (TestCommon.AppOnlyTesting())
             {
                 using (var clientContext = TestCommon.CreateClientContext())

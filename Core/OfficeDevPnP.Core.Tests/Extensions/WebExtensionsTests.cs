@@ -11,6 +11,7 @@ using System.IO;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
+using OfficeDevPnP.Core.Entities;
 
 namespace Microsoft.SharePoint.Client.Tests
 {
@@ -53,7 +54,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
             provisionTemplate.ContentTypes.Add(contentType);
             TokenParser parser = new TokenParser(clientContext.Web, provisionTemplate);
-            new ObjectContentType().ProvisionObjects(clientContext.Web, provisionTemplate, parser,
+            new ObjectContentType(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(clientContext.Web, provisionTemplate, parser,
                 new ProvisioningTemplateApplyingInformation());
         }
 
@@ -122,6 +123,22 @@ namespace Microsoft.SharePoint.Client.Tests
             if (ct != null)
             {
                 ct.DeleteObject();
+                clientContext.ExecuteQueryRetry();
+            }
+
+            bool dirty = false;
+            clientContext.Load(clientContext.Web.Webs, wc => wc.Include(w => w.Title, w => w.ServerRelativeUrl));
+            clientContext.ExecuteQueryRetry();
+            foreach (Web subWeb in clientContext.Web.Webs.ToList())
+            {
+                if (subWeb.Title.StartsWith("Test_") || subWeb.ServerRelativeUrl.Contains("Test_"))
+                {
+                    subWeb.DeleteObject();
+                    dirty = true;
+                }
+            }
+            if (dirty)
+            {
                 clientContext.ExecuteQueryRetry();
             }
 
@@ -736,5 +753,33 @@ namespace Microsoft.SharePoint.Client.Tests
         }
         #endregion
 
+        [TestMethod()]
+        public void CanGetWebNameOfRootWebTest()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                string rootWebName = ctx.Web.GetName();
+                Assert.AreEqual(string.Empty, rootWebName);
+            }
+        }
+
+        [TestMethod()]
+        public void CanGetWebNameOfSubWebTest()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                string subWebUrl = "Test_SubWebUrl";
+                SiteEntity subSiteInfo = new SiteEntity()
+                {
+                    Title = "Test_Site Title",
+                    Url = subWebUrl,
+                    Template = "STS#0"
+                };
+                Web subSite = ctx.Web.CreateWeb(subSiteInfo);
+                
+                string subWebName = subSite.GetName();
+                Assert.AreEqual(subWebUrl, subWebName);
+            }
+        }
     }
 }

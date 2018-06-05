@@ -20,6 +20,11 @@ namespace OfficeDevPnP.Core.Tests.Sites
         [TestInitialize]
         public void Initialize()
         {
+            if (TestCommon.AppOnlyTesting())
+            {
+                Assert.Inconclusive("Test that require modern site collection creation are not supported in app-only.");
+            }
+
             using (var clientContext = TestCommon.CreateClientContext())
             {
                 communicationSiteGuid = Guid.NewGuid().ToString("N");

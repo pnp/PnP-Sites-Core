@@ -8,6 +8,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
+using System.Threading.Tasks;
 #if !ONPREMISES
 using OfficeDevPnP.Core.Pages;
 #endif
@@ -89,6 +90,19 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //}
 
         //[TestMethod]
+        //public void BertTest5()
+        //{
+        //    using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/ComSiteDemo"))
+        //    {
+        //        var page = cc.Web.LoadClientSidePage("home.aspx");
+
+        //        page.Save("home2_normal.aspx");
+
+        //    }
+        //}
+
+
+        //[TestMethod]
         //public void BertTest4()
         //{
         //    using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/bert1"))
@@ -97,32 +111,47 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //        //newPage.AddZone(CanvasZoneTemplate.OneColumn, 1);
 
         //        var imageWebPart = newPage.InstantiateDefaultWebPart(DefaultClientSideWebParts.Image);
-        //        imageWebPart.Properties["imageSourceType"] = 2;
-        //        imageWebPart.Properties["siteId"] = "c827cb03-d059-4956-83d0-cd60e02e3b41";
-        //        imageWebPart.Properties["webId"] = "9fafd7c0-e8c3-4a3c-9e87-4232c481ca26";
-        //        imageWebPart.Properties["listId"] = "78d1b1ac-7590-49e7-b812-55f37c018c4b";
-        //        imageWebPart.Properties["uniqueId"] = "3C27A419-66D0-4C36-BF24-BD6147719052";
-        //        imageWebPart.Properties["imgWidth"] = 1002;
-        //        imageWebPart.Properties["imgHeight"] = 469;
+        //        imageWebPart.PropertiesJson = "{\"controlType\":3,\"displayMode\":2,\"id\":\"73f2310d-3d91-4458-b508-fbfb2fd0a524\",\"position\":{\"zoneIndex\":1,\"sectionIndex\":1,\"controlIndex\":1},\"webPartId\":\"d1d91016-032f-456d-98a4-721247c305e8\",\"webPartData\":{\"id\":\"d1d91016-032f-456d-98a4-721247c305e8\",\"instanceId\":\"73f2310d-3d91-4458-b508-fbfb2fd0a524\",\"title\":\"Image\",\"description\":\"Show an image on your page.\",\"serverProcessedContent\":{\"htmlStrings\":{},\"searchablePlainTexts\":{},\"imageSources\":{\"imageSource\":\"/sites/bert1/Images1/Gs9313d6d1-9a28-4ae0-86bc-16d9770cce7c.jpg\"},\"links\":{\"linkUrl\":\"\"}},\"dataVersion\":\"1.8\",\"properties\":{\"imageSourceType\":2,\"altText\":\"My black bike\",\"overlayText\":\"\",\"siteId\":\"78eaf8ed-fb6c-4bcb-a8ba-b4e251a90910\",\"webId\":\"ac56a969-5ca1-45fd-aca3-9ee5819e418f\",\"listId\":\"5d7a3301-0760-4472-97dd-af57f9cdd6f2\",\"uniqueId\":\"{37DE58D1-A666-4BC6-AB86-73A6792022EE}\",\"imgWidth\":960,\"imgHeight\":960,\"fixAspectRatio\":false}}}";
         //        newPage.AddControl(imageWebPart);
 
 
         //        //var t1 = new ClientSideText()
         //        //{
-        //        //    Text = "t1"
+        //        //    Text = "This is some plain text :-) <BR><p>The HTML DOM has a property called textContent (this is TextContent in <b>AngleSharp</b>) for node objects. Usually if you use this on e.g. the document root (HTML) element it should give you the whole textual content.But beware - there might be an unusual amount of spaces and newlines in there, since those are not getting stripped out by the parser - that you do not see most of them in rendered content is a feature of the HTML renderer.</p>"
         //        //};
-        //        //var t2 = new ClientSideText()
-        //        //{
-        //        //    Text = "t2"
-        //        //};
+        //        var t2 = new ClientSideText()
+        //        {
+        //            Text = "this is a short text!!"
+        //        };
 
         //        //newPage.AddControl(t1, 0);
-        //        //newPage.AddControl(t2, 1);
+        //        newPage.AddControl(t2, 1);
         //        //newPage.AddControl(t1, newPage.Zones[0].Sections[0], 2);
         //        //newPage.AddControl(t2, newPage.Zones[0].Sections[0], 1);
 
-        //        newPage.Save("B1.aspx");
+        //        //newPage.RemovePageHeader();
+        //        //newPage.PageTitle = "no header page";
+        //        //newPage.Save("B3.aspx");
 
+        //        newPage.SetPageHeader("/sites/bert1/Images1/DE03E3D9-78DB-4EB2-A096-A9B3AA375217.jpg", "50", "90");
+        //        newPage.PageTitle = "header image";
+        //        newPage.Save("B11.aspx");
+        //        newPage.Publish();
+
+        //    }
+        //}
+
+
+        //[TestMethod]
+        //public async Task GetAvailableClientSideComponentsTestAsync()
+        //{
+        //    using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/bert1"))
+        //    {
+        //        var newPage = new Pages.ClientSidePage(cc);
+
+        //        var components = await newPage.AvailableClientSideComponentsAsync("");
+
+        //        Assert.IsTrue(components.Count() > 0);
         //    }
         //}
 

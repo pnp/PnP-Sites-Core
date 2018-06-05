@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using System.Xml.Linq;
+using Microsoft.SharePoint.Client.Taxonomy;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 {
@@ -14,6 +15,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
     {
         private const string ElementSchema = @"<Field xmlns=""http://schemas.microsoft.com/sharepoint/v3"" Name=""DemoField"" StaticName=""DemoField"" DisplayName=""Test Field"" Type=""Text"" ID=""{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}"" Group=""PnP"" Required=""true""/>";
         private Guid fieldId = Guid.Parse("{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}");
+        private Guid termGroupId = Guid.Empty;
 
         private const string CalculatedFieldElementSchema = @"<Field Name=""CalculatedField"" StaticName=""CalculatedField"" DisplayName=""Test Calculated Field"" Type=""Calculated"" ResultType=""Text"" ID=""{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}"" Group=""PnP"" ReadOnly=""TRUE"" ><Formula>=DemoField&amp;""DemoField""</Formula><FieldRefs><FieldRef Name=""DemoField"" ID=""{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}"" /></FieldRefs></Field>";
         private const string TokenizedCalculatedFieldElementSchema = @"<Field Name=""CalculatedField"" StaticName=""CalculatedField"" DisplayName=""Test Calculated Field"" Type=""Calculated"" ResultType=""Text"" ID=""{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}"" Group=""PnP"" ReadOnly=""TRUE"" ><Formula>=[{fieldtitle:DemoField}]&amp;""DemoField""</Formula></Field>";
@@ -48,6 +50,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 // Clean all data row test list instances, also after a previous test case failed.
                 DeleteDataRowLists(ctx);
 
+                // first delete content types
+                var contentTypes = ctx.LoadQuery(ctx.Web.ContentTypes);
+                ctx.ExecuteQueryRetry();
+                var testContentTypes = contentTypes.Where(l => l.Name.StartsWith("Test_", StringComparison.OrdinalIgnoreCase));
+                foreach (var ctype in testContentTypes)
+                {
+                    ctype.DeleteObject();
+                    isDirty = true;
+                }
+
                 var field = ctx.Web.GetFieldById<FieldText>(fieldId); // Guid matches ID in field caml.
                 var calculatedField = ctx.Web.GetFieldById<FieldCalculated>(calculatedFieldId); // Guid matches ID in field caml.
 
@@ -65,6 +77,35 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 if (isDirty)
                 {
                     ctx.ExecuteQueryRetry();
+                }
+
+                if (!TestCommon.AppOnlyTesting())
+                {
+                    // Clean up Taxonomy
+                    if (!Guid.Empty.Equals(termGroupId))
+                    {
+                        var taxSession = TaxonomySession.GetTaxonomySession(ctx);
+                        var termStore = taxSession.GetDefaultSiteCollectionTermStore();
+                        var termGroup = termStore.GetGroup(termGroupId);
+                        ctx.ExecuteQueryRetry();
+                        isDirty = false;
+                        if (!termGroup.ServerObjectIsNull.Value)
+                        {
+                            var termSets = termGroup.TermSets;
+                            ctx.Load(termSets);
+                            ctx.ExecuteQueryRetry();
+                            foreach (var termSet in termSets)
+                            {
+                                termSet.DeleteObject();
+                            }
+                            termGroup.DeleteObject();
+                            isDirty = true;
+                        }
+                        if (isDirty)
+                        {
+                            ctx.ExecuteQueryRetry();
+                        }
+                    }
                 }
             }
         }
@@ -87,27 +128,53 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod]
         public void CanProvisionObjects()
         {
+            if (TestCommon.AppOnlyTesting())
+            {
+                Assert.Inconclusive("Taxonomy tests are not supported when testing using app-only");
+            }
+
             var template = new ProvisioningTemplate();
             var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
 
             listInstance.Url = string.Format("lists/{0}", listName);
             listInstance.Title = listName;
             listInstance.TemplateType = (int)ListTemplateType.GenericList;
-
-            Dictionary<string, string> dataValues = new Dictionary<string, string>();
-            dataValues.Add("Title", "Test");
-            DataRow dataRow = new DataRow(dataValues);
-
-            listInstance.DataRows.Add(dataRow);
-
-            template.Lists.Add(listInstance);
+            listInstance.FieldRefs.Add(new FieldRef() { Id = new Guid("23f27201-bee3-471e-b2e7-b64fd8b7ca38") });
 
             using (var ctx = TestCommon.CreateClientContext())
             {
+                //Create term
+                var taxSession = TaxonomySession.GetTaxonomySession(ctx);
+                var termStore = taxSession.GetDefaultSiteCollectionTermStore();
+
+                // Termgroup
+                termGroupId = Guid.NewGuid();
+                var termGroup = termStore.CreateGroup("Test_Group_" + DateTime.Now.ToFileTime(), termGroupId);
+                ctx.Load(termGroup);
+
+                var termSet = termGroup.CreateTermSet("Test_Termset_" + DateTime.Now.ToFileTime(), Guid.NewGuid(), 1033);
+                ctx.Load(termSet);
+
+                Guid termId = Guid.NewGuid();
+                string termName = "Test_Term_" + DateTime.Now.ToFileTime();
+
+                termSet.CreateTerm(termName, 1033, termId);
+
+                Dictionary<string, string> dataValues = new Dictionary<string, string>();
+                dataValues.Add("Title", "Test");
+                dataValues.Add("TaxKeyword", $"{termName}|{termId.ToString()}");
+                DataRow dataRow = new DataRow(dataValues);
+
+                listInstance.DataRows.Add(dataRow);
+
+                template.Lists.Add(listInstance);
+
+
                 var parser = new TokenParser(ctx.Web, template);
 
                 // Create the List
-                parser = new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                parser = new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                parser = new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 // Load DataRows
                 new ObjectListInstanceDataRows().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
@@ -116,11 +183,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsNotNull(list);
 
                 var items = list.GetItems(CamlQuery.CreateAllItemsQuery());
-                ctx.Load(items, itms => itms.Include(item => item["Title"]));
+                ctx.Load(items, itms => itms.Include(item => item["Title"], i => i["TaxKeyword"]));
                 ctx.ExecuteQueryRetry();
 
                 Assert.IsTrue(items.Count == 1);
                 Assert.IsTrue(items[0]["Title"].ToString() == "Test");
+
+                //Validate taxonomy field data
+                var value = items[0]["TaxKeyword"] as TaxonomyFieldValueCollection;
+                Assert.IsNotNull(value);
+                Assert.IsTrue(value[0].WssId > 0, "Term WSS ID not set correctly");
+                Assert.AreEqual(termName, value[0].Label, "Term label not set correctly");
+                Assert.AreEqual(termId.ToString(), value[0].TermGuid, "Term GUID not set correctly");
+
             }
         }
 
@@ -133,7 +208,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
 
                 var template = new ProvisioningTemplate();
-                template = new ObjectListInstance().ExtractObjects(ctx.Web, template, creationInfo);
+                template = new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.Export).ExtractObjects(ctx.Web, template, creationInfo);
 
                 Assert.IsTrue(template.Lists.Any());
             }
@@ -253,6 +328,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
         }
 
+#if !NETSTANDARD2_0
         [TestMethod]
         public void UpdatedListTitleShouldBeAvailableAsToken()
         {
@@ -298,7 +374,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 ConfigurationData = configurationData;
             }
         }
-
+#endif
         [TestMethod]
         public void CanProvisionCalculatedFieldRefInListInstance()
         {
@@ -323,8 +399,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var parser = new TokenParser(ctx.Web, template);
-                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
-                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var list = ctx.Web.GetListByUrl(listInstance.Url);
                 Assert.IsNotNull(list);
@@ -363,8 +440,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var parser = new TokenParser(ctx.Web, template);
-                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
-                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var list = ctx.Web.GetListByUrl(listInstance.Url);
                 Assert.IsNotNull(list);
@@ -377,7 +455,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsInstanceOfType(f1, typeof(FieldCalculated));
                 Assert.IsFalse(f1.Formula.Contains('#') || f1.Formula.Contains('?'), "Calculated field was not provisioned properly the first time");
 
-                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var f2 = list.GetFieldById<FieldCalculated>(calculatedFieldId);
 
@@ -411,8 +490,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var parser = new TokenParser(ctx.Web, template);
-                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
-                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var list = ctx.Web.GetListByUrl(listInstance.Url);
                 Assert.IsNotNull(list);
@@ -449,7 +529,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var parser = new TokenParser(ctx.Web, template);
-                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var list = ctx.Web.GetListByUrl(listInstance.Url);
                 Assert.IsNotNull(list);
@@ -488,8 +569,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var parser = new TokenParser(ctx.Web, template);
-                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
-                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var list = ctx.Web.GetListByUrl(listInstance.Url);
                 Assert.IsNotNull(list);
@@ -502,7 +584,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsInstanceOfType(f1, typeof(FieldCalculated));
                 Assert.IsFalse(f1.Formula.Contains('#') || f1.Formula.Contains('?'), "Calculated field was not provisioned properly the first time");
 
-                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var f2 = list.GetFieldById<FieldCalculated>(calculatedFieldId);
 
@@ -536,8 +619,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var parser = new TokenParser(ctx.Web, template);
-                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
-                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var list = ctx.Web.GetListByUrl(listInstance.Url);
                 Assert.IsNotNull(list);
@@ -552,7 +636,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 var extractedTemplate = new ProvisioningTemplate();
                 var provisioningTemplateCreationInformation = new ProvisioningTemplateCreationInformation(ctx.Web);
-                new ObjectListInstance().ExtractObjects(ctx.Web, extractedTemplate, provisioningTemplateCreationInformation);
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ExtractObjects(ctx.Web, extractedTemplate, provisioningTemplateCreationInformation);
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ExtractObjects(ctx.Web, extractedTemplate, provisioningTemplateCreationInformation);
 
                 XElement fieldElement = XElement.Parse(extractedTemplate.Lists.First(l => l.Title == listName).Fields.First(cf => Guid.Parse(XElement.Parse(cf.SchemaXml).Attribute("ID").Value).Equals(calculatedFieldId)).SchemaXml);
                 var formula = fieldElement.Descendants("Formula").FirstOrDefault();
@@ -609,6 +694,244 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 rowCount = ctx.Web.GetListByTitle(datarowListName).ItemCount;
                 Assert.IsTrue(rowCount == 4, "Row count not equals 4");
 
+            }
+        }
+
+        [TestMethod]
+        public void CanUpdateDefaultContentTypeWithoutModifyingContentTypeNewButtonVisibility()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // create content types
+                var documentCtype = web.ContentTypes.GetById(BuiltInContentTypeId.Document);
+                var newCtypeInfo1 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType1",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo2 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType2",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo3 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType3",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo4 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType4",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo5 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType5",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+
+                var newCtype1 = web.ContentTypes.Add(newCtypeInfo1);
+                var newCtype2 = web.ContentTypes.Add(newCtypeInfo2);
+                var newCtype3 = web.ContentTypes.Add(newCtypeInfo3);
+                var newCtype4 = web.ContentTypes.Add(newCtypeInfo4);
+                var newCtype5 = web.ContentTypes.Add(newCtypeInfo5);
+                clientContext.Load(newCtype1);
+                clientContext.Load(newCtype2);
+                clientContext.Load(newCtype3);
+                clientContext.Load(newCtype4);
+                clientContext.Load(newCtype5);
+                clientContext.ExecuteQueryRetry();
+
+                var newList = new ListCreationInformation()
+                {
+                    TemplateType = (int)ListTemplateType.DocumentLibrary,
+                    Title = listName,
+                    Url = listName
+                };
+
+                var doclib = clientContext.Web.Lists.Add(newList);
+                doclib.ContentTypesEnabled = true;
+                doclib.ContentTypes.AddExistingContentType(newCtype1);
+                doclib.ContentTypes.AddExistingContentType(newCtype3);
+                doclib.ContentTypes.AddExistingContentType(newCtype4);
+                doclib.Update();
+
+                clientContext.Load(newCtype1, ct => ct.Id);
+                clientContext.Load(newCtype2, ct => ct.Id);
+                clientContext.Load(newCtype3, ct => ct.Id);
+                clientContext.Load(newCtype4, ct => ct.Id);
+                clientContext.Load(newCtype5, ct => ct.Id);
+
+                clientContext.Load(doclib.ContentTypes);
+                clientContext.Load(doclib.RootFolder, rf => rf.ContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                var contentTypeOrder = doclib.RootFolder.ContentTypeOrder;
+                //Make a content type hidden in the new button.
+                contentTypeOrder.Remove(contentTypeOrder.First(ct => ct.GetParentIdValue().Equals(newCtype3.Id.StringValue, StringComparison.OrdinalIgnoreCase)));
+
+                doclib.RootFolder.UniqueContentTypeOrder = contentTypeOrder;
+                Assert.IsTrue(contentTypeOrder.ElementAt(0).GetParentIdValue().Equals(BuiltInContentTypeId.Document, StringComparison.OrdinalIgnoreCase));
+
+                doclib.RootFolder.Update();
+
+                clientContext.ExecuteQueryRetry();
+
+                var template = new ProvisioningTemplate();
+                var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
+
+                listInstance.Url = listName;
+                listInstance.Title = listName;
+                listInstance.TemplateType = (int)ListTemplateType.DocumentLibrary;
+                listInstance.ContentTypesEnabled = true;
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding() { ContentTypeId = newCtype1.Id.StringValue, Default = true });
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding() { ContentTypeId = newCtype2.Id.StringValue, Hidden = false });
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding() { ContentTypeId = newCtype4.Id.StringValue, Remove = true });
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding() { ContentTypeId = newCtype5.Id.StringValue });
+
+                template.Lists.Add(listInstance);
+
+                var parser = new TokenParser(clientContext.Web, template);
+
+                // Update the List with new default content type
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(clientContext.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(clientContext.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var list = clientContext.Web.GetListByUrl(listInstance.Url);
+                Assert.IsNotNull(list);
+
+                clientContext.Load(doclib.RootFolder, rf => rf.UniqueContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                var actualContentTypeOrder = doclib.RootFolder.UniqueContentTypeOrder;
+                bool isContentType2VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.GetParentIdValue().Equals(newCtype2.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+                bool isContentType3VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.GetParentIdValue().Equals(newCtype3.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+                bool isContentType4VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.GetParentIdValue().Equals(newCtype4.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+                bool isContentType5VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.GetParentIdValue().Equals(newCtype5.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+
+                bool contentType4ExistsInList = doclib.ContentTypeExistsById(newCtype4.Id.StringValue);
+
+                Assert.IsTrue(isContentType2VisibleInNewButton, "Content type 2 has not been made visible in the new button");
+                Assert.IsFalse(isContentType3VisibleInNewButton, "Content type 3 has incorrectly been made visible in the new button");
+                Assert.IsFalse(isContentType4VisibleInNewButton, "Content type 4 has incorrectly been made visible in the new button");
+                Assert.IsTrue(isContentType5VisibleInNewButton, "Content type 5 has not been made visible in the new button");
+                Assert.IsFalse(contentType4ExistsInList, "Content type 4 has not been removed from the list content types");
+            }
+        }
+        [TestMethod]
+        public void CanRemoveContentTypeWithoutModifyingContentTypeNewButtonVisibility()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // create content types
+                var documentCtype = web.ContentTypes.GetById(BuiltInContentTypeId.Document);
+                var newCtypeInfo1 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType1",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo2 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType2",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo3 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType3",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+
+                var newCtype1 = web.ContentTypes.Add(newCtypeInfo1);
+                var newCtype2 = web.ContentTypes.Add(newCtypeInfo2);
+                var newCtype3 = web.ContentTypes.Add(newCtypeInfo3);
+                clientContext.Load(newCtype1);
+                clientContext.Load(newCtype2);
+                clientContext.Load(newCtype3);
+                clientContext.ExecuteQueryRetry();
+
+                var newList = new ListCreationInformation()
+                {
+                    TemplateType = (int)ListTemplateType.DocumentLibrary,
+                    Title = listName,
+                    Url = listName
+                };
+
+                var doclib = clientContext.Web.Lists.Add(newList);
+                doclib.ContentTypesEnabled = true;
+                doclib.ContentTypes.AddExistingContentType(newCtype1);
+                doclib.ContentTypes.AddExistingContentType(newCtype3);
+                doclib.Update();
+
+                clientContext.Load(newCtype1, ct => ct.Id);
+                clientContext.Load(newCtype2, ct => ct.Id);
+                clientContext.Load(newCtype3, ct => ct.Id);
+
+                clientContext.Load(doclib.ContentTypes);
+                clientContext.Load(doclib.RootFolder, rf => rf.ContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                var contentTypeOrder = doclib.RootFolder.ContentTypeOrder;
+                //Make a content type hidden in the new button.
+                contentTypeOrder.Remove(contentTypeOrder.First(ct => ct.GetParentIdValue().Equals(newCtype3.Id.StringValue, StringComparison.OrdinalIgnoreCase)));
+
+                doclib.RootFolder.UniqueContentTypeOrder = contentTypeOrder;
+                Assert.IsTrue(contentTypeOrder.ElementAt(0).GetParentIdValue().Equals(BuiltInContentTypeId.Document, StringComparison.OrdinalIgnoreCase));
+
+                doclib.RootFolder.Update();
+                doclib.Update();
+
+                clientContext.ExecuteQueryRetry();
+
+                var template = new ProvisioningTemplate();
+                var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
+
+                listInstance.Url = listName;
+                listInstance.Title = listName;
+                listInstance.TemplateType = (int)ListTemplateType.DocumentLibrary;
+                listInstance.ContentTypesEnabled = true;
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding() { ContentTypeId = newCtype1.Id.StringValue, Default = true });
+                listInstance.ContentTypeBindings.Add(new ContentTypeBinding() { ContentTypeId = newCtype2.Id.StringValue, Hidden = false });
+
+                template.Lists.Add(listInstance);
+
+                var parser = new TokenParser(clientContext.Web, template);
+
+                // Update the List with new default content type
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(clientContext.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(clientContext.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var list = clientContext.Web.GetListByUrl(listInstance.Url);
+                Assert.IsNotNull(list);
+
+                clientContext.Load(doclib.RootFolder, rf => rf.UniqueContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                var actualContentTypeOrder = doclib.RootFolder.UniqueContentTypeOrder;
+                bool isHiddenContentTypeStillHidden = actualContentTypeOrder.FirstOrDefault(ct => ct.GetParentIdValue().Equals(newCtype3.Id.StringValue, StringComparison.OrdinalIgnoreCase)) == null;
+                bool isContentType2VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.GetParentIdValue().Equals(newCtype2.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+
+                Assert.IsTrue(isHiddenContentTypeStillHidden, "Content type has incorrectly been made visible in the new button");
+                Assert.IsTrue(isContentType2VisibleInNewButton, "Content type 2 has not been made visible in the new button");
             }
         }
     }

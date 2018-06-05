@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2018/01/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.23.1802.0, Culture=neutral, PublicKeyToken=null" />
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2018/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.26.1805.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-CMSPUBLISHING0template">
     <pnp:ProvisioningTemplate ID="CMSPUBLISHING0template" Version="1" BaseSiteTemplate="CMSPUBLISHING#0" Scope="Web">
       <pnp:WebSettings NoCrawl="false" WelcomePage="Pages/default.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
@@ -50,7 +50,7 @@
         <pnp:CurrentNavigation />
       </pnp:Navigation>
       <pnp:Lists>
-        <pnp:ListInstance Title="Documents" Description="This system library was created by the Publishing feature to store documents that are used on pages in this site." DocumentTemplate="{site}/Documents/Forms/template.dotx" TemplateType="101" Url="Documents" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" DefaultDisplayFormUrl="{site}/Documents/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/Documents/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/Documents/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=23" IsApplicationList="false" ReadSecurity="0" ValidationFormula="" ValidationMessage="">
+        <pnp:ListInstance Title="Documents" Description="This system library was created by the Publishing feature to store documents that are used on pages in this site." DocumentTemplate="{site}/Documents/Forms/template.dotx" TemplateType="101" Url="Documents" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" DefaultDisplayFormUrl="{site}/Documents/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/Documents/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/Documents/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=23" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0" ValidationFormula="" ValidationMessage="">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0101" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
@@ -74,7 +74,7 @@
             </View>
           </pnp:Views>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Images" Description="This system library was created by the Publishing feature to store images that are used on pages in this site." DocumentTemplate="" TemplateType="851" Url="PublishingImages" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="4bcccd62-dcaf-46dc-a7d4-e38277ef33f4" ContentTypesEnabled="true" EnableAttachments="false" DefaultDisplayFormUrl="{site}/PublishingImages/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/PublishingImages/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/PublishingImages/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/ital.png?rev=23" IsApplicationList="false" ReadSecurity="0" ValidationFormula="" ValidationMessage="">
+        <pnp:ListInstance Title="Images" Description="This system library was created by the Publishing feature to store images that are used on pages in this site." DocumentTemplate="" TemplateType="851" Url="PublishingImages" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="4bcccd62-dcaf-46dc-a7d4-e38277ef33f4" ContentTypesEnabled="true" EnableAttachments="false" DefaultDisplayFormUrl="{site}/PublishingImages/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/PublishingImages/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/PublishingImages/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/ital.png?rev=23" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0" ValidationFormula="" ValidationMessage="">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0101009148F5A04DDD49CBA7127AADA5FB792B00AADE34325A8B49CDA8BB4DB53328F214" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0101009148F5A04DDD49CBA7127AADA5FB792B006973ACD696DC4858A76371B2FB2F439A" />
@@ -180,7 +180,7 @@
             <pnp:FieldRef ID="bcd999a7-9dca-4824-a515-878bee641ed3" Name="PeopleInMedia" DisplayName="People In Video" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Pages" Description="This system library was created by the Publishing feature to store pages that are created in this site." DocumentTemplate="" TemplateType="850" Url="Pages" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="1" TemplateFeatureID="22a9ef51-737b-4ff2-9346-694633fe4416" ContentTypesEnabled="true" EnableAttachments="false" DefaultDisplayFormUrl="{site}/Pages/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/Pages/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/Pages/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=23" IsApplicationList="false" ReadSecurity="0" ValidationFormula="" ValidationMessage="">
+        <pnp:ListInstance Title="Pages" Description="This system library was created by the Publishing feature to store pages that are created in this site." DocumentTemplate="" TemplateType="850" Url="Pages" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="1" TemplateFeatureID="22a9ef51-737b-4ff2-9346-694633fe4416" ContentTypesEnabled="true" EnableAttachments="false" DefaultDisplayFormUrl="{site}/Pages/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/Pages/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/Pages/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=23" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0" ValidationFormula="" ValidationMessage="">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF39" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900242457EFB8B24247815D688C526CD44D" />
@@ -230,7 +230,7 @@
             <pnp:FieldRef ID="27761311-936a-40ba-80cd-ca5e7a540a36" Name="SummaryLinks2" DisplayName="Summary Links 2" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Workflow Tasks" Description="This system library was created by the Publishing feature to store workflow tasks that are created in this site." DocumentTemplate="" TemplateType="107" Url="WorkflowTasks" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-a83e-497e-9ba0-7a5c597d0107" ContentTypesEnabled="true" EnableFolderCreation="false" NoCrawl="true" DefaultDisplayFormUrl="{site}/WorkflowTasks/DispForm.aspx" DefaultEditFormUrl="{site}/WorkflowTasks/EditForm.aspx" DefaultNewFormUrl="{site}/WorkflowTasks/NewForm.aspx" ImageUrl="/_layouts/15/images/ittask.png?rev=23" IsApplicationList="false" ReadSecurity="0" ValidationFormula="" ValidationMessage="">
+        <pnp:ListInstance Title="Workflow Tasks" Description="This system library was created by the Publishing feature to store workflow tasks that are created in this site." DocumentTemplate="" TemplateType="107" Url="WorkflowTasks" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-a83e-497e-9ba0-7a5c597d0107" ContentTypesEnabled="true" EnableFolderCreation="false" NoCrawl="true" DefaultDisplayFormUrl="{site}/WorkflowTasks/DispForm.aspx" DefaultEditFormUrl="{site}/WorkflowTasks/EditForm.aspx" DefaultNewFormUrl="{site}/WorkflowTasks/NewForm.aspx" ImageUrl="/_layouts/15/images/ittask.png?rev=23" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0" ValidationFormula="" ValidationMessage="">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0108" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />

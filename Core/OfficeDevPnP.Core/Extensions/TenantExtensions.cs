@@ -37,7 +37,7 @@ namespace Microsoft.SharePoint.Client
         const string SITE_STATUS_RECYCLED = "Recycled";
 
 #if !ONPREMISES
-#region Site collection creation
+        #region Site collection creation
         /// <summary>
         /// Adds a SiteEntity by launching site collection creation and waits for the creation to finish
         /// </summary>
@@ -113,7 +113,7 @@ namespace Microsoft.SharePoint.Client
         /// Launches a site collection creation and waits for the creation to finish 
         /// </summary>
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
-        /// <param name="siteFullUrl">The SPO url</param>
+        /// <param name="siteFullUrl">The SPO URL</param>
         /// <param name="title">The site title</param>
         /// <param name="siteOwnerLogin">Owner account</param>
         /// <param name="template">Site template being used</param>
@@ -147,11 +147,11 @@ namespace Microsoft.SharePoint.Client
             };
             return tenant.CreateSiteCollection(siteCol, removeFromRecycleBin, wait, timeoutFunction);
         }
-#endregion
+        #endregion
 
-#region Site status checks
+        #region Site status checks
         /// <summary>
-        /// Returns if a site collection is in a particular status. If the url contains a sub site then returns true is the sub site exists, false if not. 
+        /// Returns if a site collection is in a particular status. If the URL contains a sub site then returns true is the sub site exists, false if not. 
         /// Status is irrelevant for sub sites
         /// </summary>
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
@@ -310,9 +310,9 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
-#endregion
+        #endregion
 
-#region Site collection deletion
+        #region Site collection deletion
         /// <summary>
         /// Deletes a site collection
         /// </summary>
@@ -392,9 +392,9 @@ namespace Microsoft.SharePoint.Client
             }
             return ret;
         }
-#endregion
+        #endregion
 
-#region Site collection properties
+        #region Site collection properties
         /// <summary>
         /// Gets the ID of site collection with specified URL
         /// </summary>
@@ -449,7 +449,7 @@ namespace Microsoft.SharePoint.Client
         /// Sets tenant site Properties
         /// </summary>
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
-        /// <param name="siteFullUrl">full url of site</param>
+        /// <param name="siteFullUrl">full URL of site</param>
         /// <param name="title">site title</param>
         /// <param name="allowSelfServiceUpgrade">Boolean value to allow serlf service upgrade</param>
         /// <param name="sharingCapability">SharingCapabilities enumeration value (i.e. Disabled/ExternalUserSharingOnly/ExternalUserAndGuestSharing/ExistingExternalUserSharingOnly)</param>
@@ -518,7 +518,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="timeoutFunction">An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.</param>
         public static void SetSiteLockState(this Tenant tenant, string siteFullUrl, SiteLockState lockState, bool wait = false, Func<TenantOperationMessage, bool> timeoutFunction = null)
         {
-            var siteProps = tenant.GetSitePropertiesByUrl(siteFullUrl, true);
+            var siteProps = tenant.GetSitePropertiesByUrl(siteFullUrl, false);
             tenant.Context.Load(siteProps);
             tenant.Context.ExecuteQueryRetry();
 
@@ -541,9 +541,9 @@ namespace Microsoft.SharePoint.Client
 
             }
         }
-#endregion
+        #endregion
 
-#region Site collection administrators
+        #region Site collection administrators
         /// <summary>
         /// Add a site collection administrator to a site collection
         /// </summary>
@@ -577,9 +577,9 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
-#endregion
+        #endregion
 
-#region Site enumeration
+        #region Site enumeration
         /// <summary>
         /// Returns all site collections in the current Tenant based on a startIndex. IncludeDetail adds additional properties to the SPSite object. 
         /// </summary>
@@ -707,15 +707,15 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
 
-#endregion
+        #endregion
 
-#region ClientSide Package Deployment
+        #region ClientSide Package Deployment
 
         /// <summary>
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
         /// </summary>
         /// <param name="tenant">Tenant to operate against</param>
-        /// <returns>The Uri holding the app catalog site url</returns>
+        /// <returns>The Uri holding the app catalog site URL</returns>
         public static Uri GetAppCatalog(this Tenant tenant)
         {
             // Assume there's only one appcatalog site
@@ -727,9 +727,9 @@ namespace Microsoft.SharePoint.Client
 
             return null;
         }
-#endregion
+        #endregion
 
-#region Private helper methods
+        #region Private helper methods
         private static bool WaitForIsComplete(Tenant tenant, SpoOperation op, Func<TenantOperationMessage, bool> timeoutFunction = null, TenantOperationMessage operationMessage = TenantOperationMessage.None)
         {
             bool succeeded = true;
@@ -823,9 +823,9 @@ namespace Microsoft.SharePoint.Client
                 return false;
             }
         }
-#endregion
+        #endregion
 
-#region Site Classification configuration
+        #region Site Classification configuration
 
         /// <summary>
         /// Enables Site Classifications for the target tenant 
@@ -896,9 +896,9 @@ namespace Microsoft.SharePoint.Client
             SiteClassificationsUtility.DisableSiteClassifications(accessToken);
         }
 
-#endregion
+        #endregion
 
-#region Site groupify
+        #region Site groupify
         /// <summary>
         /// Connect an Office 365 group to an existing SharePoint site collection
         /// </summary>
@@ -944,10 +944,10 @@ namespace Microsoft.SharePoint.Client
             tenant.CreateGroupForSite(siteUrl, siteCollectionGroupifyInformation.DisplayName, siteCollectionGroupifyInformation.Alias, siteCollectionGroupifyInformation.IsPublic, optionalParams);
             tenant.Context.ExecuteQueryRetry();
         }
-#endregion
+        #endregion
 
 #else
-#region Site collection creation
+        #region Site collection creation
         /// <summary>
         /// Adds a SiteEntity by launching site collection creation and waits for the creation to finish
         /// </summary>
