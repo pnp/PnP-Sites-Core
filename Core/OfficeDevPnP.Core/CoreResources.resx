@@ -1117,4 +1117,10 @@
   <data name="ClientSidePageHeader_ImageNotFound" xml:space="preserve">
     <value>The provided page header image '{0}' cannot be found. </value>
   </data>
+  <data name="Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed_Retry" xml:space="preserve">
+    <value>Provisioning of the navigation node failed, retrying for : {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed" xml:space="preserve">
+    <value>Provisioning of the navigation node failed : {0}</value>
+  </data>
 </root>

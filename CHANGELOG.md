@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fixed issue where you tried to modify a property of a default modern home page, and all web parts dissapeared
 - Fixed issue with Security Group names including HTML links (jensotto)
 - Fixed issue with UseShared property for Navigation Settings (TheJeffer)
+- Fixed issue with not existing links in Navigation Settings (gautamdsheth)
 
 ### Deprecated
 
