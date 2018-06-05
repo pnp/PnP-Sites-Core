@@ -144,6 +144,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 navigationSettings.GlobalNavigation.Source = StandardNavigationSource.TaxonomyProvider;
                                 navigationSettings.GlobalNavigation.TermStoreId = Guid.Parse(parser.ParseString(template.Navigation.GlobalNavigation.ManagedNavigation.TermStoreId));
                                 navigationSettings.GlobalNavigation.TermSetId = Guid.Parse(parser.ParseString(template.Navigation.GlobalNavigation.ManagedNavigation.TermSetId));
+                                web.Navigation.UseShared = false;
                                 break;
                             case GlobalNavigationType.Structural:
                             default:
@@ -152,6 +153,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation);
                                 }
                                 navigationSettings.GlobalNavigation.Source = StandardNavigationSource.PortalProvider;
+                                web.Navigation.UseShared = false;
 
                                 ProvisionGlobalStructuralNavigation(web,
                                     template.Navigation.GlobalNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
