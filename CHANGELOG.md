@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fixed issue where you could not specify content type in a datarow element in a provisioning template
 - Fixed issue where you tried to modify a property of a default modern home page, and all web parts dissapeared
 - Fixed issue with Security Group names including HTML links (jensotto)
+- Fixed issue with UseShared property for Navigation Settings (TheJeffer)
 
 ### Deprecated
 
