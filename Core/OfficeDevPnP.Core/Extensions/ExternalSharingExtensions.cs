@@ -197,7 +197,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Abstracted methid for sharing documents just with given email address. 
+        /// Abstracted method for sharing documents just with given email address. 
         /// </summary>
         /// <param name="web">Web for the context used for people picker search</param>
         /// <param name="urlToDocument">Full URL to the file which is shared</param>
@@ -216,7 +216,7 @@ namespace Microsoft.SharePoint.Client
             return Task.Run(() => ShareDocumentImplementation(web, urlToDocument, targetEmailToShare, shareOption, sendEmail, emailBody, useSimplifiedRoles)).GetAwaiter().GetResult();
         }
         /// <summary>
-        /// Abstracted methid for sharing documents just with given email address. 
+        /// Abstracted method for sharing documents just with given email address. 
         /// </summary>
         /// <param name="web">Web for the context used for people picker search</param>
         /// <param name="urlToDocument">Full URL to the file which is shared</param>
