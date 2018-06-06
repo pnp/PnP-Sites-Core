@@ -29,7 +29,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fixes issue with using culture in page header persisting [guillaume-kizilian]
 - Fixes lookup column support by supporting list web relative urls [stevebeauge]
 - Fixed ClientSidePageHeaderType enum inconsistency [SchauDK]
-
+- Fixing #1770 issue. Now we are considering Publishing Images field type [luismanez]
 
 ### Deprecated
 

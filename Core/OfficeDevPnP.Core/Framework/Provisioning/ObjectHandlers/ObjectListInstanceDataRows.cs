@@ -275,6 +275,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                     }
                                                     break;
                                                 }
+                                                default:
+                                                    {
+                                                        //Publishing image case, but can be others too
+                                                        updateValues.Add(new FieldUpdateValue(dataValue.Key, fieldValue));
+                                                        break;
+                                                    }
                                             }
                                             break;
 
