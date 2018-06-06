@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Added optional timeout value on AppManager.Add method
+- Support version 1.4 of page header data structure
 
 ### Changed
 - ClientComponentId and ClientComponentProperties are now updated when applying a template to a site where the customaction already exists [SchauDK]
@@ -19,14 +20,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fixes issue with sitedesigns not correctly being associated to web template
 - Fixes issue where you could not specify content type in a datarow element in a provisioning template
 - Fixes issue where you tried to modify a property of a default modern home page, and all web parts disapeared
-- Fixed issue with Security Group names including HTML links (jensotto)
-- Fixed issue with UseShared property for Navigation Settings (TheJeffer)
-- Fixed issue with not existing links in Navigation Settings (gautamdsheth)
+- Fixed issue with Security Group names including HTML links [jensotto]
+- Fixed issue with UseShared property for Navigation Settings [TheJeffer]
+- Fixed issue with not existing links in Navigation Settings [gautamdsheth]
 - Updated Microsoft Graph SDK package to version 1.9.0
 - Correctly extract modern page title [SchauDK]
 - Fixes issue with using culture in page header persisting [guillaume-kizilian]
 - Fixes lookup column support by supporting list web relative urls [stevebeauge]
-- Support version 1.4 of page header data structure
+- Fixed ClientSidePageHeaderType enum inconsistency [SchauDK]
 
 ### Deprecated
 
