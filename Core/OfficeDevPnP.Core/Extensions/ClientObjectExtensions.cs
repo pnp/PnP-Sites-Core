@@ -175,9 +175,9 @@ namespace Microsoft.SharePoint.Client
 #endif
 
 #if !ONPREMISES
-        private static async Task EnsurePropertiesImplementation<T>(T clientObject, Expression<Func<T, object>>[] propertySelector) where T : ClientObject
+        internal static async Task EnsurePropertiesImplementation<T>(this T clientObject, params Expression<Func<T, object>>[] propertySelector) where T : ClientObject
 #else
-        private static void EnsurePropertiesImplementation<T>(T clientObject, Expression<Func<T, object>>[] propertySelector) where T : ClientObject
+        internal static void EnsurePropertiesImplementation<T>(this T clientObject, params Expression<Func<T, object>>[] propertySelector) where T : ClientObject
 #endif
         {
             var dirty = false;
