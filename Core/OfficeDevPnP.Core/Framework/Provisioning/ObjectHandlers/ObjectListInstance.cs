@@ -1548,6 +1548,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // the OnQuickLaunch property is re-set on the Created List object
                         QuickLaunchOption = templateList.OnQuickLaunch ? QuickLaunchOptions.On : QuickLaunchOptions.Off
                     };
+                if (templateList.TemplateFeatureID != Guid.Empty)
+                {
+                    listCreate.TemplateFeatureId = templateList.TemplateFeatureID;
+                }
 #if !ONPREMISES
                 if (templateList.TemplateFeatureID != Guid.Empty)
                 {
