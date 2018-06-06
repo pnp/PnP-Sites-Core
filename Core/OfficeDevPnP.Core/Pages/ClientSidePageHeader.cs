@@ -112,6 +112,13 @@ namespace OfficeDevPnP.Core.Pages
             this.imageServerRelativeUrl = imageServerRelativeUrl;
             this.clientContext = cc;
             this.pageHeaderType = pageHeaderType;
+            this.TextAlignment = ClientSidePageHeaderTitleAlignment.Center;
+            this.LayoutType = ClientSidePageHeaderLayoutType.FullWidthImage;
+            this.ShowKicker = false;
+            this.Kicker = "";
+            this.Authors = "";
+            this.AlternativeText = "";
+            this.ShowPublishDate = false;
         }
 
         /// <summary>
