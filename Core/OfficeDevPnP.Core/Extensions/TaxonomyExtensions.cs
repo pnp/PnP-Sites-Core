@@ -1631,7 +1631,7 @@ namespace Microsoft.SharePoint.Client
 
             var field = item.ParentList.Fields.GetById(fieldId);
             TaxonomyField taxField = clientContext.CastTo<TaxonomyField>(field);
-            clientContext.Load(taxField, tf => tf.AllowMultipleValues);
+            clientContext.Load(taxField, tf => tf.AllowMultipleValues, tf => tf.StaticName);
             clientContext.ExecuteQueryRetry();
 
             if (taxField.AllowMultipleValues)
@@ -1655,7 +1655,7 @@ namespace Microsoft.SharePoint.Client
             }
             else
             {
-                throw new ArgumentException(CoreResources.TaxonomyExtensions_Field_Is_Not_Multivalues, taxField.StaticName);
+                throw new ArgumentException(string.Format(CoreResources.TaxonomyExtensions_Field_Is_Not_Multivalues, taxField.StaticName));
             }
         }
 

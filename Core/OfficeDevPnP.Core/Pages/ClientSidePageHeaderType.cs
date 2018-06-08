@@ -7,13 +7,13 @@
     public enum ClientSidePageHeaderType
     {
         /// <summary>
-        /// The page uses the default page header
-        /// </summary>
-        Default = 0,
-        /// <summary>
         /// The page does not have a header
         /// </summary>
-        None = 1,
+        None = 0,
+        /// <summary>
+        /// The page uses the default page header
+        /// </summary>
+        Default = 1,
         /// <summary>
         /// The page use a customized header (e.g. with image + offset)
         /// </summary>

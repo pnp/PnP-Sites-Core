@@ -5,6 +5,7 @@ using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return $"Fields ({_step})"; }
 #else
             get { return $"Fields"; }
-#endif 
+#endif
         }
 
         public ObjectField(FieldAndListProvisioningStepHelper.Step step)
@@ -311,6 +312,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (IsFieldXmlValid(fieldXml, parser, web.Context))
             {
+                fieldXml = FieldUtilities.FixLookupField(fieldXml, web);
+
                 var field = web.Fields.AddFieldAsXml(fieldXml, false, AddFieldOptions.AddFieldInternalNameHint);
                 web.Context.Load(field, f => f.Id, f => f.TypeAsString, f => f.DefaultValue, f => f.InternalName, f => f.Title);
                 web.Context.ExecuteQueryRetry();
@@ -361,6 +364,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 throw new Exception($"The field was found invalid: {tokenString}");
             }
         }
+
+
 
         private static void SetTaxonomyFieldOpenValue(TaxonomyField field, string taxonomyFieldXml)
         {

@@ -289,7 +289,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Upgrade(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => UpgradeAsync(id)).GetAwaiter().GetResult();
+            return Task.Run(() => UpgradeAsync(id, scope)).GetAwaiter().GetResult();
         }
 
         /// <summary>

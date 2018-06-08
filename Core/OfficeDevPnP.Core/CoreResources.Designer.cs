@@ -1791,6 +1791,24 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Provisioning of the navigation node failed : {0}.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provisioning of the navigation node failed, retrying for : {0}.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed_Retry {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed_Retry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Missing Current Managed Navigation settings in the current template.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_Navigation_missing_current_managed_navigation {
