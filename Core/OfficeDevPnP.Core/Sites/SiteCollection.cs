@@ -3,6 +3,7 @@ using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Async;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,8 @@ namespace OfficeDevPnP.Core.Sites
         /// <returns>ClientContext object for the created site collection</returns>
         public static async Task<ClientContext> CreateAsync(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
+            await new SynchronizationContextRemover();
+
             ClientContext responseContext = null;
 
             var accessToken = clientContext.GetAccessToken();
@@ -92,7 +95,11 @@ namespace OfficeDevPnP.Core.Sites
                             try
                             {
                                 var responseJson = JObject.Parse(responseString);
+#if !NETSTANDARD2_0
                                 if (Convert.ToInt32(responseJson["d"]["Create"]["SiteStatus"]) == 2)
+#else
+                                if(responseJson["d"]["Create"]["SiteStatus"].Value<int>() == 2)
+#endif
                                 {
                                     responseContext = clientContext.Clone(responseJson["d"]["Create"]["SiteUrl"].ToString());
                                 }
@@ -130,8 +137,10 @@ namespace OfficeDevPnP.Core.Sites
                 throw new ArgumentException("Alias cannot contain spaces", "Alias");
             }
 
-            ClientContext responseContext = null;
+            await new SynchronizationContextRemover();
 
+            ClientContext responseContext = null;
+            
             var accessToken = clientContext.GetAccessToken();
 
             if (clientContext.IsAppOnly())
@@ -191,7 +200,11 @@ namespace OfficeDevPnP.Core.Sites
                         // If value empty, URL is taken
                         var responseString = await response.Content.ReadAsStringAsync();
                         var responseJson = JObject.Parse(responseString);
+#if !NETSTANDARD2_0
                         if (Convert.ToInt32(responseJson["d"]["CreateGroupEx"]["SiteStatus"]) == 2)
+#else
+                        if (responseJson["d"]["CreateGroupEx"]["SiteStatus"].Value<int>() == 2)
+#endif
                         {
                             responseContext = clientContext.Clone(responseJson["d"]["CreateGroupEx"]["SiteUrl"].ToString());
                         }
@@ -218,7 +231,12 @@ namespace OfficeDevPnP.Core.Sites
         /// <returns>ClientContext object for the created site collection</returns>
         public static async Task<ClientContext> GroupifyAsync(ClientContext clientContext, TeamSiteCollectionGroupifyInformation siteCollectionGroupifyInformation)
         {
-            if (siteCollectionGroupifyInformation.Alias.Contains(" "))
+            if (siteCollectionGroupifyInformation == null)
+            {
+                throw new ArgumentException("Missing value for siteCollectionGroupifyInformation", "sitecollectionGroupifyInformation");
+            }
+
+            if (!string.IsNullOrEmpty(siteCollectionGroupifyInformation.Alias) && siteCollectionGroupifyInformation.Alias.Contains(" "))
             {
                 throw new ArgumentException("Alias cannot contain spaces", "Alias");
             }
@@ -228,11 +246,13 @@ namespace OfficeDevPnP.Core.Sites
                 throw new ArgumentException("DisplayName is required", "DisplayName");
             }
 
+            await new SynchronizationContextRemover();
+
             ClientContext responseContext = null;
 
             var accessToken = clientContext.GetAccessToken();
 
-            if (!string.IsNullOrEmpty(accessToken))
+            if (clientContext.IsAppOnly())
             {
                 throw new Exception("App-Only is currently not supported.");
             }
@@ -254,9 +274,20 @@ namespace OfficeDevPnP.Core.Sites
                     payload.Add("alias", siteCollectionGroupifyInformation.Alias);
                     payload.Add("isPublic", siteCollectionGroupifyInformation.IsPublic);
 
-                    var optionalParams = new Dictionary<string, object>();
+                    var optionalParams = new Dictionary<string, object>();                    
                     optionalParams.Add("Description", siteCollectionGroupifyInformation.Description != null ? siteCollectionGroupifyInformation.Description : "");
-                    optionalParams.Add("CreationOptions", new { results = new object[0], Classification = siteCollectionGroupifyInformation.Classification != null ? siteCollectionGroupifyInformation.Classification : "" });
+
+                    // Handle groupify options
+                    var creationOptionsValues = new List<string>();
+                    if (siteCollectionGroupifyInformation.KeepOldHomePage)
+                    {
+                        creationOptionsValues.Add("SharePointKeepOldHomepage");
+                    }
+                    var creationOptions = new Dictionary<string, object>();
+                    creationOptions.Add("results", creationOptionsValues.ToArray());
+                    optionalParams.Add("CreationOptions", creationOptions);
+
+                    optionalParams.Add("Classification", siteCollectionGroupifyInformation.Classification != null ? siteCollectionGroupifyInformation.Classification : "");
 
                     payload.Add("optionalParams", optionalParams);
 
@@ -289,8 +320,9 @@ namespace OfficeDevPnP.Core.Sites
                         // If value empty, URL is taken
                         var responseString = await response.Content.ReadAsStringAsync();
                         var responseJson = JObject.Parse(responseString);
-                      
-                        if (Convert.ToInt32(responseJson["d"]["CreateGroupForSite"]["SiteStatus"]) == 2)
+
+                        // SiteStatus 1 = Provisioning, SiteStatus 2 = Ready
+                        if (Convert.ToInt32(responseJson["d"]["CreateGroupForSite"]["SiteStatus"]) == 2 || Convert.ToInt32(responseJson["d"]["CreateGroupForSite"]["SiteStatus"]) == 1)
                         {
                             responseContext = clientContext;
                         }
@@ -336,6 +368,64 @@ namespace OfficeDevPnP.Core.Sites
             }
 
             return Guid.Empty;
+        }
+
+        /// <summary>
+        /// Checks if a given alias is already in use or not
+        /// </summary>
+        /// <param name="context">Context to operate against</param>
+        /// <param name="alias">Alias to check</param>
+        /// <returns>True if in use, false otherwise</returns>
+        public static async Task<bool> AliasExistsAsync(ClientContext context, string alias)
+        {
+            await new SynchronizationContextRemover();
+
+            bool aliasExists = true;
+
+            var accessToken = context.GetAccessToken();
+
+            using (var handler = new HttpClientHandler())
+            {
+                context.Web.EnsureProperty(w => w.Url);
+
+                if (String.IsNullOrEmpty(accessToken))
+                {
+                    handler.SetAuthenticationCookies(context);
+                }
+
+                using (var httpClient = new HttpClient(handler))
+                {
+                    string requestUrl = String.Format("{0}/_api/SP.Directory.DirectorySession/Group(alias='{1}')", context.Web.Url, alias);
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+                    request.Headers.Add("accept", "application/json;odata.metadata=minimal");
+                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    request.Headers.Add("odata-version", "4.0");
+
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+
+                    // Perform actual GET request
+                    HttpResponseMessage response = await httpClient.SendAsync(request);
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        aliasExists = false;
+                        // If value empty, URL is taken
+                    }
+                    else if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        aliasExists = true;
+                    }
+                    else
+                    {
+                        // Something went wrong...
+                        throw new Exception(await response.Content.ReadAsStringAsync());
+                    }
+                }
+                return await Task.Run(() => aliasExists);
+            }
         }
 
 

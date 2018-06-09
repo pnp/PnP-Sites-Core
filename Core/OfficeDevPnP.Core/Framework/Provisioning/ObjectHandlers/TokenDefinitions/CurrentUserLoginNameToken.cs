@@ -1,7 +1,13 @@
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
+    [TokenDefinitionDescription(
+    Token = "{currentuserloginname}",
+    Description = "Returns the login name of the current user e.g. the user using the engine.",
+    Example = "{currentuserloginname}",
+    Returns = "i:0#.f|membership|user@domain.com")]
     internal class CurrentUserLoginNameToken : TokenDefinition
     {
         public CurrentUserLoginNameToken(Web web)
@@ -13,13 +19,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (CacheValue == null)
             {
-                this.Web.EnsureProperty(w => w.Url);
-                using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
-                {
-                    var currentUser = context.Web.EnsureProperty(w => w.CurrentUser);
-
-                    CacheValue = currentUser.LoginName;
-                }
+                var currentUser = TokenContext.Web.EnsureProperty(w => w.CurrentUser);
+                CacheValue = currentUser.LoginName;
             }
             return CacheValue;
         }

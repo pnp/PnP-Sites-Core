@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2018
     /// Resolves the AppCatalog settings at the Tenant level from the Schema to the Model
     /// </summary>
 
-    public class AppCatalogFromSchemaToModelTypeResolver : ITypeResolver
+    internal class AppCatalogFromSchemaToModelTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
 

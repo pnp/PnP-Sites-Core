@@ -1,7 +1,13 @@
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
+    [TokenDefinitionDescription(
+        Token = "{sitecollectionidencoded}",
+        Description = "Returns the id of the site collection",
+        Example = "{sitecollectionidencoded}",
+        Returns = "767bc144-e605-4d8c-885a-3a980feb39c6")]
     internal class SiteCollectionIdToken : TokenDefinition
     {
         public SiteCollectionIdToken(Web web)
@@ -13,13 +19,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (CacheValue == null)
             {
-                this.Web.EnsureProperty(w => w.Url);
-                using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
-                {
-                    context.Load(context.Site, s => s.Id);
-                    context.ExecuteQueryRetry();
-                    CacheValue = context.Site.Id.ToString();
-                }
+                TokenContext.Load(TokenContext.Site, s => s.Id);
+                TokenContext.ExecuteQueryRetry();
+                CacheValue = TokenContext.Site.Id.ToString();
             }
             return CacheValue;
         }

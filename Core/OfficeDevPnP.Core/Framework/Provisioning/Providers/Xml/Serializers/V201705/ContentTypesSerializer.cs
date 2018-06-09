@@ -43,6 +43,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                 //document set template - welcome page fields
                 expressions.Add(c => c.DocumentSetTemplate.WelcomePageFields, new ExpressionCollectionValueResolver<Guid>((s) => Guid.Parse(s.GetPublicInstancePropertyValue("ID").ToString())));
 
+                //document set template - XmlDocuments section
+                expressions.Add(c => c.DocumentSetTemplate.XmlDocuments, new XmlAnyFromSchemaToModelValueResolver("XmlDocuments"));
+
                 template.ContentTypes.AddRange(
                     PnPObjectsMapper.MapObjects<ContentType>(contentTypes,
                             new CollectionFromSchemaToModelTypeResolver(typeof(ContentType)),
@@ -63,6 +66,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                 var documentSetTemplateType = Type.GetType(documentSetTemplateTypeName, true);
                 var documentTemplateTypeName = $"{baseNamespace}.ContentTypeDocumentTemplate, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var documentTemplateType = Type.GetType(documentTemplateTypeName, true);
+                var documentSetTemplateXmlDocumentsTypeName = $"{baseNamespace}.DocumentSetTemplateXmlDocuments, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var documentSetTemplateXmlDocumentsType = Type.GetType(documentSetTemplateXmlDocumentsTypeName, false);
 
                 var expressions = new Dictionary<string, IResolver>();
 
@@ -77,6 +82,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                 expressions.Add($"{contentTypeType.Namespace}.FieldRefBase.ID", new ExpressionValueResolver((s, v) => v != null ? v.ToString() : s?.ToString()));
                 //document template
                 expressions.Add($"{contentTypeType.FullName}.DocumentTemplate", new DocumentTemplateFromModelToSchemaTypeResolver(documentTemplateType));
+
+                if (documentSetTemplateXmlDocumentsType != null)
+                {
+                    //document set template - XmlDocuments section
+                    expressions.Add($"{documentSetTemplateType.FullName}.XmlDocuments", new XmlAnyFromModelToSchemalValueResolver(documentSetTemplateXmlDocumentsType));
+                }
 
                 persistence.GetPublicInstanceProperty("ContentTypes")
                     .SetValue(

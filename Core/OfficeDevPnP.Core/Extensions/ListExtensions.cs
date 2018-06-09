@@ -16,6 +16,7 @@ using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Utilities.Async;
 
 #if !ONPREMISES
 using OfficeDevPnP.Core.Utilities.Webhooks;
@@ -32,6 +33,8 @@ namespace Microsoft.SharePoint.Client
         /// The common URL delimiters
         /// </summary>
         private static readonly char[] UrlDelimiters = { '\\', '/' };
+
+        const string INDEXED_PROPERTY_KEY = "vti_indexedpropertykeys";
 
         #region Event Receivers
 
@@ -220,7 +223,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="webHookEndPoint">Url of the web hook service endpoint (the one that will be called during an event)</param>
         /// <param name="expirationDateTime">New web hook expiration date</param>
         /// <param name="accessToken">(optional) The access token to SharePoint</param>
-        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        /// <returns><c>true</c> if the update succeeded, <c>false</c> otherwise</returns>
         public static bool UpdateWebhookSubscription(this List list, string subscriptionId, string webHookEndPoint, DateTime expirationDateTime, string accessToken = null)
         {
             // Get the access from the client context if not specified.
@@ -246,10 +249,24 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="list">The list to remove the Webhook subscription from</param>
         /// <param name="subscriptionId">The id of the subscription to remove</param>
+        /// <param name="expirationDateTime">New web hook expiration date</param>
+        /// <param name="accessToken">(optional) The access token to SharePoint</param>
+        /// <returns><c>true</c> if the update succeeded, <c>false</c> otherwise</returns>
+        public static bool UpdateWebhookSubscription(this List list, Guid subscriptionId, DateTime expirationDateTime, string accessToken = null)
+        {
+            return UpdateWebhookSubscription(list, subscriptionId.ToString(), null, expirationDateTime, accessToken);
+        }
+
+        /// <summary>
+        /// Updates a Webhook subscription from the list
+        /// Note: If the access token is not specified, it will cost a dummy request to retrieve it
+        /// </summary>
+        /// <param name="list">The list to remove the Webhook subscription from</param>
+        /// <param name="subscriptionId">The id of the subscription to remove</param>
         /// <param name="webHookEndPoint">Url of the web hook service endpoint (the one that will be called during an event)</param>
         /// <param name="expirationDateTime">New web hook expiration date</param>
         /// <param name="accessToken">(optional) The access token to SharePoint</param>
-        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        /// <returns><c>true</c> if the update succeeded, <c>false</c> otherwise</returns>
         public static bool UpdateWebhookSubscription(this List list, Guid subscriptionId, string webHookEndPoint, DateTime expirationDateTime, string accessToken = null)
         {
             return UpdateWebhookSubscription(list, subscriptionId.ToString(), webHookEndPoint, expirationDateTime, accessToken);
@@ -262,7 +279,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="list">The list to remove the Webhook subscription from</param>
         /// <param name="subscription">The subscription to update</param>
         /// <param name="accessToken">(optional) The access token to SharePoint</param>
-        /// <returns><c>true</c> if the removal succeeded, <c>false</c> otherwise</returns>
+        /// <returns><c>true</c> if the update succeeded, <c>false</c> otherwise</returns>
         public static bool UpdateWebhookSubscription(this List list, WebhookSubscription subscription, string accessToken = null)
         {
             return UpdateWebhookSubscription(list, subscription.Id, subscription.NotificationUrl, subscription.ExpirationDateTime, accessToken);
@@ -356,6 +373,8 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The collection of Webhooks subscriptions of the list</returns>
         public static async Task<IList<WebhookSubscription>> GetWebhookSubscriptionsAsync(this List list, string accessToken = null)
         {
+            await new SynchronizationContextRemover();
+
             // Get the access from the client context if not specified.
             accessToken = accessToken ?? list.Context.GetAccessToken();
 
@@ -364,7 +383,7 @@ namespace Microsoft.SharePoint.Client
 
             try
             {
-                ResponseModel<WebhookSubscription> webHookSubscriptionResponse = await WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), accessToken, list.Context as ClientContext).ConfigureAwait(false);
+                ResponseModel<WebhookSubscription> webHookSubscriptionResponse = await WebhookUtility.GetWebhooksSubscriptionsAsync(list.Context.Url, WebHookResourceType.List, listId.ToString(), accessToken, list.Context as ClientContext);
                 return webHookSubscriptionResponse.Value;
             }
             catch (AggregateException ex)
@@ -379,7 +398,7 @@ namespace Microsoft.SharePoint.Client
         #region List Properties
 
         /// <summary>
-        /// Sets a key/value pair in the web property bag
+        /// Sets a key/value pair in the list property bag
         /// </summary>
         /// <param name="list">The list to process</param>
         /// <param name="key">Key for the property bag entry</param>
@@ -401,6 +420,16 @@ namespace Microsoft.SharePoint.Client
             SetPropertyBagValueInternal(list, key, value);
         }
 
+        /// <summary>
+        /// Sets a key/value pair in the list property bag
+        /// </summary>
+        /// <param name="list">The list to process</param>
+        /// <param name="key">Key for the property bag entry</param>
+        /// <param name="value">Datetime value for the property bag entry</param>
+        public static void SetPropertyBagValue(this List list, string key, DateTime value)
+        {
+            SetPropertyBagValueInternal(list, key, value);
+        }
 
         /// <summary>
         /// Sets a key/value pair in the list property bag
@@ -418,6 +447,36 @@ namespace Microsoft.SharePoint.Client
             list.RootFolder.Update();
             list.Update();
             list.Context.ExecuteQueryRetry();
+        }
+
+        /// <summary>
+        /// Removes a property bag value from the property bag
+        /// </summary>
+        /// <param name="list">The list to process</param>
+        /// <param name="key">The key to remove</param>
+        public static void RemovePropertyBagValue(this List list, string key)
+        {
+            RemovePropertyBagValueInternal(list, key, true);
+        }
+
+        /// <summary>
+        /// Removes a property bag value
+        /// </summary>
+        /// <param name="list">The list to process</param>
+        /// <param name="key">They key to remove</param>
+        /// <param name="checkIndexed"></param>
+        private static void RemovePropertyBagValueInternal(List list, string key, bool checkIndexed)
+        {
+            // In order to remove a property from the property bag, remove it both from the Properties collection by setting it to null
+            // -and- by removing it from the FieldValues collection. Bug in CSOM?
+            list.RootFolder.Properties[key] = null;
+            list.RootFolder.Properties.FieldValues.Remove(key);
+
+            list.RootFolder.Update();
+
+            list.Context.ExecuteQueryRetry();
+            if (checkIndexed)
+                RemoveIndexedPropertyBagKey(list, key); // Will only remove it if it exists as an indexed property
         }
 
         /// <summary>
@@ -453,6 +512,26 @@ namespace Microsoft.SharePoint.Client
             if (value != null)
             {
                 return (string)value;
+            }
+            else
+            {
+                return defaultValue;
+            }
+        }
+
+        /// <summary>
+        /// Get DateTime typed property bag value. If does not contain, returns default value.
+        /// </summary>
+        /// <param name="list">The list to process</param>
+        /// <param name="key">Key of the property bag entry to return</param>
+        /// <param name="defaultValue"></param>
+        /// <returns>Value of the property bag entry as integer</returns>
+        public static DateTime? GetPropertyBagValueDateTime(this List list, string key, DateTime defaultValue)
+        {
+            object value = GetPropertyBagValueInternal(list, key);
+            if (value != null)
+            {
+                return (DateTime)value;
             }
             else
             {
@@ -501,6 +580,89 @@ namespace Microsoft.SharePoint.Client
                 return false;
             }
         }
+
+        /// <summary>
+        /// Used to convert the list of property keys is required format for listing keys to be index
+        /// </summary>
+        /// <param name="keys">list of keys to set to be searchable</param>
+        /// <returns>string formatted list of keys in proper format</returns>
+        private static string GetEncodedValueForSearchIndexProperty(IEnumerable<string> keys)
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            foreach (string current in keys)
+            {
+                stringBuilder.Append(Convert.ToBase64String(Encoding.Unicode.GetBytes(current)));
+                stringBuilder.Append('|');
+            }
+            return stringBuilder.ToString();
+        }
+
+        /// <summary>
+        /// Returns all keys in the property bag that have been marked for indexing
+        /// </summary>
+        /// <param name="list">The list to process</param>
+        /// <returns>all indexed property bag keys</returns>
+        public static IEnumerable<string> GetIndexedPropertyBagKeys(this List list)
+        {
+            var keys = new List<string>();
+
+            if (list.PropertyBagContainsKey(INDEXED_PROPERTY_KEY))
+            {
+                foreach (var key in list.GetPropertyBagValueString(INDEXED_PROPERTY_KEY, "").Split(new char[] { '|' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    var bytes = Convert.FromBase64String(key);
+                    keys.Add(Encoding.Unicode.GetString(bytes));
+                }
+            }
+
+            return keys;
+        }
+
+        /// <summary>
+        /// Marks a property bag key for indexing
+        /// </summary>
+        /// <param name="list">The list to process</param>
+        /// <param name="key">The key to mark for indexing</param>
+        /// <returns>Returns True if succeeded</returns>
+        public static bool AddIndexedPropertyBagKey(this List list, string key)
+        {
+            var result = false;
+            var keys = GetIndexedPropertyBagKeys(list).ToList();
+            if (!keys.Contains(key))
+            {
+                keys.Add(key);
+                list.SetPropertyBagValue(INDEXED_PROPERTY_KEY, GetEncodedValueForSearchIndexProperty(keys));
+                result = true;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Unmarks a property bag key for indexing
+        /// </summary>
+        /// <param name="list">The list to process</param>
+        /// <param name="key">The key to unmark for indexed. Case-sensitive</param>
+        /// <returns>Returns True if succeeded</returns>
+        public static bool RemoveIndexedPropertyBagKey(this List list, string key)
+        {
+            var result = false;
+            var keys = GetIndexedPropertyBagKeys(list).ToList();
+            if (key.Contains(key))
+            {
+                keys.Remove(key);
+                if (keys.Any())
+                {
+                    list.SetPropertyBagValue(INDEXED_PROPERTY_KEY, GetEncodedValueForSearchIndexProperty(keys));
+                }
+                else
+                {
+                    RemovePropertyBagValueInternal(list, INDEXED_PROPERTY_KEY, false);
+                }
+                result = true;
+            }
+            return result;
+        }
+
 
         #endregion
 
@@ -769,7 +931,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fieldInternalName">Internal name of field</param>
         /// <param name="groupGuid">TermGroup Guid</param>
         /// <param name="termSetGuid">TermSet Guid</param>
-        public static void UpdateTaxonomyFieldDefaultValue(this Web web, string termName, string listName, string fieldInternalName, Guid groupGuid, Guid termSetGuid)
+        /// <param name="systemUpdate">If set to true, will do a system udpate to the item. Default value is false.</param>
+        public static void UpdateTaxonomyFieldDefaultValue(this Web web, string termName, string listName, string fieldInternalName, Guid groupGuid, Guid termSetGuid, bool systemUpdate = false)
         {
             TaxonomySession taxonomySession = TaxonomySession.GetTaxonomySession(web.Context);
             TermStore termStore = taxonomySession.GetDefaultSiteCollectionTermStore();
@@ -796,7 +959,7 @@ namespace Microsoft.SharePoint.Client
                 LeafName = string.Concat("Temporary_Folder_For_WssId_Creation_", DateTime.Now.ToFileTime().ToString())
             });
 
-            item.SetTaxonomyFieldValue(taxField.Id, foundTerm.Name, foundTerm.Id);
+            item.SetTaxonomyFieldValue(taxField.Id, foundTerm.Name, foundTerm.Id, systemUpdate);
 
             web.Context.Load(item);
             web.Context.ExecuteQueryRetry();
@@ -1155,9 +1318,13 @@ namespace Microsoft.SharePoint.Client
                     }
                 case BuiltInIdentity.EveryoneButExternalUsers:
                     {
+#if !NETSTANDARD2_0
                         string userIdentity = $"c:0-.f|rolemanager|spo-grid-all-users/{web.GetAuthenticationRealm()}";
                         permissionEntity = web.EnsureUser(userIdentity);
                         break;
+#else
+                        throw new Exception("Not Supported");
+#endif
                     }
             }
 
@@ -1709,6 +1876,195 @@ namespace Microsoft.SharePoint.Client
             {
             }
             return formsFolder;
+        }
+
+        /// <summary>
+        /// <para>Sets default values for column values.</para>
+        /// <para>In order to for instance set the default Enterprise Metadata keyword field to a term, add the enterprise metadata keyword to a library (internal name "TaxKeyword")</para>
+        /// <para> </para>
+        /// <para>Column values are defined by the DefaultColumnValue class that has 3 properties:</para>
+        /// <para>RelativeFolderPath : / to set a default value for the root of the document library, or /foldername to specify a subfolder</para>
+        /// <para>FieldInternalName : The name of the field to set. For instance "TaxKeyword" to set the Enterprise Metadata field</para>
+        /// <para>Terms : A collection of Taxonomy terms to set</para>
+        /// <para></para>
+        /// <para>Supported column types: Metadata, Text, Choice, MultiChoice, People, Boolean, DateTime, Number, Currency</para>
+        /// </summary>
+        /// <param name="list">The list to process.</param>
+        /// <param name="columnValues">The default column values.</param>
+        /// <param name="overwriteExistingDefaultColumnValues">If true, the currrent default column values will be overwritten.</param>
+        public static void SetDefaultColumnValues(this List list, IEnumerable<IDefaultColumnValue> columnValues, bool overwriteExistingDefaultColumnValues)
+        {
+            if (overwriteExistingDefaultColumnValues)
+            {
+                list.SetDefaultColumnValuesImplementation(columnValues);
+            }
+            else
+            {
+                list.SetDefaultColumnValues(columnValues);
+            }
+        }
+
+        /// <summary>
+        /// Remove all default column values that are defined for this list.
+        /// </summary>
+        /// <param name="list">The list to process.</param>
+        public static void ClearDefaultColumnValues(this List list)
+        {
+            var defaultValuesFileName = "client_LocationBasedDefaults.html";
+            using (var clientContext = (ClientContext)list.Context)
+            {
+                clientContext.Load(list.RootFolder);
+                clientContext.Load(list.RootFolder.Folders);
+                clientContext.ExecuteQueryRetry();
+
+                // Check if default values file is present
+                var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
+                var configFile = formsFolder.Files.GetByUrl(defaultValuesFileName);
+                clientContext.Load(configFile, c => c.Exists);
+                bool fileExists = false;
+                try
+                {
+                    clientContext.ExecuteQueryRetry();
+                    fileExists = true;
+                }
+                catch
+                {
+                    // Do nothing here
+                }
+
+                if (fileExists)
+                {
+                    configFile.DeleteObject();
+                    clientContext.ExecuteQueryRetry();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes the provided default column values from the specified folder(s) from list, if they were set.
+        /// </summary>
+        /// <param name="list">The list to process.</param>
+        /// <param name="columnValues">The default column values that must be cleared.</param>
+        public static void ClearDefaultColumnValues(this List list, IEnumerable<IDefaultColumnValue> columnValues)
+        {
+            var defaultValuesFileName = "client_LocationBasedDefaults.html";
+            using (var clientContext = (ClientContext)list.Context)
+            {
+                clientContext.Load(list.RootFolder);
+                clientContext.Load(list.RootFolder.Folders);
+                clientContext.ExecuteQueryRetry();
+                TaxonomySession taxSession = TaxonomySession.GetTaxonomySession(clientContext);
+                // Check if default values file is present
+                var formsFolder = list.RootFolder.Folders.FirstOrDefault(x => x.Name == "Forms");
+                List<IDefaultColumnValue> remainingValues = new List<IDefaultColumnValue>();
+
+                if (formsFolder != null)
+                {
+                    var configFile = formsFolder.Files.GetByUrl(defaultValuesFileName);
+                    clientContext.Load(configFile, c => c.Exists);
+                    bool fileExists = false;
+                    try
+                    {
+                        clientContext.ExecuteQueryRetry();
+                        fileExists = true;
+                    }
+                    catch { }
+
+                    if (fileExists)
+                    {
+                        var streamResult = configFile.OpenBinaryStream();
+                        clientContext.ExecuteQueryRetry();
+                        XDocument document = XDocument.Load(streamResult.Value);
+                        var values = from a in document.Descendants("a") select a;
+
+                        foreach (var value in values)
+                        {
+                            var href = value.Attribute("href").Value;
+                            href = Uri.UnescapeDataString(href);
+                            href = href.Replace(list.RootFolder.ServerRelativeUrl, "/");
+                            var defaultValues = from d in value.Descendants("DefaultValue") select d;
+                            foreach (var defaultValue in defaultValues)
+                            {
+                                var fieldName = defaultValue.Attribute("FieldName").Value;
+
+                                var field = list.Fields.GetByInternalNameOrTitle(fieldName);
+                                clientContext.Load(field);
+                                clientContext.ExecuteQueryRetry();
+                                if (field.FieldTypeKind == FieldType.Text ||
+                                    field.FieldTypeKind == FieldType.Choice ||
+                                    field.FieldTypeKind == FieldType.MultiChoice ||
+                                    field.FieldTypeKind == FieldType.User ||
+                                    field.FieldTypeKind == FieldType.Boolean ||
+                                    field.FieldTypeKind == FieldType.DateTime ||
+                                    field.FieldTypeKind == FieldType.Number ||
+                                    field.FieldTypeKind == FieldType.Currency
+                                    )
+                                {
+                                    var textValue = defaultValue.Value;
+
+                                    if (field.FieldTypeKind == FieldType.User && !textValue.Contains(";#"))
+                                    {
+                                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ListExtensions_IncorrectValueFormat);
+                                        continue;
+                                    }
+
+                                    var defaultColumnTextValue = new DefaultColumnTextValue()
+                                    {
+                                        FieldInternalName = fieldName,
+                                        FolderRelativePath = href,
+                                        Text = textValue
+                                    };
+
+                                    bool shouldBeKept = columnValues
+                                        .FirstOrDefault(c =>
+                                            c.FieldInternalName == defaultColumnTextValue.FieldInternalName && c.FolderRelativePath == defaultColumnTextValue.FolderRelativePath
+                                        ) == null;
+                                    if (shouldBeKept == true)
+                                    {
+                                        remainingValues.Add(defaultColumnTextValue);
+                                    }
+                                }
+                                else
+                                {
+                                    var termsIdentifier = defaultValue.Value;
+
+                                    var terms = termsIdentifier.Split(new string[] { ";#" }, StringSplitOptions.None);
+
+                                    var existingTerms = new List<Term>();
+                                    for (int q = 1; q < terms.Length; q++)
+                                    {
+                                        var termIdString = terms[q].Split(new char[] { '|' })[1];
+                                        var term = taxSession.GetTerm(new Guid(termIdString));
+                                        clientContext.Load(term, t => t.Id, t => t.Name);
+                                        clientContext.ExecuteQueryRetry();
+                                        existingTerms.Add(term);
+                                        q++; // Skip one
+                                    }
+
+                                    var defaultColumnTermValue = new DefaultColumnTermValue()
+                                    {
+                                        FieldInternalName = fieldName,
+                                        FolderRelativePath = href,
+                                    };
+                                    existingTerms.ForEach(t => defaultColumnTermValue.Terms.Add(t));
+
+                                    bool shouldBeKept = columnValues
+                                        .FirstOrDefault(c =>
+                                            c.FieldInternalName == defaultColumnTermValue.FieldInternalName && c.FolderRelativePath == defaultColumnTermValue.FolderRelativePath
+                                        ) == null;
+                                    if (shouldBeKept == true)
+                                    {
+                                        remainingValues.Add(defaultColumnTermValue);
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+                list.SetDefaultColumnValuesImplementation(remainingValues);
+            }
         }
 
         /// <summary>

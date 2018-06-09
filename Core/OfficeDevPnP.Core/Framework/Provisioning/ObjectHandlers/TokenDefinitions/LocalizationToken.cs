@@ -1,4 +1,5 @@
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,6 +7,11 @@ using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
+    [TokenDefinitionDescription(
+     Token = "{localization:[key]}",
+     Description = "Returns a value from a in the template provided resource file given the locale of the site that the template is applied to",
+     Example = "{localization:MyListTitle}",
+     Returns = "My List Title")]
     internal class LocalizationToken : TokenDefinition
     {
         private List<ResourceEntry> _resourceEntries;

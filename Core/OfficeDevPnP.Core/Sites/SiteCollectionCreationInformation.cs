@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Sites
     public class CommunicationSiteCollectionCreationInformation
     {
         /// <summary>
-        /// The fully qualified url (e.g. https://yourtenant.sharepoint.com/sites/mysitecollection) of the site.
+        /// The fully qualified URL (e.g. https://yourtenant.sharepoint.com/sites/mysitecollection) of the site.
         /// </summary>
         public string Url { get; set; }
 
@@ -84,6 +84,12 @@ namespace OfficeDevPnP.Core.Sites
     /// </summary>
     public class TeamSiteCollectionGroupifyInformation : SiteCreationInformation
     {
+
+        /// <summary>
+        /// If the site already has a modern home page, do we want to keep it?
+        /// </summary>
+        public bool KeepOldHomePage { get; set; }
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -100,6 +106,7 @@ namespace OfficeDevPnP.Core.Sites
         public TeamSiteCollectionGroupifyInformation(string alias, string displayName, string description = null) : base(alias, displayName, description)
         {
         }
+
     }
 
 
@@ -134,7 +141,7 @@ namespace OfficeDevPnP.Core.Sites
         //{"displayName":"test modernteamsite","alias":"testmodernteamsite","isPublic":true,"optionalParams":{"Description":"","CreationOptions":{"results":[]},"Classification":""}}
 
         /// <summary>
-        /// The fully qualified url (e.g. https://yourtenant.sharepoint.com/sites/mysitecollection) of the site.
+        /// Alias of the underlying Office 365 Group
         /// </summary>
         public string Alias { get; set; }
 

@@ -35,5 +35,9 @@ namespace OfficeDevPnP.Core.Entities
         /// Url of site to configure unified group
         /// </summary>
         public String SiteUrl { get; set; }
+        /// <summary>
+        /// Classification of the Office 365 group
+        /// </summary>
+        public String Classification { get; set; }
     }
 }
