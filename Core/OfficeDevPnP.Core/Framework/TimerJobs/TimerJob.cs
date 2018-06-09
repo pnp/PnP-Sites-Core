@@ -48,9 +48,11 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         private string realm;
         private string clientId;
         private string clientSecret;
+        private bool highTrust;
         private string azureTenant;
         private X509Certificate2 certificate;
         private string certificatePath;
+        private string certificateIssuerId;
         private SecureString certificatePassword;
 
         private int sharePointVersion = 16;
@@ -773,7 +775,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             if (cred != null)
             {
                 securePassword = cred.SecurePassword;
-            } 
+            }
 
             if (cred != null && !String.IsNullOrEmpty(cred.UserName) && securePassword != null && securePassword.Length != 0 && !String.IsNullOrEmpty(cred.Domain))
             {
@@ -810,6 +812,63 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_AppOnly, clientId);
         }
+
+        /// <summary>
+        /// Prepares the timerjob to operate against SharePoint on-premises with app-only client Id and certificate in High Trust mode. 
+        /// Sets AuthenticationType to AuthenticationType.AppOnly
+        /// </summary>
+        /// <param name="clientId">Client ID of the app</param>
+        /// <param name="certificatePath">Path of the Certificate file</param>
+        /// <param name="certificatePassword">Password of the Certificate</param>
+        /// <param name="certificateIssuerId">The Issuer ID of the certificate</param>
+        public void UseAppOnlyAuthentication(string clientId, string certificatePath, SecureString certificatePassword, string certificateIssuerId)
+        {
+            if (String.IsNullOrEmpty(clientId))
+            {
+                throw new ArgumentNullException(nameof(clientId));
+            }
+
+            if (String.IsNullOrEmpty(certificatePath))
+            {
+                throw new ArgumentNullException(nameof(certificatePath));
+            }
+
+            if (certificatePassword == null)
+            {
+                throw new ArgumentNullException(nameof(certificatePassword));
+            }
+
+            if (String.IsNullOrEmpty(certificateIssuerId))
+            {
+                throw new ArgumentNullException(nameof(certificateIssuerId));
+            }
+
+            this.authenticationType = AuthenticationType.AppOnly;
+            this.clientId = clientId;
+            this.certificatePath = certificatePath;
+            this.certificatePassword = certificatePassword;
+            this.certificateIssuerId = certificateIssuerId;
+
+            Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_AppOnly, clientId);
+        }
+
+        /// <summary>
+        /// Prepares the timerjob to operate against SharePoint on-premises with app-only client Id and certificate in High Trust mode. 
+        /// Sets AuthenticationType to AuthenticationType.AppOnly
+        /// </summary>
+        /// <param name="clientId">Client ID of the app</param>
+        /// <param name="certificatePath">Path of the Certificate file</param>
+        /// <param name="certificatePassword">Password of the Certificate</param>
+        /// <param name="certificateIssuerId">The Issuer ID of the certificate</param>
+        public void UseAppOnlyAuthentication(string clientId, string certificatePath, string certificatePassword, string certificateIssuerId)
+        {
+            if (string.IsNullOrEmpty(certificatePassword))
+            {
+                throw new ArgumentNullException(nameof(certificatePassword));
+            }
+            UseAppOnlyAuthentication(clientId, certificatePath, Core.Utilities.EncryptionUtility.ToSecureString(certificatePassword), certificateIssuerId);
+        }
+
 
 #if !ONPREMISES
         /// <summary>
@@ -1418,7 +1477,21 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 }
                 else if (AuthenticationType == AuthenticationType.AppOnly)
                 {
-                    return GetAuthenticationManager(site).GetAppOnlyAuthenticatedContext(site, this.realm, this.clientId, this.clientSecret);
+                    if (this.highTrust)
+                    {
+                        if (this.certificate != null)
+                        {
+                            return GetAuthenticationManager(site).GetHighTrustCertificateAppOnlyAuthenticatedContext(site, this.clientId, this.certificate, this.certificateIssuerId);
+                        }
+                        else
+                        {
+                            return GetAuthenticationManager(site).GetHighTrustCertificateAppOnlyAuthenticatedContext(site, this.clientId, this.certificatePath, this.certificatePassword, this.certificateIssuerId);
+                        }
+                    }
+                    else
+                    {
+                        return GetAuthenticationManager(site).GetAppOnlyAuthenticatedContext(site, this.realm, this.clientId, this.clientSecret);
+                    }
                 }
             }
             else
@@ -1450,7 +1523,21 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 }
                 else if (AuthenticationType == AuthenticationType.AppOnly)
                 {
-                    return GetAuthenticationManager(site).GetAppOnlyAuthenticatedContext(site, this.realm, this.clientId, this.clientSecret);
+                    if (this.highTrust)
+                    {
+                        if (this.certificate != null)
+                        {
+                            return GetAuthenticationManager(site).GetHighTrustCertificateAppOnlyAuthenticatedContext(site, this.clientId, this.certificate, this.certificateIssuerId);
+                        }
+                        else
+                        {
+                            return GetAuthenticationManager(site).GetHighTrustCertificateAppOnlyAuthenticatedContext(site, this.clientId, this.certificatePath, this.certificatePassword, this.certificateIssuerId);
+                        }
+                    }
+                    else
+                    {
+                        return GetAuthenticationManager(site).GetAppOnlyAuthenticatedContext(site, this.realm, this.clientId, this.clientSecret);
+                    }               
                 }
 #endif
             }
