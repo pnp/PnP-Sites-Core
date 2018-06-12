@@ -156,7 +156,7 @@ namespace OfficeDevPnP.Core.Sites
         public bool IsPublic { get; set; } = true;
 
         /// <summary>
-        /// The Guid of the site design to be used. If specified will override the SiteDesign property
+        /// The description of the site to be created.
         /// </summary>
         public string Description { get; set; }
 
