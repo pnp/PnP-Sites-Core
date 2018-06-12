@@ -62,14 +62,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var app in template.Tenant.AppCatalog.Packages)
                     {
-                        WriteMessage("Apps/Addins", ProvisioningMessageType.Progress);
                         AppMetadata appMetadata = null;
 
                         if (app.Action == PackageAction.Upload || app.Action == PackageAction.UploadAndPublish)
                         {
-                            var appBytes = GetFileBytes(template, app.Src);
+                            var appSrc = parser.ParseString(app.Src);
+                            var appBytes = GetFileBytes(template, appSrc);
 
-                            var appFilename = app.Src.Substring(app.Src.LastIndexOf('\\') + 1);
+                            var appFilename = appSrc.Substring(appSrc.LastIndexOf('\\') + 1);
                             appMetadata = manager.Add(appBytes, appFilename, app.Overwrite, timeoutSeconds: 300);
 
                             parser.Tokens.Add(new AppPackageIdToken(web, appFilename, appMetadata.Id));
@@ -122,7 +122,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (template.Tenant.StorageEntities != null && template.Tenant.StorageEntities.Any())
             {
-                WriteMessage($"Storage Entities", ProvisioningMessageType.Progress);
                 var appCatalogUri = web.GetAppCatalog();
                 using (var appCatalogContext = web.Context.Clone(appCatalogUri))
                 {
@@ -145,7 +144,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (template.Tenant.SiteScripts != null && template.Tenant.SiteScripts.Any())
             {
-                WriteMessage($"Site Scripts", ProvisioningMessageType.Progress);
                 using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
                 {
                     var tenant = new Tenant(tenantContext);
@@ -205,8 +203,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (template.Tenant.SiteDesigns != null && template.Tenant.SiteDesigns.Any())
             {
-                WriteMessage($"Site Designs", ProvisioningMessageType.Progress);
-
                 using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
                 {
                     var tenant = new Tenant(tenantContext);
@@ -403,8 +399,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
                 {
-                    WriteMessage("Content Delivery Network Settings", ProvisioningMessageType.Progress);
-
                     var tenant = new Tenant(tenantContext);
                     var publicCdnEnabled = tenant.GetTenantCdnEnabled(SPOTenantCdnType.Public);
                     var privateCdnEnabled = tenant.GetTenantCdnEnabled(SPOTenantCdnType.Private);
