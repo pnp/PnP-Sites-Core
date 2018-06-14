@@ -63,7 +63,7 @@ namespace Microsoft.SharePoint.Client
         public static TResult EnsureProperty<T, TResult>(this T clientObject, Expression<Func<T, TResult>> propertySelector) where T : ClientObject
         {
 #if !ONPREMISES
-            return Task.Run(() => EnsurePropertyImplementation(clientObject, propertySelector)).GetAwaiter().GetResult();
+            return EnsurePropertyImplementation(clientObject, propertySelector).GetAwaiter().GetResult();
 #else
             return EnsurePropertyImplementation(clientObject, propertySelector);
 #endif
@@ -153,7 +153,7 @@ namespace Microsoft.SharePoint.Client
         public static void EnsureProperties<T>(this T clientObject, params Expression<Func<T, object>>[] propertySelector) where T : ClientObject
         {
 #if !ONPREMISES
-            Task.Run(() => EnsurePropertiesImplementation(clientObject, propertySelector)).GetAwaiter().GetResult();
+            EnsurePropertiesImplementation(clientObject, propertySelector).GetAwaiter().GetResult();
 #else
             EnsurePropertiesImplementation(clientObject, propertySelector);
 #endif

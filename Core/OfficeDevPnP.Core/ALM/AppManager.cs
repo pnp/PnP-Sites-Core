@@ -55,7 +55,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public AppMetadata Add(byte[] file, string filename, bool overwrite = false, AppCatalogScope scope = AppCatalogScope.Tenant, int timeoutSeconds = 200)
         {
-            return Task.Run(() => AddAsync(file, filename, overwrite, scope, timeoutSeconds)).GetAwaiter().GetResult();
+            return AddAsync(file, filename, overwrite, scope, timeoutSeconds).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public AppMetadata Add(string path, bool overwrite = false, AppCatalogScope scope = AppCatalogScope.Tenant, int timeoutSeconds = 200)
         {
-            return Task.Run(() => AddAsync(path, overwrite, scope, timeoutSeconds)).GetAwaiter().GetResult();
+            return AddAsync(path, overwrite, scope, timeoutSeconds).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -132,7 +132,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Install(AppMetadata appMetadata, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => InstallAsync(appMetadata, scope)).GetAwaiter().GetResult();
+            return InstallAsync(appMetadata, scope).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Install(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => InstallAsync(id, scope)).GetAwaiter().GetResult();
+            return InstallAsync(id, scope).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Uninstall(AppMetadata appMetadata, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => UninstallAsync(appMetadata, scope)).GetAwaiter().GetResult();
+            return UninstallAsync(appMetadata, scope).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -227,7 +227,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Uninstall(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => UninstallAsync(id, scope)).GetAwaiter().GetResult();
+            return UninstallAsync(id, scope).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -256,7 +256,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Upgrade(AppMetadata appMetadata, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => UpgradeAsync(appMetadata, scope)).GetAwaiter().GetResult();
+            return UpgradeAsync(appMetadata, scope).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Upgrade(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => UpgradeAsync(id, scope)).GetAwaiter().GetResult();
+            return UpgradeAsync(id, scope).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -319,7 +319,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Deploy(AppMetadata appMetadata, bool skipFeatureDeployment = true, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => DeployAsync(appMetadata, skipFeatureDeployment, scope)).GetAwaiter().GetResult();
+            return DeployAsync(appMetadata, skipFeatureDeployment, scope).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -358,7 +358,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Deploy(Guid id, bool skipFeatureDeployment = true, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => DeployAsync(id, skipFeatureDeployment, scope)).GetAwaiter().GetResult();
+            return DeployAsync(id, skipFeatureDeployment, scope).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -392,7 +392,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Retract(AppMetadata appMetadata, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => RetractAsync(appMetadata, scope)).GetAwaiter().GetResult();
+            return RetractAsync(appMetadata, scope).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -425,7 +425,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Retract(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => RetractAsync(id, scope)).GetAwaiter().GetResult();
+            return RetractAsync(id, scope).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -454,7 +454,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Remove(AppMetadata appMetadata, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => RemoveAsync(appMetadata, scope)).GetAwaiter().GetResult();
+            return RemoveAsync(appMetadata, scope).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -487,7 +487,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public bool Remove(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => RemoveAsync(id, scope)).GetAwaiter().GetResult();
+            return RemoveAsync(id, scope).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -515,7 +515,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public List<AppMetadata> GetAvailable(AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => BaseGetAvailableAsync(scope, Guid.Empty)).GetAwaiter().GetResult();
+            return BaseGetAvailableAsync(scope, Guid.Empty).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -538,7 +538,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public AppMetadata GetAvailable(Guid id, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => BaseGetAvailableAsync(scope, id)).GetAwaiter().GetResult();
+            return BaseGetAvailableAsync(scope, id).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -562,7 +562,7 @@ namespace OfficeDevPnP.Core.ALM
         /// <returns></returns>
         public AppMetadata GetAvailable(string title, AppCatalogScope scope = AppCatalogScope.Tenant)
         {
-            return Task.Run(() => BaseGetAvailableAsync(scope, Guid.Empty, title)).GetAwaiter().GetResult();
+            return BaseGetAvailableAsync(scope, Guid.Empty, title).GetAwaiter().GetResult();
         }
 
         /// <summary>
@@ -663,7 +663,7 @@ namespace OfficeDevPnP.Core.ALM
                     }
                 }
             }
-            return await Task.Run(() => addins);
+            return addins;
         }
 
 
@@ -736,7 +736,7 @@ namespace OfficeDevPnP.Core.ALM
                     }
                 }
             }
-            return await Task.Run(() => returnValue);
+            return returnValue;
         }
 
         private async Task<AppMetadata> BaseAddRequest(byte[] file, string filename, bool overwrite, int timeoutSeconds, AppCatalogScope scope)
@@ -829,7 +829,7 @@ namespace OfficeDevPnP.Core.ALM
                     }
                 }
             }
-            return await Task.Run(() => returnValue);
+            return returnValue;
         }
         #endregion
     }

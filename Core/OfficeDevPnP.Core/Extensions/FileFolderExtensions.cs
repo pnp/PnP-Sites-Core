@@ -31,7 +31,7 @@ namespace Microsoft.SharePoint.Client
 #if ONPREMISES
             web.ApproveFileImplementation(serverRelativeUrl, comment);
 #else
-            Task.Run(() => web.ApproveFileImplementation(serverRelativeUrl, comment)).GetAwaiter().GetResult();
+            web.ApproveFileImplementation(serverRelativeUrl, comment).GetAwaiter().GetResult();
 #endif
         }
 #if !ONPREMISES
@@ -92,7 +92,7 @@ namespace Microsoft.SharePoint.Client
 #if ONPREMISES
             web.CheckInFileImplementation(serverRelativeUrl, checkinType, comment);
 #else
-            Task.Run(() => web.CheckInFileImplementation(serverRelativeUrl, checkinType, comment)).GetAwaiter().GetResult();
+            web.CheckInFileImplementation(serverRelativeUrl, checkinType, comment).GetAwaiter().GetResult();
 #endif
         }
 
@@ -159,7 +159,7 @@ namespace Microsoft.SharePoint.Client
 #if ONPREMISES
             web.CheckOutFileImplementation(serverRelativeUrl);
 #else
-            Task.Run(() => web.CheckOutFileImplementation(serverRelativeUrl)).GetAwaiter().GetResult();
+            web.CheckOutFileImplementation(serverRelativeUrl).GetAwaiter().GetResult();
 #endif
         }
 #if !ONPREMISES
@@ -242,7 +242,7 @@ namespace Microsoft.SharePoint.Client
 #if ONPREMISES
             return folder.CreateDocumentSetImplementation(documentSetName, contentTypeId);
 #else
-            return Task.Run(() => folder.CreateDocumentSetImplementation(documentSetName, contentTypeId)).GetAwaiter().GetResult();
+            return folder.CreateDocumentSetImplementation(documentSetName, contentTypeId).GetAwaiter().GetResult();
 #endif
         }
 #if !ONPREMISES
@@ -367,7 +367,7 @@ namespace Microsoft.SharePoint.Client
 #if ONPREMISES
             return list.ConvertFolderToDocumentSetImplementation(folder);
 #else
-            return Task.Run(() => list.ConvertFolderToDocumentSetImplementation(folder)).GetAwaiter().GetResult();
+            return list.ConvertFolderToDocumentSetImplementation(folder).GetAwaiter().GetResult();
 #endif
         }
 #if !ONPREMISES

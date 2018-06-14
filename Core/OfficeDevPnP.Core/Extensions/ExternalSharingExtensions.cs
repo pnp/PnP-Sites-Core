@@ -54,7 +54,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Resolves people picker value which can be used for sharing objects in the SharePoint site</returns>
         public static string ResolvePeoplePickerValueForEmail(this Web web, string emailAddress)
         {
-            return Task.Run(() => ResolvePeoplePickerValueForEmailImplementation(web, emailAddress)).GetAwaiter().GetResult();
+            return ResolvePeoplePickerValueForEmailImplementation(web, emailAddress).GetAwaiter().GetResult();
         }
         /// <summary>
         /// Can be used to get needed people picker search result value for given email account. 
@@ -105,7 +105,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Anonymous URL to the file as string</returns>
         public static string CreateAnonymousLinkForDocument(this Web web, string urlToDocument, ExternalSharingDocumentOption shareOption)
         {
-            return Task.Run(() => CreateAnonymousLinkForDocumentImplementation(web, urlToDocument, shareOption)).GetAwaiter().GetResult();
+            return CreateAnonymousLinkForDocumentImplementation(web, urlToDocument, shareOption).GetAwaiter().GetResult();
         }
         /// <summary>
         /// Creates anonymous link to given document.
@@ -153,7 +153,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Anonymous URL to the file as string</returns>
         public static string CreateAnonymousLinkWithExpirationForDocument(this Web web, string urlToDocument, ExternalSharingDocumentOption shareOption, DateTime expireTime)
         {
-            return Task.Run(() => CreateAnonymousLinkWithExpirationForDocumentImplementation(web, urlToDocument, shareOption, expireTime)).GetAwaiter().GetResult();
+            return CreateAnonymousLinkWithExpirationForDocumentImplementation(web, urlToDocument, shareOption, expireTime).GetAwaiter().GetResult();
         }
         /// <summary>
         /// Creates anonymous link to the given document with automatic expiration time.
@@ -213,7 +213,7 @@ namespace Microsoft.SharePoint.Client
                                                 bool sendEmail = true, string emailBody = "Document shared",
                                                 bool useSimplifiedRoles = true)
         {
-            return Task.Run(() => ShareDocumentImplementation(web, urlToDocument, targetEmailToShare, shareOption, sendEmail, emailBody, useSimplifiedRoles)).GetAwaiter().GetResult();
+            return ShareDocumentImplementation(web, urlToDocument, targetEmailToShare, shareOption, sendEmail, emailBody, useSimplifiedRoles).GetAwaiter().GetResult();
         }
         /// <summary>
         /// Abstracted method for sharing documents just with given email address. 
@@ -259,7 +259,7 @@ namespace Microsoft.SharePoint.Client
                                         ExternalSharingDocumentOption shareOption, bool sendEmail = true,
                                         string emailBody = "Document shared for you.", bool useSimplifiedRoles = true)
         {
-            return Task.Run(() => ShareDocumentWithPeoplePickerValueImplementation(web, urlToDocument, peoplePickerInput, shareOption, sendEmail, emailBody, useSimplifiedRoles)).GetAwaiter().GetResult();
+            return ShareDocumentWithPeoplePickerValueImplementation(web, urlToDocument, peoplePickerInput, shareOption, sendEmail, emailBody, useSimplifiedRoles).GetAwaiter().GetResult();
         }
         /// <summary>
         /// Share document with complex JSON string value.
@@ -319,7 +319,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>A SharingResult object</returns>
         public static SharingResult UnshareDocument(this Web web, string urlToDocument)
         {
-            return Task.Run(() => UnshareDocumentImplementation(web, urlToDocument)).GetAwaiter().GetResult();
+            return UnshareDocumentImplementation(web, urlToDocument).GetAwaiter().GetResult();
         }
         /// <summary>
         /// Can be used to programatically to unshare any document with the document URL.
@@ -352,7 +352,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>A ObjectSharingSettings object</returns>
         public static ObjectSharingSettings GetObjectSharingSettingsForDocument(this Web web, string urlToDocument, bool useSimplifiedPolicies = true)
         {
-            return Task.Run(() => GetObjectSharingSettingsForDocumentImplementation(web, urlToDocument, useSimplifiedPolicies)).GetAwaiter().GetResult();
+            return GetObjectSharingSettingsForDocumentImplementation(web, urlToDocument, useSimplifiedPolicies).GetAwaiter().GetResult();
         }
         /// <summary>
         /// Get current sharing settings for document and load list of users it has been shared automatically.
@@ -387,7 +387,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>A ObjectSharingSettings object</returns>
         public static ObjectSharingSettings GetObjectSharingSettingsForSite(this Web web, bool useSimplifiedPolicies = true)
         {
-            return Task.Run(() => GetObjectSharingSettingsForSiteImplementation(web, useSimplifiedPolicies)).GetAwaiter().GetResult();
+            return GetObjectSharingSettingsForSiteImplementation(web, useSimplifiedPolicies).GetAwaiter().GetResult();
         }
         /// <summary>
         /// Get current sharing settings for site and load list of users it has been shared automatically.
@@ -430,7 +430,7 @@ namespace Microsoft.SharePoint.Client
         public static SharingResult InviteExternalUser(this Group group, string email, bool sendEmail = true,
             string emailBody = "Site shared with you.")
         {
-            return Task.Run(() => InviteExternalUserImplementation(group, email, sendEmail, emailBody)).GetAwaiter().GetResult();
+            return InviteExternalUserImplementation(group, email, sendEmail, emailBody).GetAwaiter().GetResult();
         }
         /// <summary>
         /// Invites an external user as a group member
@@ -466,7 +466,7 @@ namespace Microsoft.SharePoint.Client
         public static SharingResult ShareSite(this Web web, string email,
             Group group, bool sendEmail = true, string emailBody = "Site shared for you.")
         {
-            return Task.Run(() => ShareSiteImplementation(web, email, group, sendEmail, emailBody)).GetAwaiter().GetResult();
+            return ShareSiteImplementation(web, email, group, sendEmail, emailBody).GetAwaiter().GetResult();
         }
         /// <summary>
         /// Share site for a person using just email. Will resolve needed people picker JSON value automatically.
@@ -504,7 +504,7 @@ namespace Microsoft.SharePoint.Client
                                                 ExternalSharingSiteOption shareOption, bool sendEmail = true,
                                                 string emailBody = "Site shared for you.", bool useSimplifiedRoles = true)
         {
-            return Task.Run(() => ShareSiteImplementation(web, email, shareOption, sendEmail, emailBody, useSimplifiedRoles)).GetAwaiter().GetResult();
+            return ShareSiteImplementation(web, email, shareOption, sendEmail, emailBody, useSimplifiedRoles).GetAwaiter().GetResult();
         }
         /// <summary>
         /// Share site for a person using just email. Will resolve needed people picker JSON value automatically.
@@ -548,7 +548,7 @@ namespace Microsoft.SharePoint.Client
                                                                     bool sendEmail = true, string emailBody = "Site shared for you.",
                                                                     bool useSimplifiedRoles = true)
         {
-            return Task.Run(() => ShareSiteWithPeoplePickerValueImplementation(web, peoplePickerInput, shareOption, sendEmail, emailBody, useSimplifiedRoles)).GetAwaiter().GetResult();
+            return ShareSiteWithPeoplePickerValueImplementation(web, peoplePickerInput, shareOption, sendEmail, emailBody, useSimplifiedRoles).GetAwaiter().GetResult();
         }
         /// <summary>
         /// Share site for a person using complex JSON object for people picker value.
@@ -603,7 +603,7 @@ namespace Microsoft.SharePoint.Client
                                                                     Group group,
                                                                     bool sendEmail = true, string emailBody = "Site shared for you.")
         {
-            return Task.Run(() => ShareSiteWithPeoplePickerValueImplementation(web, peoplePickerInput, group, sendEmail, emailBody)).GetAwaiter().GetResult();
+            return ShareSiteWithPeoplePickerValueImplementation(web, peoplePickerInput, group, sendEmail, emailBody).GetAwaiter().GetResult();
         }
         /// <summary>
         /// Share site for a person using complex JSON object for people picker value.
