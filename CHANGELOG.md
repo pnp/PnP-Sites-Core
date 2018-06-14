@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Fix NullReferenceException when parsing client side page header html #1821 [SchauDK]
+- Changed multi lookup field provisioning to also handle list url in List #1822 [cebud]
+
 ### Deprecated
 
 ## [2.27.1806.0 - June 2018 release]
