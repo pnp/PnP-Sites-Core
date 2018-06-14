@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [2.28.1807.0 - not yet released]
+
+### Added
+
+### Changed
+- Fix NullReferenceException when parsing client side page header html #1821 [SchauDK]
+### Deprecated
+
 ## [2.27.1806.0 - June 2018 release]
 
 ### Added
