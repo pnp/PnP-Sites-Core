@@ -39,8 +39,8 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Server relative link to page header image, set to null for default header image. 
-        /// Note: image needs to reside in the current site 
+        /// Server relative link to page header image, set to null for default header image.
+        /// Note: image needs to reside in the current site
         /// </summary>
         public string ImageServerRelativeUrl
         {
@@ -79,7 +79,7 @@ namespace OfficeDevPnP.Core.Pages
         /// Show the kicker in the title region
         /// </summary>
         private bool ShowKicker { get; set; }
-        
+
         /// <summary>
         /// Show the page publication date in the title region
         /// </summary>
@@ -89,12 +89,12 @@ namespace OfficeDevPnP.Core.Pages
         /// The kicker text to show if ShowKicker is set to true
         /// </summary>
         private string Kicker { get; set; }
-        
+
         /// <summary>
         /// Alternative text for the header image
         /// </summary>
-        private string AlternativeText { get; set; }      
-        
+        private string AlternativeText { get; set; }
+
         /// <summary>
         /// Page author(s) to be displayed
         /// </summary>
@@ -137,7 +137,7 @@ namespace OfficeDevPnP.Core.Pages
         #endregion
 
         /// <summary>
-        /// Returns the header value to set a "no header" 
+        /// Returns the header value to set a "no header"
         /// </summary>
         /// <param name="pageTitle">Title of the page</param>
         /// <param name="titleAlignment">Left align or center the title</param>
@@ -155,7 +155,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Returns the header value to set a "no header" 
+        /// Returns the header value to set a "no header"
         /// </summary>
         /// <param name="pageTitle">Title of the page</param>
         /// <returns>Header html value that indicates "no header"</returns>
@@ -231,15 +231,15 @@ namespace OfficeDevPnP.Core.Pages
                             if (wpJObject["properties"] != null)
                             {
                                 Guid result = new Guid();
-                                if (Guid.TryParse(wpJObject["properties"]["siteId"].ToString(), out result))
+                                if (wpJObject["properties"]["siteId"] != null && Guid.TryParse(wpJObject["properties"]["siteId"].ToString(), out result))
                                 {
                                     this.siteId = result;
                                 }
-                                if (Guid.TryParse(wpJObject["properties"]["webId"].ToString(), out result))
+                                if (wpJObject["properties"]["webId"] != null && Guid.TryParse(wpJObject["properties"]["webId"].ToString(), out result))
                                 {
                                     this.webId = result;
                                 }
-                                if (Guid.TryParse(wpJObject["properties"]["listId"].ToString(), out result))
+                                if (wpJObject["properties"]["listId"] != null && Guid.TryParse(wpJObject["properties"]["listId"].ToString(), out result))
                                 {
                                     this.listId = result;
                                 }
@@ -380,7 +380,7 @@ namespace OfficeDevPnP.Core.Pages
             {
                 header = header.Replace("@@authors@@", "");
             }
-            
+
             return header.Replace("@@showkicker@@", this.ShowKicker.ToString().ToLower()).Replace("@@showpublishdate@@", this.ShowPublishDate.ToString().ToLower()).Replace("@@kicker@@", this.Kicker == null ? "" : this.Kicker).Replace("@@textalignment@@", this.TextAlignment.ToString()).Replace("@@layouttype@@", this.LayoutType.ToString());
         }
 
