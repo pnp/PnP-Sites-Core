@@ -52,6 +52,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         Publish = true,
                         Layout = pageToExtract.LayoutType.ToString(),
                         EnableComments = !pageToExtract.CommentsDisabled,
+                        Title = pageToExtract.PageTitle
                     };
 
                     if(pageToExtract.PageHeader != null)
@@ -106,7 +107,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         {
                             foreach (var control in column.Controls)
                             {
-                                // Create control 
+                                // Create control
                                 CanvasControl controlInstance = new CanvasControl()
                                 {
                                     Column = column.Order,
@@ -127,7 +128,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 }
                                 else
                                 {
-                                    // set ControlId to webpart id 
+                                    // set ControlId to webpart id
                                     controlInstance.ControlId = Guid.Parse((control as Pages.ClientSideWebPart).WebPartId);
                                     var webPartType = Pages.ClientSidePage.NameToClientSideWebPartEnum((control as Pages.ClientSideWebPart).WebPartId);
                                     switch (webPartType)
@@ -366,7 +367,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     {
                         if (template.WebSettings == null)
                         {
-                            template.WebSettings = new WebSettings();                            
+                            template.WebSettings = new WebSettings();
                         }
 
                         if (pageUrl.StartsWith(web.ServerRelativeUrl, StringComparison.InvariantCultureIgnoreCase))
@@ -376,7 +377,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         else
                         {
                             template.WebSettings.WelcomePage = pageUrl;
-                        }                        
+                        }
                     }
                 }
             }

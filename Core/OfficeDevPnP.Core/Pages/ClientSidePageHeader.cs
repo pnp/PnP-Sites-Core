@@ -14,9 +14,9 @@ namespace OfficeDevPnP.Core.Pages
     /// </summary>
     public class ClientSidePageHeader
     {
-        private const string NoPageHeader      = "<div><div data-sp-canvascontrol=\"\" data-sp-canvasdataversion=\"1.3\" data-sp-controldata=\"&#123;&quot;id&quot;&#58;&quot;cbe7b0a9-3504-44dd-a3a3-0e5cacd07788&quot;,&quot;instanceId&quot;&#58;&quot;cbe7b0a9-3504-44dd-a3a3-0e5cacd07788&quot;,&quot;title&quot;&#58;&quot;Title Region&quot;,&quot;description&quot;&#58;&quot;Title Region Description&quot;,&quot;serverProcessedContent&quot;&#58;&#123;&quot;htmlStrings&quot;&#58;&#123;&#125;,&quot;searchablePlainTexts&quot;&#58;&#123;&#125;,&quot;imageSources&quot;&#58;&#123;&#125;,&quot;links&quot;&#58;&#123;&#125;&#125;,&quot;dataVersion&quot;&#58;&quot;1.3&quot;,&quot;properties&quot;&#58;&#123;&quot;title&quot;&#58;&quot;@@title@@&quot;,&quot;imageSourceType&quot;&#58;0&#125;&#125;\"></div></div>";
-        private const string DefaultPageHeader = "<div><div data-sp-canvascontrol=\"\" data-sp-canvasdataversion=\"1.3\" data-sp-controldata=\"&#123;&quot;id&quot;&#58;&quot;cbe7b0a9-3504-44dd-a3a3-0e5cacd07788&quot;,&quot;instanceId&quot;&#58;&quot;cbe7b0a9-3504-44dd-a3a3-0e5cacd07788&quot;,&quot;title&quot;&#58;&quot;Title Region&quot;,&quot;description&quot;&#58;&quot;Title Region Description&quot;,&quot;serverProcessedContent&quot;&#58;&#123;&quot;htmlStrings&quot;&#58;&#123;&#125;,&quot;searchablePlainTexts&quot;&#58;&#123;&#125;,&quot;imageSources&quot;&#58;&#123;&#125;,&quot;links&quot;&#58;&#123;&#125;&#125;,&quot;dataVersion&quot;&#58;&quot;1.3&quot;,&quot;properties&quot;&#58;&#123;&quot;title&quot;&#58;&quot;@@title@@&quot;,&quot;imageSourceType&quot;&#58;4,&quot;translateX&quot;&#58;50,&quot;translateY&quot;&#58;50&#125;&#125;\"></div></div>";
-        private const string CustomPageHeader  = "<div><div data-sp-canvascontrol=\"\" data-sp-canvasdataversion=\"1.3\" data-sp-controldata=\"&#123;&quot;id&quot;&#58;&quot;cbe7b0a9-3504-44dd-a3a3-0e5cacd07788&quot;,&quot;instanceId&quot;&#58;&quot;cbe7b0a9-3504-44dd-a3a3-0e5cacd07788&quot;,&quot;title&quot;&#58;&quot;Title Region&quot;,&quot;description&quot;&#58;&quot;Title Region Description&quot;,&quot;serverProcessedContent&quot;&#58;&#123;&quot;htmlStrings&quot;&#58;&#123;&#125;,&quot;searchablePlainTexts&quot;&#58;&#123;&#125;,&quot;imageSources&quot;&#58;&#123;&quot;imageSource&quot;&#58;&quot;@@imageSource@@&quot;&#125;,&quot;links&quot;&#58;&#123;&#125;&#125;,&quot;dataVersion&quot;&#58;&quot;1.3&quot;,&quot;properties&quot;&#58;&#123;&quot;title&quot;&#58;&quot;@@title@@&quot;,&quot;imageSourceType&quot;&#58;2,&quot;siteId&quot;&#58;&quot;@@siteId@@&quot;,&quot;webId&quot;&#58;&quot;@@webId@@&quot;,&quot;listId&quot;&#58;&quot;@@listId@@&quot;,&quot;uniqueId&quot;&#58;&quot;&#123;@@uniqueId@@&#125;&quot;@@focalPoints@@&#125;&#125;\"></div></div>";
+        private const string NoPageHeader      = "<div><div data-sp-canvascontrol=\"\" data-sp-canvasdataversion=\"1.4\" data-sp-controldata=\"&#123;&quot;id&quot;&#58;&quot;cbe7b0a9-3504-44dd-a3a3-0e5cacd07788&quot;,&quot;instanceId&quot;&#58;&quot;cbe7b0a9-3504-44dd-a3a3-0e5cacd07788&quot;,&quot;title&quot;&#58;&quot;Title Region&quot;,&quot;description&quot;&#58;&quot;Title Region Description&quot;,&quot;serverProcessedContent&quot;&#58;&#123;&quot;htmlStrings&quot;&#58;&#123;&#125;,&quot;searchablePlainTexts&quot;&#58;&#123;&#125;,&quot;imageSources&quot;&#58;&#123;&#125;,&quot;links&quot;&#58;&#123;&#125;&#125;,&quot;dataVersion&quot;&#58;&quot;1.4&quot;,&quot;properties&quot;&#58;&#123;&quot;title&quot;&#58;&quot;@@title@@&quot;,&quot;imageSourceType&quot;&#58;4,&quot;layoutType&quot;&#58;&quot;NoImage&quot;,&quot;textAlignment&quot;&#58;&quot;@@textalignment@@&quot;,&quot;showKicker&quot;&#58;@@showkicker@@,&quot;showPublishDate&quot;&#58;@@showpublishdate@@,&quot;kicker&quot;&#58;&quot;@@kicker@@&quot;&#125;&#125;\"></div></div>";
+        private const string DefaultPageHeader = "<div><div data-sp-canvascontrol=\"\" data-sp-canvasdataversion=\"1.4\" data-sp-controldata=\"&#123;&quot;id&quot;&#58;&quot;cbe7b0a9-3504-44dd-a3a3-0e5cacd07788&quot;,&quot;instanceId&quot;&#58;&quot;cbe7b0a9-3504-44dd-a3a3-0e5cacd07788&quot;,&quot;title&quot;&#58;&quot;Title Region&quot;,&quot;description&quot;&#58;&quot;Title Region Description&quot;,&quot;serverProcessedContent&quot;&#58;&#123;&quot;htmlStrings&quot;&#58;&#123;&#125;,&quot;searchablePlainTexts&quot;&#58;&#123;&#125;,&quot;imageSources&quot;&#58;&#123;&#125;,&quot;links&quot;&#58;&#123;&#125;&#125;,&quot;dataVersion&quot;&#58;&quot;1.4&quot;,&quot;properties&quot;&#58;&#123;&quot;title&quot;&#58;&quot;@@title@@&quot;,&quot;imageSourceType&quot;&#58;4,&quot;layoutType&quot;&#58;&quot;@@layouttype@@&quot;,&quot;textAlignment&quot;&#58;&quot;@@textalignment@@&quot;,&quot;showKicker&quot;&#58;@@showkicker@@,&quot;showPublishDate&quot;&#58;@@showpublishdate@@,&quot;kicker&quot;&#58;&quot;@@kicker@@&quot;&#125;&#125;\"></div></div>";
+        private const string CustomPageHeader  = "<div><div data-sp-canvascontrol=\"\" data-sp-canvasdataversion=\"1.4\" data-sp-controldata=\"&#123;&quot;id&quot;&#58;&quot;cbe7b0a9-3504-44dd-a3a3-0e5cacd07788&quot;,&quot;instanceId&quot;&#58;&quot;cbe7b0a9-3504-44dd-a3a3-0e5cacd07788&quot;,&quot;title&quot;&#58;&quot;Title Region&quot;,&quot;description&quot;&#58;&quot;Title Region Description&quot;,&quot;serverProcessedContent&quot;&#58;&#123;&quot;htmlStrings&quot;&#58;&#123;&#125;,&quot;searchablePlainTexts&quot;&#58;&#123;&#125;,&quot;imageSources&quot;&#58;&#123;&quot;imageSource&quot;&#58;&quot;@@imageSource@@&quot;&#125;,&quot;links&quot;&#58;&#123;&#125;,&quot;customMetadata&quot;&#58;&#123;&quot;imageSource&quot;&#58;&#123;&quot;siteId&quot;&#58;&quot;@@siteId@@&quot;,&quot;webId&quot;&#58;&quot;@@webId@@&quot;,&quot;listId&quot;&#58;&quot;@@listId@@&quot;,&quot;uniqueId&quot;&#58;&quot;@@uniqueId@@&quot;&#125;&#125;&#125;,&quot;dataVersion&quot;&#58;&quot;1.4&quot;,&quot;properties&quot;&#58;&#123;&quot;title&quot;&#58;&quot;@@title@@&quot;,&quot;imageSourceType&quot;&#58;2,&quot;layoutType&quot;&#58;&quot;@@layouttype@@&quot;,&quot;textAlignment&quot;&#58;&quot;@@textalignment@@&quot;,&quot;showKicker&quot;&#58;@@showkicker@@,&quot;showPublishDate&quot;&#58;@@showpublishdate@@,&quot;kicker&quot;&#58;&quot;@@kicker@@&quot;,&quot;authors&quot;&#58;[@@authors@@],&quot;altText&quot;&#58;&quot;@@alternativetext@@&quot;,&quot;webId&quot;&#58;&quot;@@webId@@&quot;,&quot;siteId&quot;&#58;&quot;@@siteId@@&quot;,&quot;listId&quot;&#58;&quot;@@listId@@&quot;,&quot;uniqueId&quot;&#58;&quot;@@uniqueId@@&quot;@@focalPoints@@&#125;&#125;\"></div></div>";
 
         private ClientSidePageHeaderType pageHeaderType;
         private string imageServerRelativeUrl;
@@ -39,8 +39,8 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Server relative link to page header image, set to null for default header image. 
-        /// Note: image needs to reside in the current site 
+        /// Server relative link to page header image, set to null for default header image.
+        /// Note: image needs to reside in the current site
         /// </summary>
         public string ImageServerRelativeUrl
         {
@@ -65,7 +65,42 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public double? TranslateY { get; set; }
 
-#region construction
+        /// <summary>
+        /// Type of layout used inside the header
+        /// </summary>
+        private ClientSidePageHeaderLayoutType LayoutType { get; set; }
+
+        /// <summary>
+        /// Alignment of the title in the header
+        /// </summary>
+        private ClientSidePageHeaderTitleAlignment TextAlignment { get; set; }
+
+        /// <summary>
+        /// Show the kicker in the title region
+        /// </summary>
+        private bool ShowKicker { get; set; }
+
+        /// <summary>
+        /// Show the page publication date in the title region
+        /// </summary>
+        private bool ShowPublishDate { get; set; }
+
+        /// <summary>
+        /// The kicker text to show if ShowKicker is set to true
+        /// </summary>
+        private string Kicker { get; set; }
+
+        /// <summary>
+        /// Alternative text for the header image
+        /// </summary>
+        private string AlternativeText { get; set; }
+
+        /// <summary>
+        /// Page author(s) to be displayed
+        /// </summary>
+        private string Authors { get; set; }
+
+        #region construction
         /// <summary>
         /// Creates a custom header with a custom image
         /// </summary>
@@ -77,6 +112,13 @@ namespace OfficeDevPnP.Core.Pages
             this.imageServerRelativeUrl = imageServerRelativeUrl;
             this.clientContext = cc;
             this.pageHeaderType = pageHeaderType;
+            this.TextAlignment = ClientSidePageHeaderTitleAlignment.Center;
+            this.LayoutType = ClientSidePageHeaderLayoutType.FullWidthImage;
+            this.ShowKicker = false;
+            this.Kicker = "";
+            this.Authors = "";
+            this.AlternativeText = "";
+            this.ShowPublishDate = false;
         }
 
         /// <summary>
@@ -92,21 +134,34 @@ namespace OfficeDevPnP.Core.Pages
             TranslateX = translateX;
             TranslateY = translateY;
         }
-#endregion
+        #endregion
 
         /// <summary>
-        /// Returns the header value to set a "no header" 
+        /// Returns the header value to set a "no header"
         /// </summary>
         /// <param name="pageTitle">Title of the page</param>
+        /// <param name="titleAlignment">Left align or center the title</param>
         /// <returns>Header html value that indicates "no header"</returns>
-        public static string NoHeader(string pageTitle)
+        private static string NoHeader(string pageTitle, ClientSidePageHeaderTitleAlignment titleAlignment)
         {
             if (pageTitle == null)
             {
                 pageTitle = "";
             }
 
-            return NoPageHeader.Replace("@@title@@", pageTitle);
+            string header = Replace1point4Defaults(NoPageHeader);
+
+            return header.Replace("@@title@@", pageTitle).Replace("@@textalignment@@", titleAlignment.ToString());
+        }
+
+        /// <summary>
+        /// Returns the header value to set a "no header"
+        /// </summary>
+        /// <param name="pageTitle">Title of the page</param>
+        /// <returns>Header html value that indicates "no header"</returns>
+        public static string NoHeader(string pageTitle)
+        {
+            return NoHeader(pageTitle, ClientSidePageHeaderTitleAlignment.Center);
         }
 
         /// <summary>
@@ -139,21 +194,52 @@ namespace OfficeDevPnP.Core.Pages
                             this.imageServerRelativeUrl = wpJObject["serverProcessedContent"]["imageSources"]["imageSource"].ToString();
                         }
 
+                        // Properties that apply to all header configurations
+                        if (wpJObject["properties"]["layoutType"] != null)
+                        {
+                            this.LayoutType = (ClientSidePageHeaderLayoutType)Enum.Parse(typeof(ClientSidePageHeaderLayoutType), wpJObject["properties"]["layoutType"].ToString());
+                        }
+                        if (wpJObject["properties"]["textAlignment"] != null)
+                        {
+                            this.TextAlignment = (ClientSidePageHeaderTitleAlignment)Enum.Parse(typeof(ClientSidePageHeaderTitleAlignment), wpJObject["properties"]["textAlignment"].ToString());
+                        }
+                        if (wpJObject["properties"]["showKicker"] != null)
+                        {
+                            bool showKicker = false;
+                            bool.TryParse(wpJObject["properties"]["showKicker"].ToString(), out showKicker);
+                            this.ShowKicker = showKicker;
+                        }
+                        if (wpJObject["properties"]["showPublishDate"] != null)
+                        {
+                            bool showPublishDate = false;
+                            bool.TryParse(wpJObject["properties"]["showPublishDate"].ToString(), out showPublishDate);
+                            this.ShowPublishDate = showPublishDate;
+                        }
+                        if (wpJObject["properties"]["kicker"] != null)
+                        {
+                            this.Kicker = wpJObject["properties"]["kicker"].ToString();
+                        }
+                        if (wpJObject["properties"]["authors"] != null)
+                        {
+                            this.Authors = wpJObject["properties"]["authors"].ToString();
+                        }
+
+                        // Specific properties that only apply when the header has a custom image
                         if (!string.IsNullOrEmpty(this.imageServerRelativeUrl))
                         {
                             this.pageHeaderType = ClientSidePageHeaderType.Custom;
                             if (wpJObject["properties"] != null)
                             {
                                 Guid result = new Guid();
-                                if (Guid.TryParse(wpJObject["properties"]["siteId"].ToString(), out result))
+                                if (wpJObject["properties"]["siteId"] != null && Guid.TryParse(wpJObject["properties"]["siteId"].ToString(), out result))
                                 {
                                     this.siteId = result;
                                 }
-                                if (Guid.TryParse(wpJObject["properties"]["webId"].ToString(), out result))
+                                if (wpJObject["properties"]["webId"] != null && Guid.TryParse(wpJObject["properties"]["webId"].ToString(), out result))
                                 {
                                     this.webId = result;
                                 }
-                                if (Guid.TryParse(wpJObject["properties"]["listId"].ToString(), out result))
+                                if (wpJObject["properties"]["listId"] != null && Guid.TryParse(wpJObject["properties"]["listId"].ToString(), out result))
                                 {
                                     this.listId = result;
                                 }
@@ -168,42 +254,68 @@ namespace OfficeDevPnP.Core.Pages
                                 }
                             }
 
-                            System.Globalization.CultureInfo englishCulture = new System.Globalization.CultureInfo("en-EN");
+                            System.Globalization.CultureInfo usCulture = new System.Globalization.CultureInfo("en-US");
+                            System.Globalization.CultureInfo europeanCulture = new System.Globalization.CultureInfo("nl-BE");
 
                             if (wpJObject["properties"]["translateX"] != null)
                             {
                                 double translateX = 0;
                                 var translateXEN = wpJObject["properties"]["translateX"].ToString();
-                                Double.TryParse(translateXEN, System.Globalization.NumberStyles.Float, englishCulture, out translateX);
+
+                                System.Globalization.CultureInfo cultureToUse;
+                                if (translateXEN.Contains("."))
+                                {
+                                    cultureToUse = usCulture;
+                                }
+                                else if (translateXEN.Contains(","))
+                                {
+                                    cultureToUse = europeanCulture;
+                                }
+                                else
+                                {
+                                    cultureToUse = usCulture;
+                                }
+
+                                Double.TryParse(translateXEN, System.Globalization.NumberStyles.Float, cultureToUse, out translateX);
                                 this.TranslateX = translateX;
                             }
                             if (wpJObject["properties"]["translateY"] != null)
                             {
                                 double translateY = 0;
                                 var translateYEN = wpJObject["properties"]["translateY"].ToString();
-                                Double.TryParse(translateYEN, System.Globalization.NumberStyles.Float, englishCulture, out translateY);
+
+                                System.Globalization.CultureInfo cultureToUse;
+                                if (translateYEN.Contains("."))
+                                {
+                                    cultureToUse = usCulture;
+                                }
+                                else if (translateYEN.Contains(","))
+                                {
+                                    cultureToUse = europeanCulture;
+                                }
+                                else
+                                {
+                                    cultureToUse = usCulture;
+                                }
+
+                                Double.TryParse(translateYEN, System.Globalization.NumberStyles.Float, cultureToUse, out translateY);
                                 this.TranslateY = translateY;
+                            }
+
+                            if (wpJObject["properties"]["altText"] != null)
+                            {
+                                this.AlternativeText = wpJObject["properties"]["altText"].ToString();
                             }
                         }
                         else
                         {
-                            if (wpJObject["properties"] != null)
+                            if (this.LayoutType == ClientSidePageHeaderLayoutType.NoImage)
                             {
-                                if (wpJObject["properties"]["imageSourceType"] != null)
-                                {
-                                    int imageSourceType = -1;
-                                    if (int.TryParse(wpJObject["properties"]["imageSourceType"].ToString(), out imageSourceType))
-                                    {
-                                        if (imageSourceType == 0)
-                                        {
-                                            this.pageHeaderType = ClientSidePageHeaderType.None;                                            
-                                        }
-                                        else if (imageSourceType == 4)
-                                        {
-                                            this.pageHeaderType = ClientSidePageHeaderType.Default;
-                                        }
-                                    }
-                                }
+                                this.pageHeaderType = ClientSidePageHeaderType.None;
+                            }
+                            else
+                            {
+                                this.pageHeaderType = ClientSidePageHeaderType.Default;
                             }
                         }
                     }
@@ -236,18 +348,45 @@ namespace OfficeDevPnP.Core.Pages
                     string focalPoints = "";
                     if (TranslateX.HasValue || TranslateY.HasValue)
                     {
-                        System.Globalization.CultureInfo englishCulture = new System.Globalization.CultureInfo("en-EN");
-                        var translateX = TranslateX.Value.ToString(englishCulture);
-                        var translateY = TranslateY.Value.ToString(englishCulture);
+                        System.Globalization.CultureInfo usCulture = new System.Globalization.CultureInfo("en-US");
+                        var translateX = TranslateX.Value.ToString(usCulture);
+                        var translateY = TranslateY.Value.ToString(usCulture);
                         focalPoints = $",&quot;translateX&quot;&#58;{translateX},&quot;translateY&quot;&#58;{translateY}";
                     }
 
-                    return CustomPageHeader.Replace("@@siteId@@", this.siteId.ToString()).Replace("@@webId@@", this.webId.ToString()).Replace("@@listId@@", this.listId.ToString()).Replace("@@uniqueId@@", this.uniqueId.ToString()).Replace("@@focalPoints@@", focalPoints).Replace("@@title@@", pageTitle).Replace("@@imageSource@@", this.ImageServerRelativeUrl);
+                    // Populate default properties
+                    var header = FillDefaultProperties(CustomPageHeader);
+                    // Populate custom header specific properties
+                    return header.Replace("@@siteId@@", this.siteId.ToString()).Replace("@@webId@@", this.webId.ToString()).Replace("@@listId@@", this.listId.ToString()).Replace("@@uniqueId@@", this.uniqueId.ToString()).Replace("@@focalPoints@@", focalPoints).Replace("@@title@@", pageTitle).Replace("@@imageSource@@", this.ImageServerRelativeUrl).Replace("@@alternativetext@@", this.AlternativeText == null ? "" : this.AlternativeText);
                 }
             }
 
             // in case nothing worked out...
-            return DefaultPageHeader.Replace("@@title@@", pageTitle);
+            // Populate default properties
+            var defaultHeader = FillDefaultProperties(DefaultPageHeader);
+            // Populate title
+            return defaultHeader.Replace("@@title@@", pageTitle);
+        }
+
+        private string FillDefaultProperties(string header)
+        {
+            if (!string.IsNullOrEmpty(this.Authors))
+            {
+                string data = this.Authors.Replace("\r", "").Replace("\n", "").TrimStart(new char[] { '[' }).TrimEnd(new char[] { ']' });
+                var jsonencoded = WebUtility.HtmlEncode(data).Replace(":", "&#58;").Replace("@", "%40");
+                header = header.Replace("@@authors@@", jsonencoded);
+            }
+            else
+            {
+                header = header.Replace("@@authors@@", "");
+            }
+
+            return header.Replace("@@showkicker@@", this.ShowKicker.ToString().ToLower()).Replace("@@showpublishdate@@", this.ShowPublishDate.ToString().ToLower()).Replace("@@kicker@@", this.Kicker == null ? "" : this.Kicker).Replace("@@textalignment@@", this.TextAlignment.ToString()).Replace("@@layouttype@@", this.LayoutType.ToString());
+        }
+
+        private static string Replace1point4Defaults(string header)
+        {
+            return header.Replace("@@showkicker@@", "false").Replace("@@showpublishdate@@", "false").Replace("@@kicker@@", "");
         }
 
         private void ResolvePageHeaderImage()

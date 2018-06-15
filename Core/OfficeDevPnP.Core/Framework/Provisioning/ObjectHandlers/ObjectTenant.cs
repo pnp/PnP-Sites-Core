@@ -54,6 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (template.Tenant.AppCatalog != null && template.Tenant.AppCatalog.Packages.Count > 0)
             {
+                
                 var manager = new AppManager(web.Context as ClientContext);
 
                 var appCatalogUri = web.GetAppCatalog();
@@ -65,10 +66,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (app.Action == PackageAction.Upload || app.Action == PackageAction.UploadAndPublish)
                         {
-                            var appBytes = GetFileBytes(template, app.Src);
+                            var appSrc = parser.ParseString(app.Src);
+                            var appBytes = GetFileBytes(template, appSrc);
 
-                            var appFilename = app.Src.Substring(app.Src.LastIndexOf('\\') + 1);
-                            appMetadata = manager.Add(appBytes, appFilename, app.Overwrite);
+                            var appFilename = appSrc.Substring(appSrc.LastIndexOf('\\') + 1);
+                            appMetadata = manager.Add(appBytes, appFilename, app.Overwrite, timeoutSeconds: 300);
 
                             parser.Tokens.Add(new AppPackageIdToken(web, appFilename, appMetadata.Id));
                         }
@@ -161,8 +163,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             TenantSiteScriptCreationInfo siteScriptCreationInfo = new TenantSiteScriptCreationInfo
                             {
-                                Title = siteScript.Title,
-                                Description = siteScript.Description,
+                                Title = scriptTitle,
+                                Description = scriptDescription,
                                 Content = scriptContent
                             };
                             var script = tenant.CreateSiteScript(siteScriptCreationInfo);
@@ -225,8 +227,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 PreviewImageUrl = designPreviewImageUrl,
                                 PreviewImageAltText = designPreviewImageAltText,
                                 IsDefault = siteDesign.IsDefault,
-                                WebTemplate = ((int)siteDesign.WebTemplate).ToString() // convert TeamSite to 64, CommunicationSite to 68
                             };
+                            switch((int)siteDesign.WebTemplate)
+                            {
+                                case 0:
+                                    {
+                                        siteDesignCreationInfo.WebTemplate = "64";
+                                        break;
+                                    }
+                                case 1:
+                                    {
+                                        siteDesignCreationInfo.WebTemplate = "68";
+                                        break;
+                                    }
+                            }
                             if (siteDesign.SiteScripts != null && siteDesign.SiteScripts.Any())
                             {
                                 List<Guid> ids = new List<Guid>();
@@ -264,7 +278,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 existingSiteDesign.PreviewImageUrl = designPreviewImageUrl;
                                 existingSiteDesign.PreviewImageAltText = designPreviewImageAltText;
                                 existingSiteDesign.IsDefault = siteDesign.IsDefault;
-                                existingSiteDesign.WebTemplate = ((int)siteDesign.WebTemplate).ToString(); // convert TeamSite to 64, CommunicationSite to 68
+                                switch ((int)siteDesign.WebTemplate)
+                                {
+                                    case 0:
+                                        {
+                                            existingSiteDesign.WebTemplate = "64";
+                                            break;
+                                        }
+                                    case 1:
+                                        {
+                                            existingSiteDesign.WebTemplate = "68";
+                                            break;
+                                        }
+                                }
 
                                 tenant.UpdateSiteDesign(existingSiteDesign);
                                 tenantContext.ExecuteQueryRetry();
@@ -367,7 +393,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return returnData;
         }
 
-        private static void ProcessCdns(Web web, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope)
+        private void ProcessCdns(Web web, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope)
         {
             if (provisioningTenant.ContentDeliveryNetwork != null)
             {

@@ -6,11 +6,42 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [2.27.1806.0 - Unreleased]
+## [2.28.1807.0 - not yet released]
 
 ### Added
 
 ### Changed
+- Fix NullReferenceException when parsing client side page header html #1821 [SchauDK]
+- Changed multi lookup field provisioning to also handle list url in List #1822 [cebud]
+
+### Deprecated
+
+## [2.27.1806.0 - June 2018 release]
+
+### Added
+- Added optional timeout value on AppManager.Add method
+- Support version 1.4 of page header data structure
+- Feature/file folder async extension methods [baywet]
+
+### Changed
+- ClientComponentId and ClientComponentProperties are now updated when applying a template to a site where the customaction already exists [SchauDK]
+- Fixes issue with requiring tenant admin access while not provisioning tenant scoped artifacts
+- Fixed issue where a list would not be created based on a list template (TemplateFeatureId)
+- Fixes issue with double tokens in content by search webpart provisioning [KEMiCZA]
+- Fixes issue with sitedesigns not correctly being associated to web template
+- Fixes issue where you could not specify content type in a datarow element in a provisioning template
+- Fixes issue where you tried to modify a property of a default modern home page, and all web parts disapeared
+- Fixed issue with Security Group names including HTML links [jensotto]
+- Fixed issue with UseShared property for Navigation Settings [TheJeffer]
+- Fixed issue with not existing links in Navigation Settings [gautamdsheth]
+- Updated Microsoft Graph SDK package to version 1.9.0
+- Correctly extract modern page title [SchauDK]
+- Fixes issue with using culture in page header persisting [guillaume-kizilian]
+- Fixes lookup column support by supporting list web relative urls [stevebeauge]
+- Fixed ClientSidePageHeaderType enum inconsistency [SchauDK]
+- Fixing #1770 issue. Now we are considering Publishing Images field type [luismanez]
+- #1804 Incorrect exception thrown while setting multi-valued tax field [gautamdsheth]
+- Typo fixes [stwel]
 
 ### Deprecated
 

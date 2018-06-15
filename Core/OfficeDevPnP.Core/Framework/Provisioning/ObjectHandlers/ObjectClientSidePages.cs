@@ -8,6 +8,7 @@ using System.Linq;
 using OfficeDevPnP.Core.Utilities.CanvasControl;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -145,9 +146,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     // Set page title
-                    if (page.PageTitle != clientSidePage.Title)
+                    string newTitle = parser.ParseString(clientSidePage.Title);
+                    if (page.PageTitle != newTitle)
                     {
-                        page.PageTitle = clientSidePage.Title;
+                        page.PageTitle = newTitle;
                     }
 
                     // Page Header
@@ -254,9 +256,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         var textProperty = control.ControlProperties.First();
                                         textControl.Text = parser.ParseString(textProperty.Value);
-                                        // Reduce column number by 1 due 0 start indexing
-                                        page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
                                     }
+                                    else
+                                    {
+                                        if (!string.IsNullOrEmpty(control.JsonControlData))
+                                        {
+                                            var json = JsonConvert.DeserializeObject<Dictionary<string, string>>(control.JsonControlData);
+
+                                            if (json.Count > 0)
+                                            {
+                                                textControl.Text = parser.ParseString(json.First().Value);
+                                            }
+                                        }
+                                    }
+                                    // Reduce column number by 1 due 0 start indexing
+                                    page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
+
                                 }
                                 // It is a web part
                                 else
@@ -278,6 +293,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         else if (control.ControlId != Guid.Empty)
                                         {
                                             baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals($"{{{control.ControlId.ToString()}}}", StringComparison.CurrentCultureIgnoreCase));
+
+                                            if (baseControl == null)
+                                            {
+                                                baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals(control.ControlId.ToString(), StringComparison.InvariantCultureIgnoreCase));
+                                            }
                                         }
                                     }
                                     // Is an OOB client side web part (1st party)

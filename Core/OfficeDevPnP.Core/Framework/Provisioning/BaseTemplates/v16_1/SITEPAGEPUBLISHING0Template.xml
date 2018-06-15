@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2018/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.26.1805.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.27.1806.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-SITEPAGEPUBLISHING0template">
     <pnp:ProvisioningTemplate ID="SITEPAGEPUBLISHING0template" Version="1" BaseSiteTemplate="SITEPAGEPUBLISHING#0" Scope="RootSite">
       <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="SitePages/Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
@@ -71,7 +71,7 @@
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_ExpirationLastRun" Value="12/03/2018 1:13:04" Overwrite="false" />
         <pnp:PropertyBagEntry Key="profileschemaversion" Value="5" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_expirationlastrun" Value="5/2/2018 11:36:19 PM" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_expirationlastrun" Value="6/1/2018 11:16:19 PM" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.6927" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_sitemasterid" Value="f8b2e18f-d190-4a1b-a3da-ab24093aff57" Overwrite="false" />
@@ -79,7 +79,7 @@
         <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_PolicyUpdateLastRun" Value="11/03/2018 22:33:04" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="4;5;6" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_policyupdatelastrun" Value="5/2/2018 11:32:42 PM" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_policyupdatelastrun" Value="6/6/2018 10:50:11 PM" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
       </pnp:PropertyBagEntries>
       <pnp:Security>
@@ -268,7 +268,7 @@
             <CHOICE>Custom</CHOICE>
           </CHOICES>
         </Field>
-        <Field ID="{C84F8697-331E-457D-884A-C4FB8F30EA74}" Name="FirstPublishedDate" StaticName="FirstPublishedDate" DisplayName="First Published Date" Type="DateTime" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="_Hidden" Description="" AllowDeletion="FALSE" StorageTZ="TRUE" Sortable="TRUE" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInDisplayForm="FALSE" ShowInViewForms="FALSE" ShowInListSettings="FALSE" ShowInVersionHistory="FALSE" />
+        <Field ID="{C84F8697-331E-457D-884A-C4FB8F30EA74}" Name="FirstPublishedDate" StaticName="FirstPublishedDate" DisplayName="First Published Date" Type="DateTime" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="_Hidden" Description="" AllowDeletion="FALSE" Indexed="TRUE" StorageTZ="TRUE" Sortable="TRUE" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInDisplayForm="FALSE" ShowInViewForms="FALSE" ShowInListSettings="FALSE" ShowInVersionHistory="FALSE" />
         <Field ID="{E8FEA999-553D-4F45-BE52-D941627E9FE5}" Name="_ShortcutUniqueId" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="_ShortcutUniqueId" DisplayName="Shortcut Unique Id" Group="_Hidden" Hidden="TRUE" Type="Guid" />
         <Field ID="{96C27C9D-33F5-4f8e-893E-684014BC7090}" DisplayName="Form Locale" Type="Text" Required="FALSE" Name="FormLocale" RowOrdinal="0" Group="_Hidden" />
         <Field ID="{F5AD16A2-85BE-46B2-B5F0-2BB8B4A5074A}" Name="PromotedState" StaticName="PromotedState" DisplayName="Promoted State" Type="Number" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="_Hidden" Description="" AllowDeletion="FALSE" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInDisplayForm="FALSE" ShowInViewForms="FALSE" ShowInListSettings="FALSE" ShowInVersionHistory="FALSE">
@@ -521,6 +521,24 @@
                 <FieldRef Name="fAllDayEvent" />
               </ViewFields>
             </View>
+            <View Name="{77AD41F6-CD1C-41EA-B4D7-DDC023AC4D5C}" MobileView="TRUE" Type="HTML" DisplayName="All Events" Url="/sites/templateSITEPAGEPUBLISHING0/Lists/Events/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/events.png?rev=44">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="EventDate" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="fRecurrence" />
+                <FieldRef Name="WorkspaceLink" />
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="Location" />
+                <FieldRef Name="EventDate" />
+                <FieldRef Name="EndDate" />
+                <FieldRef Name="fAllDayEvent" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
             <View Name="{65547B99-EA92-412F-98F4-2EA0E829AE3F}" MobileView="TRUE" Type="HTML" RecurrenceRowset="TRUE" DisplayName="Current Events" Url="/sites/templateSITEPAGEPUBLISHING0/Lists/Events/MyItems.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/events.png?rev=44">
               <Query>
                 <Where>
@@ -546,24 +564,6 @@
                 <FieldRef Name="EndDate" />
                 <FieldRef Name="fAllDayEvent" />
               </ViewFields>
-              <JSLink>clienttemplates.js</JSLink>
-            </View>
-            <View Name="{77AD41F6-CD1C-41EA-B4D7-DDC023AC4D5C}" MobileView="TRUE" Type="HTML" DisplayName="All Events" Url="/sites/templateSITEPAGEPUBLISHING0/Lists/Events/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/events.png?rev=44">
-              <Query>
-                <OrderBy>
-                  <FieldRef Name="EventDate" />
-                </OrderBy>
-              </Query>
-              <ViewFields>
-                <FieldRef Name="fRecurrence" />
-                <FieldRef Name="WorkspaceLink" />
-                <FieldRef Name="LinkTitle" />
-                <FieldRef Name="Location" />
-                <FieldRef Name="EventDate" />
-                <FieldRef Name="EndDate" />
-                <FieldRef Name="fAllDayEvent" />
-              </ViewFields>
-              <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
           </pnp:Views>
