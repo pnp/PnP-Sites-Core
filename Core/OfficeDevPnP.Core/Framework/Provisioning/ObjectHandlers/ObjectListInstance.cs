@@ -408,7 +408,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (!listInfo.SiteList.FieldExistsById(fieldRef.Id))
                     {
-                        field = CreateFieldRef(listInfo, field, fieldRef, parser);
+                        field = CreateFieldRef(listInfo, field, fieldRef, parser, web);
                     }
                     else
                     {
@@ -772,10 +772,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return listField;
         }
 
-        private static Field CreateFieldRef(ListInfo listInfo, Field field, FieldRef fieldRef, TokenParser parser)
+        private static Field CreateFieldRef(ListInfo listInfo, Field field, FieldRef fieldRef, TokenParser parser, Web web)
         {
             field.EnsureProperty(f => f.SchemaXmlWithResourceTokens);
-            XElement element = XElement.Parse(field.SchemaXmlWithResourceTokens);
+            string fieldXml = field.SchemaXmlWithResourceTokens;
+            fieldXml = FieldUtilities.FixLookupField(fieldXml, web);
+            XElement element = XElement.Parse(fieldXml);
 
             element.SetAttributeValue("AllowDeletion", "TRUE");
 
