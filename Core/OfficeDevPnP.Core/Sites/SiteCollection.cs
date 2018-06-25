@@ -120,7 +120,7 @@ namespace OfficeDevPnP.Core.Sites
                         throw new Exception(await response.Content.ReadAsStringAsync());
                     }
                 }
-                return await Task.Run(() => responseContext);
+                return responseContext;
             }
         }
 
@@ -219,7 +219,7 @@ namespace OfficeDevPnP.Core.Sites
                         throw new Exception(await response.Content.ReadAsStringAsync());
                     }
                 }
-                return await Task.Run(() => responseContext);
+                return responseContext;
             }
         }
 
@@ -337,7 +337,7 @@ namespace OfficeDevPnP.Core.Sites
                         throw new Exception(await response.Content.ReadAsStringAsync());
                     }
                 }
-                return await Task.Run(() => responseContext);
+                return responseContext;
             }
         }
 
@@ -424,7 +424,7 @@ namespace OfficeDevPnP.Core.Sites
                         throw new Exception(await response.Content.ReadAsStringAsync());
                     }
                 }
-                return await Task.Run(() => aliasExists);
+                return aliasExists;
             }
         }
 
@@ -471,7 +471,7 @@ namespace OfficeDevPnP.Core.Sites
                         throw new Exception(await response.Content.ReadAsStringAsync());
                     }
                 }
-                return await Task.Run(() => responseString);
+                return responseString;
             }
         }
     }

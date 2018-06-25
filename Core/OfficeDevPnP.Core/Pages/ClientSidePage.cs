@@ -63,18 +63,18 @@ namespace OfficeDevPnP.Core.Pages
         /// <param name="clientSidePageLayoutType"><see cref="ClientSidePageLayoutType"/> type of the page to create. Defaults to Article type</param>
         public ClientSidePage(ClientSidePageLayoutType clientSidePageLayoutType = ClientSidePageLayoutType.Article)
         {
-            this.layoutType = clientSidePageLayoutType;
+            layoutType = clientSidePageLayoutType;
 
-            if (this.layoutType == ClientSidePageLayoutType.Home)
+            if (layoutType == ClientSidePageLayoutType.Home)
             {
                 // By default we're assuming you want to have a customized home page, change this to true in case you want to create a home page holding the default OOB web parts
-                this.keepDefaultWebParts = false;
+                keepDefaultWebParts = false;
             }
 
-            this.pagesLibrary = "SitePages";
+            pagesLibrary = "SitePages";
 
             // Attach default page header
-            this.pageHeader = new ClientSidePageHeader(null, ClientSidePageHeaderType.Default, null);
+            pageHeader = new ClientSidePageHeader(null, ClientSidePageHeaderType.Default, null);
         }
 
         /// <summary>
@@ -88,10 +88,10 @@ namespace OfficeDevPnP.Core.Pages
             {
                 throw new ArgumentNullException("Passed ClientContext object cannot be null");
             }
-            this.context = cc;
+            context = cc;
 
             // Attach default page header
-            this.pageHeader = new ClientSidePageHeader(cc, ClientSidePageHeaderType.Default, null);
+            pageHeader = new ClientSidePageHeader(cc, ClientSidePageHeaderType.Default, null);
         }
         #endregion
 
@@ -103,11 +103,11 @@ namespace OfficeDevPnP.Core.Pages
         {
             get
             {
-                return this.pageTitle;
+                return pageTitle;
             }
             set
             {
-                this.pageTitle = value;
+                pageTitle = value;
             }
         }
 
@@ -118,7 +118,7 @@ namespace OfficeDevPnP.Core.Pages
         {
             get
             {
-                return this.sections;
+                return sections;
             }
         }
 
@@ -129,7 +129,7 @@ namespace OfficeDevPnP.Core.Pages
         {
             get
             {
-                return this.controls;
+                return controls;
             }
         }
 
@@ -140,11 +140,11 @@ namespace OfficeDevPnP.Core.Pages
         {
             get
             {
-                return this.layoutType;
+                return layoutType;
             }
             set
             {
-                this.layoutType = value;
+                layoutType = value;
             }
         }
 
@@ -155,11 +155,11 @@ namespace OfficeDevPnP.Core.Pages
         {
             get
             {
-                return this.keepDefaultWebParts;
+                return keepDefaultWebParts;
             }
             set
             {
-                this.keepDefaultWebParts = value;
+                keepDefaultWebParts = value;
             }
         }
 
@@ -170,7 +170,7 @@ namespace OfficeDevPnP.Core.Pages
         {
             get
             {
-                return this.context;
+                return context;
             }
             set
             {
@@ -178,7 +178,7 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     throw new ArgumentNullException("Passed ClientContext object cannot be null");
                 }
-                this.context = value;
+                context = value;
             }
         }
 
@@ -189,7 +189,7 @@ namespace OfficeDevPnP.Core.Pages
         {
             get
             {
-                return this.pagesLibrary;
+                return pagesLibrary;
             }
             set
             {
@@ -199,15 +199,15 @@ namespace OfficeDevPnP.Core.Pages
                 }
 
                 // validate the list existance in case we've a ClientContext object set
-                if (this.Context != null)
+                if (Context != null)
                 {
-                    if (this.Context.Web.GetListByUrl(value) == null)
+                    if (Context.Web.GetListByUrl(value) == null)
                     {
                         throw new ArgumentException("Passed pages library does not exist in current web");
                     }
                 }
 
-                this.pagesLibrary = value;
+                pagesLibrary = value;
             }
         }
 
@@ -218,7 +218,7 @@ namespace OfficeDevPnP.Core.Pages
         {
             get
             {
-                return this.pageListItem;
+                return pageListItem;
             }
         }
 
@@ -232,24 +232,24 @@ namespace OfficeDevPnP.Core.Pages
                 if (!Debugger.IsAttached)
                 {
                     // Add a default section if there wasn't one yet created
-                    if (this.sections.Count == 0)
+                    if (sections.Count == 0)
                     {
-                        this.sections.Add(new CanvasSection(this, CanvasSectionTemplate.OneColumn, 0));
+                        sections.Add(new CanvasSection(this, CanvasSectionTemplate.OneColumn, 0));
                     }
 
                     return sections.First();
                 }
                 else
                 {
-                    if (this.sections.Count > 0)
+                    if (sections.Count > 0)
                     {
                         return sections.First();
                     }
                     else
                     {
-                        if (this.sections.Count == 0)
+                        if (sections.Count == 0)
                         {
-                            this.sections.Add(new CanvasSection(this, CanvasSectionTemplate.OneColumn, 0));
+                            sections.Add(new CanvasSection(this, CanvasSectionTemplate.OneColumn, 0));
                         }
 
                         return sections.First();
@@ -266,10 +266,10 @@ namespace OfficeDevPnP.Core.Pages
             get
             {
                 EnsurePageListItem();
-                if (this.PageListItem != null)
+                if (PageListItem != null)
                 {
-                    this.PageListItem.EnsureProperty(p => p.CommentsDisabled);
-                    return this.PageListItem.CommentsDisabled;
+                    PageListItem.EnsureProperty(p => p.CommentsDisabled);
+                    return PageListItem.CommentsDisabled;
                 }
                 else
                 {
@@ -285,7 +285,7 @@ namespace OfficeDevPnP.Core.Pages
         {
             get
             {
-                return this.pageHeader;
+                return pageHeader;
             }
         }
         #endregion
@@ -296,7 +296,7 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void ClearPage()
         {
-            foreach (var section in this.sections)
+            foreach (var section in sections)
             {
                 foreach (var control in section.Controls)
                 {
@@ -304,7 +304,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
             }
 
-            this.sections.Clear();
+            sections.Clear();
 
         }
 
@@ -329,7 +329,7 @@ namespace OfficeDevPnP.Core.Pages
             {
                 throw new ArgumentNullException("Passed section cannot be null");
             }
-            this.sections.Add(section);
+            sections.Add(section);
         }
 
         /// <summary>
@@ -344,7 +344,7 @@ namespace OfficeDevPnP.Core.Pages
                 throw new ArgumentNullException("Passed section cannot be null");
             }
             section.Order = order;
-            this.sections.Add(section);
+            sections.Add(section);
         }
 
         /// <summary>
@@ -361,14 +361,14 @@ namespace OfficeDevPnP.Core.Pages
             // add to defaultsection and column
             if (control.Section == null)
             {
-                control.section = this.DefaultSection;
+                control.section = DefaultSection;
             }
             if (control.Column == null)
             {
-                control.column = this.DefaultSection.DefaultColumn;
+                control.column = DefaultSection.DefaultColumn;
             }
 
-            this.controls.Add(control);
+            controls.Add(control);
         }
 
         /// <summary>
@@ -386,15 +386,15 @@ namespace OfficeDevPnP.Core.Pages
             // add to default section and column
             if (control.Section == null)
             {
-                control.section = this.DefaultSection;
+                control.section = DefaultSection;
             }
             if (control.Column == null)
             {
-                control.column = this.DefaultSection.DefaultColumn;
+                control.column = DefaultSection.DefaultColumn;
             }
             control.Order = order;
 
-            this.controls.Add(control);
+            controls.Add(control);
         }
 
         /// <summary>
@@ -416,7 +416,7 @@ namespace OfficeDevPnP.Core.Pages
             control.section = section;
             control.column = section.DefaultColumn;
 
-            this.controls.Add(control);
+            controls.Add(control);
         }
 
         /// <summary>
@@ -440,7 +440,7 @@ namespace OfficeDevPnP.Core.Pages
             control.column = section.DefaultColumn;
             control.Order = order;
 
-            this.controls.Add(control);
+            controls.Add(control);
         }
 
         /// <summary>
@@ -462,7 +462,7 @@ namespace OfficeDevPnP.Core.Pages
             control.section = column.Section;
             control.column = column;
 
-            this.controls.Add(control);
+            controls.Add(control);
         }
 
         /// <summary>
@@ -486,7 +486,7 @@ namespace OfficeDevPnP.Core.Pages
             control.column = column;
             control.Order = order;
 
-            this.controls.Add(control);
+            controls.Add(control);
         }
 
         /// <summary>
@@ -494,13 +494,13 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void Delete()
         {
-            if (this.pageListItem == null)
+            if (pageListItem == null)
             {
-                throw new ArgumentException($"Page {this.pageName} was not loaded/saved to SharePoint and therefore can't be deleted");
+                throw new ArgumentException($"Page {pageName} was not loaded/saved to SharePoint and therefore can't be deleted");
             }
 
             pageListItem.DeleteObject();
-            this.Context.ExecuteQueryRetry();
+            Context.ExecuteQueryRetry();
         }
 
         /// <summary>
@@ -530,14 +530,14 @@ namespace OfficeDevPnP.Core.Pages
 #else
             using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))
             {
-                if (this.sections.Count == 0) return string.Empty;
+                if (sections.Count == 0) return string.Empty;
 
                 htmlWriter.NewLine = string.Empty;
 
                 htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
 
                 // Normalize section order by starting from 1, users could have started from 0 or left gaps in the numbering
-                var sectionsToOrder = this.sections.OrderBy(p => p.Order).ToList();
+                var sectionsToOrder = sections.OrderBy(p => p.Order).ToList();
                 int i = 1;
                 foreach (var section in sectionsToOrder)
                 {
@@ -545,7 +545,7 @@ namespace OfficeDevPnP.Core.Pages
                     i++;
                 }
 
-                foreach (var section in this.sections.OrderBy(p => p.Order))
+                foreach (var section in sections.OrderBy(p => p.Order))
                 {
                     htmlWriter.Write(section.ToHtml());
                 }
@@ -652,75 +652,75 @@ namespace OfficeDevPnP.Core.Pages
             if (!pageFile.Exists)
             {
                 // create page listitem
-                item = this.spPagesLibrary.RootFolder.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
+                item = spPagesLibrary.RootFolder.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
                 // Fix page to be modern
                 item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.ModernArticlePage;
-                item[ClientSidePage.Title] = string.IsNullOrWhiteSpace(this.pageTitle) ? System.IO.Path.GetFileNameWithoutExtension(this.pageName) : this.pageTitle;
+                item[ClientSidePage.Title] = string.IsNullOrWhiteSpace(pageTitle) ? System.IO.Path.GetFileNameWithoutExtension(this.pageName) : pageTitle;
                 item[ClientSidePage.ClientSideApplicationId] = ClientSidePage.SitePagesFeatureId;
-                item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
-                if (this.layoutType == ClientSidePageLayoutType.Article)
+                item[ClientSidePage.PageLayoutType] = layoutType.ToString();
+                if (layoutType == ClientSidePageLayoutType.Article)
                 {
                     item[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
                     item[ClientSidePage.BannerImageUrl] = "/_layouts/15/images/sitepagethumbnail.png";
                 }
                 item.Update();
-                this.Context.Web.Context.Load(item);
-                this.Context.Web.Context.ExecuteQueryRetry();
+                Context.Web.Context.Load(item);
+                Context.Web.Context.ExecuteQueryRetry();
             }
             else
             {
                 item = pageFile.ListItemAllFields;
-                if (!string.IsNullOrWhiteSpace(this.pageTitle))
+                if (!string.IsNullOrWhiteSpace(pageTitle))
                 {
-                    item[ClientSidePage.Title] = this.pageTitle;
+                    item[ClientSidePage.Title] = pageTitle;
                 }
             }
 
             // Persist to page field
-            if (this.layoutType == ClientSidePageLayoutType.Home && this.KeepDefaultWebParts)
+            if (layoutType == ClientSidePageLayoutType.Home && KeepDefaultWebParts)
             {
                 item[ClientSidePage.CanvasField] = "";
             }
             else
             {
-                item[ClientSidePage.CanvasField] = this.ToHtml();
+                item[ClientSidePage.CanvasField] = ToHtml();
             }
 
             // If a custom header image is set then the page must first be saved, otherwise the page contents gets erased
-            if (this.pageHeader.Type == ClientSidePageHeaderType.Custom)
+            if (pageHeader.Type == ClientSidePageHeaderType.Custom)
             {
                 item.Update();
-                this.Context.ExecuteQueryRetry();
+                Context.ExecuteQueryRetry();
             }
 
             // Persist the page header
-            if (this.pageHeader.Type == ClientSidePageHeaderType.None)
+            if (pageHeader.Type == ClientSidePageHeaderType.None)
             {
-                item[ClientSidePage.PageLayoutContentField] = ClientSidePageHeader.NoHeader(this.PageTitle);
+                item[ClientSidePage.PageLayoutContentField] = ClientSidePageHeader.NoHeader(PageTitle);
             }
             else
             {
-                item[ClientSidePage.PageLayoutContentField] = this.pageHeader.ToHtml(this.PageTitle);
+                item[ClientSidePage.PageLayoutContentField] = pageHeader.ToHtml(PageTitle);
             }
 
             item.Update();
-            this.Context.ExecuteQueryRetry();
+            Context.ExecuteQueryRetry();
 
             // Try to set the page banner image url if not yet set
             bool isDirty = false;
-            if (this.layoutType == ClientSidePageLayoutType.Article && item[ClientSidePage.BannerImageUrl] != null)
+            if (layoutType == ClientSidePageLayoutType.Article && item[ClientSidePage.BannerImageUrl] != null)
             {
                 if (string.IsNullOrEmpty((item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url) || (item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url.IndexOf("/_layouts/15/images/sitepagethumbnail.png", StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
                     string previewImageServerRelativeUrl = "";
-                    if (this.pageHeader.Type == ClientSidePageHeaderType.Custom && !string.IsNullOrEmpty(this.pageHeader.ImageServerRelativeUrl))
+                    if (pageHeader.Type == ClientSidePageHeaderType.Custom && !string.IsNullOrEmpty(pageHeader.ImageServerRelativeUrl))
                     {
-                        previewImageServerRelativeUrl = this.pageHeader.ImageServerRelativeUrl;
+                        previewImageServerRelativeUrl = pageHeader.ImageServerRelativeUrl;
                     }
                     else
                     {
                         // iterate the web parts...if we find an unique id then let's grab that information
-                        foreach (var control in this.Controls)
+                        foreach (var control in Controls)
                         {
                             if (control is ClientSideWebPart)
                             {
@@ -740,14 +740,14 @@ namespace OfficeDevPnP.Core.Pages
                     {
                         try
                         {
-                            this.Context.Site.EnsureProperties(p => p.Id);
-                            this.Context.Web.EnsureProperties(p => p.Id, p => p.Url);
+                            Context.Site.EnsureProperties(p => p.Id);
+                            Context.Web.EnsureProperties(p => p.Id, p => p.Url);
 
-                            var previewImage = this.Context.Web.GetFileByServerRelativeUrl(previewImageServerRelativeUrl);
-                            this.Context.Load(previewImage, p => p.UniqueId);
-                            this.Context.ExecuteQueryRetry();
+                            var previewImage = Context.Web.GetFileByServerRelativeUrl(previewImageServerRelativeUrl);
+                            Context.Load(previewImage, p => p.UniqueId);
+                            Context.ExecuteQueryRetry();
 
-                            item[ClientSidePage.BannerImageUrl] = $"{this.Context.Web.Url}/_layouts/15/getpreview.ashx?guidSite={this.Context.Site.Id.ToString()}&guidWeb={this.Context.Web.Id.ToString()}&guidFile={previewImage.UniqueId.ToString()}";
+                            item[ClientSidePage.BannerImageUrl] = $"{Context.Web.Url}/_layouts/15/getpreview.ashx?guidSite={Context.Site.Id.ToString()}&guidWeb={Context.Web.Id.ToString()}&guidFile={previewImage.UniqueId.ToString()}";
                             isDirty = true;
                         }
                         catch { }
@@ -756,12 +756,12 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Try to set the page description if not yet set
-            if (this.layoutType == ClientSidePageLayoutType.Article && item.FieldValues.ContainsKey(ClientSidePage.DescriptionField))
+            if (layoutType == ClientSidePageLayoutType.Article && item.FieldValues.ContainsKey(ClientSidePage.DescriptionField))
             {
                 if (item[ClientSidePage.DescriptionField] == null || string.IsNullOrEmpty(item[ClientSidePage.DescriptionField].ToString()))
                 {
                     string previewText = "";
-                    foreach (var control in this.Controls)
+                    foreach (var control in Controls)
                     {
                         if (control is ClientSideText)
                         {
@@ -785,10 +785,10 @@ namespace OfficeDevPnP.Core.Pages
             if (isDirty)
             {
                 item.Update();
-                this.Context.ExecuteQueryRetry();
+                Context.ExecuteQueryRetry();
             }
 
-            this.pageListItem = item;
+            pageListItem = item;
         }
 
         /// <summary>
@@ -896,7 +896,7 @@ namespace OfficeDevPnP.Core.Pages
         public ClientSideWebPart InstantiateDefaultWebPart(DefaultClientSideWebParts webPart)
         {
             var webPartName = ClientSidePage.ClientSideWebPartEnumToName(webPart);
-            var webParts = this.AvailableClientSideComponents(webPartName);
+            var webParts = AvailableClientSideComponents(webPartName);
 
             if (webParts.Count() == 1)
             {
@@ -912,7 +912,7 @@ namespace OfficeDevPnP.Core.Pages
         /// <returns>List of available <see cref="ClientSideComponent"/></returns>
         public System.Collections.Generic.IEnumerable<ClientSideComponent> AvailableClientSideComponents()
         {
-            return this.AvailableClientSideComponents(null);
+            return AvailableClientSideComponents(null);
         }
 
         /// <summary>
@@ -922,7 +922,7 @@ namespace OfficeDevPnP.Core.Pages
         /// <returns>List of available <see cref="ClientSideComponent"/></returns>
         public System.Collections.Generic.IEnumerable<ClientSideComponent> AvailableClientSideComponents(DefaultClientSideWebParts webPart)
         {
-            return this.AvailableClientSideComponents(ClientSidePage.ClientSideWebPartEnumToName(webPart));
+            return AvailableClientSideComponents(ClientSidePage.ClientSideWebPartEnumToName(webPart));
         }
 
         /// <summary>
@@ -934,7 +934,7 @@ namespace OfficeDevPnP.Core.Pages
         {
             await new SynchronizationContextRemover();
 
-            return await this.AvailableClientSideComponentsAsync(ClientSidePage.ClientSideWebPartEnumToName(webPart));
+            return await AvailableClientSideComponentsAsync(ClientSidePage.ClientSideWebPartEnumToName(webPart));
         }
 
         /// <summary>
@@ -944,13 +944,13 @@ namespace OfficeDevPnP.Core.Pages
         /// <returns>List of available <see cref="ClientSideComponent"/></returns>
         public System.Collections.Generic.IEnumerable<ClientSideComponent> AvailableClientSideComponents(string name)
         {
-            if (!this.securityInitialized)
+            if (!securityInitialized)
             {
-                this.InitializeSecurity();
+                InitializeSecurity();
             }
 
             // Request information about the available client side components from SharePoint
-            Task<String> availableClientSideComponentsJson = Task.Run(() => GetClientSideWebPartsAsync(this.accessToken, this.Context).GetAwaiter().GetResult());
+            Task<String> availableClientSideComponentsJson = GetClientSideWebPartsAsync(accessToken, Context);
 
             if (String.IsNullOrEmpty(availableClientSideComponentsJson.Result))
             {
@@ -986,13 +986,13 @@ namespace OfficeDevPnP.Core.Pages
         {
             await new SynchronizationContextRemover();
 
-            if (!this.securityInitialized)
+            if (!securityInitialized)
             {
-                await this.InitializeSecurityAsync();
+                await InitializeSecurityAsync();
             }
 
             // Request information about the available client side components from SharePoint
-            string availableClientSideComponentsJson = await GetClientSideWebPartsAsync(this.accessToken, this.Context);
+            string availableClientSideComponentsJson = await GetClientSideWebPartsAsync(accessToken, Context);
 
             if (String.IsNullOrEmpty(availableClientSideComponentsJson))
             {
@@ -1033,7 +1033,7 @@ namespace OfficeDevPnP.Core.Pages
             if (pageFile.Exists)
             {
                 // connect up the page list item for future reference
-                this.pageListItem = pageFile.ListItemAllFields;
+                pageListItem = pageFile.ListItemAllFields;
                 // publish the page
                 pageFile.PublishFileToLevel(FileLevel.Published);
             }
@@ -1046,7 +1046,7 @@ namespace OfficeDevPnP.Core.Pages
         [Obsolete("Please use the Publish() method instead. This method will be removed in the March 2018 release.")]
         public void Publish(string publishMessage)
         {
-            this.Publish();
+            Publish();
         }
 
         /// <summary>
@@ -1070,7 +1070,7 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void DemoteNewsArticle()
         {
-            if (this.LayoutType != ClientSidePageLayoutType.Article)
+            if (LayoutType != ClientSidePageLayoutType.Article)
             {
                 throw new Exception("You can't promote a home page as news article");
             }
@@ -1079,9 +1079,9 @@ namespace OfficeDevPnP.Core.Pages
             EnsurePageListItem();
 
             // Set promoted state
-            this.pageListItem[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
-            this.pageListItem.Update();
-            this.Context.ExecuteQueryRetry();
+            pageListItem[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
+            pageListItem.Update();
+            Context.ExecuteQueryRetry();
         }
 
         /// <summary>
@@ -1089,7 +1089,7 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void PromoteAsNewsArticle()
         {
-            if (this.LayoutType != ClientSidePageLayoutType.Article)
+            if (LayoutType != ClientSidePageLayoutType.Article)
             {
                 throw new Exception("You can only promote article pages as news article");
             }
@@ -1098,11 +1098,11 @@ namespace OfficeDevPnP.Core.Pages
             EnsurePageListItem();
 
             // Set promoted state
-            this.pageListItem[ClientSidePage.PromotedStateField] = (Int32)PromotedState.Promoted;
+            pageListItem[ClientSidePage.PromotedStateField] = (Int32)PromotedState.Promoted;
             // Set publication date
-            this.pageListItem[ClientSidePage.FirstPublishedDate] = DateTime.UtcNow;
-            this.pageListItem.Update();
-            this.Context.ExecuteQueryRetry();
+            pageListItem[ClientSidePage.FirstPublishedDate] = DateTime.UtcNow;
+            pageListItem.Update();
+            Context.ExecuteQueryRetry();
         }
 
         /// <summary>
@@ -1110,7 +1110,7 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void PromoteAsHomePage()
         {
-            if (this.LayoutType != ClientSidePageLayoutType.Home)
+            if (LayoutType != ClientSidePageLayoutType.Home)
             {
                 throw new Exception("You can only promote home pages as site home page");
             }
@@ -1118,10 +1118,10 @@ namespace OfficeDevPnP.Core.Pages
             // ensure we do have the page list item loaded
             EnsurePageListItem();
 
-            this.Context.Web.EnsureProperty(p => p.RootFolder);
-            this.Context.Web.RootFolder.WelcomePage = $"{this.PagesLibrary}/{this.PageListItem[ClientSidePage.FileLeafRef].ToString()}";
-            this.Context.Web.RootFolder.Update();
-            this.Context.ExecuteQueryRetry();
+            Context.Web.EnsureProperty(p => p.RootFolder);
+            Context.Web.RootFolder.WelcomePage = $"{PagesLibrary}/{PageListItem[ClientSidePage.FileLeafRef].ToString()}";
+            Context.Web.RootFolder.Update();
+            Context.ExecuteQueryRetry();
         }
 
         /// <summary>
@@ -1129,7 +1129,7 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void RemovePageHeader()
         {
-            this.pageHeader = new ClientSidePageHeader(this.context, ClientSidePageHeaderType.None, null);
+            pageHeader = new ClientSidePageHeader(context, ClientSidePageHeaderType.None, null);
         }
 
         /// <summary>
@@ -1137,7 +1137,7 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void SetDefaultPageHeader()
         {
-            this.pageHeader = new ClientSidePageHeader(this.context, ClientSidePageHeaderType.Default, null);
+            pageHeader = new ClientSidePageHeader(context, ClientSidePageHeaderType.Default, null);
         }
 
         /// <summary>
@@ -1148,7 +1148,7 @@ namespace OfficeDevPnP.Core.Pages
         /// <param name="translateY">Y focal point for image</param>
         public void SetCustomPageHeader(string serverRelativeImageUrl, double? translateX = null, double? translateY = null)
         {
-            this.pageHeader = new ClientSidePageHeader(this.context, ClientSidePageHeaderType.Custom, serverRelativeImageUrl)
+            pageHeader = new ClientSidePageHeader(context, ClientSidePageHeaderType.Custom, serverRelativeImageUrl)
             {
                 ImageServerRelativeUrl = serverRelativeImageUrl,
                 TranslateX = translateX,
@@ -1162,10 +1162,10 @@ namespace OfficeDevPnP.Core.Pages
         {
             // ensure we do have the page list item loaded
             EnsurePageListItem();
-            if (this.PageListItem != null)
+            if (PageListItem != null)
             {
-                this.pageListItem.SetCommentsDisabled(!enable);
-                this.Context.ExecuteQueryRetry();
+                pageListItem.SetCommentsDisabled(!enable);
+                Context.ExecuteQueryRetry();
             }
             else
             {
@@ -1176,7 +1176,7 @@ namespace OfficeDevPnP.Core.Pages
         private void ValidateOneColumnFullWidthSectionUsage()
         {
             bool hasOneColumnFullWidthSection = false;
-            foreach (var section in this.sections)
+            foreach (var section in sections)
             {
                 if (section.Type == CanvasSectionTemplate.OneColumnFullWidth)
                 {
@@ -1186,25 +1186,25 @@ namespace OfficeDevPnP.Core.Pages
             }
             if (hasOneColumnFullWidthSection)
             {
-                this.Context.Web.EnsureProperties(p => p.WebTemplate, p => p.Configuration);
-                if (!this.Context.Web.WebTemplate.Equals("SITEPAGEPUBLISHING", StringComparison.InvariantCultureIgnoreCase))
+                Context.Web.EnsureProperties(p => p.WebTemplate, p => p.Configuration);
+                if (!Context.Web.WebTemplate.Equals("SITEPAGEPUBLISHING", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    throw new Exception($"You can't use a OneColumnFullWidth section in this site template ({this.Context.Web.WebTemplate})");
+                    throw new Exception($"You can't use a OneColumnFullWidth section in this site template ({Context.Web.WebTemplate})");
                 }
             }
         }
 
         private void EnsurePageListItem()
         {
-            if (this.pageListItem == null)
+            if (pageListItem == null)
             {
                 string serverRelativePageName;
                 File pageFile;
-                LoadPageFile(this.pageName, out serverRelativePageName, out pageFile);
+                LoadPageFile(pageName, out serverRelativePageName, out pageFile);
                 if (pageFile.Exists)
                 {
                     // connect up the page list item for future reference
-                    this.pageListItem = pageFile.ListItemAllFields;
+                    pageListItem = pageFile.ListItemAllFields;
                 }
             }
         }
@@ -1212,21 +1212,21 @@ namespace OfficeDevPnP.Core.Pages
         private void LoadPageFile(string pageName, out string serverRelativePageName, out File pageFile)
         {
             // Save page contents to SharePoint
-            if (this.Context == null)
+            if (Context == null)
             {
                 throw new Exception("No valid ClientContext object connected, can't save this page to SharePoint");
             }
 
             // Grab pages library reference
-            if (this.spPagesLibrary == null)
+            if (spPagesLibrary == null)
             {
-                this.spPagesLibrary = this.Context.Web.GetListByUrl(this.PagesLibrary, p => p.RootFolder);
+                spPagesLibrary = Context.Web.GetListByUrl(PagesLibrary, p => p.RootFolder);
             }
 
             // Build up server relative page URL
-            if (string.IsNullOrEmpty(this.sitePagesServerRelativeUrl))
+            if (string.IsNullOrEmpty(sitePagesServerRelativeUrl))
             {
-                this.sitePagesServerRelativeUrl = this.spPagesLibrary.RootFolder.ServerRelativeUrl;
+                sitePagesServerRelativeUrl = spPagesLibrary.RootFolder.ServerRelativeUrl;
             }
 
             if (!String.IsNullOrWhiteSpace(pageName))
@@ -1239,12 +1239,12 @@ namespace OfficeDevPnP.Core.Pages
                 throw new Exception("No valid page name specified, can't save this page to SharePoint");
             }
 
-            serverRelativePageName = $"{this.sitePagesServerRelativeUrl}/{this.pageName}";
+            serverRelativePageName = $"{sitePagesServerRelativeUrl}/{this.pageName}";
 
             // ensure page exists
-            pageFile = this.Context.Web.GetFileByServerRelativeUrl(serverRelativePageName);
-            this.Context.Web.Context.Load(pageFile, f => f.ListItemAllFields, f => f.Exists);
-            this.Context.Web.Context.ExecuteQueryRetry();
+            pageFile = Context.Web.GetFileByServerRelativeUrl(serverRelativePageName);
+            Context.Web.Context.Load(pageFile, f => f.ListItemAllFields, f => f.Exists);
+            Context.Web.Context.ExecuteQueryRetry();
         }
 
         private void LoadFromHtml(string html, string pageHeaderHtml)
@@ -1261,7 +1261,7 @@ namespace OfficeDevPnP.Core.Pages
                 var clientSideControls = document.All.Where(m => m.HasAttribute(CanvasControl.ControlDataAttribute));
 
                 // clear sections as we're constructing them from the loaded html
-                this.sections.Clear();
+                sections.Clear();
 
                 int controlOrder = 0;
                 foreach (var clientSideControl in clientSideControls)
@@ -1280,7 +1280,7 @@ namespace OfficeDevPnP.Core.Pages
                         // Handle control positioning in sections and columns
                         ApplySectionAndColumn(control, control.SpControlData.Position);
 
-                        this.AddControl(control);
+                        AddControl(control);
                     }
                     else if (controlType == typeof(ClientSideWebPart))
                     {
@@ -1293,7 +1293,7 @@ namespace OfficeDevPnP.Core.Pages
                         // Handle control positioning in sections and columns
                         ApplySectionAndColumn(control, control.SpControlData.Position);
 
-                        this.AddControl(control);
+                        AddControl(control);
                     }
                     else if (controlType == typeof(CanvasColumn))
                     {
@@ -1303,11 +1303,11 @@ namespace OfficeDevPnP.Core.Pages
                         };
                         var sectionData = JsonConvert.DeserializeObject<ClientSideCanvasData>(controlData, jsonSerializerSettings);
 
-                        var currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).FirstOrDefault();
+                        var currentSection = sections.Where(p => p.Order == sectionData.Position.ZoneIndex).FirstOrDefault();
                         if (currentSection == null)
                         {
-                            this.AddSection(new CanvasSection(this), sectionData.Position.ZoneIndex);
-                            currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).First();
+                            AddSection(new CanvasSection(this), sectionData.Position.ZoneIndex);
+                            currentSection = sections.Where(p => p.Order == sectionData.Position.ZoneIndex).First();
                         }
 
                         var currentColumn = currentSection.Columns.Where(p => p.Order == sectionData.Position.SectionIndex).FirstOrDefault();
@@ -1323,7 +1323,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Perform section type detection
-            foreach (var section in this.sections)
+            foreach (var section in sections)
             {
                 if (section.Columns.Count == 1)
                 {
@@ -1360,12 +1360,12 @@ namespace OfficeDevPnP.Core.Pages
             ReIndex();
 
             // Load the page header
-            this.pageHeader.FromHtml(pageHeaderHtml);
+            pageHeader.FromHtml(pageHeaderHtml);
         }
 
         private void ReIndex()
         {
-            foreach (var section in this.sections.OrderBy(s => s.Order))
+            foreach (var section in sections.OrderBy(s => s.Order))
             {
                 foreach (var column in section.Columns.OrderBy(c => c.Order))
                 {
@@ -1381,11 +1381,11 @@ namespace OfficeDevPnP.Core.Pages
 
         private void ApplySectionAndColumn(CanvasControl control, ClientSideCanvasControlPosition position)
         {
-            var currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).FirstOrDefault();
+            var currentSection = sections.Where(p => p.Order == position.ZoneIndex).FirstOrDefault();
             if (currentSection == null)
             {
-                this.AddSection(new CanvasSection(this), position.ZoneIndex);
-                currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).First();
+                AddSection(new CanvasSection(this), position.ZoneIndex);
+                currentSection = sections.Where(p => p.Order == position.ZoneIndex).First();
             }
 
             var currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).FirstOrDefault();
@@ -1448,19 +1448,19 @@ namespace OfficeDevPnP.Core.Pages
         private void InitializeSecurity()
         {
             // Let's try to grab an access token, will work when we're in app-only or user+app model
-            this.Context.ExecutingWebRequest += Context_ExecutingWebRequest;
-            this.Context.Load(this.Context.Web, w => w.Url);
-            this.context.ExecuteQueryRetry();
-            this.Context.ExecutingWebRequest -= Context_ExecutingWebRequest;
+            Context.ExecutingWebRequest += Context_ExecutingWebRequest;
+            Context.Load(Context.Web, w => w.Url);
+            context.ExecuteQueryRetry();
+            Context.ExecutingWebRequest -= Context_ExecutingWebRequest;
         }
 
         private async Task<bool> InitializeSecurityAsync()
         {
             // Let's try to grab an access token, will work when we're in app-only or user+app model
-            this.Context.ExecutingWebRequest += Context_ExecutingWebRequest;
-            this.Context.Load(this.Context.Web, w => w.Url);
-            await this.context.ExecuteQueryRetryAsync();
-            this.Context.ExecutingWebRequest -= Context_ExecutingWebRequest;
+            Context.ExecutingWebRequest += Context_ExecutingWebRequest;
+            Context.Load(Context.Web, w => w.Url);
+            await context.ExecuteQueryRetryAsync();
+            Context.ExecutingWebRequest -= Context_ExecutingWebRequest;
             return true;
         }
 
@@ -1468,7 +1468,7 @@ namespace OfficeDevPnP.Core.Pages
         {
             if (!String.IsNullOrEmpty(e.WebRequestExecutor.RequestHeaders.Get("Authorization")))
             {
-                this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
+                accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
         }
         #endregion

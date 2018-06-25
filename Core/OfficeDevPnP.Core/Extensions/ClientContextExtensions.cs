@@ -87,7 +87,7 @@ namespace Microsoft.SharePoint.Client
         public static void ExecuteQueryRetry(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
         {
 #if !ONPREMISES            
-            Task.Run(() => ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent)).GetAwaiter().GetResult();
+            ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent).GetAwaiter().GetResult();
 #else
             ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
 #endif
@@ -560,7 +560,7 @@ namespace Microsoft.SharePoint.Client
                 var contextInformation = JsonConvert.DeserializeObject<dynamic>(responseString);
 
                 string formDigestValue = contextInformation.d.GetContextWebInformation.FormDigestValue;
-                return await Task.Run(() => formDigestValue);
+                return formDigestValue;
             }
         }
 

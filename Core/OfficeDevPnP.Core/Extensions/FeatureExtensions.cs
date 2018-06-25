@@ -25,7 +25,7 @@ namespace Microsoft.SharePoint.Client
         {
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ActivateWebFeature, featureID);
 #if !ONPREMISES
-            Task.Run(() => web.ProcessFeature(featureID, true, sandboxed, pollingIntervalSeconds)).GetAwaiter().GetResult();
+            web.ProcessFeature(featureID, true, sandboxed, pollingIntervalSeconds).GetAwaiter().GetResult();
 #else
             web.ProcessFeature(featureID, true, sandboxed, pollingIntervalSeconds);
 #endif
@@ -58,7 +58,7 @@ namespace Microsoft.SharePoint.Client
         {
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ActivateWebFeature, featureID);
 #if !ONPREMISES
-            Task.Run(() => site.ProcessFeature(featureID, true, sandboxed, pollingIntervalSeconds)).GetAwaiter().GetResult();
+            site.ProcessFeature(featureID, true, sandboxed, pollingIntervalSeconds).GetAwaiter().GetResult();
 #else
             site.ProcessFeature(featureID, true, sandboxed, pollingIntervalSeconds);
 #endif
@@ -90,7 +90,7 @@ namespace Microsoft.SharePoint.Client
         {
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_DeactivateWebFeature, featureID);
 #if !ONPREMISES
-            Task.Run(() => web.ProcessFeature(featureID, false, false, pollingIntervalSeconds)).GetAwaiter().GetResult();
+            web.ProcessFeature(featureID, false, false, pollingIntervalSeconds).GetAwaiter().GetResult();
 #else
             web.ProcessFeature(featureID, false, false, pollingIntervalSeconds);
 #endif
@@ -121,7 +121,7 @@ namespace Microsoft.SharePoint.Client
         {
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_DeactivateWebFeature, featureID);
 #if !ONPREMISES
-            Task.Run(() => site.ProcessFeature(featureID, false, false, pollingIntervalSeconds)).GetAwaiter().GetResult();
+            site.ProcessFeature(featureID, false, false, pollingIntervalSeconds).GetAwaiter().GetResult();
 #else
             site.ProcessFeature(featureID, false, false, pollingIntervalSeconds);
 #endif
@@ -151,7 +151,7 @@ namespace Microsoft.SharePoint.Client
         public static bool IsFeatureActive(this Site site, Guid featureID)
         {
 #if !ONPREMISES
-            return Task.Run(() => IsFeatureActiveInternal(site.Features, featureID)).GetAwaiter().GetResult();
+            return IsFeatureActiveInternal(site.Features, featureID).GetAwaiter().GetResult();
 #else
             return IsFeatureActiveInternal(site.Features, featureID);
 #endif
@@ -180,7 +180,7 @@ namespace Microsoft.SharePoint.Client
         public static bool IsFeatureActive(this Web web, Guid featureID)
         {
 #if !ONPREMISES
-            return Task.Run(() => IsFeatureActiveInternal(web.Features, featureID)).GetAwaiter().GetResult();
+            return IsFeatureActiveInternal(web.Features, featureID).GetAwaiter().GetResult();
 #else
             return IsFeatureActiveInternal(web.Features, featureID);
 #endif
