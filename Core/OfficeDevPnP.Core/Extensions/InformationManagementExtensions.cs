@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.SharePoint.Client.InformationPolicy;
 using OfficeDevPnP.Core.Entities;
+using OfficeDevPnP.Core.Utilities.Async;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -20,8 +22,41 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if a policy has been applied, false otherwise</returns>
         public static bool HasSitePolicyApplied(this Web web)
         {
+#if ONPREMISES
+            return web.HasSitePolicyAppliedImplementation();
+#else
+            return Task.Run(() => web.HasSitePolicyAppliedImplementation()).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Does this web have a site policy applied?
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <returns>True if a policy has been applied, false otherwise</returns>
+        public static async Task<bool> HasSitePolicyAppliedAsync(this Web web)
+        {
+            await new SynchronizationContextRemover();
+            return await web.HasSitePolicyAppliedImplementation();
+        }
+#endif
+        /// <summary>
+        /// Does this web have a site policy applied?
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <returns>True if a policy has been applied, false otherwise</returns>
+#if ONPREMISES
+        private static bool HasSitePolicyAppliedImplementation(this Web web)
+#else
+        private static async  Task<bool> HasSitePolicyAppliedImplementation(this Web web)
+#endif
+        {
             var hasSitePolicyApplied = ProjectPolicy.DoesProjectHavePolicy(web.Context, web);
+#if ONPREMISES
             web.Context.ExecuteQueryRetry();
+#else
+            await web.Context.ExecuteQueryRetryAsync();
+#endif
             return hasSitePolicyApplied.Value;
         }
 
@@ -32,10 +67,43 @@ namespace Microsoft.SharePoint.Client
         /// <returns>DateTime value holding the expiration date, DateTime.MinValue in case there was no policy applied</returns>
         public static DateTime GetSiteExpirationDate(this Web web)
         {
+#if ONPREMISES
+            return web.GetSiteExpirationDateImplementation();
+#else
+            return Task.Run(() => web.GetSiteExpirationDateImplementation()).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Gets the site expiration date
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <returns>DateTime value holding the expiration date, DateTime.MinValue in case there was no policy applied</returns>
+        public static async Task<DateTime> GetSiteExpirationDateAsync(this Web web)
+        {
+            await new SynchronizationContextRemover();
+            return await web.GetSiteExpirationDateImplementation();
+        }
+#endif
+        /// <summary>
+        /// Gets the site expiration date
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <returns>DateTime value holding the expiration date, DateTime.MinValue in case there was no policy applied</returns>
+#if ONPREMISES
+        private static DateTime GetSiteExpirationDateImplementation(this Web web)
+#else
+        private static async Task<DateTime> GetSiteExpirationDateImplementation(this Web web)
+#endif
+        {
             if (web.HasSitePolicyApplied())
             {
                 var expirationDate = ProjectPolicy.GetProjectExpirationDate(web.Context, web);
+#if ONPREMISES
                 web.Context.ExecuteQueryRetry();
+#else
+                await web.Context.ExecuteQueryRetryAsync();
+#endif
                 return expirationDate.Value;
             }
             else
@@ -51,10 +119,43 @@ namespace Microsoft.SharePoint.Client
         /// <returns>DateTime value holding the closure date, DateTime.MinValue in case there was no policy applied</returns>
         public static DateTime GetSiteCloseDate(this Web web)
         {
+#if ONPREMISES
+            return web.GetSiteCloseDateImplementation();
+#else
+            return Task.Run(() => web.GetSiteCloseDateImplementation()).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Gets the site closure date
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <returns>DateTime value holding the closure date, DateTime.MinValue in case there was no policy applied</returns>
+        public static async Task<DateTime> GetSiteCloseDateAsync(this Web web)
+        {
+            await new SynchronizationContextRemover();
+            return await web.GetSiteCloseDateImplementation();
+        }
+#endif
+        /// <summary>
+        /// Gets the site closure date
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <returns>DateTime value holding the closure date, DateTime.MinValue in case there was no policy applied</returns>
+#if ONPREMISES
+        private static DateTime GetSiteCloseDateImplementation(this Web web)
+#else
+        private static async Task<DateTime> GetSiteCloseDateImplementation(this Web web)
+#endif
+        {
             if (web.HasSitePolicyApplied())
             {
                 var closeDate = ProjectPolicy.GetProjectCloseDate(web.Context, web);
+#if ONPREMISES
                 web.Context.ExecuteQueryRetry();
+#else
+                await web.Context.ExecuteQueryRetryAsync();
+#endif
                 return closeDate.Value;
             }
             else
