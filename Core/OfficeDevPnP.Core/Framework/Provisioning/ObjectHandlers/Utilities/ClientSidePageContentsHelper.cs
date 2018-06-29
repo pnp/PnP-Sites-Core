@@ -430,6 +430,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
         private string TokenizeJsonControlData(Web web, string json)
         {
+            if (string.IsNullOrEmpty(json))
+            {
+                return json;
+            }
+
             var lists = web.Lists;
             var site = (web.Context as ClientContext).Site;
             web.Context.Load(site, s => s.Id, s => s.GroupId);
