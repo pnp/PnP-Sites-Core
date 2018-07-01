@@ -96,7 +96,11 @@ namespace Microsoft.SharePoint.Client
         private static async Task<DateTime> GetSiteExpirationDateImplementation(this Web web)
 #endif
         {
-            if (web.HasSitePolicyApplied())
+#if ONPREMISES
+            if (web.HasSitePolicyAppliedImplementation())
+#else
+            if (await web.HasSitePolicyAppliedImplementation())
+#endif
             {
                 var expirationDate = ProjectPolicy.GetProjectExpirationDate(web.Context, web);
 #if ONPREMISES
@@ -148,7 +152,11 @@ namespace Microsoft.SharePoint.Client
         private static async Task<DateTime> GetSiteCloseDateImplementation(this Web web)
 #endif
         {
-            if (web.HasSitePolicyApplied())
+#if ONPREMISES
+            if (web.HasSitePolicyAppliedImplementation())
+#else
+            if (await web.HasSitePolicyAppliedImplementation())
+#endif
             {
                 var closeDate = ProjectPolicy.GetProjectCloseDate(web.Context, web);
 #if ONPREMISES
@@ -171,9 +179,42 @@ namespace Microsoft.SharePoint.Client
         /// <returns>A list of <see cref="SitePolicyEntity"/> objects</returns>
         public static List<SitePolicyEntity> GetSitePolicies(this Web web)
         {
+#if ONPREMISES
+            return web.GetSitePoliciesImplementation();
+#else
+            return Task.Run(() => web.GetSitePoliciesImplementation()).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Gets a list of the available site policies
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <returns>A list of <see cref="SitePolicyEntity"/> objects</returns>
+        public static async Task<List<SitePolicyEntity>> GetSitePoliciesAsync(this Web web)
+        {
+            await new SynchronizationContextRemover();
+            return await web.GetSitePoliciesImplementation();
+        }
+#endif
+        /// <summary>
+        /// Gets a list of the available site policies
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <returns>A list of <see cref="SitePolicyEntity"/> objects</returns>
+#if ONPREMISES
+        private static List<SitePolicyEntity> GetSitePoliciesImplementation(this Web web)
+#else
+        private static async Task<List<SitePolicyEntity>> GetSitePoliciesImplementation(this Web web)
+#endif
+        {
             var sitePolicies = ProjectPolicy.GetProjectPolicies(web.Context, web);
             web.Context.Load(sitePolicies);
+#if ONPREMISES
             web.Context.ExecuteQueryRetry();
+#else
+            await web.Context.ExecuteQueryRetryAsync();
+#endif
 
             var policies = new List<SitePolicyEntity>();
 
@@ -202,7 +243,40 @@ namespace Microsoft.SharePoint.Client
         /// <returns>A <see cref="SitePolicyEntity"/> object holding the applied policy</returns>
         public static SitePolicyEntity GetAppliedSitePolicy(this Web web)
         {
-            if (web.HasSitePolicyApplied())
+#if ONPREMISES
+            return web.GetAppliedSitePolicyImplementation();
+#else
+            return Task.Run(() => web.GetAppliedSitePolicyImplementation()).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Gets the site policy that currently is applied
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <returns>A <see cref="SitePolicyEntity"/> object holding the applied policy</returns>
+        public static async Task<SitePolicyEntity> GetAppliedSitePolicyAsync(this Web web)
+        {
+            await new SynchronizationContextRemover();
+            return await web.GetAppliedSitePolicyImplementation();
+        }
+#endif
+        /// <summary>
+        /// Gets the site policy that currently is applied
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <returns>A <see cref="SitePolicyEntity"/> object holding the applied policy</returns>
+#if ONPREMISES
+        private static SitePolicyEntity GetAppliedSitePolicyImplementation(this Web web)
+#else
+        private static async Task<SitePolicyEntity> GetAppliedSitePolicyImplementation(this Web web)
+#endif
+        {
+#if ONPREMISES
+            if (web.HasSitePolicyAppliedImplementation())
+#else
+            if (await web.HasSitePolicyAppliedImplementation())
+#endif
             {
                 var policy = ProjectPolicy.GetCurrentlyAppliedProjectPolicyOnWeb(web.Context, web);
                 web.Context.Load(policy,
@@ -211,7 +285,11 @@ namespace Microsoft.SharePoint.Client
                              p => p.EmailSubject,
                              p => p.EmailBody,
                              p => p.EmailBodyWithTeamMailbox);
+#if ONPREMISES
                 web.Context.ExecuteQueryRetry();
+#else
+                await web.Context.ExecuteQueryRetryAsync();
+#endif
                 return new SitePolicyEntity
                 {
                     Name = policy.Name,
@@ -235,7 +313,40 @@ namespace Microsoft.SharePoint.Client
         /// <returns>A <see cref="SitePolicyEntity"/> object holding the fetched policy</returns>
         public static SitePolicyEntity GetSitePolicyByName(this Web web, string sitePolicy)
         {
+#if ONPREMISES
+            return web.GetSitePolicyByNameImplementation(sitePolicy);
+#else
+            return Task.Run(() => web.GetSitePolicyByNameImplementation(sitePolicy)).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Gets the site policy with the given name
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <param name="sitePolicy">Site policy to fetch</param>
+        /// <returns>A <see cref="SitePolicyEntity"/> object holding the fetched policy</returns>
+        public static async Task<SitePolicyEntity> GetSitePolicyByNameAsync(this Web web, string sitePolicy)
+        {
+            await new SynchronizationContextRemover();
+            return await web.GetSitePolicyByNameImplementation(sitePolicy);
+        }
+#endif
+        /// <summary>
+        /// Gets the site policy with the given name
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <param name="sitePolicy">Site policy to fetch</param>
+        /// <returns>A <see cref="SitePolicyEntity"/> object holding the fetched policy</returns>
+#if ONPREMISES
+        private static SitePolicyEntity GetSitePolicyByNameImplementation(this Web web, string sitePolicy)
+        {
             var policies = web.GetSitePolicies();
+#else
+        private static async Task<SitePolicyEntity> GetSitePolicyByNameImplementation(this Web web, string sitePolicy)
+        {
+            var policies = await web.GetSitePoliciesAsync();
+#endif
 
             if (policies.Count > 0)
             {
