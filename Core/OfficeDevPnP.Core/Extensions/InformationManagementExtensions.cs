@@ -48,7 +48,7 @@ namespace Microsoft.SharePoint.Client
 #if ONPREMISES
         private static bool HasSitePolicyAppliedImplementation(this Web web)
 #else
-        private static async  Task<bool> HasSitePolicyAppliedImplementation(this Web web)
+        private static async Task<bool> HasSitePolicyAppliedImplementation(this Web web)
 #endif
         {
             var hasSitePolicyApplied = ProjectPolicy.DoesProjectHavePolicy(web.Context, web);
@@ -367,11 +367,46 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if applied, false otherwise</returns>
         public static bool ApplySitePolicy(this Web web, string sitePolicy)
         {
+#if ONPREMISES
+            return web.ApplySitePolicyImplementation(sitePolicy);
+#else
+            return Task.Run(() => web.ApplySitePolicyImplementation(sitePolicy)).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Apply a policy to a site
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <param name="sitePolicy">Policy to apply</param>
+        /// <returns>True if applied, false otherwise</returns>
+        public static async Task<bool> ApplySitePolicyAsync(this Web web, string sitePolicy)
+        {
+            await new SynchronizationContextRemover();
+            return await web.ApplySitePolicyImplementation(sitePolicy);
+        }
+#endif
+        /// <summary>
+        /// Apply a policy to a site
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <param name="sitePolicy">Policy to apply</param>
+        /// <returns>True if applied, false otherwise</returns>
+#if ONPREMISES
+        private static bool ApplySitePolicyImplementation(this Web web, string sitePolicy)
+#else
+        private static async Task<bool> ApplySitePolicyImplementation(this Web web, string sitePolicy)
+#endif
+        {
             var result = false;
 
             var sitePolicies = ProjectPolicy.GetProjectPolicies(web.Context, web);
             web.Context.Load(sitePolicies);
+#if ONPREMISES
             web.Context.ExecuteQueryRetry();
+#else
+            await web.Context.ExecuteQueryRetryAsync();
+#endif
 
             if (sitePolicies != null && sitePolicies.Count > 0)
             {
@@ -380,7 +415,11 @@ namespace Microsoft.SharePoint.Client
                 if (policyToApply != null)
                 {
                     ProjectPolicy.ApplyProjectPolicy(web.Context, web, policyToApply);
+#if ONPREMISES
                     web.Context.ExecuteQueryRetry();
+#else
+                    await web.Context.ExecuteQueryRetryAsync();
+#endif
                     result = true;
                 }
             }
@@ -395,8 +434,41 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if site is closed, false otherwise</returns>
         public static bool IsClosedBySitePolicy(this Web web)
         {
+#if ONPREMISES
+            return web.IsClosedBySitePolicyImplementation();
+#else
+            return Task.Run(() => web.IsClosedBySitePolicyImplementation()).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        // <summary>
+        /// Check if a site is closed
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <returns>True if site is closed, false otherwise</returns>
+        public static async Task<bool> IsClosedBySitePolicyAsync(this Web web)
+        {
+            await new SynchronizationContextRemover();
+            return await web.IsClosedBySitePolicyImplementation();
+        }
+#endif
+        // <summary>
+        /// Check if a site is closed
+        /// </summary>
+        /// <param name="web">Web to operate on</param>
+        /// <returns>True if site is closed, false otherwise</returns>
+#if ONPREMISES
+        private static bool IsClosedBySitePolicyImplementation(this Web web)
+#else
+        private static async Task<bool> IsClosedBySitePolicyImplementation(this Web web)
+#endif
+        {
             var isClosed = ProjectPolicy.IsProjectClosed(web.Context, web);
+#if ONPREMISES
             web.Context.ExecuteQueryRetry();
+#else
+            await web.Context.ExecuteQueryRetryAsync();
+#endif
             return isClosed.Value;
         }
 
@@ -407,15 +479,51 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if site was closed, false otherwise</returns>
         public static bool SetClosedBySitePolicy(this Web web)
         {
-            if (web.HasSitePolicyApplied() && !IsClosedBySitePolicy(web))
+#if ONPREMISES
+            return web.SetClosedBySitePolicyImplementation();
+#else
+            return Task.Run(() => web.SetClosedBySitePolicyImplementation()).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Close a site, if it has a site policy applied and is currently not closed
+        /// </summary>
+        /// <param name="web"></param>
+        /// <returns>True if site was closed, false otherwise</returns>
+        public static async Task<bool> SetClosedBySitePolicyAsync(this Web web)
+        {
+            await new SynchronizationContextRemover();
+            return await web.SetClosedBySitePolicyImplementation();
+        }
+#endif
+        /// <summary>
+        /// Close a site, if it has a site policy applied and is currently not closed
+        /// </summary>
+        /// <param name="web"></param>
+        /// <returns>True if site was closed, false otherwise</returns>
+#if ONPREMISES
+        private static bool SetClosedBySitePolicyImplementation(this Web web)
+#else
+        private static async Task<bool> SetClosedBySitePolicyImplementation(this Web web)
+#endif
+        {
+#if ONPREMISES
+            if (web.HasSitePolicyAppliedImplementation() && !IsClosedBySitePolicyImplementation(web))
+#else
+            if (await web.HasSitePolicyAppliedImplementation() && !await web.IsClosedBySitePolicyImplementation())
+#endif
             {
                 ProjectPolicy.CloseProject(web.Context, web);
+#if ONPREMISES
                 web.Context.ExecuteQueryRetry();
+#else
+                await web.Context.ExecuteQueryRetryAsync();
+#endif
                 return true;
             }
             return false;
         }
-
         /// <summary>
         /// Open a site, if it has a site policy applied and is currently closed
         /// </summary>
@@ -423,10 +531,47 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if site was opened, false otherwise</returns>
         public static bool SetOpenBySitePolicy(this Web web)
         {
-            if (web.HasSitePolicyApplied() && IsClosedBySitePolicy(web))
+#if ONPREMISES
+            return web.SetOpenBySitePolicyImplementation();
+#else
+            return Task.Run(() => web.SetOpenBySitePolicyImplementation()).GetAwaiter().GetResult();
+#endif
+        }
+#if !ONPREMISES
+        /// <summary>
+        /// Open a site, if it has a site policy applied and is currently closed
+        /// </summary>
+        /// <param name="web"></param>
+        /// <returns>True if site was opened, false otherwise</returns>
+        public static async Task<bool> SetOpenBySitePolicyAsync(this Web web)
+        {
+            await new SynchronizationContextRemover();
+            return await web.SetOpenBySitePolicyImplementation();
+        }
+#endif
+        /// <summary>
+        /// Open a site, if it has a site policy applied and is currently closed
+        /// </summary>
+        /// <param name="web"></param>
+        /// <returns>True if site was opened, false otherwise</returns>
+#if ONPREMISES
+        private static bool SetOpenBySitePolicyImplementation(this Web web)
+#else
+        private static async Task<bool> SetOpenBySitePolicyImplementation(this Web web)
+#endif
+        {
+#if ONPREMISES
+            if (web.HasSitePolicyAppliedImplementation() && !IsClosedBySitePolicyImplementation(web))
+#else
+            if (await web.HasSitePolicyAppliedImplementation() && !await web.IsClosedBySitePolicyImplementation())
+#endif
             {
                 ProjectPolicy.OpenProject(web.Context, web);
+#if ONPREMISES
                 web.Context.ExecuteQueryRetry();
+#else
+                await web.Context.ExecuteQueryRetryAsync();
+#endif
                 return true;
             }
             return false;
