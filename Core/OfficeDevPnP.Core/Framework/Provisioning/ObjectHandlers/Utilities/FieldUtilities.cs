@@ -16,7 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 Guid g;
                 if (!Guid.TryParse(listAttr, out g))
                 {
-                    var targetList = web.GetList($"{web.ServerRelativeUrl.TrimEnd('/')}/{listAttr}");
+                    var targetList = web.GetList($"{web.EnsureProperty(w => w.ServerRelativeUrl).TrimEnd('/')}/{listAttr}");
                     fieldElement.SetAttributeValue("List", targetList.EnsureProperty(l => l.Id).ToString("B"));
                     return fieldElement.ToString();
                 }
