@@ -558,7 +558,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 directory.Folder,
                                 directory.Overwrite,
                                 null, // No WebPartPages are supported with this technique
-                                metadataProperties != null ? metadataProperties[directory.Src + @"\" + file] : null,
+                                metadataProperties != null && metadataProperties.ContainsKey(directory.Src + @"\" + file) ? 
+                                    metadataProperties[directory.Src + @"\" + file] : null,
                                 directory.Security,
                                 directory.Level
                                 ));

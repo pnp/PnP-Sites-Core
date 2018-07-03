@@ -145,9 +145,17 @@ namespace OfficeDevPnP.Core.Pages
                 htmlWriter.AddAttribute(TextRteAttribute, this.Rte);
                 htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
 
-                htmlWriter.RenderBeginTag(HtmlTextWriterTag.P);
-                htmlWriter.Write(this.Text);
-                htmlWriter.RenderEndTag();
+                // Don't wrap in Paragraph if the text already is wrapped in a paragraph
+                if (this.Text.Trim().StartsWith("<p>", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    htmlWriter.Write(this.Text);
+                }
+                else
+                {
+                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.P);
+                    htmlWriter.Write(this.Text);
+                    htmlWriter.RenderEndTag();
+                }
 
                 htmlWriter.RenderEndTag();
                 htmlWriter.RenderEndTag();

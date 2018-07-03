@@ -9,7 +9,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         public static string FixLookupField(string fieldXml, Web web)
         {
             var fieldElement = XElement.Parse(fieldXml);
-            if ((string)fieldElement.Attribute("Type") == "Lookup")
+            var fieldType = (string)fieldElement.Attribute("Type");
+            if (fieldType == "Lookup" || fieldType == "LookupMulti")
             {
                 var listAttr = (string)fieldElement.Attribute("List");
                 Guid g;

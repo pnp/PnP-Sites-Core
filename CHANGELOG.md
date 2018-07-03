@@ -6,6 +6,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [2.28.1807.0 - not yet released]
+
+### Added
+
+### Changed
+- Fix NullReferenceException when parsing client side page header html #1821 [SchauDK]
+- Changed multi lookup field provisioning to also handle list url in List #1822 [cebud]
+- Don't wrap client side text in P if it already was done as part of the provided text
+- Added tokenization of client side page header image url
+
+### Deprecated
+
 ## [2.27.1806.0 - June 2018 release]
 
 ### Added

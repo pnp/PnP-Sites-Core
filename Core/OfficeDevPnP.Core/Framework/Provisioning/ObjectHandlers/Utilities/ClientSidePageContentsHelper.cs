@@ -60,7 +60,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         var extractedHeader = new ClientSidePageHeader()
                         {
                             Type = (ClientSidePageHeaderType)Enum.Parse(typeof(Pages.ClientSidePageHeaderType),pageToExtract.PageHeader.Type.ToString()),
-                            ServerRelativeImageUrl = pageToExtract.PageHeader.ImageServerRelativeUrl,
+                            ServerRelativeImageUrl = TokenizeJsonControlData(web, pageToExtract.PageHeader.ImageServerRelativeUrl),
                             TranslateX = pageToExtract.PageHeader.TranslateX,
                             TranslateY = pageToExtract.PageHeader.TranslateY
                         };
@@ -430,6 +430,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
         private string TokenizeJsonControlData(Web web, string json)
         {
+            if (string.IsNullOrEmpty(json))
+            {
+                return json;
+            }
+
             var lists = web.Lists;
             var site = (web.Context as ClientContext).Site;
             web.Context.Load(site, s => s.Id, s => s.GroupId);

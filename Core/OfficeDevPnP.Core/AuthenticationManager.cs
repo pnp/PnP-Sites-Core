@@ -742,7 +742,7 @@ namespace OfficeDevPnP.Core
                     }
                 case AzureEnvironment.USGovernment:
                     {
-                        return "https://login-us.microsoftonline.com";
+                        return "https://login.microsoftonline.us";
                     }
                 case AzureEnvironment.PPE:
                     {
