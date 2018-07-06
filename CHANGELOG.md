@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Changed multi lookup field provisioning to also handle list url in List #1822 [cebud]
 - Don't wrap client side text in P if it already was done as part of the provided text
 - Added tokenization of client side page header image url
+- Fix #1810 ContentTypeBinding with lowercase ContentTypeID [TeodoraI]
 
 ### Deprecated
 

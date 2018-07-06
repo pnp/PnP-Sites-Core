@@ -1573,7 +1573,7 @@ namespace Microsoft.SharePoint.Client
             var ctx = contentTypes.Context;
             contentTypes.EnsureProperties(c => c.Include(ct => ct.Id));
 
-            var res = contentTypes.Where(c => c.Id.StringValue.StartsWith(contentTypeId)).OrderBy(c => c.Id.StringValue.Length).FirstOrDefault();
+            var res = contentTypes.Where(c => c.Id.StringValue.StartsWith(contentTypeId, StringComparison.InvariantCultureIgnoreCase)).OrderBy(c => c.Id.StringValue.Length).FirstOrDefault();
             if (res != null)
             {
                 return res.Id;
