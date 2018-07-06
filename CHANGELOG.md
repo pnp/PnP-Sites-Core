@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [2.28.1807.0 - not yet released]
+## [2.28.1807.0 - July 2018 release]
 
 ### Added
 - Information management async extension methods #1843 [baywet]
