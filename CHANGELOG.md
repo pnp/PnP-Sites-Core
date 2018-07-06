@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Information management async extension methods #1843 [baywet]
+- TimerJob AppOnly authentication in High Trust context #1808 [ypcode]
 
 ### Changed
 - Added PowerApps client side web part type
