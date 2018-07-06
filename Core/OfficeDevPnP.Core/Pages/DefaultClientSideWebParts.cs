@@ -113,7 +113,12 @@
         /// <summary>
         /// Web part to host SharePoint Add-In parts
         /// </summary>
-        ClientWebPart
+        ClientWebPart,
+        /// <summary>
+        /// Web part to host PowerApps
+        /// </summary>
+        PowerApps
+
     }
 #endif
 }

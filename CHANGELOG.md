@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- Added PowerApps client side web part type
 - Fix NullReferenceException when parsing client side page header html #1821 [SchauDK]
 - Changed multi lookup field provisioning to also handle list url in List #1822 [cebud]
 - Don't wrap client side text in P if it already was done as part of the provided text
