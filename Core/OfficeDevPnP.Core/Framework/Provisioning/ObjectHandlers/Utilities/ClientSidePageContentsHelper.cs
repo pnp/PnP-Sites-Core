@@ -224,11 +224,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                     {
                                         // If we have serverProcessedContent then also export that one, it's important as some controls depend on this information to be present
                                         string serverProcessedContent = (control as Pages.ClientSideWebPart).ServerProcessedContent.ToString(Formatting.None);
-                                        controlInstance.JsonControlData = "{ \"serverProcessedContent\": " + serverProcessedContent + ", \"properties\": " + (control as Pages.ClientSideWebPart).PropertiesJson + "}";
+                                        controlInstance.JsonControlData = "{ \"dataVersion\": \"" + (control as Pages.ClientSideWebPart).DataVersion + "\", \"serverProcessedContent\": " + serverProcessedContent + ", \"properties\": " + (control as Pages.ClientSideWebPart).PropertiesJson + "}";
                                     }
                                     else
                                     {
-                                        controlInstance.JsonControlData = (control as Pages.ClientSideWebPart).PropertiesJson;
+                                        controlInstance.JsonControlData = "{ \"dataVersion\": \"" + (control as Pages.ClientSideWebPart).DataVersion + "\", \"properties\": " + (control as Pages.ClientSideWebPart).PropertiesJson + "}";
                                     }
 
                                     // Tokenize the JsonControlData

@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Client side API - Correctly handle data version: split between canvas and webpart data version + export data vesion using the provisionign engine + improved data version detection
+
 ### Deprecated
 
 ## [2.28.1807.0 - July 2018 release]

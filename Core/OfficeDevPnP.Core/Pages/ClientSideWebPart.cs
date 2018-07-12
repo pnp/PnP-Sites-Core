@@ -24,7 +24,7 @@ namespace OfficeDevPnP.Core.Pages
         public const string WebPartDataVersionAttribute = "data-sp-webpartdataversion";
         public const string WebPartDataAttribute = "data-sp-webpartdata";
         public const string WebPartComponentIdAttribute = "data-sp-componentid";
-        public const string WebPartHtmlPropertiesAttribute = "data-sp-htmlproperties";
+        public const string WebPartHtmlPropertiesAttribute = "data-sp-htmlproperties";        
 
         private ClientSideComponent component;
         private string jsonWebPartData;
@@ -336,6 +336,10 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     this.dataVersion = "2.1";
                 }
+                else if (webPartType == DefaultClientSideWebParts.QuickLinks)
+                {
+                    this.dataVersion = "2.0";
+                }
             }
 
             // Set the web part preview image url
@@ -375,7 +379,7 @@ namespace OfficeDevPnP.Core.Pages
             {
                 htmlWriter.NewLine = string.Empty;
                 htmlWriter.AddAttribute(CanvasControlAttribute, this.CanvasControlData);
-                htmlWriter.AddAttribute(CanvasDataVersionAttribute, this.DataVersion);
+                htmlWriter.AddAttribute(CanvasDataVersionAttribute, this.CanvasDataVersion);
                 htmlWriter.AddAttribute(ControlDataAttribute, this.JsonControlData);
                 htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
 
@@ -510,6 +514,13 @@ namespace OfficeDevPnP.Core.Pages
         {
             base.FromHtml(element);
 
+            // Set/update dataVersion if it was provided as html attribute
+            var webPartDataVersion = element.GetAttribute(WebPartDataVersionAttribute);
+            if (!string.IsNullOrEmpty(webPartDataVersion))
+            {
+                this.dataVersion = element.GetAttribute(WebPartDataVersionAttribute);
+            }
+
             // load data from the data-sp-controldata attribute
             var jsonSerializerSettings = new JsonSerializerSettings()
             {
@@ -529,6 +540,12 @@ namespace OfficeDevPnP.Core.Pages
             this.description = wpJObject["description"] != null ? wpJObject["description"].Value<string>() : "";
             // Set property to trigger correct loading of properties 
             this.PropertiesJson = wpJObject["properties"].ToString(Formatting.None);
+            
+            // Set/update dataVersion if it was set in the json data
+            if (!string.IsNullOrEmpty(wpJObject["dataVersion"].ToString(Formatting.None)))
+            {
+                this.dataVersion = wpJObject["dataVersion"].ToString(Formatting.None).Trim('"');
+            }
 
             // Check for fullbleed supporting web parts
             if (wpJObject["properties"] != null && wpJObject["properties"]["isFullWidth"] != null)

@@ -20,6 +20,7 @@ namespace OfficeDevPnP.Core.Pages
         internal int controlType;
         internal string jsonControlData;
         internal string dataVersion;
+        internal string canvasDataVersion;
         internal string canvasControlData;
         internal Guid instanceId;
         internal CanvasSection section;
@@ -33,6 +34,7 @@ namespace OfficeDevPnP.Core.Pages
         public CanvasControl()
         {
             this.dataVersion = "1.0";
+            this.canvasDataVersion = "1.0";
             this.instanceId = Guid.NewGuid();
             this.canvasControlData = "";
             this.order = 0;
@@ -70,6 +72,17 @@ namespace OfficeDevPnP.Core.Pages
             get
             {
                 return dataVersion;
+            }
+        }
+
+        /// <summary>
+        /// The internal canvas storage version used
+        /// </summary>
+        public string CanvasDataVersion
+        {
+            get
+            {
+                return canvasDataVersion;
             }
         }
 
@@ -343,7 +356,7 @@ namespace OfficeDevPnP.Core.Pages
             var controlData = JsonConvert.DeserializeObject<ClientSideCanvasControlData>(element.GetAttribute(CanvasControl.ControlDataAttribute), jsonSerializerSettings);
 
             // populate base object
-            this.dataVersion = element.GetAttribute(CanvasControl.CanvasDataVersionAttribute);
+            this.canvasDataVersion = element.GetAttribute(CanvasControl.CanvasDataVersionAttribute);
             this.canvasControlData = element.GetAttribute(CanvasControl.CanvasControlAttribute);
             this.controlType = controlData.ControlType;
             this.instanceId = new Guid(controlData.Id);

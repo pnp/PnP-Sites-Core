@@ -138,7 +138,7 @@ namespace OfficeDevPnP.Core.Pages
                 htmlWriter.NewLine = string.Empty;
 
                 htmlWriter.AddAttribute(CanvasControlAttribute, this.CanvasControlData);
-                htmlWriter.AddAttribute(CanvasDataVersionAttribute, this.DataVersion);
+                htmlWriter.AddAttribute(CanvasDataVersionAttribute, this.CanvasDataVersion);
                 htmlWriter.AddAttribute(ControlDataAttribute, this.JsonControlData);
                 htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
 
