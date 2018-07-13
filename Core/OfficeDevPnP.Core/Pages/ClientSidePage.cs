@@ -568,6 +568,7 @@ namespace OfficeDevPnP.Core.Pages
         /// Loads an existint SharePoint client side page
         /// </summary>
         /// <param name="cc">ClientContext object used to load the page</param>
+        /// <param name="web">The SharePoint <see cref="Web"/> instance</param>
         /// <param name="pageName">Name of the page (e.g. mypage.aspx) to load</param>
         /// <returns>A <see cref="ClientSidePage"/> instance for the given page</returns>
         public static ClientSidePage Load(ClientContext cc, Web web, string pageName)
