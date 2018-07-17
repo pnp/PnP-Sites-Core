@@ -28,7 +28,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // Process the collection of Apps installed in the current Site Collection
                 var appCatalogUri = web.GetAppCatalog();
-                if(appCatalogUri != null)
+                if (appCatalogUri != null)
                 {
                     var manager = new AppManager(web.Context as ClientContext);
 
@@ -44,7 +44,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             });
                         }
                     }
-                }                
+                }
             }
             return template;
         }
@@ -115,7 +115,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         else
                         {
                             WriteMessage($"Tenant app catalog doesn't exist. ALM step will be skipped.", ProvisioningMessageType.Warning);
-                        }                        
+                        }
                     }
                 }
             }
@@ -130,7 +130,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            return (!web.IsSubSite() && template.ApplicationLifecycleManagement != null);
+            if (!_willProvision.HasValue && template.ApplicationLifecycleManagement != null)
+            {
+                _willProvision = (template.ApplicationLifecycleManagement.AppCatalog != null ||
+                                  template.ApplicationLifecycleManagement.Apps.Count > 0
+                                 );
+            }
+            return (!web.IsSubSite() && _willProvision.Value);
         }
     }
 #endif

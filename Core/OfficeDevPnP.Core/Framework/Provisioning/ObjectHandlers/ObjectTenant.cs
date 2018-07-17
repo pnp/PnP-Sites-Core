@@ -54,7 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (template.Tenant.AppCatalog != null && template.Tenant.AppCatalog.Packages.Count > 0)
             {
-                
+
                 var manager = new AppManager(web.Context as ClientContext);
 
                 var appCatalogUri = web.GetAppCatalog();
@@ -123,18 +123,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (template.Tenant.StorageEntities != null && template.Tenant.StorageEntities.Any())
             {
                 var appCatalogUri = web.GetAppCatalog();
-                using (var appCatalogContext = web.Context.Clone(appCatalogUri))
+                if (appCatalogUri != null)
                 {
-                    foreach (var entity in template.Tenant.StorageEntities)
+                    using (var appCatalogContext = web.Context.Clone(appCatalogUri))
                     {
-                        var key = parser.ParseString(entity.Key);
-                        var value = parser.ParseString(entity.Value);
-                        var description = parser.ParseString(entity.Description);
-                        var comment = parser.ParseString(entity.Comment);
-                        appCatalogContext.Web.SetStorageEntity(key, value, description, comment);
+                        foreach (var entity in template.Tenant.StorageEntities)
+                        {
+                            var key = parser.ParseString(entity.Key);
+                            var value = parser.ParseString(entity.Value);
+                            var description = parser.ParseString(entity.Description);
+                            var comment = parser.ParseString(entity.Comment);
+                            appCatalogContext.Web.SetStorageEntity(key, value, description, comment);
+                        }
+                        appCatalogContext.Web.Update();
+                        appCatalogContext.ExecuteQueryRetry();
                     }
-                    appCatalogContext.Web.Update();
-                    appCatalogContext.ExecuteQueryRetry();
+                }
+                else
+                {
+                    WriteMessage($"Tenant app catalog doesn't exist. Provisioning of storage entities will be skipped!", ProvisioningMessageType.Warning);
                 }
             }
             return parser;
@@ -228,7 +235,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 PreviewImageAltText = designPreviewImageAltText,
                                 IsDefault = siteDesign.IsDefault,
                             };
-                            switch((int)siteDesign.WebTemplate)
+                            switch ((int)siteDesign.WebTemplate)
                             {
                                 case 0:
                                     {
@@ -537,7 +544,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            return (template.Tenant != null);
+            if (!_willProvision.HasValue && template.Tenant != null)
+            {
+                _willProvision = (template.Tenant.AppCatalog != null ||
+                                template.Tenant.ContentDeliveryNetwork != null ||
+                                template.Tenant.SiteDesigns.Count > 0 ||
+                                template.Tenant.SiteScripts.Count > 0 ||
+                                template.Tenant.StorageEntities.Count > 0 ||
+                                template.Tenant.WebApiPermissions.Count > 0
+                                );
+            }
+            return (_willProvision.Value);
         }
     }
 
