@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#if !NETSTANDARD2_0
 namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
 {
     public class ExtensibilityMockTokenProvider : IProvisioningExtensibilityTokenProvider
@@ -41,3 +42,4 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
         }
     }
 }
+#endif

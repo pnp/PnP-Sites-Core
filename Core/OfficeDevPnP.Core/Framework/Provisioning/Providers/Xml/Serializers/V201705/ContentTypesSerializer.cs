@@ -43,6 +43,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                 //document set template - welcome page fields
                 expressions.Add(c => c.DocumentSetTemplate.WelcomePageFields, new ExpressionCollectionValueResolver<Guid>((s) => Guid.Parse(s.GetPublicInstancePropertyValue("ID").ToString())));
 
+                //document set template - XmlDocuments section
+                expressions.Add(c => c.DocumentSetTemplate.XmlDocuments, new XmlAnyFromSchemaToModelValueResolver("XmlDocuments"));
+
                 template.ContentTypes.AddRange(
                     PnPObjectsMapper.MapObjects<ContentType>(contentTypes,
                             new CollectionFromSchemaToModelTypeResolver(typeof(ContentType)),
@@ -54,33 +57,44 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var baseNamespace = PnPSerializationScope.Current?.BaseSchemaNamespace;
-            var contentTypeTypeName = $"{baseNamespace}.ContentType, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var contentTypeType = Type.GetType(contentTypeTypeName, true);
-            var documentSetTemplateTypeName = $"{baseNamespace}.DocumentSetTemplate, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var documentSetTemplateType = Type.GetType(documentSetTemplateTypeName, true);
-            var documentTemplateTypeName = $"{baseNamespace}.ContentTypeDocumentTemplate, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var documentTemplateType = Type.GetType(documentTemplateTypeName, true);
+            if (template.ContentTypes != null && template.ContentTypes.Count > 0)
+            {
+                var baseNamespace = PnPSerializationScope.Current?.BaseSchemaNamespace;
+                var contentTypeTypeName = $"{baseNamespace}.ContentType, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var contentTypeType = Type.GetType(contentTypeTypeName, true);
+                var documentSetTemplateTypeName = $"{baseNamespace}.DocumentSetTemplate, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var documentSetTemplateType = Type.GetType(documentSetTemplateTypeName, true);
+                var documentTemplateTypeName = $"{baseNamespace}.ContentTypeDocumentTemplate, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var documentTemplateType = Type.GetType(documentTemplateTypeName, true);
+                var documentSetTemplateXmlDocumentsTypeName = $"{baseNamespace}.DocumentSetTemplateXmlDocuments, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var documentSetTemplateXmlDocumentsType = Type.GetType(documentSetTemplateXmlDocumentsTypeName, false);
 
-            var expressions = new Dictionary<string, IResolver>();
+                var expressions = new Dictionary<string, IResolver>();
 
-            //document set template
-            expressions.Add($"{contentTypeType.FullName}.DocumentSetTemplate", new PropertyObjectTypeResolver(documentSetTemplateType, "DocumentSetTemplate"));
+                //document set template
+                expressions.Add($"{contentTypeType.FullName}.DocumentSetTemplate", new PropertyObjectTypeResolver(documentSetTemplateType, "DocumentSetTemplate"));
 
-            //document set template - allowed content types
-            expressions.Add($"{contentTypeType.Namespace}.DocumentSetTemplate.AllowedContentTypes", 
-                new DocumentSetTemplateAllowedContentTypesFromModelToSchemaTypeResolver());
+                //document set template - allowed content types
+                expressions.Add($"{contentTypeType.Namespace}.DocumentSetTemplate.AllowedContentTypes",
+                    new DocumentSetTemplateAllowedContentTypesFromModelToSchemaTypeResolver());
 
-            //document set template - shared fields and welcome page fields (this expression also used to resolve fieldref collection ids because of same type name)
-            expressions.Add($"{contentTypeType.Namespace}.FieldRefBase.ID", new ExpressionValueResolver((s, v) => v != null ? v.ToString() : s?.ToString()));
-            //document template
-            expressions.Add($"{contentTypeType.FullName}.DocumentTemplate", new DocumentTemplateFromModelToSchemaTypeResolver(documentTemplateType));
+                //document set template - shared fields and welcome page fields (this expression also used to resolve fieldref collection ids because of same type name)
+                expressions.Add($"{contentTypeType.Namespace}.FieldRefBase.ID", new ExpressionValueResolver((s, v) => v != null ? v.ToString() : s?.ToString()));
+                //document template
+                expressions.Add($"{contentTypeType.FullName}.DocumentTemplate", new DocumentTemplateFromModelToSchemaTypeResolver(documentTemplateType));
 
-            persistence.GetPublicInstanceProperty("ContentTypes")
-                .SetValue(
-                    persistence,
-                    PnPObjectsMapper.MapObjects(template.ContentTypes,
-                        new CollectionFromModelToSchemaTypeResolver(contentTypeType), expressions, true));
+                if (documentSetTemplateXmlDocumentsType != null)
+                {
+                    //document set template - XmlDocuments section
+                    expressions.Add($"{documentSetTemplateType.FullName}.XmlDocuments", new XmlAnyFromModelToSchemalValueResolver(documentSetTemplateXmlDocumentsType));
+                }
+
+                persistence.GetPublicInstanceProperty("ContentTypes")
+                    .SetValue(
+                        persistence,
+                        PnPObjectsMapper.MapObjects(template.ContentTypes,
+                            new CollectionFromModelToSchemaTypeResolver(contentTypeType), expressions, true));
+            }
         }
     }
 }

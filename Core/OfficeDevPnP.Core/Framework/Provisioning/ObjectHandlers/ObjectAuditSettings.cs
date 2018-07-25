@@ -49,7 +49,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (include)
                 {
-                    template.AuditSettings = auditSettings;
+                    // If a base template is specified then use that one to "cleanup" the generated template model
+                    if (creationInfo.BaseTemplate != null)
+                    {
+                        if (!auditSettings.Equals(creationInfo.BaseTemplate.AuditSettings))
+                        {
+                            template.AuditSettings = auditSettings;
+                        }
+                    }                    
+                    else
+                    {
+                        template.AuditSettings = auditSettings;
+                    }
                 }
             }
             return template;
@@ -111,7 +122,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return !web.IsSubSite();
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             return !web.IsSubSite() && template.AuditSettings != null;
         }

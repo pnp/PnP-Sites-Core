@@ -1,9 +1,15 @@
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 using System;
 using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
+    [TokenDefinitionDescription(
+     Token = "{groupid:[groupname]}",
+     Description = "Returns the id of a SharePoint group given its name",
+     Example = "{groupid:My Site Owners}",
+     Returns = "6")]
     internal class GroupIdToken : TokenDefinition
     {
         private readonly int _groupId = 0;

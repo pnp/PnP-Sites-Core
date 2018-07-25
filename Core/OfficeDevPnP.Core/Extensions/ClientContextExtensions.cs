@@ -8,6 +8,19 @@ using System.Web;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
+using System.Configuration;
+using System.Threading.Tasks;
+using System.Net.Http;
+using Newtonsoft.Json;
+using System.IdentityModel.Tokens;
+using OfficeDevPnP.Core.Utilities.Async;
+#if NETSTANDARD2_0
+using System.IdentityModel.Tokens.Jwt;
+#endif
+
+#if !ONPREMISES
+using OfficeDevPnP.Core.Sites;
+#endif
 
 namespace Microsoft.SharePoint.Client
 {
@@ -16,6 +29,19 @@ namespace Microsoft.SharePoint.Client
     /// </summary>
     public static partial class ClientContextExtensions
     {
+        private static string userAgentFromConfig = null;
+        private static string accessToken = null;
+        private static bool hasAuthCookies;
+
+        /// <summary>
+        /// Static constructor, only executed once per class load
+        /// </summary>
+        static ClientContextExtensions()
+        {
+            ClientContextExtensions.userAgentFromConfig = ConfigurationManager.AppSettings["SharePointPnPUserAgent"];
+        }
+
+
 #if ONPREMISES
         private const string MicrosoftSharePointTeamServicesHeader = "MicrosoftSharePointTeamServices";
 #endif
@@ -24,8 +50,8 @@ namespace Microsoft.SharePoint.Client
         /// Clones a ClientContext object while "taking over" the security context of the existing ClientContext instance
         /// </summary>
         /// <param name="clientContext">ClientContext to be cloned</param>
-        /// <param name="siteUrl">Site url to be used for cloned ClientContext</param>
-        /// <returns>A ClientContext object created for the passed site url</returns>
+        /// <param name="siteUrl">Site URL to be used for cloned ClientContext</param>
+        /// <returns>A ClientContext object created for the passed site URL</returns>
         public static ClientContext Clone(this ClientRuntimeContext clientContext, string siteUrl)
         {
             if (string.IsNullOrWhiteSpace(siteUrl))
@@ -36,6 +62,20 @@ namespace Microsoft.SharePoint.Client
             return clientContext.Clone(new Uri(siteUrl));
         }
 
+#if !ONPREMISES
+        /// <summary>
+        /// Executes the current set of data retrieval queries and method invocations and retries it if needed using the Task Library.
+        /// </summary>
+        /// <param name="clientContext">clientContext to operate on</param>
+        /// <param name="retryCount">Number of times to retry the request</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
+        /// <param name="userAgent">UserAgent string value to insert for this request. You can define this value in your app's config file using key="SharePointPnPUserAgent" value="PnPRocks"></param>
+        public static Task ExecuteQueryRetryAsync(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
+        {
+            return ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
+        }
+
+#endif
 
         /// <summary>
         /// Executes the current set of data retrieval queries and method invocations and retries it if needed.
@@ -43,13 +83,27 @@ namespace Microsoft.SharePoint.Client
         /// <param name="clientContext">clientContext to operate on</param>
         /// <param name="retryCount">Number of times to retry the request</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
-        public static void ExecuteQueryRetry(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500)
+        /// <param name="userAgent">UserAgent string value to insert for this request. You can define this value in your app's config file using key="SharePointPnPUserAgent" value="PnPRocks"></param>
+        public static void ExecuteQueryRetry(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
         {
-            ExecuteQueryImplementation(clientContext, retryCount, delay);
+#if !ONPREMISES            
+            Task.Run(() => ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent)).GetAwaiter().GetResult();
+#else
+            ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
+#endif
         }
 
-        private static void ExecuteQueryImplementation(ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500)
+#if !ONPREMISES
+        private static async Task ExecuteQueryImplementation(ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
+#else
+        private static void ExecuteQueryImplementation(ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
+#endif
         {
+
+#if !ONPREMISES
+            await new SynchronizationContextRemover();
+#endif
+
             var clientTag = string.Empty;
             if (clientContext is PnPClientContext)
             {
@@ -71,16 +125,7 @@ namespace Microsoft.SharePoint.Client
             {
                 try
                 {
-                    // ClientTag property is limited to 32 chars
-                    if (string.IsNullOrEmpty(clientTag))
-                    {
-                        clientTag = $"{PnPCoreUtilities.PnPCoreVersionTag}:{GetCallingPnPMethod()}";
-                    }
-                    if (clientTag.Length > 32)
-                    {
-                        clientTag = clientTag.Substring(0, 32);
-                    }
-                    clientContext.ClientTag = clientTag;
+                    clientContext.ClientTag = SetClientTag(clientTag);
 
                     // Make CSOM request more reliable by disabling the return value cache. Given we 
                     // often clone context objects and the default value is
@@ -88,9 +133,26 @@ namespace Microsoft.SharePoint.Client
                     clientContext.DisableReturnValueCache = true;
 #elif SP2016
                     clientContext.DisableReturnValueCache = true;
-#endif                
+#endif
+                    // Add event handler to "insert" app decoration header to mark the PnP Sites Core library as a known application
+                    EventHandler<WebRequestEventArgs> appDecorationHandler = AttachRequestUserAgent(userAgent);
+
+                    clientContext.ExecutingWebRequest += appDecorationHandler;
+
                     // DO NOT CHANGE THIS TO EXECUTEQUERYRETRY
+#if !ONPREMISES
+#if !NETSTANDARD2_0
+                    await clientContext.ExecuteQueryAsync();
+#else
                     clientContext.ExecuteQuery();
+#endif
+#else
+                    clientContext.ExecuteQuery();
+#endif
+
+                    // Remove the app decoration event handler after the executequery
+                    clientContext.ExecutingWebRequest -= appDecorationHandler;
+
                     return;
                 }
                 catch (WebException wex)
@@ -101,9 +163,12 @@ namespace Microsoft.SharePoint.Client
                     if (response != null && (response.StatusCode == (HttpStatusCode)429 || response.StatusCode == (HttpStatusCode)503))
                     {
                         Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, backoffInterval);
-
                         //Add delay for retry
+#if !ONPREMISES
+                        await Task.Delay(backoffInterval);
+#else
                         Thread.Sleep(backoffInterval);
+#endif
 
                         //Add to retry count and increase delay.
                         retryAttempts++;
@@ -119,13 +184,59 @@ namespace Microsoft.SharePoint.Client
             throw new MaximumRetryAttemptedException($"Maximum retry attempts {retryCount}, has be attempted.");
         }
 
+        /// <summary>
+        /// Attaches either a passed user agent, or one defined in the App.config file, to the WebRequstExecutor UserAgent property.
+        /// </summary>
+        /// <param name="customUserAgent">a custom user agent to override any defined in App.config</param>
+        /// <returns>An EventHandler of WebRequestEventArgs.</returns>
+        private static EventHandler<WebRequestEventArgs> AttachRequestUserAgent(string customUserAgent)
+        {
+            return (s, e) =>
+            {
+                bool overrideUserAgent = true;
+                var existingUserAgent = e.WebRequestExecutor.WebRequest.UserAgent;
+                if (!string.IsNullOrEmpty(existingUserAgent) && existingUserAgent.StartsWith("NONISV|SharePointPnP|PnPPS/"))
+                {
+                    overrideUserAgent = false;
+                }
+                if (overrideUserAgent)
+                {
+                    if (string.IsNullOrEmpty(customUserAgent) && !string.IsNullOrEmpty(ClientContextExtensions.userAgentFromConfig))
+                    {
+                        customUserAgent = userAgentFromConfig;
+                    }
+                    e.WebRequestExecutor.WebRequest.UserAgent = string.IsNullOrEmpty(customUserAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : customUserAgent;
+                }
+            };
+        }
+
+        /// <summary>
+        /// Sets the client context client tag on outgoing CSOM requests.
+        /// </summary>
+        /// <param name="clientTag">An optional client tag to set on client context requests.</param>
+        /// <returns></returns>
+        private static string SetClientTag(string clientTag = "")
+        {
+            // ClientTag property is limited to 32 chars
+            if (string.IsNullOrEmpty(clientTag))
+            {
+                clientTag = $"{PnPCoreUtilities.PnPCoreVersionTag}:{GetCallingPnPMethod()}";
+            }
+            if (clientTag.Length > 32)
+            {
+                clientTag = clientTag.Substring(0, 32);
+            }
+
+            return clientTag;
+        }
+
 
         /// <summary>
         /// Clones a ClientContext object while "taking over" the security context of the existing ClientContext instance
         /// </summary>
         /// <param name="clientContext">ClientContext to be cloned</param>
-        /// <param name="siteUrl">Site url to be used for cloned ClientContext</param>
-        /// <returns>A ClientContext object created for the passed site url</returns>
+        /// <param name="siteUrl">Site URL to be used for cloned ClientContext</param>
+        /// <returns>A ClientContext object created for the passed site URL</returns>
         public static ClientContext Clone(this ClientRuntimeContext clientContext, Uri siteUrl)
         {
             if (siteUrl == null)
@@ -191,12 +302,35 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if app-only, false otherwise</returns>
         public static bool IsAppOnly(this ClientRuntimeContext clientContext)
         {
-            if (clientContext.Credentials == null)
-            {
-                return true;
-            }
+            // Set initial result to false
+            var result = false;
 
-            return false;
+            // Try to get an access token from the current context
+            var accessToken = clientContext.GetAccessToken();
+
+            // If any
+            if (!String.IsNullOrEmpty(accessToken))
+            {
+                // Try to decode the access token
+                var token = new JwtSecurityToken(accessToken);
+
+                // Search for the UPN claim, to see if we have user's delegation
+                var upn = token.Claims.FirstOrDefault(claim => claim.Type == "upn")?.Value;
+                if (String.IsNullOrEmpty(upn))
+                {
+                    result = true;
+                }
+            }
+            else if (clientContext.Credentials == null)
+            {
+                result = true;
+            }
+            // As a final check, do we have the auth cookies?
+            if (clientContext.HasAuthCookies())
+            {
+                result = false;
+            }
+            return (result);
         }
 
         /// <summary>
@@ -207,8 +341,7 @@ namespace Microsoft.SharePoint.Client
         public static string GetAccessToken(this ClientRuntimeContext clientContext)
         {
             string accessToken = null;
-            // Issue a dummy request to get it from the Authorization header
-            clientContext.ExecutingWebRequest += (s, e) =>
+            EventHandler<WebRequestEventArgs> handler = (s, e) =>
             {
                 string authorization = e.WebRequestExecutor.RequestHeaders["Authorization"];
                 if (!string.IsNullOrEmpty(authorization))
@@ -216,8 +349,52 @@ namespace Microsoft.SharePoint.Client
                     accessToken = authorization.Replace("Bearer ", string.Empty);
                 }
             };
+            // Issue a dummy request to get it from the Authorization header
+            clientContext.ExecutingWebRequest += handler;
             clientContext.ExecuteQueryRetry();
+            clientContext.ExecutingWebRequest -= handler;
+
             return accessToken;
+        }
+
+        /// <summary>
+        /// Gets a boolean if the current request contains the FedAuth and rtFa cookies.
+        /// </summary>
+        /// <param name="clientContext"></param>
+        /// <returns></returns>
+        private static bool HasAuthCookies(this ClientRuntimeContext clientContext)
+        {
+            clientContext.ExecutingWebRequest += ClientContext_ExecutingWebRequestCookieCounter;
+            clientContext.ExecuteQueryRetry();
+            clientContext.ExecutingWebRequest -= ClientContext_ExecutingWebRequestCookieCounter;
+            return hasAuthCookies;
+        }
+
+        private static void ClientContext_ExecutingWebRequestCookieCounter(object sender, WebRequestEventArgs e)
+        {
+            var fedAuth = false;
+            var rtFa = false;
+
+            if (e.WebRequestExecutor != null && e.WebRequestExecutor.WebRequest != null && e.WebRequestExecutor.WebRequest.CookieContainer != null)
+            {
+                var cookies = e.WebRequestExecutor.WebRequest.CookieContainer.GetCookies(e.WebRequestExecutor.WebRequest.RequestUri);
+                if (cookies.Count > 0)
+                {
+                    for (var q = 0; q < cookies.Count; q++)
+                    {
+                        if (cookies[q].Name == "FedAuth")
+                        {
+                            fedAuth = true;
+                        }
+                        if (cookies[q].Name == "rtFa")
+                        {
+                            rtFa = true;
+                        }
+                    }
+                }
+            }
+
+            hasAuthCookies = fedAuth && rtFa;
         }
 
         /// <summary>
@@ -301,6 +478,10 @@ namespace Microsoft.SharePoint.Client
             return hasMinimalVersion;
         }
 
+        /// <summary>
+        /// Returns the name of the method calling ExecuteQueryRetry and ExecuteQueryRetryAsync
+        /// </summary>
+        /// <returns>A string with the method name</returns>
         private static string GetCallingPnPMethod()
         {
             StackTrace t = new StackTrace();
@@ -311,7 +492,8 @@ namespace Microsoft.SharePoint.Client
                 for (int i = 0; i < t.FrameCount; i++)
                 {
                     var frame = t.GetFrame(i);
-                    if (frame.GetMethod().Name.Equals("ExecuteQueryRetry"))
+                    var frameName = frame.GetMethod().Name;
+                    if (frameName.Equals("ExecuteQueryRetry") || frameName.Equals("ExecuteQueryRetryAsync"))
                     {
                         var method = t.GetFrame(i + 1).GetMethod();
 
@@ -332,5 +514,116 @@ namespace Microsoft.SharePoint.Client
             return pnpMethod;
         }
 
+        /// <summary>
+        /// Returns the request digest from the current session/site
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static async Task<string> GetRequestDigest(this ClientContext context)
+        {
+            await new SynchronizationContextRemover();
+
+            //InitializeSecurity(context);
+
+            using (var handler = new HttpClientHandler())
+            {
+                string responseString = string.Empty;
+                var accessToken = context.GetAccessToken();
+
+                context.Web.EnsureProperty(w => w.Url);
+
+                if (String.IsNullOrEmpty(accessToken))
+                {
+                    handler.SetAuthenticationCookies(context);
+                }
+
+                using (var httpClient = new PnPHttpProvider(handler))
+                {
+                    string requestUrl = String.Format("{0}/_api/contextinfo", context.Web.Url);
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+                    request.Headers.Add("accept", "application/json;odata=verbose");
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                    HttpResponseMessage response = await httpClient.SendAsync(request);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        responseString = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        throw new Exception(await response.Content.ReadAsStringAsync());
+                    }
+                }
+                var contextInformation = JsonConvert.DeserializeObject<dynamic>(responseString);
+
+                string formDigestValue = contextInformation.d.GetContextWebInformation.FormDigestValue;
+                return await Task.Run(() => formDigestValue);
+            }
+        }
+
+        private static void Context_ExecutingWebRequest(object sender, WebRequestEventArgs e)
+        {
+            if (!String.IsNullOrEmpty(e.WebRequestExecutor.RequestHeaders.Get("Authorization")))
+            {
+                accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
+            }
+        }
+
+#if !ONPREMISES
+        /// <summary>
+        /// BETA: Creates a Communication Site Collection
+        /// </summary>
+        /// <param name="clientContext"></param>
+        /// <param name="siteCollectionCreationInformation"></param>
+        /// <returns></returns>
+        public static async Task<ClientContext> CreateSiteAsync(this ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
+        {
+            await new SynchronizationContextRemover();
+
+            return await SiteCollection.CreateAsync(clientContext, siteCollectionCreationInformation);
+        }
+
+        /// <summary>
+        /// BETA: Creates a Team Site Collection
+        /// </summary>
+        /// <param name="clientContext"></param>
+        /// <param name="siteCollectionCreationInformation"></param>
+        /// <returns></returns>
+        public static async Task<ClientContext> CreateSiteAsync(this ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation)
+        {
+            await new SynchronizationContextRemover();
+
+            return await SiteCollection.CreateAsync(clientContext, siteCollectionCreationInformation);
+        }
+
+        /// <summary>
+        /// BETA: Groupifies a classic Team Site Collection
+        /// </summary>
+        /// <param name="clientContext">ClientContext instance of the site to be groupified</param>
+        /// <param name="siteCollectionGroupifyInformation">Information needed to groupify this site</param>
+        /// <returns>The clientcontext of the groupified site</returns>
+        public static async Task<ClientContext> GroupifySiteAsync(this ClientContext clientContext, TeamSiteCollectionGroupifyInformation siteCollectionGroupifyInformation)
+        {
+            await new SynchronizationContextRemover();
+
+            return await SiteCollection.GroupifyAsync(clientContext, siteCollectionGroupifyInformation);
+        }
+
+        /// <summary>
+        /// Checks if an alias is already used for an office 365 group or not
+        /// </summary>
+        /// <param name="clientContext">ClientContext of the site to operate against</param>
+        /// <param name="alias">Alias to verify</param>
+        /// <returns>True if in use, false otherwise</returns>
+        public static async Task<bool> AliasExistsAsync(this ClientContext clientContext, string alias)
+        {
+            await new SynchronizationContextRemover();
+
+            return await SiteCollection.AliasExistsAsync(clientContext, alias);
+        }
+#endif
     }
 }

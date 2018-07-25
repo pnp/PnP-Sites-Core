@@ -4,14 +4,28 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading;
+#if !NETSTANDARD2_0
 using System.Xml.Serialization.Configuration;
+#endif
 using Microsoft.Graph;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.Online.SharePoint.TenantManagement;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
+#if !NETSTANDARD2_0
 using OfficeDevPnP.Core.UPAWebService;
+#endif
 using OfficeDevPnP.Core.Diagnostics;
+using System.Net.Http;
+using CoreUtilities = OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Framework.Graph;
+using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
+using OfficeDevPnP.Core.Framework.Graph.Model;
+using Newtonsoft.Json;
+#if !ONPREMISES
+using OfficeDevPnP.Core.Sites;
+#endif
 
 namespace Microsoft.SharePoint.Client
 {
@@ -99,7 +113,7 @@ namespace Microsoft.SharePoint.Client
         /// Launches a site collection creation and waits for the creation to finish 
         /// </summary>
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
-        /// <param name="siteFullUrl">The SPO url</param>
+        /// <param name="siteFullUrl">The SPO URL</param>
         /// <param name="title">The site title</param>
         /// <param name="siteOwnerLogin">Owner account</param>
         /// <param name="template">Site template being used</param>
@@ -137,7 +151,7 @@ namespace Microsoft.SharePoint.Client
 
         #region Site status checks
         /// <summary>
-        /// Returns if a site collection is in a particular status. If the url contains a sub site then returns true is the sub site exists, false if not. 
+        /// Returns if a site collection is in a particular status. If the URL contains a sub site then returns true is the sub site exists, false if not. 
         /// Status is irrelevant for sub sites
         /// </summary>
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
@@ -435,7 +449,7 @@ namespace Microsoft.SharePoint.Client
         /// Sets tenant site Properties
         /// </summary>
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
-        /// <param name="siteFullUrl">full url of site</param>
+        /// <param name="siteFullUrl">full URL of site</param>
         /// <param name="title">site title</param>
         /// <param name="allowSelfServiceUpgrade">Boolean value to allow serlf service upgrade</param>
         /// <param name="sharingCapability">SharingCapabilities enumeration value (i.e. Disabled/ExternalUserSharingOnly/ExternalUserAndGuestSharing/ExistingExternalUserSharingOnly)</param>
@@ -504,7 +518,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="timeoutFunction">An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.</param>
         public static void SetSiteLockState(this Tenant tenant, string siteFullUrl, SiteLockState lockState, bool wait = false, Func<TenantOperationMessage, bool> timeoutFunction = null)
         {
-            var siteProps = tenant.GetSitePropertiesByUrl(siteFullUrl, true);
+            var siteProps = tenant.GetSitePropertiesByUrl(siteFullUrl, false);
             tenant.Context.Load(siteProps);
             tenant.Context.ExecuteQueryRetry();
 
@@ -626,6 +640,7 @@ namespace Microsoft.SharePoint.Client
             return sites;
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Get OneDrive site collections by iterating through all user profiles.
         /// </summary>
@@ -663,7 +678,9 @@ namespace Microsoft.SharePoint.Client
 
             return sites;
         }
+#endif
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the UserProfileService proxy to enable calls to the UPA web service.
         /// </summary>
@@ -688,6 +705,8 @@ namespace Microsoft.SharePoint.Client
             }
             return client;
         }
+#endif
+
         #endregion
 
         #region ClientSide Package Deployment
@@ -696,7 +715,7 @@ namespace Microsoft.SharePoint.Client
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
         /// </summary>
         /// <param name="tenant">Tenant to operate against</param>
-        /// <returns>The Uri holding the app catalog site url</returns>
+        /// <returns>The Uri holding the app catalog site URL</returns>
         public static Uri GetAppCatalog(this Tenant tenant)
         {
             // Assume there's only one appcatalog site
@@ -708,125 +727,6 @@ namespace Microsoft.SharePoint.Client
 
             return null;
         }
-
-        /// <summary>
-        /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
-        /// </summary>
-        /// <param name="tenant">Tenant to operate against</param>
-        /// <param name="spPkgName">Name of the package to upload (e.g. demo.sppkg) </param>
-        /// <param name="spPkgPath">Path on the filesystem where this package is stored</param>
-        /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
-        /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
-        /// <returns>The ListItem of the added package row</returns>
-        public static ListItem DeployApplicationPackageToAppCatalog(this Tenant tenant, string spPkgName, string spPkgPath, bool autoDeploy = true, bool overwrite = true)
-        {
-            var appCatalogSite = tenant.GetAppCatalog();
-            if (appCatalogSite == null)
-            {
-                throw new ArgumentException("No app catalog site found, please ensure the site exists or specify the site as parameter. Note that the app catalog site is retrieved via search, so take in account the indexing time.");
-            }
-
-            return DeployApplicationPackageToAppCatalogImplementation(tenant, appCatalogSite.ToString(), spPkgName, spPkgPath, autoDeploy, false, overwrite);
-        }
-
-        /// <summary>
-        /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
-        /// </summary>
-        /// <param name="tenant">Tenant to operate against</param>
-        /// <param name="spPkgName">Name of the package to upload (e.g. demo.sppkg) </param>
-        /// <param name="spPkgPath">Path on the filesystem where this package is stored</param>
-        /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
-        /// <param name="skipFeatureDeployment">Skip the feature deployment step, allows for a one-time central deployment of your solution</param>
-        /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
-        /// <returns>The ListItem of the added package row</returns>
-        public static ListItem DeployApplicationPackageToAppCatalog(this Tenant tenant, string spPkgName, string spPkgPath, bool autoDeploy = true, bool skipFeatureDeployment = true, bool overwrite = true)
-        {
-            var appCatalogSite = tenant.GetAppCatalog();
-            if (appCatalogSite == null)
-            {
-                throw new ArgumentException("No app catalog site found, please ensure the site exists or specify the site as parameter. Note that the app catalog site is retrieved via search, so take in account the indexing time.");
-            }
-
-            return DeployApplicationPackageToAppCatalogImplementation(tenant, appCatalogSite.ToString(), spPkgName, spPkgPath, autoDeploy, skipFeatureDeployment, overwrite);
-        }
-
-        /// <summary>
-        /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
-        /// </summary>
-        /// <param name="tenant">Tenant to operate against</param>
-        /// <param name="appCatalogSiteUrl">Full url to the tenant admin site (e.g. https://contoso.sharepoint.com/sites/apps) </param>
-        /// <param name="spPkgName">Name of the package to upload (e.g. demo.sppkg) </param>
-        /// <param name="spPkgPath">Path on the filesystem where this package is stored</param>
-        /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
-        /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
-        /// <returns>The ListItem of the added package row</returns>
-        [Obsolete("Please use the DeployApplicationPackageToAppCatalog overloads that don't require you to specify the appCatalogSiteUrl parameter. This method will be removed in the October 2017 release.")]
-        public static ListItem DeployApplicationPackageToAppCatalog(this Tenant tenant, string appCatalogSiteUrl, string spPkgName, string spPkgPath, bool autoDeploy = true, bool overwrite = true)
-        {
-            return DeployApplicationPackageToAppCatalogImplementation(tenant, appCatalogSiteUrl, spPkgName, spPkgPath, autoDeploy, false, overwrite);
-        }
-
-        private static ListItem DeployApplicationPackageToAppCatalogImplementation(this Tenant tenant, string appCatalogSiteUrl, string spPkgName, string spPkgPath, bool autoDeploy, bool skipFeatureDeployment, bool overwrite)
-        {
-            if (String.IsNullOrEmpty(appCatalogSiteUrl))
-            {
-                throw new ArgumentException("Please specify a app catalog site url");
-            }
-
-            Uri catalogUri;
-            if (!Uri.TryCreate(appCatalogSiteUrl, UriKind.Absolute, out catalogUri))
-            {
-                throw new ArgumentException("Please specify a valid app catalog site url");
-            }
-
-            if (String.IsNullOrEmpty(spPkgName))
-            {
-                throw new ArgumentException("Please specify a package name");
-            }
-
-            if (String.IsNullOrEmpty(spPkgPath))
-            {
-                throw new ArgumentException("Please specify a package path");
-            }
-
-            using (var appCatalogContext = tenant.Context.Clone(catalogUri))
-            {
-                List catalog = appCatalogContext.Web.GetListByUrl("appcatalog");
-                if (catalog == null)
-                {
-                    throw new Exception($"No app catalog found...did you provide a valid app catalog site?");
-                }
-
-                Folder rootFolder = catalog.RootFolder;
-
-                // Upload package
-                var sppkgFile = rootFolder.UploadFile(spPkgName, System.IO.Path.Combine(spPkgPath, spPkgName), overwrite);
-                if (sppkgFile == null)
-                {
-                    throw new Exception($"Upload of {spPkgName} failed");
-                }
-
-                if ((autoDeploy || skipFeatureDeployment) && 
-                    System.IO.Path.GetExtension(spPkgName).ToLower() == ".sppkg")
-                {
-                    // Trigger "deployment" by setting the IsClientSideSolutionDeployed bool to true which triggers 
-                    // an event receiver that will process the sppkg file and update the client side componenent manifest list
-                    sppkgFile.ListItemAllFields["IsClientSideSolutionDeployed"] = autoDeploy;
-                    // deal with "upgrading" solutions
-                    sppkgFile.ListItemAllFields["IsClientSideSolutionCurrentVersionDeployed"] = autoDeploy;
-                    // Allow for a central deployment of the solution, no need to install the solution in the individual site collections.
-                    // Only works when the solution is not using feature framework to "configure" the site upon solution installation
-                    sppkgFile.ListItemAllFields["SkipFeatureDeployment"] = skipFeatureDeployment;
-                    sppkgFile.ListItemAllFields.Update();
-                }
-
-                appCatalogContext.Load(sppkgFile.ListItemAllFields);
-                appCatalogContext.ExecuteQueryRetry();
-
-                return sppkgFile.ListItemAllFields;
-            }
-        }
-
         #endregion
 
         #region Private helper methods
@@ -924,6 +824,128 @@ namespace Microsoft.SharePoint.Client
             }
         }
         #endregion
+
+        #region Site Classification configuration
+
+        /// <summary>
+        /// Enables Site Classifications for the target tenant 
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
+        /// <param name="siteClassificationsSettings">The site classifications settings to apply./param>
+        public static void EnableSiteClassifications(this Tenant tenant, string accessToken, SiteClassificationsSettings siteClassificationsSettings)
+        {
+            SiteClassificationsUtility.EnableSiteClassifications(accessToken, siteClassificationsSettings);
+        }
+
+        /// <summary>
+        /// Enables Site Classifications for the target tenant 
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
+        /// <param name="classificationsList">The list of classification values</param>
+        /// <param name="defaultClassification">The default classification</param>
+        /// <param name="usageGuidelinesUrl">The URL of a guidance page</param>
+        public static void EnableSiteClassifications(this Tenant tenant, string accessToken, IEnumerable<string> classificationsList, string defaultClassification = "", string usageGuidelinesUrl = "")
+        {
+            SiteClassificationsUtility.EnableSiteClassifications(accessToken, classificationsList, defaultClassification, usageGuidelinesUrl);
+        }
+
+        /// <summary>
+        /// Enables Site Classifications for the target tenant 
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
+        /// <returns>The list of Site Classifications values</returns>
+        public static SiteClassificationsSettings GetSiteClassificationsSettings(this Tenant tenant, string accessToken)
+        {
+            return SiteClassificationsUtility.GetSiteClassificationsSettings(accessToken);
+        }
+
+        /// <summary>
+        /// Updates Site Classifications settings for the target tenant
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
+        /// <param name="siteClassificationsSettings">The site classifications settings to update.</param>
+        public static void UpdateSiteClassificationsSettings(this Tenant tenant, string accessToken, SiteClassificationsSettings siteClassificationsSettings)
+        {
+            SiteClassificationsUtility.UpdateSiteClassificationsSettings(accessToken, siteClassificationsSettings);
+        }
+
+        /// <summary>
+        /// Updates Site Classifications settings for the target tenant
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
+        /// <param name="classificationsList">The list of classification values</param>
+        /// <param name="defaultClassification">The default classification</param>
+        /// <param name="usageGuidelinesUrl">The URL of a guidance page</param>
+        public static void UpdateSiteClassificationsSettings(this Tenant tenant, string accessToken, IEnumerable<string> classificationsList, string defaultClassification = "", string usageGuidelinesUrl = "")
+        {
+            SiteClassificationsUtility.UpdateSiteClassificationsSettings(accessToken, classificationsList, defaultClassification, usageGuidelinesUrl);
+        }
+
+        /// <summary>
+        /// Disables Site Classifications settings for the target tenant
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
+        public static void DisableSiteClassifications(this Tenant tenant, string accessToken)
+        {
+            SiteClassificationsUtility.DisableSiteClassifications(accessToken);
+        }
+
+        #endregion
+
+        #region Site groupify
+        /// <summary>
+        /// Connect an Office 365 group to an existing SharePoint site collection
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="siteUrl">Url to the site collection that needs to get connected to an Office 365 group</param>
+        /// <param name="siteCollectionGroupifyInformation">Information that configures the "groupify" process</param>
+        public static void GroupifySite(this Tenant tenant, string siteUrl, TeamSiteCollectionGroupifyInformation siteCollectionGroupifyInformation)
+        {
+            if (string.IsNullOrEmpty(siteUrl))
+            {
+                throw new ArgumentException("Missing value for siteUrl", "siteUrl");
+            }
+
+            if (siteCollectionGroupifyInformation == null)
+            {
+                throw new ArgumentException("Missing value for siteCollectionGroupifyInformation", "sitecollectionGroupifyInformation");
+            }
+
+            if (!string.IsNullOrEmpty(siteCollectionGroupifyInformation.Alias) && siteCollectionGroupifyInformation.Alias.Contains(" "))
+            {
+                throw new ArgumentException("Alias cannot contain spaces", "Alias");
+            }
+
+            if (string.IsNullOrEmpty(siteCollectionGroupifyInformation.DisplayName))
+            {
+                throw new ArgumentException("DisplayName is required", "DisplayName");
+            }
+
+            GroupCreationParams optionalParams = new GroupCreationParams(tenant.Context);
+            if (!String.IsNullOrEmpty(siteCollectionGroupifyInformation.Description))
+            {
+                optionalParams.Description = siteCollectionGroupifyInformation.Description;
+            }
+            if (!String.IsNullOrEmpty(siteCollectionGroupifyInformation.Classification))
+            {
+                optionalParams.Classification = siteCollectionGroupifyInformation.Classification;
+            }
+            if (siteCollectionGroupifyInformation.KeepOldHomePage)
+            {
+                optionalParams.CreationOptions = new string[] { "SharePointKeepOldHomepage" };
+            }
+
+            tenant.CreateGroupForSite(siteUrl, siteCollectionGroupifyInformation.DisplayName, siteCollectionGroupifyInformation.Alias, siteCollectionGroupifyInformation.IsPublic, optionalParams);
+            tenant.Context.ExecuteQueryRetry();
+        }
+        #endregion
+
 #else
         #region Site collection creation
         /// <summary>
@@ -959,9 +981,9 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
-        #endregion
+#endregion
 
-        #region Site collection deletion
+#region Site collection deletion
         /// <summary>
         /// Deletes a site collection
         /// </summary>
@@ -972,7 +994,7 @@ namespace Microsoft.SharePoint.Client
             tenant.RemoveSite(siteFullUrl);
             tenant.Context.ExecuteQueryRetry();
         }
-        #endregion
+#endregion
 #endif
     }
 }

@@ -105,8 +105,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         ImageRenditions = 4194304,
         /// <summary>
+        /// Value 8388608, represents Application Lifecycle Management
+        /// </summary>
+        ApplicationLifecycleManagement = 8388608,
+        /// <summary>
+        /// Value 16777216, represents Tenant
+        /// </summary>
+        Tenant = 16777216,
+        /// <summary>
+        /// Value 33554432, represents Web API Permissions
+        /// </summary>
+        WebApiPermissions = 33554432,
+        /// <summary>
         /// Takes all handlers
         /// </summary>
-        All = AuditSettings | ComposedLook | CustomActions | ExtensibilityProviders | Features | Fields | Files | Lists | Pages | Publishing | RegionalSettings | SearchSettings | SitePolicy | SupportedUILanguages | TermGroups | Workflows | SiteSecurity | ContentTypes | PropertyBagEntries | PageContents | WebSettings | Navigation | ImageRenditions
+        All = AuditSettings | ComposedLook | CustomActions | ExtensibilityProviders | Features | Fields | Files | Lists | Pages | Publishing | RegionalSettings | SearchSettings | SitePolicy | SupportedUILanguages | TermGroups | Workflows | SiteSecurity | ContentTypes | PropertyBagEntries | PageContents | WebSettings | Navigation | ImageRenditions | ApplicationLifecycleManagement | Tenant | WebApiPermissions
     }
 }

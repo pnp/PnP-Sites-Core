@@ -99,7 +99,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Deletes the child website with the specified leaf URL, from a parent Web, if it exists. 
+        /// Deletes the child website with the specified leaf URL, from a parent Web, if it exists.
         /// </summary>
         /// <param name="parentWeb">The parent Web (site) to delete from</param>
         /// <param name="leafUrl">A string that represents the URL leaf name.</param>
@@ -137,7 +137,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Gets the collection of the URLs of all Web sites that are contained within the site collection, 
+        /// Gets the collection of the URLs of all Web sites that are contained within the site collection,
         /// including the top-level site and its subsites.
         /// </summary>
         /// <param name="site">Site collection to retrieve the URLs for.</param>
@@ -202,7 +202,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Determines if a child Web site with the specified leaf URL exists. 
+        /// Determines if a child Web site with the specified leaf URL exists.
         /// </summary>
         /// <param name="parentWeb">The Web site to check under</param>
         /// <param name="leafUrl">A string that represents the URL leaf name.</param>
@@ -314,10 +314,10 @@ namespace Microsoft.SharePoint.Client
 
         /// <summary>
         /// Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing.
-        /// 
+        ///
         /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
         /// for the effects of NoScript
-        /// 
+        ///
         /// </summary>
         /// <param name="site">site to verify</param>
         /// <returns>True if noscript, false otherwise</returns>
@@ -328,10 +328,10 @@ namespace Microsoft.SharePoint.Client
 
         /// <summary>
         /// Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing.
-        /// 
+        ///
         /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
         /// for the effects of NoScript
-        /// 
+        ///
         /// </summary>
         /// <param name="web">Web to verify</param>
         /// <returns>True if noscript, false otherwise</returns>
@@ -559,7 +559,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Returns all site collections that are indexed. In MT the search center, mysite host and contenttype hub are defined as non indexable by default and thus 
+        /// Returns all site collections that are indexed. In MT the search center, mysite host and contenttype hub are defined as non indexable by default and thus
         /// are not returned
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
@@ -1136,7 +1136,7 @@ namespace Microsoft.SharePoint.Client
         #region Localization
 #if !ONPREMISES
         /// <summary>
-        /// Can be used to set translations for different cultures. 
+        /// Can be used to set translations for different cultures.
         /// </summary>
         /// <example>
         ///     web.SetLocalizationForSiteLabels("fi-fi", "Name of the site in Finnish", "Description in Finnish");
@@ -1162,7 +1162,7 @@ namespace Microsoft.SharePoint.Client
         #region TemplateHandling
 
         /// <summary>
-        /// Can be used to apply custom remote provisioning template on top of existing site. 
+        /// Can be used to apply custom remote provisioning template on top of existing site.
         /// </summary>
         /// <param name="web">web to apply remote template</param>
         /// <param name="template">ProvisioningTemplate with the settings to be applied</param>
@@ -1203,7 +1203,7 @@ namespace Microsoft.SharePoint.Client
         #region Output Cache
 
         /// <summary>
-        /// Sets output cache on publishing web. The settings can be maintained from UI by visiting url /_layouts/15/sitecachesettings.aspx
+        /// Sets output cache on publishing web. The settings can be maintained from UI by visiting URL /_layouts/15/sitecachesettings.aspx
         /// </summary>
         /// <param name="web">SharePoint web</param>
         /// <param name="enableOutputCache">Specify true to enable output cache. False otherwise.</param>
@@ -1311,6 +1311,163 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
         #endregion
+
+        /// <summary>
+        /// Gets the name part of the URL of the Server Relative URL of the Web.
+        /// </summary>
+        /// <param name="web">The Web to process</param>
+        /// <returns>A string that contains the name part of the Server Relative URL (the last part of the URL) of a web.</returns>
+        public static string GetName(this Web web)
+        {
+            web.Context.Load(web, w => w.ParentWeb.ServerRelativeUrl);
+            web.Context.Load(web, w => w.ServerRelativeUrl);
+            web.Context.ExecuteQueryRetry();
+            string webName;
+            string parentWebUrl = null;
+
+            //web.ParentWeb.ServerObjectIsNull will be null if a parent web exists.
+            //ClientObjectExtensions.ServerObjectIsNull() seems to have a problem when 
+            //ClientObject.ServerObjectIsNull == null
+            //ServerObjectIsNull is then undefined but ClientObjectExtensions.ServerObjectIsNull()
+            //incorrectly returns true.
+            if (web.ParentWeb.ServerObjectIsNull == null || !web.ParentWeb.ServerObjectIsNull.Value)
+            {
+                parentWebUrl = web.ParentWeb.ServerRelativeUrl;
+            }
+
+            if (parentWebUrl == null)
+            {
+                webName = string.Empty;
+            }
+            else
+            {
+                webName = UrlUtility.ConvertToServiceRelUrl(web.ServerRelativeUrl, parentWebUrl);
+            }
+            return webName;
+        }
+
+#if !ONPREMISES
+        #region ClientSide Package Deployment
+        /// <summary>
+        /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
+        /// </summary>
+        /// <param name="web">Web to operate against</param>
+        /// <returns>The Uri holding the app catalog site URL</returns>
+        public static Uri GetAppCatalog(this Web web)
+        {
+            var tenantSettings = TenantSettings.GetCurrent(web.Context);
+            tenantSettings.EnsureProperties(s => s.CorporateCatalogUrl);
+            if(!string.IsNullOrEmpty(tenantSettings.CorporateCatalogUrl))
+            {
+                return new Uri(tenantSettings.CorporateCatalogUrl);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
+        /// </summary>
+        /// <param name="web">Web to operate against</param>
+        /// <param name="spPkgName">Name of the package to upload (e.g. demo.sppkg) </param>
+        /// <param name="spPkgPath">Path on the filesystem where this package is stored</param>
+        /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
+        /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
+        /// <returns>The ListItem of the added package row</returns>
+        public static ListItem DeployApplicationPackageToAppCatalog(this Web web, string spPkgName, string spPkgPath, bool autoDeploy = true, bool overwrite = true)
+        {
+            var appCatalogSite = web.GetAppCatalog();
+            if (appCatalogSite == null)
+            {
+                throw new ArgumentException("No app catalog site found, please ensure the site exists or specify the site as parameter. Note that the app catalog site is retrieved via search, so take in account the indexing time.");
+            }
+
+            return DeployApplicationPackageToAppCatalogImplementation(web, appCatalogSite.ToString(), spPkgName, spPkgPath, autoDeploy, false, overwrite);
+        }
+
+        /// <summary>
+        /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
+        /// </summary>
+        /// <param name="web">Tenant to operate against</param>
+        /// <param name="spPkgName">Name of the package to upload (e.g. demo.sppkg) </param>
+        /// <param name="spPkgPath">Path on the filesystem where this package is stored</param>
+        /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
+        /// <param name="skipFeatureDeployment">Skip the feature deployment step, allows for a one-time central deployment of your solution</param>
+        /// <param name="overwrite">Overwrite the package if it was already listed in the app catalog</param>
+        /// <returns>The ListItem of the added package row</returns>
+        public static ListItem DeployApplicationPackageToAppCatalog(this Web web, string spPkgName, string spPkgPath, bool autoDeploy = true, bool skipFeatureDeployment = true, bool overwrite = true)
+        {
+            var appCatalogSite = web.GetAppCatalog();
+            if (appCatalogSite == null)
+            {
+                throw new ArgumentException("No app catalog site found, please ensure the site exists or specify the site as parameter. Note that the app catalog site is retrieved via search, so take in account the indexing time.");
+            }
+
+            return DeployApplicationPackageToAppCatalogImplementation(web, appCatalogSite.ToString(), spPkgName, spPkgPath, autoDeploy, skipFeatureDeployment, overwrite);
+        }
+
+
+        private static ListItem DeployApplicationPackageToAppCatalogImplementation(this Web web, string appCatalogSiteUrl, string spPkgName, string spPkgPath, bool autoDeploy, bool skipFeatureDeployment, bool overwrite)
+        {
+            if (String.IsNullOrEmpty(appCatalogSiteUrl))
+            {
+                throw new ArgumentException("Please specify a app catalog site URL");
+            }
+
+            Uri catalogUri;
+            if (!Uri.TryCreate(appCatalogSiteUrl, UriKind.Absolute, out catalogUri))
+            {
+                throw new ArgumentException("Please specify a valid app catalog site URL");
+            }
+
+            if (String.IsNullOrEmpty(spPkgName))
+            {
+                throw new ArgumentException("Please specify a package name");
+            }
+
+            if (String.IsNullOrEmpty(spPkgPath))
+            {
+                throw new ArgumentException("Please specify a package path");
+            }
+
+            using (var appCatalogContext = web.Context.Clone(catalogUri))
+            {
+                List catalog = appCatalogContext.Web.GetListByUrl("appcatalog");
+                if (catalog == null)
+                {
+                    throw new Exception($"No app catalog found...did you provide a valid app catalog site?");
+                }
+
+                Folder rootFolder = catalog.RootFolder;
+
+                // Upload package
+                var sppkgFile = rootFolder.UploadFile(spPkgName, System.IO.Path.Combine(spPkgPath, spPkgName), overwrite);
+                if (sppkgFile == null)
+                {
+                    throw new Exception($"Upload of {spPkgName} failed");
+                }
+
+                if ((autoDeploy || skipFeatureDeployment) &&
+                    System.IO.Path.GetExtension(spPkgName).ToLower() == ".sppkg")
+                {
+                    // Trigger "deployment" by setting the IsClientSideSolutionDeployed bool to true which triggers
+                    // an event receiver that will process the sppkg file and update the client side componenent manifest list
+                    sppkgFile.ListItemAllFields["IsClientSideSolutionDeployed"] = autoDeploy;
+                    // deal with "upgrading" solutions
+                    sppkgFile.ListItemAllFields["IsClientSideSolutionCurrentVersionDeployed"] = autoDeploy;
+                    // Allow for a central deployment of the solution, no need to install the solution in the individual site collections.
+                    // Only works when the solution is not using feature framework to "configure" the site upon solution installation
+                    sppkgFile.ListItemAllFields["SkipFeatureDeployment"] = skipFeatureDeployment;
+                    sppkgFile.ListItemAllFields.Update();
+                }
+
+                appCatalogContext.Load(sppkgFile.ListItemAllFields);
+                appCatalogContext.ExecuteQueryRetry();
+
+                return sppkgFile.ListItemAllFields;
+            }
+        }
+        #endregion
+#endif
 
     }
 }

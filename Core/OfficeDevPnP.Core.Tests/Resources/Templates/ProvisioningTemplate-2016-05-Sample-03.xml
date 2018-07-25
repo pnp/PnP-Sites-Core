@@ -345,12 +345,16 @@
           <pnp:WebParts>
             <pnp:WebPart Title="My Content" Zone="Main" Order="1">
               <pnp:Contents>
-                <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+                <webParts>
+                  <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+                </webParts>
               </pnp:Contents>
             </pnp:WebPart>
             <pnp:WebPart Title="My Editor" Zone="Left" Order="10">
               <pnp:Contents>
-                <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+                <webParts>
+                  <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+                </webParts>
               </pnp:Contents>
             </pnp:WebPart>
           </pnp:WebParts>
@@ -384,12 +388,16 @@
           <pnp:WebParts>
             <pnp:WebPart Column="2" Row="1" Title="My Content">
               <pnp:Contents>
-                <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+                <webParts>
+                  <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+                </webParts>
               </pnp:Contents>
             </pnp:WebPart>
             <pnp:WebPart Column="1" Row="2" Title="My Editor">
               <pnp:Contents>
-                <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+                <webParts>
+                  <webPart>[!<![CDATA[web part definition goes here]]></webPart>
+                </webParts>
               </pnp:Contents>
             </pnp:WebPart>
           </pnp:WebParts>

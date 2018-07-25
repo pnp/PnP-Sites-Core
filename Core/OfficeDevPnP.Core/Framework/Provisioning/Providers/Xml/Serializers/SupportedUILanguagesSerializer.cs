@@ -32,14 +32,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var supportedUILanguageTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SupportedUILanguagesSupportedUILanguage, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var supportedUILanguageType = Type.GetType(supportedUILanguageTypeName, true);
+            if (template.SupportedUILanguages != null && template.SupportedUILanguages.Count > 0)
+            {
+                var supportedUILanguageTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SupportedUILanguagesSupportedUILanguage, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var supportedUILanguageType = Type.GetType(supportedUILanguageTypeName, true);
 
-            persistence.GetPublicInstanceProperty("SupportedUILanguages")
-                .SetValue(
-                    persistence,
-                    PnPObjectsMapper.MapObjects(template.SupportedUILanguages,
-                        new CollectionFromModelToSchemaTypeResolver(supportedUILanguageType)));
+                persistence.GetPublicInstanceProperty("SupportedUILanguages")
+                    .SetValue(
+                        persistence,
+                        PnPObjectsMapper.MapObjects(template.SupportedUILanguages,
+                            new CollectionFromModelToSchemaTypeResolver(supportedUILanguageType)));
+            }
         }
     }
 }

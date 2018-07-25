@@ -111,6 +111,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             }
         }
 
+#if !NETSTANDARD2_0
         [TestMethod()]
         [Timeout(15 * 60 * 1000)]
         public void GetOneDriveSiteCollectionsTest()
@@ -150,7 +151,8 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 Assert.IsNotNull(profile);
             }
         }
-        #endregion
+#endif
+#endregion
 
         #region Site existance tests
         [TestMethod()]
@@ -160,12 +162,15 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 var tenant = new Tenant(tenantContext);
                 var siteCollections = tenant.GetSiteCollections();
 
-                var site = siteCollections.Last();
+                // Grab a random site collection from the list of returned site collections
+                int siteNumberToCheck = new Random().Next(0, siteCollections.Count - 1);
+
+                var site = siteCollections[siteNumberToCheck];
                 var siteExists1 = tenant.CheckIfSiteExists(site.Url, "Active");
                 Assert.IsTrue(siteExists1);
 
                 try {
-                    string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                    string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
                     string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, "aaabbbccc");
                     var siteExists2 = tenant.CheckIfSiteExists(siteToCreateUrl, "Active");
                     Assert.IsFalse(siteExists2, "Invalid site returned as valid.");
@@ -187,7 +192,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 var siteExists1 = tenant.SiteExists(site.Url);
                 Assert.IsTrue(siteExists1);
 
-                string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
                 string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, "aaabbbccc");
                 var siteExists2 = tenant.SiteExists(siteToCreateUrl);
                 Assert.IsFalse(siteExists2, "Invalid site returned as valid.");
@@ -201,7 +206,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             using (var tenantContext = TestCommon.CreateTenantClientContext())
             {
                 var tenant = new Tenant(tenantContext);
-                string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
                 Console.WriteLine("SubSiteExistsTest: step 1");
                 string siteToCreateUrl = CreateTestSiteCollection(tenant, sitecollectionName);
                 Console.WriteLine("SubSiteExistsTest: step 1.1");
@@ -337,10 +342,10 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             {
                 using (var tenantContext = TestCommon.CreateTenantClientContext())
                 {
-                    tenantContext.RequestTimeout = Timeout.Infinite;
+                    tenantContext.RequestTimeout = 1000 * 60 * 15;
 
                     var tenant = new Tenant(tenantContext);
-                    string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                    string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
                     string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, sitecollectionName);
 
                     Console.WriteLine("SetSiteLockStateTest: step 1");
@@ -391,7 +396,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         }
         #endregion
 
-        #region ClientSide Package Deployment tests
+        #region AppCatalog tests
         [TestMethod()]
         public void GetAppCatalogTest()
         {
@@ -401,19 +406,6 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 Assert.IsNotNull(tenant.GetAppCatalog());
             }
         }
-
-
-        [TestMethod()]
-        public void DeploySharePointFrameworkSolutionTest()
-        {
-            using (var tenantContext = TestCommon.CreateTenantClientContext())
-            {
-                var tenant = new Tenant(tenantContext);
-                var app = tenant.DeployApplicationPackageToAppCatalog("hello-world.sppkg", "../../Resources", true, true, true);
-            }
-        }
-
-
         #endregion
 
         #region Private helper methods
@@ -436,10 +428,10 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         {
             try
             {
-                string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
                 string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, sitecollectionName);
 
-                string siteOwnerLogin = ConfigurationManager.AppSettings["SPOUserName"];
+                string siteOwnerLogin = TestCommon.AppSetting("SPOUserName");
                 if (TestCommon.AppOnlyTesting())
                 {
                     using (var clientContext = TestCommon.CreateClientContext())
@@ -472,4 +464,4 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         #endregion
     }
 #endif
-}
+    }

@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 7/24/2017*
+* Topic automatically generated on 8/24/2017*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -1899,9 +1899,10 @@ Defines a single element of type ClientSidePage.
 
 ```xml
 <pnp:ClientSidePage
-      PagesLibrary="xsd:string"
-      PromoteAsNewsArticle="xsd:boolean">
-   <pnp:Zones />
+      PageName="xsd:string"
+      PromoteAsNewsArticle="xsd:boolean"
+      Overwrite="xsd:boolean">
+   <pnp:Sections />
 </pnp:ClientSidePage>
 ```
 
@@ -1911,23 +1912,24 @@ Here follow the available child elements for the ClientSidePage element.
 
 Element|Type|Description
 -------|----|-----------
-Zones|[Zones](#zones)|Defines the Canvas Zones for a single ClientSidePage.
+Sections|[Sections](#sections)|Defines the Canvas sections for a single ClientSidePage.
 
 Here follow the available attributes for the ClientSidePage element.
 
 
 Attibute|Type|Description
 --------|----|-----------
-PagesLibrary|xsd:string|Defines the target Pages Library for a single ClientSidePage.
+PageName|xsd:string|Defines the page name for a single ClientSidePage.
 PromoteAsNewsArticle|xsd:boolean|Declares to promote the page as a news article.
-<a name="zones"></a>
-### Zones
-Defines the Canvas Zones for a single ClientSidePage.
+Overwrite|xsd:boolean|Can the page be overwritten if it exists.
+<a name="sections"></a>
+### Sections
+Defines the Canvas sections for a single ClientSidePage.
 
 ```xml
-<pnp:Zones>
-   <pnp:Zone />
-</pnp:Zones>
+<pnp:Sections>
+   <pnp:Section />
+</pnp:Sections>
 ```
 
 
@@ -1936,34 +1938,34 @@ Here follow the available child elements for the  element.
 
 Element|Type|Description
 -------|----|-----------
-Zone|[CanvasZone](#canvaszone)|Defines a Canvas Zone for a single ClientSidePage.
-<a name="canvaszone"></a>
-### CanvasZone
-A Canvas Zone for a Client-side Page.
+Section|[CanvasSection](#canvassection)|Defines a Canvas section for a single ClientSidePage.
+<a name="canvassection"></a>
+### CanvasSection
+A Canvas Section for a Client-side Page.
 
 ```xml
-<pnp:CanvasZone
+<pnp:CanvasSection
       Order="xsd:int"
       Type="">
    <pnp:Controls />
-</pnp:CanvasZone>
+</pnp:CanvasSection>
 ```
 
 
-Here follow the available child elements for the CanvasZone element.
+Here follow the available child elements for the CanvasSection element.
 
 
 Element|Type|Description
 -------|----|-----------
 Controls|[Controls](#controls)|A collection of Canvas Controls for a Client-side Page.
 
-Here follow the available attributes for the CanvasZone element.
+Here follow the available attributes for the CanvasSection element.
 
 
 Attibute|Type|Description
 --------|----|-----------
-Order|xsd:int|The order of the Canvas Zone for a Client-side Page.
-Type||The type of the Canvas Zone for a Client-side Page.
+Order|xsd:int|The order of the Canvas Section for a Client-side Page.
+Type||The type of the Canvas Section for a Client-side Page.
 <a name="controls"></a>
 ### Controls
 A collection of Canvas Controls for a Client-side Page.
@@ -1992,7 +1994,7 @@ Defines a Canvas Control for a Client-side Page.
       JsonControlData="xsd:string"
       ControlId="pnp:GUID"
       Order="xsd:int"
-      Section="xsd:int">
+      Column="xsd:int">
    <pnp:CanvasControlProperties />
 </pnp:CanvasControl>
 ```
@@ -2015,7 +2017,7 @@ CustomWebPartName|xsd:string|The Name of the client-side web part if the WebPart
 JsonControlData|xsd:string|The JSON Control Data for Canvas Control of a Client-side Page.
 ControlId|GUID|The Instance Id for Canvas Control of a Client-side Page.
 Order|xsd:int|The order of the Canvas Control for a Client-side Page.
-Section|xsd:int|The Section of the Zone in which the Canvas Control will be inserted. Optional, default 0.
+Column|xsd:int|The Column of the Section in which the Canvas Control will be inserted. Optional, default 0.
 <a name="canvascontrolproperties"></a>
 ### CanvasControlProperties
 Custom properties for the client-side web part control.
@@ -2033,33 +2035,33 @@ Here follow the available child elements for the  element.
 Element|Type|Description
 -------|----|-----------
 CanvasControlProperty|[StringDictionaryItem](#stringdictionaryitem)|A single property of a client-side web part control.
-<a name="canvassection"></a>
-### CanvasSection
-Defines a Canvas Zone for a Client-side Page.
+<a name="canvascolumn"></a>
+### CanvasColumn
+Defines a Canvas Section for a Client-side Page.
 
 ```xml
-<pnp:CanvasSection
+<pnp:CanvasColumn
       Order="xsd:int"
-      SectionFactor="xsd:int">
+      ColumnFactor="xsd:int">
    <pnp:Controls />
-</pnp:CanvasSection>
+</pnp:CanvasColumn>
 ```
 
 
-Here follow the available child elements for the CanvasSection element.
+Here follow the available child elements for the CanvasColumn element.
 
 
 Element|Type|Description
 -------|----|-----------
 Controls|[Controls](#controls)|A collection of Canvas Controls for a Client-side Page.
 
-Here follow the available attributes for the CanvasSection element.
+Here follow the available attributes for the CanvasColumn element.
 
 
 Attibute|Type|Description
 --------|----|-----------
-Order|xsd:int|The order of the Canvas Zone for a Client-side Page.
-SectionFactor|xsd:int|The Section Factor for Canvas Section of a Client-side Page.
+Order|xsd:int|The order of the Canvas section for a Client-side Page.
+ColumnFactor|xsd:int|The column Factor for Canvas column of a Client-side Page.
 <a name="controls"></a>
 ### Controls
 A collection of Canvas Controls for a Client-side Page.

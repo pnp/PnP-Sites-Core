@@ -47,30 +47,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            var baseNamespace = PnPSerializationScope.Current?.BaseSchemaNamespace;
-            var contentTypeTypeName = $"{baseNamespace}.ContentType, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var contentTypeType = Type.GetType(contentTypeTypeName, true);
-            var documentSetTemplateTypeName = $"{baseNamespace}.DocumentSetTemplate, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var documentSetTemplateType = Type.GetType(documentSetTemplateTypeName, true);
-            var documentTemplateTypeName = $"{baseNamespace}.ContentTypeDocumentTemplate, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            var documentTemplateType = Type.GetType(documentTemplateTypeName, true);
+            if (template.ContentTypes != null && template.ContentTypes.Count > 0)
+            {
+                var baseNamespace = PnPSerializationScope.Current?.BaseSchemaNamespace;
+                var contentTypeTypeName = $"{baseNamespace}.ContentType, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var contentTypeType = Type.GetType(contentTypeTypeName, true);
+                var documentSetTemplateTypeName = $"{baseNamespace}.DocumentSetTemplate, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var documentSetTemplateType = Type.GetType(documentSetTemplateTypeName, true);
+                var documentTemplateTypeName = $"{baseNamespace}.ContentTypeDocumentTemplate, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var documentTemplateType = Type.GetType(documentTemplateTypeName, true);
 
-            var expressions = new Dictionary<string, IResolver>();
+                var expressions = new Dictionary<string, IResolver>();
 
-            //document set template
-            expressions.Add($"{contentTypeType.FullName}.DocumentSetTemplate", new PropertyObjectTypeResolver(documentSetTemplateType, "DocumentSetTemplate"));
-            //document set template - allowed content types
-            expressions.Add($"{contentTypeType.Namespace}.DocumentSetTemplateAllowedContentType.ContentTypeID", new ExpressionValueResolver((s, v) => s));
-            //document set template - shared fields and welcome page fields (this expression also used to resolve fieldref collection ids because of same type name)
-            expressions.Add($"{contentTypeType.Namespace}.FieldRefBase.ID", new ExpressionValueResolver((s, v) => v != null ? v.ToString() : s?.ToString()));
-            //document template
-            expressions.Add($"{contentTypeType.FullName}.DocumentTemplate", new DocumentTemplateFromModelToSchemaTypeResolver(documentTemplateType));
+                //document set template
+                expressions.Add($"{contentTypeType.FullName}.DocumentSetTemplate", new PropertyObjectTypeResolver(documentSetTemplateType, "DocumentSetTemplate"));
+                //document set template - allowed content types
+                expressions.Add($"{contentTypeType.Namespace}.DocumentSetTemplateAllowedContentType.ContentTypeID", new ExpressionValueResolver((s, v) => s));
+                //document set template - shared fields and welcome page fields (this expression also used to resolve fieldref collection ids because of same type name)
+                expressions.Add($"{contentTypeType.Namespace}.FieldRefBase.ID", new ExpressionValueResolver((s, v) => v != null ? v.ToString() : s?.ToString()));
+                //document template
+                expressions.Add($"{contentTypeType.FullName}.DocumentTemplate", new DocumentTemplateFromModelToSchemaTypeResolver(documentTemplateType));
 
-            persistence.GetPublicInstanceProperty("ContentTypes")
-                .SetValue(
-                    persistence,
-                    PnPObjectsMapper.MapObjects(template.ContentTypes,
-                        new CollectionFromModelToSchemaTypeResolver(contentTypeType), expressions, true));
+                persistence.GetPublicInstanceProperty("ContentTypes")
+                    .SetValue(
+                        persistence,
+                        PnPObjectsMapper.MapObjects(template.ContentTypes,
+                            new CollectionFromModelToSchemaTypeResolver(contentTypeType), expressions, true));
+            }
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -36,7 +37,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add(f => f.Security.RoleAssignments, new RoleAssigmentsFromSchemaToModelTypeResolver());
                 expressions.Add(f => f.WebParts[0].Row, new ExpressionValueResolver((s, v) => (uint)(int)v));
                 expressions.Add(f => f.WebParts[0].Column, new ExpressionValueResolver((s, v) => (uint)(int)v));
-                expressions.Add(f => f.WebParts[0].Contents, new ExpressionValueResolver((s, v) => v != null ? ((XmlElement)v).InnerXml : null));
+                //Contents is deserialized to persistence differently base on schema version. 
+                //Deserialization of older schemas include <Contents> elements, newer do not. 
+                //Deserialized model should not contain <Contents> element, so skip it if present
+                expressions.Add(f => f.WebParts[0].Contents, new ExpressionValueResolver((s, v) => {
+                    if (v != null)
+                    {
+                        var xml = (XmlElement)v;
+                        return xml.Name == "Contents" ? xml.InnerXml : xml.OuterXml;
+                    }
+                    return null;
+                }));
 
                 template.Pages.AddRange(
                     PnPObjectsMapper.MapObjects<Page>(pages,

@@ -25,9 +25,9 @@ namespace OfficeDevPnP.Core.Entities
         [JsonProperty(PropertyName = "expirationDateTime")]
         public DateTime ExpirationDateTime { get; set; }
         /// <summary>
-        /// Webhook notification url
+        /// Webhook notification URL
         /// </summary>
-        [JsonProperty(PropertyName = "notificationUrl")]
+        [JsonProperty(PropertyName = "notificationUrl", NullValueHandling = NullValueHandling.Ignore)]
         public string NotificationUrl { get; set; }
         /// <summary>
         /// The resource endpoint URL you are creating the subscription for. For example a SharePoint List API URL

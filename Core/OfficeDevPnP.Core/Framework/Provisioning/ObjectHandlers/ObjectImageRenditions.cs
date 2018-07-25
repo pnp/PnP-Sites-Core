@@ -73,7 +73,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         rendition.Height = r.Height;
                         rendition.Width = r.Width;
 
-                        if (!renditions.Contains(rendition))
+                        if (!renditions.Any(rd => rd.Name == rendition.Name && rd.Height == rendition.Height && rd.Width == rendition.Width))
                         {
                             renditions.Add(rendition);
                         }
@@ -120,7 +120,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             if (!_willProvision.HasValue)
             {

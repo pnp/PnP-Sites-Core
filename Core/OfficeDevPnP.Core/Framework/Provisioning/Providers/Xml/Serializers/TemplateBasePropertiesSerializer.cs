@@ -68,9 +68,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 new FromDictionaryToArrayValueResolver<String, String>(
                     propertiesType, keySelector, valueSelector));
 
-            var templateScopeType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ProvisioningTemplateScope, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
-            expressions.Add($"{templateType}.Scope", new ExpressionValueResolver(() => Enum.Parse(templateScopeType, template.Scope.ToString())));
-            expressions.Add($"{templateType}.ScopeSpecified", new ExpressionValueResolver(() => true));
+            if (PnPSerializationScope.Current?.BaseSchemaNamespace != null && 
+                !PnPSerializationScope.Current.BaseSchemaNamespace.EndsWith("201605"))
+            {
+                var templateScopeType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ProvisioningTemplateScope, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
+                expressions.Add($"{templateType}.Scope", new ExpressionValueResolver(() => Enum.Parse(templateScopeType, template.Scope.ToString())));
+                expressions.Add($"{templateType}.ScopeSpecified", new ExpressionValueResolver(() => true));
+            }
 
             PnPObjectsMapper.MapProperties(template, persistence, expressions, true);
 

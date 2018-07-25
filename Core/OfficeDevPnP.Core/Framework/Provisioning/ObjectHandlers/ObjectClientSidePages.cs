@@ -4,15 +4,16 @@ using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using OfficeDevPnP.Core.Utilities.CanvasControl;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
 #if !ONPREMISES
-    internal class ObjectClientSidePages: ObjectHandlerBase
+    internal class ObjectClientSidePages : ObjectHandlerBase
     {
         public override string Name
         {
@@ -23,28 +24,94 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                var context = web.Context as ClientContext;
-
                 web.EnsureProperties(w => w.ServerRelativeUrl);
 
-                // Check if this is not a noscript site as we're not allowed to update some properties
-                bool isNoScriptSite = web.IsNoScriptSite();
+                // determine pages library
+                string pagesLibrary = "SitePages";
 
+                List<string> preCreatedPages = new List<string>();
+
+                var currentPageIndex = 0;
+                // pre create the needed pages so we can fill the needed tokens which might be used later on when we put web parts on those pages
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
-                    // determine pages library
-                    string pagesLibrary = "SitePages";
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(clientSidePage.PageName)}.aspx";
-
                     string url = $"{pagesLibrary}/{pageName}";
+
+                    // Write page level status messages, needed in case many pages are provisioned
+                    currentPageIndex++;
+                    WriteMessage($"ClientSidePage|Create {pageName}|{currentPageIndex}|{template.ClientSidePages.Count}", ProvisioningMessageType.Progress);
 
                     url = UrlUtility.Combine(web.ServerRelativeUrl, url);
 
                     var exists = true;
-                    Microsoft.SharePoint.Client.File file = null;
                     try
                     {
-                        file = web.GetFileByServerRelativeUrl(url);
+                        var file = web.GetFileByServerRelativeUrl(url);
+                        web.Context.Load(file, f => f.UniqueId, f => f.ServerRelativeUrl);
+                        web.Context.ExecuteQueryRetry();
+
+                        // Fill token
+                        parser.AddToken(new PageUniqueIdToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+                        parser.AddToken(new PageUniqueIdEncodedToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+                    }
+                    catch (ServerException ex)
+                    {
+                        if (ex.ServerErrorTypeName == "System.IO.FileNotFoundException")
+                        {
+                            exists = false;
+                        }
+                    }
+
+                    if (!exists)
+                    {
+                        // Pre-create the page    
+                        Pages.ClientSidePage page = web.AddClientSidePage(pageName);
+
+                        // Set page layout now, because once it's set, it can't be changed.
+                        if (!string.IsNullOrEmpty(clientSidePage.Layout))
+                        {
+                            if (clientSidePage.Layout.Equals("Article", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                page.LayoutType = Pages.ClientSidePageLayoutType.Article;
+                            }
+                            else if (clientSidePage.Layout.Equals("Home", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                page.LayoutType = Pages.ClientSidePageLayoutType.Home;
+                            }
+                        }
+
+                        page.Save(pageName);
+
+                        var file = web.GetFileByServerRelativeUrl(url);
+                        web.Context.Load(file, f => f.UniqueId, f => f.ServerRelativeUrl);
+                        web.Context.ExecuteQueryRetry();
+
+                        // Fill token
+                        parser.AddToken(new PageUniqueIdToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+                        parser.AddToken(new PageUniqueIdEncodedToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+
+                        // Track that we pre-added this page
+                        preCreatedPages.Add(url);
+                    }
+                }
+
+                currentPageIndex = 0;
+                // Iterate over the pages and create/update them
+                foreach (var clientSidePage in template.ClientSidePages)
+                {
+                    string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(clientSidePage.PageName)}.aspx";
+                    string url = $"{pagesLibrary}/{pageName}";
+                    // Write page level status messages, needed in case many pages are provisioned
+                    currentPageIndex++;
+                    WriteMessage($"ClientSidePage|{pageName}|{currentPageIndex}|{template.ClientSidePages.Count}", ProvisioningMessageType.Progress);
+
+                    url = UrlUtility.Combine(web.ServerRelativeUrl, url);
+
+                    var exists = true;
+                    try
+                    {
+                        var file = web.GetFileByServerRelativeUrl(url);
                         web.Context.Load(file);
                         web.Context.ExecuteQueryRetry();
                     }
@@ -59,7 +126,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     Pages.ClientSidePage page = null;
                     if (exists)
                     {
-                        if (clientSidePage.Overwrite)
+                        if (clientSidePage.Overwrite || preCreatedPages.Contains(url))
                         {
                             // Get the existing page
                             page = web.LoadClientSidePage(pageName);
@@ -69,6 +136,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         else
                         {
                             scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ClientSidePages_NoOverWrite, pageName);
+                            continue;
                         }
                     }
                     else
@@ -77,8 +145,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         page = web.AddClientSidePage(pageName);
                     }
 
+                    // Set page title
+                    string newTitle = parser.ParseString(clientSidePage.Title);
+                    if (page.PageTitle != newTitle)
+                    {
+                        page.PageTitle = newTitle;
+                    }
+
+                    // Page Header
+                    if (clientSidePage.Header != null)
+                    {
+                        switch (clientSidePage.Header.Type)
+                        {
+                            case ClientSidePageHeaderType.None:
+                                {
+                                    page.RemovePageHeader();
+                                    break;
+                                }
+                            case ClientSidePageHeaderType.Default:
+                                {
+                                    page.SetDefaultPageHeader();
+                                    break;
+                                }
+                            case ClientSidePageHeaderType.Custom:
+                                {
+                                    var serverRelativeImageUrl = parser.ParseString(clientSidePage.Header.ServerRelativeImageUrl);
+                                    if (clientSidePage.Header.TranslateX.HasValue && clientSidePage.Header.TranslateY.HasValue)
+                                    {
+                                        page.SetCustomPageHeader(serverRelativeImageUrl, clientSidePage.Header.TranslateX.Value, clientSidePage.Header.TranslateY.Value);
+                                    }
+                                    else
+                                    {
+                                        page.SetCustomPageHeader(serverRelativeImageUrl);
+                                    }
+                                    break;
+                                }
+                        }
+                    }
+
+                    // Set page layout
+                    if (!string.IsNullOrEmpty(clientSidePage.Layout))
+                    {
+                        if (clientSidePage.Layout.Equals("Article", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            page.LayoutType = Pages.ClientSidePageLayoutType.Article;
+                        }
+                        else if (clientSidePage.Layout.Equals("Home", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            page.LayoutType = Pages.ClientSidePageLayoutType.Home;
+                        }
+                    }
+
                     // Load existing available controls
-                    var componentsToAdd = page.AvailableClientSideComponents();
+                    var componentsToAdd = page.AvailableClientSideComponents().ToList();
 
                     // if no section specified then add a default single column section
                     if (!clientSidePage.Sections.Any())
@@ -88,7 +207,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     int sectionCount = -1;
                     // Apply the "layout" and content
-                    foreach(var section in clientSidePage.Sections)
+                    foreach (var section in clientSidePage.Sections)
                     {
                         sectionCount++;
                         switch (section.Type)
@@ -115,11 +234,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order);
                                 break;
                         }
-                        
+
                         // Add controls to the section
                         if (section.Controls.Any())
                         {
-                            foreach(var control in section.Controls)
+                            // Safety measure: reset column order to 1 for columns marked with 0 or lower
+                            foreach (var control in section.Controls.Where(p => p.Column <= 0).ToList())
+                            {
+                                control.Column = 1;
+                            }
+
+                            foreach (CanvasControl control in section.Controls)
                             {
                                 Pages.ClientSideComponent baseControl = null;
 
@@ -130,23 +255,49 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (control.ControlProperties.Any())
                                     {
                                         var textProperty = control.ControlProperties.First();
-                                        textControl.Text = textProperty.Value;
-                                        page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column], control.Order);
+                                        textControl.Text = parser.ParseString(textProperty.Value);
                                     }
+                                    else
+                                    {
+                                        if (!string.IsNullOrEmpty(control.JsonControlData))
+                                        {
+                                            var json = JsonConvert.DeserializeObject<Dictionary<string, string>>(control.JsonControlData);
+
+                                            if (json.Count > 0)
+                                            {
+                                                textControl.Text = parser.ParseString(json.First().Value);
+                                            }
+                                        }
+                                    }
+                                    // Reduce column number by 1 due 0 start indexing
+                                    page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
+
                                 }
                                 // It is a web part
                                 else
                                 {
+                                    // apply token parsing on the web part properties
+                                    control.JsonControlData = parser.ParseString(control.JsonControlData);
+
+                                    // perform processing of web part properties (e.g. include listid property based list title property)
+                                    var webPartPostProcessor = CanvasControlPostProcessorFactory.Resolve(control);
+                                    webPartPostProcessor.Process(control, page);
+
                                     // Is a custom developed client side web part (3rd party)
                                     if (control.Type == WebPartType.Custom)
                                     {
                                         if (!string.IsNullOrEmpty(control.CustomWebPartName))
                                         {
-                                            baseControl = componentsToAdd.Where(p => p.Name.Equals(control.CustomWebPartName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                                            baseControl = componentsToAdd.FirstOrDefault(p => p.Name.Equals(control.CustomWebPartName, StringComparison.InvariantCultureIgnoreCase));
                                         }
                                         else if (control.ControlId != Guid.Empty)
                                         {
-                                            baseControl = componentsToAdd.Where(p => p.Id.Equals($"{{{control.ControlId.ToString()}}}", StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                                            baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals($"{{{control.ControlId.ToString()}}}", StringComparison.CurrentCultureIgnoreCase));
+
+                                            if (baseControl == null)
+                                            {
+                                                baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals(control.ControlId.ToString(), StringComparison.InvariantCultureIgnoreCase));
+                                            }
                                         }
                                     }
                                     // Is an OOB client side web part (1st party)
@@ -218,11 +369,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             case WebPartType.YammerEmbed:
                                                 webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.YammerEmbed);
                                                 break;
-                                            default:
+                                            case WebPartType.CustomMessageRegion:
+                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.CustomMessageRegion);
+                                                break;
+                                            case WebPartType.Divider:
+                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Divider);
+                                                break;
+                                            case WebPartType.MicrosoftForms:
+                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.MicrosoftForms);
+                                                break;
+                                            case WebPartType.Spacer:
+                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Spacer);
+                                                break;
+                                            case WebPartType.ClientWebPart:
+                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.ClientWebPart);
                                                 break;
                                         }
 
-                                        baseControl = componentsToAdd.Where(p => p.Name.Equals(webPartName, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+                                        baseControl = componentsToAdd.FirstOrDefault(p => p.Name.Equals(webPartName, StringComparison.InvariantCultureIgnoreCase));
                                     }
 
                                     if (baseControl != null)
@@ -232,7 +396,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             Order = control.Order
                                         };
 
-                                        page.AddControl(myWebPart, page.Sections[sectionCount].Columns[control.Column], control.Order);
+                                        // Reduce column number by 1 due 0 start indexing
+                                        page.AddControl(myWebPart, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
 
                                         // set properties using json string
                                         if (!String.IsNullOrEmpty(control.JsonControlData))
@@ -241,36 +406,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         }
 
                                         // set using property collection
-                                        // grab the "default" properties so we can deduct their types, needed to correctly apply the set properties
-                                        var controlManifest = JObject.Parse(baseControl.Manifest);
-                                        JToken controlProperties = null;
-                                        if (controlManifest != null)
+                                        if (control.ControlProperties.Any())
                                         {
-                                            controlProperties = controlManifest.SelectToken("preconfiguredEntries[0].properties");
-                                        }
-
-                                        foreach (var property in control.ControlProperties)
-                                        {
-                                            Type propertyType = typeof(string);
-
-                                            if (controlProperties != null)
+                                            // grab the "default" properties so we can deduct their types, needed to correctly apply the set properties
+                                            var controlManifest = JObject.Parse(baseControl.Manifest);
+                                            JToken controlProperties = null;
+                                            if (controlManifest != null)
                                             {
-                                                var defaultProperty = controlProperties.SelectToken(property.Key, false);
-                                                if (defaultProperty != null)
-                                                {
-                                                    propertyType = Type.GetType($"System.{defaultProperty.Type.ToString()}");
+                                                controlProperties = controlManifest.SelectToken("preconfiguredEntries[0].properties");
+                                            }
 
-                                                    if (propertyType == null)
+                                            foreach (var property in control.ControlProperties)
+                                            {
+                                                Type propertyType = typeof(string);
+
+                                                if (controlProperties != null)
+                                                {
+                                                    var defaultProperty = controlProperties.SelectToken(property.Key, false);
+                                                    if (defaultProperty != null)
                                                     {
-                                                        if (defaultProperty.Type.ToString().Equals("integer", StringComparison.InvariantCultureIgnoreCase))
+                                                        propertyType = Type.GetType($"System.{defaultProperty.Type.ToString()}");
+
+                                                        if (propertyType == null)
                                                         {
-                                                            propertyType = typeof(int);
+                                                            if (defaultProperty.Type.ToString().Equals("integer", StringComparison.InvariantCultureIgnoreCase))
+                                                            {
+                                                                propertyType = typeof(int);
+                                                            }
                                                         }
                                                     }
                                                 }
-                                            }
 
-                                            myWebPart.Properties[property.Key] = JToken.FromObject(Convert.ChangeType(parser.ParseString(property.Value), propertyType));
+                                                myWebPart.Properties[property.Key] = JToken.FromObject(Convert.ChangeType(parser.ParseString(property.Value), propertyType));
+                                            }
                                         }
                                     }
                                     else
@@ -279,26 +447,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     }
                                 }
                             }
-                        }                        
+                        }
                     }
 
                     // Persist the page
                     page.Save(pageName);
 
-                    // Make it a news page if requested
-                    if (clientSidePage.PromoteAsNewsArticle)
+                    // Set commenting, ignore on pages of the type Home
+                    if (page.LayoutType != Pages.ClientSidePageLayoutType.Home)
                     {
-                        page.PromoteAsNewsArticle();
+                        // Make it a news page if requested
+                        if (clientSidePage.PromoteAsNewsArticle)
+                        {
+                            page.PromoteAsNewsArticle();
+                        }
+                    }
+
+                    if (clientSidePage.EnableComments)
+                    {
+                        page.EnableComments();
+                    }
+                    else
+                    {
+                        page.DisableComments();
+                    }
+
+                    // Publish page 
+                    if (clientSidePage.Publish)
+                    {
+                        page.Publish();
                     }
 
                 }
             }
+
+            WriteMessage("Done processing Client Side Pages", ProvisioningMessageType.Completed);
             return parser;
         }
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            using (var scope = new PnPMonitoredScope(this.Name))
+            using (new PnPMonitoredScope(this.Name))
             {
                 // Impossible to return all files in the site currently
 
@@ -316,7 +505,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             if (!_willProvision.HasValue)
             {

@@ -32,7 +32,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the order of the Canvas section for a Client-side Page.
         /// </summary>
-        public Int32 Order { get; set; }
+        public float Order { get; set; }
 
         /// <summary>
         /// Defines the type of the Canvas section for a Client-side Page.

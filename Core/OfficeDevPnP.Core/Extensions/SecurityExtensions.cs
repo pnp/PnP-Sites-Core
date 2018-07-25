@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+#if NETSTANDARD2_0
+using System.Net;
+#endif
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.Online.SharePoint.TenantManagement;
 using OfficeDevPnP.Core;
@@ -143,6 +146,7 @@ namespace Microsoft.SharePoint.Client
                     }
                 case BuiltInIdentity.EveryoneButExternalUsers:
                     {
+#if !NETSTANDARD2_0
                         User spReader = null;
                         try
                         {
@@ -311,6 +315,9 @@ namespace Microsoft.SharePoint.Client
                         web.AssociatedVisitorGroup.Update();
                         web.Context.ExecuteQueryRetry();
                         return spReader;
+#else
+                        throw new Exception("Not supported");
+#endif
                     }
             }
 
@@ -320,7 +327,7 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
 #if !ONPREMISES
-#region External sharing management
+        #region External sharing management
         /// <summary>
         /// Get the external sharing settings for the provided site. Only works in Office 365 Multi-Tenant
         /// </summary>
@@ -446,10 +453,10 @@ namespace Microsoft.SharePoint.Client
             return externalUsers;
         }
 
-#endregion
+        #endregion
 #endif
 
-#region Group management
+        #region Group management
         /// <summary>
         /// Returns the integer ID for a given group name
         /// </summary>
@@ -762,7 +769,7 @@ namespace Microsoft.SharePoint.Client
             {
                 return;
             }
-            
+
             var roleAssignments = securableObject.RoleAssignments;
             securableObject.Context.Load(roleAssignments);
             securableObject.Context.ExecuteQueryRetry();
@@ -930,7 +937,7 @@ namespace Microsoft.SharePoint.Client
             {
                 return;
             }
-            
+
             var roleAssignments = securableObject.RoleAssignments;
             securableObject.Context.Load(roleAssignments);
             securableObject.Context.ExecuteQueryRetry();
@@ -1096,7 +1103,7 @@ namespace Microsoft.SharePoint.Client
 
             if (users.AreItemsAvailable)
             {
-                result = users.Any(u => 
+                result = users.Any(u =>
                   u.LoginName.ToLowerInvariant().Contains(userLoginName.ToLowerInvariant())
                 );
             }
@@ -1161,9 +1168,10 @@ namespace Microsoft.SharePoint.Client
                 return false;
             }
         }
-#endregion
+        #endregion
 
-#region Authentication Realm
+
+        #region Authentication Realm
         /// <summary>
         /// Returns the authentication realm for the current web
         /// </summary>
@@ -1172,17 +1180,50 @@ namespace Microsoft.SharePoint.Client
         public static Guid GetAuthenticationRealm(this Web web)
         {
             web.EnsureProperty(w => w.Url);
-
+#if !NETSTANDARD2_0
             var returnGuid = new Guid(TokenHelper.GetRealmFromTargetUrl(new Uri(web.Url)));
 
             return returnGuid;
+#else
+            WebRequest request = WebRequest.Create(new Uri(web.Url) + "/_vti_bin/client.svc");
+            request.Headers.Add("Authorization: Bearer ");
 
+            try
+            {
+                using (request.GetResponse())
+                {
+                }
+            }
+            catch (WebException e)
+            {
+                var bearerResponseHeader = e.Response.Headers["WWW-Authenticate"];
+
+                const string bearer = "Bearer realm=\"";
+                var bearerIndex = bearerResponseHeader.IndexOf(bearer, StringComparison.Ordinal);
+
+                var realmIndex = bearerIndex + bearer.Length;
+
+                if (bearerResponseHeader.Length >= realmIndex + 36)
+                {
+                    var targetRealm = bearerResponseHeader.Substring(realmIndex, 36);
+
+                    Guid realmGuid;
+
+                    if (Guid.TryParse(targetRealm, out realmGuid))
+                    {
+                        return realmGuid;
+                    }
+                }
+            }
+            return Guid.Empty;
+#endif
         }
-#endregion
+        #endregion
 
-#region SecurableObject traversal
 
-#region Helpers
+        #region SecurableObject traversal
+
+        #region Helpers
 
         /// <summary>
         /// Get URL path of a securable object
@@ -1271,6 +1312,7 @@ namespace Microsoft.SharePoint.Client
             else if (obj is ListItem)
             {
                 var item = obj as ListItem;
+                context.Load(item, i => i.HasUniqueRoleAssignments);
                 context.Load(item.RoleAssignments);
                 context.Load(item.RoleAssignments.Groups);
                 context.ExecuteQueryRetry();
@@ -1316,9 +1358,9 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-#endregion
+        #endregion
 
-#region Entity cache
+        #region Entity cache
 
         /// <summary>
         /// A dictionary to cache resolved user emails. key: user login name, value: user email.
@@ -1351,7 +1393,7 @@ namespace Microsoft.SharePoint.Client
         /// Instead it should be replaced by a real cache with ref object to clear up intermediate records periodically.
         /// </summary>
         private static Dictionary<string, UserEntity[]> MockupGroupCache = new Dictionary<string, UserEntity[]>();
-        
+
         /// <summary>
         /// Ensure all users of a given SharePoint group has been cached.
         /// </summary>
@@ -1365,15 +1407,15 @@ namespace Microsoft.SharePoint.Client
                 var users = context.LoadQuery(obj.RoleAssignments.Groups.First(g => g.LoginName == groupLoginName).Users);
                 context.ExecuteQueryRetry();
                 MockupGroupCache[groupLoginName] = (from u in users select new UserEntity()
-                                              {
-                                                  Title = u.Title,
-                                                  Email = u.Email,
-                                                  LoginName = u.LoginName
-                                              }).ToArray();
+                                                    {
+                                                        Title = u.Title,
+                                                        Email = u.Email,
+                                                        LoginName = u.LoginName
+                                                    }).ToArray();
             }
         }
 
-#endregion
+        #endregion
 
         /// <summary>
         /// Get all unique role assignments for a web object and all its descendents down to document or list item level.
@@ -1438,6 +1480,77 @@ namespace Microsoft.SharePoint.Client
             return result;
         }
 
-#endregion
+        /// <summary>
+        /// Get all unique role assignments for a user or a group in a web object and all its descendents down to document or list item level.
+        /// </summary>
+        /// <param name="web">The current web object to be processed.</param>
+        /// <param name="principal">The current web object to be processed.</param>
+        /// <param name="leafBreadthLimit">Skip further visiting on this branch if the number of child items or documents with unique role assignments exceeded leafBreadthLimit. When setting to 0, the process will stop at list / document library level.</param>
+        /// <returns>Returns all role assignments</returns>
+        public static IEnumerable<RoleAssignmentEntity> GetPrincipalUniqueRoleAssignments(this Web web, Principal principal, int leafBreadthLimit = int.MaxValue)
+        {
+            var result = new List<RoleAssignmentEntity>();
+            web.Visit(leafBreadthLimit, (obj, path) =>
+            {
+                if (!obj.HasUniqueRoleAssignments)
+                {
+                    return;
+                }
+                var roleAssignments = web.Context.LoadQuery(obj.RoleAssignments.Where(i => i.Member.LoginName == principal.LoginName));
+                web.Context.ExecuteQueryRetry();
+
+                var assignment = roleAssignments.FirstOrDefault();
+                if (assignment != null)
+                {
+                    var bindings = web.Context.LoadQuery(assignment.RoleDefinitionBindings.Where(b => b.Name != "Limited Access"));
+                    web.Context.Load(assignment.Member, m => m.LoginName, m => m.Title, m => m.PrincipalType, m => m.Id);
+                    web.Context.ExecuteQueryRetry();
+
+                    var bindingList = (from b in bindings select b.Name).ToList();
+                    if (bindingList.Count != 0)
+                    {
+                        if (assignment.Member.PrincipalType == Utilities.PrincipalType.SharePointGroup)
+                        {
+                            EnsureGroupCache(obj, assignment.Member.LoginName);
+                            foreach (var user in MockupGroupCache[assignment.Member.LoginName])
+                            {
+                                if (!MockupUserEmailCache.ContainsKey(user.LoginName))
+                                {
+                                    MockupUserEmailCache[user.LoginName] = user.Email;
+                                }
+                                result.Add(new RoleAssignmentEntity()
+                                {
+                                    Path = path,
+                                    User = user,
+                                    Role = assignment.Member.Title,
+                                    RoleDefinitionBindings = bindingList,
+                                });
+                            }
+                        }
+                        else
+                        {
+                            if (!MockupUserEmailCache.ContainsKey(assignment.Member.LoginName))
+                            {
+                                MockupUserEmailCache[assignment.Member.LoginName] = web.GetUserEmail(assignment.Member.Id);
+                            }
+                            result.Add(new RoleAssignmentEntity()
+                            {
+                                Path = path,
+                                User = new UserEntity()
+                                {
+                                    Title = assignment.Member.Title,
+                                    Email = MockupUserEmailCache[assignment.Member.LoginName],
+                                    LoginName = assignment.Member.LoginName
+                                },
+                                Role = "(Directly Assigned)",
+                                RoleDefinitionBindings = bindingList,
+                            });
+                        }
+                    }
+                }
+            });
+            return result;
+        }
+        #endregion
     }
 }

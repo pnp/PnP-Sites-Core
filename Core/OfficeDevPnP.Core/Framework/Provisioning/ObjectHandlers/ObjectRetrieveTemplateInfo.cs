@@ -33,7 +33,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 template.Id = $"TEMPLATE-{Guid.NewGuid():N}".ToUpper();
                 template.Version = 1;
 
+                // Define the base site template and the template scope
                 template.BaseSiteTemplate = web.GetBaseTemplateId();
+                template.Scope = !web.IsSubSite() ? ProvisioningTemplateScope.RootSite : ProvisioningTemplateScope.Web;
 
                 // Retrieve original Template ID and remove it from Property Bag Entries
                 int provisioningTemplateIdIndex = template.PropertyBagEntries.FindIndex(f => f.Key.Equals("_PnP_ProvisioningTemplateId"));
@@ -81,7 +83,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             if (!_willProvision.HasValue)
             {
