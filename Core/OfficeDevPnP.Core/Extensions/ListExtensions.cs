@@ -1869,7 +1869,7 @@ namespace Microsoft.SharePoint.Client
             Folder formsFolder = null;
             try
             {
-                formsFolder = clientContext.Web.GetFolderByServerRelativeUrl(list.RootFolder.ServerRelativeUrl + "/Forms");
+                formsFolder = list.ParentWeb.GetFolderByServerRelativeUrl(list.RootFolder.ServerRelativeUrl + "/Forms");
                 clientContext.ExecuteQueryRetry();
             }
             catch (FileNotFoundException)
