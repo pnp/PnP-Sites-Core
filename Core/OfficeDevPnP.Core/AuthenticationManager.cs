@@ -606,7 +606,7 @@ namespace OfficeDevPnP.Core
             {
                 try
                 {
-                    ar = _authContext.AcquireToken(resourceId, _clientId, _redirectUri, PromptBehavior.Always);
+                    ar = _authContext.AcquireTokenAsync(resourceId, _clientId, _redirectUri, new PlatformParameters(PromptBehavior.Always)).GetAwaiter().GetResult();
 
                 }
                 catch (Exception acquireEx)
@@ -711,7 +711,7 @@ namespace OfficeDevPnP.Core
 
             clientContext.ExecutingWebRequest += (sender, args) =>
             {
-                var ar = authContext.AcquireToken(host.Scheme + "://" + host.Host + "/", clientAssertionCertificate);
+                var ar = authContext.AcquireTokenAsync(host.Scheme + "://" + host.Host + "/", clientAssertionCertificate).GetAwaiter().GetResult();
                 args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + ar.AccessToken;
             };
 

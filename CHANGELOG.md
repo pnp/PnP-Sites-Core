@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
-
+- Introduced support for ADAL 3.x and updated NuGet package reference accordingly
 - Client side API - Correctly handle data version: split between canvas and webpart data version + export data vesion using the provisionign engine + improved data version detection
 
 ### Deprecated
