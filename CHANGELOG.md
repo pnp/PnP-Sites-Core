@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - Client side API - Correctly handle data version: split between canvas and webpart data version + export data vesion using the provisionign engine + improved data version detection
+- bug fix for using SetDefaultColumnValues in lists in subsites [cnesmark]
 
 ### Deprecated
 
