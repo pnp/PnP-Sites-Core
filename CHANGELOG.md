@@ -11,8 +11,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
-- Introduced support for ADAL 3.x and updated NuGet package reference accordingly
-- Client side API - Correctly handle data version: split between canvas and webpart data version + export data vesion using the provisionign engine + improved data version detection
+- Introduced support for ADAL 3.x and JWT 5.x, updated NuGet package reference accordingly
+- Client side API - Correctly handle data version: split between canvas and webpart data version + export data vesion using the provisioning engine + improved data version detection
 - Bug fix for using SetDefaultColumnValues in lists in subsites [cnesmark]
 - Fixed an issue with lookup fields in a list instance, when a template is applied to update a lookup field [antim-mironov]
 
