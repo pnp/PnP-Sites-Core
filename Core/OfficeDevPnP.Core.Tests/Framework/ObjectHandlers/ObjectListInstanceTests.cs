@@ -21,13 +21,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         private const string TokenizedCalculatedFieldElementSchema = @"<Field Name=""CalculatedField"" StaticName=""CalculatedField"" DisplayName=""Test Calculated Field"" Type=""Calculated"" ResultType=""Text"" ID=""{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}"" Group=""PnP"" ReadOnly=""TRUE"" ><Formula>=[{fieldtitle:DemoField}]&amp;""DemoField""</Formula></Field>";
         private Guid calculatedFieldId = Guid.Parse("{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}");
 
-
+        private List<string> listsForCleanup = new List<string>();
         private string listName;
         private string datarowListName;
+
         [TestInitialize]
         public void Initialize()
         {
             listName = string.Format("Test_{0}", DateTime.Now.Ticks);
+            listsForCleanup.Add(listName);
             datarowListName = $"DataRowTest_{DateTime.Now.Ticks}";
 
         }
@@ -38,13 +40,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             {
                 bool isDirty = false;
 
-                var list = ctx.Web.GetListByUrl(string.Format("lists/{0}", listName));
-                if (list == null)
-                    list = ctx.Web.GetListByUrl(listName);
-                if (list != null)
+                foreach (var l in listsForCleanup)
                 {
-                    list.DeleteObject();
-                    isDirty = true;
+                    var list = ctx.Web.GetListByUrl(string.Format("lists/{0}", l));
+                    if (list == null)
+                    {
+                        list = ctx.Web.GetListByUrl(listName);
+                    }
+                    if (list != null)
+                    {
+                        list.DeleteObject();
+                        isDirty = true;
+                    }
                 }
 
                 // Clean all data row test list instances, also after a previous test case failed.
@@ -933,6 +940,130 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(isHiddenContentTypeStillHidden, "Content type has incorrectly been made visible in the new button");
                 Assert.IsTrue(isContentType2VisibleInNewButton, "Content type 2 has not been made visible in the new button");
             }
+        }
+
+        [TestMethod]
+        public void CanProvisionLookupFieldLocallyInListInstance()
+        {
+            var detailsListName = string.Format("DetailsList_{0}", DateTime.Now.Ticks);
+            var masterListName = string.Format("MasterList_{0}", DateTime.Now.Ticks);
+            listsForCleanup.Add(detailsListName);
+            listsForCleanup.Add(masterListName);
+            var detailsFieldId = Guid.NewGuid();
+            var lookupFieldId = Guid.NewGuid();
+            var lookupMultiFieldId = Guid.NewGuid();
+
+            ProvisioningTemplate template = BuildTemplateForLookupInListInstanceTest(
+                masterListName, detailsListName,
+                lookupFieldId, lookupMultiFieldId, detailsFieldId);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var parser = new TokenParser(ctx.Web, template);
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.LookupFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var detailsList = ctx.Web.GetListByUrl("lists/" + detailsListName);
+                Assert.IsNotNull(detailsList, "Details list not found.");
+
+                var masterList = ctx.Web.GetListByUrl("lists/" + masterListName);
+                Assert.IsNotNull(masterList, "Master list not found.");
+
+                var lf = masterList.GetFieldById<FieldLookup>(lookupFieldId);
+                Assert.IsNotNull(lf, "Lookup field not found.");
+                Assert.IsInstanceOfType(lf, typeof(FieldLookup));
+                Assert.IsTrue(detailsList.FieldExistsByName(lf.LookupField));
+
+                var lmf = masterList.GetFieldById<FieldLookup>(lookupMultiFieldId);
+                Assert.IsNotNull(lmf, "LookupMulti field not found.");
+                Assert.IsInstanceOfType(lmf, typeof(FieldLookup));
+                Assert.IsTrue(detailsList.FieldExistsByName(lmf.LookupField));
+            }
+        }
+
+        [TestMethod]
+        public void CanUpdateLookupFieldLocallyInListInstance()
+        {
+            var detailsListName = string.Format("DetailsList_{0}", DateTime.Now.Ticks);
+            var masterListName = string.Format("MasterList_{0}", DateTime.Now.Ticks);
+            listsForCleanup.Add(detailsListName);
+            listsForCleanup.Add(masterListName);
+            var detailsFieldId = Guid.NewGuid();
+            var lookupFieldId = Guid.NewGuid();
+            var lookupMultiFieldId = Guid.NewGuid();
+
+            ProvisioningTemplate template = BuildTemplateForLookupInListInstanceTest(
+                masterListName, detailsListName,
+                lookupFieldId, lookupMultiFieldId, detailsFieldId);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var parser = new TokenParser(ctx.Web, template);
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.LookupFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var masterListTempalte = template.Lists.Find(x => x.Title == masterListName);
+
+                var lookupFieldTempalte = masterListTempalte.Fields.Find(x => x.SchemaXml.Contains(@"Type=""Lookup"""));
+                var newLookupTitle = "Test Lookup Field UPDATE";
+                lookupFieldTempalte.SchemaXml = UpdateDisplayNameInFieldSchemaXml(lookupFieldTempalte.SchemaXml, newLookupTitle);
+
+                var lookupMultiFieldTempalte = masterListTempalte.Fields.Find(x => x.SchemaXml.Contains(@"Type=""LookupMulti"""));
+                var newLookupMultiTitle = "Test LookupMulti Field UPDATE";
+                lookupMultiFieldTempalte.SchemaXml = UpdateDisplayNameInFieldSchemaXml(lookupMultiFieldTempalte.SchemaXml, newLookupMultiTitle);
+
+                var updatedTemplate = new ProvisioningTemplate();
+                updatedTemplate.Lists.Add(masterListTempalte);
+                parser = new TokenParser(ctx.Web, updatedTemplate);
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, updatedTemplate, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(ctx.Web, updatedTemplate, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.LookupFields).ProvisionObjects(ctx.Web, updatedTemplate, parser, new ProvisioningTemplateApplyingInformation());
+
+                var masterList = ctx.Web.GetListByUrl("lists/" + masterListName);
+                Assert.IsNotNull(masterList, "Master list not found.");
+
+                var lf = masterList.GetFieldById<FieldLookup>(lookupFieldId);
+                Assert.IsInstanceOfType(lf, typeof(FieldLookup));
+                Assert.AreEqual(lf.Title, newLookupTitle);
+
+                var lmf = masterList.GetFieldById<FieldLookup>(lookupMultiFieldId);
+                Assert.IsInstanceOfType(lmf, typeof(FieldLookup));
+                Assert.AreEqual(lmf.Title, newLookupMultiTitle);
+            }
+        }
+
+        private ProvisioningTemplate BuildTemplateForLookupInListInstanceTest(string masterListName, string detailsListName,
+            Guid lookupFieldId, Guid lookupMultiFieldId, Guid detailsFieldId)
+        {
+            string detailsFieldSchema = @"<Field Name=""DetailsField"" StaticName=""DetailsField"" DisplayName=""Details Field"" Type=""Text"" ID=""" + detailsFieldId.ToString("B") + @""" Group=""PnP"" Required=""true""/>";
+            string lookupFieldSchema = @"<Field Name=""LookupField"" StaticName=""LookupField"" DisplayName=""Test Lookup Field"" Type=""Lookup"" List=""Lists\" + detailsListName + @""" ShowField=""DetailsField"" ID=""" + lookupFieldId.ToString("B") + @""" Group=""PnP""></Field>";
+            string lookupMultiFieldSchema = @"<Field Name=""LookupMultiField"" StaticName=""LookupMultiField"" DisplayName=""Test LookupMulti Field"" Type=""LookupMulti"" Mult=""TRUE"" List=""Lists\" + detailsListName + @""" ShowField=""DetailsField"" ID=""" + lookupMultiFieldId.ToString("B") + @""" Group=""PnP""></Field>";
+
+            var template = new ProvisioningTemplate();
+            var detailsList = new ListInstance();
+            detailsList.Url = string.Format("lists/{0}", detailsListName);
+            detailsList.Title = detailsListName;
+            detailsList.TemplateType = (int)ListTemplateType.GenericList;
+            detailsList.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = detailsFieldSchema });
+            template.Lists.Add(detailsList);
+
+            var masterList = new ListInstance();
+            masterList.Url = string.Format("lists/{0}", masterListName);
+            masterList.Title = masterListName;
+            masterList.TemplateType = (int)ListTemplateType.GenericList;
+            masterList.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = lookupFieldSchema });
+            masterList.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = lookupMultiFieldSchema });
+            template.Lists.Add(masterList);
+
+            return template;
+        }
+
+        private string UpdateDisplayNameInFieldSchemaXml(string fieldXml, string displayName)
+        {
+            return System.Text.RegularExpressions.Regex.Replace(fieldXml,
+                @"(DisplayName="")([\w\s]+)("")", "$1" + displayName + "$3");
         }
     }
 }
