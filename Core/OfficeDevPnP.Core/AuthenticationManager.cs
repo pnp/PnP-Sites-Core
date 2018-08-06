@@ -16,6 +16,7 @@ using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Async;
 
 namespace OfficeDevPnP.Core
 {
@@ -569,6 +570,8 @@ namespace OfficeDevPnP.Core
         {
             AuthenticationResult ar = null;
 
+            await new SynchronizationContextRemover();
+
             try
             {
                 if (_tokenCache != null)
@@ -606,7 +609,7 @@ namespace OfficeDevPnP.Core
             {
                 try
                 {
-                    ar = _authContext.AcquireToken(resourceId, _clientId, _redirectUri, PromptBehavior.Always);
+                    ar = await _authContext.AcquireTokenAsync(resourceId, _clientId, _redirectUri, new PlatformParameters(PromptBehavior.Always));
 
                 }
                 catch (Exception acquireEx)
@@ -711,7 +714,9 @@ namespace OfficeDevPnP.Core
 
             clientContext.ExecutingWebRequest += (sender, args) =>
             {
-                var ar = authContext.AcquireToken(host.Scheme + "://" + host.Host + "/", clientAssertionCertificate);
+                var ar = Task.Run(() => authContext
+                    .AcquireTokenAsync(host.Scheme + "://" + host.Host + "/", clientAssertionCertificate))
+                    .GetAwaiter().GetResult();
                 args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + ar.AccessToken;
             };
 

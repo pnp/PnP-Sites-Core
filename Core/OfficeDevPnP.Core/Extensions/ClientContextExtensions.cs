@@ -12,11 +12,8 @@ using System.Configuration;
 using System.Threading.Tasks;
 using System.Net.Http;
 using Newtonsoft.Json;
-using System.IdentityModel.Tokens;
 using OfficeDevPnP.Core.Utilities.Async;
-#if NETSTANDARD2_0
 using System.IdentityModel.Tokens.Jwt;
-#endif
 
 #if !ONPREMISES
 using OfficeDevPnP.Core.Sites;
