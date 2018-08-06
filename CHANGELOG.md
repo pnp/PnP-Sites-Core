@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [2.29.1808.0 - unreleased]
+## [3.0.1808.0 - August 2018 release]
 
 ### Added
 
