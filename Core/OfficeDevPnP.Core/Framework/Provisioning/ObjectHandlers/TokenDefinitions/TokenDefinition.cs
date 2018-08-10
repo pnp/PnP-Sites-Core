@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.SharePoint.Client;
 
@@ -12,6 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         private ClientContext _context;
         protected string CacheValue;
         private readonly string[] _tokens;
+        private static readonly Dictionary<string, Regex> _tokeRegexes = new Dictionary<string, Regex>(1500);
 
         /// <summary>
         /// Constructor
@@ -60,10 +62,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         /// <returns>Returns all Regular Expressions</returns>
         public Regex[] GetRegex()
         {
+            if (_tokeRegexes.Count == this._tokens.Length) return _tokeRegexes.Values.ToArray();
+
+            _tokeRegexes.Clear();
             var regexs = new Regex[this._tokens.Length];
             for (var q = 0; q < this._tokens.Length; q++)
             {
-                regexs[q] = new Regex(this._tokens[q], RegexOptions.IgnoreCase);
+                regexs[q] = new Regex(this._tokens[q], RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                _tokeRegexes.Add(this._tokens[q], regexs[q]);
             }
             return regexs;
         }
@@ -75,7 +81,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         /// <returns>Returns RegularExpression</returns>
         public Regex GetRegexForToken(string token)
         {
-            return new Regex(token, RegexOptions.IgnoreCase);
+            if (!_tokeRegexes.TryGetValue(token, out var regEx))
+            {
+                regEx = new Regex(token, RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                _tokeRegexes[token] = regEx;
+            }
+            return regEx;
         }
 
         /// <summary>
