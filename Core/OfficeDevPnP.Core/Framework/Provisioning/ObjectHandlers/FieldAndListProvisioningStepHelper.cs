@@ -7,7 +7,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     {
         internal static Step GetFieldProvisioningStep(this Field templateField, TokenParser parser)
         {
-            var schemaElement = XElement.Parse(parser.ParseString(templateField.SchemaXml));
+            var schemaElement = XElement.Parse(templateField.SchemaXml);
             var type = (string)schemaElement.Attribute("Type");
             if (type != "Lookup" && type != "LookupMulti")
             {
