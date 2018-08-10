@@ -13,6 +13,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
+using Field = OfficeDevPnP.Core.Framework.Provisioning.Model.Field;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -332,15 +333,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var createdCT = web.CreateContentType(name, description, id, group);
 
-            var fieldsRefsToProcess = templateContentType.FieldRefs.Select(fr => new
+            foreach (Field siteField in template.SiteFields)
             {
-                FieldRef = fr,
-                TemplateField = template.SiteFields.FirstOrDefault(tf => (Guid)XElement.Parse(parser.ParseString(tf.SchemaXml)).Attribute("ID") == fr.Id)
-            }).Where(frData =>
-                frData.TemplateField == null // Process fields refs if the target is not defined in the current template
-                || frData.TemplateField.GetFieldProvisioningStep(parser) == _step // or process field ref only if the current step is matching
-            ).Select(fr => fr.FieldRef).ToArray();
+                siteField.SchemaXml = parser.ParseString(siteField.SchemaXml);
+            }
 
+            List<FieldRef> fieldsRefsToProcess = new List<FieldRef>();
+            foreach (FieldRef fr in templateContentType.FieldRefs)
+            {
+                var templateField = template.SiteFields.FirstOrDefault(tf => (Guid)XElement.Parse(tf.SchemaXml).Attribute("ID") == fr.Id);
+                if (templateField == null || templateField.GetFieldProvisioningStep(parser) == _step)
+                {
+                    fieldsRefsToProcess.Add(fr);
+                }
+            }
 
             foreach (var fieldRef in fieldsRefsToProcess)
             {
