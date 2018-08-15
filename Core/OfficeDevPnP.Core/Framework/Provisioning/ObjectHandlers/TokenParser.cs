@@ -544,7 +544,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (string token in tokenDefinition.GetTokens())
                 {
                     if (TokenDictionary.ContainsKey(token)) continue;
-                    if (tokensToSkip != null && tokensToSkip.Contains(token, StringComparer.OrdinalIgnoreCase)) continue;
                     string value = tokenDefinition.GetReplaceValue();
                     TokenDictionary[Regex.Unescape(token)] = value;
                 }
@@ -600,7 +599,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (string token in tokenDefinition.GetTokens())
                 {
                     if (TokenDictionary.ContainsKey(token)) continue;
-                    if (tokensToSkip != null && tokensToSkip.Contains(token, StringComparer.OrdinalIgnoreCase)) continue;
                     string value = tokenDefinition.GetReplaceValue();
                     TokenDictionary[Regex.Unescape(token)] = value;
                 }
