@@ -333,15 +333,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var createdCT = web.CreateContentType(name, description, id, group);
 
-            foreach (Field siteField in template.SiteFields)
-            {
-                siteField.SchemaXml = parser.ParseString(siteField.SchemaXml);
-            }
-
             List<FieldRef> fieldsRefsToProcess = new List<FieldRef>();
             foreach (FieldRef fr in templateContentType.FieldRefs)
             {
-                var templateField = template.SiteFields.FirstOrDefault(tf => (Guid)XElement.Parse(tf.SchemaXml).Attribute("ID") == fr.Id);
+                var templateField = template.SiteFields.FirstOrDefault(tf => tf.GetFieldId(parser) == fr.Id);
                 if (templateField == null || templateField.GetFieldProvisioningStep(parser) == _step)
                 {
                     fieldsRefsToProcess.Add(fr);
@@ -669,18 +664,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         newCT.DocumentSetTemplate = new DocumentSetTemplate(
                             null, // TODO: WelcomePage not yet supported
                             (from allowedCT in documentSetTemplate.AllowedContentTypes.AsEnumerable()
-                             select allowedCT.StringValue).ToArray(),
+                             select allowedCT.StringValue).ToList(),
                             (from defaultDocument in documentSetTemplate.DefaultDocuments.AsEnumerable()
                              select new DefaultDocument
                              {
                                  ContentTypeId = defaultDocument.ContentTypeId.StringValue,
                                  Name = defaultDocument.Name,
                                  FileSourcePath = String.Empty, // TODO: How can we extract the proper file?!
-                             }).ToArray(),
+                             }).ToList(),
                             (from sharedField in documentSetTemplate.SharedFields.AsEnumerable()
-                             select sharedField.Id).ToArray(),
+                             select sharedField.Id).ToList(),
                             (from welcomePageField in documentSetTemplate.WelcomePageFields.AsEnumerable()
-                             select welcomePageField.Id).ToArray()
+                             select welcomePageField.Id).ToList()
                         );
                     }
 
