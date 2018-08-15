@@ -60,13 +60,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         /// Gets array of regular expressions
         /// </summary>
         /// <returns>Returns all Regular Expressions</returns>
-        [Obsolete]
+        [Obsolete("No longer in use")]
         public Regex[] GetRegex()
         {
             var regexs = new Regex[this._tokens.Length];
             for (var q = 0; q < this._tokens.Length; q++)
             {
-                regexs[q] = new Regex(this._tokens[q], RegexOptions.IgnoreCase | RegexOptions.Compiled);
+                regexs[q] = new Regex(this._tokens[q], RegexOptions.IgnoreCase);
             }
             return regexs;
         }
@@ -76,7 +76,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         /// </summary>
         /// <param name="token">token string</param>
         /// <returns>Returns RegularExpression</returns>
-        [Obsolete]
+        [Obsolete("No longer in use")]
         public Regex GetRegexForToken(string token)
         {
             return new Regex(token, RegexOptions.IgnoreCase);
