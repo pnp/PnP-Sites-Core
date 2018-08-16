@@ -20,20 +20,20 @@ using FileLevel = OfficeDevPnP.Core.Framework.Provisioning.Model.FileLevel;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
     /// <summary>
-    /// Implements the logic to serialize a schema of version 201805
+    /// Implements the logic to serialize a schema of version 201807
     /// </summary>
-    internal class XMLPnPSchemaV201805Serializer : XmlPnPSchemaBaseSerializer<V201805.ProvisioningTemplate>
+    internal class XMLPnPSchemaV201807Serializer : XmlPnPSchemaBaseSerializer<V201807.ProvisioningTemplate>
     {
-        public XMLPnPSchemaV201805Serializer():
+        public XMLPnPSchemaV201807Serializer():
             base(typeof(XMLConstants)
                 .Assembly
-                .GetManifestResourceStream("OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.ProvisioningSchema-2018-05.xsd"))
+                .GetManifestResourceStream("OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.ProvisioningSchema-2018-07.xsd"))
         {
         }
 
         public override string NamespaceUri
         {
-            get { return (XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2018_05); }
+            get { return (XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2018_07); }
         }
 
         public override string NamespacePrefix

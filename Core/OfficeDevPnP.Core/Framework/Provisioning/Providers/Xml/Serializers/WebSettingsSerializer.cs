@@ -34,6 +34,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 var target = Activator.CreateInstance(webSettingsType, true);
                 var expressions = new Dictionary<string, IResolver>();
                 expressions.Add($"{webSettingsType}.NoCrawlSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{webSettingsType}.QuickLaunchEnabledSpecified", new ExpressionValueResolver(() => true));
 
                 PnPObjectsMapper.MapProperties(template.WebSettings, target, expressions, recursive: true);
 

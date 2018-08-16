@@ -88,6 +88,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 }
             }
         }
+
+        /// <summary>
+        /// Defines the page fields values, if any
+        /// </summary>
+        public Dictionary<String, String> FieldValues { get; set; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Defines the Content Type ID for the page, if it is a custom one
+        /// </summary>
+        public String ContentTypeID { get; set; }
+
         #endregion
 
         #region Constructors
@@ -110,7 +121,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|",
                 this.Sections.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.PageName?.GetHashCode() ?? 0,
                 this.PromoteAsNewsArticle.GetHashCode(),
@@ -118,7 +129,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Layout?.GetHashCode() ?? 0,
                 this.Publish.GetHashCode(),
                 this.EnableComments.GetHashCode(),
-                this.Title?.GetHashCode() ?? 0
+                this.Title?.GetHashCode() ?? 0,
+                this.FieldValues.Aggregate(0, (acc, next) => acc += (next.Value != null ? next.Value.GetHashCode() : 0)),
+                this.ContentTypeID.GetHashCode()
             ).GetHashCode());
         }
 
@@ -155,7 +168,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Layout == other.Layout &&
                 this.Publish == other.Publish &&
                 this.EnableComments == other.EnableComments &&
-                this.Title == other.Title
+                this.Title == other.Title &&
+                this.FieldValues.DeepEquals(other.FieldValues) &&
+                this.ContentTypeID == other.ContentTypeID
                 );
         }
 

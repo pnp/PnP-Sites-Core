@@ -39,6 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                 var expressions = new Dictionary<string, IResolver>();
                 expressions.Add($"{propertyBagType}.OverwriteSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{propertyBagType}.IndexedSpecified", new ExpressionValueResolver(() => true));
 
                 persistence.GetPublicInstanceProperty("PropertyBagEntries")
                     .SetValue(

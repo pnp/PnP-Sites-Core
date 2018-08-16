@@ -27,12 +27,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             {
                 var expressions = new Dictionary<Expression<Func<ClientSidePage, Object>>, IResolver>();
 
-                // Manage CanvasControlProperties for CanvasControl
+                // Manage CanvasControlProperties for CanvasControl and FieldValues for ClientSidePage
                 var stringDictionaryTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var stringDictionaryType = Type.GetType(stringDictionaryTypeName, true);
                 var stringDictionaryKeySelector = CreateSelectorLambda(stringDictionaryType, "Key");
                 var stringDictionaryValueSelector = CreateSelectorLambda(stringDictionaryType, "Value");
+
                 expressions.Add(cp => cp.Sections[0].Controls[0].ControlProperties,
+                    new FromArrayToDictionaryValueResolver<String, String>(
+                        stringDictionaryType, stringDictionaryKeySelector, stringDictionaryValueSelector));
+
+                // FieldValues
+                expressions.Add(cp => cp.FieldValues,
                     new FromArrayToDictionaryValueResolver<String, String>(
                         stringDictionaryType, stringDictionaryKeySelector, stringDictionaryValueSelector));
 
@@ -91,7 +97,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                         (s, p) => Enum.Parse(canvasControlWebPartTypeType, s.GetPublicInstancePropertyValue("Type").ToString()))
                         );
 
-                // Manage CanvasControlProperties for CanvasControl
+                // Manage CanvasControlProperties for CanvasControl and FieldValues for ClientSidePage
                 var dictionaryItemTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var dictionaryItemType = Type.GetType(dictionaryItemTypeName, true);
                 var dictionaryItemKeySelector = CreateSelectorLambda(dictionaryItemType, "Key");
@@ -100,6 +106,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add($"{canvasControlType}.CanvasControlProperties",
                     new FromDictionaryToArrayValueResolver<string, string>(
                         dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector, "ControlProperties"));
+
+                expressions.Add($"{clientSidePageType}.FieldValues", new FromDictionaryToArrayValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
 
                 // Manage Header for client side page
                 var clientSidePageHeaderType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ClientSidePageHeader, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", false);

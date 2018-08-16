@@ -124,6 +124,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     System.Reflection.BindingFlags.Public | 
                     System.Reflection.BindingFlags.IgnoreCase).GetValue(wrapper);
 
+                // TODO: Here we need to add Sequence handling ...
+
                 if (wrapperTemplates != null)
                 {
                     // Search for the requested Provisioning Template
