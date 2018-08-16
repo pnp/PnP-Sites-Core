@@ -9,8 +9,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [3.1.1809.0 - unreleased]
 
 ### Added
+- Added support to provision hidden views
 
 ### Changed
+- Fixed issue where hidden views created by XsltListView web part where removed on a list during provisioning
 
 ### Deprecated
 
