@@ -11,7 +11,7 @@ using System.Web.UI;
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
     /// <summary>
     /// Controls of type 4 ( = text control)
     /// </summary>

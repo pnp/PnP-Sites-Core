@@ -8,7 +8,7 @@ using System.Web.UI;
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
 
     /// <summary>
     /// Represents a column in a canvas section

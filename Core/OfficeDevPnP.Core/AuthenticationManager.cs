@@ -44,14 +44,18 @@ namespace OfficeDevPnP.Core
         private string appOnlyAccessToken;
         private object tokenLock = new object();
         private CookieContainer fedAuth = null;
+
+#if !ONPREMISES && !NETSTANDARD2_0
         private string _contextUrl;
         private TokenCache _tokenCache;
         private string _commonAuthority = "https://login.windows.net/Common";
         private static AuthenticationContext _authContext = null;
         private string _clientId;
         private Uri _redirectUri;
+#endif
 
-#region Authenticating against SharePoint Online using credentials or app-only
+
+        #region Authenticating against SharePoint Online using credentials or app-only
         /// <summary>
         /// Returns a SharePointOnline ClientContext object
         /// </summary>
@@ -552,7 +556,7 @@ namespace OfficeDevPnP.Core
             return clientContext;
         }
 
-#if !NETSTANDARD2_0
+#if !ONPREMISES && !NETSTANDARD2_0
         async void clientContext_NativeApplicationExecutingWebRequest(object sender, WebRequestEventArgs e)
         {
             var host = new Uri(_contextUrl);
@@ -565,7 +569,7 @@ namespace OfficeDevPnP.Core
         }
 #endif
 
-#if !NETSTANDARD2_0
+#if !ONPREMISES && !NETSTANDARD2_0
         private async Task<AuthenticationResult> AcquireNativeApplicationTokenAsync(string authContextUrl, string resourceId)
         {
             AuthenticationResult ar = null;
@@ -759,10 +763,10 @@ namespace OfficeDevPnP.Core
                     }
             }
         }
-        #endregion
+#endregion
 
 #if !NETSTANDARD2_0
-        #region Authenticating against SharePoint on-premises using ADFS based authentication
+#region Authenticating against SharePoint on-premises using ADFS based authentication
         /// <summary>
         /// Returns a SharePoint on-premises ClientContext for sites secured via ADFS
         /// </summary>
@@ -874,7 +878,7 @@ namespace OfficeDevPnP.Core
         }
 
 
-        #endregion
+#endregion
 #endif
     }
 }

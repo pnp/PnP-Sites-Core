@@ -117,7 +117,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             // Drop list elements if they're not provided in the source XML
             string[] ListElements = new string[] {
                 "ContentTypeBindings", "Views", "FieldRefs", "Fields"
-#if ONPREMISES
+#if SP2013 || SP2016
                 , "Webhooks"
 #endif
             };
@@ -130,7 +130,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                     targetListElementXML.Remove();
                 }
 
-#if ONPREMISES
+#if SP2013 || SP2016
                 // Drop webhooks element from on-premises validation flow
                 if (listElement.Equals("Webhooks", StringComparison.InvariantCultureIgnoreCase))
                 {

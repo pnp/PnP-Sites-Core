@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.ALM
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
     /// <summary>
     /// Allows Application Lifecycle Management for Apps
     /// </summary>

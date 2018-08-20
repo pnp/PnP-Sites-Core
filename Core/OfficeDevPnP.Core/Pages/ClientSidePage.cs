@@ -16,7 +16,7 @@ using System.Web.UI;
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
     /// <summary>
     /// Represents a modern client side page with all it's contents
     /// </summary>
@@ -1473,7 +1473,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
         }
-        #endregion
+#endregion
     }
 #endif
-}
+        }

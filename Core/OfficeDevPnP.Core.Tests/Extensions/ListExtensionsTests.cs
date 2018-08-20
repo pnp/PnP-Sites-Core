@@ -491,7 +491,7 @@ namespace Microsoft.SharePoint.Client.Tests
         #endregion
 
         #region Webhooks tests
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         [TestMethod]
         public void AddWebhookTest()
         {

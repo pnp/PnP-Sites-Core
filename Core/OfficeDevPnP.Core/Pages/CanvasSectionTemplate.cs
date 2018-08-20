@@ -1,6 +1,6 @@
 ﻿namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
     /// <summary>
     /// The type of canvas being used
     /// </summary>

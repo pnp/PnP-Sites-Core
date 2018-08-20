@@ -1,6 +1,6 @@
 ﻿namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
     /// <summary>
     /// Class holding a collection of client side webparts (retrieved via the _api/web/GetClientSideWebParts REST call)
     /// </summary>

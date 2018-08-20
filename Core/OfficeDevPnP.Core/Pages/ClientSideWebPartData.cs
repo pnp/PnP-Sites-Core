@@ -2,7 +2,7 @@
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
     /// <summary>
     /// Json web part data that will be included in each client side web part (de-)serialization (data-sp-webpartdata)
     /// </summary>

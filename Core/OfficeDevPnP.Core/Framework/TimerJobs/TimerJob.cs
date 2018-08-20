@@ -54,8 +54,8 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         private string clientId;
         private string clientSecret;
         private bool highTrust;
-        private string azureTenant;
         private X509Certificate2 certificate;
+        private string azureTenant;
         private string certificatePath;
         private string certificateIssuerId;
         private SecureString certificatePassword;
@@ -76,16 +76,16 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         private ManualResetEvent doneEvent;
         private bool useThreading = true;
         private int maximumThreads = 5;
-        #endregion
+#endregion
 
-        #region Events
+#region Events
         /// <summary>
         /// TimerJobRun event
         /// </summary>
         public event TimerJobRunHandler TimerJobRun;
-        #endregion
+#endregion
 
-        #region Constructor
+#region Constructor
         /// <summary>
         /// Simpliefied constructor for timer job, version is always set to "1.0"
         /// </summary>
@@ -125,9 +125,9 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Constructor, this.name, this.version);
         }
-        #endregion
+#endregion
 
-        #region Job information & state management
+#region Job information & state management
         /// <summary>
         /// Gets the name of this timer job
         /// </summary>
@@ -238,9 +238,9 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_MaxThreadSet, this.maximumThreads);
             }
         }
-        #endregion
+#endregion
 
-        #region Run job
+#region Run job
         /// <summary>   
         /// Triggers the timer job to start running
         /// </summary>
@@ -586,9 +586,9 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
 
             return batches;
         }
-        #endregion
+#endregion
 
-        #region Authentication methods and attributes
+#region Authentication methods and attributes
 
         /// <summary>
         /// Gets the authentication type that the timer job will use. This will be set as part 
@@ -1035,9 +1035,9 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 return am;
             }
         }
-        #endregion
+#endregion
 
-        #region Site scope methods and attributes
+#region Site scope methods and attributes
 
         /// <summary>
         /// Does the TimerJob also need to enumerate OD4B site collections
@@ -1675,9 +1675,9 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 yield return currentUrl;
             }
         }
-        #endregion
+#endregion
 
-        #region Helper methods
+#region Helper methods
         /// <summary>
         /// Verifies if the passed Url has a valid structure
         /// </summary>
@@ -1859,6 +1859,6 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 return false;
             }
         }
-        #endregion
+#endregion
     }
 }

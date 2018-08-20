@@ -59,7 +59,7 @@ namespace Microsoft.SharePoint.Client
             return clientContext.Clone(new Uri(siteUrl));
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Executes the current set of data retrieval queries and method invocations and retries it if needed using the Task Library.
         /// </summary>
@@ -83,21 +83,21 @@ namespace Microsoft.SharePoint.Client
         /// <param name="userAgent">UserAgent string value to insert for this request. You can define this value in your app's config file using key="SharePointPnPUserAgent" value="PnPRocks"></param>
         public static void ExecuteQueryRetry(this ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
         {
-#if !ONPREMISES            
+#if !ONPREMISES || SP2019
             Task.Run(() => ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent)).GetAwaiter().GetResult();
 #else
             ExecuteQueryImplementation(clientContext, retryCount, delay, userAgent);
 #endif
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         private static async Task ExecuteQueryImplementation(ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
 #else
         private static void ExecuteQueryImplementation(ClientRuntimeContext clientContext, int retryCount = 10, int delay = 500, string userAgent = null)
 #endif
         {
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             await new SynchronizationContextRemover();
 #endif
 
@@ -126,9 +126,7 @@ namespace Microsoft.SharePoint.Client
 
                     // Make CSOM request more reliable by disabling the return value cache. Given we 
                     // often clone context objects and the default value is
-#if !ONPREMISES
-                    clientContext.DisableReturnValueCache = true;
-#elif SP2016
+#if !ONPREMISES || SP2016 || SP2019
                     clientContext.DisableReturnValueCache = true;
 #endif
                     // Add event handler to "insert" app decoration header to mark the PnP Sites Core library as a known application
@@ -137,7 +135,7 @@ namespace Microsoft.SharePoint.Client
                     clientContext.ExecutingWebRequest += appDecorationHandler;
 
                     // DO NOT CHANGE THIS TO EXECUTEQUERYRETRY
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
 #if !NETSTANDARD2_0
                     await clientContext.ExecuteQueryAsync();
 #else
@@ -161,7 +159,7 @@ namespace Microsoft.SharePoint.Client
                     {
                         Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, backoffInterval);
                         //Add delay for retry
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
                         await Task.Delay(backoffInterval);
 #else
                         Thread.Sleep(backoffInterval);
@@ -244,9 +242,7 @@ namespace Microsoft.SharePoint.Client
             ClientContext clonedClientContext = new ClientContext(siteUrl);
             clonedClientContext.AuthenticationMode = clientContext.AuthenticationMode;
             clonedClientContext.ClientTag = clientContext.ClientTag;
-#if !ONPREMISES
-            clonedClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
-#elif SP2016
+#if !ONPREMISES || SP2016 || SP2019
             clonedClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
 #endif
 
@@ -431,7 +427,7 @@ namespace Microsoft.SharePoint.Client
         public static bool HasMinimalServerLibraryVersion(this ClientRuntimeContext clientContext, Version minimallyRequiredVersion)
         {
             bool hasMinimalVersion = false;
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             try
             {
                 clientContext.ExecuteQueryRetry();

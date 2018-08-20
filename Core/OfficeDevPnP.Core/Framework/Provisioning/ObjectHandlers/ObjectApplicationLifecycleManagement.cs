@@ -10,7 +10,7 @@ using OfficeDevPnP.Core.ALM;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
     internal class ObjectApplicationLifecycleManagement : ObjectHandlerBase
     {
         public override string Name

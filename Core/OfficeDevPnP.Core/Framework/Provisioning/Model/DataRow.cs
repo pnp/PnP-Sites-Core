@@ -73,7 +73,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Constructor for DataRow class
         /// </summary>
         /// <param name="values">DataRow Values</param>
-        /// <param name="key">Key column value in case of KeyColumn it set on collection</param>
+        /// <param name="keyValue">Key column value in case of KeyColumn it set on collection</param>
         public DataRow(Dictionary<string, string> values, string keyValue) : this(values, null, keyValue)
         { }
 

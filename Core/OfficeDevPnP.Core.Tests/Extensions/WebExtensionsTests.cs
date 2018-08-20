@@ -728,7 +728,7 @@ namespace Microsoft.SharePoint.Client.Tests
         #endregion
 
         #region ClientSide Package Deployment tests
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         [TestMethod()]
         public void DeploySharePointFrameworkSolutionTest()
         {

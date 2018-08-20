@@ -18,7 +18,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using OfficeDevPnP.Core.Utilities.Async;
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
 using OfficeDevPnP.Core.Utilities.Webhooks;
 #endif
 
@@ -148,7 +148,7 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region Webhooks
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Add the a Webhook subscription to a list
         /// Note: If the access token is not specified, it will cost a dummy request to retrieve it

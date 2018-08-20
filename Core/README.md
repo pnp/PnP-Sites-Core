@@ -113,18 +113,26 @@ Go here to learn more about the [ADFS usernamemixed authentication](https://gith
 SharePoint 2013 depends on version 15 client assemblies, SharePoint 2016 depends on 16 client assemblies whereas Office 365 (SharePoint Online) uses version 16.1 client assemblies. The PnP core solution foresees support for this. The solution contains 6 configurations:
 - **Debug**: compiles the solution in debug mode using the **version 16.1** assemblies (=default)
 - **Release**: compiles the solution in release mode using the **version 16.1** assemblies
-- **Debug15**: compiles the solution in debug mode using the **version 15** assemblies (=default)
-- **Release15**: compiles the solution in release mode using the **version 15** assemblies
-- **Debug16**: compiles the solution in debug mode using the **version 16** assemblies (=default)
-- **Release16**: compiles the solution in release mode using the **version 16** assemblies
+- **DebugSP2013**: compiles the solution in debug mode using the **version 15** assemblies (=default)
+- **ReleaseSP2013**: compiles the solution in release mode using the **version 15** assemblies
+- **DebugSP2016**: compiles the solution in debug mode using the **version 16** assemblies (=default)
+- **ReleaseSP2016**: compiles the solution in release mode using the **version 16** assemblies
+- **DebugSP2019**: compiles the solution in debug mode using the **version 16** assemblies (=default)
+- **ReleaseSP2019**: compiles the solution in release mode using the **version 16** assemblies
 
-If you want to use the core library in a SharePoint 2013 project you'll need to switch the configuration to either Debug15 or Release15. For using against SharePoint 2016 you switch to either Debug16 or Release16. This can be easily done from Visual Studio:
+If you want to use the core library in a SharePoint 2013 project you'll need to switch the configuration to either DebugSP2013 or ReleaseSP2013. 
+For using against SharePoint 2016 you switch to either DebugSP2016 or ReleaseSP2016. 
+For using against SharePoint 2019 you switch to either DebugSP2019 or ReleaseSP2019. 
+This can be easily done from Visual Studio:
 
 ![](http://i.imgur.com/bxkuadQ.png)
 
-Also a compiler directive **ONPREMISES** has been set. This compiler directive is used in the code to choose a different implementation for SharePoint On-Premises (2013/2016) where needed. There's also specific compiler directives:
+Also a compiler directive **ONPREMISES** has been set. 
+This compiler directive is used in the code to choose a different implementation for SharePoint On-Premises (2013/2016/2019) where needed. 
+There's also specific compiler directives:
 - **SP2013** for SharePoint 2013 specific code
 - **SP2016** for SharePoint 2016 specific code
+- **SP2019** for SharePoint 2019 specific code
 
 ![](http://i.imgur.com/xqDUgcd.png)
 

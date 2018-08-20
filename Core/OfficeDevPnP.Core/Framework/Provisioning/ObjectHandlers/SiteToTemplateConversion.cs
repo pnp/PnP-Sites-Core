@@ -85,7 +85,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Files)) objectHandlers.Add(new ObjectFiles());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Pages)) objectHandlers.Add(new ObjectPages());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.PageContents)) objectHandlers.Add(new ObjectPageContents());
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.PageContents)) objectHandlers.Add(new ObjectClientSidePageContents());
 #endif
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.PropertyBagEntries)) objectHandlers.Add(new ObjectPropertyBagEntry());
@@ -250,6 +250,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Tenant)) objectHandlers.Add(new ObjectTenant());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ApplicationLifecycleManagement)) objectHandlers.Add(new ObjectApplicationLifecycleManagement());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.WebApiPermissions)) objectHandlers.Add(new ObjectWebApiPermissions());
+#endif
+#if !ONPREMISES || SP2019
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Pages)) objectHandlers.Add(new ObjectClientSidePages());
 #endif
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.CustomActions)) objectHandlers.Add(new ObjectCustomActions());

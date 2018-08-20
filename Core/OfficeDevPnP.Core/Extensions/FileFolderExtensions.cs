@@ -28,13 +28,13 @@ namespace Microsoft.SharePoint.Client
         /// <param name="comment">Message to be recorded with the approval</param>
         public static void ApproveFile(this Web web, string serverRelativeUrl, string comment)
         {
-#if ONPREMISES
-            web.ApproveFileImplementation(serverRelativeUrl, comment);
-#else
+#if !ONPREMISES  || SP2019
             Task.Run(() => web.ApproveFileImplementation(serverRelativeUrl, comment)).GetAwaiter().GetResult();
+#else
+            web.ApproveFileImplementation(serverRelativeUrl, comment);
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Approves a file
         /// </summary>
@@ -53,29 +53,32 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">The web to process</param>
         /// <param name="serverRelativeUrl">The server relative URL of the file to approve</param>
         /// <param name="comment">Message to be recorded with the approval</param>
-#if ONPREMISES
-        private static void ApproveFileImplementation(this Web web, string serverRelativeUrl, string comment)
-        { 
-            var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
-#else
+
+#if !ONPREMISES || SP2019
         private static async Task ApproveFileImplementation(this Web web, string serverRelativeUrl, string comment)
         {
             var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+
+#else
+        private static void ApproveFileImplementation(this Web web, string serverRelativeUrl, string comment)
+        { 
+            var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
 #endif
             web.Context.Load(file, x => x.Exists, x => x.CheckOutType);
-#if ONPREMISES
-            web.Context.ExecuteQueryRetry();
-#else
+
+#if !ONPREMISES || SP2019
             await web.Context.ExecuteQueryRetryAsync();
+#else
+            web.Context.ExecuteQueryRetry();
 #endif
 
             if (file.Exists)
             {
                 file.Approve(comment);
-#if ONPREMISES
-                web.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                 await web.Context.ExecuteQueryRetryAsync();
+#else
+                web.Context.ExecuteQueryRetry();                
 #endif
             }
         }
@@ -89,14 +92,14 @@ namespace Microsoft.SharePoint.Client
         /// <param name="comment">Message to be recorded with the approval</param>
         public static void CheckInFile(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
         {
-#if ONPREMISES
-            web.CheckInFileImplementation(serverRelativeUrl, checkinType, comment);
-#else
+#if !ONPREMISES || SP2019
             Task.Run(() => web.CheckInFileImplementation(serverRelativeUrl, checkinType, comment)).GetAwaiter().GetResult();
+#else
+            web.CheckInFileImplementation(serverRelativeUrl, checkinType, comment);            
 #endif
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Checks in a file
         /// </summary>
@@ -117,34 +120,34 @@ namespace Microsoft.SharePoint.Client
         /// <param name="serverRelativeUrl">The server relative URL of the file to checkin</param>
         /// <param name="checkinType">The type of the checkin</param>
         /// <param name="comment">Message to be recorded with the approval</param>
-#if ONPREMISES
-        public static void CheckInFileImplementation(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
-        {
-            var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
-#else
+#if !ONPREMISES || SP2019
         public static async Task CheckInFileImplementation(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
         {
             var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+#else
+        public static void CheckInFileImplementation(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
+        {
+            var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);        
 #endif
-            var scope = new ConditionalScope(web.Context, () => !file.ServerObjectIsNull.Value && file.Exists && file.CheckOutType != CheckOutType.None);
+        var scope = new ConditionalScope(web.Context, () => !file.ServerObjectIsNull.Value && file.Exists && file.CheckOutType != CheckOutType.None);
 
             using (scope.StartScope())
             {
                 web.Context.Load(file);
             }
-#if ONPREMISES
-            web.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await web.Context.ExecuteQueryAsync();
+#else
+            web.Context.ExecuteQueryRetry();            
 #endif
 
             if (scope.TestResult.Value)
             {
                 file.CheckIn(comment, checkinType);
-#if ONPREMISES
-                web.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                 await web.Context.ExecuteQueryAsync();
+#else
+                web.Context.ExecuteQueryRetry();                
 #endif
             }
         }
@@ -156,13 +159,13 @@ namespace Microsoft.SharePoint.Client
         /// <param name="serverRelativeUrl">The server relative URL of the file to checkout</param>
         public static void CheckOutFile(this Web web, string serverRelativeUrl)
         {
-#if ONPREMISES
-            web.CheckOutFileImplementation(serverRelativeUrl);
-#else
+#if !ONPREMISES || SP2019
             Task.Run(() => web.CheckOutFileImplementation(serverRelativeUrl)).GetAwaiter().GetResult();
+#else
+            web.CheckOutFileImplementation(serverRelativeUrl);
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Checks out a file
         /// </summary>
@@ -179,14 +182,14 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The web to process</param>
         /// <param name="serverRelativeUrl">The server relative URL of the file to checkout</param>
-#if ONPREMISES
-        private static void CheckOutFileImplementation(this Web web, string serverRelativeUrl)
-        {
-            var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
-#else
+#if !ONPREMISES || SP2019
         private static async Task CheckOutFileImplementation(this Web web, string serverRelativeUrl)
         {
             var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+#else
+            private static void CheckOutFileImplementation(this Web web, string serverRelativeUrl)
+        {
+            var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);        
 #endif
 
             var scope = new ConditionalScope(web.Context, () => !file.ServerObjectIsNull.Value && file.Exists && file.CheckOutType == CheckOutType.None);
@@ -195,19 +198,19 @@ namespace Microsoft.SharePoint.Client
             {
                 web.Context.Load(file);
             }
-#if ONPREMISES
-            web.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await web.Context.ExecuteQueryAsync();
+#else
+            web.Context.ExecuteQueryRetry();            
 #endif
 
             if (scope.TestResult.Value)
             {
                 file.CheckOut();
-#if ONPREMISES
-                web.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                 await web.Context.ExecuteQueryAsync();
+#else
+                web.Context.ExecuteQueryRetry();                
 #endif
             }
         }
@@ -239,13 +242,13 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder CreateDocumentSet(this Folder folder, string documentSetName, ContentTypeId contentTypeId)
         {
-#if ONPREMISES
-            return folder.CreateDocumentSetImplementation(documentSetName, contentTypeId);
-#else
+#if !ONPREMISES || SP2019
             return Task.Run(() => folder.CreateDocumentSetImplementation(documentSetName, contentTypeId)).GetAwaiter().GetResult();
+#else
+            return folder.CreateDocumentSetImplementation(documentSetName, contentTypeId);            
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Creates a new document set as a child of an existing folder, with the specified content type ID.
         /// </summary>
@@ -278,12 +281,12 @@ namespace Microsoft.SharePoint.Client
         ///     var set1 = list.RootFolder.CreateDocumentSet("Set 1", setContentType);
         /// </example>
         /// </remarks>
-#if ONPREMISES
-        private static Folder CreateDocumentSetImplementation(this Folder folder, string documentSetName, ContentTypeId contentTypeId)
-        {
-#else
+#if !ONPREMISES || SP2019
         private static async Task<Folder> CreateDocumentSetImplementation(this Folder folder, string documentSetName, ContentTypeId contentTypeId)
         {
+#else
+            private static Folder CreateDocumentSetImplementation(this Folder folder, string documentSetName, ContentTypeId contentTypeId)
+        {       
 #endif
             if (folder == null) { throw new ArgumentNullException(nameof(folder)); }
             if (documentSetName == null) { throw new ArgumentNullException(nameof(documentSetName)); }
@@ -297,10 +300,10 @@ namespace Microsoft.SharePoint.Client
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FieldAndContentTypeExtensions_CreateDocumentSet, documentSetName);
 
             var result = DocumentSet.DocumentSet.Create(folder.Context, folder, documentSetName, contentTypeId);
-#if ONPREMISES
-            folder.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await folder.Context.ExecuteQueryAsync();
+#else
+            folder.Context.ExecuteQueryRetry();            
 #endif
             var fullUri = new Uri(result.Value);
             var serverRelativeUrl = fullUri.AbsolutePath;
@@ -321,17 +324,18 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder ConvertFolderToDocumentSet(this List list, string folderName)
         {
-#if ONPREMISES
-            var folder = list.RootFolder.ResolveSubFolderImplementation(folderName);
-            if (folder == null) throw new ArgumentException(CoreResources.FileFolderExtensions_FolderMissing);
-            return list.ConvertFolderToDocumentSetImplementation(folder);
-#else
+#if !ONPREMISES || SP2019
             var folder = Task.Run(() => list.RootFolder.ResolveSubFolderImplementation(folderName)).GetAwaiter().GetResult();
             if (folder == null) throw new ArgumentException(CoreResources.FileFolderExtensions_FolderMissing);
             return Task.Run(() => list.ConvertFolderToDocumentSetImplementation(folder)).GetAwaiter().GetResult();
+
+#else
+           var folder = list.RootFolder.ResolveSubFolderImplementation(folderName);
+           if (folder == null) throw new ArgumentException(CoreResources.FileFolderExtensions_FolderMissing);
+           return list.ConvertFolderToDocumentSetImplementation(folder);
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Converts a folder with the given name as a child of the List RootFolder. 
         /// </summary>
@@ -364,13 +368,13 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder ConvertFolderToDocumentSet(this List list, Folder folder)
         {
-#if ONPREMISES
-            return list.ConvertFolderToDocumentSetImplementation(folder);
-#else
+#if !ONPREMISES || SP2019
             return Task.Run(() => list.ConvertFolderToDocumentSetImplementation(folder)).GetAwaiter().GetResult();
+#else
+            return list.ConvertFolderToDocumentSetImplementation(folder);            
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Converts a folder with the given name as a child of the List RootFolder. 
         /// </summary>
@@ -395,12 +399,12 @@ namespace Microsoft.SharePoint.Client
         /// <param name="list">Library in which the folder exists</param>
         /// <param name="folder">Folder to convert</param>
         /// <returns>The newly converted Document Set, so that additional operations (such as setting properties) can be done.</returns>
-#if ONPREMISES
-        private static Folder ConvertFolderToDocumentSetImplementation(this List list, Folder folder)
-        {
-#else
+#if !ONPREMISES || SP2019
         private static async Task<Folder> ConvertFolderToDocumentSetImplementation(this List list, Folder folder)
         {
+#else
+            private static Folder ConvertFolderToDocumentSetImplementation(this List list, Folder folder)
+        {       
 #endif
             list.EnsureProperties(l => l.ContentTypes.Include(c => c.StringId));
             folder.Context.Load(folder.ListItemAllFields, l => l["ContentTypeId"]);
@@ -418,12 +422,13 @@ namespace Microsoft.SharePoint.Client
 
             listItem.Update();
             folder.Update();
-#if ONPREMISES
-            list.Context.ExecuteQueryRetry();
-            folder = list.RootFolder.ResolveSubFolderImplementation(folder.Name);
-#else
+
+#if !ONPREMISES || SP2019
             await list.Context.ExecuteQueryRetryAsync();
             folder = await list.RootFolder.ResolveSubFolderImplementation(folder.Name);
+#else
+            list.Context.ExecuteQueryRetry();
+            folder = list.RootFolder.ResolveSubFolderImplementation(folder.Name);
 #endif
 
             //Refresh Folder, otherwise 'Version conflict' error might be thrown on changing properties
@@ -450,14 +455,14 @@ namespace Microsoft.SharePoint.Client
             }
 
             var folderCollection = web.Folders;
-#if ONPREMISES
-            var folder = CreateFolderImplementation(folderCollection, folderName);
-#else
+#if !ONPREMISES || SP2019
             var folder = Task.Run(() => CreateFolderImplementation(folderCollection, folderName)).GetAwaiter().GetResult();
+#else
+            var folder = CreateFolderImplementation(folderCollection, folderName);
 #endif
             return folder;
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Creates a folder with the given name as a child of the Web. 
         /// Note it is more common to create folders within an existing Folder, such as the RootFolder of a List.
@@ -506,14 +511,14 @@ namespace Microsoft.SharePoint.Client
             }
 
             var folderCollection = parentFolder.Folders;
-#if ONPREMISES
-            var folder = CreateFolderImplementation(folderCollection, folderName, parentFolder);
-#else
+#if !ONPREMISES || SP2019
             var folder = Task.Run(() => CreateFolderImplementation(folderCollection, folderName, parentFolder)).GetAwaiter().GetResult();
+#else
+            var folder = CreateFolderImplementation(folderCollection, folderName, parentFolder);            
 #endif
             return folder;
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Creates a folder with the given name.
         /// </summary>
@@ -541,10 +546,13 @@ namespace Microsoft.SharePoint.Client
             return folder;
         }
 #endif
-#if ONPREMISES
-        private static Folder CreateFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null, params Expression<Func<Folder, object>>[] expressions)
-#else
+
+#if !ONPREMISES || SP2019
         private static async Task<Folder> CreateFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null, params Expression<Func<Folder, object>>[] expressions)
+#else
+        private static Folder CreateFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null, params Expression<Func<Folder, object>>[] expressions)
+
+        
 #endif
         {
             ClientContext context = null;
@@ -563,10 +571,10 @@ namespace Microsoft.SharePoint.Client
                     Guid parentListId = Guid.Parse((String)parentFolder.Properties.FieldValues["vti_listname"]);
                     parentList = context.Web.Lists.GetById(parentListId);
                     context.Load(parentList, l => l.BaseType, l => l.Title);
-#if ONPREMISES
-                    context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                     await context.ExecuteQueryRetryAsync();
+#else                    
+                    context.ExecuteQueryRetry();
 #endif
                 }
             }
@@ -583,10 +591,10 @@ namespace Microsoft.SharePoint.Client
                 {
                     folderCollection.Context.Load(newFolder);
                 }
-#if ONPREMISES
-                folderCollection.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                 await folderCollection.Context.ExecuteQueryRetryAsync();
+#else
+                folderCollection.Context.ExecuteQueryRetry();
 #endif
                 return newFolder;
             }
@@ -603,10 +611,10 @@ namespace Microsoft.SharePoint.Client
                 ListItem newFolderItem = parentList.AddItem(newFolderInfo);
                 newFolderItem["Title"] = folderName;
                 newFolderItem.Update();
-#if ONPREMISES
-                context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                 await context.ExecuteQueryRetryAsync();
+#else
+                context.ExecuteQueryRetry();
 #endif
 
                 // Get the newly created folder
@@ -620,10 +628,10 @@ namespace Microsoft.SharePoint.Client
                 {
                     context.Load(newFolder);
                 }
-#if ONPREMISES
-                context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                 await context.ExecuteQueryRetryAsync();
+#else
+                context.ExecuteQueryRetry();
 #endif
                 return (newFolder);
             }
@@ -637,14 +645,14 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Returns true if folder exists</returns>
         public static bool DoesFolderExists(this Web web, string serverRelativeFolderUrl)
         {
-#if ONPREMISES
-            return DoesFolderExistImplementation(web, serverRelativeFolderUrl);
-#else
+#if !ONPREMISES || SP2019
             return Task.Run(() => DoesFolderExistImplementation(web, serverRelativeFolderUrl)).GetAwaiter().GetResult();
+#else
+            return DoesFolderExistImplementation(web, serverRelativeFolderUrl);            
 #endif
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Checks if a specific folder exists
         /// </summary>
@@ -658,14 +666,14 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
 
-#if ONPREMISES
-        private static bool DoesFolderExistImplementation(this Web web, string serverRelativeFolderUrl)
-        {
-            Folder folder = web.GetFolderByServerRelativeUrl(serverRelativeFolderUrl);
-#else
+#if !ONPREMISES || SP2019
         private static async Task<bool> DoesFolderExistImplementation(this Web web, string serverRelativeFolderUrl)
         {
             Folder folder = web.GetFolderByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeFolderUrl));
+#else
+        private static bool DoesFolderExistImplementation(this Web web, string serverRelativeFolderUrl)
+        {
+            Folder folder = web.GetFolderByServerRelativeUrl(serverRelativeFolderUrl);        
 #endif
 
             web.Context.Load(folder);
@@ -673,10 +681,10 @@ namespace Microsoft.SharePoint.Client
 
             try
             {
-#if ONPREMISES
-                web.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                 await web.Context.ExecuteQueryRetryAsync();
+#else
+                web.Context.ExecuteQueryRetry();                
 #endif
                 exists = true;
             }
@@ -698,13 +706,13 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The folder structure</returns>
         public static Folder EnsureFolder(this Web web, Folder parentFolder, string folderPath, params Expression<Func<Folder, object>>[] expressions)
         {
-#if ONPREMISES
-            return web.EnsureFolderImplementation(parentFolder, folderPath, expressions);
-#else
+#if !ONPREMISES || SP2019
             return Task.Run(() => web.EnsureFolderImplementation(parentFolder, folderPath, expressions)).GetAwaiter().GetResult();
+#else
+            return web.EnsureFolderImplementation(parentFolder, folderPath, expressions);            
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Ensure that the folder structure is created. This also ensures hierarchy of folders.
         /// </summary>
@@ -727,23 +735,23 @@ namespace Microsoft.SharePoint.Client
         /// <param name="folderPath">Folder path</param>
         /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>The folder structure</returns>
-#if ONPREMISES
-        public static Folder EnsureFolderImplementation(this Web web, Folder parentFolder, string folderPath, params Expression<Func<Folder, object>>[] expressions)
-        {
-            web.EnsureProperties(w => w.ServerRelativeUrl);
-            parentFolder.EnsureProperties(f => f.ServerRelativeUrl);
-#else
+#if !ONPREMISES || SP2019
         public static async Task<Folder> EnsureFolderImplementation(this Web web, Folder parentFolder, string folderPath, params Expression<Func<Folder, object>>[] expressions)
         {
             await web.EnsurePropertiesAsync(w => w.ServerRelativeUrl);
             await parentFolder.EnsurePropertiesAsync(f => f.ServerRelativeUrl);
+#else
+            public static Folder EnsureFolderImplementation(this Web web, Folder parentFolder, string folderPath, params Expression<Func<Folder, object>>[] expressions)
+        {
+            web.EnsureProperties(w => w.ServerRelativeUrl);
+                parentFolder.EnsureProperties(f => f.ServerRelativeUrl);        
 #endif
             var parentWebRelativeUrl = parentFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length);
             var webRelativeUrl = parentWebRelativeUrl + (parentWebRelativeUrl.EndsWith("/") ? "" : "/") + folderPath;
-#if ONPREMISES
-            return web.EnsureFolderPathImplementation(webRelativeUrl, expressions: expressions);
-#else
+#if !ONPREMISES || SP2019
             return await web.EnsureFolderPathImplementation(webRelativeUrl, expressions: expressions);
+#else
+            return web.EnsureFolderPathImplementation(webRelativeUrl, expressions: expressions);
 #endif
         }
 
@@ -768,14 +776,15 @@ namespace Microsoft.SharePoint.Client
             }
 
             var folderCollection = web.Folders;
-#if ONPREMISES
-            var folder = EnsureFolderImplementation(folderCollection, folderName, expressions: expressions);
-#else
+#if !ONPREMISES || SP2019
             var folder = Task.Run(() => EnsureFolderImplementation(folderCollection, folderName, expressions: expressions)).GetAwaiter().GetResult();
+#else
+            var folder = EnsureFolderImplementation(folderCollection, folderName, expressions: expressions);
 #endif
             return folder;
         }
-#if !ONPREMISES
+
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Checks if the folder exists at the top level of the web site, and if it does not exist creates it.
         /// Note it is more common to create folders within an existing Folder, such as the RootFolder of a List.
@@ -823,14 +832,14 @@ namespace Microsoft.SharePoint.Client
             }
 
             var folderCollection = parentFolder.Folders;
-#if ONPREMISES
-            var folder = EnsureFolderImplementation(folderCollection, folderName, parentFolder, expressions);
-#else
+#if !ONPREMISES || SP2019
             var folder = Task.Run(() => EnsureFolderImplementation(folderCollection, folderName, parentFolder, expressions)).GetAwaiter().GetResult();
+#else
+            var folder = EnsureFolderImplementation(folderCollection, folderName, parentFolder, expressions);
 #endif
             return folder;
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Checks if the subfolder exists, and if it does not exist creates it.
         /// </summary>
@@ -856,10 +865,11 @@ namespace Microsoft.SharePoint.Client
             return folder;
         }
 #endif
-#if ONPREMISES
-        private static Folder EnsureFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null, params Expression<Func<Folder, object>>[] expressions)
-#else
+
+#if !ONPREMISES || SP2019
         private static async Task<Folder> EnsureFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null, params Expression<Func<Folder, object>>[] expressions)
+#else
+        private static Folder EnsureFolderImplementation(FolderCollection folderCollection, string folderName, Folder parentFolder = null, params Expression<Func<Folder, object>>[] expressions)        
 #endif
         {
             Folder folder = null;
@@ -871,10 +881,10 @@ namespace Microsoft.SharePoint.Client
             {
                 folderCollection.Context.Load(folderCollection);
             }
-#if ONPREMISES
-            folderCollection.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await folderCollection.Context.ExecuteQueryRetryAsync();
+#else
+            folderCollection.Context.ExecuteQueryRetry();
 #endif
             foreach (Folder existingFolder in folderCollection)
             {
@@ -887,10 +897,10 @@ namespace Microsoft.SharePoint.Client
 
             if (folder == null)
             {
-#if ONPREMISES
-                folder = CreateFolderImplementation(folderCollection, folderName, parentFolder, expressions);
-#else
+#if !ONPREMISES || SP2019
                 folder = await CreateFolderImplementation(folderCollection, folderName, parentFolder, expressions);
+#else
+                folder = CreateFolderImplementation(folderCollection, folderName, parentFolder, expressions);
 #endif
             }
 
@@ -913,13 +923,13 @@ namespace Microsoft.SharePoint.Client
         /// </remarks>
         public static Folder EnsureFolderPath(this Web web, string webRelativeUrl, params Expression<Func<Folder, object>>[] expressions)
         {
-#if ONPREMISES
-            return web.EnsureFolderPathImplementation(webRelativeUrl, expressions);
-#else
+#if !ONPREMISES || SP2019
             return Task.Run(() => web.EnsureFolderPathImplementation(webRelativeUrl, expressions)).GetAwaiter().GetResult();
+#else
+            return web.EnsureFolderPathImplementation(webRelativeUrl, expressions);
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Check if a folder exists with the specified path (relative to the web), and if not creates it (inside a list if necessary)
         /// </summary>
@@ -956,10 +966,10 @@ namespace Microsoft.SharePoint.Client
         /// Any existing folders are traversed, and then any remaining parts of the path are created as new folders.
         /// </para>
         /// </remarks>
-#if ONPREMISES
-        private static Folder EnsureFolderPathImplementation(this Web web, string webRelativeUrl, params Expression<Func<Folder, object>>[] expressions)
-#else
+#if !ONPREMISES || SP2019
         private static async Task<Folder> EnsureFolderPathImplementation(this Web web, string webRelativeUrl, params Expression<Func<Folder, object>>[] expressions)
+#else
+        private static Folder EnsureFolderPathImplementation(this Web web, string webRelativeUrl, params Expression<Func<Folder, object>>[] expressions)
 #endif
         {
             if (webRelativeUrl == null) { throw new ArgumentNullException(nameof(webRelativeUrl)); }
@@ -971,10 +981,10 @@ namespace Microsoft.SharePoint.Client
             if (!web.IsPropertyAvailable("ServerRelativeUrl"))
             {
                 web.Context.Load(web, w => w.ServerRelativeUrl);
-#if ONPREMISES
-                web.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                 await web.Context.ExecuteQueryRetryAsync();
+#else
+                web.Context.ExecuteQueryRetry();
 #endif
             }
 
@@ -983,10 +993,10 @@ namespace Microsoft.SharePoint.Client
             // Check if folder is inside a list
             var listCollection = web.Lists;
             web.Context.Load(listCollection, lc => lc.Include(l => l.RootFolder));
-#if ONPREMISES
-            web.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await web.Context.ExecuteQueryRetryAsync();
+#else
+            web.Context.ExecuteQueryRetry();            
 #endif
 
             List containingList = null;
@@ -1008,10 +1018,10 @@ namespace Microsoft.SharePoint.Client
             if (containingList == null)
             {
                 locationType = "Web";
-#if ONPREMISES
-                currentFolder = web.EnsureProperty(w => w.RootFolder);
-#else
+#if !ONPREMISES || SP2019
                 currentFolder = await web.EnsurePropertyAsync(w => w.RootFolder);
+#else
+                currentFolder = web.EnsureProperty(w => w.RootFolder);                
 #endif
             }
             else
@@ -1019,10 +1029,10 @@ namespace Microsoft.SharePoint.Client
                 locationType = "List";
                 currentFolder = containingList.RootFolder;
             }
-#if ONPREMISES
-            currentFolder.EnsureProperty(f => f.ServerRelativeUrl);
-#else
+#if !ONPREMISES || SP2019
             await currentFolder.EnsurePropertyAsync(f => f.ServerRelativeUrl);
+#else
+            currentFolder.EnsureProperty(f => f.ServerRelativeUrl);
 #endif
             rootUrl = currentFolder.ServerRelativeUrl;
 
@@ -1038,10 +1048,10 @@ namespace Microsoft.SharePoint.Client
                 // Find next part of the path
                 var folderCollection = currentFolder.Folders;
                 folderCollection.Context.Load(folderCollection);
-#if ONPREMISES
-                folderCollection.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                 await folderCollection.Context.ExecuteQueryRetryAsync();
+#else
+                folderCollection.Context.ExecuteQueryRetry();                
 #endif
                 Folder nextFolder = null;
                 foreach (Folder existingFolder in folderCollection)
@@ -1072,10 +1082,10 @@ namespace Microsoft.SharePoint.Client
                         ListItem newFolderItem = containingList.AddItem(newFolderInfo);
 
                         var titleField = web.Context.LoadQuery(containingList.Fields.Where(f => f.Id == BuiltInFieldId.Title));
-#if ONPREMISES
-                        web.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                         await web.Context.ExecuteQueryRetryAsync();
+#else
+                        web.Context.ExecuteQueryRetry();
 #endif
                         if (titleField.Any())
                         {
@@ -1084,27 +1094,27 @@ namespace Microsoft.SharePoint.Client
 
                         newFolderItem.Update();
                         containingList.Context.Load(newFolderItem);
-#if ONPREMISES
-                        containingList.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                         await containingList.Context.ExecuteQueryRetryAsync();
+#else
+                        containingList.Context.ExecuteQueryRetry();
 #endif
                         nextFolder = web.GetFolderByServerRelativeUrl(UrlUtility.Combine(listUrl, createPath, folderName));
                         containingList.Context.Load(nextFolder);
-#if ONPREMISES
-                        containingList.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                         await containingList.Context.ExecuteQueryRetryAsync();
+#else
+                        containingList.Context.ExecuteQueryRetry();
 #endif
                     }
                     else
                     {
                         nextFolder = folderCollection.Add(folderName);
                         folderCollection.Context.Load(nextFolder);
-#if ONPREMISES
-                        folderCollection.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                         await folderCollection.Context.ExecuteQueryRetryAsync();
+#else
+                        folderCollection.Context.ExecuteQueryRetry();
 #endif
                     }
                 }
@@ -1114,10 +1124,10 @@ namespace Microsoft.SharePoint.Client
             if (expressions != null && expressions.Any())
             {
                 web.Context.Load(currentFolder, expressions);
-#if ONPREMISES
-                web.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                 await web.Context.ExecuteQueryRetryAsync();
+#else
+                web.Context.ExecuteQueryRetry();
 #endif
             }
             return currentFolder;
@@ -1133,14 +1143,14 @@ namespace Microsoft.SharePoint.Client
         {
             Folder rootFolder = web.RootFolder;
             match = WildcardToRegex(match);
-#if ONPREMISES
-            return ParseFiles(rootFolder, match, web.Context as ClientContext);
-#else
+#if !ONPREMISES || SP2019
             return Task.Run(() => ParseFiles(rootFolder, match, web.Context as ClientContext)).GetAwaiter().GetResult();
+#else
+            return ParseFiles(rootFolder, match, web.Context as ClientContext);
 #endif
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Finds files in the web. Can be slow.
         /// </summary>
@@ -1167,13 +1177,13 @@ namespace Microsoft.SharePoint.Client
             Folder rootFolder = list.EnsureProperty(l => l.RootFolder);
 
             match = WildcardToRegex(match);
-#if ONPREMISES
-            return ParseFiles(rootFolder, match, list.Context as ClientContext);
-#else
+#if !ONPREMISES || SP2019
             return Task.Run(() => ParseFiles(rootFolder, match, list.Context as ClientContext)).GetAwaiter().GetResult();
+#else
+            return ParseFiles(rootFolder, match, list.Context as ClientContext);
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Find files in the list, Can be slow.
         /// </summary>
@@ -1199,13 +1209,13 @@ namespace Microsoft.SharePoint.Client
         public static List<File> FindFiles(this Folder folder, string match)
         {
             match = WildcardToRegex(match);
-#if ONPREMISES
-            return ParseFiles(folder, match, folder.Context as ClientContext);
-#else
+#if !ONPREMISES || SP2019
             return Task.Run(() => ParseFiles(folder, match, folder.Context as ClientContext)).GetAwaiter().GetResult();
+#else
+            return ParseFiles(folder, match, folder.Context as ClientContext);
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Find files in a specific folder
         /// </summary>
@@ -1234,14 +1244,14 @@ namespace Microsoft.SharePoint.Client
         public static bool FolderExists(this Web web, string folderName)
         {
             var folderCollection = web.Folders;
-#if ONPREMISES
-            var exists = FolderExistsImplementation(folderCollection, folderName);
-#else
+#if !ONPREMISES || SP2019
             var exists = Task.Run(() => FolderExistsImplementation(folderCollection, folderName)).GetAwaiter().GetResult();
+#else
+            var exists = FolderExistsImplementation(folderCollection, folderName);
 #endif
             return exists;
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Checks if the folder exists at the top level of the web site.
         /// </summary>
@@ -1281,14 +1291,14 @@ namespace Microsoft.SharePoint.Client
             }
 
             var folderCollection = parentFolder.Folders;
-#if ONPREMISES
-            var exists = FolderExistsImplementation(folderCollection, folderName);
-#else
+#if !ONPREMISES || SP2019
             var exists = Task.Run(() => FolderExistsImplementation(folderCollection, folderName)).GetAwaiter().GetResult();
+#else
+            var exists = FolderExistsImplementation(folderCollection, folderName);
 #endif
             return exists;
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Checks if the subfolder exists.
         /// </summary>
@@ -1313,10 +1323,10 @@ namespace Microsoft.SharePoint.Client
             return exists;
         }
 #endif
-#if ONPREMISES
-        private static bool FolderExistsImplementation(FolderCollection folderCollection, string folderName)
-#else
+#if !ONPREMISES || SP2019
         private static async Task<bool> FolderExistsImplementation(FolderCollection folderCollection, string folderName)
+#else
+        private static bool FolderExistsImplementation(FolderCollection folderCollection, string folderName)
 #endif
         {
             if (folderCollection == null)
@@ -1335,10 +1345,10 @@ namespace Microsoft.SharePoint.Client
             }
 
             folderCollection.Context.Load(folderCollection);
-#if ONPREMISES
-            folderCollection.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await folderCollection.Context.ExecuteQueryRetryAsync();
+#else
+            folderCollection.Context.ExecuteQueryRetry();
 #endif
             foreach (Folder folder in folderCollection)
             {
@@ -1358,13 +1368,13 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The file contents as a string</returns>
         public static string GetFileAsString(this Web web, string serverRelativeUrl)
         {
-#if ONPREMISES
-            return web.GetFileAsStringImplementation(serverRelativeUrl);
-#else
+#if !ONPREMISES || SP2019
             return Task.Run(() => web.GetFileAsStringImplementation(serverRelativeUrl)).GetAwaiter().GetResult();
+#else
+            return web.GetFileAsStringImplementation(serverRelativeUrl);
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Returns a file as string
         /// </summary>
@@ -1384,27 +1394,28 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">The Web to process</param>
         /// <param name="serverRelativeUrl">The server relative URL to the file</param>
         /// <returns>The file contents as a string</returns>
-#if ONPREMISES
-        private static string GetFileAsStringImplementation(this Web web, string serverRelativeUrl)
-        {
-            var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
-#else
+#if !ONPREMISES || SP2019
         private static async Task<string> GetFileAsStringImplementation(this Web web, string serverRelativeUrl)
         {
             var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+#else
+        private static string GetFileAsStringImplementation(this Web web, string serverRelativeUrl)
+        {
+            var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
+        
 #endif
 
             web.Context.Load(file);
-#if ONPREMISES
-            web.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await web.Context.ExecuteQueryRetryAsync();
+#else
+            web.Context.ExecuteQueryRetry();
 #endif
             ClientResult<Stream> stream = file.OpenBinaryStream();
-#if ONPREMISES
-            web.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await web.Context.ExecuteQueryRetryAsync();
+#else
+            web.Context.ExecuteQueryRetry();
 #endif
 
             string returnString = string.Empty;
@@ -1418,20 +1429,20 @@ namespace Microsoft.SharePoint.Client
 
             return returnString;
         }
-#if ONPREMISES
-        private static List<File> ParseFiles(Folder folder, string match, ClientContext context)
-#else
+#if !ONPREMISES || SP2019
         private static async Task<List<File>> ParseFiles(Folder folder, string match, ClientContext context)
+#else
+        private static List<File> ParseFiles(Folder folder, string match, ClientContext context)
 #endif
         {
             var foundFiles = new List<File>();
             FileCollection files = folder.Files;
             context.Load(files, fs => fs.Include(f => f.ServerRelativeUrl, f => f.Name, f => f.Title, f => f.TimeCreated, f => f.TimeLastModified));
             context.Load(folder.Folders);
-#if ONPREMISES
-            context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await context.ExecuteQueryRetryAsync();
+#else
+            context.ExecuteQueryRetry();
 #endif
 
             foreach (File file in files)
@@ -1444,10 +1455,10 @@ namespace Microsoft.SharePoint.Client
 
             foreach (Folder subfolder in folder.Folders)
             {
-#if ONPREMISES
-                foundFiles.AddRange(ParseFiles(subfolder, match, context));
-#else
+#if !ONPREMISES || SP2019
                 foundFiles.AddRange(await ParseFiles(subfolder, match, context));
+#else
+                foundFiles.AddRange(ParseFiles(subfolder, match, context));
 #endif
             }
             return foundFiles;
@@ -1460,13 +1471,13 @@ namespace Microsoft.SharePoint.Client
         /// <param name="comment">Comment recorded with the publish action</param>
         public static void PublishFile(this Web web, string serverRelativeUrl, string comment)
         {
-#if ONPREMISES
-            web.PublishFileImplementation(serverRelativeUrl, comment);
-#else
+#if !ONPREMISES || SP2019
             Task.Run(() => web.PublishFileImplementation(serverRelativeUrl, comment)).GetAwaiter().GetResult();
+#else
+            web.PublishFileImplementation(serverRelativeUrl, comment);
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Publishes a file existing on a server URL
         /// </summary>
@@ -1486,30 +1497,31 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">The web to process</param>
         /// <param name="serverRelativeUrl">the server relative URL of the file to publish</param>
         /// <param name="comment">Comment recorded with the publish action</param>
-#if ONPREMISES
-        private static void PublishFileImplementation(this Web web, string serverRelativeUrl, string comment)
-        {
-            var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
-#else
+#if !ONPREMISES || SP2019
         private static async Task PublishFileImplementation(this Web web, string serverRelativeUrl, string comment)
         {
             var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+#else
+        private static void PublishFileImplementation(this Web web, string serverRelativeUrl, string comment)
+        {
+            var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);        
 #endif
 
             web.Context.Load(file, x => x.Exists, x => x.CheckOutType);
-#if ONPREMISES
-            web.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await web.Context.ExecuteQueryRetryAsync();
+#else
+            web.Context.ExecuteQueryRetry();
 #endif
 
             if (file.Exists)
             {
                 file.Publish(comment);
-#if ONPREMISES
-                web.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                 await web.Context.ExecuteQueryRetryAsync();
+#else
+                web.Context.ExecuteQueryRetry();
+                
 #endif
             }
         }
@@ -1521,13 +1533,13 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The found <see cref="Microsoft.SharePoint.Client.Folder"/> if available, null otherwise</returns>
         public static Folder ResolveSubFolder(this Folder folder, string folderName)
         {
-#if ONPREMISES
-            return folder.ResolveSubFolderImplementation(folderName);
-#else
+#if !ONPREMISES || SP2019
             return Task.Run(() => folder.ResolveSubFolderImplementation(folderName)).GetAwaiter().GetResult();
+#else
+            return folder.ResolveSubFolderImplementation(folderName);
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Gets a folder with a given name in a given <see cref="Microsoft.SharePoint.Client.Folder"/>
         /// </summary>
@@ -1540,16 +1552,16 @@ namespace Microsoft.SharePoint.Client
             return await folder.ResolveSubFolderImplementation(folderName);
         }
 #endif
-/// <summary>
-/// Gets a folder with a given name in a given <see cref="Microsoft.SharePoint.Client.Folder"/>
-/// </summary>
-/// <param name="folder"><see cref="Microsoft.SharePoint.Client.Folder"/> in which to search for</param>
-/// <param name="folderName">Name of the folder to search for</param>
-/// <returns>The found <see cref="Microsoft.SharePoint.Client.Folder"/> if available, null otherwise</returns>
-#if ONPREMISES
-        private static Folder ResolveSubFolderImplementation(this Folder folder, string folderName)
-#else
+        /// <summary>
+        /// Gets a folder with a given name in a given <see cref="Microsoft.SharePoint.Client.Folder"/>
+        /// </summary>
+        /// <param name="folder"><see cref="Microsoft.SharePoint.Client.Folder"/> in which to search for</param>
+        /// <param name="folderName">Name of the folder to search for</param>
+        /// <returns>The found <see cref="Microsoft.SharePoint.Client.Folder"/> if available, null otherwise</returns>
+#if !ONPREMISES || SP2019
         private static async Task<Folder> ResolveSubFolderImplementation(this Folder folder, string folderName)
+#else
+        private static Folder ResolveSubFolderImplementation(this Folder folder, string folderName)
 #endif
         {
             if (string.IsNullOrEmpty(folderName))
@@ -1559,10 +1571,10 @@ namespace Microsoft.SharePoint.Client
 
             folder.Context.Load(folder);
             folder.Context.Load(folder.Folders);
-#if ONPREMISES
-            folder.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await folder.Context.ExecuteQueryRetryAsync();
+#else
+            folder.Context.ExecuteQueryRetry();
 #endif
 
             foreach (Folder subFolder in folder.Folders)
@@ -1585,13 +1597,13 @@ namespace Microsoft.SharePoint.Client
         /// <param name="fileExistsCallBack">Optional callback function allowing to provide feedback if the file should be overwritten if it exists. The function requests a bool as return value and the string input contains the name of the file that exists.</param>
         public static void SaveFileToLocal(this Web web, string serverRelativeUrl, string localPath, string localFileName = null, Func<string, bool> fileExistsCallBack = null)
         {
-#if ONPREMISES
-            web.SaveFileToLocalImplementation(serverRelativeUrl, localPath, localFileName, fileExistsCallBack);
-#else
+#if !ONPREMISES || SP2019
             Task.Run(() => web.SaveFileToLocalImplementation(serverRelativeUrl, localPath, localFileName, fileExistsCallBack)).GetAwaiter().GetResult();
+#else
+            web.SaveFileToLocalImplementation(serverRelativeUrl, localPath, localFileName, fileExistsCallBack);
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Saves a remote file to a local folder
         /// </summary>
@@ -1614,28 +1626,28 @@ namespace Microsoft.SharePoint.Client
         /// <param name="localPath">The local folder</param>
         /// <param name="localFileName">The local filename. If null the filename of the file on the server will be used</param>
         /// <param name="fileExistsCallBack">Optional callback function allowing to provide feedback if the file should be overwritten if it exists. The function requests a bool as return value and the string input contains the name of the file that exists.</param>
-#if ONPREMISES
-        public static void SaveFileToLocalImplementation(this Web web, string serverRelativeUrl, string localPath, string localFileName = null, Func<string, bool> fileExistsCallBack = null)
-        {
-            var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
-#else
+#if !ONPREMISES || SP2019
         public static async Task SaveFileToLocalImplementation(this Web web, string serverRelativeUrl, string localPath, string localFileName = null, Func<string, bool> fileExistsCallBack = null)
         {
             var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+#else
+        public static void SaveFileToLocalImplementation(this Web web, string serverRelativeUrl, string localPath, string localFileName = null, Func<string, bool> fileExistsCallBack = null)
+        {
+            var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);        
 #endif
             var clientContext = web.Context as ClientContext;
             clientContext.Load(file);
-#if ONPREMISES
-            clientContext.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await clientContext.ExecuteQueryRetryAsync();
+#else
+            clientContext.ExecuteQueryRetry();
 #endif
 
             ClientResult<Stream> stream = file.OpenBinaryStream();
-#if ONPREMISES
-            clientContext.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await clientContext.ExecuteQueryRetryAsync();
+#else
+            clientContext.ExecuteQueryRetry();
 #endif
 
             var fileOut = Path.Combine(localPath, !string.IsNullOrEmpty(localFileName) ? localFileName : file.Name);
@@ -1667,13 +1679,15 @@ namespace Microsoft.SharePoint.Client
                 throw new FileNotFoundException("Local file was not found.", localFilePath);
 
             using (var stream = System.IO.File.OpenRead(localFilePath))
-#if ONPREMISES
-                return folder.UploadFileImplementation(fileName, stream, overwriteIfExists);
-#else
+            {
+#if !ONPREMISES || SP2019
                 return Task.Run(() => folder.UploadFileImplementation(fileName, stream, overwriteIfExists)).GetAwaiter().GetResult();
+#else
+                return folder.UploadFileImplementation(fileName, stream, overwriteIfExists);
 #endif
+            }
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Uploads a file to the specified folder.
         /// </summary>
@@ -1706,13 +1720,13 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
         public static File UploadFile(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
         {
-#if ONPREMISES
-            return folder.UploadFileImplementation(fileName, stream, overwriteIfExists);
-#else
+#if !ONPREMISES || SP2019
             return Task.Run(() => folder.UploadFileImplementation(fileName, stream, overwriteIfExists)).GetAwaiter().GetResult();
+#else
+            return folder.UploadFileImplementation(fileName, stream, overwriteIfExists);
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Uploads a file to the specified folder.
         /// </summary>
@@ -1736,10 +1750,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
         /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
-#if ONPREMISES
-        private static File UploadFileImplementation(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
-#else
+#if !ONPREMISES || SP2019
         private static async Task<File> UploadFileImplementation(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
+#else
+        private static File UploadFileImplementation(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
 #endif
         {
             if (fileName == null)
@@ -1765,10 +1779,10 @@ namespace Microsoft.SharePoint.Client
             Log.Debug(Constants.LOGGING_SOURCE, "Creating file info with Url '{0}'", newFileInfo.Url);
             var file = folder.Files.Add(newFileInfo);
             folder.Context.Load(file);
-#if ONPREMISES
-            folder.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await folder.Context.ExecuteQueryRetryAsync();
+#else
+            folder.Context.ExecuteQueryRetry();
 #endif
 
             return file;
@@ -1792,13 +1806,16 @@ namespace Microsoft.SharePoint.Client
                 throw new FileNotFoundException("Local file was not found.", localFilePath);
 
             using (var stream = System.IO.File.OpenRead(localFilePath))
-#if ONPREMISES
-                return folder.UploadFileWebDavImplementation(fileName, stream, overwriteIfExists);
-#else
+            {
+#if !ONPREMISES || SP2019
                 return Task.Run(() => folder.UploadFileWebDavImplementation(fileName, stream, overwriteIfExists)).GetAwaiter().GetResult();
+#else
+                return folder.UploadFileWebDavImplementation(fileName, stream, overwriteIfExists);
 #endif
+            }
         }
-#if !ONPREMISES
+
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Uploads a file to the specified folder by saving the binary directly (via webdav).
         /// </summary>
@@ -1833,13 +1850,13 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
         public static File UploadFileWebDav(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
         {
-#if ONPREMISES
-            return folder.UploadFileWebDavImplementation(fileName, stream, overwriteIfExists);
-#else
+#if !ONPREMISES || SP2019
             return Task.Run(() => folder.UploadFileWebDavImplementation(fileName, stream, overwriteIfExists)).GetAwaiter().GetResult();
+#else
+            return folder.UploadFileWebDavImplementation(fileName, stream, overwriteIfExists);
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Uploads a file to the specified folder by saving the binary directly (via webdav).
         /// Note: this method does not work using app only token.
@@ -1865,10 +1882,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="overwriteIfExists">true (default) to overwite existing files</param>
         /// <returns>The uploaded File, so that additional operations (such as setting properties) can be done.</returns>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
-#if ONPREMISES
-        private static File UploadFileWebDavImplementation(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
-#else
+#if !ONPREMISES || SP2019
         private static async Task<File> UploadFileWebDavImplementation(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
+#else
+        private static File UploadFileWebDavImplementation(this Folder folder, string fileName, Stream stream, bool overwriteIfExists)
 #endif
         {
             if (fileName == null)
@@ -1887,19 +1904,19 @@ namespace Microsoft.SharePoint.Client
             {
                 Log.Debug(Constants.LOGGING_SOURCE, "Save binary direct (via webdav) to '{0}'", serverRelativeUrl);
                 File.SaveBinaryDirect(uploadContext, serverRelativeUrl, stream, overwriteIfExists);
-#if ONPREMISES
-                uploadContext.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                 await uploadContext.ExecuteQueryRetryAsync();
+#else
+                uploadContext.ExecuteQueryRetry();
 #endif
             }
 
             var file = folder.Files.GetByUrl(serverRelativeUrl);
             folder.Context.Load(file);
-#if ONPREMISES
-            folder.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await folder.Context.ExecuteQueryRetryAsync();
+#else
+            folder.Context.ExecuteQueryRetry();
 #endif
             return file;
         }
@@ -1911,13 +1928,13 @@ namespace Microsoft.SharePoint.Client
         /// <returns>The target file if found, null if no file is found.</returns>
         public static File GetFile(this Folder folder, string fileName)
         {
-#if ONPREMISES
-            return folder.GetFileImplementation(fileName);
-#else
+#if !ONPREMISES || SP2019
             return Task.Run(() => folder.GetFileImplementation(fileName)).GetAwaiter().GetResult();
+#else
+            return folder.GetFileImplementation(fileName);
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Gets a file in a document library.
         /// </summary>
@@ -1936,10 +1953,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="folder">Folder containing the target file.</param>
         /// <param name="fileName">File name.</param>
         /// <returns>The target file if found, null if no file is found.</returns>
-#if ONPREMISES
-        private static File GetFileImplementation(this Folder folder, string fileName)
-#else
+#if !ONPREMISES || SP2019
         private static async Task<File> GetFileImplementation(this Folder folder, string fileName)
+#else
+        private static File GetFileImplementation(this Folder folder, string fileName)
 #endif
         {
             if (folder == null)
@@ -1957,14 +1974,14 @@ namespace Microsoft.SharePoint.Client
 
                 var web = context.Web;
 
-#if ONPREMISES
-                var file = web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
-                web.Context.Load(file);
-                web.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                 var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(fileServerRelativeUrl));
                 web.Context.Load(file);
                 await web.Context.ExecuteQueryRetryAsync();
+#else
+                var file = web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
+                web.Context.Load(file);
+                web.Context.ExecuteQueryRetry();
 #endif
 
                 return file;
@@ -1993,13 +2010,15 @@ namespace Microsoft.SharePoint.Client
                 throw new FileNotFoundException("Local file was not found.", localFile);
 
             using (var file = System.IO.File.OpenRead(localFile))
-#if ONPREMISES
-                return serverFile.VerifyIfUploadRequiredImplementation(file);
-#else
+            {
+#if !ONPREMISES || SP2019
                 return Task.Run(() => serverFile.VerifyIfUploadRequiredImplementation(file)).GetAwaiter().GetResult();
+#else
+                return serverFile.VerifyIfUploadRequiredImplementation(file);
 #endif
+            }
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Used to compare the server file to the local file.
         /// This enables users with faster download speeds but slow upload speeds to evaluate if the server file should be overwritten.
@@ -2027,13 +2046,13 @@ namespace Microsoft.SharePoint.Client
         /// <returns></returns>
         public static bool VerifyIfUploadRequired(this File serverFile, Stream localStream)
         {
-#if ONPREMISES
-            return serverFile.VerifyIfUploadRequiredImplementation(localStream);
-#else
+#if !ONPREMISES || SP2019
             return Task.Run(() => serverFile.VerifyIfUploadRequiredImplementation(localStream)).GetAwaiter().GetResult();
+#else
+            return serverFile.VerifyIfUploadRequiredImplementation(localStream);
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Used to compare the server file to the local file.
         /// This enables users with faster download speeds but slow upload speeds to evaluate if the server file should be overwritten.
@@ -2054,10 +2073,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="serverFile">File located on the server.</param>
         /// <param name="localStream">Stream to validate against.</param>
         /// <returns></returns>
-#if ONPREMISES
-        public static bool VerifyIfUploadRequiredImplementation(this File serverFile, Stream localStream)
-#else
+#if !ONPREMISES || SP2019
         public static async Task<bool> VerifyIfUploadRequiredImplementation(this File serverFile, Stream localStream)
+#else
+        public static bool VerifyIfUploadRequiredImplementation(this File serverFile, Stream localStream)
 #endif
         {
             if (serverFile == null)
@@ -2067,10 +2086,10 @@ namespace Microsoft.SharePoint.Client
 
             byte[] serverHash = null;
             var streamResult = serverFile.OpenBinaryStream();
-#if ONPREMISES
-            serverFile.Context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
             await serverFile.Context.ExecuteQueryRetryAsync();
+#else
+            serverFile.Context.ExecuteQueryRetry();
 #endif
 
             // Hash contents
@@ -2102,14 +2121,14 @@ namespace Microsoft.SharePoint.Client
         /// <param name="checkoutIfRequired">Check out the file if necessary to set properties.</param>
         public static void SetFileProperties(this File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
         {
-#if ONPREMISES
-            file.SetFilePropertiesImplementation(properties, checkoutIfRequired);
-#else
+#if !ONPREMISES || SP2019
             Task.Run(() => file.SetFilePropertiesImplementation(properties, checkoutIfRequired)).GetAwaiter().GetResult();
+#else
+            file.SetFilePropertiesImplementation(properties, checkoutIfRequired);
 #endif
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Sets file properties using a dictionary.
         /// </summary>
@@ -2130,10 +2149,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="properties">Dictionary of properties to set.</param>
         /// <param name="checkoutIfRequired">Check out the file if necessary to set properties.</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
-#if ONPREMISES
-        private static void SetFilePropertiesImplementation(this File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
-#else
+#if !ONPREMISES || SP2019
         private static async Task SetFilePropertiesImplementation(this File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
+#else
+        private static void SetFilePropertiesImplementation(this File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
 #endif
         {
             if (file == null)
@@ -2155,10 +2174,10 @@ namespace Microsoft.SharePoint.Client
                 context.Load(file.ListItemAllFields.FieldValuesAsText);
                 try
                 {
-#if ONPREMISES
-                    context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                     await context.ExecuteQueryRetryAsync();
+#else
+                    context.ExecuteQueryRetry();
 #endif
                 }
                 catch (ServerException ex)
@@ -2192,10 +2211,10 @@ namespace Microsoft.SharePoint.Client
                                 if (!currentValue.Equals(propertyValue, StringComparison.InvariantCultureIgnoreCase) && parentList != null)
                                 {
                                     ContentType targetCT = parentList.GetContentTypeByName(propertyValue);
-#if ONPREMISES
-                                    context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                                     await context.ExecuteQueryRetryAsync();
+#else
+                                    context.ExecuteQueryRetry();
 #endif
 
                                     if (targetCT != null)
@@ -2271,10 +2290,10 @@ namespace Microsoft.SharePoint.Client
                     {
                         Log.Debug(Constants.LOGGING_SOURCE, "Checking out file '{0}'", file.Name);
                         file.CheckOut();
-#if ONPREMISES
-                        context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                         await context.ExecuteQueryRetryAsync();
+#else
+                        context.ExecuteQueryRetry();
 #endif
                     }
 
@@ -2288,10 +2307,10 @@ namespace Microsoft.SharePoint.Client
                         file.ListItemAllFields[propertyName] = propertyValue;
                     }
                     file.ListItemAllFields.Update();
-#if ONPREMISES
-                    context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                     await context.ExecuteQueryRetryAsync();
+#else
+                    context.ExecuteQueryRetry();
 #endif
                 }
             }
@@ -2303,13 +2322,13 @@ namespace Microsoft.SharePoint.Client
         /// <param name="level">Target publish direction (Draft and Published only apply, Checkout is ignored).</param>
         public static void PublishFileToLevel(this File file, FileLevel level)
         {
-#if ONPREMISES
-            file.PublishFileToLevelImplementation(level);
-#else
+#if !ONPREMISES || SP2019
             Task.Run(() => file.PublishFileToLevelImplementation(level)).GetAwaiter().GetResult();
+#else
+            file.PublishFileToLevelImplementation(level);
 #endif
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Publishes a file based on the type of versioning required on the parent library.
         /// </summary>
@@ -2327,10 +2346,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="file">Target file to publish.</param>
         /// <param name="level">Target publish direction (Draft and Published only apply, Checkout is ignored).</param>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1303:Do not pass literals as localized parameters", MessageId = "OfficeDevPnP.Core.Diagnostics.Log.Debug(System.String,System.String,System.Object[])")]
-#if ONPREMISES
-        private static void PublishFileToLevelImplementation(this File file, FileLevel level)
-#else
+#if !ONPREMISES || SP2019
         private static async Task PublishFileToLevelImplementation(this File file, FileLevel level)
+#else
+        private static void PublishFileToLevelImplementation(this File file, FileLevel level)
 #endif
         {
             if (file == null)
@@ -2347,10 +2366,10 @@ namespace Microsoft.SharePoint.Client
                 // Ensure that ListItemAllFields.ServerObjectIsNull is loaded
                 try
                 {
-#if ONPREMISES
-                    file.EnsurePropertiesImplementation<File>(f => f.ListItemAllFields, f => f.CheckOutType, f => f.Name);
-#else
+#if !ONPREMISES || SP2019
                     await file.EnsurePropertiesImplementation<File>(f => f.ListItemAllFields, f => f.CheckOutType, f => f.Name);
+#else
+                    file.EnsurePropertiesImplementation<File>(f => f.ListItemAllFields, f => f.CheckOutType, f => f.Name);
 #endif
                 }
                 catch
@@ -2402,10 +2421,10 @@ namespace Microsoft.SharePoint.Client
                 {
                     Log.Debug(Constants.LOGGING_SOURCE, "Checking in file '{0}'", file.Name);
                     file.CheckIn("Checked in by provisioning", publishingRequired ? CheckinType.MinorCheckIn : CheckinType.MajorCheckIn);
-#if ONPREMISES
-                    context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                     await context.ExecuteQueryRetryAsync();
+#else
+                    context.ExecuteQueryRetry();
 #endif
                 }
 
@@ -2415,10 +2434,10 @@ namespace Microsoft.SharePoint.Client
                     {
                         Log.Debug(Constants.LOGGING_SOURCE, "Publishing file '{0}'", file.Name);
                         file.Publish("Published by provisioning");
-#if ONPREMISES
-                        context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                         await context.ExecuteQueryRetryAsync();
+#else
+                        context.ExecuteQueryRetry();
 #endif
                     }
 
@@ -2426,10 +2445,10 @@ namespace Microsoft.SharePoint.Client
                     {
                         Log.Debug(Constants.LOGGING_SOURCE, "Approving file '{0}'", file.Name);
                         file.Approve("Approved by provisioning");
-#if ONPREMISES
-                        context.ExecuteQueryRetry();
-#else
+#if !ONPREMISES || SP2019
                         await context.ExecuteQueryRetryAsync();
+#else
+                        context.ExecuteQueryRetry();
 #endif
                     }
                 }

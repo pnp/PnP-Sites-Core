@@ -280,7 +280,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         private void AddAppPackagesTokens(Web web)
         {
             _tokens.RemoveAll(t => t.GetType() == typeof(AppPackageIdToken));

@@ -86,10 +86,8 @@ namespace Microsoft.SharePoint.Client
 
             IEnumerable<WebPartDefinition> query;
 
-#if ONPREMISES
+#if !ONPREMISES || SP2019
             // As long as we've no CSOM library that has the ZoneID we can't use the version check as things don't compile...
-            query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
-#else
             if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION))
             {
                 query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.ZoneId, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
@@ -98,6 +96,9 @@ namespace Microsoft.SharePoint.Client
             {
                 query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
             }
+#else
+            query = web.Context.LoadQuery(limitedWebPartManager.WebParts.IncludeWithDefaultProperties(wp => wp.Id, wp => wp.WebPart, wp => wp.WebPart.Title, wp => wp.WebPart.Properties, wp => wp.WebPart.Hidden));
+            
 #endif
             web.Context.ExecuteQueryRetry();
 
@@ -381,42 +382,7 @@ namespace Microsoft.SharePoint.Client
 
             if (webPartId != Guid.Empty)
             {
-#if ONPREMISES
-                Guid id = Guid.Empty;
-
-                var wp = web.GetWebParts(serverRelativePageUrl).FirstOrDefault(wps => wps.Id == webPartId);
-                if (wp != null)
-                {
-                    id = wp.Id;
-                }
-                else
-                {
-                    return null;
-                }
-                var uri = new Uri(web.Context.Url);
-                var serverRelativeUrl = web.EnsureProperty(w => w.ServerRelativeUrl);
-                var webUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativeUrl}";
-                var pageUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativePageUrl}";
-                var request = (HttpWebRequest)WebRequest.Create($"{webUrl}/_vti_bin/exportwp.aspx?pageurl={HttpUtility.UrlKeyValueEncode(pageUrl)}&guidstring={id}");
-
-                if (web.Context.Credentials != null)
-                {
-                    request.Credentials = web.Context.Credentials;
-                }
-                else
-                {
-                    request.UseDefaultCredentials = true;
-                }
-
-                var response = request.GetResponse();
-                using (Stream stream = response.GetResponseStream())
-                {
-                    StreamReader reader = new StreamReader(stream, Encoding.UTF8);
-                    webPartXml = reader.ReadToEnd();
-                }
-
-#else
-
+#if !ONPREMISES || SP2019
                 var webPartPage = web.GetFileByServerRelativeUrl(serverRelativePageUrl);
 
                 bool forceCheckout = false;
@@ -473,6 +439,39 @@ namespace Microsoft.SharePoint.Client
                         webPartPage.UndoCheckOut();
                         web.Context.ExecuteQueryRetry();
                     }
+                }
+#else
+                Guid id = Guid.Empty;
+
+                var wp = web.GetWebParts(serverRelativePageUrl).FirstOrDefault(wps => wps.Id == webPartId);
+                if (wp != null)
+                {
+                    id = wp.Id;
+                }
+                else
+                {
+                    return null;
+                }
+                var uri = new Uri(web.Context.Url);
+                var serverRelativeUrl = web.EnsureProperty(w => w.ServerRelativeUrl);
+                var webUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativeUrl}";
+                var pageUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativePageUrl}";
+                var request = (HttpWebRequest)WebRequest.Create($"{webUrl}/_vti_bin/exportwp.aspx?pageurl={HttpUtility.UrlKeyValueEncode(pageUrl)}&guidstring={id}");
+
+                if (web.Context.Credentials != null)
+                {
+                    request.Credentials = web.Context.Credentials;
+                }
+                else
+                {
+                    request.UseDefaultCredentials = true;
+                }
+
+                var response = request.GetResponse();
+                using (Stream stream = response.GetResponseStream())
+                {
+                    StreamReader reader = new StreamReader(stream, Encoding.UTF8);
+                    webPartXml = reader.ReadToEnd();
                 }
 #endif
             }
@@ -881,7 +880,7 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Adds a client side "modern" page to a "classic" or "modern" site
         /// </summary>

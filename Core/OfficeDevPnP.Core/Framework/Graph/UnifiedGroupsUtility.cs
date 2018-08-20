@@ -720,6 +720,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="includeSite">Defines whether to return details about the Modern SharePoint Site backing the group. Default is true.</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
+        /// <param name="includeClassification"></param>
         /// <returns>An IList of SiteEntity objects</returns>
         public static List<UnifiedGroupEntity> ListUnifiedGroups(string accessToken,
             String displayName = null, string mailNickname = null,

@@ -24,14 +24,14 @@ namespace Microsoft.SharePoint.Client
         public static void ActivateFeature(this Web web, Guid featureID, bool sandboxed = false, int pollingIntervalSeconds = 30)
         {
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ActivateWebFeature, featureID);
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             Task.Run(() => web.ProcessFeature(featureID, true, sandboxed, pollingIntervalSeconds)).GetAwaiter().GetResult();
 #else
             web.ProcessFeature(featureID, true, sandboxed, pollingIntervalSeconds);
 #endif
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Activates a site collection or site scoped feature
         /// </summary>
@@ -57,14 +57,14 @@ namespace Microsoft.SharePoint.Client
         public static void ActivateFeature(this Site site, Guid featureID, bool sandboxed = false, int pollingIntervalSeconds = 30)
         {
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_ActivateWebFeature, featureID);
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             Task.Run(() => site.ProcessFeature(featureID, true, sandboxed, pollingIntervalSeconds)).GetAwaiter().GetResult();
 #else
             site.ProcessFeature(featureID, true, sandboxed, pollingIntervalSeconds);
 #endif
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Activates a site collection or site scoped feature
         /// </summary>
@@ -89,14 +89,14 @@ namespace Microsoft.SharePoint.Client
         public static void DeactivateFeature(this Web web, Guid featureID, int pollingIntervalSeconds = 30)
         {
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_DeactivateWebFeature, featureID);
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             Task.Run(() => web.ProcessFeature(featureID, false, false, pollingIntervalSeconds)).GetAwaiter().GetResult();
 #else
             web.ProcessFeature(featureID, false, false, pollingIntervalSeconds);
 #endif
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Deactivates a site collection or site scoped feature
         /// </summary>
@@ -120,14 +120,14 @@ namespace Microsoft.SharePoint.Client
         public static void DeactivateFeature(this Site site, Guid featureID, int pollingIntervalSeconds = 30)
         {
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.FeatureExtensions_DeactivateWebFeature, featureID);
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             Task.Run(() => site.ProcessFeature(featureID, false, false, pollingIntervalSeconds)).GetAwaiter().GetResult();
 #else
             site.ProcessFeature(featureID, false, false, pollingIntervalSeconds);
 #endif
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Deactivates a site collection or site scoped feature
         /// </summary>
@@ -150,14 +150,14 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if active, false otherwise</returns>
         public static bool IsFeatureActive(this Site site, Guid featureID)
         {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             return Task.Run(() => IsFeatureActiveInternal(site.Features, featureID)).GetAwaiter().GetResult();
 #else
             return IsFeatureActiveInternal(site.Features, featureID);
 #endif
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Checks if a feature is active
         /// </summary>
@@ -179,14 +179,14 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if active, false otherwise</returns>
         public static bool IsFeatureActive(this Web web, Guid featureID)
         {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             return Task.Run(() => IsFeatureActiveInternal(web.Features, featureID)).GetAwaiter().GetResult();
 #else
             return IsFeatureActiveInternal(web.Features, featureID);
 #endif
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Checks if a feature is active
         /// </summary>
@@ -207,7 +207,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="featureID">ID of the feature to check</param>
         /// <param name="noRetry">Use regular ExecuteQuery</param>
         /// <returns>True if active, false otherwise</returns>
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         private static async Task<bool> IsFeatureActiveInternal(FeatureCollection features, Guid featureID, bool noRetry=false)
 #else
         private static bool IsFeatureActiveInternal(FeatureCollection features, Guid featureID, bool noRetry = false)
@@ -227,7 +227,7 @@ namespace Microsoft.SharePoint.Client
                 }
                 features.Context.ClientTag = clientTag;
                 // Don't update this to ExecuteQueryRetry
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
                 await features.Context.ExecuteQueryAsync();
 #else
                 features.Context.ExecuteQuery();
@@ -235,7 +235,7 @@ namespace Microsoft.SharePoint.Client
             }
             else
             {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
                 await features.Context.ExecuteQueryRetryAsync();
 #else
                 features.Context.ExecuteQueryRetry();
@@ -261,13 +261,13 @@ namespace Microsoft.SharePoint.Client
         /// <param name="activate">True to activate, false to deactivate the feature</param>
         /// <param name="sandboxed">Set to true if the feature is defined in a sandboxed solution</param>
         /// <param name="pollingIntervalSeconds">The time in seconds between polls for "IsActive"</param>
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         private static Task ProcessFeature(this Site site, Guid featureID, bool activate, bool sandboxed, int pollingIntervalSeconds = 30)
 #else
         private static void ProcessFeature(this Site site, Guid featureID, bool activate, bool sandboxed, int pollingIntervalSeconds = 30)
 #endif
         {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             return ProcessFeatureInternal(site.Features, featureID, activate, sandboxed ? FeatureDefinitionScope.Site : FeatureDefinitionScope.Farm,pollingIntervalSeconds);
 #else
             ProcessFeatureInternal(site.Features, featureID, activate, sandboxed ? FeatureDefinitionScope.Site : FeatureDefinitionScope.Farm, pollingIntervalSeconds);
@@ -282,13 +282,13 @@ namespace Microsoft.SharePoint.Client
         /// <param name="activate">True to activate, false to deactivate the feature</param>
         /// <param name="sandboxed">True to specify that the feature is defined in a sandboxed solution</param>
         /// <param name="pollingIntervalSeconds">The time in seconds between polls for "IsActive"</param>
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         private static Task ProcessFeature(this Web web, Guid featureID, bool activate, bool sandboxed, int pollingIntervalSeconds = 30)
 #else
         private static void ProcessFeature(this Web web, Guid featureID, bool activate, bool sandboxed, int pollingIntervalSeconds = 30)
 #endif
         {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             return ProcessFeatureInternal(web.Features, featureID, activate, sandboxed ? FeatureDefinitionScope.Site : FeatureDefinitionScope.Farm, pollingIntervalSeconds);
 #else
             ProcessFeatureInternal(web.Features, featureID, activate, sandboxed ? FeatureDefinitionScope.Site : FeatureDefinitionScope.Farm, pollingIntervalSeconds);
@@ -303,7 +303,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="activate">True to activate, false to deactivate the feature</param>
         /// <param name="scope">Scope of the feature definition</param>
         /// <param name="pollingIntervalSeconds">The time in seconds between polls for "IsActive"</param>
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         private static async Task ProcessFeatureInternal(FeatureCollection features, Guid featureID, bool activate, FeatureDefinitionScope scope, int pollingIntervalSeconds = 30)
 #else
         private static void ProcessFeatureInternal(FeatureCollection features, Guid featureID, bool activate, FeatureDefinitionScope scope, int pollingIntervalSeconds = 30)
@@ -328,7 +328,7 @@ namespace Microsoft.SharePoint.Client
                     }
                     features.Context.ClientTag = clientTag;
                     // Don't update this to ExecuteQueryRetry
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
                     await features.Context.ExecuteQueryAsync();
 #else
                     features.Context.ExecuteQuery();
@@ -349,7 +349,7 @@ namespace Microsoft.SharePoint.Client
                         while (retryAttempts > retryCount)
                         {
                             Thread.Sleep(TimeSpan.FromSeconds(pollingIntervalSeconds));
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
                             if (await IsFeatureActiveInternal(features, featureID, true))
 #else
                             if (IsFeatureActiveInternal(features, featureID, true))
@@ -372,7 +372,7 @@ namespace Microsoft.SharePoint.Client
                 try
                 {
                     features.Remove(featureID, false);
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
                     await features.Context.ExecuteQueryRetryAsync();
 #else
                     features.Context.ExecuteQueryRetry();

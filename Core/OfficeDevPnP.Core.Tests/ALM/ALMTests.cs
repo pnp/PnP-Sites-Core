@@ -1,4 +1,4 @@
-﻿#if !ONPREMISES
+﻿#if !ONPREMISES || SP2019
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

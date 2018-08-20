@@ -563,7 +563,7 @@ namespace Microsoft.SharePoint.Client
                 }
             }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             if (!additionalAttributesList.Contains("ClientSideComponentId"))
             {
                 if (fieldCreationInformation.ClientSideComponentId != Guid.Empty)
@@ -1956,7 +1956,7 @@ namespace Microsoft.SharePoint.Client
 
         #endregion
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
 
         #region Localization
 

@@ -1,6 +1,6 @@
 ﻿namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
     /// <summary>
     /// List of possible OOB web parts
     /// </summary>

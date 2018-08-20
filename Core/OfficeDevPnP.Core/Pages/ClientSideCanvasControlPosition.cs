@@ -2,7 +2,7 @@
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
     /// <summary>
     /// Class representing the json control data that will describe a control versus the zones and sections on a page
     /// </summary>

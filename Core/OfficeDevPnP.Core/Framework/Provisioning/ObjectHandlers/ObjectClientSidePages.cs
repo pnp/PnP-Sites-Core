@@ -12,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
     internal class ObjectClientSidePages : ObjectHandlerBase
     {
         public override string Name

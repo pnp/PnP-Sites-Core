@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
     public enum ClientSidePageHeaderTitleAlignment
     {
         Center,

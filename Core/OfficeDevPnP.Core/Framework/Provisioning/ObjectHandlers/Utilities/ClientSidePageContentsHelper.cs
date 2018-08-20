@@ -14,7 +14,7 @@ using System.Web;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
     /// <summary>
     /// Helper class holding public methods that used by the client side page object handler. The purpose is to be able to reuse these public methods in a extensibility provider
     /// </summary>

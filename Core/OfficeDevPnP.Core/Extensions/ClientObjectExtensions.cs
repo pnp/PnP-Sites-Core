@@ -62,14 +62,14 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Property value</returns>
         public static TResult EnsureProperty<T, TResult>(this T clientObject, Expression<Func<T, TResult>> propertySelector) where T : ClientObject
         {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             return Task.Run(() => EnsurePropertyImplementation(clientObject, propertySelector)).GetAwaiter().GetResult();
 #else
             return EnsurePropertyImplementation(clientObject, propertySelector);
 #endif
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Ensures that particular property is loaded on the <see cref="ClientObject"/> and immediately returns this property
         /// </summary>
@@ -85,7 +85,7 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         private async static Task<TResult> EnsurePropertyImplementation<T, TResult>(T clientObject, Expression<Func<T, TResult>> propertySelector) where T : ClientObject
 #else
         private static TResult EnsurePropertyImplementation<T, TResult>(T clientObject, Expression<Func<T, TResult>> propertySelector) where T : ClientObject
@@ -122,7 +122,7 @@ namespace Microsoft.SharePoint.Client
             if (!clientObject.IsPropertyAvailable(untypedExpresssion) && !clientObject.IsObjectPropertyInstantiated(untypedExpresssion))
             {
                 clientObject.Context.Load(clientObject, untypedExpresssion);
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
                 await clientObject.Context.ExecuteQueryRetryAsync();
 #else
                 clientObject.Context.ExecuteQueryRetry();
@@ -132,7 +132,7 @@ namespace Microsoft.SharePoint.Client
             {
                 if (EnsureCollectionLoaded(clientObject, untypedExpresssion))
                 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
                     await clientObject.Context.ExecuteQueryRetryAsync();
 #else
                     clientObject.Context.ExecuteQueryRetry();
@@ -152,14 +152,14 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Property value</returns>
         public static void EnsureProperties<T>(this T clientObject, params Expression<Func<T, object>>[] propertySelector) where T : ClientObject
         {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             Task.Run(() => EnsurePropertiesImplementation(clientObject, propertySelector)).GetAwaiter().GetResult();
 #else
             EnsurePropertiesImplementation(clientObject, propertySelector);
 #endif
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         /// <summary>
         /// Ensures that particular properties are loaded on the <see cref="ClientObject"/> 
         /// </summary>
@@ -174,7 +174,7 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         internal static async Task EnsurePropertiesImplementation<T>(this T clientObject, params Expression<Func<T, object>>[] propertySelector) where T : ClientObject
 #else
         internal static void EnsurePropertiesImplementation<T>(this T clientObject, params Expression<Func<T, object>>[] propertySelector) where T : ClientObject
@@ -216,7 +216,7 @@ namespace Microsoft.SharePoint.Client
 
             if (dirty)
             {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
                 await clientObject.Context.ExecuteQueryRetryAsync();
 #else
                 clientObject.Context.ExecuteQueryRetry();

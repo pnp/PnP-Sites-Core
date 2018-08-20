@@ -2,7 +2,7 @@
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
     /// <summary>
     /// Control data for controls of type 3 (= client side web parts)
     /// </summary>

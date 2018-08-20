@@ -1257,7 +1257,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty = false;
                 }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
                 // Process list webhooks
                 if (templateList.Webhooks.Any())
                 {
@@ -1469,7 +1469,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             newUserCustomAction.Title = userCustomAction.Title;
             newUserCustomAction.Description = userCustomAction.Description;
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             if (!string.IsNullOrEmpty(userCustomAction.Title) && userCustomAction.Title.ContainsResourceToken())
             {
                 newUserCustomAction.TitleResource.SetUserResourceValue(userCustomAction.Title, parser);
@@ -1658,7 +1658,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     createdList.InformationRightsManagementSettings.PolicyTitle = parser.ParseString(templateList.IRMSettings.PolicyTitle);
                 }
             }
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             createdList.ListExperienceOptions = (Microsoft.SharePoint.Client.ListExperience)Enum.Parse(typeof(Microsoft.SharePoint.Client.ListExperience), templateList.ListExperience.ToString());
 #endif
 
@@ -1764,7 +1764,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             // Process list webhooks
             if (templateList.Webhooks.Any())
             {
@@ -1781,7 +1781,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return Tuple.Create(createdList, parser);
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
 
         private void AddOrUpdateListWebHook(List list, Webhook webhook, PnPMonitoredScope scope, TokenParser parser, bool isListUpdate = false)
         {
@@ -2064,7 +2064,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     list = ExtractUserCustomActions(web, siteList, list, creationInfo, template);
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
                     list = ExtractWebhooks(siteList, list);
 #endif
 
@@ -2091,7 +2091,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
 
         private static ListInstance ExtractWebhooks(List siteList, ListInstance list)
         {
@@ -2455,7 +2455,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     Location = userCustomAction.Location,
                 };
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
                 customAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
                 customAction.ClientSideComponentProperties = userCustomAction.ClientSideComponentProperties;
                 if (creationInfo.PersistMultiLanguageResources)

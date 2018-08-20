@@ -85,7 +85,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Then we add it to the target
                     var customActionEntity = new CustomActionEntity()
                     {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
                         ClientSideComponentId = customAction.ClientSideComponentId,
                         ClientSideComponentProperties = customAction.ClientSideComponentProperties != null ? parser.ParseString(customAction.ClientSideComponentProperties) : customAction.ClientSideComponentProperties,
 #endif
@@ -193,7 +193,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             if (customAction.ClientSideComponentId != null && customAction.ClientSideComponentId != Guid.Empty)
             {
                 if  (existingCustomAction.ClientSideComponentId != customAction.ClientSideComponentId)
@@ -420,7 +420,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             customAction.RegistrationId = userCustomAction.RegistrationId;
             customAction.RegistrationType = userCustomAction.RegistrationType;
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             customAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
             customAction.ClientSideComponentProperties = userCustomAction.ClientSideComponentProperties;
 #endif

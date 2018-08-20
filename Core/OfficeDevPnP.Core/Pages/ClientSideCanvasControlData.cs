@@ -2,7 +2,7 @@
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
     /// <summary>
     /// Base class representing the json control data that will be included in each client side control (de-)serialization (data-sp-controldata attribute)
     /// </summary>

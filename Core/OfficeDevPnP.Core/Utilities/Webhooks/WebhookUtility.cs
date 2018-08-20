@@ -1,4 +1,4 @@
-﻿#if !ONPREMISES
+﻿#if !ONPREMISES || SP2019
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.Entities;

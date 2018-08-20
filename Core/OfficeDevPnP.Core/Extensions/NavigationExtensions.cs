@@ -809,7 +809,7 @@ namespace Microsoft.SharePoint.Client
             targetAction.Description = customAction.Description;
             targetAction.Location = customAction.Location;
             targetAction.Sequence = customAction.Sequence;
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
             targetAction.ClientSideComponentId = customAction.ClientSideComponentId;
             targetAction.ClientSideComponentProperties = customAction.ClientSideComponentProperties;
 #endif

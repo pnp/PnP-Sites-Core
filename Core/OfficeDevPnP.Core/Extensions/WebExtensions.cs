@@ -1346,7 +1346,7 @@ namespace Microsoft.SharePoint.Client
             return webName;
         }
 
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
         #region ClientSide Package Deployment
         /// <summary>
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)

@@ -2,7 +2,7 @@
 
 namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
 {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
     /// <summary>
     ///     Default processor when others are not resolved
     /// </summary>

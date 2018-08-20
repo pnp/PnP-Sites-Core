@@ -1716,7 +1716,7 @@ namespace Microsoft.SharePoint.Client
             }
             if (systemUpdate)
             {
-#if !ONPREMISES
+#if !ONPREMISES || SP2019
                 item.SystemUpdate();
 #else
                 item.Update();

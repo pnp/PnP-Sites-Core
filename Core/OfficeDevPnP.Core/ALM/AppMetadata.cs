@@ -1,4 +1,4 @@
-﻿#if !ONPREMISES
+﻿#if !ONPREMISES || SP2019
 using Newtonsoft.Json;
 using System;
 
