@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.SharePoint.Client;
 
@@ -58,6 +60,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         /// Gets array of regular expressions
         /// </summary>
         /// <returns>Returns all Regular Expressions</returns>
+        [Obsolete("No longer in use")]
         public Regex[] GetRegex()
         {
             var regexs = new Regex[this._tokens.Length];
@@ -73,6 +76,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         /// </summary>
         /// <param name="token">token string</param>
         /// <returns>Returns RegularExpression</returns>
+        [Obsolete("No longer in use")]
         public Regex GetRegexForToken(string token)
         {
             return new Regex(token, RegexOptions.IgnoreCase);
