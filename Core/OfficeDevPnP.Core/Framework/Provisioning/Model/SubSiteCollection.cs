@@ -8,15 +8,15 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
     /// <summary>
-    /// Collection of ProvisioningTemplate items
+    /// Collection of SubSite items
     /// </summary>
-    public class ProvisioningTemplateCollection : BaseProvisioningObjectCollection<ProvisioningTemplate>
+    public class SubSiteCollection : BaseProvisioningObjectCollection<SubSite>
     {
         /// <summary>
-        /// Constructor for ProvisioningTemplateCollection class
+        /// Constructor for SubSiteCollection class
         /// </summary>
         /// <param name="parentProvisioning">Parent Provisioning object</param>
-        public ProvisioningTemplateCollection(Provisioning parentProvisioning) :
+        public SubSiteCollection(Provisioning parentProvisioning) :
             base(parentProvisioning)
         {
         }

@@ -438,6 +438,15 @@
     <Compile Include="Framework\Graph\GraphHttpClient.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingValue.cs" />
     <Compile Include="Framework\Graph\Model\SiteClassificationsSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseProvisioningModel.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseProvisioningTemplateObjectCollection - Copy.cs" />
+    <Compile Include="Framework\Provisioning\Model\IProvisioningDescendant.cs" />
+    <Compile Include="Framework\Provisioning\Model\Provisioning.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseProvisioningObjectCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningSequenceCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SubSiteCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteCollectionCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\App.cs" />
     <Compile Include="Framework\Provisioning\Model\AppCatalog.cs" />
     <Compile Include="Framework\Provisioning\Model\AppCollection.cs" />
@@ -458,6 +467,7 @@
     <Compile Include="Framework\Provisioning\Model\PackageCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ImageRenditionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\IRMSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningSequence.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteDesignCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteDesignGrant.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteDesignGrantCollection.cs" />
@@ -469,6 +479,8 @@
     <Compile Include="Framework\Provisioning\Model\SiteWebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTenant.cs" />
     <Compile Include="Framework\Provisioning\Model\StorageEntity.cs" />
+    <Compile Include="Framework\Provisioning\Model\SubSite.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningTermStore.cs" />
     <Compile Include="Framework\Provisioning\Model\WebApiPermission.cs" />
     <Compile Include="Framework\Provisioning\Model\WebApiPermissionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Webhook.cs" />
@@ -737,7 +749,7 @@
     <Compile Include="Framework\Provisioning\Model\PropertyBagEntryCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ExtensibilityHandlerCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ProviderCollection.cs" />
-    <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateDictionary.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseProvisioningTemplateObjectDictionary.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Publishing.cs" />
     <Compile Include="Framework\Provisioning\Model\RoleAssignment.cs" />

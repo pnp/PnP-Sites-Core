@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object for the Provisioning Template
     /// </summary>
-    public partial class ProvisioningTemplate : IEquatable<ProvisioningTemplate>
+    public partial class ProvisioningTemplate : BaseProvisioningModel, IEquatable<ProvisioningTemplate>
     {
         #region Private Fields
 
@@ -50,6 +50,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         private ProvisioningTenant _tenant;
         private ApplicationLifecycleManagement _applicationLifecycleManagement;
+        private Double _version;
 
         #endregion
 
@@ -116,7 +117,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public Dictionary<string, string> Parameters
         {
-            get { return _parameters; }
+            get
+            {
+                if (this.ParentProvisioning != null)
+                {
+                    return (this.ParentProvisioning.Parameters);
+                }
+                else
+                {
+                    return _parameters;
+                }
+            }
             private set { _parameters = value; }
         }
 
@@ -125,7 +136,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public LocalizationCollection Localizations
         {
-            get { return this._localizations; }
+            get
+            {
+                if (this.ParentProvisioning != null)
+                {
+                    return (this.ParentProvisioning.Localizations);
+                }
+                else
+                {
+                    return _localizations;
+                }
+            }
             private set { this._localizations = value; }
         }
 
@@ -137,7 +158,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets the Version of the Provisioning Template
         /// </summary>
-        public double Version { get; set; }
+        public double Version {
+            get
+            {
+                if (this.ParentProvisioning != null)
+                {
+                    return (this.ParentProvisioning.Version);
+                }
+                else
+                {
+                    return _version;
+                }
+            }
+            set
+            {
+                if (this.ParentProvisioning != null)
+                {
+                    this.ParentProvisioning.Version = value;
+                }
+                else
+                {
+                    this._version = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or Sets the Site Policy
@@ -487,17 +531,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public ProvisioningTenant Tenant
         {
-            get { return this._tenant; }
+            get
+            {
+                if (this.ParentProvisioning != null)
+                {
+                    return (this.ParentProvisioning.Tenant);
+                }
+                else
+                {
+                    return _tenant;
+                }
+            }
             set
             {
-                if (this._tenant != null)
+                if (this.ParentProvisioning != null)
                 {
-                    this._tenant.ParentTemplate = null;
+                    this.ParentProvisioning.Tenant = value;
                 }
-                this._tenant = value;
-                if (this._tenant != null)
+                else
                 {
-                    this._tenant.ParentTemplate = this;
+                    if (this._tenant != null)
+                    {
+                        this._tenant.ParentTemplate = null;
+                    }
+                    this._tenant = value;
+                    if (this._tenant != null)
+                    {
+                        this._tenant.ParentTemplate = this;
+                    }
                 }
             }
         }

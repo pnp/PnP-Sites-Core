@@ -3,7 +3,7 @@
     /// <summary>
     /// Collection of StorageEntity objects
     /// </summary>
-    public partial class StorageEntityCollection : ProvisioningTemplateCollection<StorageEntity>
+    public partial class StorageEntityCollection : BaseProvisioningTemplateObjectCollection<StorageEntity>
     {
         /// <summary>
         /// Constructor for StorageEntityCollection

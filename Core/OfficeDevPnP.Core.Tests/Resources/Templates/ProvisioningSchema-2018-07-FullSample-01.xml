@@ -865,7 +865,7 @@
     </pnp:SiteCollection>
 
     <!-- Provision the TermStore -->
-    <pnp:TermStore Scope="Current">
+    <pnp:TermStore>
       <pnp:TermGroup ID="{0E8F395E-FF58-4D45-9FF7-E331AB728BEB}" Name="{parameter:CompanyName} TermSets">
         <pnp:TermSets>
           <pnp:TermSet Name="Projects" ID="{5880B01B-5D6F-4606-A492-3B03A2FB4DD7}">
@@ -912,13 +912,6 @@
       </pnp:TermGroup>
     </pnp:TermStore>
 
-    <pnp:Extensions>
-      <my:CustomExtension xmlns:my="http://tempuri"/>
-      <my2:AnotherExtension xmlns:my2="http://tempuri2"/>
-    </pnp:Extensions>
-
   </pnp:Sequence>
-
-  <pnp:ImportSequence File="AnotherSequence.xml" />
 
 </pnp:Provisioning>

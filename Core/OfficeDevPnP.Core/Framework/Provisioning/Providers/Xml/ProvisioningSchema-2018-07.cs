@@ -34,8 +34,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
         
         private Sequence[] sequenceField;
         
-        private ImportSequence[] importSequenceField;
-        
         /// <remarks/>
         public Preferences Preferences {
             get {
@@ -86,17 +84,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
             }
             set {
                 this.sequenceField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("ImportSequence")]
-        public ImportSequence[] ImportSequence {
-            get {
-                return this.importSequenceField;
-            }
-            set {
-                this.importSequenceField = value;
             }
         }
     }
@@ -211,28 +198,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
             }
             set {
                 this.textField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema")]
-    public partial class ImportSequence {
-        
-        private string fileField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string File {
-            get {
-                return this.fileField;
-            }
-            set {
-                this.fileField = value;
             }
         }
     }
@@ -8724,8 +8689,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
         
         private TermStore[] termStoreField;
         
-        private System.Xml.XmlElement[] extensionsField;
-        
         private string idField;
         
         /// <remarks/>
@@ -8747,17 +8710,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
             }
             set {
                 this.termStoreField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Extensions")]
-        public System.Xml.XmlElement[] Extensions {
-            get {
-                return this.extensionsField;
-            }
-            set {
-                this.extensionsField = value;
             }
         }
         

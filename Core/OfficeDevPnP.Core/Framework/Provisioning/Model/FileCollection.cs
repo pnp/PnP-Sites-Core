@@ -3,7 +3,7 @@
     /// <summary>
     /// Collection of File objects
     /// </summary>
-    public partial class FileCollection : ProvisioningTemplateCollection<File>
+    public partial class FileCollection : BaseProvisioningTemplateObjectCollection<File>
     {
         /// <summary>
         /// Constructor for FileCollection class
