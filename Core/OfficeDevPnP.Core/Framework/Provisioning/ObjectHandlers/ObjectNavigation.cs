@@ -128,6 +128,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     navigationSettings.AddNewPagesToNavigation = template.Navigation.AddNewPagesToNavigation;
                     navigationSettings.CreateFriendlyUrlsForNewPages = template.Navigation.CreateFriendlyUrlsForNewPages;
 
+                    if (!isNoScriptSite)
+                    {
+                        navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
+                        web.Context.ExecuteQueryRetry();
+                    }
+
                     if (template.Navigation.GlobalNavigation != null)
                     {
                         switch (template.Navigation.GlobalNavigation.NavigationType)
