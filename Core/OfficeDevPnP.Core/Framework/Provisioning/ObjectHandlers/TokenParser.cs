@@ -7,7 +7,6 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System.Resources;
 using System.Collections;
-using System.Diagnostics;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.ALM;
@@ -25,7 +24,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public Web _web;
 
         private List<TokenDefinition> _tokens;
-        private List<Localization> _localizations = new List<Localization>();
 
         /// <summary>
         /// List of token definitions
@@ -123,7 +121,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (web.IsSubSite())
             {
                 // SiteColumns from rootsite
-                var rootWeb = (web.Context as ClientContext).Site.RootWeb;
+                var rootWeb = ((ClientContext)web.Context).Site.RootWeb;
                 var siteColumns = rootWeb.Fields;
                 web.Context.Load(siteColumns, flds => flds.Include(f => f.Title, f => f.InternalName));
                 web.Context.ExecuteQueryRetry();
@@ -328,14 +326,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     siteEntities = ParseStorageEntitiesString(storageEntitiesIndex);
                 }
                 var combinedEntities = siteEntities.Concat(tenantEntities).GroupBy(x => x.Key).Select(x => x.First());
-        
-                foreach(var entity in combinedEntities)
+
+                foreach (var entity in combinedEntities)
                 {
                     _tokens.Add(new StorageEntityValueToken(web, entity.Key, entity.Value));
                 }
             }
             catch { }
-        } 
+        }
 
         private List<StorageEntity> ParseStorageEntitiesString(string storageEntitiesIndex)
         {
@@ -505,6 +503,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return ParseString(input, null);
         }
 
+
+        static readonly Regex ReGuid = new Regex("(?<guid>\\{\\S{8}-\\S{4}-\\S{4}-\\S{4}-\\S{12}?\\})", RegexOptions.Compiled);
         /// <summary>
         /// Gets left over tokens
         /// </summary>
@@ -513,7 +513,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public IEnumerable<string> GetLeftOverTokens(string input)
         {
             List<string> values = new List<string>();
-            var matches = Regex.Matches(input, "(?<guid>\\{\\S{8}-\\S{4}-\\S{4}-\\S{4}-\\S{12}?\\})").OfType<Match>().Select(m => m.Value);
+            var matches = ReGuid.Matches(input).OfType<Match>().Select(m => m.Value);
             foreach (var match in matches)
             {
                 Guid gout;
@@ -539,31 +539,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var tokenChars = new[] { '{', '~' };
             if (string.IsNullOrEmpty(input) || input.IndexOfAny(tokenChars) == -1) return input;
 
-            var tokensToSkipList = tokensToSkip?.ToList() ?? new List<string>();
-            string origInput;
+            foreach (TokenDefinition tokenDefinition in _tokens)
+            {
+                foreach (string token in tokenDefinition.GetTokens())
+                {
+                    if (TokenDictionary.ContainsKey(token)) continue;
+                    string value = tokenDefinition.GetReplaceValue();
+                    TokenDictionary[Regex.Unescape(token)] = value;
+                }
+            }
 
+            string output = input;
+            bool hasMatch = false;
             do
             {
-                origInput = input;
-
-                foreach (var token in _tokens)
+                hasMatch = false;
+                output = ReToken.Replace(output, match =>
                 {
-                    foreach (var filteredToken in token.GetTokens().Except(tokensToSkipList, StringComparer.InvariantCultureIgnoreCase))
+                    string tokenString = match.Groups[1].Value;
+                    if (TokenDictionary.TryGetValue(tokenString, out string val))
                     {
-                        var regex = token.GetRegexForToken(filteredToken);
-                        if (regex.IsMatch(input))
+                        if (tokenString.IndexOf("listid", StringComparison.OrdinalIgnoreCase) != -1)
                         {
-                            if (token is ListIdToken && !token.Web.Id.Equals(web.Id))
-                                continue;
-
-                            input = regex.Replace(input, ParseString(token.GetReplaceValue(), tokensToSkipList.Concat(new[] { filteredToken }).ToArray()));
+                            var token = _tokens.Single(t => t.GetTokens().Contains(tokenString));
+                            if (!token.Web.Id.Equals(web.Id))
+                            {
+                                return tokenString;
+                            }
                         }
+                        hasMatch = true;
+                        return val;
                     }
-                }
-            } while (origInput != input && input.IndexOfAny(tokenChars) >= 0);
+                    return tokenString;
+                });
+            } while (hasMatch);
 
-            return input;
+            return output;
         }
+
+        private static readonly Regex ReToken = new Regex(@"(\{(?:\1??[^{]*?\}))+", RegexOptions.Compiled);
+        private static readonly char[] TokenChars = { '{', '~' };
+        private static readonly Dictionary<string, string> TokenDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Parses given string
@@ -575,29 +591,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (string.IsNullOrWhiteSpace(input)) return input;
 
-            var tokenChars = new[] { '{', '~' };
-            if (string.IsNullOrEmpty(input) || input.IndexOfAny(tokenChars) == -1) return input;
 
-            var tokensToSkipList = tokensToSkip?.ToList() ?? new List<string>();
-            string origInput;
+            if (string.IsNullOrEmpty(input) || input.IndexOfAny(TokenChars) == -1) return input;
 
+            foreach (TokenDefinition tokenDefinition in _tokens)
+            {
+                foreach (string token in tokenDefinition.GetTokens())
+                {
+                    if (TokenDictionary.ContainsKey(token)) continue;
+                    string value = tokenDefinition.GetReplaceValue();
+                    TokenDictionary[Regex.Unescape(token)] = value;
+                }
+            }
+
+            string output = input;
+            bool hasMatch = false;
             do
             {
-                origInput = input;
-                foreach (var token in _tokens)
+                hasMatch = false;
+                output = ReToken.Replace(output, match =>
                 {
-                    foreach (var filteredToken in token.GetTokens().Except(tokensToSkipList, StringComparer.InvariantCultureIgnoreCase))
+                    if (TokenDictionary.TryGetValue(match.Groups[1].Value, out string val))
                     {
-                        var regex = token.GetRegexForToken(filteredToken);
-                        if (regex.IsMatch(input))
-                        {
-                            input = regex.Replace(input, ParseString(token.GetReplaceValue(), tokensToSkipList.Concat(new[] { filteredToken }).ToArray()));
-                        }
+                        hasMatch = true;
+                        return val;
                     }
-                }
-            } while (origInput != input && input.IndexOfAny(tokenChars) >= 0);
-
-            return input;
+                    return match.Groups[1].Value;
+                });
+            } while (hasMatch);
+            return output;
         }
 
         public string ParseXmlStringWebpart(string inputXml, Web web, params string[] tokensToSkip)

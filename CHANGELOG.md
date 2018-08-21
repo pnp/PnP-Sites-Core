@@ -11,8 +11,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- Refactored token parsing for PnP template handling for performance
 
 ### Deprecated
+- Marked regex functions in TokenDefinition as obsolete, as they are not needed
 
 ## [3.0.1808.0 - August 2018 release]
 
