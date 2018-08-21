@@ -440,6 +440,7 @@
     <Compile Include="Framework\Graph\Model\SiteClassificationsSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\BaseProvisioningModel.cs" />
     <Compile Include="Framework\Provisioning\Model\BaseProvisioningTemplateObjectCollection - Copy.cs" />
+    <Compile Include="Framework\Provisioning\Model\CommunicationSiteCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\IProvisioningDescendant.cs" />
     <Compile Include="Framework\Provisioning\Model\Provisioning.cs" />
     <Compile Include="Framework\Provisioning\Model\BaseProvisioningObjectCollection.cs" />
@@ -481,6 +482,9 @@
     <Compile Include="Framework\Provisioning\Model\StorageEntity.cs" />
     <Compile Include="Framework\Provisioning\Model\SubSite.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTermStore.cs" />
+    <Compile Include="Framework\Provisioning\Model\TeamNoGroupSiteCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\TeamNoGroupSubSite.cs" />
+    <Compile Include="Framework\Provisioning\Model\TeamSiteCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\WebApiPermission.cs" />
     <Compile Include="Framework\Provisioning\Model\WebApiPermissionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Webhook.cs" />

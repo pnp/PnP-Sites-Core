@@ -74,6 +74,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public string Generator { get; set; }
 
         /// <summary>
+        /// The Description of the Provisioning File
+        /// </summary>
+        public string Description { get; set; }
+
+        /// <summary>
+        /// The Display Name of the Provisioning File
+        /// </summary>
+        public string DisplayName { get; set; }
+
+        /// <summary>
+        /// The Image Preview Url of the Provisioning File
+        /// </summary>
+        public string ImagePreviewUrl { get; set; }
+
+        /// <summary>
         /// A collection of Provisioning Template objects, if any
         /// </summary>
         public ProvisioningTemplateCollection Templates { get; private set; }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public partial class SubSite : BaseProvisioningModel, IEquatable<SubSite>
+    public abstract partial class SubSite : BaseProvisioningModel, IEquatable<SubSite>
     {
         #region Private Members
 
@@ -25,12 +25,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #region Public Members
 
         /// <summary>
-        /// The template to use while creating the SubSite
-        /// </summary>
-        public SubSiteTemplate SiteTemplate { get; set; }
-
-        /// <summary>
-        /// Defines if the Quick launch enabled
+        /// Defines if the Quick Launch is enabled or not
         /// </summary>
         public Boolean QuickLaunchEnabled { get; set; }
 
@@ -45,14 +40,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public String Title { get; set; }
 
         /// <summary>
-        /// Defines the alias for the Office 365 Group created with the Site Collection, when needed.
+        /// Defines the Description for the Site
         /// </summary>
-        public String Alias { get; set; }
-
-        /// <summary>
-        /// Language of the target Site
-        /// </summary>
-        public String Language { get; set; }
+        public String Description { get; set; }
 
         /// <summary>
         /// Defines the list of Provisioning Templates to apply to the sub-site, if any
@@ -69,16 +59,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
-                this.SiteTemplate.GetHashCode(),
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
                 this.QuickLaunchEnabled.GetHashCode(),
                 this.UseSamePermissionsAsParentSite.GetHashCode(),
                 this.Title.GetHashCode(),
-                this.Alias.GetHashCode(),
-                this.Language.GetHashCode(),
-                this.Templates.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.Description.GetHashCode(),
+                this.Templates.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.GetInheritedHashCode()
             ).GetHashCode());
         }
+
+        /// <summary>
+        /// Returns the HashCode of the members of any inherited type
+        /// </summary>
+        /// <returns></returns>
+        protected abstract int GetInheritedHashCode();
 
         /// <summary>
         /// Compares object with SubSite
@@ -106,27 +101,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return (false);
             }
 
-            return (this.SiteTemplate == other.SiteTemplate &&
-                this.QuickLaunchEnabled == other.QuickLaunchEnabled &&
+            return (this.QuickLaunchEnabled == other.QuickLaunchEnabled &&
                 this.UseSamePermissionsAsParentSite == other.UseSamePermissionsAsParentSite &&
                 this.Title == other.Title &&
-                this.Alias == other.Alias &&
-                this.Language == other.Language &&
-                this.Templates.Intersect(other.Templates).Count() == 0
+                this.Description == other.Description &&
+                this.Templates.Intersect(other.Templates).Count() == 0 &&
+                this.EqualsInherited(other)
                 );
         }
 
-        #endregion
-    }
-
-    /// <summary>
-    /// Defines the template for a new "modern" SubSite
-    /// </summary>
-    public enum SubSiteTemplate
-    {
         /// <summary>
-        /// A "modern" Team Site without the corresponding Office 365 Group
+        /// Returns the HashCode of the members of any inherited type
         /// </summary>
-        TeamNoGroup,
+        /// <returns></returns>
+        protected abstract bool EqualsInherited(SubSite other);
+
+        #endregion
     }
 }

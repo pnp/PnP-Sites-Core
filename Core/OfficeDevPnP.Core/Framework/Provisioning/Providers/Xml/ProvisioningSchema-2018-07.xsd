@@ -80,6 +80,55 @@
         </xsd:element>
       </xsd:sequence>
     </xsd:sequence>
+
+    <xsd:attribute name="Version" type="xsd:decimal" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Version of the Provisioning Template, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="Author" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Author of the Provisioning Template, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="Generator" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          Name of the tool generating this Provisioning File, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="ImagePreviewUrl" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Image Preview Url of the Provisioning File, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="DisplayName" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Display Name of the Provisioning File, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="Description" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The Description of the Provisioning file, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
   </xsd:complexType>
 
   <xsd:complexType name="Preferences" >
@@ -5605,10 +5654,11 @@
     </xsd:attribute>
   </xsd:complexType>
 
-  <xsd:complexType name="SiteCollection">
+  <xsd:complexType abstract="true" name="SiteCollection">
     <xsd:annotation>
+      <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
       <xsd:documentation xml:lang="en">
-        Defines a SiteCollection that will be created into the target tenant/farm.
+        Defines the base element for a SiteCollection that will be created into the target tenant/farm.
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
@@ -5628,7 +5678,7 @@
         </xsd:annotation>
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="Site" type="pnp:Site"  minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="Site" type="pnp:Site" minOccurs="1" maxOccurs="unbounded">
               <xsd:annotation>
                 <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
                 <xsd:documentation xml:lang="en">
@@ -5640,12 +5690,146 @@
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
-    <xsd:attributeGroup ref="pnp:SiteCollectionAttributes"/>
     <xsd:attributeGroup ref="pnp:SiteAttributes"/>
+    <xsd:attributeGroup ref="pnp:SiteCollectionAttributes"/>
   </xsd:complexType>
 
-  <xsd:complexType name="Site">
+  <xsd:complexType name="CommunicationSite">
+    <xsd:complexContent>
+      <xsd:extension base="pnp:SiteCollection">
+        <xsd:attribute name="Url" type="pnp:ReplaceableString" use="required">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              The URL of the target Site, required attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="Owner" type="pnp:ReplaceableString" use="required">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Primary Owner of the target Site, required attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="SiteDesign" type="pnp:ReplaceableString" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              The ID of the SiteDesign, if any, to apply to the target Site, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="AllowFileSharingForGuestUsers" type="xsd:boolean" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Defines whether the target Site can be shared to guest users or not, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="Classification" type="pnp:ReplaceableString" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              The Classification of the target Site, if any, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="Language" type="pnp:ReplaceableString" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Language of the target Site, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="TeamSite">
+    <xsd:complexContent>
+      <xsd:extension base="pnp:SiteCollection">
+        <xsd:attribute name="Alias" type="pnp:ReplaceableString" use="required">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              The Alias of the target Site, required attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="DisplayName" type="pnp:ReplaceableString" use="required">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              The DisplayName of the target Site, required attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="IsPublic" type="xsd:boolean" use="required">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Defines whether the Office 365 Group for the target Site is Public or Private, required attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="Classification" type="pnp:ReplaceableString" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              The Classification of the target Site, if any, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType name="TeamSiteNoGroup">
+    <xsd:complexContent>
+      <xsd:extension base="pnp:SiteCollection">
+        <xsd:attribute name="Url" type="pnp:ReplaceableString" use="required">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              The URL of the target Site, required attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="Owner" type="pnp:ReplaceableString" use="required">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Primary Owner of the target Site, required attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="TimeZoneId" type="pnp:ReplaceableString" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              TimeZone of the target Site, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="Language" type="pnp:ReplaceableString" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Language of the target Site, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
+  <xsd:complexType abstract="true" name="Site">
     <xsd:annotation>
+      <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
       <xsd:documentation xml:lang="en">
         Defines a Site that will be created into a target Site Collection.
       </xsd:documentation>
@@ -5663,53 +5847,51 @@
     <xsd:attributeGroup ref="pnp:SiteAttributes"/>
   </xsd:complexType>
 
+  <xsd:complexType name="TeamSubSiteNoGroup">
+    <xsd:complexContent>
+      <xsd:extension base="pnp:Site">
+        <xsd:attribute name="Url" type="pnp:ReplaceableString" use="required">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              The URL of the target Site, required attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="TimeZoneId" type="pnp:ReplaceableString" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              TimeZone of the target Site, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="Language" type="pnp:ReplaceableString" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Language of the target Site, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="Language" type="pnp:ReplaceableString" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Language of the target Site, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+      </xsd:extension>
+    </xsd:complexContent>
+  </xsd:complexType>
+
   <xsd:attributeGroup name="SiteCollectionAttributes">
     <xsd:annotation>
       <xsd:documentation xml:lang="en">
         Common set of attributes for any Site Collection
       </xsd:documentation>
     </xsd:annotation>
-    <xsd:attribute name="SiteTemplate" use="required">
-      <xsd:annotation>
-        <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
-        <xsd:documentation xml:lang="en">
-          Declares the "modern" template to use while creating the Site Collection.
-        </xsd:documentation>
-      </xsd:annotation>
-      <xsd:simpleType>
-        <xsd:restriction base="xsd:string">
-          <xsd:enumeration value="Communication">
-            <xsd:annotation>
-              <xsd:documentation xml:lang="en">
-                Declares to create a Communication site
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:enumeration>
-          <xsd:enumeration value="Team">
-            <xsd:annotation>
-              <xsd:documentation xml:lang="en">
-                Declares to create a "modern" Team site
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:enumeration>
-          <xsd:enumeration value="TeamNoGroup">
-            <xsd:annotation>
-              <xsd:documentation xml:lang="en">
-                Declares to create a "modern" Team site without an Office 365 Group
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:enumeration>
-        </xsd:restriction>
-      </xsd:simpleType>
-    </xsd:attribute>
-    <xsd:attribute name="Owners" type="pnp:ReplaceableString" use="required">
-      <xsd:annotation>
-        <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
-        <xsd:documentation xml:lang="en">
-          Defines the list of owners for the new Site Collection
-        </xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute>
     <xsd:attribute name="IsHubSite" type="xsd:boolean" use="optional">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
@@ -5722,41 +5904,23 @@
 
   <xsd:attributeGroup name="SubSiteAttributes">
     <xsd:annotation>
-      <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
       <xsd:documentation xml:lang="en">
-        Common set of attributes for any SubSite.
+        Common set of attributes for any Sub-Site
       </xsd:documentation>
     </xsd:annotation>
-    <xsd:attribute name="SiteTemplate" use="required">
+    <xsd:attribute name="UseSamePermissionsAsParentSite" type="xsd:boolean" use="required">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
         <xsd:documentation xml:lang="en">
-          Declares the "modern" template to use while creating the sub Site.
+          Defines whether to inherit permissions from the parent Site or not, required attribute.
         </xsd:documentation>
       </xsd:annotation>
-      <xsd:simpleType>
-        <xsd:restriction base="xsd:string">
-          <xsd:enumeration value="TeamNoGroup">
-            <xsd:annotation>
-              <xsd:documentation xml:lang="en">
-                Declares to create a "modern" Team site without an Office 365 Group
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:enumeration>
-        </xsd:restriction>
-      </xsd:simpleType>
     </xsd:attribute>
     <xsd:attribute name="QuickLaunchEnabled" type="xsd:boolean" use="optional">
       <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
         <xsd:documentation xml:lang="en">
-          Is the Quick launch enabled, optional attribute.
-        </xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute>
-    <xsd:attribute name="UseSamePermissionsAsParentSite" type="xsd:boolean" use="optional">
-      <xsd:annotation>
-        <xsd:documentation xml:lang="en">
-          Defines whether to use the same permissions of the parent site or not, optional attribute.
+          Defines whether to enable QuickLaunch or not, optional attribute.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
@@ -5770,23 +5934,17 @@
     </xsd:annotation>
     <xsd:attribute name="Title" type="pnp:ReplaceableString"  use="required">
       <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
         <xsd:documentation xml:lang="en">
           Title of the site, required attribute.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="Alias" type="pnp:ReplaceableString" use="optional">
+    <xsd:attribute name="Description" type="pnp:ReplaceableString"  use="required">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
         <xsd:documentation xml:lang="en">
-          Defines the alias for the Office 365 Group created with the Site Collection, when needed. It is an optional attribute.
-        </xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute>
-    <xsd:attribute name="Language" type="pnp:ReplaceableString" use="optional">
-      <xsd:annotation>
-        <xsd:documentation xml:lang="en">
-          Language of the target Site, optional attribute.
+          Title of the site, required attribute.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>

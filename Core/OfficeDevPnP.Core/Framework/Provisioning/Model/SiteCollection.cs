@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public partial class SiteCollection: BaseProvisioningModel, IEquatable<SiteCollection>
+    public abstract partial class SiteCollection: BaseProvisioningModel, IEquatable<SiteCollection>
     {
         #region Private Members
 
@@ -26,16 +26,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #region Public Members
 
         /// <summary>
-        /// The template to use while creating the Site Collection
-        /// </summary>
-        public SiteCollectionSiteTemplate SiteTemplate { get; set; }
-
-        /// <summary>
-        /// The list of Owners of the Site Collection
-        /// </summary>
-        public String Owners { get; set; }
-
-        /// <summary>
         /// Declares whether the current Site Collection is the Hub Site of a new Hub
         /// </summary>
         public Boolean IsHubSite { get; set; }
@@ -46,14 +36,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public String Title { get; set; }
 
         /// <summary>
-        /// Defines the alias for the Office 365 Group created with the Site Collection, when needed.
+        /// Description of the site
         /// </summary>
-        public String Alias { get; set; }
-
-        /// <summary>
-        /// Language of the target Site
-        /// </summary>
-        public String Language { get; set; }
+        public String Description { get; set; }
 
         /// <summary>
         /// Defines the list of Provisioning Templates to apply to the site collection, if any
@@ -75,17 +60,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|",
-                this.SiteTemplate.GetHashCode(),
-                this.Owners.GetHashCode(),
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
                 this.IsHubSite.GetHashCode(),
                 this.Title.GetHashCode(),
-                this.Alias.GetHashCode(),
-                this.Language.GetHashCode(),
+                this.Description.GetHashCode(),
                 this.Templates.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.Sites.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.Sites.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.GetInheritedHashCode()
             ).GetHashCode());
         }
+
+        /// <summary>
+        /// Returns the HashCode of the members of any inherited type
+        /// </summary>
+        /// <returns></returns>
+        protected abstract int GetInheritedHashCode();
 
         /// <summary>
         /// Compares object with SiteCollection
@@ -113,36 +102,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return (false);
             }
 
-            return (this.SiteTemplate == other.SiteTemplate &&
-                this.Owners == other.Owners &&
-                this.IsHubSite== other.IsHubSite &&
+            return (this.IsHubSite== other.IsHubSite &&
                 this.Title == other.Title &&
-                this.Alias == other.Alias &&
-                this.Language == other.Language &&
+                this.Description == other.Description &&
                 this.Templates.Intersect(other.Templates).Count() == 0 &&
-                this.Sites.DeepEquals(other.Sites)
+                this.Sites.DeepEquals(other.Sites) &&
+                this.EqualsInherited(other)
                 );
         }
 
-        #endregion
-    }
 
-    /// <summary>
-    /// Defines the template for a new "modern" Site Collection
-    /// </summary>
-    public enum SiteCollectionSiteTemplate
-    {
         /// <summary>
-        /// A Communication Site
+        /// Returns the HashCode of the members of any inherited type
         /// </summary>
-        Communication,
-        /// <summary>
-        /// A "modern" Team Site
-        /// </summary>
-        Team,
-        /// <summary>
-        /// A "modern" Team Site without the corresponding Office 365 Group
-        /// </summary>
-        TeamNoGroup,
+        /// <returns></returns>
+        protected abstract bool EqualsInherited(SiteCollection other);
+
+        #endregion
     }
 }
