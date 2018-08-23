@@ -76,7 +76,7 @@
         <pnp:Property Key="SomethingElse" Value="Another property ... Who knows ..." />
       </pnp:Properties>
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
-      <pnp:WebSettings RequestAccessEmail="someone@company.com" NoCrawl="false" WelcomePage="/Pages/Home.aspx" Title="Site Title" Description="Site Description" SiteLogo="{sitecollection}/SiteAssets/Logo.png" AlternateCSS="{sitecollection}/Resources/Themes/Contoso/Contoso.css" MasterPageUrl="{sitecollection}/_catalogs/MasterPage/oslo.master" CustomMasterPageUrl="{sitecollection}/_catalogs/MasterPage/CustomMaster.master" HubSiteUrl="/sites/hubsite" QuickLaunchEnabled="false" />
+      <pnp:WebSettings RequestAccessEmail="someone@company.com" NoCrawl="false" WelcomePage="/Pages/Home.aspx" Title="Site Title" Description="Site Description" SiteLogo="{sitecollection}/SiteAssets/Logo.png" AlternateCSS="{sitecollection}/Resources/Themes/Contoso/Contoso.css" MasterPageUrl="{sitecollection}/_catalogs/MasterPage/oslo.master" CustomMasterPageUrl="{sitecollection}/_catalogs/MasterPage/CustomMaster.master" HubSiteUrl="/sites/hubsite" QuickLaunchEnabled="true" />
       <pnp:RegionalSettings AdjustHijriDays="1" AlternateCalendarType="Chinese Lunar" CalendarType="Hebrew" Collation="5" FirstDayOfWeek="Sunday" FirstWeekOfYear="1" LocaleId="1040" ShowWeeks="true" Time24="true" TimeZone="4" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="9:00AM" />
       <pnp:SupportedUILanguages>
         <pnp:SupportedUILanguage LCID="1033" />
@@ -93,7 +93,7 @@
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="true" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security BreakRoleInheritance="true" ResetRoleInheritance="true" CopyRoleAssignments="true" RemoveExistingUniqueRoleAssignments="true" ClearSubscopes="true" AssociatedGroups="Test Value" AssociatedOwnerGroup="{parameter:AssociatedOwnerGroup}" AssociatedMemberGroup="{parameter:AssociatedMemberGroup}" AssociatedVisitorGroup="{parameter:AssociatedVisitorGroup}">
+      <pnp:Security BreakRoleInheritance="true" ResetRoleInheritance="true" RemoveExistingUniqueRoleAssignments="true" ClearSubscopes="true" AssociatedGroups="Test Value" AssociatedOwnerGroup="{parameter:AssociatedOwnerGroup}" AssociatedMemberGroup="{parameter:AssociatedMemberGroup}" AssociatedVisitorGroup="{parameter:AssociatedVisitorGroup}">
         <pnp:AdditionalAdministrators>
           <pnp:User Name="user@contoso.com" />
           <pnp:User Name="U_SHAREPOINT_ADMINS" />
@@ -223,7 +223,7 @@
           <pnp:PropertyBagEntries>
             <pnp:PropertyBagEntry Key="Key1" Value="Value1" />
             <pnp:PropertyBagEntry Key="Key2" Value="Value2" Indexed="true" />
-            <pnp:PropertyBagEntry Key="Key3" Value="Value3" Indexed="true" />
+            <pnp:PropertyBagEntry Key="Key3" Value="Value3" />
           </pnp:PropertyBagEntries>
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
@@ -277,9 +277,6 @@
                   <pnp:RoleAssignment Principal="user1@contoso.com" RoleDefinition="View Only" />
                 </pnp:BreakRoleInheritance>
               </pnp:Security>
-              <pnp:PropertyBagEntries>
-                <pnp:PropertyBagEntry Key="Key1" Value="Value1" Indexed="true" />
-              </pnp:PropertyBagEntries>
             </pnp:Folder>
             <pnp:Folder Name="SubFolder-02">
               <pnp:Folder Name="SubFolder-02-01">

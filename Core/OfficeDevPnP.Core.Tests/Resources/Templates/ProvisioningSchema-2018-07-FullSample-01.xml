@@ -82,6 +82,11 @@
 
     <pnp:ProvisioningTemplateFile ID="WORKFLOWSITE" File="ProvisioningSchema-2015-05-ReferenceSample-01.xml" />
 
+    <pnp:ProvisioningTemplateFile ID="ProjectsTemplate" File="ProjectsTemplate.xml" />
+
+    <pnp:ProvisioningTemplateFile ID="MeetingsTemplate" File="MeetingsTemplate.xml" />
+
+
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="1.0"
       BaseSiteTemplate="STS#0"
       ImagePreviewUrl="https://preview.png"
@@ -882,7 +887,7 @@
                         Description="{parameter:CompanyName} Projects"
                         Classification="MBI">
       <pnp:Templates>
-        <pnp:ProvisioningTemplateFile ID="ProjectsTemplate" File="ProjectsTemplate.xml" />
+        <pnp:ProvisioningTemplateReference ID="ProjectsTemplate" />
       </pnp:Templates>
     </pnp:SiteCollection>
 
@@ -895,7 +900,7 @@
                         Language="1040"
                         TimeZoneId="4">
       <pnp:Templates>
-        <pnp:ProvisioningTemplateFile ID="MeetingsTemplate" File="MeetingsTemplate.xml" />
+        <pnp:ProvisioningTemplateReference ID="MeetingsTemplate" />
       </pnp:Templates>
     </pnp:SiteCollection>
 

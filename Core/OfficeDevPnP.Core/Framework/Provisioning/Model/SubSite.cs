@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public SubSite()
         {
-            this.Templates = new ProvisioningTemplateCollection(this.ParentProvisioning);
+            this.Templates = new List<String>();
         }
 
         #endregion
@@ -47,7 +47,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the list of Provisioning Templates to apply to the sub-site, if any
         /// </summary>
-        public ProvisioningTemplateCollection Templates { get; private set; }
+        public List<String> Templates { get; private set; }
 
         #endregion
 

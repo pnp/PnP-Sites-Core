@@ -5629,15 +5629,15 @@
         The Sequences must be evaluated by the provisioning engine in the order in which they appear.
       </xsd:documentation>
     </xsd:annotation>
-    <xsd:sequence maxOccurs="unbounded">
-      <xsd:element name="SiteCollection" type="pnp:SiteCollection" minOccurs="0">
+    <xsd:sequence>
+      <xsd:element name="SiteCollection" type="pnp:SiteCollection" minOccurs="0" maxOccurs="unbounded">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
             A Site Collection to provision through a Sequence, optional element.
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-      <xsd:element name="TermStore" type="pnp:TermStore"  minOccurs="0">
+      <xsd:element name="TermStore" type="pnp:TermStore" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
             A Term Store to provision through a Sequence, optional element.
@@ -5662,12 +5662,24 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="Templates" type="pnp:Templates" minOccurs="0">
+      <xsd:element name="Templates" minOccurs="0">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
             Templates that can be provisioned together with the Site Collection, optional collection of elements.
           </xsd:documentation>
         </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ProvisioningTemplateReference" type="pnp:ProvisioningTemplateReference" minOccurs="1" maxOccurs="unbounded">
+              <xsd:annotation>
+                <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+                <xsd:documentation xml:lang="en">
+                  Defines a reference to a Provisioning Template defined or imported in the current Provisioning File
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
       </xsd:element>
       <xsd:element name="Sites" minOccurs="0">
         <xsd:annotation>
@@ -5835,12 +5847,24 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="Templates" type="pnp:Templates" minOccurs="0">
+      <xsd:element name="Templates" minOccurs="0">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
-            Templates that can be provisioned together with the Site, optional collection of elements.
+            Templates that can be provisioned together with the Site Collection, optional collection of elements.
           </xsd:documentation>
         </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="ProvisioningTemplateReference" type="pnp:ProvisioningTemplateReference" minOccurs="1" maxOccurs="unbounded">
+              <xsd:annotation>
+                <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+                <xsd:documentation xml:lang="en">
+                  Defines a reference to a Provisioning Template defined or imported in the current Provisioning File
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
     <xsd:attributeGroup ref="pnp:SubSiteAttributes"/>
