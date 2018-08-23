@@ -8,7 +8,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     Description = "Returns the ID of the current user e.g. the user using the engine.",
     Example = "{currentuserid}",
     Returns = "4")]
-    internal class CurrentUserIdToken : TokenDefinition
+    internal class CurrentUserIdToken : VolatileTokenDefinition
     {
         public CurrentUserIdToken(Web web)
             : base(web, "~currentuserid", "{currentuserid}")

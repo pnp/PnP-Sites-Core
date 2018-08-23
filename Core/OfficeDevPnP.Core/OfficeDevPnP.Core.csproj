@@ -492,6 +492,8 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\FieldAndListProvisioningStepHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\NoScriptTemplateCleaner.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectApplicationLifecycleManagement.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSequenceHandlerBase.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSequence.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTenant.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
@@ -508,6 +510,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\StorageEntityValueToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteScriptIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteTitleToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\VolatileTokenDefinition.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ClientSidePageContentsHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AppPackageIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdToken.cs" />

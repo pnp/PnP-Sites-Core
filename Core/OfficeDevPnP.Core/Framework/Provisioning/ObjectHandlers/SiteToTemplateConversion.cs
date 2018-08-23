@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
-using OfficeDevPnP.Core.Framework.Provisioning.Extensibility;
-using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -134,13 +133,79 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        internal void ApplyTenantTemplate(Tenant tenant, OfficeDevPnP.Core.Framework.Provisioning.Model.Provisioning sequenceTemplate, ProvisioningTemplateApplyingInformation provisioningInfo)
+        {
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Provisioning))
+            {
+                ProvisioningProgressDelegate progressDelegate = null;
+                ProvisioningMessagesDelegate messagesDelegate = null;
+                if (provisioningInfo == null)
+                {
+                    // When no provisioning info was passed then we want to execute all handlers
+                    provisioningInfo = new ProvisioningTemplateApplyingInformation();
+                    provisioningInfo.HandlersToProcess = Handlers.All;
+                }
+                else
+                {
+                    progressDelegate = provisioningInfo.ProgressDelegate;
+                    if (provisioningInfo.ProgressDelegate != null)
+                    {
+                        scope.LogInfo(CoreResources.SiteToTemplateConversion_ProgressDelegate_registered);
+                    }
+                    messagesDelegate = provisioningInfo.MessagesDelegate;
+                    if (provisioningInfo.MessagesDelegate != null)
+                    {
+                        scope.LogInfo(CoreResources.SiteToTemplateConversion_MessagesDelegate_registered);
+                    }
+                    if (provisioningInfo.HandlersToProcess == default(Handlers))
+                    {
+                        provisioningInfo.HandlersToProcess = Handlers.All;
+                    }
+
+                }
+
+                List<ObjectSequenceHandlerBase> objectHandlers = new List<ObjectSequenceHandlerBase>
+                {
+                    new ObjectSequence()
+                };
+
+                var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(tenant, sequenceTemplate, provisioningInfo)) + 1;
+
+                if (progressDelegate != null)
+                {
+                    progressDelegate("Initializing engine", 1, count); // handlers + initializing message)
+                }
+
+                int step = 2;
+
+                TokenParser sequenceTokenParser = new TokenParser(tenant, sequenceTemplate);
+                foreach (var handler in objectHandlers)
+                {
+                    if (handler.WillProvision(tenant, sequenceTemplate, provisioningInfo))
+                    {
+                        if (messagesDelegate != null)
+                        {
+                            handler.MessagesDelegate = messagesDelegate;
+                        }
+                        if (handler.ReportProgress && progressDelegate != null)
+                        {
+                            progressDelegate(handler.Name, step, count);
+                            step++;
+                        }
+                        sequenceTokenParser = handler.ProvisionObjects(tenant, sequenceTemplate, sequenceTokenParser, provisioningInfo);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Actual implementation of the apply templates
         /// </summary>
         /// <param name="web"></param>
         /// <param name="template"></param>
         /// <param name="provisioningInfo"></param>
-        internal void ApplyRemoteTemplate(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation provisioningInfo)
+        /// <param name="tokenParser"></param>
+        internal void ApplyRemoteTemplate(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation provisioningInfo, TokenParser tokenParser = null)
         {
             using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Provisioning))
             {
@@ -275,7 +340,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     progressDelegate("Initializing engine", 1, count); // handlers + initializing message)
                 }
-                var tokenParser = new TokenParser(web, template);
+                if (tokenParser == null)
+                {
+                    tokenParser = new TokenParser(web, template);
+                }
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders))
                 {
                     var extensibilityHandler = objectHandlers.OfType<ObjectExtensibilityHandlers>().First();
