@@ -11,43 +11,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 {
     internal static class TermGroupHelper
     {
-        internal static List<ReusedTerm> ProcessGroup(Web web, TermStore termStore, Model.TermGroup modelTermGroup, TermGroup siteCollectionTermGroup, TokenParser parser, PnPMonitoredScope scope)
+        internal static List<ReusedTerm> ProcessGroup(ClientContext context, TaxonomySession session, TermStore termStore, Model.TermGroup modelTermGroup, TermGroup siteCollectionTermGroup, TokenParser parser, PnPMonitoredScope scope)
         {
             List<ReusedTerm> reusedTerms = new List<ReusedTerm>();
 
             SiteCollectionTermGroupNameToken siteCollectionTermGroupNameToken =
-              new SiteCollectionTermGroupNameToken(web);
+              new SiteCollectionTermGroupNameToken(context.Web);
 
             #region Group
 
             var newGroup = false;
-            var normalizedGroupName = TaxonomyItem.NormalizeName(web.Context, modelTermGroup.Name);
-            web.Context.ExecuteQueryRetry();
+
+            var modelGroupName = parser.ParseString(modelTermGroup.Name);
+
+            var normalizedGroupName = TaxonomyItem.NormalizeName(context, modelGroupName);
+            context.ExecuteQueryRetry();
 
             TermGroup group = termStore.Groups.FirstOrDefault(
                 g => g.Id == modelTermGroup.Id || g.Name == normalizedGroupName.Value);
             if (group == null)
             {
-                var parsedGroupName = parser.ParseString(modelTermGroup.Name);
                 var parsedDescription = parser.ParseString(modelTermGroup.Description);
 
                 if (modelTermGroup.Name == "Site Collection" ||
-                    parsedGroupName == siteCollectionTermGroupNameToken.GetReplaceValue() ||
+                    modelGroupName == siteCollectionTermGroupNameToken.GetReplaceValue() ||
                     modelTermGroup.SiteCollectionTermGroup)
                 {
-                    var site = (web.Context as ClientContext).Site;
+                    var site = (context as ClientContext).Site;
                     group = termStore.GetSiteCollectionGroup(site, true);
-                    web.Context.Load(group, g => g.Name, g => g.Id, g => g.TermSets.Include(
+                    context.Load(group, g => g.Name, g => g.Id, g => g.TermSets.Include(
                         tset => tset.Name,
                         tset => tset.Id));
-                    web.Context.ExecuteQueryRetry();
+                    context.ExecuteQueryRetry();
                 }
                 else
                 {
-                    var parsedNormalizedGroupName = TaxonomyItem.NormalizeName(web.Context, parsedGroupName);
-                    web.Context.ExecuteQueryRetry();
-
-                    group = termStore.Groups.FirstOrDefault(g => g.Name == parsedNormalizedGroupName.Value);
+                    group = termStore.Groups.FirstOrDefault(g => g.Name == normalizedGroupName.Value);
 
                     if (group == null)
                     {
@@ -55,7 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         {
                             modelTermGroup.Id = Guid.NewGuid();
                         }
-                        group = termStore.CreateGroup(parsedGroupName, modelTermGroup.Id);
+                        group = termStore.CreateGroup(modelGroupName, modelTermGroup.Id);
 
                         group.Description = parsedDescription;
 
@@ -82,8 +81,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 #endif
 
                         termStore.CommitAll();
-                        web.Context.Load(group);
-                        web.Context.ExecuteQueryRetry();
+                        context.Load(group);
+                        context.ExecuteQueryRetry();
 
                         newGroup = true;
 
@@ -93,6 +92,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             }
             #endregion
 
+            session.UpdateCache();
+            session.Context.ExecuteQueryRetry();
             #region TermSets
 
             foreach (var modelTermSet in modelTermGroup.TermSets)
@@ -100,9 +101,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 TermSet set = null;
                 var newTermSet = false;
 
-                var normalizedTermSetName = TaxonomyItem.NormalizeName(web.Context, modelTermSet.Name);
-                web.Context.ExecuteQueryRetry();
-
+                var normalizedTermSetName = TaxonomyItem.NormalizeName(context, parser.ParseString(modelTermSet.Name));
+                context.ExecuteQueryRetry();
                 if (!newGroup)
                 {
                     set =
@@ -115,14 +115,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     {
                         modelTermSet.Id = Guid.NewGuid();
                     }
-                    set = group.CreateTermSet(parser.ParseString(modelTermSet.Name), modelTermSet.Id,
+                    set = group.CreateTermSet(normalizedTermSetName.Value, modelTermSet.Id,
                         modelTermSet.Language ?? termStore.DefaultLanguage);
-                    parser.AddToken(new TermSetIdToken(web, group.Name, modelTermSet.Name, modelTermSet.Id));
-                    if (!siteCollectionTermGroup.ServerObjectIsNull.Value)
+                    parser.AddToken(new TermSetIdToken(context.Web, group.Name, normalizedTermSetName.Value, modelTermSet.Id));
+                    if (siteCollectionTermGroup != null && !siteCollectionTermGroup.ServerObjectIsNull.Value)
                     {
                         if (group.Name == siteCollectionTermGroup.Name)
                         {
-                            parser.AddToken((new SiteCollectionTermSetIdToken(web, modelTermSet.Name, modelTermSet.Id)));
+                            parser.AddToken((new SiteCollectionTermSetIdToken(context.Web, normalizedTermSetName.Value, modelTermSet.Id)));
                         }
                     }
                     newTermSet = true;
@@ -138,12 +138,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         set.Owner = modelTermSet.Owner;
                     }
                     termStore.CommitAll();
-                    web.Context.Load(set);
-                    web.Context.ExecuteQueryRetry();
+                    context.Load(set);
+                    context.ExecuteQueryRetry();
                 }
 
-                web.Context.Load(set, s => s.Terms.Include(t => t.Id, t => t.Name));
-                web.Context.ExecuteQueryRetry();
+                context.Load(set, s => s.Terms.Include(t => t.Id, t => t.Name));
+                context.ExecuteQueryRetry();
                 var terms = set.Terms;
 
                 foreach (var modelTerm in modelTermSet.Terms)
@@ -155,13 +155,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             var term = terms.FirstOrDefault(t => t.Id == modelTerm.Id);
                             if (term == null)
                             {
-                                var normalizedTermName = TaxonomyItem.NormalizeName(web.Context, modelTerm.Name);
-                                web.Context.ExecuteQueryRetry();
+                                var normalizedTermName = TaxonomyItem.NormalizeName(context, modelTerm.Name);
+                                context.ExecuteQueryRetry();
 
                                 term = terms.FirstOrDefault(t => t.Name == normalizedTermName.Value);
                                 if (term == null)
                                 {
-                                    var returnTuple = CreateTerm<TermSet>(web, modelTerm, set, termStore, parser, scope);
+                                    var returnTuple = CreateTerm<TermSet>(context, modelTerm, set, termStore, parser, scope);
                                     if (returnTuple != null)
                                     {
                                         modelTerm.Id = returnTuple.Item1;
@@ -180,12 +180,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                             if (term != null)
                             {
-                                CheckChildTerms(web, modelTerm, term, termStore, parser, scope);
+                                CheckChildTerms(context, modelTerm, term, termStore, parser, scope);
                             }
                         }
                         else
                         {
-                            var returnTuple = CreateTerm<TermSet>(web, modelTerm, set, termStore, parser, scope);
+                            var returnTuple = CreateTerm<TermSet>(context, modelTerm, set, termStore, parser, scope);
                             if (returnTuple != null)
                             {
                                 modelTerm.Id = returnTuple.Item1;
@@ -195,7 +195,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                     else
                     {
-                        var returnTuple = CreateTerm<TermSet>(web, modelTerm, set, termStore, parser, scope);
+                        var returnTuple = CreateTerm<TermSet>(context, modelTerm, set, termStore, parser, scope);
                         if (returnTuple != null)
                         {
                             modelTerm.Id = returnTuple.Item1;
@@ -215,7 +215,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                     set.CustomSortOrder = customSortString;
                     termStore.CommitAll();
-                    web.Context.ExecuteQueryRetry();
+                    context.ExecuteQueryRetry();
                 }
             }
 
@@ -231,7 +231,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             public TermStore TermStore { get; set; }
         }
 
-        internal static Tuple<Guid, TokenParser, List<ReusedTerm>> CreateTerm<T>(Web web, Model.Term modelTerm, TaxonomyItem parent,
+        internal static Tuple<Guid, TokenParser, List<ReusedTerm>> CreateTerm<T>(ClientContext context, Model.Term modelTerm, TaxonomyItem parent,
            TermStore termStore, TokenParser parser, PnPMonitoredScope scope) where T : TaxonomyItem
         {
 
@@ -293,18 +293,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
             termStore.CommitAll();
 
-            web.Context.Load(term);
-            web.Context.ExecuteQueryRetry();
+            context.Load(term);
+            context.ExecuteQueryRetry();
 
             // Deprecate term if needed
             if (modelTerm.IsDeprecated != term.IsDeprecated)
             {
                 term.Deprecate(modelTerm.IsDeprecated);
-                web.Context.ExecuteQueryRetry();
+                context.ExecuteQueryRetry();
             }
 
 
-            parser = CreateChildTerms(web, modelTerm, term, termStore, parser, scope);
+            parser = CreateChildTerms(context, modelTerm, term, termStore, parser, scope);
             return Tuple.Create(modelTerm.Id, parser, reusedTerms);
         }
 
@@ -350,14 +350,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         /// <param name="parser"></param>
         /// <param name="scope"></param>
         /// <returns>Updated parser object</returns>
-        private static TokenParser CreateChildTerms(Web web, Model.Term modelTerm, Term term, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
+        private static TokenParser CreateChildTerms(ClientContext context, Model.Term modelTerm, Term term, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
         {
             if (modelTerm.Terms.Any())
             {
                 foreach (var modelTermTerm in modelTerm.Terms)
                 {
-                    web.Context.Load(term.Terms);
-                    web.Context.ExecuteQueryRetry();
+                    context.Load(term.Terms);
+                    context.ExecuteQueryRetry();
                     var termTerms = term.Terms;
                     if (termTerms.Any())
                     {
@@ -367,7 +367,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             termTerm = termTerms.FirstOrDefault(t => t.Name == modelTermTerm.Name);
                             if (termTerm == null)
                             {
-                                var returnTuple = CreateTerm<Term>(web, modelTermTerm, term, termStore, parser, scope);
+                                var returnTuple = CreateTerm<Term>(context, modelTermTerm, term, termStore, parser, scope);
                                 if (returnTuple != null)
                                 {
                                     modelTermTerm.Id = returnTuple.Item1;
@@ -386,7 +386,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                     else
                     {
-                        var returnTuple = CreateTerm<Term>(web, modelTermTerm, term, termStore, parser, scope);
+                        var returnTuple = CreateTerm<Term>(context, modelTermTerm, term, termStore, parser, scope);
                         if (returnTuple != null)
                         {
                             modelTermTerm.Id = returnTuple.Item1;
@@ -421,19 +421,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         /// <param name="parser"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        internal static TryReuseTermResult TryReuseTerm(Web web, Model.Term modelTerm, TaxonomyItem parent, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
+        internal static TryReuseTermResult TryReuseTerm(ClientContext context, Model.Term modelTerm, TaxonomyItem parent, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
         {
             if (!modelTerm.IsReused) return new TryReuseTermResult() { Success = false, UpdatedParser = parser };
             if (modelTerm.Id == Guid.Empty) return new TryReuseTermResult() { Success = false, UpdatedParser = parser };
 
             // Since we're reusing terms ensure the previous terms are committed
             termStore.CommitAll();
-            web.Context.ExecuteQueryRetry();
+            context.ExecuteQueryRetry();
 
             // Try to retrieve a matching term from the website also marked from re-use.  
-            var taxonomySession = TaxonomySession.GetTaxonomySession(web.Context);
-            web.Context.Load(taxonomySession);
-            web.Context.ExecuteQueryRetry();
+            var taxonomySession = TaxonomySession.GetTaxonomySession(context);
+            context.Load(taxonomySession);
+            context.ExecuteQueryRetry();
 
             if (taxonomySession.ServerObjectIsNull())
             {
@@ -445,8 +445,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
             try
             {
-                web.Context.Load(preExistingTerm);
-                web.Context.ExecuteQueryRetry();
+                context.Load(preExistingTerm);
+                context.ExecuteQueryRetry();
 
                 if (preExistingTerm.ServerObjectIsNull())
                 {
@@ -502,18 +502,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 }
 
                 termStore.CommitAll();
-                web.Context.Load(createdTerm);
-                web.Context.ExecuteQueryRetry();
+                context.Load(createdTerm);
+                context.ExecuteQueryRetry();
 
                 // Create any child terms
-                parser = CreateChildTerms(web, modelTerm, createdTerm, termStore, parser, scope);
+                parser = CreateChildTerms(context, modelTerm, createdTerm, termStore, parser, scope);
 
                 // Return true, because our TryReuseTerm attempt succeeded!
                 return new TryReuseTermResult() { Success = true, UpdatedParser = parser };
             }
         }
 
-        private static TokenParser CheckChildTerms(Web web, Model.Term modelTerm, Term parentTerm, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
+        private static TokenParser CheckChildTerms(ClientContext context, Model.Term modelTerm, Term parentTerm, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
         {
             if (modelTerm.Terms.Any())
             {
@@ -529,13 +529,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         var term = terms.FirstOrDefault(t => t.Id == childTerm.Id);
                         if (term == null)
                         {
-                            var normalizedTermName = TaxonomyItem.NormalizeName(web.Context, childTerm.Name);
-                            web.Context.ExecuteQueryRetry();
+                            var normalizedTermName = TaxonomyItem.NormalizeName(context, childTerm.Name);
+                            context.ExecuteQueryRetry();
 
                             term = terms.FirstOrDefault(t => t.Name == normalizedTermName.Value);
                             if (term == null)
                             {
-                                var returnTuple = CreateTerm<TermSet>(web, childTerm, parentTerm, termStore, parser, scope);
+                                var returnTuple = CreateTerm<TermSet>(context, childTerm, parentTerm, termStore, parser, scope);
                                 if (returnTuple != null)
                                 {
                                     childTerm.Id = returnTuple.Item1;
@@ -554,12 +554,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                         if (term != null)
                         {
-                            parser = CheckChildTerms(web, childTerm, term, termStore, parser, scope);
+                            parser = CheckChildTerms(context, childTerm, term, termStore, parser, scope);
                         }
                     }
                     else
                     {
-                        var returnTuple = CreateTerm<TermSet>(web, childTerm, parentTerm, termStore, parser, scope);
+                        var returnTuple = CreateTerm<TermSet>(context, childTerm, parentTerm, termStore, parser, scope);
                         if (returnTuple != null)
                         {
                             childTerm.Id = returnTuple.Item1;

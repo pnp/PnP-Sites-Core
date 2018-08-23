@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.SharePoint.Client;
+﻿using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -56,217 +56,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var modelTermGroup in template.TermGroups)
                 {
-                    this.reusedTerms.AddRange(TermGroupHelper.ProcessGroup(web, termStore, modelTermGroup, siteCollectionTermGroup, parser, scope));
-                    /*
-                   
-                    #region Group
-
-                    var newGroup = false;
-                    var normalizedGroupName = TaxonomyItem.NormalizeName(web.Context, modelTermGroup.Name);
-                    web.Context.ExecuteQueryRetry();
-
-                    TermGroup group = termStore.Groups.FirstOrDefault(
-                        g => g.Id == modelTermGroup.Id || g.Name == normalizedGroupName.Value);
-                    if (group == null)
-                    {
-                        var parsedGroupName = parser.ParseString(modelTermGroup.Name);
-                        var parsedDescription = parser.ParseString(modelTermGroup.Description);
-
-                        if (modelTermGroup.Name == "Site Collection" ||
-                            parsedGroupName == siteCollectionTermGroupNameToken.GetReplaceValue() ||
-                            modelTermGroup.SiteCollectionTermGroup)
-                        {
-                            var site = (web.Context as ClientContext).Site;
-                            group = termStore.GetSiteCollectionGroup(site, true);
-                            web.Context.Load(group, g => g.Name, g => g.Id, g => g.TermSets.Include(
-                                tset => tset.Name,
-                                tset => tset.Id));
-                            web.Context.ExecuteQueryRetry();
-                        }
-                        else
-                        {
-                            var parsedNormalizedGroupName = TaxonomyItem.NormalizeName(web.Context, parsedGroupName);
-                            web.Context.ExecuteQueryRetry();
-
-                            group = termStore.Groups.FirstOrDefault(g => g.Name == parsedNormalizedGroupName.Value);
-
-                            if (group == null)
-                            {
-                                if (modelTermGroup.Id == Guid.Empty)
-                                {
-                                    modelTermGroup.Id = Guid.NewGuid();
-                                }
-                                group = termStore.CreateGroup(parsedGroupName, modelTermGroup.Id);
-
-                                group.Description = parsedDescription;
-
-#if !ONPREMISES
-
-                                // Handle TermGroup Contributors, if any
-                                if (modelTermGroup.Contributors != null && modelTermGroup.Contributors.Count > 0)
-                                {
-                                    foreach (var c in modelTermGroup.Contributors)
-                                    {
-                                        group.AddContributor(c.Name);
-                                    }
-                                }
-
-                                // Handle TermGroup Managers, if any
-                                if (modelTermGroup.Managers != null && modelTermGroup.Managers.Count > 0)
-                                {
-                                    foreach (var m in modelTermGroup.Managers)
-                                    {
-                                        group.AddGroupManager(m.Name);
-                                    }
-                                }
-
-#endif
-
-                                termStore.CommitAll();
-                                web.Context.Load(group);
-                                web.Context.ExecuteQueryRetry();
-
-                                newGroup = true;
-
-                            }
-                        }
-                    }
-
-                    #endregion
-
-                    #region TermSets
-
-                    foreach (var modelTermSet in modelTermGroup.TermSets)
-                    {
-                        TermSet set = null;
-                        var newTermSet = false;
-
-                        var normalizedTermSetName = TaxonomyItem.NormalizeName(web.Context, modelTermSet.Name);
-                        web.Context.ExecuteQueryRetry();
-
-                        if (!newGroup)
-                        {
-                            set =
-                                group.TermSets.FirstOrDefault(
-                                    ts => ts.Id == modelTermSet.Id || ts.Name == normalizedTermSetName.Value);
-                        }
-                        if (set == null)
-                        {
-                            if (modelTermSet.Id == Guid.Empty)
-                            {
-                                modelTermSet.Id = Guid.NewGuid();
-                            }
-                            set = group.CreateTermSet(parser.ParseString(modelTermSet.Name), modelTermSet.Id,
-                                modelTermSet.Language ?? termStore.DefaultLanguage);
-                            parser.AddToken(new TermSetIdToken(web, group.Name, modelTermSet.Name, modelTermSet.Id));
-                            if (!siteCollectionTermGroup.ServerObjectIsNull.Value)
-                            {
-                                if (group.Name == siteCollectionTermGroup.Name)
-                                {
-                                    parser.AddToken((new SiteCollectionTermSetIdToken(web, modelTermSet.Name, modelTermSet.Id)));
-                                }
-                            }
-                            newTermSet = true;
-                            set.Description = parser.ParseString(modelTermSet.Description);
-                            set.IsOpenForTermCreation = modelTermSet.IsOpenForTermCreation;
-                            set.IsAvailableForTagging = modelTermSet.IsAvailableForTagging;
-                            foreach (var property in modelTermSet.Properties)
-                            {
-                                set.SetCustomProperty(property.Key, parser.ParseString(property.Value));
-                            }
-                            if (modelTermSet.Owner != null)
-                            {
-                                set.Owner = modelTermSet.Owner;
-                            }
-                            termStore.CommitAll();
-                            web.Context.Load(set);
-                            web.Context.ExecuteQueryRetry();
-                        }
-
-                        web.Context.Load(set, s => s.Terms.Include(t => t.Id, t => t.Name));
-                        web.Context.ExecuteQueryRetry();
-                        var terms = set.Terms;
-
-                        foreach (var modelTerm in modelTermSet.Terms)
-                        {
-                            if (!newTermSet)
-                            {
-                                if (terms.Any())
-                                {
-                                    var term = terms.FirstOrDefault(t => t.Id == modelTerm.Id);
-                                    if (term == null)
-                                    {
-                                        var normalizedTermName = TaxonomyItem.NormalizeName(web.Context, modelTerm.Name);
-                                        web.Context.ExecuteQueryRetry();
-
-                                        term = terms.FirstOrDefault(t => t.Name == normalizedTermName.Value);
-                                        if (term == null)
-                                        {
-                                            var returnTuple = CreateTerm<TermSet>(web, modelTerm, set, termStore, parser, scope);
-                                            if (returnTuple != null)
-                                            {
-                                                modelTerm.Id = returnTuple.Item1;
-                                                parser = returnTuple.Item2;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            modelTerm.Id = term.Id;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        modelTerm.Id = term.Id;
-                                    }
-
-                                    if (term != null)
-                                    {
-                                        CheckChildTerms(web, modelTerm, term, termStore, parser, scope);
-                                    }
-                                }
-                                else
-                                {
-                                    var returnTuple = CreateTerm<TermSet>(web, modelTerm, set, termStore, parser, scope);
-                                    if (returnTuple != null)
-                                    {
-                                        modelTerm.Id = returnTuple.Item1;
-                                        parser = returnTuple.Item2;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                var returnTuple = CreateTerm<TermSet>(web, modelTerm, set, termStore, parser, scope);
-                                if (returnTuple != null)
-                                {
-                                    modelTerm.Id = returnTuple.Item1;
-                                    parser = returnTuple.Item2;
-                                }
-                            }
-                        }
-
-                        // do we need custom sorting?
-                        if (modelTermSet.Terms.Any(t => t.CustomSortOrder > -1))
-                        {
-                            var sortedTerms = modelTermSet.Terms.OrderBy(t => t.CustomSortOrder);
-
-                            var customSortString = sortedTerms.Aggregate(string.Empty,
-                                (a, i) => a + i.Id.ToString() + ":");
-                            customSortString = customSortString.TrimEnd(new[] { ':' });
-
-                            set.CustomSortOrder = customSortString;
-                            termStore.CommitAll();
-                            web.Context.ExecuteQueryRetry();
-                        }
-                    }
-
-                    #endregion
-                    */
+                    this.reusedTerms.AddRange(TermGroupHelper.ProcessGroup(web.Context as ClientContext, taxSession, termStore, modelTermGroup, siteCollectionTermGroup, parser, scope));
                 }
 
                 foreach (var reusedTerm in this.reusedTerms)
                 {
-                    TermGroupHelper.TryReuseTerm(web, reusedTerm.ModelTerm, reusedTerm.Parent, reusedTerm.TermStore, parser, scope);
+                    TermGroupHelper.TryReuseTerm(web.Context as ClientContext, reusedTerm.ModelTerm, reusedTerm.Parent, reusedTerm.TermStore, parser, scope);
                 }
             }
             return parser;
@@ -488,68 +283,68 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="parser"></param>
         /// <param name="scope"></param>
         /// <returns></returns>
-        
 
-        private TokenParser CheckChildTerms(Web web, Model.Term modelTerm, Term parentTerm, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
-        {
-            if (modelTerm.Terms.Any())
-            {
-                parentTerm.Context.Load(parentTerm, s => s.Terms.Include(t => t.Id, t => t.Name));
-                parentTerm.Context.ExecuteQueryRetry();
 
-                var terms = parentTerm.Terms;
+        //private TokenParser CheckChildTerms(Web web, Model.Term modelTerm, Term parentTerm, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
+        //{
+        //    if (modelTerm.Terms.Any())
+        //    {
+        //        parentTerm.Context.Load(parentTerm, s => s.Terms.Include(t => t.Id, t => t.Name));
+        //        parentTerm.Context.ExecuteQueryRetry();
 
-                foreach (var childTerm in modelTerm.Terms)
-                {
-                    if (terms.Any())
-                    {
-                        var term = terms.FirstOrDefault(t => t.Id == childTerm.Id);
-                        if (term == null)
-                        {
-                            var normalizedTermName = TaxonomyItem.NormalizeName(web.Context, childTerm.Name);
-                            web.Context.ExecuteQueryRetry();
+        //        var terms = parentTerm.Terms;
 
-                            term = terms.FirstOrDefault(t => t.Name == normalizedTermName.Value);
-                            if (term == null)
-                            {
-                                var returnTuple = TermGroupHelper.CreateTerm<TermSet>(web, childTerm, parentTerm, termStore, parser, scope);
-                                if (returnTuple != null)
-                                {
-                                    childTerm.Id = returnTuple.Item1;
-                                    parser = returnTuple.Item2;
-                                    this.reusedTerms.AddRange(returnTuple.Item3);
-                                }
-                            }
-                            else
-                            {
-                                childTerm.Id = term.Id;
-                            }
-                        }
-                        else
-                        {
-                            childTerm.Id = term.Id;
-                        }
+        //        foreach (var childTerm in modelTerm.Terms)
+        //        {
+        //            if (terms.Any())
+        //            {
+        //                var term = terms.FirstOrDefault(t => t.Id == childTerm.Id);
+        //                if (term == null)
+        //                {
+        //                    var normalizedTermName = TaxonomyItem.NormalizeName(web.Context, childTerm.Name);
+        //                    web.Context.ExecuteQueryRetry();
 
-                        if (term != null)
-                        {
-                            parser = CheckChildTerms(web, childTerm, term, termStore, parser, scope);
-                        }
-                    }
-                    else
-                    {
-                        var returnTuple = TermGroupHelper.CreateTerm<TermSet>(web, childTerm, parentTerm, termStore, parser, scope);
-                        if (returnTuple != null)
-                        {
-                            childTerm.Id = returnTuple.Item1;
-                            parser = returnTuple.Item2;
-                            this.reusedTerms.AddRange(returnTuple.Item3);
-                        }
-                    }
-                }
-            }
+        //                    term = terms.FirstOrDefault(t => t.Name == normalizedTermName.Value);
+        //                    if (term == null)
+        //                    {
+        //                        var returnTuple = TermGroupHelper.CreateTerm<TermSet>(web, childTerm, parentTerm, termStore, parser, scope);
+        //                        if (returnTuple != null)
+        //                        {
+        //                            childTerm.Id = returnTuple.Item1;
+        //                            parser = returnTuple.Item2;
+        //                            this.reusedTerms.AddRange(returnTuple.Item3);
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        childTerm.Id = term.Id;
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    childTerm.Id = term.Id;
+        //                }
 
-            return parser;
-        }
+        //                if (term != null)
+        //                {
+        //                    parser = CheckChildTerms(web, childTerm, term, termStore, parser, scope);
+        //                }
+        //            }
+        //            else
+        //            {
+        //                var returnTuple = TermGroupHelper.CreateTerm<TermSet>(web, childTerm, parentTerm, termStore, parser, scope);
+        //                if (returnTuple != null)
+        //                {
+        //                    childTerm.Id = returnTuple.Item1;
+        //                    parser = returnTuple.Item2;
+        //                    this.reusedTerms.AddRange(returnTuple.Item3);
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    return parser;
+        //}
 
         private class TryReuseTermResult
         {

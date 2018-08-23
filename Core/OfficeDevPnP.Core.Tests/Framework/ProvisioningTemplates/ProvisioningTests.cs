@@ -3,6 +3,7 @@ using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using System;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
@@ -23,9 +24,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
         [TestMethod]
         public void ProvisionTenantTemplate()
         {
-            //var resourceFolder = string.Format(@"{0}\..\..\Resources\Templates",
-            //  AppDomain.CurrentDomain.BaseDirectory);
-            //XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(resourceFolder, "");
+            var resourceFolder = string.Format(@"{0}\..\..\Resources\Templates", AppDomain.CurrentDomain.BaseDirectory);
+            XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(resourceFolder, "");
+
+           // var existingTemplate = provider.GetTemplate("ProvisioningSchema-2018-07-FullSample-01.xml");
 
             Guid siteGuid = Guid.NewGuid();
             int siteId = siteGuid.GetHashCode();
@@ -43,9 +45,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 
             sequenceTemplate.Templates.Add(template);
 
-            sequenceTemplate.Parameters.Add("Test", "test");
+            sequenceTemplate.Parameters.Add("CompanyName", "Contoso");
 
             var sequence = new ProvisioningSequence();
+
+            sequence.TermStore = new ProvisioningTermStore();
+            var termGroup = new TermGroup() { Name = "Contoso TermGroup" };
+            var termSet = new TermSet() { Name = "Contoso TermSet" };
+            var term = new Term() { Name = "Contoso Term" };
+
+            termSet.Terms.Add(term);
+            termGroup.TermSets.Add(termSet);
+            sequence.TermStore.TermGroups.Add(termGroup);
+
             var teamSite1 = new TeamSiteCollection()
             {
                 //  Alias = $"prov-1-{siteId}",

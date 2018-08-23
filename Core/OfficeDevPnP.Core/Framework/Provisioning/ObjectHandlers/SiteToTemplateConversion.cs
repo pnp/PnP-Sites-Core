@@ -166,7 +166,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 List<ObjectSequenceHandlerBase> objectHandlers = new List<ObjectSequenceHandlerBase>
                 {
-                    new ObjectSequence()
+                    new ObjectSequenceTermGroups(),
+                    new ObjectSequenceSites()
                 };
 
                 var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(tenant, sequenceTemplate, provisioningInfo)) + 1;

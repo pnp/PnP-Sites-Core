@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-    internal class ObjectSequence : ObjectSequenceHandlerBase
+    internal class ObjectSequenceSites : ObjectSequenceHandlerBase
     {
         public override string Name => "Sequences";
 

@@ -493,11 +493,12 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\NoScriptTemplateCleaner.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectApplicationLifecycleManagement.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSequenceHandlerBase.cs" />
-    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSequence.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSequenceSites.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTenant.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSequenceTermGroups.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWebApiPermissions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdTokenEncoded.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\HostUrlToken.cs" />

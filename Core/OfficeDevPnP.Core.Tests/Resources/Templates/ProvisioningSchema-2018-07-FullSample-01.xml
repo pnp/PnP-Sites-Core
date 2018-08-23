@@ -615,7 +615,7 @@
       <pnp:TermGroups>
         <pnp:TermGroup ID="{0E8F395E-FF58-4D45-9FF7-E331AB728BEB}" Name="{parameter:CompanyName} TermSets">
           <pnp:TermSets>
-            <pnp:TermSet Name="Projects" ID="{5880B01B-5D6F-4606-A492-3B03A2FB4DD7}" Language="1040">
+            <pnp:TermSet Name="Projects" ID="{5880B01B-5D6F-4606-A492-3B03A2FB4DD7}" Language="1033">
               <pnp:Terms>
                 <pnp:Term Name="IT Projects" ID="{3D212FC2-F176-4621-AED1-128219666D95}">
                   <pnp:CustomProperties>
@@ -629,12 +629,12 @@
                   <pnp:Terms>
                     <pnp:Term Name="Cloud" ID="{87C55100-8316-4DA0-97FD-FEB5731880F6}">
                       <pnp:Labels>
-                        <pnp:Label Language="1040" Value="Nuvola"/>
+                        <pnp:Label Language="1033" Value="Nuvola"/>
                       </pnp:Labels>
                     </pnp:Term>
                     <pnp:Term Name="New Farm" ID="{C422BD0D-681D-448F-A41E-C71C473A95CC}" IsDeprecated="true">
                       <pnp:Labels>
-                        <pnp:Label Language="1040" Value="Nuova Farm"/>
+                        <pnp:Label Language="1033" Value="Nuova Farm"/>
                       </pnp:Labels>
                     </pnp:Term>
                   </pnp:Terms>
@@ -643,12 +643,12 @@
                   <pnp:Terms>
                     <pnp:Term Name="Security Assessment" ID="{3279FE80-95DB-4D35-B235-A9B2F0FB6F9E}">
                       <pnp:Labels>
-                        <pnp:Label Language="1040" Value="Valutazione Sicurezza"/>
+                        <pnp:Label Language="1033" Value="Valutazione Sicurezza"/>
                       </pnp:Labels>
                     </pnp:Term>
                     <pnp:Term Name="Safety Program" ID="{FBEA36EA-A750-4A97-9667-5D51A6C895AF}">
                       <pnp:Labels>
-                        <pnp:Label Language="1040" Value="Programma Sicurezza"/>
+                        <pnp:Label Language="1033" Value="Programma Sicurezza"/>
                       </pnp:Labels>
                     </pnp:Term>
                   </pnp:Terms>
@@ -656,13 +656,13 @@
               </pnp:Terms>
             </pnp:TermSet>
           </pnp:TermSets>
-          <pnp:Contributors>
+          <!--<pnp:Contributors>
             <pnp:User Name="user1@contoso.com"/>
           </pnp:Contributors>
           <pnp:Managers>
             <pnp:User Name="user2@contoso.com"/>
             <pnp:User Name="user3@contoso.com"/>
-          </pnp:Managers>
+          </pnp:Managers>-->
         </pnp:TermGroup>
       </pnp:TermGroups>
 
