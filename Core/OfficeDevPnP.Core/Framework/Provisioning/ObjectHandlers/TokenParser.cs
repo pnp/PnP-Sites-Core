@@ -579,7 +579,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static readonly Regex ReToken = new Regex(@"(\{(?:\1??[^{]*?\}))+", RegexOptions.Compiled);
         private static readonly char[] TokenChars = { '{', '~' };
-        private static readonly Dictionary<string, string> TokenDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, string> TokenDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Parses given string
