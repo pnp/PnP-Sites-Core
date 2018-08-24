@@ -5,7 +5,6 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.ObjectTermGroups;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 {
@@ -82,6 +81,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                         termStore.CommitAll();
                         context.Load(group);
+                        context.Load(termStore);
                         context.ExecuteQueryRetry();
 
                         newGroup = true;
@@ -115,8 +115,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     {
                         modelTermSet.Id = Guid.NewGuid();
                     }
-                    set = group.CreateTermSet(normalizedTermSetName.Value, modelTermSet.Id,
-                        modelTermSet.Language ?? termStore.DefaultLanguage);
+                    else
+                    {
+                        if (CheckIfTermSetIdIsUnique(termStore, modelTermSet.Id) == false)
+                        {
+                            throw new Exception($"Termset ID {modelTermSet.Id} is already present in termstore");
+                        }
+                    }
+                    var termSetLanguage = modelTermSet.Language.HasValue ? modelTermSet.Language.Value : termStore.DefaultLanguage;
+                    set = group.CreateTermSet(normalizedTermSetName.Value, modelTermSet.Id, termSetLanguage);
                     parser.AddToken(new TermSetIdToken(context.Web, group.Name, normalizedTermSetName.Value, modelTermSet.Id));
                     if (siteCollectionTermGroup != null && !siteCollectionTermGroup.ServerObjectIsNull.Value)
                     {
@@ -126,7 +133,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         }
                     }
                     newTermSet = true;
-                    set.Description = parser.ParseString(modelTermSet.Description);
+                    if (!string.IsNullOrEmpty(modelTermSet.Description))
+                    {
+                        set.Description = parser.ParseString(modelTermSet.Description);
+                    }
                     set.IsOpenForTermCreation = modelTermSet.IsOpenForTermCreation;
                     set.IsAvailableForTagging = modelTermSet.IsAvailableForTagging;
                     foreach (var property in modelTermSet.Properties)
@@ -231,6 +241,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             public TermStore TermStore { get; set; }
         }
 
+        internal static bool CheckIfTermSetIdIsUnique(TermStore store, Guid id)
+        {
+            var existingTermSet = store.GetTermSet(id);
+            store.Context.Load(existingTermSet);
+            store.Context.ExecuteQueryRetry();
+
+            return existingTermSet.ServerObjectIsNull == true;
+        }
+
+        internal static bool CheckIfTermIdIsUnique(TermStore store, Guid id)
+        {
+            var existingTerm = store.GetTerm(id);
+            store.Context.Load(existingTerm);
+            store.Context.ExecuteQueryRetry();
+
+            return existingTerm.ServerObjectIsNull == true;
+        }
+
         internal static Tuple<Guid, TokenParser, List<ReusedTerm>> CreateTerm<T>(ClientContext context, Model.Term modelTerm, TaxonomyItem parent,
            TermStore termStore, TokenParser parser, PnPMonitoredScope scope) where T : TaxonomyItem
         {
@@ -253,6 +281,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             if (modelTerm.Id == Guid.Empty)
             {
                 modelTerm.Id = Guid.NewGuid();
+            }
+            else
+            {
+                if (CheckIfTermIdIsUnique(termStore, modelTerm.Id) == false)
+                {
+                    throw new Exception($"Term ID {modelTerm.Id} is already present in termstore");
+                }
             }
 
             if (parent is Term)

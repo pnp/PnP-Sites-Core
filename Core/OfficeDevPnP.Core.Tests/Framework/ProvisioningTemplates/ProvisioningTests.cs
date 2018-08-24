@@ -27,7 +27,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
             var resourceFolder = string.Format(@"{0}\..\..\Resources\Templates", AppDomain.CurrentDomain.BaseDirectory);
             XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(resourceFolder, "");
 
-           // var existingTemplate = provider.GetTemplate("ProvisioningSchema-2018-07-FullSample-01.xml");
+            var existingTemplate = provider.GetTemplate("ProvisioningSchema-2018-07-FullSample-01.xml");
 
             Guid siteGuid = Guid.NewGuid();
             int siteId = siteGuid.GetHashCode();
@@ -40,6 +40,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
                 Url = "lists/testlist"
             });
 
+            template.TermGroups.AddRange(existingTemplate.TermGroups);
 
             Provisioning sequenceTemplate = new Provisioning();
 
@@ -51,12 +52,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 
             sequence.TermStore = new ProvisioningTermStore();
             var termGroup = new TermGroup() { Name = "Contoso TermGroup" };
-            var termSet = new TermSet() { Name = "Contoso TermSet" };
+            var termSet = new TermSet() { Name = "Projects", Id = Guid.NewGuid(), IsAvailableForTagging = true, Language = 1033 };
             var term = new Term() { Name = "Contoso Term" };
 
             termSet.Terms.Add(term);
-            termGroup.TermSets.Add(termSet);
-            sequence.TermStore.TermGroups.Add(termGroup);
+           // termGroup.TermSets.Add(termSet);
+            
+            var existingTermSet = existingTemplate.TermGroups[0].TermSets[0];
+            termGroup.TermSets.Add(existingTermSet);
+
+           // sequence.TermStore.TermGroups.Add(termGroup);
 
             var teamSite1 = new TeamSiteCollection()
             {

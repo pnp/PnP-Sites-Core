@@ -27,8 +27,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var context = tenant.Context as ClientContext;
                     
-                    //var context = tenantContext.Clone("https://erwinmcm.sharepoint.com/sites/demo1");
-                    
                     TaxonomySession taxSession = TaxonomySession.GetTaxonomySession(context);
                     TermStore termStore = null;
 
@@ -48,10 +46,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     catch (ServerException)
                     {
-                        // If the GetDefaultSiteCollectionTermStore method call fails ... raise a specific Warning
-                        WriteMessage("GetDefaultKeywordsTermStore failed", ProvisioningMessageType.Warning);
+                        WriteMessage("Failed to retrieve existing terms", ProvisioningMessageType.Error);
 
-                        // and exit skipping the current handler
                         return parser;
                     }
 
@@ -68,67 +64,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return parser;
         }
-
-        //private TokenParser CheckChildTerms(ClientContext context, Model.Term modelTerm, Term parentTerm, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
-        //{
-        //    if (modelTerm.Terms.Any())
-        //    {
-        //        parentTerm.Context.Load(parentTerm, s => s.Terms.Include(t => t.Id, t => t.Name));
-        //        parentTerm.Context.ExecuteQueryRetry();
-
-        //        var terms = parentTerm.Terms;
-
-        //        foreach (var childTerm in modelTerm.Terms)
-        //        {
-        //            if (terms.Any())
-        //            {
-        //                var term = terms.FirstOrDefault(t => t.Id == childTerm.Id);
-        //                if (term == null)
-        //                {
-        //                    var normalizedTermName = TaxonomyItem.NormalizeName(context, childTerm.Name);
-        //                    context.ExecuteQueryRetry();
-
-        //                    term = terms.FirstOrDefault(t => t.Name == normalizedTermName.Value);
-        //                    if (term == null)
-        //                    {
-        //                        var returnTuple = TermGroupHelper.CreateTerm<TermSet>(context, childTerm, parentTerm, termStore, parser, scope);
-        //                        if (returnTuple != null)
-        //                        {
-        //                            childTerm.Id = returnTuple.Item1;
-        //                            parser = returnTuple.Item2;
-        //                            this.reusedTerms.AddRange(returnTuple.Item3);
-        //                        }
-        //                    }
-        //                    else
-        //                    {
-        //                        childTerm.Id = term.Id;
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    childTerm.Id = term.Id;
-        //                }
-
-        //                if (term != null)
-        //                {
-        //                    parser = CheckChildTerms(context, childTerm, term, termStore, parser, scope);
-        //                }
-        //            }
-        //            else
-        //            {
-        //                var returnTuple = TermGroupHelper.CreateTerm<TermSet>(context, childTerm, parentTerm, termStore, parser, scope);
-        //                if (returnTuple != null)
-        //                {
-        //                    childTerm.Id = returnTuple.Item1;
-        //                    parser = returnTuple.Item2;
-        //                    this.reusedTerms.AddRange(returnTuple.Item3);
-        //                }
-        //            }
-        //        }
-        //    }
-
-        //    return parser;
-        //}
 
         private class TryReuseTermResult
         {
