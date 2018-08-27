@@ -397,17 +397,8 @@ namespace Microsoft.SharePoint.Client
                 var serverRelativeUrl = web.EnsureProperty(w => w.ServerRelativeUrl);
                 var webUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativeUrl}";
                 var pageUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativePageUrl}";
-                var request = (HttpWebRequest)WebRequest.Create($"{webUrl}/_vti_bin/exportwp.aspx?pageurl={HttpUtility.UrlKeyValueEncode(pageUrl)}&guidstring={id}");
-
-                if (web.Context.Credentials != null)
-                {
-                    request.Credentials = web.Context.Credentials;
-                }
-                else
-                {
-                    request.UseDefaultCredentials = true;
-                }
-
+                var request = web.Context.CreateWebRequest($"{webUrl}/_vti_bin/exportwp.aspx?pageurl={HttpUtility.UrlKeyValueEncode(pageUrl)}&guidstring={id}");
+             
                 var response = request.GetResponse();
                 using (Stream stream = response.GetResponseStream())
                 {
