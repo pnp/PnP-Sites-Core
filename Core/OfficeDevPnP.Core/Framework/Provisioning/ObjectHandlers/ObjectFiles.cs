@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using OfficeDevPnP.Core.Utilities;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -122,7 +123,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (file.Properties != null && file.Properties.Any())
                         {
                             Dictionary<string, string> transformedProperties = file.Properties.ToDictionary(property => property.Key, property => parser.ParseString(property.Value));
-                            SetFileProperties(targetFile, transformedProperties, false);
+                            SetFileProperties(targetFile, transformedProperties, parser, false);
                         }
 
 #if !SP2013
@@ -246,7 +247,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 
-        public void SetFileProperties(File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
+        public void SetFileProperties(File file, IDictionary<string, string> properties, TokenParser parser, bool checkoutIfRequired = true)
         {
             var context = file.Context;
             if (properties != null && properties.Count > 0)
@@ -269,97 +270,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-                // Loop through and detect changes first, then, check out if required and apply
-                foreach (var kvp in properties)
-                {
-                    var propertyName = kvp.Key;
-                    var propertyValue = kvp.Value;
+                var web = parentList.ParentWeb;
+                var fields = parentList.Fields;
+                web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind, f => f.TypeAsString, f => f.ReadOnlyField, f => f.Title));
+                web.Context.ExecuteQueryRetry();
 
-                    var targetField = parentList.Fields.GetByInternalNameOrTitle(propertyName);
-                    targetField.EnsureProperties(f => f.TypeAsString, f => f.ReadOnlyField);
+                ListItemUtilities.UpdateListItem(web, file.ListItemAllFields, parser, parentList.Fields, properties);
 
-                    // Changed by PaoloPia because there are fields like PublishingPageLayout
-                    // which are marked as read-only, but have to be overwritten while uploading
-                    // a publishing page file and which in reality can still be written
-                    if (!targetField.ReadOnlyField || WriteableReadOnlyFields.Contains(propertyName.ToLower()))
-                    {
-                        switch (propertyName.ToUpperInvariant())
-                        {
-                            case "CONTENTTYPE":
-                                {
-                                    Microsoft.SharePoint.Client.ContentType targetCT = parentList.GetContentTypeByName(propertyValue);
-                                    context.ExecuteQueryRetry();
-
-                                    if (targetCT != null)
-                                    {
-                                        file.ListItemAllFields["ContentTypeId"] = targetCT.StringId;
-                                    }
-                                    else
-                                    {
-                                        Log.Error(Constants.LOGGING_SOURCE, "Content Type {0} does not exist in target list!", propertyValue);
-                                    }
-                                    break;
-                                }
-                            default:
-                                {
-                                    switch (targetField.TypeAsString)
-                                    {
-                                        case "User":
-                                            var user = parentList.ParentWeb.EnsureUser(propertyValue);
-                                            context.Load(user);
-                                            context.ExecuteQueryRetry();
-
-                                            if (user != null)
-                                            {
-                                                var userValue = new FieldUserValue
-                                                {
-                                                    LookupId = user.Id,
-                                                };
-                                                file.ListItemAllFields[propertyName] = userValue;
-                                            }
-                                            break;
-                                        case "URL":
-                                            var urlArray = propertyValue.Split(',');
-                                            var linkValue = new FieldUrlValue();
-                                            if (urlArray.Length == 2)
-                                            {
-                                                linkValue.Url = urlArray[0];
-                                                linkValue.Description = urlArray[1];
-                                            }
-                                            else
-                                            {
-                                                linkValue.Url = urlArray[0];
-                                                linkValue.Description = urlArray[0];
-                                            }
-                                            file.ListItemAllFields[propertyName] = linkValue;
-                                            break;
-                                        case "MultiChoice":
-                                            var multiChoice = JsonUtility.Deserialize<String[]>(propertyValue);
-                                            file.ListItemAllFields[propertyName] = multiChoice;
-                                            break;
-                                        case "LookupMulti":
-                                            var lookupMultiValue = JsonUtility.Deserialize<FieldLookupValue[]>(propertyValue);
-                                            file.ListItemAllFields[propertyName] = lookupMultiValue;
-                                            break;
-                                        case "TaxonomyFieldType":
-                                            var taxonomyValue = JsonUtility.Deserialize<TaxonomyFieldValue>(propertyValue);
-                                            file.ListItemAllFields[propertyName] = taxonomyValue;
-                                            break;
-                                        case "TaxonomyFieldTypeMulti":
-                                            var taxonomyValueArray = JsonUtility.Deserialize<TaxonomyFieldValue[]>(propertyValue);
-                                            file.ListItemAllFields[propertyName] = taxonomyValueArray;
-                                            break;
-                                        default:
-                                            file.ListItemAllFields[propertyName] = propertyValue;
-                                            break;
-                                    }
-                                    break;
-                                }
-                        }
-                    }
-                    file.ListItemAllFields.Update();
-                    context.ExecuteQueryRetry();
-                }
             }
         }
 
