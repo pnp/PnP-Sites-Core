@@ -557,7 +557,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 output = ReToken.Replace(output, match =>
                 {
                     string tokenString = match.Groups[1].Value;
-                    if (TokenDictionary.TryGetValue(tokenString, out string val))
+                    string val;
+                    if (TokenDictionary.TryGetValue(tokenString, out val))
                     {
                         if (tokenString.IndexOf("listid", StringComparison.OrdinalIgnoreCase) != -1)
                         {
@@ -611,7 +612,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 hasMatch = false;
                 output = ReToken.Replace(output, match =>
                 {
-                    if (TokenDictionary.TryGetValue(match.Groups[1].Value, out string val))
+                    string val;
+                    if (TokenDictionary.TryGetValue(match.Groups[1].Value, out val))
                     {
                         hasMatch = true;
                         return val;
