@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Refactored token parsing for PnP template handling for performance
+- Support token replacement for view xml - vonis22
+- Updated CSOM Assemblies to 8029.1200
 
 ### Deprecated
 - Marked regex functions in TokenDefinition as obsolete, as they are not needed
