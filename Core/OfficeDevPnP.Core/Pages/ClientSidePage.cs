@@ -41,6 +41,7 @@ namespace OfficeDevPnP.Core.Pages
         public const string SitePagesFeatureId = "b6917cb1-93a0-4b97-a84d-7cf49975d4ec";
 
         private ClientContext context;
+        private Web web;
         private string pageName;
         private string pagesLibrary;
         private List spPagesLibrary;
@@ -81,14 +82,21 @@ namespace OfficeDevPnP.Core.Pages
         /// Constructs ClientSidePage class and connects a <see cref="ClientContext"/> instance, this is needed to allow interaction with SharePoint
         /// </summary>
         /// <param name="cc">The SharePoint <see cref="ClientContext"/> instance</param>
+        /// <param name="web">The SharePoint <see cref="Web"/> instance</param>
         /// <param name="clientSidePageLayoutType"><see cref="ClientSidePageLayoutType"/> type of the page to create. Defaults to Article type</param>
-        public ClientSidePage(ClientContext cc, ClientSidePageLayoutType clientSidePageLayoutType = ClientSidePageLayoutType.Article) : this(clientSidePageLayoutType)
+        public ClientSidePage(ClientContext cc, Web web, ClientSidePageLayoutType clientSidePageLayoutType = ClientSidePageLayoutType.Article) : this(clientSidePageLayoutType)
         {
             if (cc == null)
             {
                 throw new ArgumentNullException("Passed ClientContext object cannot be null");
             }
             this.context = cc;
+
+            if (web == null)
+            {
+                throw new ArgumentNullException("Passed Web object cannot be null");
+            }
+            this.web = web;
 
             // Attach default page header
             this.pageHeader = new ClientSidePageHeader(cc, ClientSidePageHeaderType.Default, null);
@@ -560,13 +568,19 @@ namespace OfficeDevPnP.Core.Pages
         /// Loads an existint SharePoint client side page
         /// </summary>
         /// <param name="cc">ClientContext object used to load the page</param>
+        /// <param name="web">The SharePoint <see cref="Web"/> instance</param>
         /// <param name="pageName">Name of the page (e.g. mypage.aspx) to load</param>
         /// <returns>A <see cref="ClientSidePage"/> instance for the given page</returns>
-        public static ClientSidePage Load(ClientContext cc, string pageName)
+        public static ClientSidePage Load(ClientContext cc, Web web, string pageName)
         {
             if (cc == null)
             {
                 throw new ArgumentNullException("Passed ClientContext object cannot be null");
+            }
+
+            if (web == null)
+            {
+                throw new ArgumentNullException("Passed Web object cannot be null");
             }
 
             if (String.IsNullOrEmpty(pageName))
@@ -574,12 +588,12 @@ namespace OfficeDevPnP.Core.Pages
                 throw new ArgumentException("Passed pageName object cannot be null or empty");
             }
 
-            ClientSidePage page = new ClientSidePage(cc)
+            ClientSidePage page = new ClientSidePage(cc, web)
             {
                 pageName = pageName
             };
 
-            var pagesLibrary = page.Context.Web.GetListByUrl(page.PagesLibrary, p => p.RootFolder);
+            var pagesLibrary = web.GetListByUrl(page.PagesLibrary, p => p.RootFolder);
 
             // Not all sites do have a pages library, throw a nice exception in that case
             if (pagesLibrary == null)
@@ -590,7 +604,7 @@ namespace OfficeDevPnP.Core.Pages
 
             page.sitePagesServerRelativeUrl = pagesLibrary.RootFolder.ServerRelativeUrl;
 
-            var file = page.Context.Web.GetFileByServerRelativeUrl($"{page.sitePagesServerRelativeUrl}/{page.pageName}");
+            var file = web.GetFileByServerRelativeUrl($"{page.sitePagesServerRelativeUrl}/{page.pageName}");
             page.Context.Web.Context.Load(file, f => f.ListItemAllFields, f => f.Exists);
             page.Context.Web.Context.ExecuteQueryRetry();
 
@@ -741,13 +755,13 @@ namespace OfficeDevPnP.Core.Pages
                         try
                         {
                             this.Context.Site.EnsureProperties(p => p.Id);
-                            this.Context.Web.EnsureProperties(p => p.Id, p => p.Url);
+                            this.web.EnsureProperties(p => p.Id, p => p.Url);
 
-                            var previewImage = this.Context.Web.GetFileByServerRelativeUrl(previewImageServerRelativeUrl);
+                            var previewImage = this.web.GetFileByServerRelativeUrl(previewImageServerRelativeUrl);
                             this.Context.Load(previewImage, p => p.UniqueId);
                             this.Context.ExecuteQueryRetry();
 
-                            item[ClientSidePage.BannerImageUrl] = $"{this.Context.Web.Url}/_layouts/15/getpreview.ashx?guidSite={this.Context.Site.Id.ToString()}&guidWeb={this.Context.Web.Id.ToString()}&guidFile={previewImage.UniqueId.ToString()}";
+                            item[ClientSidePage.BannerImageUrl] = $"{this.web.Url}/_layouts/15/getpreview.ashx?guidSite={this.Context.Site.Id.ToString()}&guidWeb={this.web.Id.ToString()}&guidFile={previewImage.UniqueId.ToString()}";
                             isDirty = true;
                         }
                         catch { }
@@ -952,7 +966,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Request information about the available client side components from SharePoint
-            Task<String> availableClientSideComponentsJson = Task.Run(() => GetClientSideWebPartsAsync(this.accessToken, this.Context).GetAwaiter().GetResult());
+            Task<String> availableClientSideComponentsJson = Task.Run(() => GetClientSideWebPartsAsync(this.accessToken, this.Context, this.web).GetAwaiter().GetResult());
 
             if (String.IsNullOrEmpty(availableClientSideComponentsJson.Result))
             {
@@ -994,7 +1008,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Request information about the available client side components from SharePoint
-            string availableClientSideComponentsJson = await GetClientSideWebPartsAsync(this.accessToken, this.Context);
+            string availableClientSideComponentsJson = await GetClientSideWebPartsAsync(this.accessToken, this.Context, this.web);
 
             if (String.IsNullOrEmpty(availableClientSideComponentsJson))
             {
@@ -1120,9 +1134,9 @@ namespace OfficeDevPnP.Core.Pages
             // ensure we do have the page list item loaded
             EnsurePageListItem();
 
-            this.Context.Web.EnsureProperty(p => p.RootFolder);
-            this.Context.Web.RootFolder.WelcomePage = $"{this.PagesLibrary}/{this.PageListItem[ClientSidePage.FileLeafRef].ToString()}";
-            this.Context.Web.RootFolder.Update();
+            this.web.EnsureProperty(p => p.RootFolder);
+            this.web.RootFolder.WelcomePage = $"{this.PagesLibrary}/{this.PageListItem[ClientSidePage.FileLeafRef].ToString()}";
+            this.web.RootFolder.Update();
             this.Context.ExecuteQueryRetry();
         }
 
@@ -1188,10 +1202,10 @@ namespace OfficeDevPnP.Core.Pages
             }
             if (hasOneColumnFullWidthSection)
             {
-                this.Context.Web.EnsureProperties(p => p.WebTemplate, p => p.Configuration);
-                if (!this.Context.Web.WebTemplate.Equals("SITEPAGEPUBLISHING", StringComparison.InvariantCultureIgnoreCase))
+                this.web.EnsureProperties(p => p.WebTemplate, p => p.Configuration);
+                if (!this.web.WebTemplate.Equals("SITEPAGEPUBLISHING", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    throw new Exception($"You can't use a OneColumnFullWidth section in this site template ({this.Context.Web.WebTemplate})");
+                    throw new Exception($"You can't use a OneColumnFullWidth section in this site template ({this.web.WebTemplate})");
                 }
             }
         }
@@ -1222,7 +1236,7 @@ namespace OfficeDevPnP.Core.Pages
             // Grab pages library reference
             if (this.spPagesLibrary == null)
             {
-                this.spPagesLibrary = this.Context.Web.GetListByUrl(this.PagesLibrary, p => p.RootFolder);
+                this.spPagesLibrary = this.web.GetListByUrl(this.PagesLibrary, p => p.RootFolder);
             }
 
             // Build up server relative page URL
@@ -1244,7 +1258,7 @@ namespace OfficeDevPnP.Core.Pages
             serverRelativePageName = $"{this.sitePagesServerRelativeUrl}/{this.pageName}";
 
             // ensure page exists
-            pageFile = this.Context.Web.GetFileByServerRelativeUrl(serverRelativePageName);
+            pageFile = this.web.GetFileByServerRelativeUrl(serverRelativePageName);
             this.Context.Web.Context.Load(pageFile, f => f.ListItemAllFields, f => f.Exists);
             this.Context.Web.Context.ExecuteQueryRetry();
         }
@@ -1401,7 +1415,7 @@ namespace OfficeDevPnP.Core.Pages
             control.column = currentColumn;
         }
 
-        private async Task<string> GetClientSideWebPartsAsync(string accessToken, ClientContext context)
+        private async Task<string> GetClientSideWebPartsAsync(string accessToken, ClientContext context, Web web)
         {
             await new SynchronizationContextRemover();
 
@@ -1409,7 +1423,7 @@ namespace OfficeDevPnP.Core.Pages
 
             using (var handler = new HttpClientHandler())
             {
-                context.Web.EnsureProperty(w => w.Url);
+                web.EnsureProperty(w => w.Url);
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
                 if (String.IsNullOrEmpty(accessToken))
                 {
@@ -1420,7 +1434,7 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     //GET https://bertonline.sharepoint.com/sites/130023/_api/web/GetClientSideWebParts HTTP/1.1
 
-                    string requestUrl = String.Format("{0}/_api/web/GetClientSideWebParts", context.Web.Url);
+                    string requestUrl = String.Format("{0}/_api/web/GetClientSideWebParts", web.Url);
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
                     request.Headers.Add("accept", "application/json;odata.metadata=minimal");
                     request.Headers.Add("odata-version", "4.0");
@@ -1451,7 +1465,7 @@ namespace OfficeDevPnP.Core.Pages
         {
             // Let's try to grab an access token, will work when we're in app-only or user+app model
             this.Context.ExecutingWebRequest += Context_ExecutingWebRequest;
-            this.Context.Load(this.Context.Web, w => w.Url);
+            this.Context.Load(this.web, w => w.Url);
             this.context.ExecuteQueryRetry();
             this.Context.ExecutingWebRequest -= Context_ExecutingWebRequest;
         }
@@ -1460,7 +1474,7 @@ namespace OfficeDevPnP.Core.Pages
         {
             // Let's try to grab an access token, will work when we're in app-only or user+app model
             this.Context.ExecutingWebRequest += Context_ExecutingWebRequest;
-            this.Context.Load(this.Context.Web, w => w.Url);
+            this.Context.Load(this.web, w => w.Url);
             await this.context.ExecuteQueryRetryAsync();
             this.Context.ExecutingWebRequest -= Context_ExecutingWebRequest;
             return true;

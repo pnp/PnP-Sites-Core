@@ -891,7 +891,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>A <see cref="ClientSidePage"/> instance</returns>
         public static ClientSidePage AddClientSidePage(this Web web, string pageName = "", bool alreadyPersist = false)
         {
-            var page = new ClientSidePage(web.Context as ClientContext);
+            var page = new ClientSidePage(web.Context as ClientContext, web);
 
             if (alreadyPersist)
             {
@@ -908,7 +908,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>A <see cref="ClientSidePage"/> instance</returns>
         public static ClientSidePage LoadClientSidePage(this Web web, string pageName)
         {
-            return ClientSidePage.Load((web.Context as ClientContext), pageName);
+            return ClientSidePage.Load((web.Context as ClientContext), web, pageName);
         }
 #endif
         /// <summary>
