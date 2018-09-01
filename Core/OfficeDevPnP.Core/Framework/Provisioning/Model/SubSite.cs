@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public abstract partial class SubSite : BaseProvisioningModel, IEquatable<SubSite>
+    public abstract partial class SubSite : BaseHierarchyModel, IEquatable<SubSite>
     {
         #region Private Members
 

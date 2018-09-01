@@ -10,13 +10,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of ProvisioningTemplate items
     /// </summary>
-    public class ProvisioningTemplateCollection : BaseProvisioningObjectCollection<ProvisioningTemplate>
+    public class ProvisioningTemplateCollection : BaseProvisioningHierarchyObjectCollection<ProvisioningTemplate>
     {
         /// <summary>
         /// Constructor for ProvisioningTemplateCollection class
         /// </summary>
         /// <param name="parentProvisioning">Parent Provisioning object</param>
-        public ProvisioningTemplateCollection(Provisioning parentProvisioning) :
+        public ProvisioningTemplateCollection(ProvisioningHierarchy parentProvisioning) :
             base(parentProvisioning)
         {
         }

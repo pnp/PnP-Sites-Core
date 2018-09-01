@@ -8,62 +8,62 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
     /// <summary>
-    /// Collection of Provisioning childrens
+    /// Collection of Provisioning Hierarchy children
     /// </summary>
     /// <typeparam name="T">The type of Item for the collection</typeparam>
-    public abstract class BaseProvisioningObjectCollection<T> : Collection<T>, IProvisioningDescendant
-        where T : BaseProvisioningModel
+    public abstract class BaseProvisioningHierarchyObjectCollection<T> : Collection<T>, IProvisioningHierarchyDescendant
+        where T : BaseHierarchyModel
     {
         /// <summary>
         /// Custom constructor to manage the ParentTemplate for the collection 
         /// and all the children of the collection
         /// </summary>
-        /// <param name="parentProvisioning">Parent provisioning template</param>
-        public BaseProvisioningObjectCollection(Provisioning parentProvisioning)
+        /// <param name="parentHierarchy">Parent provisioning template</param>
+        public BaseProvisioningHierarchyObjectCollection(ProvisioningHierarchy parentHierarchy)
         {
-            this._parentProvisioning = parentProvisioning;
+            this._parentHierarchy = parentHierarchy;
         }
 
-        private Provisioning _parentProvisioning;
+        private ProvisioningHierarchy _parentHierarchy;
 
         /// <summary>
         /// References the parent ProvisioningTemplate for the current provisioning artifact
         /// </summary>
-        public virtual Provisioning ParentProvisioning
+        public virtual ProvisioningHierarchy ParentHierarchy
         {
             get
             {
-                return (this._parentProvisioning);
+                return (this._parentHierarchy);
             }
             internal set
             {
-                this._parentProvisioning = value;
+                this._parentHierarchy = value;
             }
         }
 
         protected override void InsertItem(int index, T item)
         {
             base.InsertItem(index, item);
-            item.ParentProvisioning = this.ParentProvisioning;
+            item.ParentHierarchy = this.ParentHierarchy;
         }
 
         protected override void RemoveItem(int index)
         {
-            this.Items[index].ParentProvisioning = null;
+            this.Items[index].ParentHierarchy = null;
             base.RemoveItem(index);
         }
 
         protected override void SetItem(int index, T item)
         {
             base.SetItem(index, item);
-            item.ParentProvisioning = this.ParentProvisioning;
+            item.ParentHierarchy = this.ParentHierarchy;
         }
 
         protected override void ClearItems()
         {
             foreach (var item in this.Items)
             {
-                item.ParentProvisioning = null;
+                item.ParentHierarchy = null;
             }
             base.ClearItems();
         }

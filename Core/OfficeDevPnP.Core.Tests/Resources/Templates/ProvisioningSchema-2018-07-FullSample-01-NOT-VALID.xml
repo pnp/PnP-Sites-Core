@@ -6,6 +6,8 @@
                   DisplayName="Sample Provisioning"
                   ImagePreviewUrl="https://sharepointpnp.com/ImagePreview.png">
 
+  <pnp:InvalidElement />
+  
   <pnp:Preferences Author="John Black" Version="1.0" Generator="Human being :-)">
     <pnp:Parameters>
       <pnp:Parameter Key="O365TenantName">contoso</pnp:Parameter>
@@ -85,6 +87,7 @@
     <pnp:ProvisioningTemplateFile ID="ProjectsTemplate" File="ProjectsTemplate.xml" />
 
     <pnp:ProvisioningTemplateFile ID="MeetingsTemplate" File="MeetingsTemplate.xml" />
+
 
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="1.0"
       BaseSiteTemplate="STS#0"

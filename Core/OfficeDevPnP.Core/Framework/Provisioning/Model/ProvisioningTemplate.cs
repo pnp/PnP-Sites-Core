@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object for the Provisioning Template
     /// </summary>
-    public partial class ProvisioningTemplate : BaseProvisioningModel, IEquatable<ProvisioningTemplate>
+    public partial class ProvisioningTemplate : BaseHierarchyModel, IEquatable<ProvisioningTemplate>
     {
         #region Private Fields
 
@@ -119,9 +119,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             get
             {
-                if (this.ParentProvisioning != null)
+                if (this.ParentHierarchy != null)
                 {
-                    return (this.ParentProvisioning.Parameters);
+                    return (this.ParentHierarchy.Parameters);
                 }
                 else
                 {
@@ -138,9 +138,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             get
             {
-                if (this.ParentProvisioning != null)
+                if (this.ParentHierarchy != null)
                 {
-                    return (this.ParentProvisioning.Localizations);
+                    return (this.ParentHierarchy.Localizations);
                 }
                 else
                 {
@@ -161,9 +161,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public double Version {
             get
             {
-                if (this.ParentProvisioning != null)
+                if (this.ParentHierarchy != null)
                 {
-                    return (this.ParentProvisioning.Version);
+                    return (this.ParentHierarchy.Version);
                 }
                 else
                 {
@@ -172,9 +172,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
             set
             {
-                if (this.ParentProvisioning != null)
+                if (this.ParentHierarchy != null)
                 {
-                    this.ParentProvisioning.Version = value;
+                    this.ParentHierarchy.Version = value;
                 }
                 else
                 {
@@ -533,9 +533,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             get
             {
-                if (this.ParentProvisioning != null)
+                if (this.ParentHierarchy != null)
                 {
-                    return (this.ParentProvisioning.Tenant);
+                    return (this.ParentHierarchy.Tenant);
                 }
                 else
                 {
@@ -544,9 +544,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
             set
             {
-                if (this.ParentProvisioning != null)
+                if (this.ParentHierarchy != null)
                 {
-                    this.ParentProvisioning.Tenant = value;
+                    this.ParentHierarchy.Tenant = value;
                 }
                 else
                 {

@@ -438,12 +438,12 @@
     <Compile Include="Framework\Graph\GraphHttpClient.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingValue.cs" />
     <Compile Include="Framework\Graph\Model\SiteClassificationsSettings.cs" />
-    <Compile Include="Framework\Provisioning\Model\BaseProvisioningModel.cs" />
-    <Compile Include="Framework\Provisioning\Model\BaseProvisioningTemplateObjectCollection - Copy.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseHierarchyModel.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseProvisioningTemplateObjectCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\CommunicationSiteCollection.cs" />
-    <Compile Include="Framework\Provisioning\Model\IProvisioningDescendant.cs" />
-    <Compile Include="Framework\Provisioning\Model\Provisioning.cs" />
-    <Compile Include="Framework\Provisioning\Model\BaseProvisioningObjectCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\IProvisioningHierarchyDescendant.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningHierarchy.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseProvisioningHierarchyObjectCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningSequenceCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SubSiteCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteCollectionCollection.cs" />
@@ -513,6 +513,8 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUtilities.cs" />
+    <Compile Include="Framework\Provisioning\Providers\IProvisioningFormatter.cs" />
+    <Compile Include="Framework\Provisioning\Providers\IProvisioningHierarchyFormatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.cs">
       <DependentUpon>ProvisioningSchema-2017-05.xsd</DependentUpon>
     </Compile>
@@ -591,10 +593,12 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateBasePropertiesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\RegionalSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WebSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XmlPnPSchemaBaseProvisioningSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201807Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201805Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201801Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201705Serializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLProvisioningHierarchyFormatter.cs" />
     <Compile Include="Pages\AvailableClientSideComponents.cs" />
     <Compile Include="Pages\CanvasColumn.cs" />
     <Compile Include="Pages\CanvasControl.cs" />

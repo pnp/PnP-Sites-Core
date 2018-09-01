@@ -8,28 +8,28 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
     /// <summary>
-    /// Base type for any Domain Model object (excluded the ProvisioningTemplate type)
+    /// Base type for any Domain Model object in the Provisioning Hierarchy (from the ProvisioningTemplate type and above)
     /// </summary>
-    public abstract class BaseProvisioningModel : IProvisioningDescendant
+    public abstract class BaseHierarchyModel : IProvisioningHierarchyDescendant
     {
-        private Provisioning _parentProvisioning;
+        private ProvisioningHierarchy _parentHierarchy;
 
         /// <summary>
-        /// Represents a reference to the parent Provisioning object, if any
+        /// Represents a reference to the parent Provisioning Hierarchy object, if any
         /// </summary>
         /// <remarks>
         /// Introduced to support schema v2018-07 and tenant level provisioning
         /// </remarks>
         [JsonIgnore]
-        public Provisioning ParentProvisioning
+        public ProvisioningHierarchy ParentHierarchy
         {
             get
             {
-                return (this._parentProvisioning);
+                return (this._parentHierarchy);
             }
             internal set
             {
-                this._parentProvisioning = value;
+                this._parentHierarchy = value;
             }
         }
     }

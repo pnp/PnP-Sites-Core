@@ -15,7 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// The Sequence element groups the artefacts to be provisioned into groups.
     /// The Sequences must be evaluated by the provisioning engine in the order in which they appear.
     /// </remarks>
-    public partial class ProvisioningSequence : BaseProvisioningModel, IEquatable<ProvisioningSequence>
+    public partial class ProvisioningSequence : BaseHierarchyModel, IEquatable<ProvisioningSequence>
     {
         #region Private Members
 
@@ -27,7 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public ProvisioningSequence()
         {
-            this.SiteCollections = new SiteCollectionCollection(this.ParentProvisioning);
+            this.SiteCollections = new SiteCollectionCollection(this.ParentHierarchy);
         }
 
         #endregion

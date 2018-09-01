@@ -666,6 +666,49 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_ProvisioningHierarchyIsValid_201807()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            XMLProvisioningHierarchyFormatter hierarchyFormatter = new XMLProvisioningHierarchyFormatter();
+
+            // Test with a valid hierarchy file
+            var hierarchyStream = provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml");
+            var hierarchyIsValid = hierarchyFormatter.IsValid(hierarchyStream);
+            Assert.IsTrue(hierarchyIsValid);
+
+            // Test with a NOT valid hierarchy file
+            hierarchyStream = provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01-NOT-VALID.xml");            
+            hierarchyIsValid = hierarchyFormatter.IsValid(hierarchyStream);
+            Assert.IsFalse(hierarchyIsValid);            
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_ProvisioningHierarchyLoad_201807()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            XMLProvisioningHierarchyFormatter hierarchyFormatter = new XMLProvisioningHierarchyFormatter();
+            hierarchyFormatter.Initialize(provider);
+
+            var hierarchy = hierarchyFormatter.ToProvisioningHierarchy(provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml"));
+
+            Assert.IsNotNull(hierarchy);
+            Assert.IsNotNull(hierarchy.Templates);
+            // Assert.IsNotNull(hierarchy.Sequences);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_ContentTypes_201605()
         {
             XMLTemplateProvider provider =

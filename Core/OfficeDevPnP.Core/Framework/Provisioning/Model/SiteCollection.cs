@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public abstract partial class SiteCollection: BaseProvisioningModel, IEquatable<SiteCollection>
+    public abstract partial class SiteCollection: BaseHierarchyModel, IEquatable<SiteCollection>
     {
         #region Private Members
 
@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public SiteCollection()
         {
             this.Templates = new List<String>();
-            this.Sites = new SubSiteCollection(this.ParentProvisioning);
+            this.Sites = new SubSiteCollection(this.ParentHierarchy);
         }
 
         #endregion

@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines the root node of the Provisioning Domain Model
     /// </summary>
-    public partial class Provisioning
+    public partial class ProvisioningHierarchy
     {
         #region Private Fields
 
@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Constructors
 
-        public Provisioning()
+        public ProvisioningHierarchy()
         {
             this.Templates = new ProvisioningTemplateCollection(this);
             this.Sequences = new ProvisioningSequenceCollection(this);

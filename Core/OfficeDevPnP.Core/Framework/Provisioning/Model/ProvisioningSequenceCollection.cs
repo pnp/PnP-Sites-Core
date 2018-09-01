@@ -10,13 +10,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of ProvisioningSequence items
     /// </summary>
-    public class ProvisioningSequenceCollection : BaseProvisioningObjectCollection<ProvisioningSequence>
+    public class ProvisioningSequenceCollection : BaseProvisioningHierarchyObjectCollection<ProvisioningSequence>
     {
         /// <summary>
         /// Constructor for ProvisioningSequenceCollection class
         /// </summary>
         /// <param name="parentProvisioning">Parent Provisioning object</param>
-        public ProvisioningSequenceCollection(Provisioning parentProvisioning) :
+        public ProvisioningSequenceCollection(ProvisioningHierarchy parentProvisioning) :
             base(parentProvisioning)
         {
         }
