@@ -11,20 +11,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class ProvisioningHierarchy
     {
-        #region Private Fields
-
-        private Dictionary<string, string> _parameters = new Dictionary<string, string>();
-        private LocalizationCollection _localizations;
-        private ProvisioningTenant _tenant;
-
-        #endregion
-
         #region Constructors
 
         public ProvisioningHierarchy()
         {
             this.Templates = new ProvisioningTemplateCollection(this);
             this.Sequences = new ProvisioningSequenceCollection(this);
+            this.Localizations = new LocalizationCollection(null);
+            this.Tenant = new ProvisioningTenant();
         }
 
         #endregion
@@ -34,29 +28,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Any parameters that can be used throughout the template
         /// </summary>
-        public Dictionary<string, string> Parameters
-        {
-            get { return _parameters; }
-            private set { _parameters = value; }
-        }
+        public Dictionary<string, string> Parameters { get; internal set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// Gets or sets the Localizations
         /// </summary>
-        public LocalizationCollection Localizations
-        {
-            get { return this._localizations; }
-            private set { this._localizations = value; }
-        }
+        public LocalizationCollection Localizations { get; internal set; }
 
         /// <summary>
         /// The Tenant-wide settings for the template
         /// </summary>
-        public ProvisioningTenant Tenant
-        {
-            get { return this._tenant; }
-            set { this._tenant = value; }
-        }
+        public ProvisioningTenant Tenant { get; set; }
 
         /// <summary>
         /// Gets or sets the Provisioning File Version number

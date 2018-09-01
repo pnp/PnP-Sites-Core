@@ -128,7 +128,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     return _parameters;
                 }
             }
-            private set { _parameters = value; }
+            private set {
+                if (this.ParentHierarchy != null)
+                {
+                    this.ParentHierarchy.Parameters = value;
+                }
+                else
+                {
+                    _parameters = value;
+                }
+            }
         }
 
         /// <summary>
@@ -147,7 +156,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     return _localizations;
                 }
             }
-            private set { this._localizations = value; }
+            private set
+            {
+                if (this.ParentHierarchy != null)
+                {
+                    this.ParentHierarchy.Localizations = value;
+                }
+                else
+                {
+                    _localizations = value;
+                }
+            }
         }
 
         /// <summary>
@@ -728,14 +747,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Version == other.Version &&
                 this.Pages.DeepEquals(other.Pages) &&
                 this.TermGroups.DeepEquals(other.TermGroups) &&
-                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) : true) &&
-                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowSubscriptions.DeepEquals(other.Workflows.WorkflowSubscriptions) : true) &&
+                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) : this.Workflows == other.Workflows) &&
+                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowSubscriptions.DeepEquals(other.Workflows.WorkflowSubscriptions) : this.Workflows == other.Workflows) &&
                 this.AddIns.DeepEquals(other.AddIns) &&
                 this.Publishing == other.Publishing &&
-                this.Localizations.DeepEquals(other.Localizations) &&
-                this.WebSettings.Equals(other.WebSettings) &&
-                this.SiteWebhooks.DeepEquals(other.SiteWebhooks) &&
-                this.ClientSidePages.DeepEquals(other.ClientSidePages) &&
+                ((this.Localizations != null && other.Localizations != null) ? this.Localizations.DeepEquals(other.Localizations) : this.Localizations == other.Localizations) &&
+                ((this.WebSettings != null && other.WebSettings != null) ? this.WebSettings.Equals(other.WebSettings) : this.WebSettings == other.WebSettings) &&
+                ((this.SiteWebhooks != null && other.SiteWebhooks != null) ? this.SiteWebhooks.DeepEquals(other.SiteWebhooks) : this.SiteWebhooks == other.SiteWebhooks) &&
+                ((this.ClientSidePages != null && other.ClientSidePages != null) ? this.ClientSidePages.DeepEquals(other.ClientSidePages) : this.ClientSidePages == other.ClientSidePages) &&
                 this.TemplateCultureInfo == other.TemplateCultureInfo &&
                 this.Scope == other.Scope &&
                 this.Tenant == other.Tenant

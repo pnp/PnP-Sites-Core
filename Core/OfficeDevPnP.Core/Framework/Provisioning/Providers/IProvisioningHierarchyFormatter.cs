@@ -14,19 +14,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
     public interface IProvisioningHierarchyFormatter
     {
         /// <summary>
-        /// Method to initialize the formatter with the proper TemplateProvider instance
-        /// </summary>
-        /// <param name="provider">The provider that is calling the current template formatter</param>
-        void Initialize(TemplateProviderBase provider);
-
-        /// <summary>
-        /// Method to validate the content of a formatted ProvisioningHierarchy instance
-        /// </summary>
-        /// <param name="hierarchy">The formatted Provisioning Hierarchy instance as a Stream</param>
-        /// <returns>Boolean result of the validation</returns>
-        Boolean IsValid(Stream hierarchy);
-
-        /// <summary>
         /// Method to format a ProvisioningHierarchy into a formatted provisioning file
         /// </summary>
         /// <param name="hierarchy">The input ProvisioningHierarchy</param>

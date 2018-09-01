@@ -582,6 +582,8 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201705\ListInstancesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201801\ApplicationLifecycleManagementSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201801\TenantSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\ProvisioningHierarchySerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\SequenceSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WorkflowsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AuditSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SiteColumnsSerializer.cs" />
@@ -598,7 +600,6 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201805Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201801Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201705Serializer.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\XMLProvisioningHierarchyFormatter.cs" />
     <Compile Include="Pages\AvailableClientSideComponents.cs" />
     <Compile Include="Pages\CanvasColumn.cs" />
     <Compile Include="Pages\CanvasControl.cs" />
@@ -1216,7 +1217,6 @@
   <ItemGroup>
     <Folder Include="Framework\Provisioning\Deprecated\Connectors\OpenXML\" />
     <Folder Include="Framework\Provisioning\Providers\Xml\Serializers\V201805\" />
-    <Folder Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\" />
     <Folder Include="Utilities\Graph\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

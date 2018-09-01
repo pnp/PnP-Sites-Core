@@ -674,22 +674,22 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     AppDomain.CurrentDomain.BaseDirectory),
                     "Templates");
 
-            XMLProvisioningHierarchyFormatter hierarchyFormatter = new XMLProvisioningHierarchyFormatter();
+            var serializer = new XMLPnPSchemaV201807Serializer();
 
             // Test with a valid hierarchy file
             var hierarchyStream = provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml");
-            var hierarchyIsValid = hierarchyFormatter.IsValid(hierarchyStream);
+            var hierarchyIsValid = serializer.IsValid(hierarchyStream);
             Assert.IsTrue(hierarchyIsValid);
 
             // Test with a NOT valid hierarchy file
             hierarchyStream = provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01-NOT-VALID.xml");            
-            hierarchyIsValid = hierarchyFormatter.IsValid(hierarchyStream);
+            hierarchyIsValid = serializer.IsValid(hierarchyStream);
             Assert.IsFalse(hierarchyIsValid);            
         }
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_ProvisioningHierarchyLoad_201807()
+        public void XMLSerializer_ProvisioningHierarchy_Load_201807()
         {
             XMLTemplateProvider provider =
                 new XMLFileSystemTemplateProvider(
@@ -697,10 +697,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     AppDomain.CurrentDomain.BaseDirectory),
                     "Templates");
 
-            XMLProvisioningHierarchyFormatter hierarchyFormatter = new XMLProvisioningHierarchyFormatter();
-            hierarchyFormatter.Initialize(provider);
+            var serializer = new XMLPnPSchemaV201807Serializer();
+            serializer.Initialize(provider);
 
-            var hierarchy = hierarchyFormatter.ToProvisioningHierarchy(provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml"));
+            var hierarchy = serializer.ToProvisioningHierarchy(provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml"));
 
             Assert.IsNotNull(hierarchy);
             Assert.IsNotNull(hierarchy.Templates);
