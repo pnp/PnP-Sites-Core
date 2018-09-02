@@ -447,6 +447,7 @@
     <Compile Include="Framework\Providers\Extensibility\XMLEncryptionTemplateProviderExtension.cs" />
     <Compile Include="Framework\Providers\XMLProvidersTests.cs" />
     <Compile Include="Framework\ProvisioningTemplates\DomainModelTests.cs" />
+    <Compile Include="Framework\ProvisioningTemplates\ProvisioningTests.cs" />
     <Compile Include="Pages\ClientSidePagesTests.cs" />
     <Compile Include="Sites\SiteCollectionTests.cs" />
     <Compile Include="Utilities\JsonUtilityTests.cs" />

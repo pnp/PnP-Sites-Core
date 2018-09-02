@@ -1,19 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
+using Newtonsoft.Json;
+using OfficeDevPnP.Core.ALM;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
-using System.Resources;
-using System.Collections;
-using System.Diagnostics;
-using System.Globalization;
-using System.Text.RegularExpressions;
-using OfficeDevPnP.Core.ALM;
 using OfficeDevPnP.Core.Utilities;
-using Microsoft.Online.SharePoint.TenantAdministration;
-using Newtonsoft.Json;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Resources;
+using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -55,6 +54,45 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens = sortedTokens.ToList();
         }
 
+        // Lightweight rebase
+        public void Rebase(Web web)
+        {
+            foreach(var token in _tokens)
+            {
+                token.ClearCache();
+            }
+        }
+        // Heavy rebase for switching templates
+        public void Rebase(Web web, ProvisioningTemplate template)
+        {
+            foreach (var token in _tokens.Where(t => t is VolatileTokenDefinition))
+            {
+                ((VolatileTokenDefinition)token).ClearVolatileCache(web);
+            }
+            // remove list tokens
+            AddListTokens(web); // tokens are remove in method
+            // remove content type tokens
+            AddContentTypeTokens(web);
+            // remove field tokens
+            _tokens.RemoveAll(t => t is FieldTitleToken);
+            AddFieldTokens(web);
+            // remove group tokens
+            _tokens.RemoveAll(t => t is GroupIdToken || t is AssociatedGroupToken);
+            AddGroupTokens(web);
+            // remove role definition tokens
+            _tokens.RemoveAll(t => t is RoleDefinitionToken || t is RoleDefinitionIdToken);
+            AddRoleDefinitionTokens(web);
+        }
+
+        public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy)
+        {
+            _tokens = new List<TokenDefinition>();
+            foreach (var parameter in hierarchy.Parameters)
+            {
+                _tokens.Add(new ParameterToken(null, parameter.Key, parameter.Value ?? string.Empty));
+            }
+
+        }
         /// <summary>
         /// Constructor
         /// </summary>
@@ -112,29 +150,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             AddStorageEntityTokens(web);
 #endif
             // Fields
-            var fields = web.Fields;
-            web.Context.Load(fields, flds => flds.Include(f => f.Title, f => f.InternalName));
-            web.Context.ExecuteQueryRetry();
-            foreach (var field in fields)
-            {
-                _tokens.Add(new FieldTitleToken(web, field.InternalName, field.Title));
-            }
-
-            if (web.IsSubSite())
-            {
-                // SiteColumns from rootsite
-                var rootWeb = (web.Context as ClientContext).Site.RootWeb;
-                var siteColumns = rootWeb.Fields;
-                web.Context.Load(siteColumns, flds => flds.Include(f => f.Title, f => f.InternalName));
-                web.Context.ExecuteQueryRetry();
-                foreach (var field in siteColumns)
-                {
-                    _tokens.Add(new FieldTitleToken(rootWeb, field.InternalName, field.Title));
-                }
-            }
+            AddFieldTokens(web);
 
             // Handle resources
-            if (template.Localizations.Any())
+            if (template.Localizations != null && template.Localizations.Any())
             {
                 // Read all resource keys in a list
                 List<Tuple<string, uint, string>> resourceEntries = new List<Tuple<string, uint, string>>();
@@ -172,6 +191,50 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             // OOTB Roledefs
+            AddRoleDefinitionTokens(web);
+
+            // Groups
+            AddGroupTokens(web);
+
+            // AppPackages tokens
+#if !ONPREMISES
+            AddAppPackagesTokens(web);
+#endif
+            var sortedTokens = from t in _tokens
+                               orderby t.GetTokenLength() descending
+                               select t;
+
+            _tokens = sortedTokens.ToList();
+        }
+
+        private void AddFieldTokens(Web web)
+        {
+            _tokens.RemoveAll(t => t is FieldTitleToken);
+
+            var fields = web.AvailableFields;
+            web.Context.Load(fields, flds => flds.Include(f => f.Title, f => f.InternalName));
+            web.Context.ExecuteQueryRetry();
+            foreach (var field in fields)
+            {
+                _tokens.Add(new FieldTitleToken(web, field.InternalName, field.Title));
+            }
+
+            //if (web.IsSubSite())
+            //{
+            //    // SiteColumns from rootsite
+            //    var rootWeb = (web.Context as ClientContext).Site.RootWeb;
+            //    var siteColumns = rootWeb.Fields;
+            //    web.Context.Load(siteColumns, flds => flds.Include(f => f.Title, f => f.InternalName));
+            //    web.Context.ExecuteQueryRetry();
+            //    foreach (var field in siteColumns)
+            //    {
+            //        _tokens.Add(new FieldTitleToken(rootWeb, field.InternalName, field.Title));
+            //    }
+            //}
+        }
+
+        private void AddRoleDefinitionTokens(Web web)
+        {
             web.EnsureProperty(w => w.RoleDefinitions.Include(r => r.RoleTypeKind, r => r.Name, r => r.Id));
             foreach (var roleDef in web.RoleDefinitions.AsEnumerable().Where(r => r.RoleTypeKind != RoleType.None))
             {
@@ -181,8 +244,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 _tokens.Add(new RoleDefinitionIdToken(web, roleDef.Name, roleDef.Id));
             }
+        }
 
-            // Groups
+        private void AddGroupTokens(Web web)
+        {
             web.EnsureProperty(w => w.SiteGroups.Include(g => g.Title, g => g.Id));
             foreach (var siteGroup in web.SiteGroups)
             {
@@ -204,16 +269,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 _tokens.Add(new GroupIdToken(web, "associatedownergroup", web.AssociatedOwnerGroup.Id));
             }
-
-            // AppPackages tokens
-#if !ONPREMISES
-            AddAppPackagesTokens(web);
-#endif
-            var sortedTokens = from t in _tokens
-                               orderby t.GetTokenLength() descending
-                               select t;
-
-            _tokens = sortedTokens.ToList();
         }
 
         private void AddTermStoreTokens(Web web)
@@ -328,14 +383,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     siteEntities = ParseStorageEntitiesString(storageEntitiesIndex);
                 }
                 var combinedEntities = siteEntities.Concat(tenantEntities).GroupBy(x => x.Key).Select(x => x.First());
-        
-                foreach(var entity in combinedEntities)
+
+                foreach (var entity in combinedEntities)
                 {
                     _tokens.Add(new StorageEntityValueToken(web, entity.Key, entity.Value));
                 }
             }
             catch { }
-        } 
+        }
 
         private List<StorageEntity> ParseStorageEntitiesString(string storageEntitiesIndex)
         {
@@ -416,6 +471,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         internal void AddListTokens(Web web)
         {
+            web.EnsureProperty(w => w.ServerRelativeUrl);
+
             _tokens.RemoveAll(t => t.GetType() == typeof(ListIdToken));
             _tokens.RemoveAll(t => t.GetType() == typeof(ListUrlToken));
             _tokens.RemoveAll(t => t.GetType() == typeof(ListViewIdToken));
@@ -424,7 +481,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             web.Context.ExecuteQueryRetry();
             foreach (var list in web.Lists)
             {
-                _tokens.Add(new ListIdToken(web, list.Title, list.Id));
+                // _tokens.Add(new ListIdToken(web, list.Title, list.Id));
+                _tokens.Add(new ListIdToken(web, list.Title, Guid.Empty));
                 _tokens.Add(new ListUrlToken(web, list.Title, list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
 
                 foreach (var view in list.Views)
@@ -476,23 +534,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
             return resourceValues;
-        }
-
-        /// <summary>
-        /// Clears cache of tokens
-        /// </summary>
-        /// <param name="web">A SharePoint site or subsite</param>
-        public void Rebase(Web web)
-        {
-            web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Language);
-
-            _web = web;
-
-            foreach (var token in _tokens)
-            {
-                token.ClearCache();
-                token.Web = web;
-            }
         }
 
         /// <summary>

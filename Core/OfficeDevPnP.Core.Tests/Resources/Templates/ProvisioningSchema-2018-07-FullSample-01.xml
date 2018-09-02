@@ -614,9 +614,9 @@
       <pnp:TermGroups>
         <pnp:TermGroup ID="{0E8F395E-FF58-4D45-9FF7-E331AB728BEB}" Name="{parameter:CompanyName} TermSets">
           <pnp:TermSets>
-            <pnp:TermSet Name="Projects" ID="{5880B01B-5D6F-4606-A492-3B03A2FB4DD7}" Language="1040">
+            <pnp:TermSet Name="Projects" ID="{be91a6b0-cac1-409a-96a1-5906286eb037}" Language="1033">
               <pnp:Terms>
-                <pnp:Term Name="IT Projects" ID="{3D212FC2-F176-4621-AED1-128219666D95}">
+                <pnp:Term Name="IT Projects" ID="{1218a3a2-8f21-40de-824f-3a50a321c2e5}">
                   <pnp:CustomProperties>
                     <pnp:Property Key="Property1" Value="Value1" />
                     <pnp:Property Key="Property2" Value="Value2" />
@@ -626,28 +626,28 @@
                     <pnp:Property Key="LocalProperty2" Value="Value2" />
                   </pnp:LocalCustomProperties>
                   <pnp:Terms>
-                    <pnp:Term Name="Cloud" ID="{87C55100-8316-4DA0-97FD-FEB5731880F6}">
+                    <pnp:Term Name="Cloud" ID="{88389c63-57fa-496c-8965-dcbaea73f618}">
                       <pnp:Labels>
-                        <pnp:Label Language="1040" Value="Nuvola"/>
+                        <pnp:Label Language="1033" Value="Nuvola"/>
                       </pnp:Labels>
                     </pnp:Term>
-                    <pnp:Term Name="New Farm" ID="{C422BD0D-681D-448F-A41E-C71C473A95CC}" IsDeprecated="true">
+                    <pnp:Term Name="New Farm" ID="{eac7150b-d7ae-4cde-b1c1-efabe63a1fc5}" IsDeprecated="true">
                       <pnp:Labels>
-                        <pnp:Label Language="1040" Value="Nuova Farm"/>
+                        <pnp:Label Language="1033" Value="Nuova Farm"/>
                       </pnp:Labels>
                     </pnp:Term>
                   </pnp:Terms>
                 </pnp:Term>
-                <pnp:Term Name="HSE Projects" ID="{1F1B9EE8-74EA-4D89-B502-FEAA44340385}">
+                <pnp:Term Name="HSE Projects" ID="{5be0d276-d5ff-42ff-ae28-27bbcaa6a90e}">
                   <pnp:Terms>
-                    <pnp:Term Name="Security Assessment" ID="{3279FE80-95DB-4D35-B235-A9B2F0FB6F9E}">
+                    <pnp:Term Name="Security Assessment" ID="{7bf1547d-a54b-406d-a1b3-0f3ae9959fc7}">
                       <pnp:Labels>
-                        <pnp:Label Language="1040" Value="Valutazione Sicurezza"/>
+                        <pnp:Label Language="1033" Value="Valutazione Sicurezza"/>
                       </pnp:Labels>
                     </pnp:Term>
-                    <pnp:Term Name="Safety Program" ID="{FBEA36EA-A750-4A97-9667-5D51A6C895AF}">
+                    <pnp:Term Name="Safety Program" ID="{fe85a888-7384-4025-b010-b84457b78582}">
                       <pnp:Labels>
-                        <pnp:Label Language="1040" Value="Programma Sicurezza"/>
+                        <pnp:Label Language="1033" Value="Programma Sicurezza"/>
                       </pnp:Labels>
                     </pnp:Term>
                   </pnp:Terms>
@@ -655,13 +655,13 @@
               </pnp:Terms>
             </pnp:TermSet>
           </pnp:TermSets>
-          <pnp:Contributors>
+          <!--<pnp:Contributors>
             <pnp:User Name="user1@contoso.com"/>
           </pnp:Contributors>
           <pnp:Managers>
             <pnp:User Name="user2@contoso.com"/>
             <pnp:User Name="user3@contoso.com"/>
-          </pnp:Managers>
+          </pnp:Managers>-->
         </pnp:TermGroup>
       </pnp:TermGroups>
 
