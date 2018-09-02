@@ -77,6 +77,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             var filteredProperties = destinationProperties.Where(
                 p => (!Attribute.IsDefined(p, typeof(ObsoleteAttribute)) &&
                 (p.PropertyType.BaseType.Name != typeof(BaseProvisioningTemplateObjectCollection<>).Name || recursive) &&
+                (p.PropertyType.BaseType.Name != typeof(BaseProvisioningHierarchyObjectCollection<>).Name || recursive) &&
                 // p.PropertyType.BaseType.Name != typeof(BaseModel).Name && // TODO: Think about this rule ...
                 (!p.PropertyType.IsArray || recursive) // &&
                 // !p.PropertyType.Namespace.Contains(typeof(XMLConstants).Namespace)
@@ -104,7 +105,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         {
                             // We have a resolver, thus we use it to resolve the input value
                             if (!((ITypeResolver)resolver).CustomCollectionResolver &&
-                                dp.PropertyType.BaseType.Name == typeof(BaseProvisioningTemplateObjectCollection<>).Name)
+                                (dp.PropertyType.BaseType.Name == typeof(BaseProvisioningTemplateObjectCollection<>).Name ||
+                                dp.PropertyType.BaseType.Name == typeof(BaseProvisioningHierarchyObjectCollection<>).Name))
                             {
                                 var destinationCollection = dp.GetValue(destination);
                                 if (destinationCollection != null)
@@ -132,7 +134,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         {
                             // If the destination property is a custom collection of the 
                             // Domain Model and we have the recursive flag enabled
-                            if (recursive && dp.PropertyType.BaseType.Name == typeof(BaseProvisioningTemplateObjectCollection<>).Name)
+                            if (recursive && (dp.PropertyType.BaseType.Name == typeof(BaseProvisioningTemplateObjectCollection<>).Name ||
+                                dp.PropertyType.BaseType.Name == typeof(BaseProvisioningHierarchyObjectCollection<>).Name))
                             {
                                 // We need to recursively handle a collection of properties in the Domain Model
                                 var destinationCollection = dp.GetValue(destination);
@@ -199,7 +202,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                 dp.SetValue(destination, sourceValue);
                             }
                         }
-                        catch (Exception)
+                        catch (Exception ex)
                         {
                             // Right now, for testing purposes, I just output and skip any issue
                             // TODO: Handle issues insteaf of skipping them, we need to find a common pattern

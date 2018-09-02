@@ -2,7 +2,9 @@
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201801;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201805;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201807;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -28,41 +30,74 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             {
                 var expressions = new Dictionary<Expression<Func<ProvisioningSequence, Object>>, IResolver>();
 
+                // Handle the TermStore property of the Sequence, if any
                 expressions.Add(seq => seq.TermStore, new ExpressionValueResolver((s, v) => {
 
-                    var termGroupsExpressions = new Dictionary<Expression<Func<TermGroup, Object>>, IResolver>();
-                    termGroupsExpressions.Add(g => g.Id, new FromStringToGuidValueResolver());
-                    termGroupsExpressions.Add(g => g.TermSets[0].Id, new FromStringToGuidValueResolver());
-                    termGroupsExpressions.Add(g => g.TermSets[0].Terms[0].Id, new FromStringToGuidValueResolver());
-                    termGroupsExpressions.Add(g => g.TermSets[0].Terms[0].SourceTermId, new FromStringToGuidValueResolver());
+                    if (v != null)
+                    {
+                        var tgs = new TermGroupsSerializer();
+                        var termGroupsExpressions = tgs.GetTermGroupExpressions();
 
-                    var dictionaryItemTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-                    var dictionaryItemType = Type.GetType(dictionaryItemTypeName, true);
-                    var dictionaryItemKeySelector = CreateSelectorLambda(dictionaryItemType, "Key");
-                    var dictionaryItemValueSelector = CreateSelectorLambda(dictionaryItemType, "Value");
-                    termGroupsExpressions.Add(g => g.TermSets[0].Properties, new FromArrayToDictionaryValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
-                    termGroupsExpressions.Add(g => g.TermSets[0].Terms[0].LocalProperties, new FromArrayToDictionaryValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector, "LocalCustomProperties"));
-                    termGroupsExpressions.Add(g => g.TermSets[0].Terms[0].Properties, new FromArrayToDictionaryValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector, "CustomProperties"));
-                    termGroupsExpressions.Add(g => g.TermSets[0].Terms[0].Terms,
-                        new PropertyObjectTypeResolver<Term>(t => t.Terms,
-                        o => o.GetPublicInstancePropertyValue("Terms")?.GetPublicInstancePropertyValue("Items"),
-                        new CollectionFromSchemaToModelTypeResolver(typeof(Term))));
+                        var result = new Model.ProvisioningTermStore();
+                        result.TermGroups.AddRange(
+                            PnPObjectsMapper.MapObjects<TermGroup>(v,
+                                new CollectionFromSchemaToModelTypeResolver(typeof(TermGroup)),
+                                termGroupsExpressions,
+                                recursive: true)
+                                as IEnumerable<TermGroup>);
 
-                    var result = new Model.ProvisioningTermStore();
-                    result.TermGroups.AddRange(
-                        PnPObjectsMapper.MapObjects<TermGroup>(v,
-                            new CollectionFromSchemaToModelTypeResolver(typeof(TermGroup)),
-                            termGroupsExpressions, recursive: true)
-                            as IEnumerable<TermGroup>);
+                        return (result);
+                    }
+                    else
+                    {
+                        return (null);
+                    }
+                }));
+
+                // Handle the SiteCollections property of the Sequence, if any
+                expressions.Add(seq => seq.SiteCollections, 
+                    new SiteCollectionsAndSitesFromSchemaToModelTypeResolver(typeof(SiteCollection)));
+                expressions.Add(seq => seq.SiteCollections[0].Sites,
+                    new SiteCollectionsAndSitesFromSchemaToModelTypeResolver(typeof(SubSite)));
+                expressions.Add(seq => seq.SiteCollections[0].Templates, new ExpressionValueResolver((s, v) => {
+
+                    var result = new List<String>();
+
+                    foreach (var t in (IEnumerable)v)
+                    {
+                        var templateId = t.GetPublicInstancePropertyValue("ID")?.ToString();
+
+                        if (templateId != null)
+                        {
+                            result.Add(templateId);
+                        }
+                    }
+
+                    return (result);
+                }));
+                expressions.Add(seq => seq.SiteCollections[0].Sites[0].Templates, new ExpressionValueResolver((s, v) => {
+
+                    var result = new List<String>();
+
+                    foreach (var t in (IEnumerable)v)
+                    {
+                        var templateId = t.GetPublicInstancePropertyValue("ID")?.ToString();
+
+                        if (templateId != null)
+                        {
+                            result.Add(templateId);
+                        }
+                    }
 
                     return (result);
                 }));
 
                 template.ParentHierarchy.Sequences.AddRange(
-                    PnPObjectsMapper.MapObjects<ProvisioningSequence>(sequences,
-                            new CollectionFromSchemaToModelTypeResolver(typeof(ProvisioningSequence)),
-                            expressions, recursive: true)
-                            as IEnumerable<ProvisioningSequence>);
+                PnPObjectsMapper.MapObjects<ProvisioningSequence>(sequences,
+                        new CollectionFromSchemaToModelTypeResolver(typeof(ProvisioningSequence)),
+                        expressions, 
+                        recursive: true)
+                        as IEnumerable<ProvisioningSequence>);
             }
         }
 

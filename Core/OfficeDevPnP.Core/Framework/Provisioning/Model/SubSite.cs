@@ -47,7 +47,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the list of Provisioning Templates to apply to the sub-site, if any
         /// </summary>
-        public List<String> Templates { get; private set; }
+        public List<String> Templates { get; internal set; }
 
         #endregion
 

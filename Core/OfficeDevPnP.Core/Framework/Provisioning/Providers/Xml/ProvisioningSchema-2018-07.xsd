@@ -5630,12 +5630,23 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
-      <xsd:element name="SiteCollection" type="pnp:SiteCollection" minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="SiteCollections" minOccurs="0">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">
-            A Site Collection to provision through a Sequence, optional element.
+            A collection of Site Collection elements to provision through a Sequence, optional element.
           </xsd:documentation>
         </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="SiteCollection" type="pnp:SiteCollection" minOccurs="0" maxOccurs="unbounded">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  A Site Collection to provision through a Sequence, optional element.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
       </xsd:element>
       <xsd:element name="TermStore" type="pnp:TermStore" minOccurs="0" maxOccurs="1">
         <xsd:annotation>

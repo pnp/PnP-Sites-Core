@@ -15,9 +15,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Constructor for SiteCollectionCollection class
         /// </summary>
-        /// <param name="parentProvisioning">Parent Provisioning object</param>
-        public SiteCollectionCollection(ProvisioningHierarchy parentProvisioning) :
-            base(parentProvisioning)
+        /// <param name="parentHierarchy">Parent Provisioning object</param>
+        public SiteCollectionCollection(ProvisioningHierarchy parentHierarchy) :
+            base(parentHierarchy)
         {
         }
     }

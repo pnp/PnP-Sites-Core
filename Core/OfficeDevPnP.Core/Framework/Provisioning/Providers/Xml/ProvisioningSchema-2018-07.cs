@@ -771,20 +771,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema")]
     public partial class Sequence {
         
-        private SiteCollection[] siteCollectionField;
+        private SiteCollection[] siteCollectionsField;
         
         private TermGroup[] termStoreField;
         
         private string idField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("SiteCollection")]
-        public SiteCollection[] SiteCollection {
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
+        public SiteCollection[] SiteCollections {
             get {
-                return this.siteCollectionField;
+                return this.siteCollectionsField;
             }
             set {
-                this.siteCollectionField = value;
+                this.siteCollectionsField = value;
             }
         }
         
