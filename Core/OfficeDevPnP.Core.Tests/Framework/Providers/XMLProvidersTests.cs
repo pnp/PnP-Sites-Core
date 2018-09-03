@@ -722,7 +722,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var hierarchy = serializer.ToProvisioningHierarchy(provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml"));
 
-            // TODO: Save the hierarchy
+            // Save the hierarchy
+            var outputFile = "ProvisioningSchema-2018-07-FullSample-01-OUT.xml";
+            var mem = serializer.ToFormattedHierarchy(hierarchy);
+            provider.Connector.SaveFileStream(outputFile, mem);
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{outputFile}"));
+
+            var hierarchy2 = serializer.ToProvisioningHierarchy(provider.Connector.GetFileStream(outputFile));
+            Assert.IsNotNull(hierarchy2);
         }
 
         [TestMethod]

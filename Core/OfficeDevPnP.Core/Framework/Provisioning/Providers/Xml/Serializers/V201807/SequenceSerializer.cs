@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     if (v != null)
                     {
                         var tgs = new TermGroupsSerializer();
-                        var termGroupsExpressions = tgs.GetTermGroupExpressions();
+                        var termGroupsExpressions = tgs.GetTermGroupDeserializeExpressions();
 
                         var result = new Model.ProvisioningTermStore();
                         result.TermGroups.AddRange(
@@ -112,11 +112,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 var sequenceTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Sequence, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var sequenceType = Type.GetType(sequenceTypeName, true);
 
+                var expressions = new Dictionary<string, IResolver>();
+
+                // Handle the TermStore property of the Sequence, if any
+                expressions.Add($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Sequence.TermStore", new ExpressionValueResolver((s, v) => {
+
+                    if (v != null)
+                    {
+                        var tgs = new TermGroupsSerializer();
+                        var termGroupsExpressions = tgs.GetTermGroupSerializationExpressions();
+
+                        var baseNamespace = PnPSerializationScope.Current?.BaseSchemaNamespace;
+                        var termGroupType = Type.GetType($"{baseNamespace}.TermGroup, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
+
+                        var sourceSequence = s as ProvisioningSequence;
+
+                        return(PnPObjectsMapper.MapObjects(sourceSequence.TermStore.TermGroups,
+                            new CollectionFromModelToSchemaTypeResolver(termGroupType), 
+                            termGroupsExpressions, 
+                            true));
+                    }
+                    else
+                    {
+                        return (null);
+                    }
+                }));
+
                 persistence.GetPublicInstanceProperty("Sequence")
                     .SetValue(
                         persistence,
                         PnPObjectsMapper.MapObjects(template.ParentHierarchy.Sequences,
-                            new CollectionFromModelToSchemaTypeResolver(sequenceType), recursive: true));
+                            new CollectionFromModelToSchemaTypeResolver(sequenceType), 
+                            expressions, 
+                            recursive: true));
             }
         }
     }
