@@ -270,57 +270,77 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Reference Include="AngleSharp, Version=0.9.9.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\AngleSharp.0.9.9.1\lib\net45\AngleSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Data.Edm, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Microsoft.Data.Edm.5.6.2\lib\net40\Microsoft.Data.Edm.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Data.OData, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Microsoft.Data.OData.5.6.2\lib\net40\Microsoft.Data.OData.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Microsoft.Data.Services.Client.5.6.2\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Options, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Microsoft.Extensions.Options.1.0.0\lib\netstandard1.0\Microsoft.Extensions.Options.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.Primitives, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Microsoft.Extensions.Primitives.1.0.0\lib\netstandard1.0\Microsoft.Extensions.Primitives.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Extensions.WebEncoders, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Microsoft.Extensions.WebEncoders.1.0.0\lib\netstandard1.0\Microsoft.Extensions.WebEncoders.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Graph, Version=1.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Microsoft.Graph.1.1.1\lib\portable45-net45+win8+wpa81\Microsoft.Graph.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Graph.Core, Version=1.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Microsoft.Graph.Core.1.2.1\lib\portable45-net45+win8+wpa81\Microsoft.Graph.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Microsoft.IdentityModel.6.1.7600.16394\lib\net35\Microsoft.IdentityModel.dll</HintPath>
+    <Reference Include="AngleSharp">
+      <HintPath>..\packages\AngleSharp.0.9.9\lib\net45\AngleSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=2.29.0.1078, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.29.0\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+    <Reference Include="Microsoft.Data.Edm, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Data.Edm.5.6.2\lib\net40\Microsoft.Data.Edm.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms, Version=2.29.0.1078, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.29.0\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll</HintPath>
+    <Reference Include="Microsoft.Data.OData, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Data.OData.5.6.2\lib\net40\Microsoft.Data.OData.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.2\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.1.0.0\lib\netstandard1.0\Microsoft.Extensions.Options.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.1.0.0\lib\netstandard1.0\Microsoft.Extensions.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.WebEncoders, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.WebEncoders.1.0.0\lib\netstandard1.0\Microsoft.Extensions.WebEncoders.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Graph, Version=1.9.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Graph.1.9.0\lib\net45\Microsoft.Graph.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Graph.Core, Version=1.9.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Graph.Core.1.9.0\lib\net45\Microsoft.Graph.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.6.1.7600.16394\lib\net35\Microsoft.IdentityModel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.19.8.16603, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.19.8.16603, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.5.2.4\lib\net45\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.5.2.4\lib\net45\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.2.4\lib\net45\Microsoft.IdentityModel.Tokens.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Storage, Version=4.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SharePointPnP.IdentityModel.Extensions, Version=1.2.3.0, Culture=neutral, PublicKeyToken=5e633289e95c321a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\SharePointPnP.IdentityModel.Extensions.1.2.3\lib\net45\SharePointPnP.IdentityModel.Extensions.dll</HintPath>
+      <HintPath>..\packages\SharePointPnP.IdentityModel.Extensions.1.2.3\lib\net45\SharePointPnP.IdentityModel.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -330,26 +350,30 @@
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.IdentityModel.Selectors" />
-    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\System.IdentityModel.Tokens.Jwt.4.0.0\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.2.4\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Spatial, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\System.Spatial.5.6.2\lib\net40\System.Spatial.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\System.Spatial.5.6.2\lib\net40\System.Spatial.dll</HintPath>
     </Reference>
     <Reference Include="System.Text.Encodings.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\System.Text.Encodings.Web.4.0.0\lib\netstandard1.0\System.Text.Encodings.Web.dll</HintPath>
+      <HintPath>..\packages\System.Text.Encodings.Web.4.0.0\lib\netstandard1.0\System.Text.Encodings.Web.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web.Http, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\..\..\WebJobEngine\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.Core.5.2.3\lib\net45\System.Web.Http.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Services" />
     <Reference Include="System.Windows.Forms" />
@@ -364,9 +388,16 @@
   <ItemGroup>
     <Compile Include="ALM\AppManager.cs" />
     <Compile Include="ALM\AppMetadata.cs" />
+    <Compile Include="Attributes\TokenDefinitionDescriptionAttribute.cs" />
+    <Compile Include="CoreResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CoreResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Entities\UnifiedGroupUser.cs" />
     <Compile Include="Entities\WebhookNotification.cs" />
     <Compile Include="Entities\WebhookSubscription.cs" />
+    <Compile Include="Enums\AppCatalogScope.cs" />
     <Compile Include="Extensions\ClientContextExtensions.cs" />
     <Compile Include="Extensions\ClientObjectExtensions.cs" />
     <Compile Include="Extensions\Deprecated\BrandingExtensions.deprecated.cs" />
@@ -394,6 +425,7 @@
     <Compile Include="Extensions\InformationManagementExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\ListRatingExtensions.cs" />
+    <Compile Include="Extensions\ObjectExtension.cs" />
     <Compile Include="Extensions\ProvisioningExtensions.cs" />
     <Compile Include="Extensions\PublishingExtensions.cs" />
     <Compile Include="Extensions\RecordsManagementExtensions.cs" />
@@ -401,11 +433,6 @@
     <Compile Include="Extensions\SiteExtensions.cs" />
     <Compile Include="Extensions\TaxonomyExtensions.cs" />
     <Compile Include="Extensions\TenantExtensions.cs" />
-    <Compile Include="CoreResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CoreResources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Framework\Graph\Model\DirectorySetting.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingTemplates.cs" />
     <Compile Include="Framework\Graph\GraphHttpClient.cs" />
@@ -419,6 +446,7 @@
     <Compile Include="Framework\Provisioning\Model\CanvasControlCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasSection.cs" />
     <Compile Include="Framework\Provisioning\Model\CanvasSectionCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ClientSidePageHeader.cs" />
     <Compile Include="Framework\Provisioning\Model\ContentDeliveryNetwork.cs" />
     <Compile Include="Framework\Provisioning\Model\CdnOrigin.cs" />
     <Compile Include="Framework\Provisioning\Model\CdnOriginCollection.cs" />
@@ -430,17 +458,29 @@
     <Compile Include="Framework\Provisioning\Model\PackageCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ImageRenditionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\IRMSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteDesignCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteDesignGrant.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteDesignGrantCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteScriptCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\StorageEntityCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteDesign.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteScript.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteWebhook.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteWebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTenant.cs" />
+    <Compile Include="Framework\Provisioning\Model\StorageEntity.cs" />
+    <Compile Include="Framework\Provisioning\Model\WebApiPermission.cs" />
+    <Compile Include="Framework\Provisioning\Model\WebApiPermissionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Webhook.cs" />
     <Compile Include="Framework\Provisioning\Model\WebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\FieldAndListProvisioningStepHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\NoScriptTemplateCleaner.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectApplicationLifecycleManagement.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTenant.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWebApiPermissions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdTokenEncoded.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\HostUrlToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\PageUniqueIdEncodedToken.cs" />
@@ -448,15 +488,23 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionConnectedOffice365GroupId.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionIdEncodedToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteIdEncodedToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteDesignIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\StorageEntityValueToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteScriptIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteTitleToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ClientSidePageContentsHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AppPackageIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUtilities.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.cs">
       <DependentUpon>ProvisioningSchema-2017-05.xsd</DependentUpon>
     </Compile>
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-01.cs">
       <DependentUpon>ProvisioningSchema-2018-01.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-05.cs">
+      <DependentUpon>ProvisioningSchema-2018-05.xsd</DependentUpon>
     </Compile>
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\DocumentTemplateFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TermSetFromModelToSchemaTypeResolver.cs" />
@@ -474,6 +522,10 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\CdnFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\CdnFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\AppCatalogFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\ClientSidePageHeaderFromModelToSchema.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\ClientSidePageHeaderFromSchemaToModel.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\SiteScriptRefFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\SiteScriptRefFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\WorkHourFromSchemaToModelValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FoldersFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromAuditFlagsToArrayResolver.cs" />
@@ -520,11 +572,25 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateBasePropertiesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\RegionalSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WebSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201805Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201801Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201705Serializer.cs" />
-    <Compile Include="Pages\ClientSidePageCanvas.cs" />
-    <Compile Include="Pages\ClientSidePageControls.cs" />
-    <Compile Include="Pages\ClientSidePagesControlData.cs" />
+    <Compile Include="Pages\AvailableClientSideComponents.cs" />
+    <Compile Include="Pages\CanvasColumn.cs" />
+    <Compile Include="Pages\CanvasControl.cs" />
+    <Compile Include="Pages\CanvasSection.cs" />
+    <Compile Include="Pages\CanvasSectionTemplate.cs" />
+    <Compile Include="Pages\ClientSideCanvasControlData.cs" />
+    <Compile Include="Pages\ClientSideCanvasControlPosition.cs" />
+    <Compile Include="Pages\ClientSideCanvasData.cs" />
+    <Compile Include="Pages\ClientSideCanvasPosition.cs" />
+    <Compile Include="Pages\ClientSidePage.cs" />
+    <Compile Include="Pages\ClientSideComponent.cs" />
+    <Compile Include="Pages\ClientSidePageHeader.cs" />
+    <Compile Include="Pages\ClientSidePageHeaderLayoutType.cs" />
+    <Compile Include="Pages\ClientSidePageHeaderTitleAlignment.cs" />
+    <Compile Include="Pages\ClientSidePageHeaderType.cs" />
+    <Compile Include="Pages\ClientSidePageLayoutType.cs" />
     <Compile Include="Entities\UnifiedGroupEntity.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
     <Compile Include="Framework\Graph\PnPHttpProvider.cs" />
@@ -772,7 +838,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\GuidToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CurrentUserIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteIdToken.cs" />
-    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteNameToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\WebNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\TermSetIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ParameterToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ListUrlToken.cs" />
@@ -863,8 +929,16 @@
     <Compile Include="Extensions\PnPClientContext.cs" />
     <Compile Include="IdentityModel\TokenProviders\ADFS\CertificateMixed.cs" />
     <Compile Include="IdentityModel\WSTrustBindings\CertificateWSTrustBinding.cs" />
+    <Compile Include="Pages\ClientSideText.cs" />
+    <Compile Include="Pages\ClientSideTextControlData.cs" />
+    <Compile Include="Pages\ClientSideWebPart.cs" />
+    <Compile Include="Pages\ClientSideWebPartControlData.cs" />
+    <Compile Include="Pages\ClientSideWebPartData.cs" />
+    <Compile Include="Pages\DefaultClientSideWebParts.cs" />
+    <Compile Include="Pages\PromotedState.cs" />
     <Compile Include="Sites\SiteCollection.cs" />
     <Compile Include="Sites\SiteCollectionCreationInformation.cs" />
+    <Compile Include="Utilities\Async\SynchronizationContextRemover.cs" />
     <Compile Include="Utilities\Cache\ICacheProvider.cs" />
     <Compile Include="Utilities\Cache\InMemoryCacheProvider.cs" />
     <Compile Include="Utilities\Cache\SimpleAspNetCacheProvider.cs" />
@@ -898,6 +972,7 @@
     <Compile Include="Framework\Graph\SiteClassificationUtility.cs" />
     <Compile Include="Utilities\PnPCoreUtilities.cs" />
     <Compile Include="Utilities\PnPHttpProvider.cs" />
+    <Compile Include="Utilities\PnPHttpUtility.cs" />
     <Compile Include="Utilities\RESTUtilities.cs" />
     <Compile Include="Utilities\Webhooks\ResponseModel.cs" />
     <Compile Include="Utilities\Webhooks\WebhookUtility.cs" />
@@ -967,8 +1042,13 @@
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-01.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-05.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Pages\ClientSidePages.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -1108,6 +1188,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Framework\Provisioning\Deprecated\Connectors\OpenXML\" />
+    <Folder Include="Framework\Provisioning\Providers\Xml\Serializers\V201805\" />
     <Folder Include="Utilities\Graph\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
@@ -1120,8 +1201,8 @@
   <Target Name="AfterBuild" DependsOnTargets="">
   </Target>
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>del $(ProjectDir)\obj\pnpcore.*
+del $(ProjectDir)\obj\*.json</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>

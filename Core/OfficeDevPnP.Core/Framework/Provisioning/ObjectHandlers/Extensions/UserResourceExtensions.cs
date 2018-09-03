@@ -32,7 +32,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                 if (System.IO.File.Exists(resourceFileName))
                 {
                     // Read existing entries, if any
+#if !NETSTANDARD2_0
                     using (ResXResourceReader resxReader = new ResXResourceReader(resourceFileName))
+#else
+                    using (ResourceReader resxReader = new ResourceReader(resourceFileName))
+#endif
                     {
                         foreach (DictionaryEntry entry in resxReader)
                         {
@@ -46,10 +50,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                     }
                 }
 
-            
-
                 // Create new resource file
+#if !NETSTANDARD2_0
                 using (ResXResourceWriter resx = new ResXResourceWriter(resourceFileName))
+#else
+                using (ResourceWriter resx = new ResourceWriter(resourceFileName))
+#endif
                 {
                     foreach (var token in ResourceTokens.Where(t => t.Item2 == language))
                     {
@@ -58,7 +64,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                     }
                 }
 
-                template.Localizations.Add(new Localization() { LCID = language, Name = culture.NativeName, ResourceFile = $"{creationInfo.ResourceFilePrefix}.{culture.Name}.resx"});
+                template.Localizations.Add(new Localization() { LCID = language, Name = culture.NativeName, ResourceFile = $"{creationInfo.ResourceFilePrefix}.{culture.Name}.resx" });
 
                 // Persist the file using the connector
                 using (FileStream stream = System.IO.File.Open(resourceFileName, FileMode.Open))
@@ -120,4 +126,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
         }
     }
 #endif
-}
+            }

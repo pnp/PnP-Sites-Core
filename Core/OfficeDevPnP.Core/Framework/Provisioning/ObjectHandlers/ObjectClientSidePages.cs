@@ -7,11 +7,13 @@ using System;
 using System.Linq;
 using OfficeDevPnP.Core.Utilities.CanvasControl;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
 #if !ONPREMISES
-    internal class ObjectClientSidePages: ObjectHandlerBase
+    internal class ObjectClientSidePages : ObjectHandlerBase
     {
         public override string Name
         {
@@ -27,11 +29,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // determine pages library
                 string pagesLibrary = "SitePages";
 
+                List<string> preCreatedPages = new List<string>();
+
+                var currentPageIndex = 0;
                 // pre create the needed pages so we can fill the needed tokens which might be used later on when we put web parts on those pages
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(clientSidePage.PageName)}.aspx";
                     string url = $"{pagesLibrary}/{pageName}";
+
+                    // Write page level status messages, needed in case many pages are provisioned
+                    currentPageIndex++;
+                    WriteMessage($"ClientSidePage|Create {pageName}|{currentPageIndex}|{template.ClientSidePages.Count}", ProvisioningMessageType.Progress);
 
                     url = UrlUtility.Combine(web.ServerRelativeUrl, url);
 
@@ -58,6 +67,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         // Pre-create the page    
                         Pages.ClientSidePage page = web.AddClientSidePage(pageName);
+
+                        // Set page layout now, because once it's set, it can't be changed.
+                        if (!string.IsNullOrEmpty(clientSidePage.Layout))
+                        {
+                            if (clientSidePage.Layout.Equals("Article", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                page.LayoutType = Pages.ClientSidePageLayoutType.Article;
+                            }
+                            else if (clientSidePage.Layout.Equals("Home", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                page.LayoutType = Pages.ClientSidePageLayoutType.Home;
+                            }
+                        }
+
                         page.Save(pageName);
 
                         var file = web.GetFileByServerRelativeUrl(url);
@@ -67,14 +90,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Fill token
                         parser.AddToken(new PageUniqueIdToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
                         parser.AddToken(new PageUniqueIdEncodedToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+
+                        // Track that we pre-added this page
+                        preCreatedPages.Add(url);
                     }
                 }
 
+                currentPageIndex = 0;
                 // Iterate over the pages and create/update them
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(clientSidePage.PageName)}.aspx";
                     string url = $"{pagesLibrary}/{pageName}";
+                    // Write page level status messages, needed in case many pages are provisioned
+                    currentPageIndex++;
+                    WriteMessage($"ClientSidePage|{pageName}|{currentPageIndex}|{template.ClientSidePages.Count}", ProvisioningMessageType.Progress);
 
                     url = UrlUtility.Combine(web.ServerRelativeUrl, url);
 
@@ -96,7 +126,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     Pages.ClientSidePage page = null;
                     if (exists)
                     {
-                        if (clientSidePage.Overwrite)
+                        if (clientSidePage.Overwrite || preCreatedPages.Contains(url))
                         {
                             // Get the existing page
                             page = web.LoadClientSidePage(pageName);
@@ -113,6 +143,44 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         // Create new client side page
                         page = web.AddClientSidePage(pageName);
+                    }
+
+                    // Set page title
+                    string newTitle = parser.ParseString(clientSidePage.Title);
+                    if (page.PageTitle != newTitle)
+                    {
+                        page.PageTitle = newTitle;
+                    }
+
+                    // Page Header
+                    if (clientSidePage.Header != null)
+                    {
+                        switch (clientSidePage.Header.Type)
+                        {
+                            case ClientSidePageHeaderType.None:
+                                {
+                                    page.RemovePageHeader();
+                                    break;
+                                }
+                            case ClientSidePageHeaderType.Default:
+                                {
+                                    page.SetDefaultPageHeader();
+                                    break;
+                                }
+                            case ClientSidePageHeaderType.Custom:
+                                {
+                                    var serverRelativeImageUrl = parser.ParseString(clientSidePage.Header.ServerRelativeImageUrl);
+                                    if (clientSidePage.Header.TranslateX.HasValue && clientSidePage.Header.TranslateY.HasValue)
+                                    {
+                                        page.SetCustomPageHeader(serverRelativeImageUrl, clientSidePage.Header.TranslateX.Value, clientSidePage.Header.TranslateY.Value);
+                                    }
+                                    else
+                                    {
+                                        page.SetCustomPageHeader(serverRelativeImageUrl);
+                                    }
+                                    break;
+                                }
+                        }
                     }
 
                     // Set page layout
@@ -139,7 +207,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     int sectionCount = -1;
                     // Apply the "layout" and content
-                    foreach(var section in clientSidePage.Sections)
+                    foreach (var section in clientSidePage.Sections)
                     {
                         sectionCount++;
                         switch (section.Type)
@@ -166,17 +234,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order);
                                 break;
                         }
-                        
+
                         // Add controls to the section
                         if (section.Controls.Any())
                         {
                             // Safety measure: reset column order to 1 for columns marked with 0 or lower
-                            foreach(var control in section.Controls.Where(p => p.Column <= 0).ToList())
+                            foreach (var control in section.Controls.Where(p => p.Column <= 0).ToList())
                             {
                                 control.Column = 1;
                             }
 
-                            foreach(CanvasControl control in section.Controls)
+                            foreach (CanvasControl control in section.Controls)
                             {
                                 Pages.ClientSideComponent baseControl = null;
 
@@ -188,16 +256,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         var textProperty = control.ControlProperties.First();
                                         textControl.Text = parser.ParseString(textProperty.Value);
-                                        // Reduce column number by 1 due 0 start indexing
-                                        page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
                                     }
+                                    else
+                                    {
+                                        if (!string.IsNullOrEmpty(control.JsonControlData))
+                                        {
+                                            var json = JsonConvert.DeserializeObject<Dictionary<string, string>>(control.JsonControlData);
+
+                                            if (json.Count > 0)
+                                            {
+                                                textControl.Text = parser.ParseString(json.First().Value);
+                                            }
+                                        }
+                                    }
+                                    // Reduce column number by 1 due 0 start indexing
+                                    page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
+
                                 }
                                 // It is a web part
                                 else
                                 {
                                     // apply token parsing on the web part properties
                                     control.JsonControlData = parser.ParseString(control.JsonControlData);
-                                    
+
                                     // perform processing of web part properties (e.g. include listid property based list title property)
                                     var webPartPostProcessor = CanvasControlPostProcessorFactory.Resolve(control);
                                     webPartPostProcessor.Process(control, page);
@@ -212,6 +293,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         else if (control.ControlId != Guid.Empty)
                                         {
                                             baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals($"{{{control.ControlId.ToString()}}}", StringComparison.CurrentCultureIgnoreCase));
+
+                                            if (baseControl == null)
+                                            {
+                                                baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals(control.ControlId.ToString(), StringComparison.InvariantCultureIgnoreCase));
+                                            }
                                         }
                                     }
                                     // Is an OOB client side web part (1st party)
@@ -295,6 +381,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             case WebPartType.Spacer:
                                                 webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Spacer);
                                                 break;
+                                            case WebPartType.ClientWebPart:
+                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.ClientWebPart);
+                                                break;
                                         }
 
                                         baseControl = componentsToAdd.FirstOrDefault(p => p.Name.Equals(webPartName, StringComparison.InvariantCultureIgnoreCase));
@@ -358,7 +447,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     }
                                 }
                             }
-                        }                        
+                        }
                     }
 
                     // Persist the page
@@ -372,15 +461,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             page.PromoteAsNewsArticle();
                         }
+                    }
 
-                        if (clientSidePage.EnableComments)
-                        {
-                            page.EnableComments();
-                        }
-                        else
-                        {
-                            page.DisableComments();
-                        }
+                    if (clientSidePage.EnableComments)
+                    {
+                        page.EnableComments();
+                    }
+                    else
+                    {
+                        page.DisableComments();
                     }
 
                     // Publish page 
@@ -391,6 +480,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 }
             }
+
+            WriteMessage("Done processing Client Side Pages", ProvisioningMessageType.Completed);
             return parser;
         }
 

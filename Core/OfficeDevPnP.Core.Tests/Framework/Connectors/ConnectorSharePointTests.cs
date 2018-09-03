@@ -78,7 +78,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
         }
         #endregion
 
-        #region SharePoint Connector tests
+#region SharePoint Connector tests
+#if !NETSTANDARD2_0
         /// <summary>
         /// Pass the connection information as parameters
         /// Get a file as string from passed SharePoint url and list
@@ -97,6 +98,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
             string file2 = spConnector.GetFile("Idonotexist.xml");
             Assert.IsNull(file2);
         }
+#endif
 
         /// <summary>
         /// Pass the connection information as parameters
@@ -166,6 +168,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
             }
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Pass the connection information as parameters
         /// Get a file as stream from passed SharePoint url and list. Uses 1 level of sub folders 
@@ -186,6 +189,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
             string file2 = spConnector.GetFile("Idonotexist.xml", String.Format("{0}/sub1", testContainerSecure));
             Assert.IsNull(file2);
         }
+#endif
 
         /// <summary>
         /// Save file to default container
@@ -355,6 +359,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
                 Assert.IsNull(bytes);
             }
         }
-        #endregion
+#endregion
     }
 }

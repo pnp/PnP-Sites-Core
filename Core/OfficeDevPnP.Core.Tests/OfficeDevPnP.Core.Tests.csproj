@@ -270,8 +270,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -530,7 +530,9 @@
     <None Include="Framework\Functional\Templates\garagewhite.spcolor">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Resources\alm.sppkg" />
     <None Include="Resources\almskip.sppkg" />
     <None Include="Resources\custom.spcolor">
@@ -632,6 +634,7 @@
     <Content Include="Framework\Functional\Templates\workflows_add_1605.xml" />
     <Content Include="Pages\Samples\EmbedWebPart.html" />
     <Content Include="Pages\Samples\FileViewerWebPart.html" />
+    <Content Include="Pages\Samples\HeaderImage.txt" />
     <Content Include="Pages\Samples\StreamWebPart.html" />
     <Content Include="Pages\Samples\SpacerWebPart.html" />
     <Content Include="Pages\Samples\SiteActivityWebPart.html" />
@@ -744,6 +747,10 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>del $(ProjectDir)\obj\pnpcore.*
+del $(ProjectDir)\obj\*.json</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

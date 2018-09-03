@@ -1,0 +1,101 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>OfficeDevPnP.Core</RootNamespace>
+    <AssemblyName>OfficeDevPnP.Core</AssemblyName>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>bin\DebugCore\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>bin\ReleaseCore\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="obj\**" />
+    <Compile Remove="Web References\**" />
+    <Compile Remove="WebAPI\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <EmbeddedResource Remove="Web References\**" />
+    <EmbeddedResource Remove="WebAPI\**" />
+    <None Remove="obj\**" />
+    <None Remove="Web References\**" />
+    <None Remove="WebAPI\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Properties\Settings.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-03.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-05.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-08.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-01.xsd" />
+    <None Remove="OfficeDevPnP.Core.csproj.DotSettings" />
+    <None Remove="Properties\Settings.settings" />
+    <None Remove="Version.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-03.xsd" />
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-05.xsd" />
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-08.xsd" />
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.xsd" />
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.xsd" />
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.xsd" />
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-01.xsd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="0.9.9.2" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.8.1" />
+    <PackageReference Include="Microsoft.Graph" Version="1.7.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="3.19.2" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.2.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Portable.Xaml" Version="0.21.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.4.1" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.1" />
+    <PackageReference Include="System.IO.Packaging" Version="4.4.1" />
+    <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
+    <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
+    <PackageReference Include="WindowsAzure.Storage" Version="9.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="SharePointPnP.Client">
+      <HintPath>..\..\Assemblies\16.1\SharePointPnP.Client.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="CoreResources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CoreResources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="CoreResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
+      <CustomToolNamespace></CustomToolNamespace>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Utilities\OAuth\" />
+  </ItemGroup>
+
+</Project>

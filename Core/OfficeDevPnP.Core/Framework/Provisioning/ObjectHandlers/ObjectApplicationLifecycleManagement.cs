@@ -27,20 +27,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // NOOP
 
                 // Process the collection of Apps installed in the current Site Collection
-                var manager = new AppManager(web.Context as ClientContext);
-
-                var siteApps = manager.GetAvailable()?.Where(a => a.InstalledVersion != null)?.ToList();
-                if (siteApps != null && siteApps.Count > 0)
+                var appCatalogUri = web.GetAppCatalog();
+                if(appCatalogUri != null)
                 {
-                    foreach (var app in siteApps)
+                    var manager = new AppManager(web.Context as ClientContext);
+
+                    var siteApps = manager.GetAvailable()?.Where(a => a.InstalledVersion != null)?.ToList();
+                    if (siteApps != null && siteApps.Count > 0)
                     {
-                        template.ApplicationLifecycleManagement.Apps.Add(new Model.App
+                        foreach (var app in siteApps)
                         {
-                            AppId = app.Id.ToString(),
-                            Action = AppAction.Install,
-                        });
+                            template.ApplicationLifecycleManagement.Apps.Add(new Model.App
+                            {
+                                AppId = app.Id.ToString(),
+                                Action = AppAction.Install,
+                            });
+                        }
                     }
-                }
+                }                
             }
             return template;
         }
@@ -60,49 +64,58 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (template.ApplicationLifecycleManagement.Apps != null &&
                         template.ApplicationLifecycleManagement.Apps.Count > 0)
                     {
-                        // Get the apps already installed in the site
-                        var siteApps = manager.GetAvailable()?.Where(a => a.InstalledVersion != null)?.ToList();
-
-                        foreach (var app in template.ApplicationLifecycleManagement.Apps)
+                        //Get tenant app catalog
+                        var appCatalogUri = web.GetAppCatalog();
+                        if (appCatalogUri != null)
                         {
-                            var appId = Guid.Parse(parser.ParseString(app.AppId));
-                            var alreadyExists = siteApps.Any(a => a.Id == appId);
-                            var working = false;
+                            // Get the apps already installed in the site
+                            var siteApps = manager.GetAvailable()?.Where(a => a.InstalledVersion != null)?.ToList();
 
-                            if (app.Action == AppAction.Install && !alreadyExists)
+                            foreach (var app in template.ApplicationLifecycleManagement.Apps)
                             {
-                                manager.Install(appId);
-                                working = true;
-                            }
-                            else if (app.Action == AppAction.Install && alreadyExists)
-                            {
-                                WriteMessage($"App with ID {appId} already exists in the target site and it will be skipped!", ProvisioningMessageType.Warning);
-                            }
-                            else if (app.Action == AppAction.Uninstall && alreadyExists)
-                            {
-                                manager.Uninstall(appId);
-                                working = true;
-                            }
-                            else if (app.Action == AppAction.Uninstall && !alreadyExists)
-                            {
-                                WriteMessage($"App with ID {appId} does not exist in the target site and cannot be uninstalled!", ProvisioningMessageType.Warning);
-                            }
-                            else if (app.Action == AppAction.Update && alreadyExists)
-                            {
-                                manager.Upgrade(appId);
-                                working = true;
-                            }
-                            else if (app.Action == AppAction.Update && !alreadyExists)
-                            {
-                                WriteMessage($"App with ID {appId} does not exist in the target site and cannot be updated!", ProvisioningMessageType.Warning);
-                            }
+                                var appId = Guid.Parse(parser.ParseString(app.AppId));
+                                var alreadyExists = siteApps.Any(a => a.Id == appId);
+                                var working = false;
 
-                            if (app.SyncMode == SyncMode.Synchronously && working)
-                            {
-                                // We need to wait for the app management
-                                // to be completed before proceeding
+                                if (app.Action == AppAction.Install && !alreadyExists)
+                                {
+                                    manager.Install(appId);
+                                    working = true;
+                                }
+                                else if (app.Action == AppAction.Install && alreadyExists)
+                                {
+                                    WriteMessage($"App with ID {appId} already exists in the target site and will be skipped", ProvisioningMessageType.Warning);
+                                }
+                                else if (app.Action == AppAction.Uninstall && alreadyExists)
+                                {
+                                    manager.Uninstall(appId);
+                                    working = true;
+                                }
+                                else if (app.Action == AppAction.Uninstall && !alreadyExists)
+                                {
+                                    WriteMessage($"App with ID {appId} does not exist in the target site and cannot be uninstalled", ProvisioningMessageType.Warning);
+                                }
+                                else if (app.Action == AppAction.Update && alreadyExists)
+                                {
+                                    manager.Upgrade(appId);
+                                    working = true;
+                                }
+                                else if (app.Action == AppAction.Update && !alreadyExists)
+                                {
+                                    WriteMessage($"App with ID {appId} does not exist in the target site and cannot be updated", ProvisioningMessageType.Warning);
+                                }
+
+                                if (app.SyncMode == SyncMode.Synchronously && working)
+                                {
+                                    // We need to wait for the app management
+                                    // to be completed before proceeding
+                                }
                             }
                         }
+                        else
+                        {
+                            WriteMessage($"Tenant app catalog doesn't exist. ALM step will be skipped.", ProvisioningMessageType.Warning);
+                        }                        
                     }
                 }
             }

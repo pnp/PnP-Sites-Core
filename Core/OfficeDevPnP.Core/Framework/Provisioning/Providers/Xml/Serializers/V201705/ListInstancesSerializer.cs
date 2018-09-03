@@ -87,6 +87,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                 // IRM Settings
                 expressions.Add(l => l.IRMSettings, new IRMSettingsFromSchemaToModelTypeResolver());
 
+                // DataSource
+                var dataSourceItemTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var dataSourceItemType = Type.GetType(dataSourceItemTypeName, true);
+                var dataSourceItemKeySelector = CreateSelectorLambda(dataSourceItemType, "Key");
+                var dataSourceItemValueSelector = CreateSelectorLambda(dataSourceItemType, "Value");
+                expressions.Add(l => l.DataSource, new FromArrayToDictionaryValueResolver<string, string>(dataSourceItemType, dataSourceItemKeySelector, dataSourceItemValueSelector));
+
                 template.Lists.AddRange(
                     PnPObjectsMapper.MapObjects<ListInstance>(lists,
                             new CollectionFromSchemaToModelTypeResolver(typeof(ListInstance)),
@@ -179,6 +186,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
 
                 // IRM Settings
                 resolvers.Add($"{listInstanceType}.IRMSettings", new IRMSettingsFromModelToSchemaTypeResolver());
+
+                // DataSource
+                var dataSourceItemTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var dataSourceItemType = Type.GetType(dataSourceItemTypeName, true);
+                var dataSourceItemKeySelector = CreateSelectorLambda(dataSourceItemType, "Key");
+                var dataSourceItemValueSelector = CreateSelectorLambda(dataSourceItemType, "Value");
+
+                resolvers.Add($"{listInstanceType}.DataSource", new FromDictionaryToArrayValueResolver<string, string>(dataSourceItemType, dataSourceItemKeySelector, dataSourceItemValueSelector));
 
                 // Manage empty TemplateFeatureID
                 resolvers.Add($"{listInstanceType}.TemplateFeatureID", new ExpressionValueResolver((s, v) =>

@@ -113,8 +113,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         Tenant = 16777216,
         /// <summary>
+        /// Value 33554432, represents Web API Permissions
+        /// </summary>
+        WebApiPermissions = 33554432,
+        /// <summary>
         /// Takes all handlers
         /// </summary>
-        All = AuditSettings | ComposedLook | CustomActions | ExtensibilityProviders | Features | Fields | Files | Lists | Pages | Publishing | RegionalSettings | SearchSettings | SitePolicy | SupportedUILanguages | TermGroups | Workflows | SiteSecurity | ContentTypes | PropertyBagEntries | PageContents | WebSettings | Navigation | ImageRenditions | ApplicationLifecycleManagement | Tenant
+        All = AuditSettings | ComposedLook | CustomActions | ExtensibilityProviders | Features | Fields | Files | Lists | Pages | Publishing | RegionalSettings | SearchSettings | SitePolicy | SupportedUILanguages | TermGroups | Workflows | SiteSecurity | ContentTypes | PropertyBagEntries | PageContents | WebSettings | Navigation | ImageRenditions | ApplicationLifecycleManagement | Tenant | WebApiPermissions
     }
 }

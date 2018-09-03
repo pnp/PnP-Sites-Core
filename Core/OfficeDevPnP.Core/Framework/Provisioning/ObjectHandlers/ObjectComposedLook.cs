@@ -342,7 +342,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = (template.ComposedLook != null && !template.ComposedLook.Equals(ComposedLook.Empty));
+                _willProvision = (template.ComposedLook != null && !template.ComposedLook.Equals(ComposedLook.Empty) && !web.IsNoScriptSite());
             }
             return _willProvision.Value;
         }
@@ -351,7 +351,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willExtract.HasValue)
             {
-                _willExtract = true;
+                _willExtract = !web.IsNoScriptSite();
             }
             return _willExtract.Value;
         }
