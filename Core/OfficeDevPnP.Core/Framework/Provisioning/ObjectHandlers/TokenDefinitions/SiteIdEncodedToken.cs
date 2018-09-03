@@ -1,7 +1,13 @@
 ﻿using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
+    [TokenDefinitionDescription(
+        Token = "{siteidencoded}",
+        Description = "Returns the id of the current site",
+        Example = "{siteidencoded}",
+        Returns = "9188a794%2Dcfcf%2D48b6%2D9ac5%2Ddf2048e8aa5d")]
     internal class SiteIdEncodedToken : TokenDefinition
     {
         public SiteIdEncodedToken(Web web)
@@ -13,13 +19,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (CacheValue == null)
             {
-                this.Web.EnsureProperty(w => w.Url);
-                using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
-                {
-                    context.Load(context.Web, w => w.Id);
-                    context.ExecuteQueryRetry();
-                    CacheValue = context.Web.Id.ToString().Replace("-", "%2D");
-                }
+                TokenContext.Load(TokenContext.Web, w => w.Id);
+                TokenContext.ExecuteQueryRetry();
+                CacheValue = TokenContext.Web.Id.ToString().Replace("-", "%2D");
             }
             return CacheValue;
         }

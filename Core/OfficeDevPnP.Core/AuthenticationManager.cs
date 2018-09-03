@@ -8,12 +8,15 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+#if !NETSTANDARD2_0
 using System.Windows.Forms;
+#endif
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Async;
 
 namespace OfficeDevPnP.Core
 {
@@ -48,7 +51,7 @@ namespace OfficeDevPnP.Core
         private string _clientId;
         private Uri _redirectUri;
 
-        #region Authenticating against SharePoint Online using credentials or app-only
+#region Authenticating against SharePoint Online using credentials or app-only
         /// <summary>
         /// Returns a SharePointOnline ClientContext object
         /// </summary>
@@ -274,6 +277,7 @@ namespace OfficeDevPnP.Core
             return lease;
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Returns a SharePoint on-premises / SharePoint Online ClientContext object. Requires claims based authentication with FedAuth cookie.
         /// </summary>
@@ -349,9 +353,10 @@ namespace OfficeDevPnP.Core
 
             return null;
         }
-        #endregion
+#endif
+#endregion
 
-        #region Authenticating against SharePoint on-premises using credentials
+#region Authenticating against SharePoint on-premises using credentials
         /// <summary>
         /// Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
         /// </summary>
@@ -382,6 +387,7 @@ namespace OfficeDevPnP.Core
             return clientContext;
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Returns a SharePoint ClientContext using High Trust Certificate App Only Authentication
         /// </summary>
@@ -396,7 +402,9 @@ namespace OfficeDevPnP.Core
             var certPassword = Utilities.EncryptionUtility.ToSecureString(certificatePassword);
             return GetHighTrustCertificateAppOnlyAuthenticatedContext(siteUrl, clientId, certificatePath, certPassword, certificateIssuerId);
         }
+#endif
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Returns a SharePoint ClientContext using High Trust Certificate App Only Authentication
         /// </summary>
@@ -411,7 +419,9 @@ namespace OfficeDevPnP.Core
             var certificate = new X509Certificate2(certificatePath, certificatePassword);
             return GetHighTrustCertificateAppOnlyAuthenticatedContext(siteUrl, clientId, certificate, certificateIssuerId);
         }
+#endif
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Returns a SharePoint ClientContext using High Trust Certificate App Only Authentication
         /// </summary>
@@ -428,7 +438,9 @@ namespace OfficeDevPnP.Core
             var cert = Utilities.X509CertificateUtility.LoadCertificate(storeName, storeLocation, thumbPrint);
             return GetHighTrustCertificateAppOnlyAuthenticatedContext(siteUrl, clientId, cert, certificateIssuerId);
         }
+#endif
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Returns a SharePoint ClientContext using High Trust Certificate App Only Authentication
         /// </summary>
@@ -457,10 +469,12 @@ namespace OfficeDevPnP.Core
 
             return clientContext;
         }
-        #endregion
+#endif
 
-        #region Authenticating against SharePoint Online using Azure AD based authentication
-#if !ONPREMISES
+#endregion
+
+#region Authenticating against SharePoint Online using Azure AD based authentication
+#if !ONPREMISES && !NETSTANDARD2_0
         /// <summary>
         /// Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Native Application registered. The user will be prompted for authentication.
         /// </summary>
@@ -497,6 +511,7 @@ namespace OfficeDevPnP.Core
 
             return clientContext;
         }
+#endif
 
         /// <summary>
         /// Returns a SharePoint ClientContext using Azure Active Directory authentication. This requires that you have a Azure AD Web Application registered. The user will not be prompted for authentication, the current user's authentication context will be used by leveraging ADAL.
@@ -537,6 +552,7 @@ namespace OfficeDevPnP.Core
             return clientContext;
         }
 
+#if !NETSTANDARD2_0
         async void clientContext_NativeApplicationExecutingWebRequest(object sender, WebRequestEventArgs e)
         {
             var host = new Uri(_contextUrl);
@@ -547,10 +563,14 @@ namespace OfficeDevPnP.Core
                 e.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + ar.AccessToken;
             }
         }
+#endif
 
+#if !NETSTANDARD2_0
         private async Task<AuthenticationResult> AcquireNativeApplicationTokenAsync(string authContextUrl, string resourceId)
         {
             AuthenticationResult ar = null;
+
+            await new SynchronizationContextRemover();
 
             try
             {
@@ -589,7 +609,7 @@ namespace OfficeDevPnP.Core
             {
                 try
                 {
-                    ar = _authContext.AcquireToken(resourceId, _clientId, _redirectUri, PromptBehavior.Always);
+                    ar = await _authContext.AcquireTokenAsync(resourceId, _clientId, _redirectUri, new PlatformParameters(PromptBehavior.Always));
 
                 }
                 catch (Exception acquireEx)
@@ -600,7 +620,9 @@ namespace OfficeDevPnP.Core
 
             return ar;
         }
+#endif
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
         /// </summary>
@@ -618,6 +640,9 @@ namespace OfficeDevPnP.Core
 
             return GetAzureADAppOnlyAuthenticatedContext(siteUrl, clientId, tenant, cert, environment);
         }
+#endif
+
+#if !NETSTANDARD2_0
 
         /// <summary>
         /// Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
@@ -635,6 +660,9 @@ namespace OfficeDevPnP.Core
 
             return GetAzureADAppOnlyAuthenticatedContext(siteUrl, clientId, tenant, certificatePath, certPassword, environment);
         }
+#endif
+
+#if !NETSTANDARD2_0
 
         /// <summary>
         /// Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
@@ -660,7 +688,9 @@ namespace OfficeDevPnP.Core
 
             return GetAzureADAppOnlyAuthenticatedContext(siteUrl, clientId, tenant, cert, environment);
         }
+#endif
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Returns a SharePoint ClientContext using Azure Active Directory App Only Authentication. This requires that you have a certificated created, and updated the key credentials key in the application manifest in the azure AD accordingly.
         /// </summary>
@@ -684,12 +714,15 @@ namespace OfficeDevPnP.Core
 
             clientContext.ExecutingWebRequest += (sender, args) =>
             {
-                var ar = authContext.AcquireToken(host.Scheme + "://" + host.Host + "/", clientAssertionCertificate);
+                var ar = Task.Run(() => authContext
+                    .AcquireTokenAsync(host.Scheme + "://" + host.Host + "/", clientAssertionCertificate))
+                    .GetAwaiter().GetResult();
                 args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + ar.AccessToken;
             };
 
             return clientContext;
         }
+#endif
 
         /// <summary>
         /// Get's the Azure AD login end point for the given environment
@@ -714,7 +747,7 @@ namespace OfficeDevPnP.Core
                     }
                 case AzureEnvironment.USGovernment:
                     {
-                        return "https://login-us.microsoftonline.com";
+                        return "https://login.microsoftonline.us";
                     }
                 case AzureEnvironment.PPE:
                     {
@@ -726,9 +759,9 @@ namespace OfficeDevPnP.Core
                     }
             }
         }
-#endif
         #endregion
 
+#if !NETSTANDARD2_0
         #region Authenticating against SharePoint on-premises using ADFS based authentication
         /// <summary>
         /// Returns a SharePoint on-premises ClientContext for sites secured via ADFS
@@ -839,7 +872,9 @@ namespace OfficeDevPnP.Core
             fedAuth = new CertificateMixed().GetFedAuthCookie(siteUrl, serialNumber, new Uri($"https://{sts}/adfs/services/trust/13/certificatemixed"), idpId, logonTokenCacheExpirationWindow);
 
         }
-        #endregion
 
+
+        #endregion
+#endif
     }
 }

@@ -1,7 +1,13 @@
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
+    [TokenDefinitionDescription(
+     Token = "{fieldtitle:[internalname]}",
+     Description = "Returns the title/displayname of a field given its internalname",
+     Example = "{fieldtitle:LeaveEarly}",
+     Returns = "Leaving Early")]
     internal class FieldTitleToken : TokenDefinition
     {
         private readonly string _value = null;

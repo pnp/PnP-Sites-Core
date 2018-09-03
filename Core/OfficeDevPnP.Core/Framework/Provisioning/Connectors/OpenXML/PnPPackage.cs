@@ -5,7 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Packaging;
 using System.IO;
+#if !NETSTANDARD2_0
 using System.Xaml;
+#else 
+using Portable.Xaml;
+#endif
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML.Model;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
@@ -15,7 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
     /// </summary>
     public partial class PnPPackage : IDisposable
     {
-        #region Constant strings
+#region Constant strings
 
         // site template xaml
         public const string R_PROVISIONINGTEMPLATE_MANIFEST = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/manifest";
@@ -35,7 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         public const string CT_ORIGIN = "application/pnpprovisioningtemplate.origin";
         public const string CT_FILE = "application/unknown";
 
-        // urls
+        // URLs
         public static string U_PROVISIONINGTEMPLATE_MANIFEST = "/manifest.xml";
 
         public static string U_DIR_PROVISIONINGTEMPLATE = "/ProvisioningTemplate/";
@@ -47,11 +51,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         // file extensions
         public const string EXT_PROVISIONINGTEMPLATE = ".pnp";
 
-        #endregion
+#endregion
 
         public const CompressionOption PACKAGE_COMPRESSION_LEVEL = CompressionOption.Maximum;
 
-        #region Public Properties
+#region Public Properties
 
         /// <summary>
         /// The complete package object
@@ -180,9 +184,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             }
         }
 
-        #endregion
+#endregion
 
-        #region Package Handling methods
+#region Package Handling methods
 
         /// <summary>
         /// Opens the package and returns it based on the path
@@ -235,9 +239,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             ClearPackagePartsWithRelationshipType(R_PROVISIONINGTEMPLATE_FILE, FilesOriginPart);
         }
 
-        #endregion
+#endregion
 
-        #region Package Helper Methods
+#region Package Helper Methods
 
         private void EnsureMandatoryPackageComponents()
         {
@@ -444,16 +448,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
 
         }
 
-        #endregion
+#endregion
 
-        #region Generic Helper methods
+#region Generic Helper methods
 
         private Uri GetUri(string uriStr)
         {
             return new Uri(uriStr, UriKind.Relative);
         }
 
-        #endregion
+#endregion
 
         void IDisposable.Dispose()
         {

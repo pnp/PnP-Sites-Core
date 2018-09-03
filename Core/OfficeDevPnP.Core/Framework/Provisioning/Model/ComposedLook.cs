@@ -24,7 +24,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
         }
 
-        #endregion 
+        #endregion
+
+        #region Private members
 
         private static ComposedLook _empty;
 
@@ -33,6 +35,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { _empty = value; }
             get { return (_empty); }
         }
+
+        #endregion
 
         #region Properties
         /// <summary>

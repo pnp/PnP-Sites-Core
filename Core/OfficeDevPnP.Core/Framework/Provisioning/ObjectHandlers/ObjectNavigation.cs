@@ -144,6 +144,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 navigationSettings.GlobalNavigation.Source = StandardNavigationSource.TaxonomyProvider;
                                 navigationSettings.GlobalNavigation.TermStoreId = Guid.Parse(parser.ParseString(template.Navigation.GlobalNavigation.ManagedNavigation.TermStoreId));
                                 navigationSettings.GlobalNavigation.TermSetId = Guid.Parse(parser.ParseString(template.Navigation.GlobalNavigation.ManagedNavigation.TermSetId));
+                                web.Navigation.UseShared = false;
                                 break;
                             case GlobalNavigationType.Structural:
                             default:
@@ -152,6 +153,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation);
                                 }
                                 navigationSettings.GlobalNavigation.Source = StandardNavigationSource.PortalProvider;
+                                web.Navigation.UseShared = false;
 
                                 ProvisionGlobalStructuralNavigation(web,
                                     template.Navigation.GlobalNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
@@ -331,12 +333,53 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             foreach (var node in nodes)
             {
-                var navNode = web.AddNavigationNode(
-                    parser.ParseString(node.Title),
-                    new Uri(parser.ParseString(node.Url), UriKind.RelativeOrAbsolute),
-                    parser.ParseString(parentNodeTitle),
-                    navigationType,
-                    node.IsExternal);
+                try
+                {
+                    var navNode = web.AddNavigationNode(
+                        parser.ParseString(node.Title),
+                        new Uri(parser.ParseString(node.Url), UriKind.RelativeOrAbsolute),
+                        parser.ParseString(parentNodeTitle),
+                        navigationType,
+                        node.IsExternal
+                        );
+
+#if !SP2013
+                    if (node.Title.ContainsResourceToken())
+                    {
+                        navNode.LocalizeNavigationNode(web, node.Title, parser, scope);
+                    }
+#endif
+                }
+                catch (ServerException ex)
+                {
+                    // If the SharePoint link doesn't exist, provision it as external link
+                    // when we provision as external link, the server side URL validation won't kick-in
+                    // This handles the "no such file or url found" error
+
+                    WriteMessage(String.Format(CoreResources.Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed_Retry, node.Title), ProvisioningMessageType.Warning);
+
+                    if (ex.ServerErrorCode == -2130247147)
+                    {
+                        try
+                        {
+                            var navNode = web.AddNavigationNode(
+                                parser.ParseString(node.Title),
+                                new Uri(parser.ParseString(node.Url), UriKind.RelativeOrAbsolute),
+                                parser.ParseString(parentNodeTitle),
+                                navigationType,
+                                true
+                                );
+                        }
+                        catch (Exception innerEx)
+                        {
+                            WriteMessage(String.Format(CoreResources.Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed, innerEx.Message), ProvisioningMessageType.Warning);
+                        }
+                    }
+                    else
+                    {
+                        WriteMessage(String.Format(CoreResources.Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed, ex.Message), ProvisioningMessageType.Warning);
+                    }
+                }
 
                 ProvisionStructuralNavigationNodes(
                     web,
@@ -345,13 +388,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     node.NavigationNodes,
                     scope,
                     parser.ParseString(node.Title));
-
-#if !SP2013
-                if (node.Title.ContainsResourceToken())
-                {
-                    navNode.LocalizeNavigationNode(web, node.Title, parser, scope);
-                }
-#endif
             }
         }
 

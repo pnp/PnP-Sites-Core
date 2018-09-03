@@ -14,9 +14,9 @@ namespace Microsoft.SharePoint.Client.Tests
         private string _termGroupName; // For easy reference. Set in the Initialize method
         private string _termSetName; // For easy reference. Set in the Initialize method
         private string _termName; // For easy reference. Set in the Initialize method
-        private Guid _termGroupId = new Guid("e879befa-2356-49fd-b43e-ba446be72d6c"); // Hardcoded for easier reference in tests
-        private Guid _termSetId = new Guid("59ad0849-97b9-4755-a431-2bb9ebc8b66b"); // Hardcoded for easier reference in tests
-        private Guid _termId = new Guid("51af0e21-ef8c-4e1f-b897-f677d0938f48");
+        private Guid _termGroupId = Guid.NewGuid(); //Hardcoded GUIDs had sideffects when running tests. Several successive taxonomy tests would trigger a server exception.
+        private Guid _termSetId = Guid.NewGuid(); //Hardcoded GUIDs had sideffects when running tests. Several successive taxonomy tests would trigger a server exception.
+        private Guid _termId = Guid.NewGuid(); //Hardcoded GUIDs had sideffects when running tests. Several successive taxonomy tests would trigger a server exception and term field value label was untestable as previous term label in hidden field would overwrite new term label in list item.
 
         private Guid _listId; // For easy reference
 
@@ -82,6 +82,12 @@ namespace Microsoft.SharePoint.Client.Tests
                     {
                         term = termSet.CreateTerm(_termName, 1033, _termId);
                         clientContext.ExecuteQueryRetry();
+                    }
+                    else
+                    {
+                        var label = term.GetDefaultLabel(1033);
+                        clientContext.ExecuteQueryRetry();
+                        _termName = label.Value;
                     }
 
                     // List
@@ -256,7 +262,210 @@ namespace Microsoft.SharePoint.Client.Tests
 
                 var value = item[fieldName] as TaxonomyFieldValue;
 
+                Assert.IsNotNull(value);
+                Assert.IsTrue(value.WssId > 0, "Term WSS ID not set correctly");
+                Assert.AreEqual(_termName, value.Label, "Term label not set correctly");
+                Assert.AreEqual(_termId.ToString(), value.TermGuid, "Term GUID not set correctly");
+            }
+        }
+
+        [TestMethod()]
+        public void SetBlankTaxonomyFieldValueTest()
+        {
+            var fieldName = "Test2_" + DateTime.Now.ToFileTime();
+
+            var fieldId = Guid.NewGuid();
+
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                // Retrieve list
+                var list = clientContext.Web.Lists.GetById(_listId);
+                clientContext.Load(list);
+                clientContext.ExecuteQueryRetry();
+
+                // Retrieve Termset
+                TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
+                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSetId);
+                clientContext.Load(termSet);
+                clientContext.ExecuteQueryRetry();
+
+                // Create taxonomyfield first
+                TaxonomyFieldCreationInformation fieldCI = new TaxonomyFieldCreationInformation()
+                {
+                    Id = fieldId,
+                    DisplayName = fieldName,
+                    InternalName = fieldName,
+                    Group = "Test Fields Group",
+                    TaxonomyItem = termSet
+                };
+                //Add Enterprise keywords field so that we have at least two taxonomy fields in the list
+                var keyworkdField = clientContext.Web.Fields.GetByInternalNameOrTitle("TaxKeyword");
+                clientContext.Load(keyworkdField, f => f.Id);
+                list.Fields.Add(keyworkdField);
+                var field = list.CreateTaxonomyField(fieldCI);
+
+                // Create Item
+                ListItemCreationInformation itemCi = new ListItemCreationInformation();
+
+                var item = list.AddItem(itemCi);
+                item.Update();
+                clientContext.Load(item);
+                clientContext.ExecuteQueryRetry();
+
+                //First set a valid value in at least two taxonomy fields (same term can be used if one field is the keyword field)
+                item.SetTaxonomyFieldValue(fieldId, _termName, _termId);
+                item.SetTaxonomyFieldValue(keyworkdField.Id, _termName, _termId);
+
+                clientContext.Load(item, i => i[fieldName], i => i["TaxCatchAll"]);
+                clientContext.ExecuteQueryRetry();
+
+                Assert.AreEqual(2, (item["TaxCatchAll"] as FieldLookupValue[]).Length, "TaxCatchAll does not have 2 entries");
+                var value = item[fieldName] as TaxonomyFieldValue;
                 Assert.AreEqual(_termId.ToString(), value.TermGuid, "Term not set correctly");
+
+                //Set a blank value in one of the taxonomy fields.
+                item.SetTaxonomyFieldValue(fieldId, string.Empty, Guid.Empty);
+                
+                var taxonomyField = clientContext.CastTo<TaxonomyField>(field);
+                clientContext.Load(taxonomyField, t => t.TextField);
+                clientContext.Load(item, i => i[fieldName], i => i["TaxCatchAll"]);
+                clientContext.ExecuteQueryRetry();
+
+                var hiddenField = list.Fields.GetById(taxonomyField.TextField);
+                clientContext.Load(hiddenField,
+                    f => f.InternalName);
+                clientContext.ExecuteQueryRetry();
+
+                Assert.AreEqual(1, (item["TaxCatchAll"] as FieldLookupValue[]).Length, "TaxCatchAll does not have 1 entry");
+                object taxonomyFieldValue = item[fieldName];
+                object hiddenFieldValue = item[hiddenField.InternalName];
+                Assert.IsNull(taxonomyFieldValue, "taxonomyFieldValue is not null");
+                Assert.IsNull(hiddenFieldValue, "hiddenFieldValue is not null");
+            }
+        }
+
+        [TestMethod()]
+        public void SetTaxonomyFieldMultiValueTest()
+        {
+            var fieldName = "TaxKeyword";
+
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                // Retrieve list
+                var list = clientContext.Web.Lists.GetById(_listId);
+                clientContext.Load(list);
+                clientContext.ExecuteQueryRetry();
+
+                // Retrieve Termset
+                TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
+                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSetId);
+                clientContext.Load(termSet);
+                clientContext.ExecuteQueryRetry();
+
+                //Add Enterprise keywords field
+                var keyworkdField = clientContext.Web.Fields.GetByInternalNameOrTitle(fieldName);
+                clientContext.Load(keyworkdField, f => f.Id);
+                list.Fields.Add(keyworkdField);
+
+                //Create second term
+                var taxSession = TaxonomySession.GetTaxonomySession(clientContext);
+                var termStore = taxSession.GetDefaultSiteCollectionTermStore();
+
+                Guid term2Id = Guid.NewGuid();
+                string term2Name = "Test_Term_" + DateTime.Now.ToFileTime();
+
+                var term2 = termStore.GetTerm(term2Id);
+                clientContext.Load(term2, t => t.Id);
+                clientContext.ExecuteQueryRetry();
+
+                // Create if non existant
+                if (term2.ServerObjectIsNull.Value)
+                {
+                    term2 = termSet.CreateTerm(term2Name, 1033, term2Id);
+                    clientContext.ExecuteQueryRetry();
+                }
+                else
+                {
+                    var label2 = term2.GetDefaultLabel(1033);
+                    clientContext.ExecuteQueryRetry();
+                    term2Name = label2.Value;
+                }
+
+                // Create Item
+                ListItemCreationInformation itemCi = new ListItemCreationInformation();
+
+                var item = list.AddItem(itemCi);
+                item.Update();
+                clientContext.Load(item);
+                clientContext.ExecuteQueryRetry();
+
+                item.SetTaxonomyFieldValues(keyworkdField.Id, new List<KeyValuePair<Guid, string>> {
+                    new KeyValuePair<Guid, string>(_termId, _termName),
+                    new KeyValuePair<Guid, string>(term2Id, term2Name)
+                });
+
+                clientContext.Load(item, i => i[fieldName]);
+                clientContext.ExecuteQueryRetry();
+
+                var value = item[fieldName] as TaxonomyFieldValueCollection;
+
+                Assert.IsNotNull(value);
+                Assert.AreEqual(2, value.Count, "Taxonomy value count mismatch");
+                Assert.IsTrue(value[0].WssId > 0, "Term WSS ID not set correctly");
+                Assert.IsTrue(value[1].WssId > 0, "Term2 WSS ID not set correctly");
+                Assert.AreEqual(_termName, value[0].Label, "Term label not set correctly");
+                Assert.AreEqual(term2Name, value[1].Label, "Term2 label not set correctly");
+                Assert.AreEqual(_termId.ToString(), value[0].TermGuid, "Term GUID not set correctly");
+                Assert.AreEqual(term2Id.ToString(), value[1].TermGuid, "Term2 GUID not set correctly");
+            }
+        }
+
+        [TestMethod()]
+        public void SetBlankTaxonomyFieldMultiValueTest()
+        {
+            var fieldName = "TaxKeyword";
+
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                // Retrieve list
+                var list = clientContext.Web.Lists.GetById(_listId);
+                clientContext.Load(list);
+                clientContext.ExecuteQueryRetry();
+
+                // Retrieve Termset
+                TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
+                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSetId);
+                clientContext.Load(termSet);
+                clientContext.ExecuteQueryRetry();
+
+                //Add Enterprise keywords field
+                var keywordField = clientContext.Web.Fields.GetByInternalNameOrTitle(fieldName);
+                var keywordTaxonomyField = clientContext.CastTo<TaxonomyField>(keywordField);
+                clientContext.Load(keywordTaxonomyField, f => f.Id, f => f.TextField);
+                list.Fields.Add(keywordTaxonomyField);
+
+                // Create Item
+                ListItemCreationInformation itemCi = new ListItemCreationInformation();
+
+                var item = list.AddItem(itemCi);
+                item.Update();
+                clientContext.Load(item);
+                clientContext.ExecuteQueryRetry();
+
+                item.SetTaxonomyFieldValues(keywordField.Id, new List<KeyValuePair<Guid, string>>());
+
+                clientContext.Load(item, i => i[fieldName]);
+                clientContext.ExecuteQueryRetry();
+
+                var hiddenField = list.Fields.GetById(keywordTaxonomyField.TextField);
+                clientContext.Load(hiddenField,
+                    f => f.InternalName);
+                clientContext.ExecuteQueryRetry();
+
+                TaxonomyFieldValueCollection taxonomyFieldValueCollection = item[fieldName] as TaxonomyFieldValueCollection;
+                object hiddenFieldValue = item[hiddenField.InternalName];
+                Assert.AreEqual(0, taxonomyFieldValueCollection.Count, "taxonomyFieldValueCollection is not empty");
+                Assert.IsNull(hiddenFieldValue, "hiddenFieldValue is not null");
             }
         }
 

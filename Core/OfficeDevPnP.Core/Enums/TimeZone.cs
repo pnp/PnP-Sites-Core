@@ -1,4 +1,6 @@
-﻿namespace OfficeDevPnP.Core.Enums
+﻿using System;
+
+namespace OfficeDevPnP.Core.Enums
 {
     /// <summary>
     /// Timezones to use when creating sitecollections
@@ -73,7 +75,12 @@
         /// <summary>
         /// Timezone for AUCKLAND and WELLINGTON
         /// </summary>
+        [Obsolete("Use UTCPLUS1200_AUCKLAND_WELLINGTON instead")]
         UTCPLUS1200_AUKLAND_WELLINGTON = 17,
+        /// <summary>
+        /// Timezone for AUCKLAND and WELLINGTON
+        /// </summary>
+        UTCPLUS1200_AUCKLAND_WELLINGTON = 17,
         /// <summary>
         /// Timezone for BRISBANE
         /// </summary>
@@ -87,7 +94,7 @@
         /// </summary>
         UTCPLUS0900_OSAKA_SAPPORO_TOKYO = 20,
         /// <summary>
-        /// Timezone for KUALALUMPUR and SINGAPORE
+        /// Timezone for KUALA LUMPUR and SINGAPORE
         /// </summary>
         UTCPLUS0800_KUALA_LUMPUR_SINGAPORE = 21,
         /// <summary>
@@ -95,11 +102,11 @@
         /// </summary>
         UTCPLUS0700_BANGKOK_HANOI_JAKARTA = 22,
         /// <summary>
-        /// Timezone for CHENNAI, KOLKATA, MUMBAI and NEWDELHI
+        /// Timezone for CHENNAI, KOLKATA, MUMBAI and NEW DELHI
         /// </summary>
         UTCPLUS0530_CHENNAI_KOLKATA_MUMBAI_NEW_DELHI = 23,
         /// <summary>
-        /// Timezone for ABUDHABI and MUSCAT
+        /// Timezone for ABU DHABI and MUSCAT
         /// </summary>
         UTCPLUS0400_ABU_DHABI_MUSCAT = 24,
         /// <summary>
@@ -127,7 +134,7 @@
         /// </summary>
         UTCMINUS0200_MID_ATLANTIC = 30,
         /// <summary>
-        /// Timezone for MORNOVIA
+        /// Timezone for MONROVIA
         /// </summary>
         UTC_MONROVIA = 31,
         /// <summary>
@@ -135,7 +142,7 @@
         /// </summary>
         UTCMINUS0300_CAYENNE = 32,
         /// <summary>
-        /// Timezone for GEORGETOWN LA-PAZ-SAN-JUAN
+        /// Timezone for GEORGETOWN and LA PAZ - SAN JUAN
         /// </summary>
         UTCMINUS0400_GEORGETOWN_LA_PAZ_SAN_JUAN = 33,
         /// <summary>
@@ -151,7 +158,7 @@
         /// </summary>
         UTCMINUS0600_SASKATCHEWAN = 36,
         /// <summary>
-        /// Timezone for GUADALAJARA, MEXICOCITY and MONTERREY
+        /// Timezone for GUADALAJARA, MEXICO CITY and MONTERREY
         /// </summary>
         UTCMINUS0600_GUADALAJARA_MEXICO_CITY_MONTERREY = 37,
         /// <summary>
@@ -183,7 +190,7 @@
         /// </summary>
         UTCPLUS0930_DARWIN = 44,
         /// <summary>
-        /// Timezone for BEIJING, CHONGQING, HONGKONG and SAR URUMQI
+        /// Timezone for BEIJING, CHONGQING, HONG KONG and SAR URUMQI
         /// </summary>
         UTCPLUS0800_BEIJING_CHONGQING_HONG_KONG_SAR_URUMQI = 45,
         /// <summary>
@@ -207,7 +214,7 @@
         /// </summary>
         UTCPLUS0200_HARARE_PRETORIA = 50,
         /// <summary>
-        /// Timezone for MOSCOW, STPETERSBURG and VOLGOGRAD
+        /// Timezone for MOSCOW, ST PETERSBURG and VOLGOGRAD
         /// </summary>
         UTCPLUS0300_MOSCOW_STPETERSBURG_VOLGOGRAD = 51,
         /// <summary>
@@ -235,7 +242,7 @@
         /// </summary>
         UTCPLUS0500_EKATERINBURG = 58,
         /// <summary>
-        /// Timezone for HELSINKI, KYIV, RIGA, SOFIA, TALLINN and VILNIU
+        /// Timezone for HELSINKI, KYIV, RIGA, SOFIA, TALLINN and VILNIUS
         /// </summary>
         UTCPLUS0200_HELSINKI_KYIV_RIGA_SOFIA_TALLINN_VILNIUS = 59,
         /// <summary>
@@ -307,7 +314,7 @@
         /// </summary>
         UTCPLUS1000_CANBERRA_MELBOURNE_SYDNEY = 76,
         /// <summary>
-        /// Timezone for CHIHUAHUA and LA PAZ MAZATLAN
+        /// Timezone for CHIHUAHUA and LA PAZ - MAZATLAN
         /// </summary>
         UTCMINUS0700_CHIHUAHUA_LA_PAZ_MAZATLAN = 77,
         /// <summary>

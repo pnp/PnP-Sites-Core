@@ -1,6 +1,7 @@
 ﻿using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201801;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201805;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 // Manage the CDN
                 expressions.Add(t => t.ContentDeliveryNetwork, new CdnFromSchemaToModelTypeResolver());
 
+                // Manage the Site Designs mapping with Site Scripts
+                expressions.Add(t => t.SiteDesigns[0].SiteScripts, new SiteScriptRefFromSchemaToModelTypeResolver());
+
                 PnPObjectsMapper.MapProperties(tenantSettings, template.Tenant, expressions, true);
             }
         }
@@ -44,6 +48,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             {
                 var tenantTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Tenant, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var tenantType = Type.GetType(tenantTypeName, false);
+                var siteDesignsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SiteDesignsSiteDesign, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var siteDesignsType = Type.GetType(siteDesignsTypeName, false);
 
                 if (tenantType != null)
                 {
@@ -55,6 +61,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                         new AppCatalogFromModelToSchemaTypeResolver());
                     resolvers.Add($"{tenantType}.ContentDeliveryNetwork",
                         new CdnFromModelToSchemaTypeResolver());
+                    resolvers.Add($"{siteDesignsType}.SiteScripts",
+                        new SiteScriptRefFromModelToSchemaTypeResolver());
 
                     PnPObjectsMapper.MapProperties(template.Tenant, target, resolvers, recursive: true);
 
