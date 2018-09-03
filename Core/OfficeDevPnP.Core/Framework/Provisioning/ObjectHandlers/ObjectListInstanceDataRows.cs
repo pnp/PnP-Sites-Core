@@ -136,15 +136,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 if (dataField == null) continue;
 
-// <<<<<<< HEAD
-//                                     bool create = true;
-//                                     ListItem listitem = null;
-//                                     var usersFields = new Dictionary<string, object>();
-//                                     if (!string.IsNullOrEmpty(listInstance.DataRows.KeyColumn))
-//                                     {
-//                                         // Get value from key column
-//                                         var dataRowValues = dataRow.Values.Where(v => v.Key == listInstance.DataRows.KeyColumn);
-// =======
                                 if (dataValue.Value == null)
                                 {
                                     updateValues.Add(dataField.FieldTypeKind == FieldType.Invalid
@@ -154,7 +145,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 else
                                 {
                                     String fieldValue = parser.ParseString(dataValue.Value);
-// >>>>>>> upstream/master
 
                                     switch (dataField.FieldTypeKind)
                                     {
@@ -272,80 +262,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 case "TaxonomyFieldTypeMulti":
                                                     // Multi value field - Expected format: term label|term GUID;term label|term GUID;term label|term GUID;...
                                                 {
-// <<<<<<< HEAD
-//                                                     case FieldType.Geolocation:
-//                                                         // FieldGeolocationValue - Expected format: Altitude,Latitude,Longitude,Measure
-//                                                         var geolocationArray = fieldValue.Split(',');
-//                                                         if (geolocationArray.Length == 4)
-//                                                         {
-//                                                             var geolocationValue = new FieldGeolocationValue
-//                                                             {
-//                                                                 Altitude = Double.Parse(geolocationArray[0]),
-//                                                                 Latitude = Double.Parse(geolocationArray[1]),
-//                                                                 Longitude = Double.Parse(geolocationArray[2]),
-//                                                                 Measure = Double.Parse(geolocationArray[3]),
-//                                                             };
-//                                                             listitem[parser.ParseString(dataValue.Key)] = geolocationValue;
-//                                                         }
-//                                                         else
-//                                                         {
-//                                                             listitem[parser.ParseString(dataValue.Key)] = fieldValue;
-//                                                         }
-//                                                         break;
-//                                                     case FieldType.Lookup:
-//                                                         // FieldLookupValue - Expected format: LookupID or LookupID,LookupID,LookupID...
-//                                                         if (fieldValue.Contains(","))
-//                                                         {
-//                                                             var lookupValues = new List<FieldLookupValue>();
-//                                                             fieldValue.Split(',').All(value =>
-//                                                             {
-//                                                                 lookupValues.Add(new FieldLookupValue
-//                                                                 {
-//                                                                     LookupId = int.Parse(value),
-//                                                                 });
-//                                                                 return true;
-//                                                             });
-//                                                             listitem[parser.ParseString(dataValue.Key)] = lookupValues.ToArray();
-//                                                         }
-//                                                         else
-//                                                         {
-//                                                             var lookupValue = new FieldLookupValue
-//                                                             {
-//                                                                 LookupId = int.Parse(fieldValue),
-//                                                             };
-//                                                             listitem[parser.ParseString(dataValue.Key)] = lookupValue;
-//                                                         }
-//                                                         break;
-//                                                     case FieldType.URL:
-//                                                         // FieldUrlValue - Expected format: URL,Description
-//                                                         var urlArray = fieldValue.Split(',');
-//                                                         var linkValue = new FieldUrlValue();
-//                                                         if (urlArray.Length == 2)
-//                                                         {
-//                                                             linkValue.Url = urlArray[0];
-//                                                             linkValue.Description = urlArray[1];
-//                                                         }
-//                                                         else
-//                                                         {
-//                                                             linkValue.Url = urlArray[0];
-//                                                             linkValue.Description = urlArray[0];
-//                                                         }
-//                                                         listitem[parser.ParseString(dataValue.Key)] = linkValue;
-//                                                         break;
-//                                                     case FieldType.User:
-//                                                         usersFields.Add(dataValue.Key, fieldValue);
-//                                                         break;
-//                                                     case FieldType.DateTime:
-//                                                         var dateTime = DateTime.MinValue;
-//                                                         if (DateTime.TryParse(fieldValue, out dateTime))
-// =======
                                                     if (fieldValue != null)
                                                     {
                                                         var termStrings = new List<string>();
 
                                                         var termsArray = fieldValue.Split(new char[] { ';' });
                                                         foreach (var term in termsArray)
-// >>>>>>> upstream/master
                                                         {
                                                             termStrings.Add($"-1;#{term}");
                                                         }
@@ -353,64 +275,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                     }
                                                     break;
                                                 }
-// <<<<<<< HEAD
-//                                             }
-//                                         }
-//                                         listitem.Update();
-//                                         web.Context.ExecuteQueryRetry(); // TODO: Run in batches?
-
-//                                         if (usersFields.Count > 0)
-//                                         {
-//                                             foreach (var userField in usersFields)
-//                                             {
-//                                                 // FieldUserValue - Expected format: loginName or loginName,loginName,loginName...
-//                                                 if (userField.Value.ToString().Contains(","))
-//                                                 {
-//                                                     var userValues = new List<FieldUserValue>();
-//                                                     userField.Value.ToString().Split(',').All(value =>
-//                                                     {
-//                                                         var user = web.EnsureUser(value);
-//                                                         web.Context.Load(user);
-//                                                         web.Context.ExecuteQueryRetry();
-//                                                         if (user != null)
-//                                                         {
-//                                                             userValues.Add(new FieldUserValue
-//                                                             {
-//                                                                 LookupId = user.Id,
-//                                                             }); ;
-//                                                         }
-//                                                         return true;
-//                                                     });
-//                                                     listitem[parser.ParseString(userField.Key)] = userValues.ToArray();
-//                                                 }
-//                                                 else
-//                                                 {
-//                                                     var user = web.EnsureUser(userField.Value.ToString());
-//                                                     web.Context.Load(user);
-//                                                     web.Context.ExecuteQueryRetry();
-//                                                     if (user != null)
-//                                                     {
-//                                                         var userValue = new FieldUserValue
-//                                                         {
-//                                                             LookupId = user.Id,
-//                                                         };
-//                                                         listitem[parser.ParseString(userField.Key)] = userValue;
-//                                                     }
-//                                                     else
-//                                                     {
-//                                                         listitem[parser.ParseString(userField.Key)] = userField.Value.ToString();
-//                                                     }
-//                                                 }
-//                                                 listitem.Update();
-//                                                 web.Context.ExecuteQueryRetry();
-//                                             }
-//                                         }
-
-//                                         if (dataRow.Security != null && (dataRow.Security.ClearSubscopes == true || dataRow.Security.CopyRoleAssignments == true || dataRow.Security.RoleAssignments.Count > 0))
-//                                         {
-//                                             listitem.SetSecurity(parser, dataRow.Security);
-//                                         }
-// =======
                                                 default:
                                                     {
                                                         //Publishing image case, but can be others too
@@ -423,7 +287,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         default:
                                             updateValues.Add(new FieldUpdateValue(dataValue.Key, fieldValue));
                                             break;
-// >>>>>>> upstream/master
                                     }
                                 }
                             }
@@ -569,11 +432,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
     }
-// <<<<<<< HEAD
-// }
-// =======
-
-
 }
-
-// >>>>>>> upstream/master
