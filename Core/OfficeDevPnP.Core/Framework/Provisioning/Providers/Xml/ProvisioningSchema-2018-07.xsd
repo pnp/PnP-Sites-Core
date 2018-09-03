@@ -5858,6 +5858,26 @@
       </xsd:documentation>
     </xsd:annotation>
     <xsd:sequence>
+      <xsd:element name="Sites" minOccurs="0">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Allows to create sub-Sites under the current site
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="Site" type="pnp:Site" minOccurs="1" maxOccurs="unbounded">
+              <xsd:annotation>
+                <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+                <xsd:documentation xml:lang="en">
+                  A Site to provision through a Sequence, optional element.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
       <xsd:element name="Templates" minOccurs="0">
         <xsd:annotation>
           <xsd:documentation xml:lang="en">

@@ -202,12 +202,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}",
                 this.AppCatalog?.GetHashCode() ?? 0,
                 this.ContentDeliveryNetwork?.GetHashCode() ?? 0,
                 this.SiteDesigns.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.SiteScripts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.StorageEntities.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.StorageEntities.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.WebApiPermissions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
@@ -241,7 +242,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.ContentDeliveryNetwork == other.ContentDeliveryNetwork &&
                 this.SiteDesigns.DeepEquals(other.SiteDesigns) &&
                 this.SiteScripts.DeepEquals(other.SiteScripts) &&
-                this.StorageEntities.DeepEquals(other.StorageEntities)
+                this.StorageEntities.DeepEquals(other.StorageEntities) &&
+                this.WebApiPermissions.DeepEquals(other.WebApiPermissions)
                 );
         }
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,6 +49,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2018
 
             if (null != sourceCollection)
             {
+                //var subSiteResolverKey = $"{typeof(SubSite).FullName.ToUpper()}.SITES";
+                //if (!resolvers.ContainsKey(subSiteResolverKey))
+                //{
+                //    resolvers.Add(subSiteResolverKey,
+                //        new SiteCollectionsAndSitesFromSchemaToModelTypeResolver(typeof(SubSite)));
+                //}
+
                 foreach (var i in (IEnumerable)sourceCollection)
                 {
                     Object targetItem = null;

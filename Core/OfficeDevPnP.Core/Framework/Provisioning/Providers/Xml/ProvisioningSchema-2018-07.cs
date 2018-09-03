@@ -302,6 +302,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema")]
     public abstract partial class Site {
         
+        private Site[] sitesField;
+        
         private ProvisioningTemplateReference[] templatesField;
         
         private bool useSamePermissionsAsParentSiteField;
@@ -313,6 +315,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
         private string titleField;
         
         private string descriptionField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
+        public Site[] Sites {
+            get {
+                return this.sitesField;
+            }
+            set {
+                this.sitesField = value;
+            }
+        }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]

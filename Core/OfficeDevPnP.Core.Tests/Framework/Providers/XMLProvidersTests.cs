@@ -709,6 +709,24 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_ProvisioningHierarchy_Save_201807()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201807Serializer();
+            serializer.Initialize(provider);
+
+            var hierarchy = serializer.ToProvisioningHierarchy(provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml"));
+
+            // TODO: Save the hierarchy
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_ContentTypes_201605()
         {
             XMLTemplateProvider provider =

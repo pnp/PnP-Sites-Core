@@ -59,6 +59,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     new SiteCollectionsAndSitesFromSchemaToModelTypeResolver(typeof(SiteCollection)));
                 expressions.Add(seq => seq.SiteCollections[0].Sites,
                     new SiteCollectionsAndSitesFromSchemaToModelTypeResolver(typeof(SubSite)));
+                expressions.Add(seq => seq.SiteCollections[0].Sites[0].Sites,
+                    new SiteCollectionsAndSitesFromSchemaToModelTypeResolver(typeof(SubSite)));
                 expressions.Add(seq => seq.SiteCollections[0].Templates, new ExpressionValueResolver((s, v) => {
 
                     var result = new List<String>();
