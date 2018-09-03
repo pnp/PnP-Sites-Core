@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Refactored token parsing for PnP template handling for performance
 - Support token replacement for view xml - vonis22
 - Updated CSOM Assemblies to 8029.1200
+- Bugfix for token replacement where two tokens where next to each other like {hosturl}{siteid}
 
 ### Deprecated
 - Marked regex functions in TokenDefinition as obsolete, as they are not needed

@@ -616,7 +616,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (TokenDictionary.TryGetValue(match.Groups[1].Value, out val))
                     {
                         hasMatch = true;
-                        return val;
+                        return match.Groups[0].Value == match.Groups[1].Value ? val : match.Groups[0].Value.Replace(match.Groups[1].Value, val);
                     }
                     return match.Groups[1].Value;
                 });
