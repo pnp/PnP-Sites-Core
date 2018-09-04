@@ -4,13 +4,17 @@ using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading;
+#if !NETSTANDARD2_0
 using System.Xml.Serialization.Configuration;
+#endif
 using Microsoft.Graph;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.Online.SharePoint.TenantManagement;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Entities;
+#if !NETSTANDARD2_0
 using OfficeDevPnP.Core.UPAWebService;
+#endif
 using OfficeDevPnP.Core.Diagnostics;
 using System.Net.Http;
 using CoreUtilities = OfficeDevPnP.Core.Utilities;
@@ -19,6 +23,9 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Framework.Graph.Model;
 using Newtonsoft.Json;
+#if !ONPREMISES
+using OfficeDevPnP.Core.Sites;
+#endif
 
 namespace Microsoft.SharePoint.Client
 {
@@ -106,7 +113,7 @@ namespace Microsoft.SharePoint.Client
         /// Launches a site collection creation and waits for the creation to finish 
         /// </summary>
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
-        /// <param name="siteFullUrl">The SPO url</param>
+        /// <param name="siteFullUrl">The SPO URL</param>
         /// <param name="title">The site title</param>
         /// <param name="siteOwnerLogin">Owner account</param>
         /// <param name="template">Site template being used</param>
@@ -144,7 +151,7 @@ namespace Microsoft.SharePoint.Client
 
         #region Site status checks
         /// <summary>
-        /// Returns if a site collection is in a particular status. If the url contains a sub site then returns true is the sub site exists, false if not. 
+        /// Returns if a site collection is in a particular status. If the URL contains a sub site then returns true is the sub site exists, false if not. 
         /// Status is irrelevant for sub sites
         /// </summary>
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
@@ -442,7 +449,7 @@ namespace Microsoft.SharePoint.Client
         /// Sets tenant site Properties
         /// </summary>
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
-        /// <param name="siteFullUrl">full url of site</param>
+        /// <param name="siteFullUrl">full URL of site</param>
         /// <param name="title">site title</param>
         /// <param name="allowSelfServiceUpgrade">Boolean value to allow serlf service upgrade</param>
         /// <param name="sharingCapability">SharingCapabilities enumeration value (i.e. Disabled/ExternalUserSharingOnly/ExternalUserAndGuestSharing/ExistingExternalUserSharingOnly)</param>
@@ -511,7 +518,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="timeoutFunction">An optional function that will be called while waiting for the site to be created. If set will override the wait variable. Return true to cancel the wait loop.</param>
         public static void SetSiteLockState(this Tenant tenant, string siteFullUrl, SiteLockState lockState, bool wait = false, Func<TenantOperationMessage, bool> timeoutFunction = null)
         {
-            var siteProps = tenant.GetSitePropertiesByUrl(siteFullUrl, true);
+            var siteProps = tenant.GetSitePropertiesByUrl(siteFullUrl, false);
             tenant.Context.Load(siteProps);
             tenant.Context.ExecuteQueryRetry();
 
@@ -633,6 +640,7 @@ namespace Microsoft.SharePoint.Client
             return sites;
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Get OneDrive site collections by iterating through all user profiles.
         /// </summary>
@@ -670,7 +678,9 @@ namespace Microsoft.SharePoint.Client
 
             return sites;
         }
+#endif
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the UserProfileService proxy to enable calls to the UPA web service.
         /// </summary>
@@ -695,6 +705,8 @@ namespace Microsoft.SharePoint.Client
             }
             return client;
         }
+#endif
+
         #endregion
 
         #region ClientSide Package Deployment
@@ -703,7 +715,7 @@ namespace Microsoft.SharePoint.Client
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
         /// </summary>
         /// <param name="tenant">Tenant to operate against</param>
-        /// <returns>The Uri holding the app catalog site url</returns>
+        /// <returns>The Uri holding the app catalog site URL</returns>
         public static Uri GetAppCatalog(this Tenant tenant)
         {
             // Assume there's only one appcatalog site
@@ -886,6 +898,54 @@ namespace Microsoft.SharePoint.Client
 
         #endregion
 
+        #region Site groupify
+        /// <summary>
+        /// Connect an Office 365 group to an existing SharePoint site collection
+        /// </summary>
+        /// <param name="tenant">The target tenant</param>
+        /// <param name="siteUrl">Url to the site collection that needs to get connected to an Office 365 group</param>
+        /// <param name="siteCollectionGroupifyInformation">Information that configures the "groupify" process</param>
+        public static void GroupifySite(this Tenant tenant, string siteUrl, TeamSiteCollectionGroupifyInformation siteCollectionGroupifyInformation)
+        {
+            if (string.IsNullOrEmpty(siteUrl))
+            {
+                throw new ArgumentException("Missing value for siteUrl", "siteUrl");
+            }
+
+            if (siteCollectionGroupifyInformation == null)
+            {
+                throw new ArgumentException("Missing value for siteCollectionGroupifyInformation", "sitecollectionGroupifyInformation");
+            }
+
+            if (!string.IsNullOrEmpty(siteCollectionGroupifyInformation.Alias) && siteCollectionGroupifyInformation.Alias.Contains(" "))
+            {
+                throw new ArgumentException("Alias cannot contain spaces", "Alias");
+            }
+
+            if (string.IsNullOrEmpty(siteCollectionGroupifyInformation.DisplayName))
+            {
+                throw new ArgumentException("DisplayName is required", "DisplayName");
+            }
+
+            GroupCreationParams optionalParams = new GroupCreationParams(tenant.Context);
+            if (!String.IsNullOrEmpty(siteCollectionGroupifyInformation.Description))
+            {
+                optionalParams.Description = siteCollectionGroupifyInformation.Description;
+            }
+            if (!String.IsNullOrEmpty(siteCollectionGroupifyInformation.Classification))
+            {
+                optionalParams.Classification = siteCollectionGroupifyInformation.Classification;
+            }
+            if (siteCollectionGroupifyInformation.KeepOldHomePage)
+            {
+                optionalParams.CreationOptions = new string[] { "SharePointKeepOldHomepage" };
+            }
+
+            tenant.CreateGroupForSite(siteUrl, siteCollectionGroupifyInformation.DisplayName, siteCollectionGroupifyInformation.Alias, siteCollectionGroupifyInformation.IsPublic, optionalParams);
+            tenant.Context.ExecuteQueryRetry();
+        }
+        #endregion
+
 #else
         #region Site collection creation
         /// <summary>
@@ -921,9 +981,9 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
-        #endregion
+#endregion
 
-        #region Site collection deletion
+#region Site collection deletion
         /// <summary>
         /// Deletes a site collection
         /// </summary>
@@ -934,7 +994,7 @@ namespace Microsoft.SharePoint.Client
             tenant.RemoveSite(siteFullUrl);
             tenant.Context.ExecuteQueryRetry();
         }
-        #endregion
+#endregion
 #endif
     }
 }

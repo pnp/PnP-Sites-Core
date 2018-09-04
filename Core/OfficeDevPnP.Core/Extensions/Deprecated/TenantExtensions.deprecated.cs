@@ -60,7 +60,7 @@ namespace Microsoft.SharePoint.Client
         /// Adds a package to the tenants app catalog and by default deploys it if the package is a client side package (sppkg)
         /// </summary>
         /// <param name="tenant">Tenant to operate against</param>
-        /// <param name="appCatalogSiteUrl">Full url to the tenant admin site (e.g. https://contoso.sharepoint.com/sites/apps) </param>
+        /// <param name="appCatalogSiteUrl">Full URL to the tenant admin site (e.g. https://contoso.sharepoint.com/sites/apps) </param>
         /// <param name="spPkgName">Name of the package to upload (e.g. demo.sppkg) </param>
         /// <param name="spPkgPath">Path on the filesystem where this package is stored</param>
         /// <param name="autoDeploy">Automatically deploy the package, only applies to client side packages (sppkg)</param>
@@ -76,13 +76,13 @@ namespace Microsoft.SharePoint.Client
         {
             if (String.IsNullOrEmpty(appCatalogSiteUrl))
             {
-                throw new ArgumentException("Please specify a app catalog site url");
+                throw new ArgumentException("Please specify a app catalog site URL");
             }
 
             Uri catalogUri;
             if (!Uri.TryCreate(appCatalogSiteUrl, UriKind.Absolute, out catalogUri))
             {
-                throw new ArgumentException("Please specify a valid app catalog site url");
+                throw new ArgumentException("Please specify a valid app catalog site URL");
             }
 
             if (String.IsNullOrEmpty(spPkgName))

@@ -814,7 +814,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 customSortOrder = ((Term)parent).CustomSortOrder;
             }
             context.Load(terms, tms => tms.IncludeWithDefaultProperties(t => t.Labels, t => t.CustomSortOrder,
-                t => t.IsReused, t => t.IsSourceTerm, t => t.SourceTerm, t => t.IsDeprecated));
+                t => t.IsReused, t => t.IsSourceTerm, t => t.SourceTerm, t => t.IsDeprecated, t => t.Description, t => t.Owner));
             context.ExecuteQueryRetry();
 
             foreach (var term in terms)
@@ -830,6 +830,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 modelTerm.IsSourceTerm = term.IsSourceTerm;
                 modelTerm.SourceTermId = (term.SourceTerm != null) ? term.SourceTerm.Id : Guid.Empty;
                 modelTerm.IsDeprecated = term.IsDeprecated;
+                modelTerm.Description = term.Description;
+                modelTerm.Owner = term.Owner;
 
                 if ((!term.IsReused || term.IsSourceTerm) && term.Labels.Any())
                 {

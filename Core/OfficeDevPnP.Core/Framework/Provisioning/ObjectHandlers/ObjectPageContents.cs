@@ -6,6 +6,7 @@ using System;
 using System.Text.RegularExpressions;
 using Microsoft.SharePoint.Client.WebParts;
 using OfficeDevPnP.Core.Utilities;
+using System.Xml;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -262,15 +263,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 xml = Regex.Replace(xml, list.Id.ToString(), $"{{listid:{System.Security.SecurityElement.Escape(list.Title)}}}", RegexOptions.IgnoreCase);
             }
 
+            string webpartType = null;
+            try
+            {
+                var xmlDoc = new System.Xml.XmlDocument();
+                xmlDoc.LoadXml(xml);
+                XmlNamespaceManager ns = new XmlNamespaceManager(xmlDoc.NameTable);
+                ns.AddNamespace("ns", "http://schemas.microsoft.com/WebPart/v3");
+                webpartType = xmlDoc.SelectSingleNode("//webParts/ns:webPart/ns:metaData/ns:type[@name]", ns)?.Attributes["name"]?.Value;
+            }
+            catch (Exception) { }
+
             //some webparts already contains the site URL using ~sitecollection token (i.e: CQWP)
             xml = Regex.Replace(xml, "\"~sitecollection/(.)*\"", "\"{site}\"", RegexOptions.IgnoreCase);
             xml = Regex.Replace(xml, "'~sitecollection/(.)*'", "'{site}'", RegexOptions.IgnoreCase);
-            xml = Regex.Replace(xml, ">~sitecollection/(.)*<", ">{site}<", RegexOptions.IgnoreCase);
+
+            // Support for ContentBySearchWebParts
+            if (!string.IsNullOrEmpty(webpartType) && webpartType.ToLower().Contains("Microsoft.Office.Server.Search.WebControls.ContentBySearchWebPart".ToLower()))
+                xml = Regex.Replace(xml, ">~sitecollection/(.)*<", (Match m) => m.ToString().Replace("~sitecollection", "{sitecollection}"), RegexOptions.IgnoreCase);
+            else
+                xml = Regex.Replace(xml, ">~sitecollection/(.)*<", ">{site}<", RegexOptions.IgnoreCase);
 
             xml = Regex.Replace(xml, web.Id.ToString(), "{siteid}", RegexOptions.IgnoreCase);
             xml = Regex.Replace(xml, "(\"" + web.ServerRelativeUrl + ")(?!&)", "\"{site}", RegexOptions.IgnoreCase);
             xml = Regex.Replace(xml, "'" + web.ServerRelativeUrl, "'{site}", RegexOptions.IgnoreCase);
             xml = Regex.Replace(xml, ">" + web.ServerRelativeUrl, ">{site}", RegexOptions.IgnoreCase);
+
             return xml;
         }
 

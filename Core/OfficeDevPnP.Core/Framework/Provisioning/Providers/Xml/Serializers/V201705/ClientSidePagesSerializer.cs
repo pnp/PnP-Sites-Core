@@ -1,5 +1,6 @@
 ﻿using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201805;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -44,6 +45,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 // Manage ControlId for CanvasControl
                 expressions.Add(cp => cp.Sections[0].Controls[0].ControlId,
                     new FromStringToGuidValueResolver());
+
+                // Manage Header for client side page
+                expressions.Add(cp => cp.Header, new ClientSidePageHeaderFromSchemaToModel());
 
                 template.ClientSidePages.AddRange(
                     PnPObjectsMapper.MapObjects(clientSidePages,
@@ -96,6 +100,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add($"{canvasControlType}.CanvasControlProperties",
                     new FromDictionaryToArrayValueResolver<string, string>(
                         dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector, "ControlProperties"));
+
+                // Manage Header for client side page
+                var clientSidePageHeaderType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ClientSidePageHeader, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", false);
+
+                if (null != clientSidePageHeaderType)
+                {
+                    expressions.Add($"{clientSidePageType}.Header", new ClientSidePageHeaderFromModelToSchema());
+                    expressions.Add($"{clientSidePageHeaderType}.TranslateX", new FromNullableToSpecifiedValueResolver<double>("TranslateXSpecified"));
+                    expressions.Add($"{clientSidePageHeaderType}.TranslateY", new FromNullableToSpecifiedValueResolver<double>("TranslateYSpecified"));
+                }
 
                 persistence.GetPublicInstanceProperty("ClientSidePages")
                     .SetValue(

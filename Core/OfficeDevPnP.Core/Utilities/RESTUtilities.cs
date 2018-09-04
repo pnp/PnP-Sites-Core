@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Utilities
     internal static class RESTUtilities
     {
         /// <summary>
-        /// Sets the authentication cookie based upon either credentials currently used or if not set, the presence of any authentication cookies for the current context url.
+        /// Sets the authentication cookie based upon either credentials currently used or if not set, the presence of any authentication cookies for the current context URL.
         /// </summary>
         /// <param name="handler"></param>
         /// <param name="context"></param>

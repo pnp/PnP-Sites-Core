@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2018/01/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.21.1712.0, Culture=neutral, PublicKeyToken=null">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.26.1805.0, Culture=neutral, PublicKeyToken=null">
     <pnp:Parameters>
       <pnp:Parameter Key="O365TenantName">contoso</pnp:Parameter>
       <pnp:Parameter Key="CodeProvidedParam" />
@@ -172,7 +172,7 @@
         </pnp:ContentType>
       </pnp:ContentTypes>
       <pnp:Lists>
-        <pnp:ListInstance Title="{parameter:CompanyName} - Projects" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/Projects" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="10" MaxVersionLimit="10" DraftVersionVisibility="1" TemplateFeatureID="81a7b6a8-c0e9-4819-aea1-8fc8894d3c43" ContentTypesEnabled="true" EnableAttachments="false" NoCrawl="true" ListExperience="ClassicExperience" DefaultDisplayFormUrl="./Forms/Display.aspx" DefaultEditFormUrl="./Forms/Edit.aspx" DefaultNewFormUrl="./Forms/NewItem.aspx" Direction="LTR" ImageUrl="./Images/Sample.png" ReadSecurity="11" ValidationFormula="sample formula here" ValidationMessage="validation message here">
+        <pnp:ListInstance Title="{parameter:CompanyName} - Projects" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/Projects" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="10" MaxVersionLimit="10" DraftVersionVisibility="1" TemplateFeatureID="81a7b6a8-c0e9-4819-aea1-8fc8894d3c43" ContentTypesEnabled="true" EnableAttachments="false" NoCrawl="true" ListExperience="ClassicExperience" DefaultDisplayFormUrl="./Forms/Display.aspx" DefaultEditFormUrl="./Forms/Edit.aspx" DefaultNewFormUrl="./Forms/NewItem.aspx" Direction="LTR" ImageUrl="./Images/Sample.png" IsApplicationList="false" ReadSecurity="11" ValidationFormula="sample formula here" ValidationMessage="validation message here">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0120" Remove="true" />
@@ -256,7 +256,7 @@
           </pnp:Webhooks>
           <pnp:IRMSettings Enabled="true" AllowWriteCopy="false" DocumentAccessExpireDays="30" DocumentLibraryProtectionExpiresInDays="90" EnableDocumentAccessExpire="true" EnableGroupProtection="false" GroupName="Custom IRM Group" LicenseCacheExpireDays="60" PolicyDescription="Sample IRM Policy" PolicyTitle="Sample IRM Policy" />
         </pnp:ListInstance>
-        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" RemoveExistingContentTypes="true">
+        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" RemoveExistingContentTypes="true" IsApplicationList="false">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
           </pnp:ContentTypeBindings>
@@ -496,7 +496,7 @@
         <pnp:Webhook ServerNotificationUrl="http://myapp.azurewebsites.net/WebHookListener" ExpiresInDays="120" SiteWebhookType="WebDeleted" />
       </pnp:SiteWebhooks>
       <pnp:ClientSidePages>
-        <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" Overwrite="true" Layout="Article" Publish="true" EnableComments="true">
+        <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" Overwrite="true">
           <pnp:Sections>
             <pnp:Section Order="1" Type="OneColumn">
               <pnp:Controls>

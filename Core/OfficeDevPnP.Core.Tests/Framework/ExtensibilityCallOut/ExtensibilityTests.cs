@@ -5,6 +5,7 @@ using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Extensibility;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 
+#if !NETSTANDARD2_0
 namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
 {
     [TestClass]
@@ -12,7 +13,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
     {
         private const string TEST_CATEGORY = "Framework Provisioning Extensibility Providers";
 
-        #region Providers
+#region Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
@@ -212,9 +213,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
             _em.ExecuteExtensibilityCallOut(_mockCtx, _mockProvider, _mockTemplate);
         }
 
-        #endregion
+#endregion
 
-        #region TokenProviders
+#region TokenProviders
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
@@ -386,6 +387,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
             _em.ExecuteTokenProviderCallOut(_mockCtx, _mockProvider, _mockTemplate);
         }
 
-        #endregion
+#endregion
     }
 }
+#endif

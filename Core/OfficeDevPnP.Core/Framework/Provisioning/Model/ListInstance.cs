@@ -122,6 +122,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private CustomActionCollection _userCustomActions;
         private WebhookCollection _webhooks;
         private IRMSettings _IRMSettings;
+        private Dictionary<String, String> _dataSource = new Dictionary<String, String>();
         #endregion
 
         #region Properties
@@ -406,6 +407,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public Int32 ReadSecurity { get; set; }
 
         /// <summary>
+        /// Defines the Write Security property, optional attribute.
+        /// </summary>
+        public Int32 WriteSecurity { get; set; }
+
+        /// <summary>
         /// Defines a value that specifies the data validation criteria for a list item, optional attribute.
         /// </summary>
         public String ValidationFormula { get; set; }
@@ -414,6 +420,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Defines a value that specifies the error message returned when data validation fails for a list item, optional attribute.
         /// </summary>
         public String ValidationMessage { get; set; }
+
+        /// <summary>
+        /// Defines a list of Data Source properties for the List Instance
+        /// </summary>
+        public Dictionary<String, String> DataSource
+        {
+            get { return this._dataSource; }
+            private set { this._dataSource = value; }
+        }
 
         #endregion
 
@@ -425,7 +440,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|{31}|{32}|{33}|{34}|{35}|{36}|{37}|{38}|{39}|{40}|{41}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|{31}|{32}|{33}|{34}|{35}|{36}|{37}|{38}|{39}|{40}|{41}|{42}|{43}|",
                 this.ContentTypesEnabled.GetHashCode(),
                 (this.Description != null ? this.Description.GetHashCode() : 0),
                 (this.DocumentTemplate != null ? this.DocumentTemplate.GetHashCode() : 0),
@@ -467,7 +482,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.IsApplicationList.GetHashCode(),
                 this.ReadSecurity.GetHashCode(),
                 this.ValidationFormula?.GetHashCode() ?? 0,
-                this.ValidationMessage?.GetHashCode() ?? 0
+                this.ValidationMessage?.GetHashCode() ?? 0,
+                this.DataSource.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.WriteSecurity.GetHashCode()
             ).GetHashCode());
         }
 
@@ -490,7 +507,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// MaxVersionLimit, MinorVersionLimit, OnQuickLaunch, EnableAttachments, EnableFolderCreation, ForceCheckOut, RemoveExistingContentTypes, TemplateType,
         /// Title, Url, TemplateFeatureID, RemoveExistingViews, ContentTypeBindings, View, Fields, FieldRefs, FieldDefaults, Security, Folders, UserCustomActions, 
         /// Webhooks, IRMSettings, DefaultDisplayFormUrl, DefaultEditFormUrl, DefaultNewFormUrl, Direction, ImageUrl, IrmExpire, IrmReject, IsApplicationList,
-        /// ReadSecurity, ValidationFormula, and ValidationMessage properties.
+        /// ReadSecurity, ValidationFormula, ValidationMessage, DataSource, and WriteSecurity properties.
         /// </summary>
         /// <param name="other">ListInstance object</param>
         /// <returns>true if the ListInstance object is equal to the current object; otherwise, false.</returns>
@@ -544,7 +561,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.IsApplicationList == other.IsApplicationList &&
                 this.ReadSecurity == other.ReadSecurity &&
                 this.ValidationFormula == other.ValidationFormula &&
-                this.ValidationMessage == other.ValidationMessage
+                this.ValidationMessage == other.ValidationMessage &&
+                this.DataSource.DeepEquals(other.DataSource) &&
+                this.WriteSecurity == other.WriteSecurity
             );
         }
 

@@ -3,7 +3,9 @@ using System;
 using System.Configuration;
 using System.Security;
 using System.Net;
+#if !NETSTANDARD2_0
 using System.Data.SqlClient;
+#endif
 using System.Data;
 using System.Threading;
 using System.Security.Cryptography.X509Certificates;
@@ -12,12 +14,41 @@ namespace OfficeDevPnP.Core.Tests
 {
     static class TestCommon
     {
+#if NETSTANDARD2_0
+        private static Configuration configuration = null;
+#endif
+
+        public static string AppSetting(string key)
+        {
+#if !NETSTANDARD2_0
+            return ConfigurationManager.AppSettings[key];
+#else
+            try
+            {
+                return configuration.AppSettings.Settings[key].Value;
+            }
+            catch
+            {
+                return null;
+            }
+#endif
+        }
+
         #region Constructor
         static TestCommon()
         {
+#if NETSTANDARD2_0
+            // Load configuration in a way that's compatible with a .Net Core test project as well
+            ExeConfigurationFileMap fileMap = new ExeConfigurationFileMap
+            {
+                ExeConfigFilename = @"..\..\App.config" //Path to your config file
+            };
+            configuration = ConfigurationManager.OpenMappedExeConfiguration(fileMap, ConfigurationUserLevel.None);
+#endif
+
             // Read configuration data
-            TenantUrl = ConfigurationManager.AppSettings["SPOTenantUrl"];
-            DevSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];            
+            TenantUrl = AppSetting("SPOTenantUrl");
+            DevSiteUrl = AppSetting("SPODevSiteUrl");            
 
 #if !ONPREMISES
             if (string.IsNullOrEmpty(TenantUrl))
@@ -36,9 +67,9 @@ namespace OfficeDevPnP.Core.Tests
             TenantUrl = TenantUrl.TrimEnd(new[] { '/' });
             DevSiteUrl = DevSiteUrl.TrimEnd(new[] { '/' });
 
-            if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]))
+            if (!string.IsNullOrEmpty(AppSetting("SPOCredentialManagerLabel")))
             {
-                var tempCred = Core.Utilities.CredentialManager.GetCredential(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]);
+                var tempCred = Core.Utilities.CredentialManager.GetCredential(AppSetting("SPOCredentialManagerLabel"));
 
                 // username in format domain\user means we're testing in on-premises
                 if (tempCred.UserName.IndexOf("\\") > 0)
@@ -53,53 +84,53 @@ namespace OfficeDevPnP.Core.Tests
             }
             else
             {
-                if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOUserName"]) &&
-                    !String.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOPassword"]))
+                if (!String.IsNullOrEmpty(AppSetting("SPOUserName")) &&
+                    !String.IsNullOrEmpty(AppSetting("SPOPassword")))
                 {
-                    UserName = ConfigurationManager.AppSettings["SPOUserName"];
-                    var password = ConfigurationManager.AppSettings["SPOPassword"];
+                    UserName = AppSetting("SPOUserName");
+                    var password = AppSetting("SPOPassword");
 
                     Password = GetSecureString(password);
                     Credentials = new SharePointOnlineCredentials(UserName, Password);
                 }
-                else if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["OnPremUserName"]) &&
-                         !String.IsNullOrEmpty(ConfigurationManager.AppSettings["OnPremDomain"]) &&
-                         !String.IsNullOrEmpty(ConfigurationManager.AppSettings["OnPremPassword"]))
+                else if (!String.IsNullOrEmpty(AppSetting("OnPremUserName")) &&
+                         !String.IsNullOrEmpty(AppSetting("OnPremDomain")) &&
+                         !String.IsNullOrEmpty(AppSetting("OnPremPassword")))
                 {
-                    Password = GetSecureString(ConfigurationManager.AppSettings["OnPremPassword"]);
-                    Credentials = new NetworkCredential(ConfigurationManager.AppSettings["OnPremUserName"], Password, ConfigurationManager.AppSettings["OnPremDomain"]);
+                    Password = GetSecureString(AppSetting("OnPremPassword"));
+                    Credentials = new NetworkCredential(AppSetting("OnPremUserName"), Password, AppSetting("OnPremDomain"));
                 }
-                else if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppId"]) &&
-                         !String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppSecret"]))
+                else if (!String.IsNullOrEmpty(AppSetting("AppId")) &&
+                         !String.IsNullOrEmpty(AppSetting("AppSecret")))
                 {
-                    AppId = ConfigurationManager.AppSettings["AppId"];
-                    AppSecret = ConfigurationManager.AppSettings["AppSecret"];
+                    AppId = AppSetting("AppId");
+                    AppSecret = AppSetting("AppSecret");
                 }
-                else if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppId"]) &&
-                        !String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustIssuerId"]))
+                else if (!String.IsNullOrEmpty(AppSetting("AppId")) &&
+                        !String.IsNullOrEmpty(AppSetting("HighTrustIssuerId")))
                 {
-                    AppId = ConfigurationManager.AppSettings["AppId"];
-                    HighTrustCertificatePassword = ConfigurationManager.AppSettings["HighTrustCertificatePassword"];
-                    HighTrustCertificatePath = ConfigurationManager.AppSettings["HighTrustCertificatePath"];
-                    HighTrustIssuerId = ConfigurationManager.AppSettings["HighTrustIssuerId"];
+                    AppId = AppSetting("AppId");
+                    HighTrustCertificatePassword = AppSetting("HighTrustCertificatePassword");
+                    HighTrustCertificatePath = AppSetting("HighTrustCertificatePath");
+                    HighTrustIssuerId = AppSetting("HighTrustIssuerId");
 
-                    if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustCertificateStoreName"]))
+                    if (!String.IsNullOrEmpty(AppSetting("HighTrustCertificateStoreName")))
                     {
                         StoreName result;
-                        if (Enum.TryParse(ConfigurationManager.AppSettings["HighTrustCertificateStoreName"], out result))
+                        if (Enum.TryParse(AppSetting("HighTrustCertificateStoreName"), out result))
                         {
                             HighTrustCertificateStoreName = result;
                         }
                     }
-                    if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["HighTrustCertificateStoreLocation"]))
+                    if (!String.IsNullOrEmpty(AppSetting("HighTrustCertificateStoreLocation")))
                     {
                         StoreLocation result;
-                        if (Enum.TryParse(ConfigurationManager.AppSettings["HighTrustCertificateStoreLocation"], out result))
+                        if (Enum.TryParse(AppSetting("HighTrustCertificateStoreLocation"), out result))
                         {
                             HighTrustCertificateStoreLocation = result;
                         }
                     }
-                    HighTrustCertificateStoreThumbprint = ConfigurationManager.AppSettings["HighTrustCertificateStoreThumbprint"].Replace(" ", string.Empty);
+                    HighTrustCertificateStoreThumbprint = AppSetting("HighTrustCertificateStoreThumbprint").Replace(" ", string.Empty);
                 }
                 else
                 {
@@ -107,9 +138,9 @@ namespace OfficeDevPnP.Core.Tests
                 }
             }
         }
-        #endregion
+#endregion
 
-        #region Properties
+#region Properties
         public static string TenantUrl { get; set; }
         public static string DevSiteUrl { get; set; }
         static string UserName { get; set; }
@@ -152,7 +183,7 @@ namespace OfficeDevPnP.Core.Tests
         {
             get
             {
-                return ConfigurationManager.AppSettings["WebHookTestUrl"];
+                return AppSetting("WebHookTestUrl");
             }
         }
 
@@ -160,47 +191,47 @@ namespace OfficeDevPnP.Core.Tests
         {
             get
             {
-                return ConfigurationManager.AppSettings["AzureStorageKey"];
+                return AppSetting("AzureStorageKey");
             }
         }
         public static String TestAutomationDatabaseConnectionString
         {
             get
             {
-                return ConfigurationManager.AppSettings["TestAutomationDatabaseConnectionString"];
+                return AppSetting("TestAutomationDatabaseConnectionString");
             }
         }
         public static String AzureADCertPfxPassword
         {
             get
             {
-                return ConfigurationManager.AppSettings["AzureADCertPfxPassword"];
+                return AppSetting("AzureADCertPfxPassword");
             }
         }
         public static String AzureADClientId
         {
             get
             {
-                return ConfigurationManager.AppSettings["AzureADClientId"];
+                return AppSetting("AzureADClientId");
             }
         }
         public static String NoScriptSite
         {
             get
             {
-                return ConfigurationManager.AppSettings["NoScriptSite"];
+                return AppSetting("NoScriptSite");
             }
         }
         public static String ScriptSite
         {
             get
             {
-                return ConfigurationManager.AppSettings["ScriptSite"];
+                return AppSetting("ScriptSite");
             }
         }
-        #endregion
+#endregion
 
-        #region Methods
+#region Methods
         public static ClientContext CreateClientContext()
         {
             return CreateContext(DevSiteUrl, Credentials);
@@ -252,14 +283,14 @@ namespace OfficeDevPnP.Core.Tests
 
         public static bool AppOnlyTesting()
         {
-            if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppId"]) &&
-                !String.IsNullOrEmpty(ConfigurationManager.AppSettings["AppSecret"]) &&
-                String.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOCredentialManagerLabel"]) &&
-                String.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOUserName"]) &&
-                String.IsNullOrEmpty(ConfigurationManager.AppSettings["SPOPassword"]) &&
-                String.IsNullOrEmpty(ConfigurationManager.AppSettings["OnPremUserName"]) &&
-                String.IsNullOrEmpty(ConfigurationManager.AppSettings["OnPremDomain"]) &&
-                String.IsNullOrEmpty(ConfigurationManager.AppSettings["OnPremPassword"]))
+            if (!String.IsNullOrEmpty(AppSetting("AppId")) &&
+                !String.IsNullOrEmpty(AppSetting("AppSecret")) &&
+                String.IsNullOrEmpty(AppSetting("SPOCredentialManagerLabel")) &&
+                String.IsNullOrEmpty(AppSetting("SPOUserName")) &&
+                String.IsNullOrEmpty(AppSetting("SPOPassword")) &&
+                String.IsNullOrEmpty(AppSetting("OnPremUserName")) &&
+                String.IsNullOrEmpty(AppSetting("OnPremDomain")) &&
+                String.IsNullOrEmpty(AppSetting("OnPremPassword")))
             {
                 return true;
             }
@@ -269,6 +300,7 @@ namespace OfficeDevPnP.Core.Tests
             }
         }
 
+#if !NETSTANDARD2_0
         public static bool TestAutomationSQLDatabaseAvailable()
         {
             string connectionString = TestAutomationDatabaseConnectionString;
@@ -291,17 +323,20 @@ namespace OfficeDevPnP.Core.Tests
 
             return false;
         }
+#endif
 
         private static ClientContext CreateContext(string contextUrl, ICredentials credentials)
         {
-            ClientContext context;
+            ClientContext context =  null;
             if (!String.IsNullOrEmpty(AppId) && !String.IsNullOrEmpty(AppSecret))
             {
                 AuthenticationManager am = new AuthenticationManager();
 
                 if (new Uri(DevSiteUrl).DnsSafeHost.Contains("spoppe.com"))
                 {
+#if !NETSTANDARD2_0
                     context = am.GetAppOnlyAuthenticatedContext(contextUrl, Core.Utilities.TokenHelper.GetRealmFromTargetUrl(new Uri(DevSiteUrl)), AppId, AppSecret, acsHostUrl: "windows-ppe.net", globalEndPointPrefix: "login");
+#endif
                 }
                 else
                 {
@@ -329,6 +364,6 @@ namespace OfficeDevPnP.Core.Tests
 
             return secureString;
         }
-        #endregion
+#endregion
     }
 }
