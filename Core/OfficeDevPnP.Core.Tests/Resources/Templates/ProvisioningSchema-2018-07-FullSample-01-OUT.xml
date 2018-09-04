@@ -69,7 +69,7 @@
       <pnp:StorageEntity Key="PnPKey02" Value="{ Id: 1, Property: 'Some text here'}" Description="Description 02" />
     </pnp:StorageEntities>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-DUMMY-87b47b29-faa3-4843-bfc4-af235f02a70b">
+  <pnp:Templates ID="CONTAINER-DUMMY-a8579004-d29f-43eb-94ea-28ce4ad67cab">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
@@ -976,6 +976,49 @@ function showAlert(){alert("Hello!")};
     </pnp:ProvisioningTemplate>
   </pnp:Templates>
   <pnp:Sequence ID="SAMPLE-SEQUENCE">
+    <pnp:SiteCollections>
+      <pnp:SiteCollection d4p1:type="pnp:CommunicationSite" Title="{parameter:CompanyName} Intranet" Description="{parameter:CompanyName} Intranet" Url="https://{parameter:O365TenantName}.sharepoint.com/sites/CommSite" Owner="{parameter:CommunicationSiteOwner}" SiteDesign="{SiteDesignId:PnP Site Design}" Classification="HBI" Language="1040" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
+        <pnp:Templates>
+          <pnp:ProvisioningTemplateReference ID="SPECIALTEAM" />
+        </pnp:Templates>
+        <pnp:Sites>
+          <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" Title="{parameter:CompanyName} Intranet Workflows" Description="{parameter:CompanyName} Intranet Workflows" Url="{parameter:SitePrefix}-Workflows" TimeZoneId="4" Language="1040">
+            <pnp:Sites>
+              <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" Title="{parameter:CompanyName} Intranet Workflows Sub1" Description="{parameter:CompanyName} Intranet Workflows Sub1" Url="{parameter:SitePrefix}-Workflows-Sub1" TimeZoneId="4" Language="1040">
+                <pnp:Sites>
+                  <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" Title="{parameter:CompanyName} Intranet Workflows Sub1.1" Description="{parameter:CompanyName} Intranet Workflows Sub1.1" Url="{parameter:SitePrefix}-Workflows-Sub1.1" TimeZoneId="4" Language="1040">
+                    <pnp:Templates>
+                      <pnp:ProvisioningTemplateReference ID="WORKFLOWSITE" />
+                    </pnp:Templates>
+                  </pnp:Site>
+                </pnp:Sites>
+                <pnp:Templates>
+                  <pnp:ProvisioningTemplateReference ID="WORKFLOWSITE" />
+                </pnp:Templates>
+              </pnp:Site>
+              <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" Title="{parameter:CompanyName} Intranet Workflows Sub2" Description="{parameter:CompanyName} Intranet Workflows Sub2" Url="{parameter:SitePrefix}-Workflows-Sub2" TimeZoneId="4" Language="1040">
+                <pnp:Templates>
+                  <pnp:ProvisioningTemplateReference ID="WORKFLOWSITE" />
+                </pnp:Templates>
+              </pnp:Site>
+            </pnp:Sites>
+            <pnp:Templates>
+              <pnp:ProvisioningTemplateReference ID="WORKFLOWSITE" />
+            </pnp:Templates>
+          </pnp:Site>
+        </pnp:Sites>
+      </pnp:SiteCollection>
+      <pnp:SiteCollection d4p1:type="pnp:TeamSite" Title="{parameter:CompanyName} Projects" Description="{parameter:CompanyName} Projects" Alias="Projects" DisplayName="{parameter:CompanyName} Projects" IsPublic="true" Classification="MBI" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
+        <pnp:Templates>
+          <pnp:ProvisioningTemplateReference ID="ProjectsTemplate" />
+        </pnp:Templates>
+      </pnp:SiteCollection>
+      <pnp:SiteCollection d4p1:type="pnp:TeamSiteNoGroup" Title="{parameter:CompanyName} Meetings" Description="{parameter:CompanyName} Intranet Meetings" Url="https://{parameter:O365TenantName}.sharepoint.com/sites/Meetings" Owner="{parameter:TeamSiteNoGroupOwner}" TimeZoneId="4" Language="1040" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
+        <pnp:Templates>
+          <pnp:ProvisioningTemplateReference ID="MeetingsTemplate" />
+        </pnp:Templates>
+      </pnp:SiteCollection>
+    </pnp:SiteCollections>
     <pnp:TermStore>
       <pnp:TermGroup Name="{parameter:CompanyName} TermSets" ID="0e8f395e-ff58-4d45-9ff7-e331ab728beb">
         <pnp:TermSets>

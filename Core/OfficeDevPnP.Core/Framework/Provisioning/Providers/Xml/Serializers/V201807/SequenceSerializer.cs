@@ -138,6 +138,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     }
                 }));
 
+                // Handle SiteCollections and hierarchycal subsites
+                var siteCollectionTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SiteCollection, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var siteCollectionType = Type.GetType(siteCollectionTypeName, true);
+                var subSiteTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Site, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var subSiteType = Type.GetType(subSiteTypeName, true);
+
+                expressions.Add($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Sequence.SiteCollections",
+                    new SiteCollectionsAndSitesFromModelToSchemaTypeResolver(siteCollectionType));
+                expressions.Add($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SiteCollection.Sites",
+                    new SiteCollectionsAndSitesFromModelToSchemaTypeResolver(subSiteType));
+                expressions.Add($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Site.Sites",
+                    new SiteCollectionsAndSitesFromModelToSchemaTypeResolver(subSiteType));
+
+                expressions.Add($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SiteCollection.Templates", new ExpressionValueResolver((s, v) => {
+                    return ConvertTemplateListToReferences(v);
+                }));
+
+                expressions.Add($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Site.Templates", new ExpressionValueResolver((s, v) =>
+                {
+                    return ConvertTemplateListToReferences(v);
+                }));
+
                 persistence.GetPublicInstanceProperty("Sequence")
                     .SetValue(
                         persistence,
@@ -146,6 +168,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                             expressions, 
                             recursive: true));
             }
+        }
+
+        private static object ConvertTemplateListToReferences(object v)
+        {
+            var templateReferenceTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ProvisioningTemplateReference, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var templateReferenceType = Type.GetType(templateReferenceTypeName, true);
+
+            var resultType = templateReferenceType.MakeArrayType();
+            var resultArray = (Array)Activator.CreateInstance(resultType, ((IList)v).Count);
+            var i = 0;
+
+            foreach (var id in (IEnumerable)v)
+            {
+                var t = Activator.CreateInstance(templateReferenceType);
+                t.SetPublicInstancePropertyValue("ID", id);
+                resultArray.SetValue(t, i++);
+            }
+
+            return (resultArray);
         }
     }
 }

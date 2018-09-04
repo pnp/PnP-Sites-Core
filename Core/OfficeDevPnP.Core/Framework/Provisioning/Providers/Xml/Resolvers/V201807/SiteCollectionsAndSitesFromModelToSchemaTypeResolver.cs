@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2018
     /// <summary>
     /// Allows resolving specific SiteCollection and SubSite types
     /// </summary>
-    internal class SiteCollectionsAndSitesFromSchemaToModelTypeResolver : ITypeResolver
+    internal class SiteCollectionsAndSitesFromModelToSchemaTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
 
@@ -19,17 +19,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2018
 
         private Type _targetItemType;
 
-        public SiteCollectionsAndSitesFromSchemaToModelTypeResolver(Type targetItemType)
+        public SiteCollectionsAndSitesFromModelToSchemaTypeResolver(Type targetItemType)
         {
             this._targetItemType = targetItemType;
         }
 
         public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {
-            var itemType = typeof(List<>);
-            var resultType = itemType.MakeGenericType(new Type[] { this._targetItemType });
-            IList result = (IList)Activator.CreateInstance(resultType);
-
             // Define the specific source schema types
             var communicationSiteTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.CommunicationSite, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
             var communicationSiteType = Type.GetType(communicationSiteTypeName, true);
@@ -47,39 +43,44 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2018
                 sourceCollection = source.GetPublicInstancePropertyValue("Sites");
             }
 
+            Array resultArray = null;
+
             if (null != sourceCollection)
             {
-                foreach (var i in (IEnumerable)sourceCollection)
+                var resultType = this._targetItemType.MakeArrayType();
+                resultArray = (Array)Activator.CreateInstance(resultType, ((IList)sourceCollection).Count);
+                var i = 0;
+
+                foreach (var sourceItem in (IEnumerable)sourceCollection)
                 {
                     Object targetItem = null;
 
-                    if (i.GetType().Name == communicationSiteType.Name)
+                    switch (sourceItem)
                     {
-                        targetItem = new Model.CommunicationSiteCollection();
-                    }
-                    else if (i.GetType().Name == teamSiteType.Name)
-                    {
-                        targetItem = new Model.TeamSiteCollection();
-                    }
-                    else if (i.GetType().Name == teamSiteNoGroupType.Name)
-                    {
-                        targetItem = new Model.TeamNoGroupSiteCollection();
-                    }
-                    else if (i.GetType().Name == teamSubSiteNoGroupType.Name)
-                    {
-                        targetItem = new Model.TeamNoGroupSubSite();
+                        case CommunicationSiteCollection cs:
+                            targetItem = Activator.CreateInstance(communicationSiteType);
+                            break;
+                        case TeamSiteCollection ts:
+                            targetItem = Activator.CreateInstance(teamSiteType);
+                            break;
+                        case TeamNoGroupSiteCollection tngs:
+                            targetItem = Activator.CreateInstance(teamSiteNoGroupType);
+                            break;
+                        case TeamNoGroupSubSite tngss:
+                            targetItem = Activator.CreateInstance(teamSubSiteNoGroupType);
+                            break;
                     }
 
-                    PnPObjectsMapper.MapProperties(i, targetItem, resolvers, recursive);
+                    PnPObjectsMapper.MapProperties(sourceItem, targetItem, resolvers, recursive);
 
-                    if (targetItem!= null)
+                    if (targetItem != null)
                     {
-                        result.Add(targetItem);
+                        resultArray.SetValue(targetItem, i++);
                     }
                 }
             }
 
-            return (result);
+            return (resultArray.Length > 0 ? resultArray : null);
         }
     }
 }
