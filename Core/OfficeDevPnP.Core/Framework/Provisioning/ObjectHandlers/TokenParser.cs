@@ -578,7 +578,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return output;
         }
 
-        private static readonly Regex ReToken = new Regex(@"(\{(?:\1??[^{]*?\}))+", RegexOptions.Compiled);
+        private static readonly Regex ReToken = new Regex(@"(?:(?<token>\{(?:\1??[^{]*?\}))+)|(?<token>~\w+)", RegexOptions.Compiled|RegexOptions.IgnoreCase);
+        private static readonly Regex ReTokenFallback = new Regex(@"\{.*?\}", RegexOptions.Compiled);
+
         private static readonly char[] TokenChars = { '{', '~' };
         private readonly Dictionary<string, string> TokenDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
@@ -605,22 +607,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
+            // Optimize for direct match with string search
+            if (TokenDictionary.TryGetValue(input, out string directMatch))
+            {
+                return directMatch;
+            }
+
+            string original = input;
             string output = input;
             bool hasMatch = false;
+            
             do
             {
-                hasMatch = false;
+                hasMatch = false;                
                 output = ReToken.Replace(output, match =>
                 {
                     string val;
-                    if (TokenDictionary.TryGetValue(match.Groups[1].Value, out val))
+                    if (TokenDictionary.TryGetValue(match.Groups["token"].Value, out val))
                     {
                         hasMatch = true;
-                        return match.Groups[0].Value == match.Groups[1].Value ? val : match.Groups[0].Value.Replace(match.Groups[1].Value, val);
+                        return match.Groups[0].Value == match.Groups["token"].Value ? val : match.Groups[0].Value.Replace(match.Groups["token"].Value, val);
                     }
                     return match.Groups[1].Value;
                 });
-            } while (hasMatch);
+            } while (hasMatch && original != output);
+
+            if (hasMatch || !ReTokenFallback.IsMatch(output)) return output;
+            
+            // Fallback for tokens which may contain { or } as part of their name
+            foreach (var pair in TokenDictionary)
+            {
+                int idx = output.IndexOf(pair.Key, StringComparison.CurrentCultureIgnoreCase);
+                if (idx != -1)
+                {
+                    output = output.Remove(idx, pair.Key.Length).Insert(idx, pair.Value);
+                }
+                if (!ReTokenFallback.IsMatch(output)) break;
+            }
             return output;
         }
 
