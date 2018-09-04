@@ -541,11 +541,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (TokenDefinition tokenDefinition in _tokens)
             {
+                if ((tokenDefinition is ListIdToken) == false) continue;
                 foreach (string token in tokenDefinition.GetTokens())
                 {
                     if (TokenDictionary.ContainsKey(token)) continue;
                     string value = tokenDefinition.GetReplaceValue();
                     TokenDictionary[Regex.Unescape(token)] = value;
+                    ListTokenDictionary[Regex.Unescape(token)] = tokenDefinition;
                 }
             }
 
@@ -556,13 +558,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 hasMatch = false;
                 output = ReToken.Replace(output, match =>
                 {
-                    string tokenString = match.Groups[1].Value;
+                    string tokenString = match.Groups["token"].Value;
                     string val;
                     if (TokenDictionary.TryGetValue(tokenString, out val))
                     {
                         if (tokenString.IndexOf("listid", StringComparison.OrdinalIgnoreCase) != -1)
                         {
-                            var token = _tokens.Single(t => t.GetTokens().Contains(tokenString));
+                            var token = ListTokenDictionary[tokenString];
                             if (!token.Web.Id.Equals(web.Id))
                             {
                                 return tokenString;
@@ -578,11 +580,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return output;
         }
 
-        private static readonly Regex ReToken = new Regex(@"(?:(?<token>\{(?:\1??[^{]*?\}))+)|(?<token>~\w+)", RegexOptions.Compiled|RegexOptions.IgnoreCase);
+        private static readonly Regex ReToken = new Regex(@"(?:(?<token>\{(?:\1??[^{]*?\}))+)|(?<token>~\w+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex ReTokenFallback = new Regex(@"\{.*?\}", RegexOptions.Compiled);
 
         private static readonly char[] TokenChars = { '{', '~' };
         private readonly Dictionary<string, string> TokenDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, TokenDefinition> ListTokenDictionary = new Dictionary<string, TokenDefinition>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// Parses given string
@@ -617,10 +620,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             string original = input;
             string output = input;
             bool hasMatch = false;
-            
+
             do
             {
-                hasMatch = false;                
+                hasMatch = false;
                 output = ReToken.Replace(output, match =>
                 {
                     string val;
@@ -629,12 +632,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         hasMatch = true;
                         return match.Groups[0].Value == match.Groups["token"].Value ? val : match.Groups[0].Value.Replace(match.Groups["token"].Value, val);
                     }
-                    return match.Groups[1].Value;
+                    return match.Groups["token"].Value;
                 });
             } while (hasMatch && original != output);
 
             if (hasMatch || !ReTokenFallback.IsMatch(output)) return output;
-            
+
             // Fallback for tokens which may contain { or } as part of their name
             foreach (var pair in TokenDictionary)
             {
