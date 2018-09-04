@@ -539,16 +539,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var tokenChars = new[] { '{', '~' };
             if (string.IsNullOrEmpty(input) || input.IndexOfAny(tokenChars) == -1) return input;
 
-            foreach (TokenDefinition tokenDefinition in _tokens)
+            BuildTokenCache();
+
+            // Optimize for direct match with string search
+            string directMatch;
+            if (TokenDictionary.TryGetValue(input, out directMatch))
             {
-                if ((tokenDefinition is ListIdToken) == false) continue;
-                foreach (string token in tokenDefinition.GetTokens())
-                {
-                    if (TokenDictionary.ContainsKey(token)) continue;
-                    string value = tokenDefinition.GetReplaceValue();
-                    TokenDictionary[Regex.Unescape(token)] = value;
-                    ListTokenDictionary[Regex.Unescape(token)] = tokenDefinition;
-                }
+                return directMatch;
             }
 
             string output = input;
@@ -571,13 +568,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                         hasMatch = true;
-                        return val;
+                        return match.Groups[0].Value == tokenString ? val : match.Groups[0].Value.Replace(tokenString, val);
                     }
                     return tokenString;
                 });
-            } while (hasMatch);
+            } while (hasMatch && input != output);
 
             return output;
+        }
+
+        private void BuildTokenCache()
+        {
+            foreach (TokenDefinition tokenDefinition in _tokens)
+            {
+                foreach (string token in tokenDefinition.GetTokens())
+                {
+                    if (TokenDictionary.ContainsKey(token)) continue;
+                    string value = tokenDefinition.GetReplaceValue();
+                    TokenDictionary[Regex.Unescape(token)] = value;
+                    if (tokenDefinition is ListIdToken)
+                    {
+                        ListTokenDictionary[Regex.Unescape(token)] = tokenDefinition;
+                    }
+                }
+            }
         }
 
         private static readonly Regex ReToken = new Regex(@"(?:(?<token>\{(?:\1??[^{]*?\}))+)|(?<token>~\w+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
@@ -600,15 +614,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (string.IsNullOrEmpty(input) || input.IndexOfAny(TokenChars) == -1) return input;
 
-            foreach (TokenDefinition tokenDefinition in _tokens)
-            {
-                foreach (string token in tokenDefinition.GetTokens())
-                {
-                    if (TokenDictionary.ContainsKey(token)) continue;
-                    string value = tokenDefinition.GetReplaceValue();
-                    TokenDictionary[Regex.Unescape(token)] = value;
-                }
-            }
+            BuildTokenCache();
 
             // Optimize for direct match with string search
             string directMatch;
@@ -617,7 +623,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 return directMatch;
             }
 
-            string original = input;
             string output = input;
             bool hasMatch = false;
 
@@ -626,15 +631,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 hasMatch = false;
                 output = ReToken.Replace(output, match =>
                 {
+                    string tokenString = match.Groups["token"].Value;
                     string val;
-                    if (TokenDictionary.TryGetValue(match.Groups["token"].Value, out val))
+                    if (TokenDictionary.TryGetValue(tokenString, out val))
                     {
                         hasMatch = true;
-                        return match.Groups[0].Value == match.Groups["token"].Value ? val : match.Groups[0].Value.Replace(match.Groups["token"].Value, val);
+                        return match.Groups[0].Value == tokenString ? val : match.Groups[0].Value.Replace(tokenString, val);
                     }
                     return match.Groups["token"].Value;
                 });
-            } while (hasMatch && original != output);
+            } while (hasMatch && input != output);
 
             if (hasMatch || !ReTokenFallback.IsMatch(output)) return output;
 

@@ -228,10 +228,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var web = ctx.Web;
 
                 ProvisioningTemplate template = new ProvisioningTemplate();
+                template.Parameters.Add("test", "test");
                 var parser = new TokenParser(ctx.Web, template);
                 parser.AddToken(new ListIdToken(web, listTitle, listGuid));
+                parser.ParseString($"{{listid:{listTitle}}}");
                 var listId = parser.ParseStringWebPart($"{{listid:{listTitle}}}", web, null);
                 Assert.IsTrue(listGuid.ToString() == listId);
+
+                var parameterValue = parser.ParseStringWebPart("{parameter:test}", web, null);
+                Assert.IsTrue("test" == parameterValue);
             }
         }
     }
