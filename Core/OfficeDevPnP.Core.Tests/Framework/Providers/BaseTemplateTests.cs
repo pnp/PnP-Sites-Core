@@ -246,7 +246,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         private static string GetSiteUrl(BaseTemplate template, bool siteCollectionUrl = true)
         {
-            Uri devSiteUrl = new Uri(ConfigurationManager.AppSettings["SPODevSiteUrl"]);
+            Uri devSiteUrl = new Uri(TestCommon.AppSetting("SPODevSiteUrl"));
             string baseUrl = String.Format("{0}://{1}", devSiteUrl.Scheme, devSiteUrl.DnsSafeHost);
 
             string siteUrl = "";
@@ -317,7 +317,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         private void DumpTemplate(ClientContext ctx, string template, string subSiteTemplate = "", string saveAsTemplate = "")
         {
 
-            Uri devSiteUrl = new Uri(ConfigurationManager.AppSettings["SPODevSiteUrl"]);
+            Uri devSiteUrl = new Uri(TestCommon.AppSetting("SPODevSiteUrl"));
             string baseUrl = String.Format("{0}://{1}", devSiteUrl.Scheme, devSiteUrl.DnsSafeHost);
 
             string siteUrl = "";

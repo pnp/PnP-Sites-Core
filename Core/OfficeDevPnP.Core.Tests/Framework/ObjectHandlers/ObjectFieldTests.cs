@@ -54,7 +54,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var parser = new TokenParser(ctx.Web, template);
-                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var f = ctx.Web.GetFieldById<FieldText>(fieldId);
 
@@ -72,7 +72,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
 
                 var template = new ProvisioningTemplate();
-                template = new ObjectField().ExtractObjects(ctx.Web, template, creationInfo);
+                template = new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ExtractObjects(ctx.Web, template, creationInfo);
 
                 Assert.IsTrue(template.SiteFields.Any());
                 Assert.IsInstanceOfType(template.SiteFields, typeof(Core.Framework.Provisioning.Model.FieldCollection));
@@ -89,7 +89,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var parser = new TokenParser(ctx.Web, template);
-                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var f = ctx.Web.GetFieldById<FieldCalculated>(calculatedFieldId);
 
@@ -109,7 +109,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var parser = new TokenParser(ctx.Web, template);
-                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var f1 = ctx.Web.GetFieldById<FieldCalculated>(calculatedFieldId);
 
@@ -117,7 +117,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsInstanceOfType(f1, typeof(FieldCalculated));
                 Assert.IsFalse(f1.Formula.Contains('#') || f1.Formula.Contains('?'), "Calculated field was not provisioned properly the first time");
 
-                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var f2 = ctx.Web.GetFieldById<FieldCalculated>(calculatedFieldId);
 
@@ -138,10 +138,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var parser = new TokenParser(ctx.Web, template);
-                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var provisioningTemplateCreationInformation = new ProvisioningTemplateCreationInformation(ctx.Web);
-                new ObjectField().ExtractObjects(ctx.Web, extractedTemplate, provisioningTemplateCreationInformation);
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ExtractObjects(ctx.Web, extractedTemplate, provisioningTemplateCreationInformation);
 
                 XElement fieldElement = XElement.Parse(extractedTemplate.SiteFields.Last().SchemaXml);
 
@@ -162,7 +162,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var parser = new TokenParser(ctx.Web, template);
-                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var f = ctx.Web.GetFieldById<FieldCalculated>(calculatedFieldId);
 
@@ -171,7 +171,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsFalse(f.Formula.Contains('#') || f.Formula.Contains('?'), "Calculated field was not provisioned properly");
 
                 var provisioningTemplateCreationInformation = new ProvisioningTemplateCreationInformation(ctx.Web);
-                new ObjectField().ExtractObjects(ctx.Web, extractedTemplate, provisioningTemplateCreationInformation);
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ExtractObjects(ctx.Web, extractedTemplate, provisioningTemplateCreationInformation);
 
                 XElement fieldElement = XElement.Parse(extractedTemplate.SiteFields.First(cf => Guid.Parse(XElement.Parse(cf.SchemaXml).Attribute("ID").Value).Equals(calculatedFieldId)).SchemaXml);
                 var formula = fieldElement.Descendants("Formula").FirstOrDefault();

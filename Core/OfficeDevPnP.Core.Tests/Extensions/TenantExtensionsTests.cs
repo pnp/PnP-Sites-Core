@@ -111,6 +111,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             }
         }
 
+#if !NETSTANDARD2_0
         [TestMethod()]
         [Timeout(15 * 60 * 1000)]
         public void GetOneDriveSiteCollectionsTest()
@@ -150,7 +151,8 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 Assert.IsNotNull(profile);
             }
         }
-        #endregion
+#endif
+#endregion
 
         #region Site existance tests
         [TestMethod()]
@@ -168,7 +170,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 Assert.IsTrue(siteExists1);
 
                 try {
-                    string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                    string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
                     string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, "aaabbbccc");
                     var siteExists2 = tenant.CheckIfSiteExists(siteToCreateUrl, "Active");
                     Assert.IsFalse(siteExists2, "Invalid site returned as valid.");
@@ -190,7 +192,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 var siteExists1 = tenant.SiteExists(site.Url);
                 Assert.IsTrue(siteExists1);
 
-                string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
                 string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, "aaabbbccc");
                 var siteExists2 = tenant.SiteExists(siteToCreateUrl);
                 Assert.IsFalse(siteExists2, "Invalid site returned as valid.");
@@ -204,7 +206,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             using (var tenantContext = TestCommon.CreateTenantClientContext())
             {
                 var tenant = new Tenant(tenantContext);
-                string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
                 Console.WriteLine("SubSiteExistsTest: step 1");
                 string siteToCreateUrl = CreateTestSiteCollection(tenant, sitecollectionName);
                 Console.WriteLine("SubSiteExistsTest: step 1.1");
@@ -343,7 +345,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                     tenantContext.RequestTimeout = 1000 * 60 * 15;
 
                     var tenant = new Tenant(tenantContext);
-                    string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                    string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
                     string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, sitecollectionName);
 
                     Console.WriteLine("SetSiteLockStateTest: step 1");
@@ -426,10 +428,10 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         {
             try
             {
-                string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+                string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
                 string siteToCreateUrl = GetTestSiteCollectionName(devSiteUrl, sitecollectionName);
 
-                string siteOwnerLogin = ConfigurationManager.AppSettings["SPOUserName"];
+                string siteOwnerLogin = TestCommon.AppSetting("SPOUserName");
                 if (TestCommon.AppOnlyTesting())
                 {
                     using (var clientContext = TestCommon.CreateClientContext())
@@ -462,4 +464,4 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         #endregion
     }
 #endif
-}
+    }
