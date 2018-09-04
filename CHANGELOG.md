@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Support token replacement for view xml - vonis22
 - Updated CSOM Assemblies to 8029.1200
 - Bugfix for token replacement where two tokens where next to each other like {hosturl}{siteid}
+- Bugfix and optimizatin for web part listid token replacement
 - Make preview link for banner image on modern pages link to the root site to avoid too long url's - and act like the default behaviour
 
 ### Deprecated
