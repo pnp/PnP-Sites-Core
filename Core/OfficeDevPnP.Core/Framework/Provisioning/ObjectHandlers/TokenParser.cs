@@ -608,7 +608,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             // Optimize for direct match with string search
-            if (TokenDictionary.TryGetValue(input, out string directMatch))
+            string directMatch;
+            if (TokenDictionary.TryGetValue(input, out directMatch))
             {
                 return directMatch;
             }
