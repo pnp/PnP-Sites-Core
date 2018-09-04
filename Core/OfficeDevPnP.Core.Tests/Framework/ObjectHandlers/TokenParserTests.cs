@@ -177,6 +177,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         }
 
         [TestMethod]
+        [Timeout(1 * 60 * 1000)]
         public void NestedTokenTests()
         {
             using (var ctx = TestCommon.CreateClientContext())
