@@ -68,9 +68,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             _tokens.Add(new SiteCollectionToken(web));
             _tokens.Add(new SiteCollectionIdToken(web));
-            _tokens.Add(new SiteCollectionIdEncodedToken(web));
+            _tokens.Add(new SiteCollectionIdEncodedToken(web));            
             _tokens.Add(new SiteToken(web));
-            _tokens.Add(new MasterPageCatalogToken(web));
+            _tokens.Add(new MasterPageCatalogToken(web));            
             _tokens.Add(new SiteCollectionTermStoreIdToken(web));
             _tokens.Add(new KeywordsTermStoreIdToken(web));
             _tokens.Add(new ThemeCatalogToken(web));
@@ -79,6 +79,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new SiteIdEncodedToken(web));
             _tokens.Add(new SiteOwnerToken(web));
             _tokens.Add(new SiteTitleToken(web));
+
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.members));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.visitors));
@@ -584,7 +585,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (string token in tokenDefinition.GetTokens())
                 {
                     if (TokenDictionary.ContainsKey(token)) continue;
+
+                    int before = _web.Context.PendingRequestCount();
                     string value = tokenDefinition.GetReplaceValue();
+                    int after = _web.Context.PendingRequestCount();
+
+                    if (before != after)
+                    {
+                        throw new Exception($"Token {token} triggered an ExecuteQuery on the 'current' context. Please refactor this token to use the TokenContext class.");
+                    }
+
                     TokenDictionary[Regex.Unescape(token)] = value;
                     if (tokenDefinition is ListIdToken)
                     {
