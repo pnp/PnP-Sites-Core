@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 - Added support to provision hidden views
+- Added support for inviting guest users (AAD B2B) via Microsoft Graph [Vipul Kelkar]
 
 ### Changed
 - Fixed issue where hidden views created by XsltListView web part where removed on a list during provisioning
@@ -19,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Bugfix for token replacement where two tokens where next to each other like {hosturl}{siteid}
 - Bugfix and optimizatin for web part listid token replacement
 - Make preview link for banner image on modern pages link to the root site to avoid too long url's - and act like the default behaviour
+- Fix for updating Unified Groups [Gautam Sheth]
 
 ### Deprecated
 - Marked regex functions in TokenDefinition as obsolete, as they are not needed
