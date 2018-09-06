@@ -88,11 +88,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy)
         {
+            var web = ((ClientContext)tenant.Context).Web;
             _tokens = new List<TokenDefinition>();
             foreach (var parameter in hierarchy.Parameters)
             {
                 _tokens.Add(new ParameterToken(null, parameter.Key, parameter.Value ?? string.Empty));
             }
+            _tokens.Add(new GuidToken(null));
+            _tokens.Add(new CurrentUserIdToken(web));
+            _tokens.Add(new CurrentUserLoginNameToken(web));
+            _tokens.Add(new CurrentUserFullNameToken(web));
+            _tokens.Add(new AuthenticationRealmToken(web));
             _initializedFromHierarchy = true;
         }
         /// <summary>
