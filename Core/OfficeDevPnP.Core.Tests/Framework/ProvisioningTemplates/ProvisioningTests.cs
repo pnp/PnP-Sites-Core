@@ -119,7 +119,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 
                 var tenant = new Tenant(tenantContext);
 
-                tenant.ApplyTemplate(hierarchy, applyingInformation);
+                tenant.ApplyProvisionHierarchy(hierarchy, sequence.ID, applyingInformation);
             }
         }
     }

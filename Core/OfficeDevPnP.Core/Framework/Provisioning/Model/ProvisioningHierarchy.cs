@@ -1,8 +1,5 @@
-﻿using System;
+﻿using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
@@ -69,6 +66,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// The Image Preview Url of the Provisioning File
         /// </summary>
         public string ImagePreviewUrl { get; set; }
+
+        /// <summary>
+        /// The Connector which can be used to retrieve or save related artifacts
+        /// </summary>
+        public FileConnectorBase Connector { get; set; }
 
         /// <summary>
         /// A collection of Provisioning Template objects, if any

@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     public abstract partial class SiteCollection: BaseHierarchyModel, IEquatable<SiteCollection>
     {
         #region Private Members
-
+        Guid id;
         #endregion
 
         #region Constructor
@@ -19,6 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             this.Templates = new List<String>();
             this.Sites = new SubSiteCollection(this.ParentHierarchy);
+            this.id = Guid.NewGuid();
         }
 
         #endregion
@@ -50,6 +51,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public SubSiteCollection Sites { get; private set; }
 
+        public Guid Id => id;
+
+        public override string ToString()
+        {
+            return id.ToString();
+        }
         #endregion
 
         #region Comparison code

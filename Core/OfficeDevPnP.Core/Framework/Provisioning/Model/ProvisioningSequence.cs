@@ -50,6 +50,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             set { this._termStore = value; }
         }
 
+        public override string ToString()
+        {
+            return ID;
+        }
         #endregion
 
         #region Comparison code
