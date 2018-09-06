@@ -1496,10 +1496,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             newUserCustomAction.Location = userCustomAction.Location;
             //newUserCustomAction.RegistrationId = userCustomAction.RegistrationId;
             //newUserCustomAction.RegistrationType = userCustomAction.RegistrationType;
-            newUserCustomAction.CommandUIExtension =
-                userCustomAction.CommandUIExtension != null ?
-                    parser.ParseString(userCustomAction.CommandUIExtension.ToString()) :
-                    string.Empty;
+            if (userCustomAction.CommandUIExtension != null)
+            {
+                newUserCustomAction.CommandUIExtension = parser.ParseString(userCustomAction.CommandUIExtension.ToString());
+            }
             newUserCustomAction.ScriptBlock = userCustomAction.ScriptBlock;
             newUserCustomAction.ScriptSrc = userCustomAction.ScriptSrc;
             newUserCustomAction.Url = userCustomAction.Url;
