@@ -65,13 +65,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                     var result = new List<String>();
 
-                    foreach (var t in (IEnumerable)v)
+                    if (v != null)
                     {
-                        var templateId = t.GetPublicInstancePropertyValue("ID")?.ToString();
-
-                        if (templateId != null)
+                        foreach (var t in (IEnumerable)v)
                         {
-                            result.Add(templateId);
+                            var templateId = t.GetPublicInstancePropertyValue("ID")?.ToString();
+
+                            if (templateId != null)
+                            {
+                                result.Add(templateId);
+                            }
                         }
                     }
 
@@ -81,13 +84,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                     var result = new List<String>();
 
-                    foreach (var t in (IEnumerable)v)
+                    if (v != null)
                     {
-                        var templateId = t.GetPublicInstancePropertyValue("ID")?.ToString();
-
-                        if (templateId != null)
+                        foreach (var t in (IEnumerable)v)
                         {
-                            result.Add(templateId);
+                            var templateId = t.GetPublicInstancePropertyValue("ID")?.ToString();
+
+                            if (templateId != null)
+                            {
+                                result.Add(templateId);
+                            }
                         }
                     }
 
