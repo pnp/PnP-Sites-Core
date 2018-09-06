@@ -1568,10 +1568,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var listTemplates = site.GetCustomListTemplates(web);
                     web.Context.Load(listTemplates);
                     web.Context.ExecuteQueryRetry();
-                    var template = listTemplates.SingleOrDefault(t => t.FeatureId == templateList.TemplateFeatureID);
-                    if (template != null)
+                    var matchingTemplates = listTemplates.Where(t => t.FeatureId == templateList.TemplateFeatureID &&
+                            t.ListTemplateTypeKind == templateList.TemplateType).ToList();
+                    if (matchingTemplates.Count == 1)
                     {
-                        listCreate.ListTemplate = template;
+                        listCreate.ListTemplate = matchingTemplates[0];
                     }
                 }
                 if (listCreate.ListTemplate == null)
