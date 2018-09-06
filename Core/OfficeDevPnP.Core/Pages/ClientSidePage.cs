@@ -747,7 +747,10 @@ namespace OfficeDevPnP.Core.Pages
                             this.Context.Load(previewImage, p => p.UniqueId);
                             this.Context.ExecuteQueryRetry();
 
-                            item[ClientSidePage.BannerImageUrl] = $"{this.Context.Web.Url}/_layouts/15/getpreview.ashx?guidSite={this.Context.Site.Id.ToString()}&guidWeb={this.Context.Web.Id.ToString()}&guidFile={previewImage.UniqueId.ToString()}";
+                            Uri rootUri = new Uri(this.Context.Web.Url);
+                            rootUri = new Uri(rootUri, "/");
+
+                            item[ClientSidePage.BannerImageUrl] = $"{rootUri}_layouts/15/getpreview.ashx?guidSite={this.Context.Site.Id.ToString()}&guidWeb={this.Context.Web.Id.ToString()}&guidFile={previewImage.UniqueId.ToString()}";
                             isDirty = true;
                         }
                         catch { }

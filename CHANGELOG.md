@@ -13,8 +13,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Fixed issue where hidden views created by XsltListView web part where removed on a list during provisioning
+- Refactored token parsing for PnP template handling for performance
+- Support token replacement for view xml - vonis22
+- Updated CSOM Assemblies to 8029.1200
+- Bugfix for token replacement where two tokens where next to each other like {hosturl}{siteid}
+- Bugfix and optimizatin for web part listid token replacement
+- Make preview link for banner image on modern pages link to the root site to avoid too long url's - and act like the default behaviour
 
 ### Deprecated
+- Marked regex functions in TokenDefinition as obsolete, as they are not needed
 
 ## [3.0.1808.0 - August 2018 release]
 

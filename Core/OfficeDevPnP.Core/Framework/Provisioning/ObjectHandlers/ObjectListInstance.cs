@@ -490,7 +490,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             try
             {
-                var viewElement = XElement.Parse(view.SchemaXml);
+                var viewElement = XElement.Parse(parser.ParseString(view.SchemaXml));
                 var displayNameElement = viewElement.Attribute("DisplayName");
                 if (displayNameElement == null)
                 {
