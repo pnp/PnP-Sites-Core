@@ -112,7 +112,7 @@ namespace OfficeDevPnP.Core.Pages
             this.imageServerRelativeUrl = imageServerRelativeUrl;
             this.clientContext = cc;
             this.pageHeaderType = pageHeaderType;
-            this.TextAlignment = ClientSidePageHeaderTitleAlignment.Center;
+            this.TextAlignment = ClientSidePageHeaderTitleAlignment.Left;
             this.LayoutType = ClientSidePageHeaderLayoutType.FullWidthImage;
             this.ShowKicker = false;
             this.Kicker = "";
@@ -161,7 +161,7 @@ namespace OfficeDevPnP.Core.Pages
         /// <returns>Header html value that indicates "no header"</returns>
         public static string NoHeader(string pageTitle)
         {
-            return NoHeader(pageTitle, ClientSidePageHeaderTitleAlignment.Center);
+            return NoHeader(pageTitle, ClientSidePageHeaderTitleAlignment.Left);
         }
 
         /// <summary>
