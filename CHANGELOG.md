@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Bugfix and optimizatin for web part listid token replacement
 - Make preview link for banner image on modern pages link to the root site to avoid too long url's - and act like the default behaviour
 - Fix for updating Unified Groups [Gautam Sheth]
+- Extensibility handlers error handling [Jens Otto Hatlevold]
 
 ### Deprecated
 - Marked regex functions in TokenDefinition as obsolete, as they are not needed
