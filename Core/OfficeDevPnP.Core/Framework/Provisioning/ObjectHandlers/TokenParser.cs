@@ -246,12 +246,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
-            _tokens.Add(new SiteCollectionTermGroupIdToken(web));
-            _tokens.Add(new SiteCollectionTermGroupNameToken(web));
-
             // SiteCollection TermSets, only when we're not working in app-only
             if (!web.Context.IsAppOnly())
             {
+                _tokens.Add(new SiteCollectionTermGroupIdToken(web));
+                _tokens.Add(new SiteCollectionTermGroupNameToken(web));
+
                 var site = (web.Context as ClientContext).Site;
                 var siteCollectionTermGroup = termStore.GetSiteCollectionGroup(site, true);
                 web.Context.Load(siteCollectionTermGroup);
