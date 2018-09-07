@@ -26,6 +26,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private List<TokenDefinition> _tokens;
         private List<Localization> _localizations = new List<Localization>();
 
+        private bool _initializedFromHierarchy;
+
         /// <summary>
         /// List of token definitions
         /// </summary>
@@ -86,12 +88,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy)
         {
+            var web = ((ClientContext)tenant.Context).Web;
             _tokens = new List<TokenDefinition>();
             foreach (var parameter in hierarchy.Parameters)
             {
                 _tokens.Add(new ParameterToken(null, parameter.Key, parameter.Value ?? string.Empty));
             }
-
+            _tokens.Add(new GuidToken(null));
+            _tokens.Add(new CurrentUserIdToken(web));
+            _tokens.Add(new CurrentUserLoginNameToken(web));
+            _tokens.Add(new CurrentUserFullNameToken(web));
+            _tokens.Add(new AuthenticationRealmToken(web));
+            _initializedFromHierarchy = true;
         }
         /// <summary>
         /// Constructor
@@ -136,10 +144,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             AddListTokens(web);
             AddContentTypeTokens(web);
 
-            // Add parameters
-            foreach (var parameter in template.Parameters)
+            if (!_initializedFromHierarchy)
             {
-                _tokens.Add(new ParameterToken(web, parameter.Key, parameter.Value ?? string.Empty));
+                // Add parameters
+                foreach (var parameter in template.Parameters)
+                {
+                    _tokens.Add(new ParameterToken(web, parameter.Key, parameter.Value ?? string.Empty));
+                }
             }
 
             AddTermStoreTokens(web);

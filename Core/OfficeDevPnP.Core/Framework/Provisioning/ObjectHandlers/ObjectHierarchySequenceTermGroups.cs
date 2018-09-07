@@ -2,20 +2,22 @@
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Term = Microsoft.SharePoint.Client.Taxonomy.Term;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-    internal class ObjectSequenceTermGroups : ObjectSequenceHandlerBase
+    internal class ObjectHierarchySequenceTermGroups : ObjectHierarchyHandlerBase
     {
         private List<TermGroupHelper.ReusedTerm> reusedTerms;
 
         public override string Name => "Term Groups";
 
-        public override TokenParser ProvisionObjects(Tenant tenant, Model.ProvisioningHierarchy hierarchy, TokenParser parser,
+        public override TokenParser ProvisionObjects(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, TokenParser parser,
             ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -71,7 +73,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             public TokenParser UpdatedParser { get; set; }
         }
 
-        public override Model.ProvisioningTemplate ExtractObjects(Tenant tenant, Model.ProvisioningHierarchy hierarchy, ProvisioningTemplateCreationInformation creationInfo)
+        public override ProvisioningHierarchy ExtractObjects(Tenant tenant, ProvisioningHierarchy hierarchy, ProvisioningTemplateCreationInformation creationInfo)
         {
             throw new NotImplementedException();
         }
@@ -79,16 +81,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private List<Model.Term> GetTerms<T>(ClientRuntimeContext context, TaxonomyItem parent, int defaultLanguage, Boolean isSiteCollectionTermGroup = false)
         {
             List<Model.Term> termsToReturn = new List<Model.Term>();
-            TermCollection terms;
+            Microsoft.SharePoint.Client.Taxonomy.TermCollection terms;
             var customSortOrder = string.Empty;
-            if (parent is TermSet)
+            if (parent is Microsoft.SharePoint.Client.Taxonomy.TermSet)
             {
-                terms = ((TermSet)parent).Terms;
-                customSortOrder = ((TermSet)parent).CustomSortOrder;
+                terms = ((Microsoft.SharePoint.Client.Taxonomy.TermSet)parent).Terms;
+                customSortOrder = ((Microsoft.SharePoint.Client.Taxonomy.TermSet)parent).CustomSortOrder;
             }
             else
             {
-                terms = ((Term)parent).Terms;
+                terms = ((Microsoft.SharePoint.Client.Taxonomy.Term)parent).Terms;
                 customSortOrder = ((Term)parent).CustomSortOrder;
             }
             context.Load(terms, tms => tms.IncludeWithDefaultProperties(t => t.Labels, t => t.CustomSortOrder,
@@ -179,12 +181,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 
-        public override bool WillProvision(Tenant tenant, Model.ProvisioningHierarchy hierarchy, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override bool WillProvision(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             return hierarchy.Sequences.Where(s => s.TermStore != null && s.TermStore.TermGroups != null && s.TermStore.TermGroups.Any()).Any();
         }
 
-        public override bool WillExtract(Tenant tenant, Model.ProvisioningHierarchy hierarchy, ProvisioningTemplateCreationInformation creationInfo)
+        public override bool WillExtract(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateCreationInformation creationInfo)
         {
             return false;
         }

@@ -34,10 +34,10 @@ namespace Microsoft.SharePoint.Client
 #if !ONPREMISES
         #region Provisioning
 
-        public static void ApplyTemplate(this Tenant tenant, ProvisioningHierarchy hierarchy, ProvisioningTemplateApplyingInformation applyingInformation = null)
+        public static void ApplyProvisionHierarchy(this Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation = null)
         {
             SiteToTemplateConversion engine = new SiteToTemplateConversion();
-            engine.ApplyTenantTemplate(tenant, hierarchy, applyingInformation);
+            engine.ApplyProvisioningHierarchy(tenant, hierarchy, sequenceId, applyingInformation);
         }
         #endregion
         #region Site collection creation
