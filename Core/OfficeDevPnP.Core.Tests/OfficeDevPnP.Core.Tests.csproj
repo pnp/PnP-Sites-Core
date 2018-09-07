@@ -334,6 +334,7 @@
     <Compile Include="Framework\Connectors\ConnectorOpenXmlTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorSharePointTests.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockHandler.cs" />
+    <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockInvalidHandler.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockTokenProvider.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTestConstants.cs" />
     <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockProvider.cs" />
@@ -699,6 +700,8 @@
     <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03-OUT-ct.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03-OUT-nav.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03-OUT.xml" />
+    <Content Include="Resources\Templates\UnavailableExtensibilityHandlerTemplates\ProvisioningSchema-2015-12-Sample.xml" />
+    <Content Include="Resources\Templates\UnavailableExtensibilityHandlerTemplates\ProvisioningTemplate-2016-05-Sample.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-02.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-Valid-XInclude-01.xml" />

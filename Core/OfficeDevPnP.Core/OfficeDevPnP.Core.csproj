@@ -433,6 +433,7 @@
     <Compile Include="Extensions\SiteExtensions.cs" />
     <Compile Include="Extensions\TaxonomyExtensions.cs" />
     <Compile Include="Extensions\TenantExtensions.cs" />
+    <Compile Include="Framework\Graph\GraphUtility.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySetting.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingTemplates.cs" />
     <Compile Include="Framework\Graph\GraphHttpClient.cs" />

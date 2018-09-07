@@ -13,6 +13,7 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
 using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
+using Field = OfficeDevPnP.Core.Framework.Provisioning.Model.Field;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -332,15 +333,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var createdCT = web.CreateContentType(name, description, id, group);
 
-            var fieldsRefsToProcess = templateContentType.FieldRefs.Select(fr => new
+            List<FieldRef> fieldsRefsToProcess = new List<FieldRef>();
+            foreach (FieldRef fr in templateContentType.FieldRefs)
             {
-                FieldRef = fr,
-                TemplateField = template.SiteFields.FirstOrDefault(tf => (Guid)XElement.Parse(parser.ParseString(tf.SchemaXml)).Attribute("ID") == fr.Id)
-            }).Where(frData =>
-                frData.TemplateField == null // Process fields refs if the target is not defined in the current template
-                || frData.TemplateField.GetFieldProvisioningStep(parser) == _step // or process field ref only if the current step is matching
-            ).Select(fr => fr.FieldRef).ToArray();
-
+                var templateField = template.SiteFields.FirstOrDefault(tf => tf.GetFieldId(parser) == fr.Id);
+                if (templateField == null || templateField.GetFieldProvisioningStep(parser) == _step)
+                {
+                    fieldsRefsToProcess.Add(fr);
+                }
+            }
 
             foreach (var fieldRef in fieldsRefsToProcess)
             {
@@ -663,18 +664,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         newCT.DocumentSetTemplate = new DocumentSetTemplate(
                             null, // TODO: WelcomePage not yet supported
                             (from allowedCT in documentSetTemplate.AllowedContentTypes.AsEnumerable()
-                             select allowedCT.StringValue).ToArray(),
+                             select allowedCT.StringValue).ToList(),
                             (from defaultDocument in documentSetTemplate.DefaultDocuments.AsEnumerable()
                              select new DefaultDocument
                              {
                                  ContentTypeId = defaultDocument.ContentTypeId.StringValue,
                                  Name = defaultDocument.Name,
                                  FileSourcePath = String.Empty, // TODO: How can we extract the proper file?!
-                             }).ToArray(),
+                             }).ToList(),
                             (from sharedField in documentSetTemplate.SharedFields.AsEnumerable()
-                             select sharedField.Id).ToArray(),
+                             select sharedField.Id).ToList(),
                             (from welcomePageField in documentSetTemplate.WelcomePageFields.AsEnumerable()
-                             select welcomePageField.Id).ToArray()
+                             select welcomePageField.Id).ToList()
                         );
                     }
 

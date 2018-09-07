@@ -34,6 +34,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             this._step = step;
         }
 
+        public class DuplicateKeyComparer<TKey>
+            :
+                IComparer<TKey> where TKey : IComparable
+        {
+            #region IComparer<TKey> Members
+
+            public int Compare(TKey x, TKey y)
+            {
+                int result = x.CompareTo(y);
+                return result == 0 ? -1 : result;
+            }
+
+            #endregion
+        }
+
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -52,27 +67,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
                 var existingFieldIds = existingFields.AsEnumerable<SPField>().Select(l => l.Id).ToList();
 
-                var fields = template.SiteFields
-                    .Select(fld => new
+                SortedList<string,Field> fieldDict = new SortedList<string, Field>(new DuplicateKeyComparer<string>());
+                foreach (Field siteField in template.SiteFields)
+                {                    
+                    var step = siteField.GetFieldProvisioningStep(parser);
+
+                    if (step == _step)
                     {
-                        Field = fld,
-                        FieldRef = (string)XElement.Parse(parser.ParseString(fld.SchemaXml, "~sitecollection", "~site")).Attribute("FieldRef"),
-                        Step = fld.GetFieldProvisioningStep(parser)
-                    })
-                    .Where(fldData => fldData.Step == _step) // Only include fields related to the current step
-                    .OrderBy(fldData => fldData.FieldRef) // Ensure fields having fieldRef are handled after. This ensure lookups are created before dependent lookups
-                    .Select(fldData => fldData.Field)
-                    .ToArray();
+                        var fieldRef = (string)XElement.Parse(parser.ParseString(siteField.SchemaXml, "~sitecollection", "~site")).Attribute("FieldRef") + "";
+                        fieldDict.Add(fieldRef,siteField);
+                    }
+                }
+
+                var fields = fieldDict.Values.ToList();
 
                 var currentFieldIndex = 0;
                 foreach (var field in fields)
                 {
                     currentFieldIndex++;
-
                     var fieldSchemaElement = XElement.Parse(parser.ParseString(field.SchemaXml, "~sitecollection", "~site"));
                     var fieldId = fieldSchemaElement.Attribute("ID").Value;
                     var fieldInternalName = (string)fieldSchemaElement.Attribute("InternalName") != null ? (string)fieldSchemaElement.Attribute("InternalName") : "";
-                    WriteMessage($"Field|{(!string.IsNullOrWhiteSpace(fieldInternalName) ? fieldInternalName : fieldId)}|{currentFieldIndex}|{fields.Length}", ProvisioningMessageType.Progress);
+                    WriteMessage($"Field|{(!string.IsNullOrWhiteSpace(fieldInternalName) ? fieldInternalName : fieldId)}|{currentFieldIndex}|{fields.Count}", ProvisioningMessageType.Progress);
                     if (!existingFieldIds.Contains(Guid.Parse(fieldId)))
                     {
                         try
