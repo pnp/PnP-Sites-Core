@@ -397,10 +397,13 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         {
             using (var context = TestCommon.CreateClientContext())
             {
-                context.Web.UploadThemeFile(customColorFilePath);
-                context.Web.UploadThemeFile(customBackgroundFilePath);
-                context.Web.CreateComposedLookByName("Test_Theme", customColorFilePath, null, customBackgroundFilePath, null);
-                Assert.IsTrue(context.Web.ComposedLookExists("Test_Theme"));
+                if (System.IO.File.Exists(customColorFilePath) && System.IO.File.Exists(customBackgroundFilePath))
+                {
+                    context.Web.UploadThemeFile(customColorFilePath);
+                    context.Web.UploadThemeFile(customBackgroundFilePath);
+                    context.Web.CreateComposedLookByName("Test_Theme", customColorFilePath, null, customBackgroundFilePath, null);
+                    Assert.IsTrue(context.Web.ComposedLookExists("Test_Theme"));
+                }
             }
         }
 
