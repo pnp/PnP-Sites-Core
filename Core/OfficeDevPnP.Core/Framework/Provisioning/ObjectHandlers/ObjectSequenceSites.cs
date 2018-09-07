@@ -155,7 +155,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 subweb = web.Webs.Add(new WebCreationInformation()
                                 {
-                                    Language = int.Parse(subSiteObject.Language),
+                                    Language = subSiteObject.Language,
                                     Url = subSiteObject.Url,
                                     Description = subSiteObject.Description,
                                     Title = subSiteObject.Title,

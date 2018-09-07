@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Language of the target Site
         /// </summary>
-        public String Language { get; set; }
+        public int Language { get; set; }
 
         /// <summary>
         /// The TimeZone of the target Site

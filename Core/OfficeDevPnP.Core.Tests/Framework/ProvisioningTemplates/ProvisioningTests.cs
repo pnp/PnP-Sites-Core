@@ -79,7 +79,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
             {
                 Description = "Test Sub",
                 Url = "testsub1",
-                Language = "1033",
+                Language = 1033,
                 TimeZoneId = 4,
                 Title = "Test Sub",
                 UseSamePermissionsAsParentSite = true
