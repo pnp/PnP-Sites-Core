@@ -33,10 +33,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
                 throw new ArgumentNullException(nameof(ctx), CoreResources.Provisioning_Extensibility_Pipeline_ClientCtxNull);
 
             if (string.IsNullOrWhiteSpace(provider.Assembly))
-                throw new ArgumentException($"{nameof(provider)}.{nameof(provider.Assembly)}", CoreResources.Provisioning_Extensibility_Pipeline_Missing_AssemblyName);
+                throw new ArgumentException(String.Format("{0}.{1}", nameof(provider), nameof(provider.Assembly)), CoreResources.Provisioning_Extensibility_Pipeline_Missing_AssemblyName);
 
             if (string.IsNullOrWhiteSpace(provider.Type))
-                throw new ArgumentException($"{nameof(provider)}.{nameof(provider.Type)}", CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
+                throw new ArgumentException(String.Format("{0}.{1}", nameof(provider), nameof(provider.Type)), CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
 
             try
             {
@@ -101,10 +101,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
                 throw new ArgumentNullException(nameof(ctx), CoreResources.Provisioning_Extensibility_Pipeline_ClientCtxNull);
 
             if (string.IsNullOrWhiteSpace(handler.Assembly))
-                throw new ArgumentException($"{nameof(handler)}.{nameof(handler.Assembly)}", CoreResources.Provisioning_Extensibility_Pipeline_Missing_AssemblyName);
+                throw new ArgumentException(String.Format("{0}.{1}", nameof(handler), nameof(handler.Type)), CoreResources.Provisioning_Extensibility_Pipeline_Missing_AssemblyName);
 
             if (string.IsNullOrWhiteSpace(handler.Type))
-                throw new ArgumentException($"{nameof(handler)}.{nameof(handler.Type)}", CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
+                throw new ArgumentException(String.Format("{0}.{1}", nameof(handler), nameof(handler.Type)), CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
 
             try
             {
@@ -182,10 +182,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
                 throw new ArgumentNullException(nameof(ctx), CoreResources.Provisioning_Extensibility_Pipeline_ClientCtxNull);
 
             if (string.IsNullOrWhiteSpace(handler.Assembly))
-                throw new ArgumentException($"{nameof(handler)}.{nameof(handler.Assembly)}", CoreResources.Provisioning_Extensibility_Pipeline_Missing_AssemblyName);
+                throw new ArgumentException(String.Format("{0}.{1}", nameof(handler), nameof(handler.Assembly)), CoreResources.Provisioning_Extensibility_Pipeline_Missing_AssemblyName);
 
             if (string.IsNullOrWhiteSpace(handler.Type))
-                throw new ArgumentException($"{nameof(handler)}.{nameof(handler.Type)}", CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
+                throw new ArgumentException(String.Format("{0}.{1}", nameof(handler), nameof(handler.Type)), CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
 
             ProvisioningTemplate parsedTemplate = null;
 

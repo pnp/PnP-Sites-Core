@@ -1770,7 +1770,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     if (!String.IsNullOrEmpty(provider.HandlerType))
                     {
-                        var handlerType = Type.GetType(provider.HandlerType, provider.Enabled);
+                        var handlerType = Type.GetType(provider.HandlerType, false);
                         if (handlerType != null)
                         {
                             result.ExtensibilityHandlers.Add(

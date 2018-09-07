@@ -29,7 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 {
                     string res = null;
                     var typeName = s.GetPublicInstancePropertyValue("HandlerType");
-                    if(typeName != null)
+                    if (typeName != null)
                     {
                         object enabledValue = s.GetPublicInstancePropertyValue("Enabled");
                         bool enabled = false;
@@ -38,8 +38,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                             enabled = (bool)enabledValue;
                         }
 
-                        var type = Type.GetType(typeName.ToString(), enabled);
-                        if(type != null)
+                        var type = Type.GetType(typeName.ToString(), false);
+                        if (type != null)
                         {
                             d.Assembly = type.Assembly.FullName;
                             res = type.FullName;
