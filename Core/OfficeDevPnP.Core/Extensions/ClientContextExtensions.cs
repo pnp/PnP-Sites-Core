@@ -276,6 +276,31 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Returns the number of pending requests
+        /// </summary>
+        /// <param name="clientContext">Client context to check the pending requests for</param>
+        /// <returns>The number of pending requests</returns>
+        public static int PendingRequestCount(this ClientRuntimeContext clientContext)
+        {
+            int count = 0;
+
+            if (clientContext.HasPendingRequest)
+            {
+                var result = clientContext.PendingRequest.GetType().GetProperty("Actions", BindingFlags.GetProperty | BindingFlags.Instance | BindingFlags.NonPublic);
+                if (result != null)
+                {
+                    var propValue = result.GetValue(clientContext.PendingRequest);
+                    if (propValue != null)
+                    {
+                        count = (propValue as System.Collections.Generic.List<ClientAction>).Count;
+                    }
+                }
+            }
+
+            return count;
+        }
+
+        /// <summary>
         /// Gets a site collection context for the passed web. This site collection client context uses the same credentials
         /// as the passed client context
         /// </summary>

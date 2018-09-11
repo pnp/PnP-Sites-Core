@@ -258,9 +258,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (list.Views.Any() && list.RemoveExistingViews)
             {
-                while (createdList.Views.Any())
+                for (int i = createdList.Views.Count - 1; i >= 0; i--)
                 {
-                    createdList.Views[0].DeleteObject();
+                    var view = createdList.Views[i];
+                    if (view.Hidden && view.ServerRelativeUrl.IndexOf(listInfo.TemplateList.Url, StringComparison.OrdinalIgnoreCase) == -1)
+                    {
+                        // Don't delete views related to list view webparts - view URL differ from list URL
+                        continue;
+                    }
+                    createdList.Views[i].DeleteObject();
                 }
                 web.Context.ExecuteQueryRetry();
             }
@@ -484,7 +490,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             try
             {
-                var viewElement = XElement.Parse(view.SchemaXml);
+                var viewElement = XElement.Parse(parser.ParseString(view.SchemaXml));
                 var displayNameElement = viewElement.Attribute("DisplayName");
                 if (displayNameElement == null)
                 {
@@ -523,6 +529,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Default view
                 var viewDefault = viewElement.Attribute("DefaultView") != null && bool.Parse(viewElement.Attribute("DefaultView").Value);
 
+                // Hidden view
+                var hidden = viewElement.Attribute("Hidden") != null && bool.Parse(viewElement.Attribute("Hidden").Value);
+
                 // Row limit
                 var viewPaged = true;
                 uint viewRowLimit = 30;
@@ -552,7 +561,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     Query = viewQuery.ToString(),
                     ViewTypeKind = viewType,
                     PersonalView = false,
-                    SetAsDefaultView = viewDefault,
+                    SetAsDefaultView = viewDefault
                 };
 
                 // Allow to specify a custom view url. View url is taken from title, so we first set title to the view url value we need,
@@ -571,6 +580,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var createdView = createdList.Views.Add(viewCI);
                 createdView.ListViewXml = viewInnerXml;
+                if (hidden) createdView.Hidden = hidden;
                 createdView.Update();
                 createdView.EnsureProperties(v => v.Scope, v => v.JSLink, v => v.Title, v => v.Aggregations, v => v.MobileView, v => v.MobileDefaultView, v => v.ViewData);
                 web.Context.ExecuteQueryRetry();
@@ -1558,10 +1568,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var listTemplates = site.GetCustomListTemplates(web);
                     web.Context.Load(listTemplates);
                     web.Context.ExecuteQueryRetry();
-                    var template = listTemplates.SingleOrDefault(t => t.FeatureId == templateList.TemplateFeatureID);
-                    if (template != null)
+                    var matchingTemplates = listTemplates.Where(t => t.FeatureId == templateList.TemplateFeatureID &&
+                            t.ListTemplateTypeKind == templateList.TemplateType).ToList();
+                    if (matchingTemplates.Count == 1)
                     {
-                        listCreate.ListTemplate = template;
+                        listCreate.ListTemplate = matchingTemplates[0];
                     }
                 }
                 if (listCreate.ListTemplate == null)

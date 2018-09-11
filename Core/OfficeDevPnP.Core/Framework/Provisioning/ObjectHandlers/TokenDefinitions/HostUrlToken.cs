@@ -23,8 +23,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (CacheValue == null)
             {
-                this.Web.EnsureProperty(w => w.Url);
-                var uri = new Uri(this.Web.Url);
+                TokenContext.Web.EnsureProperty(w => w.Url);
+                var uri = new Uri(TokenContext.Web.Url);
                 CacheValue = $"{uri.Scheme}://{uri.DnsSafeHost}";
             }
             return CacheValue;
