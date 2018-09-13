@@ -133,7 +133,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         #region Helper Methods
 
-        private ITemplateFormatter GetSpecificFormatterInternal(ref System.IO.Stream template)
+        internal ITemplateFormatter GetSpecificFormatterInternal(ref System.IO.Stream template)
         {
             if (template == null)
             {

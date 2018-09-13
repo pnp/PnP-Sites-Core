@@ -69,7 +69,7 @@
       <pnp:StorageEntity Key="PnPKey02" Value="{ Id: 1, Property: 'Some text here'}" Description="Description 02" />
     </pnp:StorageEntities>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-DUMMY-76d237bb-ee03-4fb2-aab8-cf2c16d1f397">
+  <pnp:Templates ID="CONTAINER-DUMMY-9c835c09-41a0-4d2e-98d1-b2565c675996">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />

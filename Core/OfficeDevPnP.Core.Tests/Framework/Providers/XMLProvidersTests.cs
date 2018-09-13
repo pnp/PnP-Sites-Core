@@ -698,10 +698,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     AppDomain.CurrentDomain.BaseDirectory),
                     "Templates");
 
-            var serializer = new XMLPnPSchemaV201807Serializer();
-            serializer.Initialize(provider);
+            var hierarchy = provider.GetHierarchy("ProvisioningSchema-2018-07-FullSample-01.xml");
+            //var serializer = new XMLPnPSchemaV201807Serializer();
+            //serializer.Initialize(provider);
 
-            var hierarchy = serializer.ToProvisioningHierarchy(provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml"));
+            //var hierarchy = serializer.ToProvisioningHierarchy(provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml"));
 
             Assert.IsNotNull(hierarchy);
             Assert.IsNotNull(hierarchy.Templates);
@@ -718,18 +719,23 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     AppDomain.CurrentDomain.BaseDirectory),
                     "Templates");
 
-            var serializer = new XMLPnPSchemaV201807Serializer();
-            serializer.Initialize(provider);
+            var hierarchy = provider.GetHierarchy("ProvisioningSchema-2018-07-FullSample-01.xml");
 
-            var hierarchy = serializer.ToProvisioningHierarchy(provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml"));
+            //var serializer = new XMLPnPSchemaV201807Serializer();
+            //serializer.Initialize(provider);
+
+            //var hierarchy = serializer.ToProvisioningHierarchy(provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml"));
 
             // Save the hierarchy
             var outputFile = "ProvisioningSchema-2018-07-FullSample-01-OUT.xml";
-            var mem = serializer.ToFormattedHierarchy(hierarchy);
-            provider.Connector.SaveFileStream(outputFile, mem);
+            //var mem = serializer.ToFormattedHierarchy(hierarchy);
+            //provider.Connector.SaveFileStream(outputFile, mem);
+
+            provider.SaveAs(hierarchy, outputFile);
+
             Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{outputFile}"));
 
-            var hierarchy2 = serializer.ToProvisioningHierarchy(provider.Connector.GetFileStream(outputFile));
+            var hierarchy2 = provider.GetHierarchy(outputFile);
             Assert.IsNotNull(hierarchy2);
         }
 
