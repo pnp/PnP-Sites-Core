@@ -457,7 +457,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
-                if (modelTerm.Terms.Any(t => t.CustomSortOrder > -1))
+                if (modelTerm.Terms.Any(t => t.CustomSortOrder > 0))
                 {
                     var sortedTerms = modelTerm.Terms.OrderBy(t => t.CustomSortOrder);
 
