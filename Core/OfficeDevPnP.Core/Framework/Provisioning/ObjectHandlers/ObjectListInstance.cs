@@ -2269,7 +2269,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var fieldElement = XElement.Parse(field.SchemaXml);
                     var sourceId = fieldElement.Attribute("SourceID") != null ? fieldElement.Attribute("SourceID").Value : null;
 
-                    if (sourceId != null && sourceId == "http://schemas.microsoft.com/sharepoint/v3")
+                    if (sourceId == "http://schemas.microsoft.com/sharepoint/v3")
                     {
                         if (field.InternalName == "Editor"
                             || field.InternalName == "Author"
@@ -2301,6 +2301,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             || field.InternalName == "CheckoutUser"
                             || field.InternalName == "Modified_x0020_By"
                             || field.InternalName == "Created_x0020_By"
+                            || field.InternalName == "_DisplayName"
                             )
                         {
                             addField = false;
@@ -2340,6 +2341,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var schemaXml = ParseFieldSchema(field.SchemaXml, web, lists);
                     var fieldElement = XElement.Parse(field.SchemaXml);
+                    var sourceId = fieldElement.Attribute("SourceID") != null ? fieldElement.Attribute("SourceID").Value : null;
+
+                    if (sourceId == "http://schemas.microsoft.com/sharepoint/v3")
+                    {
+                        if (field.InternalName == "_DisplayName")
+                        {
+                            continue;
+                        }
+                    }
+
                     var listId = fieldElement.Attribute("List") != null ? fieldElement.Attribute("List").Value : null;
 
                     if (fieldElement.Attribute("Type").Value == "Calculated")
