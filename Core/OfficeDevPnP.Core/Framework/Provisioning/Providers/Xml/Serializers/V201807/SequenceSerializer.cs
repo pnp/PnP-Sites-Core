@@ -192,7 +192,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 resultArray.SetValue(t, i++);
             }
 
-            return (resultArray);
+            return (resultArray.Length > 0 ? resultArray : null);
         }
     }
 }
