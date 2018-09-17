@@ -201,6 +201,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             var stream = ((IProvisioningHierarchyFormatter)formatter).ToFormattedHierarchy(hierarchy);
 
             this.Connector.SaveFileStream(uri, stream);
+
+            if (this.Connector is ICommitableFileConnector)
+            {
+                ((ICommitableFileConnector)this.Connector).Commit();
+            }
         }
 
         public override void SaveAs(ProvisioningTemplate template, string uri)
