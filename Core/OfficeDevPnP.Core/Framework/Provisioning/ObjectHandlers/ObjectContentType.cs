@@ -218,13 +218,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             // Set flag to reorder fields CT fields are not equal to template fields
             var existingFieldNames = existingContentType.FieldLinks.AsEnumerable().Select(fld => fld.Name).ToArray();
-            var ctFieldNames = templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray();
+
+            // Workaround to ignore the fields below :
+            //< pnp:FieldRef ID = "746bb255-b0f7-47d5-9a3e-1c8e52468420" Name = "Authors" />
+            //< pnp:FieldRef ID = "8a8804d8-ad51-48ef-9acf-0df7b3cc7ef6" Name = "OriginalSourceUrl" />
+            var ctFieldNames = templateContentType.FieldRefs
+                .Where(fld => fld.Id.ToString().IndexOf("746bb255-b0f7-47d5-9a3e-1c8e52468420") < 0 && fld.Id.ToString().IndexOf("8a8804d8-ad51-48ef-9acf-0df7b3cc7ef6") < 0)
+                .Select(fld => parser.ParseString(fld.Name)).ToArray();
+
             reOrderFields = !existingFieldNames.SequenceEqual(ctFieldNames);
 
             // Delta handling
             existingContentType.EnsureProperty(c => c.FieldLinks);
             var targetIds = existingContentType.FieldLinks.AsEnumerable().Select(c1 => c1.Id).ToList();
-            var sourceIds = templateContentType.FieldRefs.Select(c1 => c1.Id).ToList();
+            var sourceIds = templateContentType.FieldRefs
+                .Where(fld => fld.Id.ToString().IndexOf("746bb255-b0f7-47d5-9a3e-1c8e52468420") < 0 && fld.Id.ToString().IndexOf("8a8804d8-ad51-48ef-9acf-0df7b3cc7ef6") < 0)
+                .Select(c1 => c1.Id).ToList();
 
             var fieldsNotPresentInTarget = sourceIds.Except(targetIds).ToArray();
 
