@@ -271,7 +271,7 @@
   </Choose>
   <ItemGroup>
     <Reference Include="AngleSharp">
-      <HintPath>..\packages\AngleSharp.0.9.9\lib\net45\AngleSharp.dll</HintPath>
+      <HintPath>..\packages\AngleSharp.0.9.9.2\lib\net45\AngleSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Data.Edm, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
