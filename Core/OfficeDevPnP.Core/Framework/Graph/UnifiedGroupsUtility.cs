@@ -700,7 +700,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                     if (includeClassification)
                     {
-                        group.Classification = GetGroupClassification(groupId, accessToken);
+                        group.Classification = g.Classification;
                     }
 
                     return (group);
@@ -794,7 +794,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                                 if (includeClassification)
                                 {
-                                    group.Classification = GetGroupClassification(g.Id, accessToken);
+                                    group.Classification = g.Classification;
                                 }
 
                                 groups.Add(group);
