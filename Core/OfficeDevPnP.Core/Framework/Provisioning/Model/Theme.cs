@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Declares if the Theme Is Inverted
         /// </summary>
-        public String IsInverted { get; set; }
+        public Boolean IsInverted { get; set; }
 
         /// <summary>
         /// Defines the Palette of the Theme
@@ -43,7 +43,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (String.Format("{0}|{1}|{2}",
                 Name?.GetHashCode() ?? 0,
-                IsInverted?.GetHashCode() ?? 0,
+                IsInverted.GetHashCode(),
                 Palette?.GetHashCode() ?? 0
             ).GetHashCode());
         }
