@@ -68,8 +68,62 @@
       <pnp:StorageEntity Key="PnPKey01" Value="My custom tenant-wide value 01" Comment="Comment 01" Description="Description 01" />
       <pnp:StorageEntity Key="PnPKey02" Value="{ Id: 1, Property: 'Some text here'}" Description="Description 02" />
     </pnp:StorageEntities>
+    <pnp:Themes>
+      <pnp:Theme Name="CustomOrange">{
+        "themePrimary": "#ecb534",
+        "themeLighterAlt": "#fefcf6",
+        "themeLighter": "#fcf3dd",
+        "themeLight": "#fae8bf",
+        "themeTertiary": "#f4d282",
+        "themeSecondary": "#efbe4b",
+        "themeDarkAlt": "#d5a32f",
+        "themeDark": "#b48a28",
+        "themeDarker": "#85661d",
+        "neutralLighterAlt": "#f8f8f8",
+        "neutralLighter": "#f4f4f4",
+        "neutralLight": "#eaeaea",
+        "neutralQuaternaryAlt": "#dadada",
+        "neutralQuaternary": "#d0d0d0",
+        "neutralTertiaryAlt": "#c8c8c8",
+        "neutralTertiary": "#a9a9a9",
+        "neutralSecondary": "#8d8d8d",
+        "neutralPrimaryAlt": "#727272",
+        "neutralPrimary": "#020202",
+        "neutralDark": "#3a3a3a",
+        "black": "#1e1e1e",
+        "white": "#ffffff",
+        "bodyBackground": "#ffffff",
+        "bodyText": "#020202"
+        }</pnp:Theme>
+      <pnp:Theme Name="CustomBlue" IsInverted="true">{
+        "themePrimary": "#316bcf",
+        "themeLighterAlt": "#f5f8fd",
+        "themeLighter": "#d9e4f7",
+        "themeLight": "#bacef0",
+        "themeTertiary": "#7ba1e2",
+        "themeSecondary": "#467ad4",
+        "themeDarkAlt": "#2d60ba",
+        "themeDark": "#26519d",
+        "themeDarker": "#1c3c74",
+        "neutralLighterAlt": "#f8f8f8",
+        "neutralLighter": "#f4f4f4",
+        "neutralLight": "#eaeaea",
+        "neutralQuaternaryAlt": "#dadada",
+        "neutralQuaternary": "#d0d0d0",
+        "neutralTertiaryAlt": "#c8c8c8",
+        "neutralTertiary": "#a9a9a9",
+        "neutralSecondary": "#8d8d8d",
+        "neutralPrimaryAlt": "#727272",
+        "neutralPrimary": "#020202",
+        "neutralDark": "#3a3a3a",
+        "black": "#1e1e1e",
+        "white": "#ffffff",
+        "bodyBackground": "#ffffff",
+        "bodyText": "#020202"
+        }</pnp:Theme>
+    </pnp:Themes>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-DUMMY-95a15c51-6cdf-41b8-b06e-15d9bc74692f">
+  <pnp:Templates ID="CONTAINER-DUMMY-8728f2af-72da-4d0e-941f-ad642362eab2">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
@@ -977,14 +1031,14 @@ function showAlert(){alert("Hello!")};
   </pnp:Templates>
   <pnp:Sequence ID="SAMPLE-SEQUENCE">
     <pnp:SiteCollections>
-      <pnp:SiteCollection d4p1:type="pnp:CommunicationSite" Title="{parameter:CompanyName} Intranet" Description="{parameter:CompanyName} Intranet" Url="https://{parameter:O365TenantName}.sharepoint.com/sites/CommSite" Owner="{parameter:CommunicationSiteOwner}" SiteDesign="{SiteDesignId:PnP Site Design}" Classification="HBI" Language="1040" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
+      <pnp:SiteCollection d4p1:type="pnp:CommunicationSite" Title="{parameter:CompanyName} Intranet" Description="{parameter:CompanyName} Intranet" Theme="CustomOrange" Url="https://{parameter:O365TenantName}.sharepoint.com/sites/CommSite" Owner="{parameter:CommunicationSiteOwner}" SiteDesign="{SiteDesignId:PnP Site Design}" Classification="HBI" Language="1040" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
         <pnp:Templates>
           <pnp:ProvisioningTemplateReference ID="SPECIALTEAM" />
         </pnp:Templates>
         <pnp:Sites>
-          <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" Title="{parameter:CompanyName} Intranet Workflows" Description="{parameter:CompanyName} Intranet Workflows" Url="{parameter:SitePrefix}-Workflows" TimeZoneId="4" Language="1040">
+          <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" Title="{parameter:CompanyName} Intranet Workflows" Description="{parameter:CompanyName} Intranet Workflows" Theme="CustomBlue" Url="{parameter:SitePrefix}-Workflows" TimeZoneId="4" Language="1040">
             <pnp:Sites>
-              <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" Title="{parameter:CompanyName} Intranet Workflows Sub1" Description="{parameter:CompanyName} Intranet Workflows Sub1" Url="{parameter:SitePrefix}-Workflows-Sub1" TimeZoneId="4" Language="1040">
+              <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" Title="{parameter:CompanyName} Intranet Workflows Sub1" Description="{parameter:CompanyName} Intranet Workflows Sub1" Theme="CustomOrange" Url="{parameter:SitePrefix}-Workflows-Sub1" TimeZoneId="4" Language="1040">
                 <pnp:Sites>
                   <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" Title="{parameter:CompanyName} Intranet Workflows Sub1.1" Description="{parameter:CompanyName} Intranet Workflows Sub1.1" Url="{parameter:SitePrefix}-Workflows-Sub1.1" TimeZoneId="4" Language="1040">
                     <pnp:Templates>
@@ -996,7 +1050,7 @@ function showAlert(){alert("Hello!")};
                   <pnp:ProvisioningTemplateReference ID="WORKFLOWSITE" />
                 </pnp:Templates>
               </pnp:Site>
-              <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" Title="{parameter:CompanyName} Intranet Workflows Sub2" Description="{parameter:CompanyName} Intranet Workflows Sub2" Url="{parameter:SitePrefix}-Workflows-Sub2" TimeZoneId="4" Language="1040">
+              <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" Title="{parameter:CompanyName} Intranet Workflows Sub2" Description="{parameter:CompanyName} Intranet Workflows Sub2" Theme="CustomBlue" Url="{parameter:SitePrefix}-Workflows-Sub2" TimeZoneId="4" Language="1040">
                 <pnp:Templates>
                   <pnp:ProvisioningTemplateReference ID="WORKFLOWSITE" />
                 </pnp:Templates>
@@ -1013,7 +1067,7 @@ function showAlert(){alert("Hello!")};
           <pnp:ProvisioningTemplateReference ID="ProjectsTemplate" />
         </pnp:Templates>
       </pnp:SiteCollection>
-      <pnp:SiteCollection d4p1:type="pnp:TeamSiteNoGroup" Title="{parameter:CompanyName} Meetings" Description="{parameter:CompanyName} Intranet Meetings" Url="https://{parameter:O365TenantName}.sharepoint.com/sites/Meetings" Owner="{parameter:TeamSiteNoGroupOwner}" TimeZoneId="4" Language="1040" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
+      <pnp:SiteCollection d4p1:type="pnp:TeamSiteNoGroup" Title="{parameter:CompanyName} Meetings" Description="{parameter:CompanyName} Intranet Meetings" Theme="CustomOrange" Url="https://{parameter:O365TenantName}.sharepoint.com/sites/Meetings" Owner="{parameter:TeamSiteNoGroupOwner}" TimeZoneId="4" Language="1040" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
         <pnp:Templates>
           <pnp:ProvisioningTemplateReference ID="MeetingsTemplate" />
         </pnp:Templates>

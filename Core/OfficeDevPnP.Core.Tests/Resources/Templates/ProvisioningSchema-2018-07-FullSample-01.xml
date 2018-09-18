@@ -76,6 +76,64 @@
         <pnp:ExcludeRestrictedSiteClassifications>HIB,GDPR</pnp:ExcludeRestrictedSiteClassifications>
       </pnp:Private>
     </pnp:ContentDeliveryNetwork>
+    <pnp:Themes>
+      <pnp:Theme Name="CustomOrange" IsInverted="false">
+        {
+        "themePrimary": "#ecb534",
+        "themeLighterAlt": "#fefcf6",
+        "themeLighter": "#fcf3dd",
+        "themeLight": "#fae8bf",
+        "themeTertiary": "#f4d282",
+        "themeSecondary": "#efbe4b",
+        "themeDarkAlt": "#d5a32f",
+        "themeDark": "#b48a28",
+        "themeDarker": "#85661d",
+        "neutralLighterAlt": "#f8f8f8",
+        "neutralLighter": "#f4f4f4",
+        "neutralLight": "#eaeaea",
+        "neutralQuaternaryAlt": "#dadada",
+        "neutralQuaternary": "#d0d0d0",
+        "neutralTertiaryAlt": "#c8c8c8",
+        "neutralTertiary": "#a9a9a9",
+        "neutralSecondary": "#8d8d8d",
+        "neutralPrimaryAlt": "#727272",
+        "neutralPrimary": "#020202",
+        "neutralDark": "#3a3a3a",
+        "black": "#1e1e1e",
+        "white": "#ffffff",
+        "bodyBackground": "#ffffff",
+        "bodyText": "#020202"
+        }
+      </pnp:Theme>
+      <pnp:Theme Name="CustomBlue" IsInverted="true">
+        {
+        "themePrimary": "#316bcf",
+        "themeLighterAlt": "#f5f8fd",
+        "themeLighter": "#d9e4f7",
+        "themeLight": "#bacef0",
+        "themeTertiary": "#7ba1e2",
+        "themeSecondary": "#467ad4",
+        "themeDarkAlt": "#2d60ba",
+        "themeDark": "#26519d",
+        "themeDarker": "#1c3c74",
+        "neutralLighterAlt": "#f8f8f8",
+        "neutralLighter": "#f4f4f4",
+        "neutralLight": "#eaeaea",
+        "neutralQuaternaryAlt": "#dadada",
+        "neutralQuaternary": "#d0d0d0",
+        "neutralTertiaryAlt": "#c8c8c8",
+        "neutralTertiary": "#a9a9a9",
+        "neutralSecondary": "#8d8d8d",
+        "neutralPrimaryAlt": "#727272",
+        "neutralPrimary": "#020202",
+        "neutralDark": "#3a3a3a",
+        "black": "#1e1e1e",
+        "white": "#ffffff",
+        "bodyBackground": "#ffffff",
+        "bodyText": "#020202"
+        }
+      </pnp:Theme>
+    </pnp:Themes>
   </pnp:Tenant>
 
   <pnp:Templates ID="SAMPLE-TEMPLATES">
@@ -855,6 +913,7 @@
                           AllowFileSharingForGuestUsers="true"
                           IsHubSite="true"
                           Classification="HBI"
+                          Theme="CustomOrange"
                           Description="{parameter:CompanyName} Intranet"
                           Language="1040">
         <pnp:Templates>
@@ -869,6 +928,7 @@
                     Description="{parameter:CompanyName} Intranet Workflows"
                     TimeZoneId="4"
                     Language="1040"
+                    Theme="CustomBlue"
                     QuickLaunchEnabled="true"
                     UseSamePermissionsAsParentSite="true">
             <pnp:Sites>
@@ -878,6 +938,7 @@
                         Description="{parameter:CompanyName} Intranet Workflows Sub1"
                         TimeZoneId="4"
                         Language="1040"
+                        Theme="CustomOrange"
                         QuickLaunchEnabled="true"
                         UseSamePermissionsAsParentSite="true">
                 <pnp:Sites>
@@ -904,6 +965,7 @@
                         Description="{parameter:CompanyName} Intranet Workflows Sub2"
                         TimeZoneId="4"
                         Language="1040"
+                        Theme="CustomBlue"
                         QuickLaunchEnabled="true"
                         UseSamePermissionsAsParentSite="true">
                 <pnp:Templates>
@@ -938,6 +1000,7 @@
                           Description="{parameter:CompanyName} Intranet Meetings"
                           IsHubSite="false"
                           Language="1040"
+                          Theme="CustomOrange"
                           TimeZoneId="4">
         <pnp:Templates>
           <pnp:ProvisioningTemplateReference ID="MeetingsTemplate" />

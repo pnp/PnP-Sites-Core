@@ -51,6 +51,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public SubSiteCollection Sites { get; private set; }
 
+        /// <summary>
+        /// Defines the Theme to apply to the SiteCollection
+        /// </summary>
+        public String Theme { get; set; }
+
         public Guid Id => id;
 
         public override string ToString()
@@ -67,12 +72,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|",
                 this.IsHubSite.GetHashCode(),
                 this.Title.GetHashCode(),
                 this.Description.GetHashCode(),
                 this.Templates.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Sites.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Theme.GetHashCode(),
                 this.GetInheritedHashCode()
             ).GetHashCode());
         }
@@ -114,6 +120,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Description == other.Description &&
                 this.Templates.Intersect(other.Templates).Count() == 0 &&
                 this.Sites.DeepEquals(other.Sites) &&
+                this.Theme == other.Theme &&
                 this.EqualsInherited(other)
                 );
         }

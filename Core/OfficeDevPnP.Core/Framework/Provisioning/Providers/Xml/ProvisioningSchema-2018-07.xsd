@@ -300,6 +300,15 @@
         </xsd:annotation>
       </xsd:element>
 
+      <xsd:element name="Themes" type="pnp:Themes" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Entry point for the tenant-wide Themes
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
     </xsd:all>
 
   </xsd:complexType>
@@ -630,6 +639,45 @@
               </xsd:attribute>
             </xsd:extension>
           </xsd:complexContent>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
+
+  </xsd:complexType>
+
+  <xsd:complexType name="Themes">
+    <xsd:annotation>
+      <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+      <xsd:documentation xml:lang="en">
+        Collection of tenant-wide Themes
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:sequence>
+      <xsd:element name="Theme" minOccurs="0" maxOccurs="unbounded">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Defines a single tenant-wide Theme
+          </xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType mixed="true">
+          <xsd:attribute name="Name" type="xsd:string" use="required">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Defines the name of the tenant-wide Theme
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="IsInverted" type="xsd:boolean" use="optional" default="false">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Defines the name of the tenant-wide Theme
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
@@ -5992,6 +6040,14 @@
         <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
         <xsd:documentation xml:lang="en">
           Title of the site, required attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="Theme" type="pnp:ReplaceableString"  use="optional">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Theme of the site, optional attribute.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>

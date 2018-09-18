@@ -486,6 +486,8 @@
     <Compile Include="Framework\Provisioning\Model\TeamNoGroupSiteCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\TeamNoGroupSubSite.cs" />
     <Compile Include="Framework\Provisioning\Model\TeamSiteCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Theme.cs" />
+    <Compile Include="Framework\Provisioning\Model\ThemeCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\WebApiPermission.cs" />
     <Compile Include="Framework\Provisioning\Model\WebApiPermissionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Webhook.cs" />

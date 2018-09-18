@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 9/11/2018*
+* Topic automatically generated on 9/17/2018*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -245,6 +245,7 @@ Element to manage tenant-wide settings.
    <pnp:SiteDesigns />
    <pnp:SiteScripts />
    <pnp:StorageEntities />
+   <pnp:Themes />
 </pnp:Tenant>
 ```
 
@@ -260,6 +261,7 @@ ContentDeliveryNetwork|[ContentDeliveryNetwork](#contentdeliverynetwork)|Entry p
 SiteDesigns|[SiteDesigns](#sitedesigns)|Entry point for the tenant-wide Site Designs
 SiteScripts|[SiteScripts](#sitescripts)|Entry point for the tenant-wide Site Scripts
 StorageEntities|[StorageEntities](#storageentities)|Entry point for the tenant-wide properties (Storage Entities)
+Themes|[Themes](#themes)|Entry point for the tenant-wide Themes
 <a name="webapipermissions"></a>
 ### WebApiPermissions
 Collection of tenant-wide Web API permissions.
@@ -438,6 +440,42 @@ Attibute|Type|Description
 --------|----|-----------
 Comment|xsd:string|The Comment of the tenant-wide property, optional attribute.
 Description|xsd:string|The Description of the tenant-wide property, optional attribute.
+<a name="themes"></a>
+### Themes
+Collection of tenant-wide Themes
+
+```xml
+<pnp:Themes>
+   <pnp:Theme />
+</pnp:Themes>
+```
+
+
+Here follow the available child elements for the Themes element.
+
+
+Element|Type|Description
+-------|----|-----------
+Theme|[Theme](#theme)|Defines a single tenant-wide Theme
+<a name="theme"></a>
+### Theme
+Defines a single tenant-wide Theme
+
+```xml
+<pnp:Theme
+      Name="xsd:string"
+      IsInverted="xsd:boolean">
+</pnp:Theme>
+```
+
+
+Here follow the available attributes for the  element.
+
+
+Attibute|Type|Description
+--------|----|-----------
+Name|xsd:string|Defines the name of the tenant-wide Theme
+IsInverted|xsd:boolean|Defines the name of the tenant-wide Theme
 <a name="templates"></a>
 ### Templates
 SharePoint Templates, which can be inline or references to external files.

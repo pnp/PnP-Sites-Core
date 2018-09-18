@@ -316,6 +316,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
         
         private string descriptionField;
         
+        private string themeField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
         public Site[] Sites {
@@ -390,6 +392,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
             }
             set {
                 this.descriptionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Theme {
+            get {
+                return this.themeField;
+            }
+            set {
+                this.themeField = value;
             }
         }
     }
@@ -483,6 +496,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
         
         private string descriptionField;
         
+        private string themeField;
+        
         private bool isHubSiteField;
         
         private bool isHubSiteFieldSpecified;
@@ -528,6 +543,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
             }
             set {
                 this.descriptionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Theme {
+            get {
+                return this.themeField;
+            }
+            set {
+                this.themeField = value;
             }
         }
         
@@ -9125,6 +9151,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
         
         private StorageEntitiesStorageEntity[] storageEntitiesField;
         
+        private ThemesTheme[] themesField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute("Package", IsNullable=false)]
         public AppCatalogPackage[] AppCatalog {
@@ -9187,6 +9215,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
             }
             set {
                 this.storageEntitiesField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute("Theme", IsNullable=false)]
+        public ThemesTheme[] Themes {
+            get {
+                return this.themesField;
+            }
+            set {
+                this.themesField = value;
             }
         }
     }
@@ -9539,6 +9578,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
             }
             set {
                 this.descriptionField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema")]
+    public partial class ThemesTheme {
+        
+        private string nameField;
+        
+        private bool isInvertedField;
+        
+        private string[] textField;
+        
+        public ThemesTheme() {
+            this.isInvertedField = false;
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Name {
+            get {
+                return this.nameField;
+            }
+            set {
+                this.nameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool IsInverted {
+            get {
+                return this.isInvertedField;
+            }
+            set {
+                this.isInvertedField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlTextAttribute()]
+        public string[] Text {
+            get {
+                return this.textField;
+            }
+            set {
+                this.textField = value;
             }
         }
     }
