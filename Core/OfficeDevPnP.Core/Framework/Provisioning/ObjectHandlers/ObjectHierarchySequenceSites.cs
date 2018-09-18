@@ -49,6 +49,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         WriteMessage($"Creating Team Site {siteInfo.Alias}", ProvisioningMessageType.Progress);
                                         siteContext = Sites.SiteCollection.CreateAsync(tenant.Context as ClientContext, siteInfo).GetAwaiter().GetResult();
+                                        if(t.IsHubSite)
+                                        {
+                                            tenant.RegisterHubSite(siteContext.Url);
+                                            tenant.Context.ExecuteQueryRetry();
+                                        }
                                     }
                                     else
                                     {
@@ -58,7 +63,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             siteContext = (tenant.Context as ClientContext).Clone(groupSiteInfo["siteUrl"]);
                                         }
                                     }
-
+                                    if(!string.IsNullOrEmpty(t.Theme))
+                                    {
+                                        tenant.SetWebTheme(t.Theme, siteContext.Url);
+                                        tenant.Context.ExecuteQueryRetry();
+                                    }
                                     break;
                                 }
                             case CommunicationSiteCollection c:
@@ -87,11 +96,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         WriteMessage($"Using existing Communications Site at {siteInfo.Url}", ProvisioningMessageType.Progress);
                                         siteContext = (tenant.Context as ClientContext).Clone(siteInfo.Url);
+                                      
                                     }
                                     else
                                     {
                                         WriteMessage($"Creating Communications Site at {siteInfo.Url}", ProvisioningMessageType.Progress);
                                         siteContext = Sites.SiteCollection.CreateAsync(tenant.Context as ClientContext, siteInfo).GetAwaiter().GetResult();
+                                    }
+                                    if (c.IsHubSite)
+                                    {
+                                        tenant.RegisterHubSite(siteContext.Url);
+                                        tenant.Context.ExecuteQueryRetry();
+                                    }
+                                    if (!string.IsNullOrEmpty(c.Theme))
+                                    {
+                                        tenant.SetWebTheme(c.Theme, siteContext.Url);
+                                        tenant.Context.ExecuteQueryRetry();
                                     }
                                     break;
                                 }
@@ -116,6 +136,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         tenant.CreateSiteCollection(siteInfo, false, true);
                                         siteContext = tenant.Context.Clone(t.Url);
+                                    }
+                                    if (t.IsHubSite)
+                                    {
+                                        tenant.RegisterHubSite(siteContext.Url);
+                                        tenant.Context.ExecuteQueryRetry();
+                                    }
+                                    if (!string.IsNullOrEmpty(t.Theme))
+                                    {
+                                        tenant.SetWebTheme(t.Theme, siteContext.Url);
+                                        tenant.Context.ExecuteQueryRetry();
                                     }
                                     break;
                                 }

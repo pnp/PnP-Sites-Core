@@ -1,5 +1,6 @@
 ﻿using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
+using Newtonsoft.Json;
 using OfficeDevPnP.Core.ALM;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Runtime.Serialization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 {
@@ -292,6 +294,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             return parser;
         }
 
+        public static TokenParser ProcessThemes(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope)
+        {
+            if (provisioningTenant.Themes != null && provisioningTenant.Themes.Any())
+            {
+                foreach (var theme in provisioningTenant.Themes)
+                {
+                    var parsedName = parser.ParseString(theme.Name);
+                    var parsedPalette = parser.ParseString(theme.Palette);
+                    var palette = JsonConvert.DeserializeObject<Dictionary<string, string>>(parsedPalette);
+                    var tenantTheme = new TenantTheme() { Name = parsedName, Palette = palette, IsInverted = theme.IsInverted };
+                    tenant.UpdateTenantTheme(parsedName, JsonConvert.SerializeObject(tenantTheme));
+                    tenant.Context.ExecuteQueryRetry();
+                }
+            }
+            return parser;
+        }
+
+
+        [DataContract]
+        private class TenantTheme
+        {
+            [DataMember(Name = "name")]
+            public string Name { get; set; }
+
+            [DataMember(Name = "palette")]
+            public IDictionary<string, string> Palette { get; set; }
+
+            [DataMember(Name = "isInverted")]
+            public bool IsInverted { get; set; }
+        }
         /// <summary>
         /// Retrieves a file as a byte array from the connector. If the file name contains special characters (e.g. "%20") and cannot be retrieved, a workaround will be performed
         /// </summary>

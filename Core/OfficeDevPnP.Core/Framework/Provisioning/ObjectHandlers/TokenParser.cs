@@ -58,7 +58,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         // Lightweight rebase
         public void Rebase(Web web)
         {
-            foreach(var token in _tokens)
+            foreach (var token in _tokens)
             {
                 token.ClearCache();
             }
@@ -66,6 +66,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         // Heavy rebase for switching templates
         public void Rebase(Web web, ProvisioningTemplate template)
         {
+
+            _web = web;
+
             foreach (var token in _tokens.Where(t => t is VolatileTokenDefinition))
             {
                 ((VolatileTokenDefinition)token).ClearVolatileCache(web);
@@ -88,6 +91,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy)
         {
             var web = ((ClientContext)tenant.Context).Web;
+
+            _web = web;
             _tokens = new List<TokenDefinition>();
             foreach (var parameter in hierarchy.Parameters)
             {
@@ -115,9 +120,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             _tokens.Add(new SiteCollectionToken(web));
             _tokens.Add(new SiteCollectionIdToken(web));
-            _tokens.Add(new SiteCollectionIdEncodedToken(web));            
+            _tokens.Add(new SiteCollectionIdEncodedToken(web));
             _tokens.Add(new SiteToken(web));
-            _tokens.Add(new MasterPageCatalogToken(web));            
+            _tokens.Add(new MasterPageCatalogToken(web));
             _tokens.Add(new SiteCollectionTermStoreIdToken(web));
             _tokens.Add(new KeywordsTermStoreIdToken(web));
             _tokens.Add(new ThemeCatalogToken(web));

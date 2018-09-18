@@ -36,6 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         parser = TenantHelper.ProcessSiteScripts(tenant, template.Tenant, template.Connector, parser, scope);
                         parser = TenantHelper.ProcessSiteDesigns(tenant, template.Tenant, parser, scope);
                         parser = TenantHelper.ProcessStorageEntities(tenant, template.Tenant, parser, scope);
+                        parser = TenantHelper.ProcessThemes(tenant, template.Tenant, parser, scope);
                     }
                     // So far we do not provision CDN settings
                     // It will come in the near future
