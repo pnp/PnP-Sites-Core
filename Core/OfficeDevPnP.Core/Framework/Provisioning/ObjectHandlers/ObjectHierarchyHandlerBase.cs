@@ -1,13 +1,6 @@
-﻿using Microsoft.Online.SharePoint.TenantAdministration;
-using Microsoft.SharePoint.Client;
-using Microsoft.SharePoint.Client.Taxonomy;
+﻿#if !ONPREMISES
+using Microsoft.Online.SharePoint.TenantAdministration;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Xml.Linq;
-using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -46,3 +39,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
     }
 }
+#endif

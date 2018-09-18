@@ -133,6 +133,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+#if !ONPREMISES
         internal void ApplyProvisioningHierarchy(Tenant tenant, OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation provisioningInfo)
         {
             using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Provisioning))
@@ -199,7 +200,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
         }
-
+#endif
         /// <summary>
         /// Actual implementation of the apply templates
         /// </summary>

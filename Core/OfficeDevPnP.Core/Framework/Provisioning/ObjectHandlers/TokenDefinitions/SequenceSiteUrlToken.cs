@@ -5,14 +5,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
 {
     [TokenDefinitionDescription(
     Token = "{sequencesiteurl:[provisioningid]}",
-    Description = "Returns a full url of the site given its ID from the sequence",
+    Description = "Returns a full url of the site given its provisioning ID from the sequence",
     Example = "{sequencesiteurl:MYID}",
     Returns = "https://contoso.sharepoint.com/sites/mynewsite")]
     internal class SequenceSiteUrlUrlToken : TokenDefinition
     {
         private string _url = null;
         public SequenceSiteUrlUrlToken(Web web, string provisioningId, string url)
-            : base(web, $"{{sequencesiteurltoken:{provisioningId}}}")
+            : base(web, $"{{sequencesiteurl:{provisioningId}}}")
         {
             _url = url;
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.Online.SharePoint.TenantAdministration;
+﻿#if !ONPREMISES
+using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Entities;
@@ -203,11 +204,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                         }
 
-                        foreach (var token in _additionalTokens)
-                        {
-                            siteTokenParser.AddToken(token);
-                        }
-
                         var web = siteContext.Web;
 
                         foreach (var subsite in sitecollection.Sites)
@@ -374,3 +370,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
     }
 }
+#endif

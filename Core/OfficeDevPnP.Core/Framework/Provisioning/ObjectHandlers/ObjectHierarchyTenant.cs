@@ -1,11 +1,11 @@
-﻿using Microsoft.Online.SharePoint.TenantAdministration;
+﻿#if !ONPREMISES
+using Microsoft.Online.SharePoint.TenantAdministration;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-#if !ONPREMISES
     internal class ObjectHierarchyTenant : ObjectHierarchyHandlerBase
     {
         public override string Name
@@ -49,6 +49,5 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return hierarchy.Tenant != null;
         }
     }
-
-#endif
 }
+#endif

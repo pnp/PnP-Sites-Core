@@ -1,4 +1,5 @@
-﻿using Microsoft.Online.SharePoint.TenantAdministration;
+﻿#if !ONPREMISES
+using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.ALM;
@@ -526,3 +527,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         }
     }
 }
+#endif
