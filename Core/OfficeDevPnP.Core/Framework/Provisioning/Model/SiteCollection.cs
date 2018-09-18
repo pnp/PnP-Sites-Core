@@ -2,12 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public abstract partial class SiteCollection: BaseHierarchyModel, IEquatable<SiteCollection>
+    public abstract partial class SiteCollection : BaseHierarchyModel, IEquatable<SiteCollection>
     {
         #region Private Members
         Guid id;
@@ -56,7 +54,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public String Theme { get; set; }
 
+        /// <summary>
+        /// Internal use only
+        /// </summary>
         public Guid Id => id;
+
+        /// <summary>
+        /// Defines an optional ID in the sequence for use in tokens.
+        /// </summary>
+        public string ProvisioningId { get; set; }
 
         public override string ToString()
         {
@@ -72,13 +78,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
                 this.IsHubSite.GetHashCode(),
                 this.Title.GetHashCode(),
                 this.Description.GetHashCode(),
                 this.Templates.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Sites.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Theme.GetHashCode(),
+                this.ProvisioningId.GetHashCode(),
                 this.GetInheritedHashCode()
             ).GetHashCode());
         }
@@ -115,12 +122,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return (false);
             }
 
-            return (this.IsHubSite== other.IsHubSite &&
+            return (this.IsHubSite == other.IsHubSite &&
                 this.Title == other.Title &&
                 this.Description == other.Description &&
                 this.Templates.Intersect(other.Templates).Count() == 0 &&
                 this.Sites.DeepEquals(other.Sites) &&
                 this.Theme == other.Theme &&
+                this.ProvisioningId == other.ProvisioningId &&
                 this.EqualsInherited(other)
                 );
         }

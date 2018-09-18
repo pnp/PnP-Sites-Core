@@ -21,7 +21,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         {
             if (provisioningTenant.AppCatalog != null && provisioningTenant.AppCatalog.Packages.Count > 0)
             {
-                using (var context = ((ClientContext)tenant.Context).Clone(tenant.RootSiteUrl))
+                var rootSiteUrl = tenant.GetRootSiteUrl();
+                tenant.Context.ExecuteQueryRetry();
+                using (var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl.Value))
                 {
                     var web = context.Web;
                     var appCatalogUri = web.GetAppCatalog();

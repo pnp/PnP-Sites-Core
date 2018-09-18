@@ -318,6 +318,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
         
         private string themeField;
         
+        private string provisioningIdField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
         public Site[] Sites {
@@ -403,6 +405,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
             }
             set {
                 this.themeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ProvisioningId {
+            get {
+                return this.provisioningIdField;
+            }
+            set {
+                this.provisioningIdField = value;
             }
         }
     }
@@ -498,6 +511,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
         
         private string themeField;
         
+        private string provisioningIdField;
+        
         private bool isHubSiteField;
         
         private bool isHubSiteFieldSpecified;
@@ -554,6 +569,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
             }
             set {
                 this.themeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ProvisioningId {
+            get {
+                return this.provisioningIdField;
+            }
+            set {
+                this.provisioningIdField = value;
             }
         }
         

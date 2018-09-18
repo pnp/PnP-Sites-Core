@@ -6051,6 +6051,14 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
+    <xsd:attribute name="ProvisioningId" type="pnp:ReplaceableString" use="optional">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          The reference id of the site collection in sequences for use in tokens, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
   </xsd:attributeGroup>
 
   <xsd:complexType name="TermStore" >

@@ -3,6 +3,7 @@ using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.ALM;
+using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using OfficeDevPnP.Core.Utilities;
@@ -91,7 +92,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy)
         {
             var web = ((ClientContext)tenant.Context).Web;
-
+            web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url, w => w.Language);
             _web = web;
             _tokens = new List<TokenDefinition>();
             foreach (var parameter in hierarchy.Parameters)
@@ -103,6 +104,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new CurrentUserLoginNameToken(web));
             _tokens.Add(new CurrentUserFullNameToken(web));
             _tokens.Add(new AuthenticationRealmToken(web));
+            AddResourceTokens(web, hierarchy.Localizations, hierarchy.Connector);
             _initializedFromHierarchy = true;
         }
         /// <summary>
@@ -112,7 +114,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="template">a provisioning template</param>
         public TokenParser(Web web, ProvisioningTemplate template)
         {
-            web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Language);
+            web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url, w => w.Language);
 
             _web = web;
 
@@ -169,14 +171,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             AddFieldTokens(web);
 
             // Handle resources
-            if (template.Localizations != null && template.Localizations.Any())
+            AddResourceTokens(web, template.Localizations, template.Connector);
+
+            // OOTB Roledefs
+            AddRoleDefinitionTokens(web);
+
+            // Groups
+            AddGroupTokens(web);
+
+            // AppPackages tokens
+#if !ONPREMISES
+            AddAppPackagesTokens(web);
+#endif
+            var sortedTokens = from t in _tokens
+                               orderby t.GetTokenLength() descending
+                               select t;
+
+            _tokens = sortedTokens.ToList();
+        }
+
+        private void AddResourceTokens(Web web, LocalizationCollection localizations, FileConnectorBase connector)
+        {
+            if (localizations != null && localizations.Any())
             {
                 // Read all resource keys in a list
                 List<Tuple<string, uint, string>> resourceEntries = new List<Tuple<string, uint, string>>();
-                foreach (var localizationEntry in template.Localizations)
+                foreach (var localizationEntry in localizations)
                 {
                     var filePath = localizationEntry.ResourceFile;
-                    using (var stream = template.Connector.GetFileStream(filePath))
+                    using (var stream = connector.GetFileStream(filePath))
                     {
                         if (stream != null)
                         {
@@ -205,22 +228,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     _tokens.Add(token);
                 }
             }
-
-            // OOTB Roledefs
-            AddRoleDefinitionTokens(web);
-
-            // Groups
-            AddGroupTokens(web);
-
-            // AppPackages tokens
-#if !ONPREMISES
-            AddAppPackagesTokens(web);
-#endif
-            var sortedTokens = from t in _tokens
-                               orderby t.GetTokenLength() descending
-                               select t;
-
-            _tokens = sortedTokens.ToList();
         }
 
         private void AddFieldTokens(Web web)

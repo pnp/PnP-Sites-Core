@@ -1,9 +1,6 @@
-﻿using OfficeDevPnP.Core.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
@@ -60,6 +57,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public String Theme { get; set; }
 
+        /// <summary>
+        /// Defines an optional ID in the sequence for use in tokens.
+        /// </summary>
+        public string ProvisioningId { get; set; }
         #endregion
 
         #region Comparison code
@@ -70,13 +71,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
                 this.QuickLaunchEnabled.GetHashCode(),
                 this.UseSamePermissionsAsParentSite.GetHashCode(),
                 this.Title.GetHashCode(),
                 this.Description.GetHashCode(),
                 this.Templates.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Theme.GetHashCode(),
+                this.ProvisioningId.GetHashCode(),
                 this.GetInheritedHashCode()
             ).GetHashCode());
         }
@@ -118,7 +120,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Title == other.Title &&
                 this.Description == other.Description &&
                 this.Templates.Intersect(other.Templates).Count() == 0 &&
-                this.Theme == other.Theme && 
+                this.Theme == other.Theme &&
+                this.ProvisioningId == other.ProvisioningId &&
                 this.EqualsInherited(other)
                 );
         }

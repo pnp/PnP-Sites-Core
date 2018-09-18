@@ -13,6 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         public CurrentUserLoginNameToken(Web web)
             : base(web, "~currentuserloginname", "{currentuserloginname}")
         {
+
         }
 
         public override string GetReplaceValue()
