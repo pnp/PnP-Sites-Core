@@ -906,6 +906,7 @@
     <pnp:SiteCollections>
       <!-- Let's create a Site Collection -->
       <pnp:SiteCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="pnp:CommunicationSite"
+                          ProvisioningId="SITE.01"
                           Url="https://{parameter:O365TenantName}.sharepoint.com/sites/CommSite"
                           Title="{parameter:CompanyName} Intranet"
                           Owner="{parameter:CommunicationSiteOwner}"
@@ -923,6 +924,7 @@
         <pnp:Sites>
           <!-- Now create a Site into the previously created Site Collection -->
           <pnp:Site xsi:type="pnp:TeamSubSiteNoGroup"
+                    ProvisioningId="SITE.01.01"
                     Url="{parameter:SitePrefix}-Workflows"
                     Title="{parameter:CompanyName} Intranet Workflows"
                     Description="{parameter:CompanyName} Intranet Workflows"
@@ -933,6 +935,7 @@
                     UseSamePermissionsAsParentSite="true">
             <pnp:Sites>
               <pnp:Site xsi:type="pnp:TeamSubSiteNoGroup"
+                        ProvisioningId="SITE.01.01.01"
                         Url="{parameter:SitePrefix}-Workflows-Sub1"
                         Title="{parameter:CompanyName} Intranet Workflows Sub1"
                         Description="{parameter:CompanyName} Intranet Workflows Sub1"
@@ -943,6 +946,7 @@
                         UseSamePermissionsAsParentSite="true">
                 <pnp:Sites>
                   <pnp:Site xsi:type="pnp:TeamSubSiteNoGroup"
+                            ProvisioningId="SITE.01.01.01.01"
                             Url="{parameter:SitePrefix}-Workflows-Sub1.1"
                             Title="{parameter:CompanyName} Intranet Workflows Sub1.1"
                             Description="{parameter:CompanyName} Intranet Workflows Sub1.1"
@@ -960,6 +964,7 @@
                 </pnp:Templates>
               </pnp:Site>
               <pnp:Site xsi:type="pnp:TeamSubSiteNoGroup"
+                        ProvisioningId="SITE.01.01.02"
                         Url="{parameter:SitePrefix}-Workflows-Sub2"
                         Title="{parameter:CompanyName} Intranet Workflows Sub2"
                         Description="{parameter:CompanyName} Intranet Workflows Sub2"
@@ -981,6 +986,7 @@
       </pnp:SiteCollection>
 
       <pnp:SiteCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="pnp:TeamSite"
+                          ProvisioningId="SITE.02"
                           Title="{parameter:CompanyName} Projects"
                           Alias="Projects"
                           DisplayName="{parameter:CompanyName} Projects"
@@ -994,6 +1000,7 @@
       </pnp:SiteCollection>
 
       <pnp:SiteCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="pnp:TeamSiteNoGroup"
+                          ProvisioningId="SITE.03"
                           Title="{parameter:CompanyName} Meetings"
                           Url="https://{parameter:O365TenantName}.sharepoint.com/sites/Meetings"
                           Owner="{parameter:TeamSiteNoGroupOwner}"
