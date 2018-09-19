@@ -62,7 +62,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         if (groupSiteInfo.ContainsKey("siteUrl"))
                                         {
                                             WriteMessage($"Using existing Team Site {siteInfo.Alias}", ProvisioningMessageType.Progress);
-                                            siteContext = (tenant.Context as ClientContext).Clone(groupSiteInfo["siteUrl"]);
+                                            siteContext = (tenant.Context as ClientContext).Clone(groupSiteInfo["siteUrl"], applyingInformation.AccessTokens);
                                         }
                                     }
                                     if (t.IsHubSite)
@@ -126,7 +126,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (tenant.SiteExists(siteInfo.Url))
                                     {
                                         WriteMessage($"Using existing Communications Site at {siteInfo.Url}", ProvisioningMessageType.Progress);
-                                        siteContext = (tenant.Context as ClientContext).Clone(siteInfo.Url);
+                                        siteContext = (tenant.Context as ClientContext).Clone(siteInfo.Url, applyingInformation.AccessTokens);
                                     }
                                     else
                                     {
@@ -172,12 +172,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (tenant.SiteExists(t.Url))
                                     {
                                         WriteMessage($"Using existing Team Site at {siteInfo.Url}", ProvisioningMessageType.Progress);
-                                        siteContext = (tenant.Context as ClientContext).Clone(t.Url);
+                                        siteContext = (tenant.Context as ClientContext).Clone(t.Url, applyingInformation.AccessTokens);
                                     }
                                     else
                                     {
                                         tenant.CreateSiteCollection(siteInfo, false, true);
-                                        siteContext = tenant.Context.Clone(t.Url);
+                                        siteContext = tenant.Context.Clone(t.Url, applyingInformation.AccessTokens);
                                     }
                                     if (t.IsHubSite)
                                     {
@@ -225,7 +225,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         siteUrls.TryGetValue(sitecollection.Id, out string siteUrl);
                         if (siteUrl != null)
                         {
-                            using (var clonedContext = tenant.Context.Clone(siteUrl))
+                            using (var clonedContext = tenant.Context.Clone(siteUrl, applyingInformation.AccessTokens))
                             {
                                 var web = clonedContext.Web;
                                 foreach (var templateRef in sitecollection.Templates)

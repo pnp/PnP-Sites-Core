@@ -32,10 +32,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         var tenant = new Tenant(tenantContext);
                         TenantHelper.ProcessCdns(tenant, template.Tenant, parser, scope);
-                        TenantHelper.ProcessApps(tenant, template.Tenant, template.Connector, parser, scope, MessagesDelegate);
+                        TenantHelper.ProcessApps(tenant, template.Tenant, template.Connector, parser, scope, applyingInformation, MessagesDelegate);
                         parser = TenantHelper.ProcessSiteScripts(tenant, template.Tenant, template.Connector, parser, scope);
                         parser = TenantHelper.ProcessSiteDesigns(tenant, template.Tenant, parser, scope);
-                        parser = TenantHelper.ProcessStorageEntities(tenant, template.Tenant, parser, scope);
+                        parser = TenantHelper.ProcessStorageEntities(tenant, template.Tenant, parser, scope, applyingInformation);
                         parser = TenantHelper.ProcessThemes(tenant, template.Tenant, parser, scope);
                     }
                     // So far we do not provision CDN settings

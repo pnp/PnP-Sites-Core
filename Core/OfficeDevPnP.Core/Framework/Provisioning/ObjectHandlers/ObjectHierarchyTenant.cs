@@ -25,10 +25,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (hierarchy.Tenant != null)
                 {
                     TenantHelper.ProcessCdns(tenant, hierarchy.Tenant, parser, scope);
-                    TenantHelper.ProcessApps(tenant, hierarchy.Tenant, hierarchy.Connector, parser, scope, MessagesDelegate);
+                    TenantHelper.ProcessApps(tenant, hierarchy.Tenant, hierarchy.Connector, parser, scope, applyingInformation, MessagesDelegate);
                     parser = TenantHelper.ProcessSiteScripts(tenant, hierarchy.Tenant, hierarchy.Connector, parser, scope);
                     parser = TenantHelper.ProcessSiteDesigns(tenant, hierarchy.Tenant, parser, scope);
-                    parser = TenantHelper.ProcessStorageEntities(tenant, hierarchy.Tenant, parser, scope);
+                    parser = TenantHelper.ProcessStorageEntities(tenant, hierarchy.Tenant, parser, scope, applyingInformation);
                     parser = TenantHelper.ProcessThemes(tenant, hierarchy.Tenant, parser, scope);
                     // So far we do not provision CDN settings
                     // It will come in the near future
