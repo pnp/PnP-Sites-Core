@@ -391,6 +391,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 memStream.Position = 0;
                 returnData = memStream.ToArray();
             }
+            if (stream != null)
+            {
+                stream.Dispose();
+            }
             return returnData;
         }
 
