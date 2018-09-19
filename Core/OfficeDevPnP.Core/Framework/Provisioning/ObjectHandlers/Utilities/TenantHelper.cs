@@ -27,12 +27,38 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 using (var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl.Value))
                 {
                     var web = context.Web;
-                    var appCatalogUri = web.GetAppCatalog();
 
-                    var manager = new AppManager(context);
+                    Uri appCatalogUri = null;
+
+                    try
+                    {
+                        appCatalogUri = web.GetAppCatalog();
+                    }
+                    catch (System.Net.WebException ex)
+                    {
+                        if (ex.Response != null)
+                        {
+                            var httpResponse = ex.Response as System.Net.HttpWebResponse;
+                            if (httpResponse != null && httpResponse.StatusCode == HttpStatusCode.Unauthorized)
+                            {
+                                // Ignore any security exception and simply keep 
+                                // the AppCatalog URI null
+                            }
+                            else
+                            {
+                                throw ex;
+                            }
+                        }
+                        else
+                        {
+                            throw ex;
+                        }
+                    }
 
                     if (appCatalogUri != null)
                     {
+                        var manager = new AppManager(context);
+
                         foreach (var app in provisioningTenant.AppCatalog.Packages)
                         {
                             AppMetadata appMetadata = null;
