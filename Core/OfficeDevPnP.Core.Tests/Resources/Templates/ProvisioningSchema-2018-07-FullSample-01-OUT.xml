@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema">
+<pnp:Provisioning Author="John White" Generator="Human being" ImagePreviewUrl="https://sharepointpnp.com/ImagePreview.png" DisplayName="Sample Provisioning" Description="A sample Provisioning document" xmlns:pnp="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema">
   <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.2.1810.0, Culture=neutral, PublicKeyToken=null">
     <pnp:Parameters>
       <pnp:Parameter Key="O365TenantName">contoso</pnp:Parameter>
@@ -123,7 +123,7 @@
         }</pnp:Theme>
     </pnp:Themes>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-DUMMY-f5cf8b09-72b5-493a-8b84-4ee48dd4d23b">
+  <pnp:Templates ID="CONTAINER-DUMMY-94f3cc85-e445-433d-996c-f9aad6159ab3">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
