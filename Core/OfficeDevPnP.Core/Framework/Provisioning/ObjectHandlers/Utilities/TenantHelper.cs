@@ -19,22 +19,48 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 {
     internal static class TenantHelper
     {
-        public static TokenParser ProcessApps(Tenant tenant, ProvisioningTenant provisioningTenant, FileConnectorBase connector, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
+        public static TokenParser ProcessApps(Tenant tenant, ProvisioningTenant provisioningTenant, FileConnectorBase connector, TokenParser parser, PnPMonitoredScope scope, ProvisioningTemplateApplyingInformation applyingInformation, ProvisioningMessagesDelegate messagesDelegate)
         {
             if (provisioningTenant.AppCatalog != null && provisioningTenant.AppCatalog.Packages.Count > 0)
             {
                 var rootSiteUrl = tenant.GetRootSiteUrl();
                 tenant.Context.ExecuteQueryRetry();
-                using (var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl.Value))
+                using (var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl.Value, applyingInformation.AccessTokens))
                 {
 
                     var web = context.Web;
-                    var appCatalogUri = web.GetAppCatalog();
 
-                    var manager = new AppManager(context);
+                    Uri appCatalogUri = null;
+
+                    try
+                    {
+                        appCatalogUri = web.GetAppCatalog();
+                    }
+                    catch (System.Net.WebException ex)
+                    {
+                        if (ex.Response != null)
+                        {
+                            var httpResponse = ex.Response as System.Net.HttpWebResponse;
+                            if (httpResponse != null && httpResponse.StatusCode == HttpStatusCode.Unauthorized)
+                            {
+                                // Ignore any security exception and simply keep 
+                                // the AppCatalog URI null
+                            }
+                            else
+                            {
+                                throw ex;
+                            }
+                        }
+                        else
+                        {
+                            throw ex;
+                        }
+                    }
 
                     if (appCatalogUri != null)
                     {
+                        var manager = new AppManager(context);
+
                         foreach (var app in provisioningTenant.AppCatalog.Packages)
                         {
                             messagesDelegate?.Invoke($"Processing solution {app.Src}", ProvisioningMessageType.Progress);
@@ -97,15 +123,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             return parser;
         }
 
-        internal static TokenParser ProcessStorageEntities(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
+        internal static TokenParser ProcessStorageEntities(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             if (provisioningTenant.StorageEntities != null && provisioningTenant.StorageEntities.Any())
             {
-                using (var context = ((ClientContext)tenant.Context).Clone(tenant.RootSiteUrl))
+                using (var context = ((ClientContext)tenant.Context).Clone(tenant.RootSiteUrl, applyingInformation.AccessTokens))
                 {
                     var web = context.Web;
                     var appCatalogUri = web.GetAppCatalog();
-                    using (var appCatalogContext = context.Clone(appCatalogUri))
+                    using (var appCatalogContext = context.Clone(appCatalogUri, applyingInformation.AccessTokens))
                     {
                         foreach (var entity in provisioningTenant.StorageEntities)
                         {

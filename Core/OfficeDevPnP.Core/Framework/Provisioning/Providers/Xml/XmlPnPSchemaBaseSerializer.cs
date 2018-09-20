@@ -391,6 +391,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             var ts = new TenantSerializer();
             ts.Serialize(template, wrapper);
 
+            // Configure the basic properties of the wrapper
+            wrapper.GetType().GetProperty("Author",
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper,
+                template.ParentHierarchy.Author);
+            wrapper.GetType().GetProperty("DisplayName",
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper,
+                template.ParentHierarchy.DisplayName);
+            wrapper.GetType().GetProperty("Description",
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper,
+                template.ParentHierarchy.Description);
+            wrapper.GetType().GetProperty("Description",
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper,
+                template.ParentHierarchy.Description);
+            wrapper.GetType().GetProperty("ImagePreviewUrl",
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper,
+                template.ParentHierarchy.ImagePreviewUrl);
+            wrapper.GetType().GetProperty("Generator",
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper,
+                template.ParentHierarchy.Generator);
+            wrapper.GetType().GetProperty("Version",
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper,
+                (Decimal)template.ParentHierarchy.Version);
+
             // Configure the Generator
             preferences.GetType().GetProperty("Generator",
                 System.Reflection.BindingFlags.Instance |
