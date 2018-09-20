@@ -70,6 +70,78 @@ namespace OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ExtensiblityPipelineException))]
+        [TestCategory(TEST_CATEGORY)]
+        public void ProvisioningCallOutThrowsExceptionOnUnavailableExtensibilityProvider()
+        {
+            var _mockProvider = new ExtensibilityHandler();
+            _mockProvider.Assembly = "NonexistingAssembly";
+            _mockProvider.Type = "OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut.ExtensibilityMockHandler";
+            _mockProvider.Configuration = ExtensibilityTestConstants.PROVIDER_MOCK_DATA;
+
+            var _mockctx = new ClientContext(ExtensibilityTestConstants.MOCK_URL);
+            var _mockTemplate = new ProvisioningTemplate();
+            _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
+
+            var _em = new ExtensibilityManager();
+            _em.ExecuteExtensibilityProvisionCallOut(_mockctx, _mockProvider, _mockTemplate, null, null, null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ExtensiblityPipelineException))]
+        [TestCategory(TEST_CATEGORY)]
+        public void ExtractionCallOutThrowsExceptionOnUnavailableExtensibilityProvider()
+        {
+            var _mockProvider = new ExtensibilityHandler();
+            _mockProvider.Assembly = "NonexistingAssembly";
+            _mockProvider.Type = "OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut.ExtensibilityMockHandler";
+            _mockProvider.Configuration = ExtensibilityTestConstants.PROVIDER_MOCK_DATA;
+
+            var _mockctx = new ClientContext(ExtensibilityTestConstants.MOCK_URL);
+            var _mockTemplate = new ProvisioningTemplate();
+            _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
+
+            var _em = new ExtensibilityManager();
+            _em.ExecuteExtensibilityExtractionCallOut(_mockctx, _mockProvider, _mockTemplate, null, null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ExtensiblityPipelineException))]
+        [TestCategory(TEST_CATEGORY)]
+        public void ProvisioningCallOutThrowsExceptionOnInvalidExtensibilityProvider()
+        {
+            var _mockProvider = new ExtensibilityHandler();
+            _mockProvider.Assembly = "OfficeDevPnP.Core.Tests";
+            _mockProvider.Type = "OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut.ExtensibilityMockInvalidHandler";
+            _mockProvider.Configuration = ExtensibilityTestConstants.PROVIDER_MOCK_DATA;
+
+            var _mockctx = new ClientContext(ExtensibilityTestConstants.MOCK_URL);
+            var _mockTemplate = new ProvisioningTemplate();
+            _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
+
+            var _em = new ExtensibilityManager();
+            _em.ExecuteExtensibilityProvisionCallOut(_mockctx, _mockProvider, _mockTemplate, null, null, null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ExtensiblityPipelineException))]
+        [TestCategory(TEST_CATEGORY)]
+        public void ExtractionCallOutThrowsExceptionOnInvalidExtensibilityProvider()
+        {
+            var _mockProvider = new ExtensibilityHandler();
+            _mockProvider.Assembly = "OfficeDevPnP.Core.Tests";
+            _mockProvider.Type = "OfficeDevPnP.Core.Tests.Framework.ExtensibilityCallOut.ExtensibilityMockInvalidHandler";
+            _mockProvider.Configuration = ExtensibilityTestConstants.PROVIDER_MOCK_DATA;
+
+            var _mockctx = new ClientContext(ExtensibilityTestConstants.MOCK_URL);
+            var _mockTemplate = new ProvisioningTemplate();
+            _mockTemplate.Id = ExtensibilityTestConstants.PROVISIONINGTEMPLATE_ID;
+
+            var _em = new ExtensibilityManager();
+            _em.ExecuteExtensibilityExtractionCallOut(_mockctx, _mockProvider, _mockTemplate, null, null);
+        }
+
+        [TestMethod]
         [TestCategory(TEST_CATEGORY)]
         [ExpectedException(typeof(ExtensiblityPipelineException))]
         public void ProviderCallOutThrowsException()

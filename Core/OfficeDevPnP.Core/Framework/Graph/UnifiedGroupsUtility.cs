@@ -389,7 +389,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
             var fullListOfOwners = await graphClient.Groups[targetGroup.Id].Owners.Request().Select("userPrincipalName, Id").GetAsync();
             var pageExists = true;
 
-            while(pageExists)
+            while (pageExists)
             {
                 foreach (var owner in fullListOfOwners)
                 {
@@ -444,7 +444,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         public static bool UpdateUnifiedGroup(string groupId,
             string accessToken, int retryCount = 10, int delay = 500,
             string displayName = null, string description = null, string[] owners = null, string[] members = null,
-            Stream groupLogo = null, bool isPrivate = false)
+            Stream groupLogo = null, bool? isPrivate = null)
         {
             bool result;
             try
@@ -458,6 +458,12 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         .Request()
                         .GetAsync();
 
+                    // Workaround for the PATCH request, needed after update to Graph Library
+                    var clonedGroup = new Group
+                    {
+                        Id = groupToUpdate.Id
+                    };
+
                     #region Logic to update the group DisplayName and Description
 
                     var updateGroup = false;
@@ -466,22 +472,22 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     // Check if we have to update the DisplayName
                     if (!String.IsNullOrEmpty(displayName) && groupToUpdate.DisplayName != displayName)
                     {
-                        groupToUpdate.DisplayName = displayName;
+                        clonedGroup.DisplayName = displayName;
                         updateGroup = true;
                     }
 
                     // Check if we have to update the Description
                     if (!String.IsNullOrEmpty(description) && groupToUpdate.Description != description)
                     {
-                        groupToUpdate.Description = description;
+                        clonedGroup.Description = description;
                         updateGroup = true;
                     }
 
                     // Check if visibility has changed for the Group
                     bool existingIsPrivate = groupToUpdate.Visibility == "Private";
-                    if (existingIsPrivate != isPrivate)
+                    if (isPrivate.HasValue && existingIsPrivate != isPrivate)
                     {
-                        groupToUpdate.Visibility = isPrivate == true ? "Private" : "Public";
+                        clonedGroup.Visibility = isPrivate == true ? "Private" : "Public";
                         updateGroup = true;
                     }
 
@@ -506,7 +512,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     {
                         var updatedGroup = await graphClient.Groups[groupId]
                             .Request()
-                            .UpdateAsync(groupToUpdate);
+                            .UpdateAsync(clonedGroup);
 
                         groupUpdated = true;
                     }
@@ -720,6 +726,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="includeSite">Defines whether to return details about the Modern SharePoint Site backing the group. Default is true.</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
+        /// <param name="includeClassification">Defines whether or not to return details about the Modern Site classification value.</param>
         /// <returns>An IList of SiteEntity objects</returns>
         public static List<UnifiedGroupEntity> ListUnifiedGroups(string accessToken,
             String displayName = null, string mailNickname = null,
@@ -850,7 +857,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     {
                         unifiedGroupGraphUsers = new List<User>();
 
-                        GenerateGraphUserCollection(groupUsers.CurrentPage,unifiedGroupGraphUsers);
+                        GenerateGraphUserCollection(groupUsers.CurrentPage, unifiedGroupGraphUsers);
                     }
 
                     // Retrieve users when the results are paged.
@@ -1014,7 +1021,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
             {
                 classification = e.Error.Message;
             }
-            
+
             return classification;
         }
     }

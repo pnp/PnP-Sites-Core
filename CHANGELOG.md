@@ -6,12 +6,32 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [3.1.1809.0 - unreleased]
+## [3.2.1810.0 - Unreleased]
 
 ### Added
 
 ### Changed
+
+### Deprecated
+
+
+## [3.1.1809.0 - September 2018 release]
+
+### Added
+- Added support to provision hidden views
+- Added support for inviting guest users (AAD B2B) via Microsoft Graph [Vipul Kelkar]
+
+### Changed
+- Fixed issue where hidden views created by XsltListView web part where removed on a list during provisioning
 - Refactored token parsing for PnP template handling for performance
+- Support token replacement for view xml [vonis22]
+- Updated CSOM Assemblies to 8029.1200
+- Bugfix for token replacement where two tokens where next to each other like {hosturl}{siteid}
+- Bugfix and optimizatin for web part listid token replacement
+- Make preview link for banner image on modern pages link to the root site to avoid too long url's - and act like the default behaviour
+- Fix for updating Unified Groups [Gautam Sheth]
+- Extensibility handlers error handling [Jens Otto Hatlevold]
+- Fix default client side page header title alignment
 
 ### Deprecated
 - Marked regex functions in TokenDefinition as obsolete, as they are not needed
