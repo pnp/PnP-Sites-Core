@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             {
                 List catalog;
                 // Check if the current web is a sub-site
-                if (Web.IsSubSite())
+                if (TokenContext.Web.IsSubSite())
                 {
                     // Master page URL needs to be retrieved from the rootweb
                     var rootWeb = TokenContext.Site.RootWeb;

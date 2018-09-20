@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (CacheValue == null)
             {
-                CacheValue = this.Web.GetName();
+                CacheValue = TokenContext.Web.GetName();
             }
             return CacheValue;
         }

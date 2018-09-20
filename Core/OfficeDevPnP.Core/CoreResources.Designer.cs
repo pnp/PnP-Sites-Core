@@ -948,6 +948,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The extensibility handler does not implement a supported extensibility handler interface. Check if the extensibility handler references the same version of OfficeDevPnP currently in use (Version {0}). Assembly: {1}. Type: {2}.
+        /// </summary>
+        internal static string Provisioning_Extensibility_Invalid_Handler_Implementation {
+            get {
+                return ResourceManager.GetString("Provisioning_Extensibility_Invalid_Handler_Implementation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Provisioning extensibility pipeline preparing to invoke, Assembly: {0}. Type {1}.
         /// </summary>
         internal static string Provisioning_Extensibility_Pipeline_BeforeInvocation {
