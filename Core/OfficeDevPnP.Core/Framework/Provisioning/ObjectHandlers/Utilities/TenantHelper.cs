@@ -1,5 +1,6 @@
 ﻿#if !ONPREMISES
 using Microsoft.Online.SharePoint.TenantAdministration;
+using Microsoft.Online.SharePoint.TenantAdministration.Internal;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.ALM;
@@ -26,6 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 tenant.Context.ExecuteQueryRetry();
                 using (var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl.Value))
                 {
+
                     var web = context.Web;
                     var appCatalogUri = web.GetAppCatalog();
 
@@ -35,6 +37,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     {
                         foreach (var app in provisioningTenant.AppCatalog.Packages)
                         {
+                            messagesDelegate?.Invoke($"Processing solution {app.Src}", ProvisioningMessageType.Progress);
                             AppMetadata appMetadata = null;
 
                             if (app.Action == PackageAction.Upload || app.Action == PackageAction.UploadAndPublish)
@@ -94,7 +97,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             return parser;
         }
 
-        internal static TokenParser ProcessStorageEntities(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope)
+        internal static TokenParser ProcessStorageEntities(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
         {
             if (provisioningTenant.StorageEntities != null && provisioningTenant.StorageEntities.Any())
             {
@@ -120,7 +123,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             return parser;
         }
 
-        internal static TokenParser ProcessSiteScripts(Tenant tenant, ProvisioningTenant provisioningTenant, FileConnectorBase connector, TokenParser parser, PnPMonitoredScope scope)
+        internal static TokenParser ProcessSiteScripts(Tenant tenant, ProvisioningTenant provisioningTenant, FileConnectorBase connector, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
         {
             if (provisioningTenant.SiteScripts != null && provisioningTenant.SiteScripts.Any())
             {
@@ -130,23 +133,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                 foreach (var siteScript in provisioningTenant.SiteScripts)
                 {
-                    var scriptTitle = parser.ParseString(siteScript.Title);
-                    var scriptDescription = parser.ParseString(siteScript.Description);
-                    var scriptContent = parser.ParseString(System.Text.Encoding.UTF8.GetString(GetFileBytes(connector, parser.ParseString(siteScript.JsonFilePath))));
-                    var existingScript = existingScripts.FirstOrDefault(s => s.Title == scriptTitle);
+
+                    var parsedTitle = parser.ParseString(siteScript.Title);
+                    var parsedDescription = parser.ParseString(siteScript.Description);
+                    var parsedContent = parser.ParseString(System.Text.Encoding.UTF8.GetString(GetFileBytes(connector, parser.ParseString(siteScript.JsonFilePath))));
+                    var existingScript = existingScripts.FirstOrDefault(s => s.Title == parsedTitle);
+
+                    messagesDelegate?.Invoke($"Processing site script {siteScript.Title}", ProvisioningMessageType.Progress);
 
                     if (existingScript == null)
                     {
                         TenantSiteScriptCreationInfo siteScriptCreationInfo = new TenantSiteScriptCreationInfo
                         {
-                            Title = scriptTitle,
-                            Description = scriptDescription,
-                            Content = scriptContent
+                            Title = parsedTitle,
+                            Description = parsedDescription,
+                            Content = parsedContent
                         };
                         var script = tenant.CreateSiteScript(siteScriptCreationInfo);
                         tenant.Context.Load(script);
                         tenant.Context.ExecuteQueryRetry();
-                        parser.AddToken(new SiteScriptIdToken(null, scriptTitle, script.Id));
+                        parser.AddToken(new SiteScriptIdToken(null, parsedTitle, script.Id));
                     }
                     else
                     {
@@ -156,9 +162,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             existingScript = Tenant.GetSiteScript(tenant.Context, existingId);
                             tenant.Context.ExecuteQueryRetry();
 
-                            existingScript.Content = scriptContent;
-                            existingScript.Title = scriptTitle;
-                            existingScript.Description = scriptDescription;
+                            existingScript.Content = parsedContent;
+                            existingScript.Title = parsedTitle;
+                            existingScript.Description = parsedDescription;
                             tenant.UpdateSiteScript(existingScript);
                             tenant.Context.ExecuteQueryRetry();
                             var existingToken = parser.Tokens.OfType<SiteScriptIdToken>().FirstOrDefault(t => t.GetReplaceValue() == existingId.ToString());
@@ -166,7 +172,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             {
                                 parser.Tokens.Remove(existingToken);
                             }
-                            parser.AddToken(new SiteScriptIdToken(null, scriptTitle, existingId));
+                            parser.AddToken(new SiteScriptIdToken(null, parsedTitle, existingId));
                         }
                     }
                 }
@@ -174,7 +180,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             return parser;
         }
 
-        public static TokenParser ProcessSiteDesigns(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope)
+        public static TokenParser ProcessSiteDesigns(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
         {
             if (provisioningTenant.SiteDesigns != null && provisioningTenant.SiteDesigns.Any())
             {
@@ -184,20 +190,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 tenant.Context.ExecuteQueryRetry();
                 foreach (var siteDesign in provisioningTenant.SiteDesigns)
                 {
-                    var designTitle = parser.ParseString(siteDesign.Title);
-                    var designDescription = parser.ParseString(siteDesign.Description);
-                    var designPreviewImageUrl = parser.ParseString(siteDesign.PreviewImageUrl);
-                    var designPreviewImageAltText = parser.ParseString(siteDesign.PreviewImageAltText);
+                    var parsedTitle = parser.ParseString(siteDesign.Title);
+                    var parsedDescription = parser.ParseString(siteDesign.Description);
+                    var parsedPreviewImageUrl = parser.ParseString(siteDesign.PreviewImageUrl);
+                    var parsedPreviewImageAltText = parser.ParseString(siteDesign.PreviewImageAltText);
+                    messagesDelegate?.Invoke($"Processing site design {parsedTitle}", ProvisioningMessageType.Progress);
 
-                    var existingSiteDesign = existingDesigns.FirstOrDefault(d => d.Title == designTitle);
+                    var existingSiteDesign = existingDesigns.FirstOrDefault(d => d.Title == parsedTitle);
                     if (existingSiteDesign == null)
                     {
                         TenantSiteDesignCreationInfo siteDesignCreationInfo = new TenantSiteDesignCreationInfo()
                         {
-                            Title = designTitle,
-                            Description = designDescription,
-                            PreviewImageUrl = designPreviewImageUrl,
-                            PreviewImageAltText = designPreviewImageAltText,
+                            Title = parsedTitle,
+                            Description = parsedDescription,
+                            PreviewImageUrl = parsedPreviewImageUrl,
+                            PreviewImageAltText = parsedPreviewImageAltText,
                             IsDefault = siteDesign.IsDefault,
                         };
                         switch ((int)siteDesign.WebTemplate)
@@ -245,10 +252,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             existingSiteDesign = Tenant.GetSiteDesign(tenant.Context, existingId);
                             tenant.Context.ExecuteQueryRetry();
 
-                            existingSiteDesign.Title = designTitle;
-                            existingSiteDesign.Description = designDescription;
-                            existingSiteDesign.PreviewImageUrl = designPreviewImageUrl;
-                            existingSiteDesign.PreviewImageAltText = designPreviewImageAltText;
+                            existingSiteDesign.Title = parsedTitle;
+                            existingSiteDesign.Description = parsedDescription;
+                            existingSiteDesign.PreviewImageUrl = parsedPreviewImageUrl;
+                            existingSiteDesign.PreviewImageAltText = parsedPreviewImageAltText;
                             existingSiteDesign.IsDefault = siteDesign.IsDefault;
                             switch ((int)siteDesign.WebTemplate)
                             {
@@ -272,7 +279,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             {
                                 parser.Tokens.Remove(existingToken);
                             }
-                            parser.AddToken(new SiteScriptIdToken(null, designTitle, existingId));
+                            parser.AddToken(new SiteScriptIdToken(null, parsedTitle, existingId));
 
                             if (siteDesign.Grants != null && siteDesign.Grants.Any())
                             {
@@ -297,18 +304,63 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             return parser;
         }
 
-        public static TokenParser ProcessThemes(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope)
+        public static TokenParser ProcessThemes(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
         {
             if (provisioningTenant.Themes != null && provisioningTenant.Themes.Any())
             {
                 foreach (var theme in provisioningTenant.Themes)
                 {
+                    messagesDelegate?.Invoke($"Processing theme {theme.Name}", ProvisioningMessageType.Progress);
+
                     var parsedName = parser.ParseString(theme.Name);
                     var parsedPalette = parser.ParseString(theme.Palette);
                     var palette = JsonConvert.DeserializeObject<Dictionary<string, string>>(parsedPalette);
                     var tenantTheme = new TenantTheme() { Name = parsedName, Palette = palette, IsInverted = theme.IsInverted };
                     tenant.UpdateTenantTheme(parsedName, JsonConvert.SerializeObject(tenantTheme));
                     tenant.Context.ExecuteQueryRetry();
+                }
+            }
+            return parser;
+        }
+
+        public static TokenParser ProcessWebApiPermissions(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
+        {
+            if (provisioningTenant.WebApiPermissions != null && provisioningTenant.WebApiPermissions.Any())
+            {
+                messagesDelegate?.Invoke("Processing WebApiPermissions", ProvisioningMessageType.Progress);
+                var servicePrincipal = new SPOWebAppServicePrincipal(tenant.Context);
+                //var requests = servicePrincipal.PermissionRequests;
+                var requestsEnumerable = tenant.Context.LoadQuery(servicePrincipal.PermissionRequests);
+                var grantsEnumerable = tenant.Context.LoadQuery(servicePrincipal.PermissionGrants);
+                tenant.Context.ExecuteQueryRetry();
+
+                var requests = requestsEnumerable.ToList();
+
+                foreach (var permission in provisioningTenant.WebApiPermissions)
+                {
+                    var parsedScope = parser.ParseString(permission.Scope);
+                    var parsedResource = parser.ParseString(permission.Resource);
+                    var request = requests.FirstOrDefault(r => r.Scope.Equals(parsedScope, StringComparison.InvariantCultureIgnoreCase) && r.Resource.Equals(parsedResource, StringComparison.InvariantCultureIgnoreCase));
+                    while (request != null)
+                    {
+                        if (grantsEnumerable.FirstOrDefault(g => g.Resource.Equals(parsedResource, StringComparison.InvariantCultureIgnoreCase) && g.Scope.ToLower().Contains(parsedScope.ToLower())) == null)
+                        {
+                            var requestToApprove = servicePrincipal.PermissionRequests.GetById(request.Id);
+                            tenant.Context.Load(requestToApprove);
+                            tenant.Context.ExecuteQueryRetry();
+                            try
+                            {
+                                requestToApprove.Approve();
+                                tenant.Context.ExecuteQueryRetry();
+                            }
+                            catch (Exception ex)
+                            {
+                                messagesDelegate?.Invoke(ex.Message, ProvisioningMessageType.Warning);
+                            }
+                        }
+                        requests.Remove(request);
+                        request = requests.FirstOrDefault(r => r.Scope.Equals(parsedScope, StringComparison.InvariantCultureIgnoreCase) && r.Resource.Equals(parsedResource, StringComparison.InvariantCultureIgnoreCase));
+                    }
                 }
             }
             return parser;
@@ -398,7 +450,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             return returnData;
         }
 
-        internal static void ProcessCdns(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope)
+        internal static void ProcessCdns(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
         {
             if (provisioningTenant.ContentDeliveryNetwork != null)
             {
