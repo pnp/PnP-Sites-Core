@@ -359,7 +359,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var hubsiteUrl = parser.ParseString(webSettings.HubSiteUrl);
                         try
                         {
-                            using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
+                            using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl(), applyingInformation.AccessTokens))
                             {
                                 var tenant = new Tenant(tenantContext);
                                 tenant.ConnectSiteToHubSite(web.Url, hubsiteUrl);

@@ -214,9 +214,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
+                    // System.Threading.Thread.Sleep(TimeSpan.FromMinutes(10));
+
                     WriteMessage("Applying templates", ProvisioningMessageType.Progress);
 
                     var provisioningTemplateApplyingInformation = new ProvisioningTemplateApplyingInformation();
+                    provisioningTemplateApplyingInformation.AccessTokens = applyingInformation.AccessTokens;
                     provisioningTemplateApplyingInformation.MessagesDelegate = applyingInformation.MessagesDelegate;
                     provisioningTemplateApplyingInformation.ProgressDelegate = applyingInformation.ProgressDelegate;
                     
@@ -236,7 +239,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         provisioningTemplate.Connector = hierarchy.Connector;
                                         if (siteTokenParser == null)
                                         {
-                                            siteTokenParser = new TokenParser(web, provisioningTemplate);
+                                            siteTokenParser = new TokenParser(web, provisioningTemplate, applyingInformation);
                                             foreach(var token in _additionalTokens)
                                             {
                                                 siteTokenParser.AddToken(token);
@@ -258,7 +261,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 if (siteTokenParser == null)
                                 {
-                                    siteTokenParser = new TokenParser(tenant, hierarchy);
+                                    siteTokenParser = new TokenParser(tenant, hierarchy, applyingInformation);
                                     foreach(var token in _additionalTokens)
                                     {
                                         siteTokenParser.AddToken(token);
