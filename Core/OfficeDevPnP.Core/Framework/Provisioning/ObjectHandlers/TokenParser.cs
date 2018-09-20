@@ -89,7 +89,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             AddRoleDefinitionTokens(web);
         }
 
-        public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy)
+        public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy):
+            this(tenant, hierarchy, null)
+        {
+        }
+
+        public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             var web = ((ClientContext)tenant.Context).Web;
             web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url, w => w.Language);
@@ -107,12 +112,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             AddResourceTokens(web, hierarchy.Localizations, hierarchy.Connector);
             _initializedFromHierarchy = true;
         }
+
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="web">A SharePoint site or subsite</param>
         /// <param name="template">a provisioning template</param>
-        public TokenParser(Web web, ProvisioningTemplate template)
+        public TokenParser(Web web, ProvisioningTemplate template) :
+            this(web, template, null)
+        {
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="web">A SharePoint site or subsite</param>
+        /// <param name="template">a provisioning template</param>
+        /// <param name="applyingInformation">The provisioning template applying information</param>
+        public TokenParser(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url, w => w.Language);
 
@@ -163,8 +180,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             AddTermStoreTokens(web);
 
 #if !ONPREMISES
-            AddSiteDesignTokens(web);
-            AddSiteScriptTokens(web);
+            AddSiteDesignTokens(web, applyingInformation);
+            AddSiteScriptTokens(web, applyingInformation);
             AddStorageEntityTokens(web);
 #endif
             // Fields
@@ -435,11 +452,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return storageEntities;
         }
 
-        private void AddSiteDesignTokens(Web web)
+        private void AddSiteDesignTokens(Web web, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             try
             {
-                using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
+                using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl(), applyingInformation?.AccessTokens))
                 {
                     var tenant = new Tenant(tenantContext);
                     var designs = tenant.GetSiteDesigns();
@@ -457,11 +474,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private void AddSiteScriptTokens(Web web)
+        private void AddSiteScriptTokens(Web web, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             try
             {
-                using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
+                using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl(), applyingInformation?.AccessTokens))
                 {
                     var tenant = new Tenant(tenantContext);
                     var scripts = tenant.GetSiteScripts();
