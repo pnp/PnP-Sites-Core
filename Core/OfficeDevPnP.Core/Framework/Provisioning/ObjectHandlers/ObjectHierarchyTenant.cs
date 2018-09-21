@@ -24,12 +24,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (hierarchy.Tenant != null)
                 {
-                    TenantHelper.ProcessCdns(tenant, hierarchy.Tenant, parser, scope);
-                    TenantHelper.ProcessApps(tenant, hierarchy.Tenant, hierarchy.Connector, parser, scope, applyingInformation, MessagesDelegate);
-                    parser = TenantHelper.ProcessSiteScripts(tenant, hierarchy.Tenant, hierarchy.Connector, parser, scope);
-                    parser = TenantHelper.ProcessSiteDesigns(tenant, hierarchy.Tenant, parser, scope);
-                    parser = TenantHelper.ProcessStorageEntities(tenant, hierarchy.Tenant, parser, scope, applyingInformation);
-                    parser = TenantHelper.ProcessThemes(tenant, hierarchy.Tenant, parser, scope);
+                    TenantHelper.ProcessCdns(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
+                    parser = TenantHelper.ProcessApps(tenant, hierarchy.Tenant, hierarchy.Connector, parser, scope, applyingInformation, MessagesDelegate);
+                    parser = TenantHelper.ProcessWebApiPermissions(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
+                    parser = TenantHelper.ProcessSiteScripts(tenant, hierarchy.Tenant, hierarchy.Connector, parser, scope, MessagesDelegate);
+                    parser = TenantHelper.ProcessSiteDesigns(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
+                    parser = TenantHelper.ProcessStorageEntities(tenant, hierarchy.Tenant, parser, scope, applyingInformation, MessagesDelegate);
+                    parser = TenantHelper.ProcessThemes(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
                     // So far we do not provision CDN settings
                     // It will come in the near future
                     // NOOP on CDN

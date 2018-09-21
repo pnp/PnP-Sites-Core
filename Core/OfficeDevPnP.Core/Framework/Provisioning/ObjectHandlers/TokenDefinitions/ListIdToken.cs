@@ -37,9 +37,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
                     CacheValue = _listId;
                 } else
                 {
-                    var list = this.Web.Lists.GetByTitle(_name);
-                    Web.Context.Load(list, l => l.Id);
-                    Web.Context.ExecuteQueryRetry();
+                    var list = TokenContext.Web.Lists.GetByTitle(_name);
+                    TokenContext.Load(list, l => l.Id);
+                    TokenContext.ExecuteQueryRetry();
                     _listId = list.Id.ToString();
                     CacheValue = list.Id.ToString();
                 }

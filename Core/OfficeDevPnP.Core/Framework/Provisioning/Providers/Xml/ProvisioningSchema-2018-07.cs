@@ -517,6 +517,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
         
         private bool isHubSiteFieldSpecified;
         
+        private string hubSiteLogoUrlField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
         public ProvisioningTemplateReference[] Templates {
@@ -602,6 +604,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
             }
             set {
                 this.isHubSiteFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string HubSiteLogoUrl {
+            get {
+                return this.hubSiteLogoUrlField;
+            }
+            set {
+                this.hubSiteLogoUrlField = value;
             }
         }
     }
