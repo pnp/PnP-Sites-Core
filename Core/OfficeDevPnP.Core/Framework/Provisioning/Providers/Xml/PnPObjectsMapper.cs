@@ -91,6 +91,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 // Search for the matching source property
                 var sp = sourceProperties.FirstOrDefault(p => p.Name.Equals(dp.Name, StringComparison.InvariantCultureIgnoreCase));
                 var spSpecified = sourceProperties.FirstOrDefault(p => p.Name.Equals($"{dp.Name}Specified", StringComparison.InvariantCultureIgnoreCase));
+                var dpSpecified = destinationProperties.FirstOrDefault(p => p.Name.Equals($"{dp.Name}Specified", StringComparison.InvariantCultureIgnoreCase));
                 if (null != sp || null != resolver)
                 {
                     if (null != resolver)
@@ -200,6 +201,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                 }
                                 // We simply need to do 1:1 value mapping
                                 dp.SetValue(destination, sourceValue);
+
+                                if (dpSpecified != null)
+                                {
+                                    dpSpecified.SetValue(destination, true);
+                                }
                             }
                         }
                         catch (Exception ex)
