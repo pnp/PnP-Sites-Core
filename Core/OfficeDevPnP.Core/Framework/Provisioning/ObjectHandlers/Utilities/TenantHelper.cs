@@ -165,7 +165,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     var parsedContent = parser.ParseString(System.Text.Encoding.UTF8.GetString(GetFileBytes(connector, parser.ParseString(siteScript.JsonFilePath))));
                     var existingScript = existingScripts.FirstOrDefault(s => s.Title == parsedTitle);
 
-                    messagesDelegate?.Invoke($"Processing site script {siteScript.Title}", ProvisioningMessageType.Progress);
+                    messagesDelegate?.Invoke($"Processing site script {parsedTitle}", ProvisioningMessageType.Progress);
 
                     if (existingScript == null)
                     {
@@ -336,10 +336,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             {
                 foreach (var theme in provisioningTenant.Themes)
                 {
-                    messagesDelegate?.Invoke($"Processing theme {theme.Name}", ProvisioningMessageType.Progress);
 
                     var parsedName = parser.ParseString(theme.Name);
                     var parsedPalette = parser.ParseString(theme.Palette);
+
+                    messagesDelegate?.Invoke($"Processing theme {parsedName}", ProvisioningMessageType.Progress);
+
                     var palette = JsonConvert.DeserializeObject<Dictionary<string, string>>(parsedPalette);
                     var tenantTheme = new TenantTheme() { Name = parsedName, Palette = palette, IsInverted = theme.IsInverted };
                     tenant.UpdateTenantTheme(parsedName, JsonConvert.SerializeObject(tenantTheme));

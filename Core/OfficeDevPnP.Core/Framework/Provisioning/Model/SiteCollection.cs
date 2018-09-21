@@ -30,6 +30,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public Boolean IsHubSite { get; set; }
 
         /// <summary>
+        /// Defines the url to the logo if this site is a hubsite. Only applicable if IsHubSite is set to true.
+        /// </summary>
+        public string HubSiteLogoUrl { get; set; }
+
+        /// <summary>
         /// Title of the site
         /// </summary>
         public String Title { get; set; }

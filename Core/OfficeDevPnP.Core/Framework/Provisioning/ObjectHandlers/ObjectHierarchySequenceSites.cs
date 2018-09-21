@@ -67,13 +67,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     }
                                     if (t.IsHubSite)
                                     {
-                                        var hubproperties = tenant.GetHubSitePropertiesByUrl(siteContext.Url);
-                                        tenant.Context.ExecuteQueryRetry();
-                                        if (hubproperties.ID == null)
-                                        {
-                                            tenant.RegisterHubSite(siteContext.Url);
-                                            tenant.Context.ExecuteQueryRetry();
-                                        }
+                                        RegisterAsHubSite(tenant, siteContext.Url, t.HubSiteLogoUrl);
                                     }
                                     if (!string.IsNullOrEmpty(t.Theme))
                                     {
@@ -135,14 +129,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     }
                                     if (c.IsHubSite)
                                     {
-                                        var hubSiteProperties = tenant.GetHubSitePropertiesByUrl(siteInfo.Url);
-                                        tenant.Context.Load<HubSiteProperties>(hubSiteProperties);
-                                        tenant.Context.ExecuteQueryRetry();
-                                        if (hubSiteProperties.ServerObjectIsNull == true)
-                                        {
-                                            tenant.RegisterHubSite(siteInfo.Url);
-                                            tenant.Context.ExecuteQueryRetry();
-                                        }
+                                        RegisterAsHubSite(tenant, siteInfo.Url, c.HubSiteLogoUrl);
                                     }
                                     if (!string.IsNullOrEmpty(c.Theme))
                                     {
@@ -181,13 +168,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     }
                                     if (t.IsHubSite)
                                     {
-                                        var hubproperties = tenant.GetHubSitePropertiesByUrl(siteContext.Url);
-                                        tenant.Context.ExecuteQueryRetry();
-                                        if (hubproperties.ID == null)
-                                        {
-                                            tenant.RegisterHubSite(siteContext.Url);
-                                            tenant.Context.ExecuteQueryRetry();
-                                        }
+                                        RegisterAsHubSite(tenant, siteContext.Url, t.HubSiteLogoUrl);
                                     }
                                     if (!string.IsNullOrEmpty(t.Theme))
                                     {
@@ -282,7 +263,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-
+        private static void RegisterAsHubSite(Tenant tenant, string siteUrl, string logoUrl)
+        {
+            var hubSiteProperties = tenant.GetHubSitePropertiesByUrl(siteUrl);
+            tenant.Context.Load<HubSiteProperties>(hubSiteProperties);
+            tenant.Context.ExecuteQueryRetry();
+            if (hubSiteProperties.ServerObjectIsNull == true)
+            {
+                hubSiteProperties = tenant.RegisterHubSite(siteUrl);
+                tenant.Context.Load(hubSiteProperties);
+                tenant.Context.ExecuteQueryRetry();
+            }
+            if(!string.IsNullOrEmpty(logoUrl))
+            {
+                hubSiteProperties.LogoUrl = logoUrl;
+                hubSiteProperties.Update();
+                tenant.Context.ExecuteQueryRetry();
+            }
+        }
 
         private TokenParser CreateSubSites(ProvisioningHierarchy hierarchy, TokenParser tokenParser, Model.SiteCollection sitecollection, ClientContext siteContext, Web web, TeamNoGroupSubSite subSiteObject)
         {
