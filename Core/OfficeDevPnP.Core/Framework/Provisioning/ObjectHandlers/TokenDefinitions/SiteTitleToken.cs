@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
       Returns = "My Company Portal")]
     internal class SiteTitleToken : TokenDefinition
     {
-        public SiteTitleToken(Web web) : base(web, "{sitetitle}", "~sitename", "{sitename}")
+        public SiteTitleToken(Web web) : base(web, "{sitetitle}", "{sitename}")
         {
         }
 

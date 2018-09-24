@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class ThemeCatalogToken : TokenDefinition
     {
         public ThemeCatalogToken(Web web)
-            : base(web, "~themecatalog", "{themecatalog}")
+            : base(web, "{themecatalog}")
         {
         }
 

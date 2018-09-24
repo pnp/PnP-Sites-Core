@@ -315,7 +315,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var field in fieldsToProcess)
                 {
-                    var fieldElement = XElement.Parse(parser.ParseXmlString(field.SchemaXml, "~sitecollection", "~site"));
+                    var fieldElement = XElement.Parse(parser.ParseXmlString(field.SchemaXml));
                     if (fieldElement.Attribute("ID") == null)
                     {
                         scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_, field.SchemaXml);
@@ -860,7 +860,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             Field field = null;
             fieldElement = PrepareField(fieldElement);
 
-            var fieldXml = parser.ParseXmlString(fieldElement.ToString(), "~sitecollection", "~site");
+            var fieldXml = parser.ParseXmlString(fieldElement.ToString());
             if (IsFieldXmlValid(parser.ParseXmlString(originalFieldXml), parser, context))
             {
                 var addOptions = listInfo.TemplateList.ContentTypesEnabled
@@ -961,7 +961,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingFieldElement.Attributes("Version").Remove();
                         }
                         var existingFieldXml = FieldUtilities.FixLookupField(existingFieldElement.ToString(), web);
-                        existingField.SchemaXml = parser.ParseXmlString(existingFieldXml, "~sitecollection", "~site");
+                        existingField.SchemaXml = parser.ParseXmlString(existingFieldXml);
                         existingField.UpdateAndPushChanges(true);
                         web.Context.ExecuteQueryRetry();
 #if !SP2013

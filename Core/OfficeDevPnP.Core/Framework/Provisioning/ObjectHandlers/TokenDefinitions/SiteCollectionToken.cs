@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class SiteCollectionToken : VolatileTokenDefinition
     {
         public SiteCollectionToken(Web web)
-            : base(web, "~sitecollection", "{sitecollection}")
+            : base(web, "{sitecollection}")
         {
         }
 

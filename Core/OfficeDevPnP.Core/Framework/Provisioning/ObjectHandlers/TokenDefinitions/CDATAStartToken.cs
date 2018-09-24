@@ -6,7 +6,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class CDATAStartToken : TokenDefinition
     {
         public CDATAStartToken(Web web)
-            : base(web, "~cdatastart", "{cdatastart}")
+            : base(web, "{cdatastart}")
         {
         }
 

@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class CurrentUserIdToken : VolatileTokenDefinition
     {
         public CurrentUserIdToken(Web web)
-            : base(web, "~currentuserid", "{currentuserid}")
+            : base(web, "{currentuserid}")
         {
         }
 
