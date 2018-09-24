@@ -392,41 +392,63 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             ts.Serialize(template, wrapper);
 
             // Configure the basic properties of the wrapper
-            wrapper.GetType().GetProperty("Author",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper,
-                template.ParentHierarchy.Author);
-            wrapper.GetType().GetProperty("DisplayName",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper,
-                template.ParentHierarchy.DisplayName);
-            wrapper.GetType().GetProperty("Description",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper,
-                template.ParentHierarchy.Description);
-            wrapper.GetType().GetProperty("Description",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper,
-                template.ParentHierarchy.Description);
-            wrapper.GetType().GetProperty("ImagePreviewUrl",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper,
-                template.ParentHierarchy.ImagePreviewUrl);
-            wrapper.GetType().GetProperty("Generator",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper,
-                template.ParentHierarchy.Generator);
-            wrapper.GetType().GetProperty("Version",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper,
-                (Decimal)template.ParentHierarchy.Version);
+            if (template.ParentHierarchy != null)
+            {
+                var author = wrapper.GetType().GetProperty("Author",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.IgnoreCase);
+                if (author != null)
+                {
+                    author.SetValue(wrapper,
+                        template.ParentHierarchy.Author);
+                }
+                var displayName = wrapper.GetType().GetProperty("DisplayName",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.IgnoreCase);
+                if (displayName != null)
+                {
+                    displayName.SetValue(wrapper,
+                        template.ParentHierarchy.DisplayName);
+                }
+                var description = wrapper.GetType().GetProperty("Description",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.IgnoreCase);
+                if (description != null)
+                {
+                    description.SetValue(wrapper,
+                        template.ParentHierarchy.Description);
+                }
+                var imagePreviewUrl = wrapper.GetType().GetProperty("ImagePreviewUrl",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.IgnoreCase);
+                if (imagePreviewUrl != null)
+                {
+                    imagePreviewUrl.SetValue(wrapper,
+                        template.ParentHierarchy.ImagePreviewUrl);
+                }
+                var generator = wrapper.GetType().GetProperty("Generator",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.IgnoreCase);
+                if (generator != null)
+                {
+                    generator.SetValue(wrapper,
+                        template.ParentHierarchy.Generator);
+                }
+                var version = wrapper.GetType().GetProperty("Version",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.IgnoreCase);
+                if (version != null)
+                {
+                    version.SetValue(wrapper,
+                        (Decimal)template.ParentHierarchy.Version);
+                }
+            }
 
             // Configure the Generator
             preferences.GetType().GetProperty("Generator",
