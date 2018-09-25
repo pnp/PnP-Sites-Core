@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - ClientSide page name now can contain a token [gautamdsheth]
 - Fix issue with AssociatedGroupToken loading [gautamdsheth]
 - LoginNames are compared case insensitive [tmeckel]
+- Allow to create a CustomAction to a ListInstance without specifying a valid XML for the CommandUIExtension [tmeckel]
 
 ### Deprecated
 
