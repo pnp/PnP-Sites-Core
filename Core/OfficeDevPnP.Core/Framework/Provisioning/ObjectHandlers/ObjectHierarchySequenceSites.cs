@@ -51,6 +51,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         Classification = tokenParser.ParseString(t.Classification),
                                         IsPublic = t.IsPublic
                                     };
+                                    
                                     var groupSiteInfo = Sites.SiteCollection.GetGroupInfo(tenant.Context as ClientContext, siteInfo.Alias).GetAwaiter().GetResult();
                                     if (groupSiteInfo == null)
                                     {

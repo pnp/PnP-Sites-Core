@@ -486,6 +486,45 @@ namespace OfficeDevPnP.Core.Sites
             }
         }
 
+        public static async Task<bool> SetGroupImage(ClientContext context, byte[] file, string mimeType)
+        {
+            var accessToken = context.GetAccessToken();
+            var returnValue = false;
+            using (var handler = new HttpClientHandler())
+            {
+                context.Web.EnsureProperty(w => w.Url);
+
+                // we're not in app-only or user + app context, so let's fall back to cookie based auth
+                if (String.IsNullOrEmpty(accessToken))
+                {
+                    handler.SetAuthenticationCookies(context);
+                }
+
+                using (var httpClient = new PnPHttpProvider(handler))
+                {
+
+                    string requestUrl = $"{context.Web.Url}/_api/groupservice/setgroupimage";
+
+                    var requestDigest = await context.GetRequestDigest();
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+                    request.Headers.Add("accept", "application/json;odata=verbose");
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                    request.Headers.Add("X-RequestDigest", requestDigest);
+                    request.Headers.Add("binaryStringRequestBody", "true");
+                    request.Content = new ByteArrayContent(file);
+                    request.Content.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
+                    httpClient.Timeout = new TimeSpan(0, 0, 200);
+                    // Perform actual post operation
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
+
+                    returnValue = response.IsSuccessStatusCode;
+                }
+            }
+            return await Task.Run(() => returnValue);
+        }
 
         private static async Task<string> GetValidSiteUrlFromAliasAsync(ClientContext context, string alias)
         {
