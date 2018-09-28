@@ -93,7 +93,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(siteId == ctx.Web.Id.ToString());
                 Assert.IsTrue(currentUserId == currentUser.Id.ToString());
                 Assert.IsTrue(currentUserFullName == currentUser.Title);
-                Assert.IsTrue(currentUserLoginName == currentUser.LoginName);
+                Assert.IsTrue(currentUserLoginName.Equals(currentUser.LoginName, StringComparison.OrdinalIgnoreCase));
                 Guid outGuid;
                 Assert.IsTrue(Guid.TryParse(guid, out outGuid));
                 Assert.IsTrue(int.Parse(associatedOwnerGroupId) == ctx.Web.AssociatedOwnerGroup.Id);
@@ -208,7 +208,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var chainTest1 = parser.ParseString("parameterTest:{parameter:chain1}");
 
                 // Parser should stop processing parent tokens when processing nested tokens,
-                // so we should end up with the value of the last param (chain2) in our param chain, 
+                // so we should end up with the value of the last param (chain2) in our param chain,
                 // which will not get detokenized.
                 Assert.IsTrue(chainTest1 == "parameterTest:{parameter:chain1}");
             }

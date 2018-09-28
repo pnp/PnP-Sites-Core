@@ -242,7 +242,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
 
                         // do we need custom sorting?
-                        if (modelTermSet.Terms.Any(t => t.CustomSortOrder > -1))
+                        if (modelTermSet.Terms.Any(t => t.CustomSortOrder > 0))
                         {
                             var sortedTerms = modelTermSet.Terms.OrderBy(t => t.CustomSortOrder);
 
@@ -457,7 +457,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
-                if (modelTerm.Terms.Any(t => t.CustomSortOrder > -1))
+                if (modelTerm.Terms.Any(t => t.CustomSortOrder > 0))
                 {
                     var sortedTerms = modelTerm.Terms.OrderBy(t => t.CustomSortOrder);
 
