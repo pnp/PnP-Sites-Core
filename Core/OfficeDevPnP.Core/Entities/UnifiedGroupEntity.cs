@@ -39,5 +39,9 @@ namespace OfficeDevPnP.Core.Entities
         /// Classification of the Office 365 group
         /// </summary>
         public String Classification { get; set; }
+        /// <summary>
+        /// Visibility of the Office 365 group
+        /// </summary>
+        public String Visibility { get; set; }
     }
 }
