@@ -15,7 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #region Private Members
 
         private CanvasSectionCollection _sections;
-
+        private ObjectSecurity _security = null;
         private ClientSidePageHeader _header;
 
         #endregion
@@ -29,6 +29,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             get { return _sections; }
             private set { _sections = value; }
+        }
+
+        /// <summary>
+        /// Defines the Security rules for the client-side Page
+        /// </summary>
+        public ObjectSecurity Security
+        {
+            get { return this._security; }
+            private set
+            {
+                if (this._security != null)
+                {
+                    this._security.ParentTemplate = null;
+                }
+                this._security = value;
+                if (this._security != null)
+                {
+                    this._security.ParentTemplate = this.ParentTemplate;
+                }
+            }
         }
 
         /// <summary>

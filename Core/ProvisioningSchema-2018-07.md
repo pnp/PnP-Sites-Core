@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 9/18/2018*
+* Topic automatically generated on 10/3/2018*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -2247,6 +2247,7 @@ Defines a single element of type ClientSidePage.
    <pnp:Sections />
    <pnp:Header />
    <pnp:FieldValues />
+   <pnp:Security />
 </pnp:ClientSidePage>
 ```
 
@@ -2259,6 +2260,7 @@ Element|Type|Description
 Sections|[Sections](#sections)|Defines the Canvas sections for a single ClientSidePage.
 Header|[Header](#header)|Defines the layout of the Header for the current client side page
 FieldValues|[FieldValues](#fieldvalues)|Defines the page fields values, if any.
+Security|[ObjectSecurity](#objectsecurity)|
 
 Here follow the available attributes for the ClientSidePage element.
 

@@ -517,8 +517,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
         
         private bool isHubSiteFieldSpecified;
         
-        private string hubSiteLogoUrlField;
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
         public ProvisioningTemplateReference[] Templates {
@@ -604,17 +602,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
             }
             set {
                 this.isHubSiteFieldSpecified = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string HubSiteLogoUrl {
-            get {
-                return this.hubSiteLogoUrlField;
-            }
-            set {
-                this.hubSiteLogoUrlField = value;
             }
         }
     }
@@ -1884,6 +1871,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
         
         private StringDictionaryItem[] fieldValuesField;
         
+        private ObjectSecurity securityField;
+        
         private string pageNameField;
         
         private bool promoteAsNewsArticleField;
@@ -1939,6 +1928,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
             }
             set {
                 this.fieldValuesField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public ObjectSecurity Security {
+            get {
+                return this.securityField;
+            }
+            set {
+                this.securityField = value;
             }
         }
         
@@ -2157,6 +2156,128 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
         
         /// <remarks/>
         Custom,
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema")]
+    public partial class ObjectSecurity {
+        
+        private ObjectSecurityBreakRoleInheritance breakRoleInheritanceField;
+        
+        /// <remarks/>
+        public ObjectSecurityBreakRoleInheritance BreakRoleInheritance {
+            get {
+                return this.breakRoleInheritanceField;
+            }
+            set {
+                this.breakRoleInheritanceField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema")]
+    public partial class ObjectSecurityBreakRoleInheritance {
+        
+        private RoleAssignment[] roleAssignmentField;
+        
+        private bool copyRoleAssignmentsField;
+        
+        private bool clearSubscopesField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlElementAttribute("RoleAssignment")]
+        public RoleAssignment[] RoleAssignment {
+            get {
+                return this.roleAssignmentField;
+            }
+            set {
+                this.roleAssignmentField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool CopyRoleAssignments {
+            get {
+                return this.copyRoleAssignmentsField;
+            }
+            set {
+                this.copyRoleAssignmentsField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool ClearSubscopes {
+            get {
+                return this.clearSubscopesField;
+            }
+            set {
+                this.clearSubscopesField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema")]
+    public partial class RoleAssignment {
+        
+        private string principalField;
+        
+        private string roleDefinitionField;
+        
+        private bool removeField;
+        
+        public RoleAssignment() {
+            this.removeField = false;
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Principal {
+            get {
+                return this.principalField;
+            }
+            set {
+                this.principalField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string RoleDefinition {
+            get {
+                return this.roleDefinitionField;
+            }
+            set {
+                this.roleDefinitionField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool Remove {
+            get {
+                return this.removeField;
+            }
+            set {
+                this.removeField = value;
+            }
+        }
     }
     
     /// <remarks/>
@@ -3531,128 +3652,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema")]
     public partial class DataValue : BaseFieldValue {
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema")]
-    public partial class ObjectSecurity {
-        
-        private ObjectSecurityBreakRoleInheritance breakRoleInheritanceField;
-        
-        /// <remarks/>
-        public ObjectSecurityBreakRoleInheritance BreakRoleInheritance {
-            get {
-                return this.breakRoleInheritanceField;
-            }
-            set {
-                this.breakRoleInheritanceField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema")]
-    public partial class ObjectSecurityBreakRoleInheritance {
-        
-        private RoleAssignment[] roleAssignmentField;
-        
-        private bool copyRoleAssignmentsField;
-        
-        private bool clearSubscopesField;
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("RoleAssignment")]
-        public RoleAssignment[] RoleAssignment {
-            get {
-                return this.roleAssignmentField;
-            }
-            set {
-                this.roleAssignmentField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public bool CopyRoleAssignments {
-            get {
-                return this.copyRoleAssignmentsField;
-            }
-            set {
-                this.copyRoleAssignmentsField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public bool ClearSubscopes {
-            get {
-                return this.clearSubscopesField;
-            }
-            set {
-                this.clearSubscopesField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema")]
-    public partial class RoleAssignment {
-        
-        private string principalField;
-        
-        private string roleDefinitionField;
-        
-        private bool removeField;
-        
-        public RoleAssignment() {
-            this.removeField = false;
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Principal {
-            get {
-                return this.principalField;
-            }
-            set {
-                this.principalField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string RoleDefinition {
-            get {
-                return this.roleDefinitionField;
-            }
-            set {
-                this.roleDefinitionField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(false)]
-        public bool Remove {
-            get {
-                return this.removeField;
-            }
-            set {
-                this.removeField = value;
-            }
-        }
     }
     
     /// <remarks/>

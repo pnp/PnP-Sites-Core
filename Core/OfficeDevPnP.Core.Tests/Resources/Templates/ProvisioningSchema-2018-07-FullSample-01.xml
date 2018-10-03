@@ -894,6 +894,13 @@
             <pnp:FieldValue Key="Category" Value="Marketing" />
             <pnp:FieldValue Key="Tags" Value="Tag01,Tag02,Tag03" />
           </pnp:FieldValues>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="true">
+              <pnp:RoleAssignment Principal="user1@contoso.com" RoleDefinition="Full Control"/>
+              <pnp:RoleAssignment Principal="user2@contoso.com" RoleDefinition="Edit"/>
+              <pnp:RoleAssignment Principal="user3@contoso.com" RoleDefinition="View Only"/>
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
         </pnp:ClientSidePage>
       </pnp:ClientSidePages>
 

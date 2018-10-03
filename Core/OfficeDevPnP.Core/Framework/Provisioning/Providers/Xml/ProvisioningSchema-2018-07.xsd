@@ -3989,6 +3989,8 @@
         </xsd:complexType>
       </xsd:element>
 
+      <xsd:element name="Security" type="pnp:ObjectSecurity" minOccurs="0" maxOccurs="1" />
+
     </xsd:all>
 
     <xsd:attribute name="PageName" type="xsd:string" use="required">
@@ -5992,14 +5994,6 @@
         <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
         <xsd:documentation xml:lang="en">
           Declares whether the current Site Collection is the Hub Site of a new Hub
-        </xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute>
-    <xsd:attribute name="HubSiteLogoUrl" type="pnp:ReplaceableString" use="optional">
-      <xsd:annotation>
-        <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
-        <xsd:documentation xml:lang="en">
-          Defines the url to the hubsite logo. Only applicable if IsHubSite attribute has been set to true.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>

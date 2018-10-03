@@ -123,14 +123,14 @@
         }</pnp:Theme>
     </pnp:Themes>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-DUMMY-94f3cc85-e445-433d-996c-f9aad6159ab3">
+  <pnp:Templates ID="CONTAINER-DUMMY-7468e4c7-89ee-4d94-bea8-18ed5ed6bb11">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
         <pnp:Property Key="SomethingElse" Value="Another property ... Who knows ..." />
       </pnp:Properties>
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
-      <pnp:WebSettings RequestAccessEmail="someone@company.com" NoCrawl="false" WelcomePage="/Pages/Home.aspx" Title="Site Title" Description="Site Description" SiteLogo="{sitecollection}/SiteAssets/Logo.png" AlternateCSS="{sitecollection}/Resources/Themes/Contoso/Contoso.css" MasterPageUrl="{sitecollection}/_catalogs/MasterPage/oslo.master" CustomMasterPageUrl="{sitecollection}/_catalogs/MasterPage/CustomMaster.master" HubSiteUrl="/sites/hubsite" QuickLaunchEnabled="true" />
+      <pnp:WebSettings RequestAccessEmail="someone@company.com" NoCrawl="false" WelcomePage="/Pages/Home.aspx" Title="Site Title" Description="Site Description" SiteLogo="{sitecollection}/SiteAssets/Logo.png" AlternateCSS="{sitecollection}/Resources/Themes/Contoso/Contoso.css" MasterPageUrl="{sitecollection}/_catalogs/MasterPage/oslo.master" CustomMasterPageUrl="{sitecollection}/_catalogs/MasterPage/CustomMaster.master" HubSiteUrl="/sites/hubsite" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="true" />
       <pnp:RegionalSettings AdjustHijriDays="1" AlternateCalendarType="Chinese Lunar" CalendarType="Hebrew" Collation="5" FirstDayOfWeek="Sunday" FirstWeekOfYear="1" LocaleId="1040" ShowWeeks="true" Time24="true" TimeZone="4" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="9:00AM" />
       <pnp:SupportedUILanguages>
         <pnp:SupportedUILanguage LCID="1033" />
@@ -273,11 +273,11 @@
         </pnp:ContentType>
       </pnp:ContentTypes>
       <pnp:Lists>
-        <pnp:ListInstance Title="{parameter:CompanyName} - Projects" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/Projects" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="10" MaxVersionLimit="10" DraftVersionVisibility="1" TemplateFeatureID="81a7b6a8-c0e9-4819-aea1-8fc8894d3c43" ContentTypesEnabled="true" EnableAttachments="false" NoCrawl="true" ListExperience="ClassicExperience" DefaultDisplayFormUrl="./Forms/Display.aspx" DefaultEditFormUrl="./Forms/Edit.aspx" DefaultNewFormUrl="./Forms/NewItem.aspx" Direction="LTR" ImageUrl="./Images/Sample.png" IsApplicationList="false" ReadSecurity="11" ValidationFormula="sample formula here" ValidationMessage="validation message here">
+        <pnp:ListInstance Title="{parameter:CompanyName} - Projects" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/Projects" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="10" MaxVersionLimit="10" DraftVersionVisibility="1" TemplateFeatureID="81a7b6a8-c0e9-4819-aea1-8fc8894d3c43" ContentTypesEnabled="true" EnableAttachments="false" NoCrawl="true" ListExperience="ClassicExperience" DefaultDisplayFormUrl="./Forms/Display.aspx" DefaultEditFormUrl="./Forms/Edit.aspx" DefaultNewFormUrl="./Forms/NewItem.aspx" Direction="LTR" ImageUrl="./Images/Sample.png" IrmExpire="true" IrmReject="false" IsApplicationList="false" ReadSecurity="11" ValidationFormula="sample formula here" ValidationMessage="validation message here">
           <pnp:PropertyBagEntries>
-            <pnp:PropertyBagEntry Key="Key1" Value="Value1" />
-            <pnp:PropertyBagEntry Key="Key2" Value="Value2" Indexed="true" />
-            <pnp:PropertyBagEntry Key="Key3" Value="Value3" />
+            <pnp:PropertyBagEntry Key="Key1" Value="Value1" Overwrite="false" />
+            <pnp:PropertyBagEntry Key="Key2" Value="Value2" Overwrite="false" Indexed="true" />
+            <pnp:PropertyBagEntry Key="Key3" Value="Value3" Overwrite="false" />
           </pnp:PropertyBagEntries>
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
@@ -316,7 +316,7 @@
               <pnp:Folder Name="SubFolder-01-01">
                 <pnp:Folder Name="SubFolder-01-01-01">
                   <pnp:PropertyBagEntries>
-                    <pnp:PropertyBagEntry Key="Key1" Value="Value1" />
+                    <pnp:PropertyBagEntry Key="Key1" Value="Value1" Overwrite="true" />
                   </pnp:PropertyBagEntries>
                   <pnp:DefaultColumnValues>
                     <pnp:DefaultColumnValue Key="Field1" Value="Custom Value 1" />
@@ -366,12 +366,12 @@
           </pnp:Webhooks>
           <pnp:IRMSettings Enabled="true" AllowWriteCopy="false" DocumentAccessExpireDays="30" DocumentLibraryProtectionExpiresInDays="90" EnableDocumentAccessExpire="true" EnableGroupProtection="false" GroupName="Custom IRM Group" LicenseCacheExpireDays="60" PolicyDescription="Sample IRM Policy" PolicyTitle="Sample IRM Policy" />
         </pnp:ListInstance>
-        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" RemoveExistingContentTypes="true" IsApplicationList="false" ReadSecurity="11" WriteSecurity="11">
+        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" RemoveExistingContentTypes="true" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="11" WriteSecurity="11">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
           </pnp:ContentTypeBindings>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Sample BCS List" Description="List with data via BCS" OnQuickLaunch="true" TemplateType="101" Url="Lists/SampleBCS" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IsApplicationList="false">
+        <pnp:ListInstance Title="Sample BCS List" Description="List with data via BCS" OnQuickLaunch="true" TemplateType="101" Url="Lists/SampleBCS" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IrmExpire="false" IrmReject="false" IsApplicationList="false">
           <pnp:DataSource>
             <pnp:DataSourceItem Key="LobSystemInstance" Value="ODS" />
             <pnp:DataSourceItem Key="EntityNamespace" Value="https://sample.contoso.com/ODS" />
@@ -631,12 +631,19 @@
             <pnp:FieldValue Key="Category" Value="Marketing" />
             <pnp:FieldValue Key="Tags" Value="Tag01,Tag02,Tag03" />
           </pnp:FieldValues>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="true">
+              <pnp:RoleAssignment Principal="user1@contoso.com" RoleDefinition="Full Control" />
+              <pnp:RoleAssignment Principal="user2@contoso.com" RoleDefinition="Edit" />
+              <pnp:RoleAssignment Principal="user3@contoso.com" RoleDefinition="View Only" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
         </pnp:ClientSidePage>
       </pnp:ClientSidePages>
     </pnp:ProvisioningTemplate>
     <pnp:ProvisioningTemplate ID="WORKFLOWSITE" Version="0" Scope="Undefined">
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
-      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" QuickLaunchEnabled="false" />
+      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
@@ -677,12 +684,12 @@
         </pnp:ContentType>
       </pnp:ContentTypes>
       <pnp:Lists>
-        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
+        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
           </pnp:ContentTypeBindings>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
+        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
           </pnp:ContentTypeBindings>
@@ -766,7 +773,7 @@ function showAlert(){alert("Hello!")};
     </pnp:ProvisioningTemplate>
     <pnp:ProvisioningTemplate ID="ProjectsTemplate" Version="0" Scope="Undefined">
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
-      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" QuickLaunchEnabled="false" />
+      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
@@ -807,12 +814,12 @@ function showAlert(){alert("Hello!")};
         </pnp:ContentType>
       </pnp:ContentTypes>
       <pnp:Lists>
-        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
+        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
           </pnp:ContentTypeBindings>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
+        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
           </pnp:ContentTypeBindings>
@@ -898,7 +905,7 @@ function showAlert(){alert("Hello!")};
     </pnp:ProvisioningTemplate>
     <pnp:ProvisioningTemplate ID="MeetingsTemplate" Version="0" Scope="Undefined">
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
-      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" QuickLaunchEnabled="false" />
+      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
@@ -939,12 +946,12 @@ function showAlert(){alert("Hello!")};
         </pnp:ContentType>
       </pnp:ContentTypes>
       <pnp:Lists>
-        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
+        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
           </pnp:ContentTypeBindings>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
+        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
           </pnp:ContentTypeBindings>
@@ -1031,16 +1038,16 @@ function showAlert(){alert("Hello!")};
   </pnp:Templates>
   <pnp:Sequence ID="SAMPLE-SEQUENCE">
     <pnp:SiteCollections>
-      <pnp:SiteCollection d4p1:type="pnp:CommunicationSite" Title="{parameter:CompanyName} Intranet" Description="{parameter:CompanyName} Intranet" Theme="CustomOrange" ProvisioningId="SITE.01" Url="https://{parameter:O365TenantName}.sharepoint.com/sites/CommSite" Owner="{parameter:CommunicationSiteOwner}" SiteDesign="{SiteDesignId:PnP Site Design}" Classification="HBI" Language="1040" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
+      <pnp:SiteCollection d4p1:type="pnp:CommunicationSite" Title="{parameter:CompanyName} Intranet" Description="{parameter:CompanyName} Intranet" Theme="CustomOrange" ProvisioningId="SITE.01" IsHubSite="true" Url="https://{parameter:O365TenantName}.sharepoint.com/sites/CommSite" Owner="{parameter:CommunicationSiteOwner}" SiteDesign="{SiteDesignId:PnP Site Design}" AllowFileSharingForGuestUsers="true" Classification="HBI" Language="1040" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
         <pnp:Templates>
           <pnp:ProvisioningTemplateReference ID="SPECIALTEAM" />
         </pnp:Templates>
         <pnp:Sites>
-          <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" Title="{parameter:CompanyName} Intranet Workflows" Description="{parameter:CompanyName} Intranet Workflows" Theme="CustomBlue" ProvisioningId="SITE.01.01" Url="{parameter:SitePrefix}-Workflows" TimeZoneId="4" Language="1040">
+          <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" QuickLaunchEnabled="true" Title="{parameter:CompanyName} Intranet Workflows" Description="{parameter:CompanyName} Intranet Workflows" Theme="CustomBlue" ProvisioningId="SITE.01.01" Url="{parameter:SitePrefix}-Workflows" TimeZoneId="4" Language="1040">
             <pnp:Sites>
-              <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" Title="{parameter:CompanyName} Intranet Workflows Sub1" Description="{parameter:CompanyName} Intranet Workflows Sub1" Theme="CustomOrange" ProvisioningId="SITE.01.01.01" Url="{parameter:SitePrefix}-Workflows-Sub1" TimeZoneId="4" Language="1040">
+              <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" QuickLaunchEnabled="true" Title="{parameter:CompanyName} Intranet Workflows Sub1" Description="{parameter:CompanyName} Intranet Workflows Sub1" Theme="CustomOrange" ProvisioningId="SITE.01.01.01" Url="{parameter:SitePrefix}-Workflows-Sub1" TimeZoneId="4" Language="1040">
                 <pnp:Sites>
-                  <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" Title="{parameter:CompanyName} Intranet Workflows Sub1.1" Description="{parameter:CompanyName} Intranet Workflows Sub1.1" ProvisioningId="SITE.01.01.01.01" Url="{parameter:SitePrefix}-Workflows-Sub1.1" TimeZoneId="4" Language="1040">
+                  <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" QuickLaunchEnabled="true" Title="{parameter:CompanyName} Intranet Workflows Sub1.1" Description="{parameter:CompanyName} Intranet Workflows Sub1.1" ProvisioningId="SITE.01.01.01.01" Url="{parameter:SitePrefix}-Workflows-Sub1.1" TimeZoneId="4" Language="1040">
                     <pnp:Templates>
                       <pnp:ProvisioningTemplateReference ID="WORKFLOWSITE" />
                     </pnp:Templates>
@@ -1050,7 +1057,7 @@ function showAlert(){alert("Hello!")};
                   <pnp:ProvisioningTemplateReference ID="WORKFLOWSITE" />
                 </pnp:Templates>
               </pnp:Site>
-              <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" Title="{parameter:CompanyName} Intranet Workflows Sub2" Description="{parameter:CompanyName} Intranet Workflows Sub2" Theme="CustomBlue" ProvisioningId="SITE.01.01.02" Url="{parameter:SitePrefix}-Workflows-Sub2" TimeZoneId="4" Language="1040">
+              <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" QuickLaunchEnabled="true" Title="{parameter:CompanyName} Intranet Workflows Sub2" Description="{parameter:CompanyName} Intranet Workflows Sub2" Theme="CustomBlue" ProvisioningId="SITE.01.01.02" Url="{parameter:SitePrefix}-Workflows-Sub2" TimeZoneId="4" Language="1040">
                 <pnp:Templates>
                   <pnp:ProvisioningTemplateReference ID="WORKFLOWSITE" />
                 </pnp:Templates>
@@ -1062,12 +1069,12 @@ function showAlert(){alert("Hello!")};
           </pnp:Site>
         </pnp:Sites>
       </pnp:SiteCollection>
-      <pnp:SiteCollection d4p1:type="pnp:TeamSite" Title="{parameter:CompanyName} Projects" Description="{parameter:CompanyName} Projects" ProvisioningId="SITE.02" Alias="Projects" DisplayName="{parameter:CompanyName} Projects" IsPublic="true" Classification="MBI" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
+      <pnp:SiteCollection d4p1:type="pnp:TeamSite" Title="{parameter:CompanyName} Projects" Description="{parameter:CompanyName} Projects" ProvisioningId="SITE.02" IsHubSite="true" Alias="Projects" DisplayName="{parameter:CompanyName} Projects" IsPublic="true" Classification="MBI" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
         <pnp:Templates>
           <pnp:ProvisioningTemplateReference ID="ProjectsTemplate" />
         </pnp:Templates>
       </pnp:SiteCollection>
-      <pnp:SiteCollection d4p1:type="pnp:TeamSiteNoGroup" Title="{parameter:CompanyName} Meetings" Description="{parameter:CompanyName} Intranet Meetings" Theme="CustomOrange" ProvisioningId="SITE.03" Url="https://{parameter:O365TenantName}.sharepoint.com/sites/Meetings" Owner="{parameter:TeamSiteNoGroupOwner}" TimeZoneId="4" Language="1040" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
+      <pnp:SiteCollection d4p1:type="pnp:TeamSiteNoGroup" Title="{parameter:CompanyName} Meetings" Description="{parameter:CompanyName} Intranet Meetings" Theme="CustomOrange" ProvisioningId="SITE.03" IsHubSite="false" Url="https://{parameter:O365TenantName}.sharepoint.com/sites/Meetings" Owner="{parameter:TeamSiteNoGroupOwner}" TimeZoneId="4" Language="1040" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
         <pnp:Templates>
           <pnp:ProvisioningTemplateReference ID="MeetingsTemplate" />
         </pnp:Templates>
