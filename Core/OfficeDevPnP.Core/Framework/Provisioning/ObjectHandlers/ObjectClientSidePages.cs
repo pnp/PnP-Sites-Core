@@ -9,6 +9,7 @@ using OfficeDevPnP.Core.Utilities.CanvasControl;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -476,6 +477,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (clientSidePage.Publish)
                     {
                         page.Publish();
+                    }
+
+                    // Set any security on the page
+                    if (clientSidePage.Security != null && clientSidePage.Security.RoleAssignments.Count != 0)
+                    {
+                        web.Context.Load(page.PageListItem);
+                        web.Context.ExecuteQueryRetry();
+                        page.PageListItem.SetSecurity(parser, clientSidePage.Security);
                     }
 
                 }
