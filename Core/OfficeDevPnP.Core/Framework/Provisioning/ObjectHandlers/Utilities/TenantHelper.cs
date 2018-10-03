@@ -14,11 +14,22 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
+using System.Security.Cryptography;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 {
     internal static class TenantHelper
     {
+        internal static string appExistsQuery = @"<View>
+<Query>
+   <Where>
+      <Eq>
+         <FieldRef Name='AppPackageHash' />
+         <Value Type='Text'>{0}</Value>
+      </Eq>
+   </Where>
+</Query>
+</View>";
         public static TokenParser ProcessApps(Tenant tenant, ProvisioningTenant provisioningTenant, FileConnectorBase connector, TokenParser parser, PnPMonitoredScope scope, ProvisioningTemplateApplyingInformation applyingInformation, ProvisioningMessagesDelegate messagesDelegate)
         {
             if (provisioningTenant.AppCatalog != null && provisioningTenant.AppCatalog.Packages.Count > 0)
@@ -63,18 +74,55 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                         foreach (var app in provisioningTenant.AppCatalog.Packages)
                         {
-                            messagesDelegate?.Invoke($"Processing solution {app.Src}", ProvisioningMessageType.Progress);
+                            
                             AppMetadata appMetadata = null;
 
                             if (app.Action == PackageAction.Upload || app.Action == PackageAction.UploadAndPublish)
                             {
                                 var appSrc = parser.ParseString(app.Src);
-                                var appBytes = GetFileBytes(connector, appSrc);
+                                var appBytes = ConnectorFileHelper.GetFileBytes(connector, appSrc);
 
+                                var hash = string.Empty;
+                                using (var memoryStream = new MemoryStream(appBytes))
+                                {
+                                    hash = CalculateHash(memoryStream);
+                                }
+
+                                var exists = false;
+                                var appId = Guid.Empty;
+
+                                using (var appCatalogContext = ((ClientContext)tenant.Context).Clone(appCatalogUri, applyingInformation.AccessTokens))
+                                {
+                                    // check if the app already is present
+                                    var appList = appCatalogContext.Web.GetListByUrl("AppCatalog");
+                                    var camlQuery = new CamlQuery
+                                    {
+                                        ViewXml = string.Format(appExistsQuery, hash)
+                                    };
+                                    var items = appList.GetItems(camlQuery);
+                                    appCatalogContext.Load(items, i => i.IncludeWithDefaultProperties());
+                                    appCatalogContext.ExecuteQueryRetry();
+                                    if (items.Count > 0)
+                                    {
+                                        exists = true;
+                                        appId = Guid.Parse(items[0].FieldValues["UniqueId"].ToString());
+                                    }
+
+                                }
                                 var appFilename = appSrc.Substring(appSrc.LastIndexOf('\\') + 1);
-                                appMetadata = manager.Add(appBytes, appFilename, app.Overwrite, timeoutSeconds: 300);
 
+                                if (!exists)
+                                {
+                                    messagesDelegate?.Invoke($"Processing solution {app.Src}", ProvisioningMessageType.Progress);
+                                    appMetadata = manager.Add(appBytes, appFilename, app.Overwrite, timeoutSeconds: 300);
+                                }
+                                else
+                                {
+                                    messagesDelegate?.Invoke($"Skipping existing solution {app.Src}", ProvisioningMessageType.Progress);
+                                    appMetadata = manager.GetAvailable().FirstOrDefault(a => a.Id == appId);
+                                }
                                 parser.Tokens.Add(new AppPackageIdToken(web, appFilename, appMetadata.Id));
+
                             }
 
                             if (app.Action == PackageAction.Publish || app.Action == PackageAction.UploadAndPublish)
@@ -86,7 +134,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 }
                                 if (appMetadata != null)
                                 {
-                                    manager.Deploy(appMetadata, app.SkipFeatureDeployment);
+                                    if (appMetadata.Deployed == false)
+                                    {
+                                        manager.Deploy(appMetadata, app.SkipFeatureDeployment);
+                                    }
                                 }
                                 else
                                 {
@@ -121,6 +172,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
             }
             return parser;
+        }
+
+        internal static string CalculateHash(Stream stream)
+        {
+            SHA512Managed HashCalculator = new SHA512Managed();
+            byte[] packageHash = HashCalculator.ComputeHash(stream);
+            string hashString = Convert.ToBase64String(packageHash);
+            return hashString;
         }
 
         internal static TokenParser ProcessStorageEntities(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningTemplateApplyingInformation applyingInformation, ProvisioningMessagesDelegate messagesDelegate)
@@ -162,7 +221,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                     var parsedTitle = parser.ParseString(siteScript.Title);
                     var parsedDescription = parser.ParseString(siteScript.Description);
-                    var parsedContent = parser.ParseString(System.Text.Encoding.UTF8.GetString(GetFileBytes(connector, parser.ParseString(siteScript.JsonFilePath))));
+                    var parsedContent = parser.ParseString(System.Text.Encoding.UTF8.GetString(ConnectorFileHelper.GetFileBytes(connector, parser.ParseString(siteScript.JsonFilePath))));
                     var existingScript = existingScripts.FirstOrDefault(s => s.Title == parsedTitle);
 
                     messagesDelegate?.Invoke($"Processing site script {parsedTitle}", ProvisioningMessageType.Progress);
@@ -394,7 +453,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             return parser;
         }
 
-
         [DataContract]
         private class TenantTheme
         {
@@ -410,73 +468,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         /// <summary>
         /// Retrieves a file as a byte array from the connector. If the file name contains special characters (e.g. "%20") and cannot be retrieved, a workaround will be performed
         /// </summary>
-        private static byte[] GetFileBytes(FileConnectorBase connector, string fileName)
-        {
-            var container = String.Empty;
-            if (fileName.Contains(@"\") || fileName.Contains(@"/"))
-            {
-                var tempFileName = fileName.Replace(@"/", @"\");
-                container = fileName.Substring(0, tempFileName.LastIndexOf(@"\"));
-                fileName = fileName.Substring(tempFileName.LastIndexOf(@"\") + 1);
-            }
 
-            // add the default provided container (if any)
-            if (!String.IsNullOrEmpty(container))
-            {
-                if (!String.IsNullOrEmpty(connector.GetContainer()))
-                {
-                    if (container.StartsWith("/"))
-                    {
-                        container = container.TrimStart("/".ToCharArray());
-                    }
-
-#if !NETSTANDARD2_0
-                    if (connector.GetType() == typeof(Connectors.AzureStorageConnector))
-                    {
-                        if (connector.GetContainer().EndsWith("/"))
-                        {
-                            container = $@"{connector.GetContainer()}{container}";
-                        }
-                        else
-                        {
-                            container = $@"{connector.GetContainer()}/{container}";
-                        }
-                    }
-                    else
-                    {
-                        container = $@"{connector.GetContainer()}\{container}";
-                    }
-#else
-                    container = $@"{template.Connector.GetContainer()}\{container}";
-#endif
-                }
-            }
-            else
-            {
-                container = connector.GetContainer();
-            }
-
-            var stream = connector.GetFileStream(fileName, container);
-            if (stream == null)
-            {
-                //Decode the URL and try again
-                fileName = WebUtility.UrlDecode(fileName);
-                stream = connector.GetFileStream(fileName, container);
-            }
-            byte[] returnData;
-
-            using (var memStream = new MemoryStream())
-            {
-                stream.CopyTo(memStream);
-                memStream.Position = 0;
-                returnData = memStream.ToArray();
-            }
-            if (stream != null)
-            {
-                stream.Dispose();
-            }
-            return returnData;
-        }
 
         internal static void ProcessCdns(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
         {

@@ -521,6 +521,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AppPackageIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ConnectorFileHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUtilities.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\TenantHelper.cs" />
     <Compile Include="Framework\Provisioning\Providers\IProvisioningHierarchyFormatter.cs" />
