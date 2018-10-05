@@ -33,23 +33,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
 
             if (string.IsNullOrEmpty(CacheValue))
             {
-                TokenContext.Load(TokenContext.Web, w => w.AssociatedOwnerGroup.Title, w => w.AssociatedMemberGroup.Title, w => w.AssociatedVisitorGroup.Title);
-                TokenContext.ExecuteQueryRetry();
                 switch (_groupType)
                 {
                     case AssociatedGroupType.owners:
                         {
-                            CacheValue = TokenContext.Web.AssociatedOwnerGroup.Title;
+                            TokenContext.Load(TokenContext.Web, w => w.AssociatedOwnerGroup.Title);
+                            TokenContext.ExecuteQueryRetry();
+                            if (!TokenContext.Web.AssociatedOwnerGroup.ServerObjectIsNull.Value)
+                            {
+                                CacheValue = TokenContext.Web.AssociatedOwnerGroup.Title;
+                            }
                             break;
                         }
                     case AssociatedGroupType.members:
                         {
-                            CacheValue = TokenContext.Web.AssociatedMemberGroup.Title;
+                            TokenContext.Load(TokenContext.Web, w => w.AssociatedMemberGroup.Title);
+                            TokenContext.ExecuteQueryRetry();
+                            if (!TokenContext.Web.AssociatedMemberGroup.ServerObjectIsNull.Value)
+                            {
+                                CacheValue = TokenContext.Web.AssociatedMemberGroup.Title;
+                            }
                             break;
                         }
                     case AssociatedGroupType.visitors:
                         {
-                            CacheValue = TokenContext.Web.AssociatedVisitorGroup.Title;
+                            TokenContext.Load(TokenContext.Web, w => w.AssociatedVisitorGroup.Title);
+                            TokenContext.ExecuteQueryRetry();
+                            if (!TokenContext.Web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
+                            {
+                                CacheValue = TokenContext.Web.AssociatedVisitorGroup.Title;
+                            }
                             break;
                         }
                 }
