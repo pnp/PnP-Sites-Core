@@ -341,11 +341,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (web.WebTemplate == "GROUP")
                         {
 #if !ONPREMISES
-                            var fileBytes = ConnectorFileHelper.GetFileBytes(template.Connector, logoUrl);
-                            if (fileBytes != null && fileBytes.Length > 0)
+                            if (!string.IsNullOrEmpty(logoUrl) && !logoUrl.ToLower().Contains("_api/groupservice/getgroupimage"))
                             {
-                                var mimeType = MimeMapping.GetMimeMapping(logoUrl);
-                                Sites.SiteCollection.SetGroupImage((ClientContext)web.Context, fileBytes, mimeType).GetAwaiter().GetResult();
+                                var fileBytes = ConnectorFileHelper.GetFileBytes(template.Connector, logoUrl);
+                                if (fileBytes != null && fileBytes.Length > 0)
+                                {
+                                    var mimeType = MimeMapping.GetMimeMapping(logoUrl);
+                                    Sites.SiteCollection.SetGroupImage((ClientContext)web.Context, fileBytes, mimeType).GetAwaiter().GetResult();
+                                }
                             }
 #endif
                         }

@@ -2266,7 +2266,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var fieldElement = XElement.Parse(field.SchemaXml);
                     var sourceId = fieldElement.Attribute("SourceID") != null ? fieldElement.Attribute("SourceID").Value : null;
 
-                    if (sourceId == "http://schemas.microsoft.com/sharepoint/v3")
+                    if (sourceId != null && sourceId == "http://schemas.microsoft.com/sharepoint/v3")
                     {
                         if (field.InternalName == "Editor"
                             || field.InternalName == "Author"
@@ -2340,7 +2340,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var fieldElement = XElement.Parse(field.SchemaXml);
                     var sourceId = fieldElement.Attribute("SourceID") != null ? fieldElement.Attribute("SourceID").Value : null;
 
-                    if (sourceId == "http://schemas.microsoft.com/sharepoint/v3")
+                    if (sourceId != null && sourceId == "http://schemas.microsoft.com/sharepoint/v3")
                     {
                         if (field.InternalName == "_DisplayName")
                         {
