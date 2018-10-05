@@ -21,6 +21,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - LoginNames are compared case insensitive [tmeckel]
 - Allow to create a CustomAction to a ListInstance without specifying a valid XML for the CommandUIExtension [tmeckel]
 - Don't create a custom sort order for the HashTags TermSet [tmeckel]
+- Use topological sort to order groups before creating them [tmeckel]
+- Don't process web hook assignments without having a valid URL [phawrylak]
 - Refactored objectterms and objectenant handler to support provisioning hierarchies.
 
 ### Deprecated

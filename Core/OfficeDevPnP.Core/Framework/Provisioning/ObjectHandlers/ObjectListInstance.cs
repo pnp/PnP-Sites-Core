@@ -2108,16 +2108,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             var addedWebhooks = Task.Run(() => siteList.GetWebhookSubscriptionsAsync()).GetAwaiter().GetResult();
 
-            if (addedWebhooks.Any())
+            foreach (var webhook in addedWebhooks.Where(x => !string.IsNullOrEmpty(x.NotificationUrl)))
             {
-                foreach (var webhook in addedWebhooks)
+                list.Webhooks.Add(new Webhook
                 {
-                    list.Webhooks.Add(new Webhook()
-                    {
-                        ExpiresInDays = webhook.ExpirationDateTime.Subtract(DateTime.Now).Days + 1,
-                        ServerNotificationUrl = webhook.NotificationUrl,
-                    });
-                }
+                    ExpiresInDays = webhook.ExpirationDateTime.Subtract(DateTime.Now).Days + 1,
+                    ServerNotificationUrl = webhook.NotificationUrl,
+                });
             }
 
             return list;
