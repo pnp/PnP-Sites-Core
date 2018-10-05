@@ -35,7 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             {
                 if (_context == null)
                 {
-                    var webUrl = Web.EnsureProperty(w => w.Url);
+                    // Make sure that the Url property has been loaded on the web in the constructor
                     _context = Web.Context.Clone(Web.Url);
                 }
                 return _context;

@@ -8,10 +8,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         Description = "Returns the server relative url of the site collection",
         Example = "{sitecollection}",
         Returns = "/sites/mysitecollection")]
-    internal class SiteCollectionToken : TokenDefinition
+    internal class SiteCollectionToken : VolatileTokenDefinition
     {
         public SiteCollectionToken(Web web)
-            : base(web, "~sitecollection", "{sitecollection}")
+            : base(web, "{sitecollection}")
         {
         }
 

@@ -428,6 +428,103 @@ namespace OfficeDevPnP.Core.Sites
             }
         }
 
+        /// <summary>
+        /// Checks if a given alias is already in use or not
+        /// </summary>
+        /// <param name="context">Context to operate against</param>
+        /// <param name="alias">Alias to check</param>
+        /// <returns>True if in use, false otherwise</returns>
+        public static async Task<Dictionary<string,string>> GetGroupInfo(ClientContext context, string alias)
+        {
+            await new SynchronizationContextRemover();
+
+            Dictionary<string, string> siteInfo = new Dictionary<string, string>();
+
+            var accessToken = context.GetAccessToken();
+
+            using (var handler = new HttpClientHandler())
+            {
+                context.Web.EnsureProperty(w => w.Url);
+
+                if (String.IsNullOrEmpty(accessToken))
+                {
+                    handler.SetAuthenticationCookies(context);
+                }
+
+                using (var httpClient = new HttpClient(handler))
+                {
+                    string requestUrl = String.Format("{0}/_api/SP.Directory.DirectorySession/Group(alias='{1}')", context.Web.Url, alias);
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+                    request.Headers.Add("accept", "application/json;odata.metadata=minimal");
+                    httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    request.Headers.Add("odata-version", "4.0");
+
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+
+                    // Perform actual GET request
+                    HttpResponseMessage response = await httpClient.SendAsync(request);
+
+                    if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        siteInfo = null;
+                    }
+                    else if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        var responseString = await response.Content.ReadAsStringAsync();
+                        siteInfo = JsonConvert.DeserializeObject<Dictionary<string, string>>(responseString);
+                    }
+                    else
+                    {
+                        // Something went wrong...
+                        throw new Exception(await response.Content.ReadAsStringAsync());
+                    }
+                }
+                return await Task.Run(() => siteInfo);
+            }
+        }
+
+        public static async Task<bool> SetGroupImage(ClientContext context, byte[] file, string mimeType)
+        {
+            var accessToken = context.GetAccessToken();
+            var returnValue = false;
+            using (var handler = new HttpClientHandler())
+            {
+                context.Web.EnsureProperty(w => w.Url);
+
+                // we're not in app-only or user + app context, so let's fall back to cookie based auth
+                if (String.IsNullOrEmpty(accessToken))
+                {
+                    handler.SetAuthenticationCookies(context);
+                }
+
+                using (var httpClient = new PnPHttpProvider(handler))
+                {
+
+                    string requestUrl = $"{context.Web.Url}/_api/groupservice/setgroupimage";
+
+                    var requestDigest = await context.GetRequestDigest();
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+                    request.Headers.Add("accept", "application/json;odata=verbose");
+                    if (!string.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                    request.Headers.Add("X-RequestDigest", requestDigest);
+                    request.Headers.Add("binaryStringRequestBody", "true");
+                    request.Content = new ByteArrayContent(file);
+                    request.Content.Headers.ContentType = new MediaTypeHeaderValue(mimeType);
+                    httpClient.Timeout = new TimeSpan(0, 0, 200);
+                    // Perform actual post operation
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
+
+                    returnValue = response.IsSuccessStatusCode;
+                }
+            }
+            return await Task.Run(() => returnValue);
+        }
 
         private static async Task<string> GetValidSiteUrlFromAliasAsync(ClientContext context, string alias)
         {
@@ -464,6 +561,7 @@ namespace OfficeDevPnP.Core.Sites
                     {
                         // If value empty, URL is taken
                         responseString = await response.Content.ReadAsStringAsync();
+                        
                     }
                     else
                     {

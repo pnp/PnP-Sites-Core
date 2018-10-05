@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of ContentType objects
     /// </summary>
-    public partial class ContentTypeCollection : ProvisioningTemplateCollection<ContentType>
+    public partial class ContentTypeCollection : BaseProvisioningTemplateObjectCollection<ContentType>
     {
         /// <summary>
         /// Constructor for ContentTypeCollection class

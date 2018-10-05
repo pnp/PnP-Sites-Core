@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class MasterPageCatalogToken : TokenDefinition
     {
         public MasterPageCatalogToken(Web web)
-            : base(web, "~masterpagecatalog", "{masterpagecatalog}")
+            : base(web, "{masterpagecatalog}")
         {
         }
 

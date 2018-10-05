@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class AuthenticationRealmToken : TokenDefinition
     {
         public AuthenticationRealmToken(Web web)
-            : base(web, "~authenticationrealm", "~realm", "{authenticationrealm}", "{realm}")
+            : base(web, "{authenticationrealm}", "{realm}")
         {
         }
         public override string GetReplaceValue()

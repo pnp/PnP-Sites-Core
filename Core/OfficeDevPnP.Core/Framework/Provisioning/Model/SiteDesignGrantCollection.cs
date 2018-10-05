@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of SiteDesignGrant objects
     /// </summary>
-    public partial class SiteDesignGrantCollection : ProvisioningTemplateCollection<SiteDesignGrant>
+    public partial class SiteDesignGrantCollection : BaseProvisioningTemplateObjectCollection<SiteDesignGrant>
     {
         /// <summary>
         /// Constructor for SiteDesignGrantCollection

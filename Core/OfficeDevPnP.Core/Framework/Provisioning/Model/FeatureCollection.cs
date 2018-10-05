@@ -3,7 +3,7 @@
     /// <summary>
     /// Collection of Feature objects
     /// </summary>
-    public partial class FeatureCollection : ProvisioningTemplateCollection<Feature>
+    public partial class FeatureCollection : BaseProvisioningTemplateObjectCollection<Feature>
     {
         /// <summary>
         /// Constructor for FeaturCollection class

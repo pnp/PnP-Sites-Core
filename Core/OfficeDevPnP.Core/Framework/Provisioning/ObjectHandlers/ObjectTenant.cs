@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
-using OfficeDevPnP.Core.ALM;
-using System.IO;
-using System.Net;
-using Microsoft.Online.SharePoint.TenantAdministration;
-using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
@@ -36,11 +28,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (template.Tenant != null)
                 {
-                    ProcessCdns(web, template.Tenant, parser, scope);
-                    ProcessApps(web, template, parser, scope);
-                    parser = ProcessSiteScripts(web, template, parser, scope);
-                    parser = ProcessSiteDesigns(web, template, parser, scope);
-                    parser = ProcessStorageEntities(web, template, parser, scope);
+                    using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
+                    {
+                        var tenant = new Tenant(tenantContext);
+                        TenantHelper.ProcessCdns(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                        parser = TenantHelper.ProcessApps(tenant, template.Tenant, template.Connector, parser, scope, applyingInformation, MessagesDelegate);
+                        parser = TenantHelper.ProcessWebApiPermissions(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                        parser = TenantHelper.ProcessSiteScripts(tenant, template.Tenant, template.Connector, parser, scope, MessagesDelegate);
+                        parser = TenantHelper.ProcessSiteDesigns(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                        parser = TenantHelper.ProcessStorageEntities(tenant, template.Tenant, parser, scope, applyingInformation, MessagesDelegate);
+                        parser = TenantHelper.ProcessThemes(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                    }
                     // So far we do not provision CDN settings
                     // It will come in the near future
                     // NOOP on CDN
@@ -50,11 +48,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
+        /*
         private void ProcessApps(Web web, ProvisioningTemplate template, TokenParser parser, PnPMonitoredScope scope)
         {
             if (template.Tenant.AppCatalog != null && template.Tenant.AppCatalog.Packages.Count > 0)
             {
-                
+
                 var manager = new AppManager(web.Context as ClientContext);
 
                 var appCatalogUri = web.GetAppCatalog();
@@ -228,7 +227,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 PreviewImageAltText = designPreviewImageAltText,
                                 IsDefault = siteDesign.IsDefault,
                             };
-                            switch((int)siteDesign.WebTemplate)
+                            switch ((int)siteDesign.WebTemplate)
                             {
                                 case 0:
                                     {
@@ -528,6 +527,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return returnDict;
         }
+        */
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
