@@ -340,12 +340,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Modern site? Then we assume the SiteLogo is actually a filepath
                         if (web.WebTemplate == "GROUP")
                         {
+#if !ONPREMISES
                             var fileBytes = ConnectorFileHelper.GetFileBytes(template.Connector, logoUrl);
                             if (fileBytes != null && fileBytes.Length > 0)
                             {
                                 var mimeType = MimeMapping.GetMimeMapping(logoUrl);
                                 Sites.SiteCollection.SetGroupImage((ClientContext)web.Context, fileBytes, mimeType).GetAwaiter().GetResult();
                             }
+#endif
                         }
                         else
                         {
