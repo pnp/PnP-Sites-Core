@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Don't process web hook assignments without having a valid URL [phawrylak]
 - Refactored objectterms and objectenant handler to support provisioning hierarchies.
 - Don't export the internal _DisplayName field [phawrylak]
+- Fixed SetOpenBySitePolicy as it never worked [gautamdsheth]
 
 ### Deprecated
 
