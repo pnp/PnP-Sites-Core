@@ -26,6 +26,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Refactored objectterms and objectenant handler to support provisioning hierarchies.
 - Don't export the internal _DisplayName field [phawrylak]
 - Fixed SetOpenBySitePolicy as it never worked [gautamdsheth]
+- Fixed ServerUnauthorizedAccessException when creating web (#1925) [phawrylak]
 
 ### Deprecated
 
