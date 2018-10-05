@@ -9,6 +9,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [3.2.1810.0 - Unreleased]
 
 ### Added
+- Added support for provisioning a site hierarchy through the provisioning engine based upon the 2018-07 schema.
+- Added Tenant.ApplyProvisioningHierarchy extension method
+- Added various additional provisioning engine object handlers to support sitehierarchy
+- Added ability to set SiteLogo on a modern team site through Sites.SiteCollection.SetGroupImage method.
 
 ### Changed
 
@@ -17,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - LoginNames are compared case insensitive [tmeckel]
 - Allow to create a CustomAction to a ListInstance without specifying a valid XML for the CommandUIExtension [tmeckel]
 - Don't create a custom sort order for the HashTags TermSet [tmeckel]
+- Refactored objectterms and objectenant handler to support provisioning hierarchies.
 
 ### Deprecated
 
