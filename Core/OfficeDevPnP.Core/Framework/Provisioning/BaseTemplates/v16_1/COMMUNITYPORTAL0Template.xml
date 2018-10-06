@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2018/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.29.1808.0, Culture=neutral, PublicKeyToken=null" />
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.2.1810.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-COMMUNITYPORTAL0template">
     <pnp:ProvisioningTemplate ID="COMMUNITYPORTAL0template" Version="1" BaseSiteTemplate="COMMUNITYPORTAL#0" Scope="RootSite">
-      <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="" SiteLogo="/_layouts/15/images/siteicon.png" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" />
+      <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="" SiteLogo="/_layouts/15/images/siteicon.png" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
       <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="Gregorian" Collation="25" FirstDayOfWeek="Sunday" FirstWeekOfYear="0" LocaleId="1033" ShowWeeks="false" Time24="false" TimeZone="4" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
       <pnp:SupportedUILanguages>
         <pnp:SupportedUILanguage LCID="1033" />
@@ -12,23 +12,23 @@
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="6" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="" Overwrite="false" />
         <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="WSSEndUser;#WSSCentralAdmin;#FastEndUser;#FastCentralAdmin;#MSSEndUser;#MSSCentralAdmin;#PPSDesignerEndUser;#SQLWSSAddIn" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="34bb8c65-62de-4dc3-9c93-ea01f1c360c1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="393a24a1-2893-49a7-a5a9-f3acea6b9ef2" Overwrite="false" />
         <pnp:PropertyBagEntry Key="sharepointhelpoverride" Value="SPOStandard" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="8" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="7" Overwrite="false" />
         <pnp:PropertyBagEntry Key="profileschemaversion" Value="5" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_associategroups" Value="8;7;6" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="7" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.7925" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associategroups" Value="7;6;5" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="6" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.8126" Overwrite="false" />
         <pnp:PropertyBagEntry Key="metadatatimestamp" Value="437b86fc125845a985ea87a29156ce3c|2015-03-27T08:10:01.077Z" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__ScriptSafeInternalPages" Value="WopiFrame.aspx;videoembedplayer.aspx;" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="6;7;8" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="5;6;7" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security>
+      <pnp:Security RemoveExistingUniqueRoleAssignments="false">
         <pnp:AdditionalOwners>
           <pnp:User Name="SHAREPOINT\system" />
         </pnp:AdditionalOwners>
@@ -47,7 +47,7 @@
         </pnp:CurrentNavigation>
       </pnp:Navigation>
       <pnp:SiteFields>
-        <Field Type="Note" DisplayName="TaxKeywordTaxHTField" StaticName="TaxKeywordTaxHTField" Name="TaxKeywordTaxHTField" ID="{1390a86a-23da-45f0-8efe-ef36edadfb39}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{7faf76ac-e91c-4b79-9709-1b7b2fdc0db1}" />
+        <Field Type="Note" DisplayName="TaxKeywordTaxHTField" StaticName="TaxKeywordTaxHTField" Name="TaxKeywordTaxHTField" ID="{1390a86a-23da-45f0-8efe-ef36edadfb39}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{931a8041-affb-44e9-9014-07e43acc33fc}" />
         <Field ID="{1F30D200-0D4E-4C8A-A7EB-2E49815BF2BE}" DisplayName="Instance Id" Name="WF4InstanceId" Type="Text" Group="_Hidden" Hidden="TRUE" Sealed="TRUE" Indexed="TRUE" />
         <Field Type="TaxonomyFieldTypeMulti" DisplayName="Enterprise Keywords" StaticName="TaxKeyword" Name="TaxKeyword" ID="{23f27201-bee3-471e-b2e7-b64fd8b7ca38}" ShowInViewForms="TRUE" DefaultListField="TRUE" List="{{listid:TaxonomyHiddenList}}" WebId="{siteid}" Required="FALSE" Hidden="FALSE" CanToggleHidden="TRUE" ShowField="Term1033" SourceID="{{siteid}}" Mult="TRUE" Sortable="FALSE" Group="Enterprise Keywords Group" Description="Enterprise Keywords are shared with other users and applications to allow for ease of search and filtering, as well as metadata consistency and reuse" AllowDeletion="TRUE" Sealed="TRUE">
           <Customization>
@@ -251,6 +251,7 @@
         </Field>
         <Field ID="{B4BA57C8-AB73-49fa-B6AF-A4F824D84C14}" DisplayName="WSEventType" Name="WSEventType" Type="Text" Sealed="TRUE" Group="_Hidden" />
         <Field ID="{66B691CF-07A3-4CA6-AC6D-27FA969C8569}" DisplayName="Form Name" Type="Text" Required="FALSE" Name="FormName" RowOrdinal="0" Group="_Hidden" />
+        <Field ID="{6C5CC2D0-706C-4BC2-9549-F774A75D5488}" Name="UserExpiration" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="UserExpiration" Group="_Hidden" DisplayName="User Expiration" ReadOnly="TRUE" ReadOnlyEnforced="TRUE" Type="DateTime" FromBaseType="TRUE" />
         <Field ID="{1C2CC9D2-3C9F-4a46-8088-17287D608270}" SourceID="http://schemas.microsoft.com/sharepoint/v3" Name="VideoSetExternalLink" DisplayName="External Link" StaticName="VideoSetExternalLink" Group="_Hidden" Type="URL" Hidden="TRUE" ShowInEditForm="TRUE" />
         <Field Type="LookupMulti" DisplayName="Taxonomy Catch All Column1" StaticName="TaxCatchAllLabel" Name="TaxCatchAllLabel" ID="{8f6b6dd8-9357-4019-8172-966fcd502ed2}" ShowInViewForms="FALSE" List="{{listid:TaxonomyHiddenList}}" WebId="{siteid}" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" ShowField="CatchAllDataLabel" FieldRef="{F3B0ADF9-C1A2-4b02-920D-943FBA4B3611}" SourceID="{{siteid}}" ReadOnly="TRUE" Mult="TRUE" Sortable="FALSE" AllowDeletion="TRUE" Sealed="TRUE" />
         <Field ID="{EA7208D9-8D79-4553-9572-6E83377F523A}" Type="Geolocation" Group="_Hidden" Name="Geolocation" DisplayName="Geolocation" Sealed="TRUE" SourceID="http://schemas.microsoft.com/sharepoint/v3/fields" StaticName="Geolocation" />
@@ -567,12 +568,12 @@
         </pnp:ContentType>
       </pnp:ContentTypes>
       <pnp:Lists>
-        <pnp:ListInstance Title="Form Templates" Description="This library contains administrator-approved form templates that were activated to this site collection." DocumentTemplate="" TemplateType="101" Url="FormServerTemplates" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/FormServerTemplates/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/FormServerTemplates/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/FormServerTemplates/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=44" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+        <pnp:ListInstance Title="Form Templates" Description="This library contains administrator-approved form templates that were activated to this site collection." DocumentTemplate="" TemplateType="101" Url="FormServerTemplates" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/FormServerTemplates/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/FormServerTemplates/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/FormServerTemplates/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=44" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x010100F8EF98760CBA4A94994F13BA881038FA" Default="true" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{40466B3C-99F1-4976-93CF-D2F0228577B4}" MobileView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateCOMMUNITYPORTAL0/FormServerTemplates/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{238FE216-8E55-471B-BC72-7CDD1D5BF609}" MobileView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateCOMMUNITYPORTAL0/FormServerTemplates/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -587,7 +588,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{6C876A56-AC17-407F-9CDF-ABD96A26FE65}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Forms" Url="/sites/templateCOMMUNITYPORTAL0/FormServerTemplates/Forms/All Forms.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{9AF497A4-96D7-4107-ACD3-E58E5FEA4C4C}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Forms" Url="/sites/templateCOMMUNITYPORTAL0/FormServerTemplates/Forms/All Forms.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="FormCategory" />
@@ -631,13 +632,13 @@
             <pnp:FieldRef ID="db8d9d6d-dc9a-4fbd-85f3-4a753bfdc58c" Name="_LikeCount" DisplayName="Like count" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Style Library" Description="Use the style library to store style sheets, such as CSS or XSL files. The style sheets in this gallery can be used by this site or any of its subsites." DocumentTemplate="" TemplateType="101" Url="Style Library" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="500" DraftVersionVisibility="1" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" NoCrawl="true" DefaultDisplayFormUrl="{site}/Style Library/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/Style Library/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/Style Library/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=44" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+        <pnp:ListInstance Title="Style Library" Description="Use the style library to store style sheets, such as CSS or XSL files. The style sheets in this gallery can be used by this site or any of its subsites." DocumentTemplate="" TemplateType="101" Url="Style Library" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="500" DraftVersionVisibility="1" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" NoCrawl="true" DefaultDisplayFormUrl="{site}/Style Library/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/Style Library/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/Style Library/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=44" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0101" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{C94E2480-7098-487A-8535-F013C58059C0}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateCOMMUNITYPORTAL0/Style Library/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{A6B880FC-0ABF-40A5-BCE4-E6BE02F84C16}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateCOMMUNITYPORTAL0/Style Library/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
