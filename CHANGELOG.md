@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fixed ServerUnauthorizedAccessException when creating web (#1925) [phawrylak]
 
 ### Deprecated
+- Deprecated all provisioning engine tokens that start with ~, like ~site, etc. Use {site} etc. instead. ~ tokens conflicted with a token system used by SharePoint itself.
 
 ## [3.1.1809.0 - September 2018 release]
 
