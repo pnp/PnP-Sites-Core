@@ -7,6 +7,7 @@ using System.Net.Http.Headers;
 using OfficeDevPnP.Core.Entities;
 using System.IO;
 using OfficeDevPnP.Core.Diagnostics;
+using Newtonsoft.Json.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
@@ -979,6 +980,50 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
 
             return unifiedGroupGraphUsers;
-        }        
+        }
+
+        /// <summary>
+        /// Returns the classification value of an Office 365 Group.
+        /// </summary>
+        /// <param name="groupId">ID of the unified Group</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <returns>Classification value of a Unified group</returns>
+        public static string GetGroupClassification(string groupId, string accessToken)
+        {
+            if (String.IsNullOrEmpty(groupId))
+            {
+                throw new ArgumentNullException(nameof(groupId));
+            }
+
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            string classification = string.Empty;
+
+            try
+            {
+                string getGroupUrl = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groups/{groupId}";
+
+                var getGroupResult = GraphHttpClient.MakeGetRequestForString(
+                    getGroupUrl,
+                    accessToken: accessToken);
+
+                JObject groupObject = JObject.Parse(getGroupResult);
+
+                if (groupObject["classification"] != null)
+                {
+                    classification = Convert.ToString(groupObject["classification"]);
+                }
+
+            }
+            catch (ServiceException e)
+            {
+                classification = e.Error.Message;
+            }
+
+            return classification;
+        }
     }
 }
