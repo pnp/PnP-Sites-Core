@@ -9,6 +9,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [3.2.1810.0 - Unreleased]
 
 ### Added
+
+### Changed
+
+### Deprecated
+
+## [3.2.1810.0 - October 2018 release]
+
+### Added
 - Added support for provisioning a site hierarchy through the provisioning engine based upon the 2018-07 schema.
 - Added Tenant.ApplyProvisioningHierarchy extension method
 - Added various additional provisioning engine object handlers to support sitehierarchy
