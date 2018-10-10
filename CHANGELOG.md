@@ -6,9 +6,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [3.2.1810.0 - Unreleased]
+## [3.3.1811.0 - Unreleased]
 
 ### Added
+- Added support for language/lcid when creating modern sites using Sites.SiteCollection.CreateAsync method.
 
 ### Changed
 
