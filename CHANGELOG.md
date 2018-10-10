@@ -9,9 +9,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [3.3.1811.0 - Unreleased]
 
 ### Added
+- Added support for the `Visibility` attribute for Unified Groups (devinprejean)
 - Added support for language/lcid when creating modern sites using Sites.SiteCollection.CreateAsync method.
 
 ### Changed
+- Get classification directly from Unified Group instead of a separate call (devinprejean)
+
 
 ### Deprecated
 
