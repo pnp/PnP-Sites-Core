@@ -6,10 +6,8 @@ using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Utilities.Async;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Sites
@@ -45,21 +43,26 @@ namespace OfficeDevPnP.Core.Sites
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
-                    string requestUrl = String.Format("{0}/_api/sitepages/communicationsite/create", clientContext.Web.Url);
+                    string requestUrl = $"{clientContext.Web.Url}/_api/SPSiteManager/Create";
+                    //    string requestUrl = String.Format("{0}/_api/sitepages/communicationsite/create", clientContext.Web.Url);
 
                     var siteDesignId = GetSiteDesignId(siteCollectionCreationInformation);
 
                     Dictionary<string, object> payload = new Dictionary<string, object>();
-                    payload.Add("__metadata", new { type = "SP.Publishing.CommunicationSiteCreationRequest" });
+                    payload.Add("__metadata", new { type = "Microsoft.SharePoint.Portal.SPSiteCreationRequest" });
                     payload.Add("Title", siteCollectionCreationInformation.Title);
+                    payload.Add("Lcid", siteCollectionCreationInformation.Lcid);
+                    payload.Add("ShareByEmailEnabled", siteCollectionCreationInformation.ShareByEmailEnabled);
                     payload.Add("Url", siteCollectionCreationInformation.Url);
-                    payload.Add("AllowFileSharingForGuestUsers", siteCollectionCreationInformation.AllowFileSharingForGuestUsers);
+                    // Deprecated
+                    // payload.Add("AllowFileSharingForGuestUsers", siteCollectionCreationInformation.AllowFileSharingForGuestUsers);
                     if (siteDesignId != Guid.Empty)
                     {
                         payload.Add("SiteDesignId", siteDesignId);
                     }
                     payload.Add("Classification", siteCollectionCreationInformation.Classification == null ? "" : siteCollectionCreationInformation.Classification);
                     payload.Add("Description", siteCollectionCreationInformation.Description == null ? "" : siteCollectionCreationInformation.Description);
+                    payload.Add("WebTemplate", "SITEPAGEPUBLISHING#0");
                     payload.Add("WebTemplateExtensionId", Guid.Empty);
 
                     var body = new { request = payload };
@@ -140,7 +143,7 @@ namespace OfficeDevPnP.Core.Sites
             await new SynchronizationContextRemover();
 
             ClientContext responseContext = null;
-            
+
             var accessToken = clientContext.GetAccessToken();
 
             if (clientContext.IsAppOnly())
@@ -167,7 +170,7 @@ namespace OfficeDevPnP.Core.Sites
 
                     var optionalParams = new Dictionary<string, object>();
                     optionalParams.Add("Description", siteCollectionCreationInformation.Description != null ? siteCollectionCreationInformation.Description : "");
-                    optionalParams.Add("CreationOptions", new { results = new object[0], Classification = siteCollectionCreationInformation.Classification != null ? siteCollectionCreationInformation.Classification : "" });
+                    optionalParams.Add("CreationOptions", new { results = siteCollectionCreationInformation.Lcid != 0 ? new [] { $"SPSiteLanguage:{siteCollectionCreationInformation.Lcid}" } : new object[0], Classification = siteCollectionCreationInformation.Classification != null ? siteCollectionCreationInformation.Classification : "" });
 
                     payload.Add("optionalParams", optionalParams);
 
@@ -241,7 +244,7 @@ namespace OfficeDevPnP.Core.Sites
                 throw new ArgumentException("Alias cannot contain spaces", "Alias");
             }
 
-            if(string.IsNullOrEmpty(siteCollectionGroupifyInformation.DisplayName))
+            if (string.IsNullOrEmpty(siteCollectionGroupifyInformation.DisplayName))
             {
                 throw new ArgumentException("DisplayName is required", "DisplayName");
             }
@@ -274,7 +277,7 @@ namespace OfficeDevPnP.Core.Sites
                     payload.Add("alias", siteCollectionGroupifyInformation.Alias);
                     payload.Add("isPublic", siteCollectionGroupifyInformation.IsPublic);
 
-                    var optionalParams = new Dictionary<string, object>();                    
+                    var optionalParams = new Dictionary<string, object>();
                     optionalParams.Add("Description", siteCollectionGroupifyInformation.Description != null ? siteCollectionGroupifyInformation.Description : "");
 
                     // Handle groupify options
@@ -434,7 +437,7 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="context">Context to operate against</param>
         /// <param name="alias">Alias to check</param>
         /// <returns>True if in use, false otherwise</returns>
-        public static async Task<Dictionary<string,string>> GetGroupInfo(ClientContext context, string alias)
+        public static async Task<Dictionary<string, string>> GetGroupInfo(ClientContext context, string alias)
         {
             await new SynchronizationContextRemover();
 
@@ -561,7 +564,7 @@ namespace OfficeDevPnP.Core.Sites
                     {
                         // If value empty, URL is taken
                         responseString = await response.Content.ReadAsStringAsync();
-                        
+
                     }
                     else
                     {

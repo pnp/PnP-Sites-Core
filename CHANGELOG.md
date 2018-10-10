@@ -6,10 +6,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [3.2.1810.0 - Unreleased]
+## [3.3.1811.0 - Unreleased]
 
 ### Added
 - Added support for the `Visibility` attribute for Unified Groups (devinprejean)
+- Added support for language/lcid when creating modern sites using Sites.SiteCollection.CreateAsync method.
 
 ### Changed
 - Get classification directly from Unified Group instead of a separate call (devinprejean)
@@ -40,6 +41,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fixed ServerUnauthorizedAccessException when creating web (#1925) [phawrylak]
 
 ### Deprecated
+- Deprecated all provisioning engine tokens that start with ~, like ~site, etc. Use {site} etc. instead. ~ tokens conflicted with a token system used by SharePoint itself.
 
 ## [3.1.1809.0 - September 2018 release]
 
