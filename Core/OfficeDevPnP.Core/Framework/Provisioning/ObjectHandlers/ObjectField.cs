@@ -336,6 +336,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // Add newly created field to token set, this allows to create a field + use it in a formula in the same provisioning template
                 parser.AddToken(new FieldTitleToken(web, field.InternalName, field.Title));
+                parser.AddToken(new FieldIdToken(web, field.InternalName, field.Id));
 
                 bool isDirty = false;
 #if !SP2013

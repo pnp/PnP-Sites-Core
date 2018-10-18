@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
 - Added support for the `Visibility` attribute for Unified Groups (devinprejean)
 - Added support for language/lcid when creating modern sites using Sites.SiteCollection.CreateAsync method.
+- Added support for FieldIdToken to support customers while migrating across sites and keeping field internal name, but changing field Id.
 
 ### Changed
 - Get classification directly from Unified Group instead of a separate call (devinprejean)

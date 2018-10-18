@@ -343,9 +343,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var createdField = CreateField(fieldElement, listInfo, parser, field.SchemaXml, (ClientContext)web.Context, scope);
                                 if (createdField != null)
                                 {
-                                    createdField.EnsureProperties(f => f.InternalName, f => f.Title);
+                                    createdField.EnsureProperties(f => f.InternalName, f => f.Title, f => f.Id);
                                     parser.AddToken(new FieldTitleToken(web, createdField.InternalName,
                                         createdField.Title));
+                                    parser.AddToken(new FieldIdToken(web, createdField.InternalName,
+                                        createdField.Id));
                                 }
                             }
                             catch (Exception ex)
@@ -362,8 +364,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var updatedField = UpdateField(web, listInfo, fieldGuid, fieldElement, fieldFromList, scope, parser, field.SchemaXml);
                                 if (updatedField != null)
                                 {
-                                    updatedField.EnsureProperties(f => f.InternalName, f => f.Title);
+                                    updatedField.EnsureProperties(f => f.InternalName, f => f.Title, f => f.Id);
                                     parser.AddToken(new FieldTitleToken(web, updatedField.InternalName, updatedField.Title));
+                                    parser.AddToken(new FieldIdToken(web, updatedField.InternalName, updatedField.Id));
                                 }
                             }
                             catch (Exception ex)
@@ -421,9 +424,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         field = UpdateFieldRef(listInfo.SiteList, field.Id, fieldRef, parser);
                     }
 
-                    field.EnsureProperties(f => f.InternalName, f => f.Title);
+                    field.EnsureProperties(f => f.InternalName, f => f.Title, f => f.Id);
 
                     parser.AddToken(new FieldTitleToken(web, field.InternalName, field.Title));
+                    parser.AddToken(new FieldIdToken(web, field.InternalName, field.Id));
 
 #if !SP2013
                     var siteField = template.SiteFields.FirstOrDefault(f => Guid.Parse(XElement.Parse(f.SchemaXml).Attribute("ID").Value).Equals(field.Id));

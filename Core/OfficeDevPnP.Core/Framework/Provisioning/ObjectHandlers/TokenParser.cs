@@ -79,7 +79,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // remove content type tokens
             AddContentTypeTokens(web);
             // remove field tokens
-            _tokens.RemoveAll(t => t is FieldTitleToken);
+            _tokens.RemoveAll(t => t is FieldTitleToken || t is FieldIdToken);
             AddFieldTokens(web);
             // remove group tokens
             _tokens.RemoveAll(t => t is GroupIdToken || t is AssociatedGroupToken);
@@ -249,14 +249,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private void AddFieldTokens(Web web)
         {
-            _tokens.RemoveAll(t => t is FieldTitleToken);
+            _tokens.RemoveAll(t => t is FieldTitleToken || t is FieldIdToken);
 
             var fields = web.AvailableFields;
-            web.Context.Load(fields, flds => flds.Include(f => f.Title, f => f.InternalName));
+            web.Context.Load(fields, flds => flds.Include(f => f.Title, f => f.InternalName, f => f.Id));
             web.Context.ExecuteQueryRetry();
             foreach (var field in fields)
             {
                 _tokens.Add(new FieldTitleToken(web, field.InternalName, field.Title));
+                _tokens.Add(new FieldIdToken(web, field.InternalName, field.Id));
             }
 
             //if (web.IsSubSite())
