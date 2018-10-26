@@ -80,6 +80,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 page.LayoutType = Pages.ClientSidePageLayoutType.Home;
                             }
+                            else if (clientSidePage.Layout.Equals("SingleWebPartAppPage", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                page.LayoutType = Pages.ClientSidePageLayoutType.SingleWebPartAppPage;
+                            }
                         }
 
                         page.Save(pageName);
@@ -194,6 +198,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         else if (clientSidePage.Layout.Equals("Home", StringComparison.InvariantCultureIgnoreCase))
                         {
                             page.LayoutType = Pages.ClientSidePageLayoutType.Home;
+                        }
+                        else if (clientSidePage.Layout.Equals("SingleWebPartAppPage", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            page.LayoutType = Pages.ClientSidePageLayoutType.SingleWebPartAppPage;
                         }
                     }
 
@@ -454,23 +462,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Persist the page
                     page.Save(pageName);
 
-                    // Set commenting, ignore on pages of the type Home
-                    if (page.LayoutType != Pages.ClientSidePageLayoutType.Home)
+                    if (page.LayoutType != Pages.ClientSidePageLayoutType.SingleWebPartAppPage)
                     {
-                        // Make it a news page if requested
-                        if (clientSidePage.PromoteAsNewsArticle)
+                        // Set commenting, ignore on pages of the type Home
+                        if (page.LayoutType != Pages.ClientSidePageLayoutType.Home)
                         {
-                            page.PromoteAsNewsArticle();
+                            // Make it a news page if requested
+                            if (clientSidePage.PromoteAsNewsArticle)
+                            {
+                                page.PromoteAsNewsArticle();
+                            }
                         }
-                    }
 
-                    if (clientSidePage.EnableComments)
-                    {
-                        page.EnableComments();
-                    }
-                    else
-                    {
-                        page.DisableComments();
+                        if (clientSidePage.EnableComments)
+                        {
+                            page.EnableComments();
+                        }
+                        else
+                        {
+                            page.DisableComments();
+                        }
                     }
 
                     // Publish page 
