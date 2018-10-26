@@ -1230,7 +1230,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     isDirty |= existingList.Set(x => x.EnableVersioning, templateList.EnableVersioning);
 
 #if !SP2013
-                    isDirty |= existingList.Set(x => x.MajorVersionLimit, templateList.MaxVersionLimit);
+                    isDirty |= existingList.Set(x => x.MajorVersionLimit, templateList.MaxVersionLimit > 0 ? templateList.MaxVersionLimit : 50000);
 
 #endif
                     if (existingList.BaseType == BaseType.DocumentLibrary)
@@ -1241,7 +1241,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (templateList.EnableMinorVersions)
                         {
-                            isDirty |= existingList.Set(x => x.MajorWithMinorVersionsLimit, templateList.MinorVersionLimit);
+                            isDirty |= existingList.Set(x => x.MajorWithMinorVersionsLimit, templateList.MinorVersionLimit > 0 ? templateList.MinorVersionLimit : 50000);
 
                             if (DraftVisibilityType.Approver == (DraftVisibilityType)templateList.DraftVersionVisibility)
                             {
@@ -1696,7 +1696,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (templateList.EnableVersioning)
                 {
 #if !SP2013
-                    createdList.MajorVersionLimit = templateList.MaxVersionLimit;
+                    createdList.MajorVersionLimit = templateList.MaxVersionLimit > 0 ? templateList.MaxVersionLimit : 50000;
 #endif
                     // DraftVisibilityType.Approver is available only when the EnableModeration option of the list is true
                     if (DraftVisibilityType.Approver
@@ -1727,7 +1727,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (templateList.EnableMinorVersions)
                         {
-                            createdList.MajorWithMinorVersionsLimit = templateList.MinorVersionLimit; // Set only if enabled, otherwise you'll get exception due setting value to zero.
+                            createdList.MajorWithMinorVersionsLimit = templateList.MinorVersionLimit > 0 ? templateList.MinorVersionLimit : 50000; // Set only if enabled, otherwise you'll get exception due setting value to zero.
                         }
                     }
                 }
