@@ -245,9 +245,7 @@ namespace OfficeDevPnP.Core
                                 Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", response.ExpiresOn);
                                 var lease = GetAccessTokenLease(response.ExpiresOn);
                                 lease =
-                                    TimeSpan.FromSeconds(
-                                        Math.Min(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds,
-                                                 TimeSpan.FromHours(1).TotalSeconds));
+                                    TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
                                 Thread.Sleep(lease);
                                 appOnlyAccessToken = null;
                             }
