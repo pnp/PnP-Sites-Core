@@ -419,6 +419,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             File targetFile = null;
             var fileName = !String.IsNullOrEmpty(file.TargetFileName) ? file.TargetFileName : template.Connector.GetFilenamePart(file.Src);
+            //The file name might contain encoded characters that prevent upload.
+            fileName = WebUtility.UrlDecode(fileName);
+
             try
             {
                 targetFile = folder.UploadFile(fileName, stream, file.Overwrite);
@@ -427,8 +430,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (ex.ServerErrorCode != -2130575306) //Error code: -2130575306 = The file is already checked out.
                 {
-                    //The file name might contain encoded characters that prevent upload. Decode it and try again.
-                    fileName = WebUtility.UrlDecode(fileName);
                     try
                     {
                         targetFile = folder.UploadFile(fileName, stream, file.Overwrite);
@@ -558,7 +559,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 directory.Folder,
                                 directory.Overwrite,
                                 null, // No WebPartPages are supported with this technique
-                                metadataProperties != null && metadataProperties.ContainsKey(directory.Src + @"\" + file) ? 
+                                metadataProperties != null && metadataProperties.ContainsKey(directory.Src + @"\" + file) ?
                                     metadataProperties[directory.Src + @"\" + file] : null,
                                 directory.Security,
                                 directory.Level
