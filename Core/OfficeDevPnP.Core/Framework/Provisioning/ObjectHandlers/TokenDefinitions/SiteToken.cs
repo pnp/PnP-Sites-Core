@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class SiteToken : TokenDefinition
     {
         public SiteToken(Web web)
-            : base(web, "~site", "{site}")
+            : base(web, "{site}")
         {
         }
 

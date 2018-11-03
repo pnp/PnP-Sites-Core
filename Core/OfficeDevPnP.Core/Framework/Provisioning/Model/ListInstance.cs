@@ -24,6 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._folders = new FolderCollection(this.ParentTemplate);
             this._userCustomActions = new CustomActionCollection(this.ParentTemplate);
             this._webhooks = new WebhookCollection(this.ParentTemplate);
+            this._propertyBags = new PropertyBagEntryCollection(this.ParentTemplate);
         }
 
         /// <summary>
@@ -123,6 +124,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private WebhookCollection _webhooks;
         private IRMSettings _IRMSettings;
         private Dictionary<String, String> _dataSource = new Dictionary<String, String>();
+        private PropertyBagEntryCollection _propertyBags;
         #endregion
 
         #region Properties
@@ -430,6 +432,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { this._dataSource = value; }
         }
 
+        /// <summary>
+        /// Defines the property bag properties for the root folder of the list
+        /// </summary>
+        public PropertyBagEntryCollection PropertyBagEntries
+        {
+            get { return this._propertyBags; }
+            private set { this._propertyBags = value; }
+        }
+
         #endregion
 
         #region Comparison code
@@ -440,7 +451,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|{31}|{32}|{33}|{34}|{35}|{36}|{37}|{38}|{39}|{40}|{41}|{42}|{43}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|{31}|{32}|{33}|{34}|{35}|{36}|{37}|{38}|{39}|{40}|{41}|{42}|{43}|{44}|",
                 this.ContentTypesEnabled.GetHashCode(),
                 (this.Description != null ? this.Description.GetHashCode() : 0),
                 (this.DocumentTemplate != null ? this.DocumentTemplate.GetHashCode() : 0),
@@ -484,7 +495,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.ValidationFormula?.GetHashCode() ?? 0,
                 this.ValidationMessage?.GetHashCode() ?? 0,
                 this.DataSource.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
-                this.WriteSecurity.GetHashCode()
+                this.WriteSecurity.GetHashCode(),
+                this.PropertyBagEntries.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
@@ -563,7 +575,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.ValidationFormula == other.ValidationFormula &&
                 this.ValidationMessage == other.ValidationMessage &&
                 this.DataSource.DeepEquals(other.DataSource) &&
-                this.WriteSecurity == other.WriteSecurity
+                this.WriteSecurity == other.WriteSecurity &&
+                this.PropertyBagEntries.DeepEquals(other.PropertyBagEntries)
             );
         }
 

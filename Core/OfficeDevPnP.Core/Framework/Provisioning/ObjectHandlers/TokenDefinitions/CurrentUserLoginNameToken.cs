@@ -11,8 +11,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class CurrentUserLoginNameToken : TokenDefinition
     {
         public CurrentUserLoginNameToken(Web web)
-            : base(web, "~currentuserloginname", "{currentuserloginname}")
+            : base(web, "{currentuserloginname}")
         {
+
         }
 
         public override string GetReplaceValue()

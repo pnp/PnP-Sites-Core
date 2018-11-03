@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// A collection of CanvasControl objects
     /// </summary>
-    public partial class CanvasControlCollection : ProvisioningTemplateCollection<CanvasControl>
+    public partial class CanvasControlCollection : BaseProvisioningTemplateObjectCollection<CanvasControl>
     {
         /// <summary>
         /// Constructor for CanvasControlCollection class

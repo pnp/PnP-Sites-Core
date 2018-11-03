@@ -14,6 +14,7 @@ using System.Net.Http;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.Utilities.Async;
 using System.IdentityModel.Tokens.Jwt;
+using System.Collections.Generic;
 
 #if !ONPREMISES
 using OfficeDevPnP.Core.Sites;
@@ -48,15 +49,16 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="clientContext">ClientContext to be cloned</param>
         /// <param name="siteUrl">Site URL to be used for cloned ClientContext</param>
+        /// <param name="accessTokens">Dictionary of access tokens for sites URLs</param>
         /// <returns>A ClientContext object created for the passed site URL</returns>
-        public static ClientContext Clone(this ClientRuntimeContext clientContext, string siteUrl)
+        public static ClientContext Clone(this ClientRuntimeContext clientContext, string siteUrl, Dictionary<String, String> accessTokens = null)
         {
             if (string.IsNullOrWhiteSpace(siteUrl))
             {
                 throw new ArgumentException(CoreResources.ClientContextExtensions_Clone_Url_of_the_site_is_required_, nameof(siteUrl));
             }
 
-            return clientContext.Clone(new Uri(siteUrl));
+            return clientContext.Clone(new Uri(siteUrl), accessTokens);
         }
 
 #if !ONPREMISES
@@ -233,8 +235,9 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="clientContext">ClientContext to be cloned</param>
         /// <param name="siteUrl">Site URL to be used for cloned ClientContext</param>
+        /// <param name="accessTokens">Dictionary of access tokens for sites URLs</param>
         /// <returns>A ClientContext object created for the passed site URL</returns>
-        public static ClientContext Clone(this ClientRuntimeContext clientContext, Uri siteUrl)
+        public static ClientContext Clone(this ClientRuntimeContext clientContext, Uri siteUrl, Dictionary<String, String> accessTokens = null)
         {
             if (siteUrl == null)
             {
@@ -261,15 +264,31 @@ namespace Microsoft.SharePoint.Client
                 //Take over the form digest handling setting
                 clonedClientContext.FormDigestHandlingEnabled = (clientContext as ClientContext).FormDigestHandlingEnabled;
 
-                // In case of app only or SAML
-                clonedClientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
+                var originalUri = new Uri(clientContext.Url);
+                // If the cloned host is not the same as the original one
+                // and if there is a custom Access Token for it in the input arguments
+                if (originalUri.Host != siteUrl.Host &&
+                    accessTokens != null && accessTokens.Count > 0 &&
+                    accessTokens.ContainsKey(siteUrl.Authority))
+                { 
+                    // Let's apply that specific Access Token
+                    clonedClientContext.ExecutingWebRequest += (sender, args) =>
+                    {
+                        args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + accessTokens[siteUrl.Authority];
+                    };
+                }
+                else
                 {
-                    // Call the ExecutingWebRequest delegate method from the original ClientContext object, but pass along the webRequestEventArgs of 
-                    // the new delegate method
-                    MethodInfo methodInfo = clientContext.GetType().GetMethod("OnExecutingWebRequest", BindingFlags.Instance | BindingFlags.NonPublic);
-                    object[] parametersArray = new object[] { webRequestEventArgs };
-                    methodInfo.Invoke(clientContext, parametersArray);
-                };
+                    // In case of app only or SAML
+                    clonedClientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
+                    {
+                        // Call the ExecutingWebRequest delegate method from the original ClientContext object, but pass along the webRequestEventArgs of 
+                        // the new delegate method
+                        MethodInfo methodInfo = clientContext.GetType().GetMethod("OnExecutingWebRequest", BindingFlags.Instance | BindingFlags.NonPublic);
+                        object[] parametersArray = new object[] { webRequestEventArgs };
+                        methodInfo.Invoke(clientContext, parametersArray);
+                    };
+                }
             }
 
             return clonedClientContext;

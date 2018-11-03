@@ -3,7 +3,7 @@
     /// <summary>
     /// Collection of SiteDesign objects
     /// </summary>
-    public partial class SiteDesignCollection : ProvisioningTemplateCollection<SiteDesign>
+    public partial class SiteDesignCollection : BaseProvisioningTemplateObjectCollection<SiteDesign>
     {
         /// <summary>
         /// Constructor for SiteDesignCollection

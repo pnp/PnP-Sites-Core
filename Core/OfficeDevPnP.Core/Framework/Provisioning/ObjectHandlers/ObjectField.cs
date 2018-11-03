@@ -74,7 +74,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (step == _step)
                     {
-                        var fieldRef = (string)XElement.Parse(parser.ParseString(siteField.SchemaXml, "~sitecollection", "~site")).Attribute("FieldRef") + "";
+                        var fieldRef = (string)XElement.Parse(parser.ParseString(siteField.SchemaXml)).Attribute("FieldRef") + "";
                         fieldDict.Add(fieldRef,siteField);
                     }
                 }
@@ -85,7 +85,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var field in fields)
                 {
                     currentFieldIndex++;
-                    var fieldSchemaElement = XElement.Parse(parser.ParseString(field.SchemaXml, "~sitecollection", "~site"));
+                    var fieldSchemaElement = XElement.Parse(parser.ParseString(field.SchemaXml));
                     var fieldId = fieldSchemaElement.Attribute("ID").Value;
                     var fieldInternalName = (string)fieldSchemaElement.Attribute("InternalName") != null ? (string)fieldSchemaElement.Attribute("InternalName") : "";
                     WriteMessage($"Field|{(!string.IsNullOrWhiteSpace(fieldInternalName) ? fieldInternalName : fieldId)}|{currentFieldIndex}|{fields.Count}", ProvisioningMessageType.Progress);
@@ -178,7 +178,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             existingFieldElement.Attributes("Version").Remove();
                         }
-                        existingField.SchemaXml = parser.ParseXmlString(existingFieldElement.ToString(), "~sitecollection", "~site");
+                        existingField.SchemaXml = parser.ParseXmlString(existingFieldElement.ToString());
                         existingField.UpdateAndPushChanges(true);
                         web.Context.Load(existingField, f => f.TypeAsString, f => f.DefaultValue);
                         try
@@ -324,7 +324,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static void CreateField(Web web, XElement templateFieldElement, PnPMonitoredScope scope, TokenParser parser, string originalFieldXml)
         {
-            var fieldXml = parser.ParseXmlString(templateFieldElement.ToString(), "~sitecollection", "~site");
+            var fieldXml = parser.ParseXmlString(templateFieldElement.ToString());
 
             if (IsFieldXmlValid(fieldXml, parser, web.Context))
             {
@@ -336,6 +336,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // Add newly created field to token set, this allows to create a field + use it in a formula in the same provisioning template
                 parser.AddToken(new FieldTitleToken(web, field.InternalName, field.Title));
+                parser.AddToken(new FieldIdToken(web, field.InternalName, field.Id));
 
                 bool isDirty = false;
 #if !SP2013

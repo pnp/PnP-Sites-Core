@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class SiteCollectionTermGroupIdToken : TokenDefinition
     {
         public SiteCollectionTermGroupIdToken(Web web)
-            : base(web, "~sitecollectiontermgroupid", "{sitecollectiontermgroupid}")
+            : base(web, "{sitecollectiontermgroupid}")
         {
         }
 

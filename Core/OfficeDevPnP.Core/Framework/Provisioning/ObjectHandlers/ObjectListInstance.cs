@@ -315,7 +315,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var field in fieldsToProcess)
                 {
-                    var fieldElement = XElement.Parse(parser.ParseXmlString(field.SchemaXml, "~sitecollection", "~site"));
+                    var fieldElement = XElement.Parse(parser.ParseXmlString(field.SchemaXml));
                     if (fieldElement.Attribute("ID") == null)
                     {
                         scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_, field.SchemaXml);
@@ -343,9 +343,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var createdField = CreateField(fieldElement, listInfo, parser, field.SchemaXml, (ClientContext)web.Context, scope);
                                 if (createdField != null)
                                 {
-                                    createdField.EnsureProperties(f => f.InternalName, f => f.Title);
+                                    createdField.EnsureProperties(f => f.InternalName, f => f.Title, f => f.Id);
                                     parser.AddToken(new FieldTitleToken(web, createdField.InternalName,
                                         createdField.Title));
+                                    parser.AddToken(new FieldIdToken(web, createdField.InternalName,
+                                        createdField.Id));
                                 }
                             }
                             catch (Exception ex)
@@ -362,8 +364,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var updatedField = UpdateField(web, listInfo, fieldGuid, fieldElement, fieldFromList, scope, parser, field.SchemaXml);
                                 if (updatedField != null)
                                 {
-                                    updatedField.EnsureProperties(f => f.InternalName, f => f.Title);
+                                    updatedField.EnsureProperties(f => f.InternalName, f => f.Title, f => f.Id);
                                     parser.AddToken(new FieldTitleToken(web, updatedField.InternalName, updatedField.Title));
+                                    parser.AddToken(new FieldIdToken(web, updatedField.InternalName, updatedField.Id));
                                 }
                             }
                             catch (Exception ex)
@@ -421,9 +424,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         field = UpdateFieldRef(listInfo.SiteList, field.Id, fieldRef, parser);
                     }
 
-                    field.EnsureProperties(f => f.InternalName, f => f.Title);
+                    field.EnsureProperties(f => f.InternalName, f => f.Title, f => f.Id);
 
                     parser.AddToken(new FieldTitleToken(web, field.InternalName, field.Title));
+                    parser.AddToken(new FieldIdToken(web, field.InternalName, field.Id));
 
 #if !SP2013
                     var siteField = template.SiteFields.FirstOrDefault(f => Guid.Parse(XElement.Parse(f.SchemaXml).Attribute("ID").Value).Equals(field.Id));
@@ -860,7 +864,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             Field field = null;
             fieldElement = PrepareField(fieldElement);
 
-            var fieldXml = parser.ParseXmlString(fieldElement.ToString(), "~sitecollection", "~site");
+            var fieldXml = parser.ParseXmlString(fieldElement.ToString());
             if (IsFieldXmlValid(parser.ParseXmlString(originalFieldXml), parser, context))
             {
                 var addOptions = listInfo.TemplateList.ContentTypesEnabled
@@ -961,7 +965,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             existingFieldElement.Attributes("Version").Remove();
                         }
                         var existingFieldXml = FieldUtilities.FixLookupField(existingFieldElement.ToString(), web);
-                        existingField.SchemaXml = parser.ParseXmlString(existingFieldXml, "~sitecollection", "~site");
+                        existingField.SchemaXml = parser.ParseXmlString(existingFieldXml);
                         existingField.UpdateAndPushChanges(true);
                         web.Context.ExecuteQueryRetry();
 #if !SP2013
@@ -2108,16 +2112,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             var addedWebhooks = Task.Run(() => siteList.GetWebhookSubscriptionsAsync()).GetAwaiter().GetResult();
 
-            if (addedWebhooks.Any())
+            foreach (var webhook in addedWebhooks.Where(x => !string.IsNullOrEmpty(x.NotificationUrl)))
             {
-                foreach (var webhook in addedWebhooks)
+                list.Webhooks.Add(new Webhook
                 {
-                    list.Webhooks.Add(new Webhook()
-                    {
-                        ExpiresInDays = webhook.ExpirationDateTime.Subtract(DateTime.Now).Days + 1,
-                        ServerNotificationUrl = webhook.NotificationUrl,
-                    });
-                }
+                    ExpiresInDays = webhook.ExpirationDateTime.Subtract(DateTime.Now).Days + 1,
+                    ServerNotificationUrl = webhook.NotificationUrl,
+                });
             }
 
             return list;
@@ -2301,6 +2302,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             || field.InternalName == "CheckoutUser"
                             || field.InternalName == "Modified_x0020_By"
                             || field.InternalName == "Created_x0020_By"
+                            || field.InternalName == "_DisplayName"
                             )
                         {
                             addField = false;
@@ -2340,6 +2342,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var schemaXml = ParseFieldSchema(field.SchemaXml, web, lists);
                     var fieldElement = XElement.Parse(field.SchemaXml);
+                    var sourceId = fieldElement.Attribute("SourceID") != null ? fieldElement.Attribute("SourceID").Value : null;
+
+                    if (sourceId != null && sourceId == "http://schemas.microsoft.com/sharepoint/v3")
+                    {
+                        if (field.InternalName == "_DisplayName")
+                        {
+                            continue;
+                        }
+                    }
+
                     var listId = fieldElement.Attribute("List") != null ? fieldElement.Attribute("List").Value : null;
 
                     if (fieldElement.Attribute("Type").Value == "Calculated")

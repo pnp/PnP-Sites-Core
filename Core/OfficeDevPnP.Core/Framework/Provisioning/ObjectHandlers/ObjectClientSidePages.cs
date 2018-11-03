@@ -9,6 +9,7 @@ using OfficeDevPnP.Core.Utilities.CanvasControl;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -78,6 +79,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             else if (clientSidePage.Layout.Equals("Home", StringComparison.InvariantCultureIgnoreCase))
                             {
                                 page.LayoutType = Pages.ClientSidePageLayoutType.Home;
+                            }
+                            else if (clientSidePage.Layout.Equals("SingleWebPartAppPage", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                page.LayoutType = Pages.ClientSidePageLayoutType.SingleWebPartAppPage;
                             }
                         }
 
@@ -193,6 +198,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         else if (clientSidePage.Layout.Equals("Home", StringComparison.InvariantCultureIgnoreCase))
                         {
                             page.LayoutType = Pages.ClientSidePageLayoutType.Home;
+                        }
+                        else if (clientSidePage.Layout.Equals("SingleWebPartAppPage", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            page.LayoutType = Pages.ClientSidePageLayoutType.SingleWebPartAppPage;
                         }
                     }
 
@@ -453,29 +462,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Persist the page
                     page.Save(pageName);
 
-                    // Set commenting, ignore on pages of the type Home
-                    if (page.LayoutType != Pages.ClientSidePageLayoutType.Home)
+                    if (page.LayoutType != Pages.ClientSidePageLayoutType.SingleWebPartAppPage)
                     {
-                        // Make it a news page if requested
-                        if (clientSidePage.PromoteAsNewsArticle)
+                        // Set commenting, ignore on pages of the type Home
+                        if (page.LayoutType != Pages.ClientSidePageLayoutType.Home)
                         {
-                            page.PromoteAsNewsArticle();
+                            // Make it a news page if requested
+                            if (clientSidePage.PromoteAsNewsArticle)
+                            {
+                                page.PromoteAsNewsArticle();
+                            }
                         }
-                    }
 
-                    if (clientSidePage.EnableComments)
-                    {
-                        page.EnableComments();
-                    }
-                    else
-                    {
-                        page.DisableComments();
+                        if (clientSidePage.EnableComments)
+                        {
+                            page.EnableComments();
+                        }
+                        else
+                        {
+                            page.DisableComments();
+                        }
                     }
 
                     // Publish page 
                     if (clientSidePage.Publish)
                     {
                         page.Publish();
+                    }
+
+                    // Set any security on the page
+                    if (clientSidePage.Security != null && clientSidePage.Security.RoleAssignments.Count != 0)
+                    {
+                        web.Context.Load(page.PageListItem);
+                        web.Context.ExecuteQueryRetry();
+                        page.PageListItem.SetSecurity(parser, clientSidePage.Security);
                     }
 
                 }

@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class SiteOwnerToken : TokenDefinition
     {
         public SiteOwnerToken(Web web)
-            : base(web, "~siteowner", "{siteowner}")
+            : base(web, "{siteowner}")
         {
         }
 

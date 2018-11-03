@@ -5,9 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 #if !NETSTANDARD2_0
-using System.Xml.Serialization.Configuration;
 #endif
-using Microsoft.Graph;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.Online.SharePoint.TenantManagement;
 using OfficeDevPnP.Core;
@@ -16,15 +14,12 @@ using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.UPAWebService;
 #endif
 using OfficeDevPnP.Core.Diagnostics;
-using System.Net.Http;
-using CoreUtilities = OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Framework.Graph;
-using System.Net.Http.Headers;
-using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Framework.Graph.Model;
-using Newtonsoft.Json;
 #if !ONPREMISES
 using OfficeDevPnP.Core.Sites;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 #endif
 
 namespace Microsoft.SharePoint.Client
@@ -37,6 +32,14 @@ namespace Microsoft.SharePoint.Client
         const string SITE_STATUS_RECYCLED = "Recycled";
 
 #if !ONPREMISES
+        #region Provisioning
+
+        public static void ApplyProvisionHierarchy(this Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation = null)
+        {
+            SiteToTemplateConversion engine = new SiteToTemplateConversion();
+            engine.ApplyProvisioningHierarchy(tenant, hierarchy, sequenceId, applyingInformation);
+        }
+        #endregion
         #region Site collection creation
         /// <summary>
         /// Adds a SiteEntity by launching site collection creation and waits for the creation to finish
@@ -981,9 +984,9 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
-#endregion
+        #endregion
 
-#region Site collection deletion
+        #region Site collection deletion
         /// <summary>
         /// Deletes a site collection
         /// </summary>
@@ -994,7 +997,7 @@ namespace Microsoft.SharePoint.Client
             tenant.RemoveSite(siteFullUrl);
             tenant.Context.ExecuteQueryRetry();
         }
-#endregion
+        #endregion
 #endif
     }
 }

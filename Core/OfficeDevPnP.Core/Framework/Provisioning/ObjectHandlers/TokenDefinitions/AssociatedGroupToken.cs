@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
        Description = "Returns the title of the associated visitors SharePoint group of a site",
        Example = "{associatedvisitorsgroup}",
        Returns = "My Site Visitors Group Title")]
-    internal class AssociatedGroupToken : TokenDefinition
+    internal class AssociatedGroupToken : VolatileTokenDefinition
     {
         private AssociatedGroupType _groupType;
 

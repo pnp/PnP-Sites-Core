@@ -13,18 +13,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class ListIdToken : TokenDefinition
     {
         private string _listId = null;
-
+        private string _name = null;
         public ListIdToken(Web web, string name, Guid listid)
             : base(web, $"{{listid:{Regex.Escape(name)}}}")
         {
-            _listId = listid.ToString();
+            if (listid == Guid.Empty)
+            {
+                // on demand loading
+                _name = name;
+            }
+            else
+            {
+                _listId = listid.ToString();
+            }
         }
 
         public override string GetReplaceValue()
         {
             if (string.IsNullOrEmpty(CacheValue))
             {
-                CacheValue = _listId;
+                if (_listId != null)
+                {
+                    CacheValue = _listId;
+                } else
+                {
+                    var list = TokenContext.Web.Lists.GetByTitle(_name);
+                    TokenContext.Load(list, l => l.Id);
+                    TokenContext.ExecuteQueryRetry();
+                    _listId = list.Id.ToString();
+                    CacheValue = list.Id.ToString();
+                }
             }
             return CacheValue;
         }

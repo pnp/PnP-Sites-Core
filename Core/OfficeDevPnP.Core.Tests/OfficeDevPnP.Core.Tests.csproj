@@ -448,6 +448,7 @@
     <Compile Include="Framework\Providers\Extensibility\XMLEncryptionTemplateProviderExtension.cs" />
     <Compile Include="Framework\Providers\XMLProvidersTests.cs" />
     <Compile Include="Framework\ProvisioningTemplates\DomainModelTests.cs" />
+    <Compile Include="Framework\ProvisioningTemplates\ProvisioningTests.cs" />
     <Compile Include="Pages\ClientSidePagesTests.cs" />
     <Compile Include="Sites\SiteCollectionTests.cs" />
     <Compile Include="Utilities\JsonUtilityTests.cs" />
@@ -673,13 +674,21 @@
     <None Include="Resources\Templates\TestTemplateOriginal.pnp" />
     <None Include="Resources\Templates\TestTemplateOriginal2.pnp" />
     <None Include="Resources\TestSolution.wsp" />
+    <Content Include="Resources\Templates\MeetingsTemplate.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-05-FullSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-05-ReferenceSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-12-FullSample-02.xml" />
+    <Content Include="Resources\Templates\ProjectsTemplate.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-12-ReferenceSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2017-05-FullSample-01-OUT.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2017-05-FullSample-01.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2018-01-FullSample-01-OUT.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2018-01-FullSample-01.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2018-05-FullSample-01-OUT.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2018-05-FullSample-01.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2018-07-FullSample-01-NOT-VALID.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2018-07-FullSample-01-OUT.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2018-07-FullSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-03-Sample-01.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -688,6 +697,9 @@
     </Content>
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-NOT-Valid-XInclude-01.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-01.xml" />
+    <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03-OUT-ct.xml" />
+    <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03-OUT-nav.xml" />
+    <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03-OUT.xml" />
     <Content Include="Resources\Templates\UnavailableExtensibilityHandlerTemplates\ProvisioningSchema-2015-12-Sample.xml" />
     <Content Include="Resources\Templates\UnavailableExtensibilityHandlerTemplates\ProvisioningTemplate-2016-05-Sample.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03.xml" />

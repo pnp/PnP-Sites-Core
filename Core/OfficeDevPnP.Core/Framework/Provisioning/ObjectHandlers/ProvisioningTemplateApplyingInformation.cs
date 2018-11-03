@@ -39,10 +39,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// If true then persists template information
         /// </summary>
 		public bool PersistTemplateInfo { get; set; } = true;
-		/// <summary>
-		/// If true, system propertybag entries that start with _, vti_, dlc_ etc. will be overwritten if overwrite = true on the PropertyBagEntry. If not true those keys will be skipped, regardless of the overwrite property of the entry.
-		/// </summary>
-		public bool OverwriteSystemPropertyBagValues { get; set; }
+        /// <summary>
+        /// If true, system propertybag entries that start with _, vti_, dlc_ etc. will be overwritten if overwrite = true on the PropertyBagEntry. If not true those keys will be skipped, regardless of the overwrite property of the entry.
+        /// </summary>
+        public bool OverwriteSystemPropertyBagValues { get; set; }
 
         /// <summary>
         /// If true, existing navigation nodes of the site (where applicable) will be cleared out before applying the navigation nodes from the template (if any). This setting will override any settings made in the template.
@@ -92,6 +92,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             set
             {
                 extensibilityHandlers = value;
+            }
+        }
+
+        private Dictionary<String, String> _accessTokens;
+
+        /// <summary>
+        /// Allows to provide a dictionary of custom OAuth access tokens
+        /// when working across different URLs during provisioning and
+        /// using OAuth for AuthN/AuthZ
+        /// </summary>
+        public Dictionary<String, String> AccessTokens
+        {
+            get
+            {
+                if (this._accessTokens == null)
+                {
+                    this._accessTokens = new Dictionary<string, string>();
+                }
+                return (this._accessTokens);
+            }
+            set
+            {
+                this._accessTokens = value;
             }
         }
     }
