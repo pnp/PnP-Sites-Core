@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of WebPart objects
     /// </summary>
-    public partial class WebPartCollection : ProvisioningTemplateCollection<WebPart>
+    public partial class WebPartCollection : BaseProvisioningTemplateObjectCollection<WebPart>
     {
         /// <summary>
         /// Constructor for WebPartCollection class

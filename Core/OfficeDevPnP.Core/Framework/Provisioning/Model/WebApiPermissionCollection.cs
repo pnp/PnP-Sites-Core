@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of WebApiPermission objects
     /// </summary>
-    public partial class WebApiPermissionCollection : ProvisioningTemplateCollection<WebApiPermission>
+    public partial class WebApiPermissionCollection : BaseProvisioningTemplateObjectCollection<WebApiPermission>
     {
         /// <summary>
         /// Constructor for WebApiPermissionCollection class

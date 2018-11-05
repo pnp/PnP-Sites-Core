@@ -75,7 +75,7 @@ namespace Microsoft.SharePoint.Client
             bool isNoScript = parentWeb.IsNoScriptSite();
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_CreateWeb, leafUrl, template);
-            WebCreationInformation creationInfo = new WebCreationInformation()
+            WebCreationInformation creationInfo = new WebCreationInformation
             {
                 Url = leafUrl,
                 Title = title,
@@ -86,6 +86,7 @@ namespace Microsoft.SharePoint.Client
             };
 
             Web newWeb = parentWeb.Webs.Add(creationInfo);
+            parentWeb.Context.ExecuteQueryRetry();
 
             if (!isNoScript)
             {
@@ -1326,7 +1327,7 @@ namespace Microsoft.SharePoint.Client
             string parentWebUrl = null;
 
             //web.ParentWeb.ServerObjectIsNull will be null if a parent web exists.
-            //ClientObjectExtensions.ServerObjectIsNull() seems to have a problem when 
+            //ClientObjectExtensions.ServerObjectIsNull() seems to have a problem when
             //ClientObject.ServerObjectIsNull == null
             //ServerObjectIsNull is then undefined but ClientObjectExtensions.ServerObjectIsNull()
             //incorrectly returns true.

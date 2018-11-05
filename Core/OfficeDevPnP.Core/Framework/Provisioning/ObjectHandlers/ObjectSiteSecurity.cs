@@ -9,6 +9,7 @@ using Microsoft.SharePoint.Client.Utilities;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using RoleDefinition = Microsoft.SharePoint.Client.RoleDefinition;
 using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -63,29 +64,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors, scope, parser);
                 }
 
-                //sorting groups with respect to possible dependency through Owner property. Groups that are owners of other groups must be processed prior owned groups.
-                for (int i = 0; i < siteSecurity.SiteGroups.Count; i++)
-                {
-                    var currentGroup = siteSecurity.SiteGroups[i];
-                    string currentGroupOwner = currentGroup.Owner;
-                    string currentGroupTitle = parser.ParseString(currentGroup.Title);
-
-                    if (currentGroupOwner != "SHAREPOINT\\system" && currentGroupOwner != currentGroupTitle && !(currentGroupOwner.StartsWith("{{associated") && currentGroupOwner.EndsWith("group}}")))
-                    {
-                        for (int j = i + 1; j < siteSecurity.SiteGroups.Count; j++)
-                        {
-                            if (siteSecurity.SiteGroups[j].Title == currentGroupOwner)
-                            {
-                                siteSecurity.SiteGroups.Insert(i, siteSecurity.SiteGroups[j]);
-                                siteSecurity.SiteGroups.RemoveAt(j);
-                                i--;
-                                break;
+                foreach (var siteGroup in siteSecurity.SiteGroups
+                        .Sort<SiteGroup>(
+                            _grp => {
+                                string groupOwner = _grp.Owner;
+                                if (string.IsNullOrWhiteSpace(groupOwner)
+                                    || "SHAREPOINT\\system".Equals(groupOwner, StringComparison.OrdinalIgnoreCase)
+                                    || _grp.Title.Equals(groupOwner, StringComparison.OrdinalIgnoreCase)
+                                    || (groupOwner.StartsWith("{{associated") && groupOwner.EndsWith("group}}")))
+                                {
+                                    return Enumerable.Empty<SiteGroup>();
+                                }
+                                return siteSecurity.SiteGroups.Where(_item => _item.Title.Equals(groupOwner, StringComparison.OrdinalIgnoreCase));
                             }
-                        }
-                    }
-                }
-
-                foreach (var siteGroup in siteSecurity.SiteGroups)
+                    ))
                 {
                     Group group;
                     var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName));
@@ -111,7 +103,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (parsedGroupTitle != parsedGroupOwner)
                         {
-                            Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName == parsedGroupOwner);
+                            Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName.Equals(parsedGroupOwner, StringComparison.OrdinalIgnoreCase));
                             if (ownerPrincipal == null)
                             {
                                 ownerPrincipal = web.EnsureUser(parsedGroupOwner);
@@ -199,7 +191,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             if (parsedGroupTitle != parsedGroupOwner)
                             {
-                                Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName == parsedGroupOwner);
+                                Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName.Equals(parsedGroupOwner, StringComparison.OrdinalIgnoreCase));
                                 if (ownerPrincipal == null)
                                 {
                                     ownerPrincipal = web.EnsureUser(parsedGroupOwner);
@@ -365,7 +357,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
 
             var parsedRoleDefinition = parser.ParseString(roleAssignment.Principal);
-            Principal principal = groups.FirstOrDefault(g => g.LoginName == parsedRoleDefinition);
+            Principal principal = groups.FirstOrDefault(g => g.LoginName.Equals(parsedRoleDefinition, StringComparison.OrdinalIgnoreCase));
 
             if (principal == null)
             {

@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// A collection of CdnOrigin objects
     /// </summary>
-    public class CdnOriginCollection : ProvisioningTemplateCollection<CdnOrigin>
+    public class CdnOriginCollection : BaseProvisioningTemplateObjectCollection<CdnOrigin>
     {
         /// <summary>
         /// Constructor for CdnOriginCollection class

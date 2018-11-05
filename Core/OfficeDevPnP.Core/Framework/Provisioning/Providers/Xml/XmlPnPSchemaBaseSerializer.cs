@@ -13,10 +13,16 @@ using System.Xml.Serialization;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers;
 using System.Collections;
 using System.Reflection;
+using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
-    internal abstract class XmlPnPSchemaBaseSerializer<TSchemaTemplate> : IXMLSchemaFormatter, ITemplateFormatter
+    /// <summary>
+    /// Base class for serialization/deserialization of provisioning templates
+    /// with the new schema serializer
+    /// </summary>
+    /// <typeparam name="TSchemaTemplate"></typeparam>
+    internal abstract class XmlPnPSchemaBaseSerializer<TSchemaTemplate> : IXMLSchemaFormatter, ITemplateFormatter, IProvisioningHierarchyFormatter
         where TSchemaTemplate: new()
     {
         private TemplateProviderBase _provider;
@@ -123,6 +129,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     System.Reflection.BindingFlags.Instance | 
                     System.Reflection.BindingFlags.Public | 
                     System.Reflection.BindingFlags.IgnoreCase).GetValue(wrapper);
+
+                // TODO: Here we need to add Sequence handling ...
 
                 if (wrapperTemplates != null)
                 {
@@ -300,84 +308,162 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             using (var scope = new PnPSerializationScope(typeof(TSchemaTemplate)))
             {
                 var result = new TSchemaTemplate();
+                Stream output = null;
 
-                // Create the wrapper
-                var wrapperType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Provisioning, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
-                Object wrapper = Activator.CreateInstance(wrapperType);
+                // Process the template to generate the output stream
+                output = ProcessOutputStream(template, result);
 
-                // Create the Preferences
-                var preferencesType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Preferences, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
-                Object preferences = Activator.CreateInstance(preferencesType);
-
-                wrapper.GetType().GetProperty("Preferences",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper, preferences);
-
-                // Handle the Parameters of the schema wrapper, if any
-                var tps = new TemplateParametersSerializer();
-                tps.Serialize(template, wrapper);
-
-                // Handle the Localizations of the schema wrapper, if any
-                var ls = new LocalizationsSerializer();
-                ls.Serialize(template, wrapper);
-
-                // Handle the Tenant-wide of the schema wrapper, if any
-                var ts = new TenantSerializer();
-                ts.Serialize(template, wrapper);
-
-                // Configure the Generator
-                preferences.GetType().GetProperty("Generator",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase).SetValue(preferences, this.GetType().Assembly.FullName);
-
-                // Configure the output Template
-                var templatesType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Templates, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
-                var templates = Array.CreateInstance(templatesType, 1);
-                var templatesItem = Activator.CreateInstance(templatesType);
-
-                templatesItem.GetType().GetProperty("ID",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase).SetValue(templatesItem, $"CONTAINER-{template.Id}");
-
-                var provisioningTemplates = Array.CreateInstance(typeof(TSchemaTemplate), 1);
-                provisioningTemplates.SetValue(result, 0);
-
-                templatesItem.GetType().GetProperty("ProvisioningTemplate",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase).SetValue(templatesItem, provisioningTemplates);
-
-                templates.SetValue(templatesItem, 0);
-
-                wrapperType.GetProperty("Templates",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper, templates);
-
-                SerializeTemplate(template, result);
-
-                XmlSerializerNamespaces ns =
-                    new XmlSerializerNamespaces();
-                ns.Add(((IXMLSchemaFormatter)this).NamespacePrefix,
-                    ((IXMLSchemaFormatter)this).NamespaceUri);
-
-                MemoryStream output = new MemoryStream();
-                XmlSerializer xmlSerializer = new XmlSerializer(wrapperType);
-                if (ns != null)
-                {
-                    xmlSerializer.Serialize(output, wrapper, ns);
-                }
-                else
-                {
-                    xmlSerializer.Serialize(output, wrapper);
-                }
-
-                output.Position = 0;
                 return (output);
             }
+        }
+
+        protected Stream ProcessOutputStream(ProvisioningTemplate template, TSchemaTemplate result)
+        {
+            // Prepare the output wrapper
+            Type wrapperType;
+            object wrapper, templatesItem;
+            Array templates;
+
+            ProcessOutputHierarchy(template, out wrapperType, out wrapper, out templates, out templatesItem);
+
+            // Add the single template to the output
+            var provisioningTemplates = Array.CreateInstance(typeof(TSchemaTemplate), 1);
+            provisioningTemplates.SetValue(result, 0);
+
+            templatesItem.GetType().GetProperty("ProvisioningTemplate",
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.IgnoreCase).SetValue(templatesItem, provisioningTemplates);
+
+            templates.SetValue(templatesItem, 0);
+
+            wrapperType.GetProperty("Templates",
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper, templates);
+
+            SerializeTemplate(template, result);
+
+            XmlSerializerNamespaces ns =
+                new XmlSerializerNamespaces();
+            ns.Add(((IXMLSchemaFormatter)this).NamespacePrefix,
+                ((IXMLSchemaFormatter)this).NamespaceUri);
+
+            MemoryStream output = new MemoryStream();
+            XmlSerializer xmlSerializer = new XmlSerializer(wrapperType);
+            if (ns != null)
+            {
+                xmlSerializer.Serialize(output, wrapper, ns);
+            }
+            else
+            {
+                xmlSerializer.Serialize(output, wrapper);
+            }
+
+            output.Position = 0;
+            return (output);
+        }
+
+        private void ProcessOutputHierarchy(ProvisioningTemplate template, out Type wrapperType, out object wrapper, out Array templates, out object templatesItem)
+        {
+            // Create the wrapper
+            wrapperType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Provisioning, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
+            wrapper = Activator.CreateInstance(wrapperType);
+
+            // Create the Preferences
+            var preferencesType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Preferences, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
+            Object preferences = Activator.CreateInstance(preferencesType);
+
+            wrapper.GetType().GetProperty("Preferences",
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper, preferences);
+
+            // Handle the Parameters of the schema wrapper, if any
+            var tps = new TemplateParametersSerializer();
+            tps.Serialize(template, wrapper);
+
+            // Handle the Localizations of the schema wrapper, if any
+            var ls = new LocalizationsSerializer();
+            ls.Serialize(template, wrapper);
+
+            // Handle the Tenant-wide of the schema wrapper, if any
+            var ts = new TenantSerializer();
+            ts.Serialize(template, wrapper);
+
+            // Configure the basic properties of the wrapper
+            if (template.ParentHierarchy != null)
+            {
+                var author = wrapper.GetType().GetProperty("Author",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.IgnoreCase);
+                if (author != null)
+                {
+                    author.SetValue(wrapper,
+                        template.ParentHierarchy.Author);
+                }
+                var displayName = wrapper.GetType().GetProperty("DisplayName",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.IgnoreCase);
+                if (displayName != null)
+                {
+                    displayName.SetValue(wrapper,
+                        template.ParentHierarchy.DisplayName);
+                }
+                var description = wrapper.GetType().GetProperty("Description",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.IgnoreCase);
+                if (description != null)
+                {
+                    description.SetValue(wrapper,
+                        template.ParentHierarchy.Description);
+                }
+                var imagePreviewUrl = wrapper.GetType().GetProperty("ImagePreviewUrl",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.IgnoreCase);
+                if (imagePreviewUrl != null)
+                {
+                    imagePreviewUrl.SetValue(wrapper,
+                        template.ParentHierarchy.ImagePreviewUrl);
+                }
+                var generator = wrapper.GetType().GetProperty("Generator",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.IgnoreCase);
+                if (generator != null)
+                {
+                    generator.SetValue(wrapper,
+                        template.ParentHierarchy.Generator);
+                }
+                var version = wrapper.GetType().GetProperty("Version",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.IgnoreCase);
+                if (version != null)
+                {
+                    version.SetValue(wrapper,
+                        (Decimal)template.ParentHierarchy.Version);
+                }
+            }
+
+            // Configure the Generator
+            preferences.GetType().GetProperty("Generator",
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.IgnoreCase).SetValue(preferences, this.GetType().Assembly.FullName);
+
+            // Configure the output Template
+            var templatesType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Templates, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
+            templates = Array.CreateInstance(templatesType, 1);
+            templatesItem = Activator.CreateInstance(templatesType);
+            templatesItem.GetType().GetProperty("ID",
+                System.Reflection.BindingFlags.Instance |
+                System.Reflection.BindingFlags.Public |
+                System.Reflection.BindingFlags.IgnoreCase).SetValue(templatesItem, $"CONTAINER-{template.Id}");
         }
 
         protected virtual void SerializeTemplate(ProvisioningTemplate template, Object persistenceTemplate)
@@ -433,6 +519,196 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             var currentSchemaVersionString = $"V{currentSchemaTemplateNamespace.Substring(currentSchemaTemplateNamespace.IndexOf(".Xml.") + 6)}";
             var currentSchemaVersion = (XMLPnPSchemaVersion)Enum.Parse(typeof(XMLPnPSchemaVersion), currentSchemaVersionString);
             return currentSchemaVersion;
+        }
+
+        public Stream ToFormattedHierarchy(ProvisioningHierarchy hierarchy)
+        {
+            if (hierarchy == null)
+            {
+                throw new ArgumentNullException(nameof(hierarchy));
+            }
+
+            using (var scope = new PnPSerializationScope(typeof(TSchemaTemplate)))
+            {
+                // We prepare a dummy template to leverage the existing deserialization infrastructure
+                var dummyTemplate = new ProvisioningTemplate();
+                dummyTemplate.Id = $"DUMMY-{Guid.NewGuid()}";
+                hierarchy.Templates.Add(dummyTemplate);
+
+                // Prepare the output wrapper
+                Type wrapperType;
+                object wrapper, templatesItem;
+                Array templates;
+
+                ProcessOutputHierarchy(dummyTemplate, out wrapperType, out wrapper, out templates, out templatesItem);
+
+                // Handle the Sequences, if any
+                var ts = new SequenceSerializer();
+                ts.Serialize(dummyTemplate, wrapper);
+
+                // Remove the dummy template
+                hierarchy.Templates.Remove(dummyTemplate);
+
+                // Add every single template to the output
+                var provisioningTemplates = Array.CreateInstance(typeof(TSchemaTemplate), hierarchy.Templates.Count);
+                for (int c = 0; c < hierarchy.Templates.Count; c++)
+                {
+                    // Prepare variable to hold the output template
+                    var outputTemplate = new TSchemaTemplate();
+
+                    // Serialize the real templates
+                    SerializeTemplate(hierarchy.Templates[c], outputTemplate);
+
+                    // Add the serialized template to the output
+                    provisioningTemplates.SetValue(outputTemplate, c);
+                }
+
+                templatesItem.GetType().GetProperty("ProvisioningTemplate",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.IgnoreCase).SetValue(templatesItem, provisioningTemplates);
+
+                templates.SetValue(templatesItem, 0);
+
+                wrapperType.GetProperty("Templates",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public |
+                    System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper, templates);
+
+                XmlSerializerNamespaces ns =
+                    new XmlSerializerNamespaces();
+                ns.Add(((IXMLSchemaFormatter)this).NamespacePrefix,
+                    ((IXMLSchemaFormatter)this).NamespaceUri);
+
+                MemoryStream output = new MemoryStream();
+                XmlSerializer xmlSerializer = new XmlSerializer(wrapperType);
+                if (ns != null)
+                {
+                    xmlSerializer.Serialize(output, wrapper, ns);
+                }
+                else
+                {
+                    xmlSerializer.Serialize(output, wrapper);
+                }
+
+                output.Position = 0;
+                return (output);
+            }
+        }
+
+        public ProvisioningHierarchy ToProvisioningHierarchy(Stream hierarchy)
+        {
+            // Create a copy of the source stream
+            MemoryStream sourceStream = new MemoryStream();
+            hierarchy.Position = 0;
+            hierarchy.CopyTo(sourceStream);
+            sourceStream.Position = 0;
+
+            // Check the provided template against the XML schema
+            if (!this.IsValid(sourceStream))
+            {
+                // TODO: Use resource file
+                throw new ApplicationException("The provided provisioning file is not valid!");
+            }
+
+            // Prepare the output variable
+            ProvisioningHierarchy resultHierarchy = new ProvisioningHierarchy();
+
+            // Determine if the file is a provisioning hierarchy
+            sourceStream.Position = 0;
+            XDocument xml = XDocument.Load(sourceStream);
+            if (xml.Root.Name.LocalName != "Provisioning")
+            {
+                throw new ApplicationException("The provided provisioning file is not a Hierarchy!");
+            }
+
+            // Determine the specific formatter needed for the current provisioning file
+            var innerFormatter = XMLPnPSchemaFormatter.GetSpecificFormatter(
+                xml.Root.Name.NamespaceName);
+
+            // Process all the provisioning templates included in the hierarchy, if any
+            XmlNamespaceManager nsManager = new XmlNamespaceManager(new System.Xml.NameTable());
+            nsManager.AddNamespace("pnp", xml.Root.Name.NamespaceName);
+
+            // Start with templates embedded in the provisioning file
+            var templates = xml.XPathSelectElements("/pnp:Provisioning/pnp:Templates/pnp:ProvisioningTemplate", nsManager).ToList();
+
+            foreach (var template in templates)
+            {
+                // Save the single template into a MemoryStream
+                MemoryStream templateStream = new MemoryStream();
+                template.Save(templateStream);
+                templateStream.Position = 0;
+
+                // Process the single template with the classic technique
+                var provisioningTemplate = innerFormatter.ToProvisioningTemplate(templateStream);
+
+                // Add the generated template to the resulting hierarchy
+                resultHierarchy.Templates.Add(provisioningTemplate);
+            }
+
+            // Then process any external file reference
+            var templateFiles = xml.XPathSelectElements("/pnp:Provisioning/pnp:Templates/pnp:ProvisioningTemplateFile", nsManager).ToList();
+
+            foreach (var template in templateFiles)
+            {
+                var templateID = template.Attribute("ID")?.Value;
+                var templateFile = template.Attribute("File")?.Value;
+                if (!String.IsNullOrEmpty(templateFile) && !String.IsNullOrEmpty(templateID))
+                {
+                    // Process the single template file with the classic technique
+                    var provisioningTemplate = this._provider.GetTemplate(templateFile);
+                    provisioningTemplate.Id = templateID;
+
+                    // Add the generated template to the resulting hierarchy
+                    resultHierarchy.Templates.Add(provisioningTemplate);
+                }
+            }
+
+            // And now process the top level children elements
+            // using schema specific serializers
+
+            using (var scope = new PnPSerializationScope(typeof(TSchemaTemplate)))
+            {
+                // We prepare a dummy template to leverage the existing serialization infrastructure
+                var dummyTemplate = new ProvisioningTemplate();
+                dummyTemplate.Id = $"DUMMY-{Guid.NewGuid()}";
+                resultHierarchy.Templates.Add(dummyTemplate);
+
+                // Deserialize the whole wrapper
+                Object wrapper = null;
+                var wrapperType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Provisioning, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
+                XmlSerializer xmlSerializer = new XmlSerializer(wrapperType);
+                using (var reader = xml.Root.CreateReader())
+                {
+                    wrapper = xmlSerializer.Deserialize(reader);
+                }
+
+                // Handle the Parameters of the schema wrapper, if any
+                var tps = new TemplateParametersSerializer();
+                tps.Deserialize(wrapper, dummyTemplate);
+
+                // Handle the Localizations of the schema wrapper, if any
+                var ls = new LocalizationsSerializer();
+                ls.Deserialize(wrapper, dummyTemplate);
+
+                // Handle the Tenant-wide settings of the schema wrapper, if any
+                var ts = new TenantSerializer();
+                ts.Deserialize(wrapper, dummyTemplate);
+
+                // Handle the Sequences
+                var ss = new SequenceSerializer();
+                ss.Deserialize(wrapper, dummyTemplate);
+
+                // Handle the Provisioning Hierarchy properties
+                var phs = new ProvisioningHierarchySerializer();
+                phs.Deserialize(wrapper, dummyTemplate);
+
+                // Remove the dummy template from the hierarchy
+                resultHierarchy.Templates.Remove(dummyTemplate);
+            }
+
+            return (resultHierarchy);
         }
     }
 }

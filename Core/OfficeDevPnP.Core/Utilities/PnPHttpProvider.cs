@@ -41,6 +41,9 @@ namespace OfficeDevPnP.Core.Utilities
             this.retryCount = retryCount;
             this.delay = delay;
             this.userAgent = userAgent;
+
+            // Use TLS 1.2 as default connection
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
         }
 
         /// <summary>

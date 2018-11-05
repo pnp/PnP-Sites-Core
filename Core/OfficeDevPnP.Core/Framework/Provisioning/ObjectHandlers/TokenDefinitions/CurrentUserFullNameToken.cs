@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class CurrentUserFullNameToken : TokenDefinition
     {
         public CurrentUserFullNameToken(Web web)
-            : base(web, "~currentuserfullname", "{currentuserfullname}")
+            : base(web, "{currentuserfullname}")
         {
         }
 

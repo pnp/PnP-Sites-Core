@@ -13,7 +13,12 @@
         /// <summary>
         /// Home page of modern team sites
         /// </summary>
-        Home
+        Home,
+        /// <summary>
+        /// Page is an app page, hosting a single SPFX web part full screen
+        /// </summary>
+        SingleWebPartAppPage
+
     }
 #endif
 }

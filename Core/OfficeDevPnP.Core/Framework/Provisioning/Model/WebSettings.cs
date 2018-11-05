@@ -67,6 +67,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Defines whether the comments on site pages are disabled or not
         /// </summary>
         public Boolean CommentsOnSitePagesDisabled { get; set; }
+
+        /// <summary>
+        /// Enables or disables the QuickLaunch for the site
+        /// </summary>
+        public Boolean QuickLaunchEnabled { get; set; }
         
         #endregion
 
@@ -116,7 +121,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns hash code in integer</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|",
                 (this.NoCrawl.GetHashCode()),
                 (this.RequestAccessEmail != null ? this.RequestAccessEmail.GetHashCode() : 0),
                 (this.WelcomePage != null ? this.WelcomePage.GetHashCode() : 0),
@@ -125,7 +130,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 (this.SiteLogo != null ? this.SiteLogo.GetHashCode() : 0),
                 (this.AlternateCSS != null ? this.AlternateCSS.GetHashCode() : 0),
                 (this.HubSiteUrl != null ? this.HubSiteUrl.GetHashCode() : 0),
-                this.CommentsOnSitePagesDisabled.GetHashCode()
+                this.CommentsOnSitePagesDisabled.GetHashCode(),
+                this.QuickLaunchEnabled.GetHashCode()
             ).GetHashCode());
         }
 
@@ -163,7 +169,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this.SiteLogo == other.SiteLogo &&
                     this.AlternateCSS == other.AlternateCSS &&
                     this.HubSiteUrl == other.HubSiteUrl &&
-                    this.CommentsOnSitePagesDisabled == other.CommentsOnSitePagesDisabled
+                    this.CommentsOnSitePagesDisabled == other.CommentsOnSitePagesDisabled &&
+                    this.QuickLaunchEnabled == other.QuickLaunchEnabled
                 );
         }
 
