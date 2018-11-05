@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     /// <typeparam name="TKey">The type of the Key for the keyed collection</typeparam>
     /// <typeparam name="TItem">The type of the Item for the keyed collection</typeparam>
-    public abstract class ProvisioningTemplateDictionary<TKey, TItem> : KeyedCollection<TKey, TItem>, IProvisioningTemplateDescendant
+    public abstract class BaseProvisioningTemplateObjectDictionary<TKey, TItem> : KeyedCollection<TKey, TItem>, IProvisioningTemplateDescendant
         where TItem : BaseModel
     {
         /// <summary>
@@ -20,7 +20,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// and all the children of the collection
         /// </summary>
         /// <param name="parentTemplate">Parent provisioning template</param>
-        public ProvisioningTemplateDictionary(ProvisioningTemplate parentTemplate)
+        public BaseProvisioningTemplateObjectDictionary(ProvisioningTemplate parentTemplate)
         {
             this.ParentTemplate = parentTemplate;
         }

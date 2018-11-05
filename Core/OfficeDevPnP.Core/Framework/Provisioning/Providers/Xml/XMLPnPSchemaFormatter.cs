@@ -29,7 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             get
             {
-                return (new XMLPnPSchemaV201805Serializer());
+                return (new XMLPnPSchemaV201807Serializer());
             }
         }
 
@@ -49,18 +49,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     return (new XMLPnPSchemaV201505Formatter());
                 case XMLPnPSchemaVersion.V201508:
                     return (new XMLPnPSchemaV201508Formatter());
-#pragma warning restore CS0618 // Type or member is obsolete
                 case XMLPnPSchemaVersion.V201512:
                     return (new XMLPnPSchemaV201512Formatter());
                 case XMLPnPSchemaVersion.V201605:
                     return (new XMLPnPSchemaV201605Formatter());
+#pragma warning restore CS0618 // Type or member is obsolete
                 case XMLPnPSchemaVersion.V201705:
                     return (new XMLPnPSchemaV201705Serializer());
                 case XMLPnPSchemaVersion.V201801:
                     return (new XMLPnPSchemaV201801Serializer());
                 case XMLPnPSchemaVersion.V201805:
-                default:
                     return (new XMLPnPSchemaV201805Serializer());
+                case XMLPnPSchemaVersion.V201807:
+                default:
+                    return (new XMLPnPSchemaV201807Serializer());
             }
         }
 
@@ -90,8 +92,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2018_01:
                     return (new XMLPnPSchemaV201801Serializer());
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2018_05:
-                default:
                     return (new XMLPnPSchemaV201805Serializer());
+                case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2018_07:
+                default:
+                    return (new XMLPnPSchemaV201807Serializer());
             }
         }
 
@@ -129,7 +133,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         #region Helper Methods
 
-        private ITemplateFormatter GetSpecificFormatterInternal(ref System.IO.Stream template)
+        internal ITemplateFormatter GetSpecificFormatterInternal(ref System.IO.Stream template)
         {
             if (template == null)
             {

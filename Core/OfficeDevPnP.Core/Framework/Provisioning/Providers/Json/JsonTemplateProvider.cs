@@ -61,6 +61,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
             return (result);
         }
 
+        public override ProvisioningHierarchy GetHierarchy(string uri)
+        {
+            throw new NotImplementedException();
+        }
+
         public override ProvisioningTemplate GetTemplate(string uri)
         {
             return (this.GetTemplate(uri, (ITemplateProviderExtension[])null));
@@ -122,6 +127,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
             return (provisioningTemplate);
         }
 
+        public override void Save(ProvisioningHierarchy hierarchy)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Save(ProvisioningTemplate template)
         {
             this.Save(template, (ITemplateProviderExtension[])null);
@@ -140,6 +150,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
         public override void Save(ProvisioningTemplate template, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions = null)
         {
             this.SaveAs(template, this.Uri, formatter, extensions);
+        }
+
+        public override void SaveAs(ProvisioningHierarchy hierarchy, string uri)
+        {
+            throw new NotImplementedException();
         }
 
         public override void SaveAs(ProvisioningTemplate template, string uri)

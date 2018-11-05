@@ -6,14 +6,44 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [3.2.1810.0 - Unreleased]
+## [3.3.1811.0 - Unreleased]
 
 ### Added
+- Added support for the `Visibility` attribute for Unified Groups (devinprejean)
+- Added support for language/lcid when creating modern sites using Sites.SiteCollection.CreateAsync method.
+- Added support for FieldIdToken to support customers while migrating across sites and keeping field internal name, but changing field Id.
+- Added support for Single Page WebPart App pages, will be part of SPFX 1.7
 
 ### Changed
+- Get classification directly from Unified Group instead of a separate call (devinprejean)
+
 
 ### Deprecated
 
+## [3.2.1810.0 - October 2018 release]
+
+### Added
+- Added support for provisioning a site hierarchy through the provisioning engine based upon the 2018-07 schema.
+- Added Tenant.ApplyProvisioningHierarchy extension method
+- Added various additional provisioning engine object handlers to support sitehierarchy
+- Added ability to set SiteLogo on a modern team site through Sites.SiteCollection.SetGroupImage method.
+
+### Changed
+
+- ClientSide page name now can contain a token [gautamdsheth]
+- Fix issue with AssociatedGroupToken loading [gautamdsheth]
+- LoginNames are compared case insensitive [tmeckel]
+- Allow to create a CustomAction to a ListInstance without specifying a valid XML for the CommandUIExtension [tmeckel]
+- Don't create a custom sort order for the HashTags TermSet [tmeckel]
+- Use topological sort to order groups before creating them [tmeckel]
+- Don't process web hook assignments without having a valid URL [phawrylak]
+- Refactored objectterms and objectenant handler to support provisioning hierarchies.
+- Don't export the internal _DisplayName field [phawrylak]
+- Fixed SetOpenBySitePolicy as it never worked [gautamdsheth]
+- Fixed ServerUnauthorizedAccessException when creating web (#1925) [phawrylak]
+
+### Deprecated
+- Deprecated all provisioning engine tokens that start with ~, like ~site, etc. Use {site} etc. instead. ~ tokens conflicted with a token system used by SharePoint itself.
 
 ## [3.1.1809.0 - September 2018 release]
 

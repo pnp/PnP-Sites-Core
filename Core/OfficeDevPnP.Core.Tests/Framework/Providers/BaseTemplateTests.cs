@@ -46,7 +46,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             bool createSites = true;
 
             List<BaseTemplate> templates = new List<BaseTemplate>(1);
-            templates.Add(new BaseTemplate("STS#0"));
+            templates.Add(new BaseTemplate("GROUP#0", skipDeleteCreateCycle: true));
 
             ProcessBaseTemplates(templates, deleteSites, createSites);
         }

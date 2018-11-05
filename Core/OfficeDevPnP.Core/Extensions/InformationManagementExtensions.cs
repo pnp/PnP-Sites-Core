@@ -561,9 +561,9 @@ namespace Microsoft.SharePoint.Client
 #endif
         {
 #if ONPREMISES
-            if (web.HasSitePolicyAppliedImplementation() && !IsClosedBySitePolicyImplementation(web))
+            if (web.HasSitePolicyAppliedImplementation() && IsClosedBySitePolicyImplementation(web))
 #else
-            if (await web.HasSitePolicyAppliedImplementation() && !await web.IsClosedBySitePolicyImplementation())
+            if (await web.HasSitePolicyAppliedImplementation() && await web.IsClosedBySitePolicyImplementation())
 #endif
             {
                 ProjectPolicy.OpenProject(web.Context, web);

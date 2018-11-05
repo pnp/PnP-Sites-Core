@@ -23,7 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (template.Tenant.WebApiPermissions.Any())
                 {
-                    using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
+                    using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl(), applyingInformation.AccessTokens))
                     {
                         var servicePrincipal = new SPOWebAppServicePrincipal(tenantContext);
                         //var requests = servicePrincipal.PermissionRequests;
