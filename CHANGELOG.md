@@ -9,13 +9,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [3.3.1811.0 - Unreleased]
 
 ### Added
-- Added support for the `Visibility` attribute for Unified Groups (devinprejean)
+- Added support for the `Visibility` attribute for Unified Groups [devinprejean]
 - Added support for language/lcid when creating modern sites using Sites.SiteCollection.CreateAsync method.
 - Added support for FieldIdToken to support customers while migrating across sites and keeping field internal name, but changing field Id.
 - Added support for Single Page WebPart App pages, will be part of SPFX 1.7
+- Added support for Resource Path API in modern pages #1936 [gautamdsheth]
 
 ### Changed
-- Get classification directly from Unified Group instead of a separate call (devinprejean)
+- Get classification directly from Unified Group instead of a separate call [devinprejean]
+- Removes 60 minute maximum lifetime for Access Tokens in AuthenticationManager #1957 [koskila]
 
 
 ### Deprecated

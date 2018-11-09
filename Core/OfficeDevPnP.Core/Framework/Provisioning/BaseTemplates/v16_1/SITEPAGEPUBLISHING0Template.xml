@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.2.1810.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.3.1811.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-SITEPAGEPUBLISHING0template">
     <pnp:ProvisioningTemplate ID="SITEPAGEPUBLISHING0template" Version="1" BaseSiteTemplate="SITEPAGEPUBLISHING#0" Scope="RootSite">
       <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="SitePages/Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
@@ -71,7 +71,7 @@
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_ExpirationLastRun" Value="12/03/2018 1:13:04" Overwrite="false" />
         <pnp:PropertyBagEntry Key="profileschemaversion" Value="5" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_expirationlastrun" Value="9/29/2018 11:02:05 PM" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_expirationlastrun" Value="11/5/2018 9:45:53 AM" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.6927" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_sitemasterid" Value="f8b2e18f-d190-4a1b-a3da-ab24093aff57" Overwrite="false" />
@@ -79,7 +79,7 @@
         <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_PolicyUpdateLastRun" Value="11/03/2018 22:33:04" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="4;5;6" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_policyupdatelastrun" Value="10/3/2018 10:01:31 PM" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_policyupdatelastrun" Value="11/7/2018 11:22:43 PM" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
       </pnp:PropertyBagEntries>
       <pnp:Security RemoveExistingUniqueRoleAssignments="false">
