@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [3.3.1811.0 - Unreleased]
+## [3.3.1811.0 - November 2018 release]
 
 ### Added
 - Added support for the `Visibility` attribute for Unified Groups [devinprejean]
@@ -18,7 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Get classification directly from Unified Group instead of a separate call [devinprejean]
 - Removes 60 minute maximum lifetime for Access Tokens in AuthenticationManager #1957 [koskila]
-
+- Fix: MaxVersionLimit set to 0 issue [gautamdsheth]
 
 ### Deprecated
 
