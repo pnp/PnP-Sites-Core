@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Get classification directly from Unified Group instead of a separate call [devinprejean]
+- Removes 60 minute maximum lifetime for Access Tokens in AuthenticationManager #1957 [koskila]
 
 
 ### Deprecated
