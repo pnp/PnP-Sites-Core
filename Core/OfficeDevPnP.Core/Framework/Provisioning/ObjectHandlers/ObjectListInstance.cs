@@ -389,7 +389,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var fieldsRefsToProcess = listInfo.TemplateList.FieldRefs.Select(fr => new
                 {
                     FieldRef = fr,
-                    TemplateField = template.SiteFields.FirstOrDefault(tf => (Guid)XElement.Parse(parser.ParseString(tf.SchemaXml)).Attribute("ID") == fr.Id)
+                    TemplateField = template.SiteFields.FirstOrDefault(tf => (Guid)XElement.Parse(tf.SchemaXml).Attribute("ID") == fr.Id)
                 }).Where(frData =>
                     frData.TemplateField == null // Process fields refs if the target is not defined in the current template
                     || frData.TemplateField.GetFieldProvisioningStep(parser) == step // or process field ref only if the current step is matching
