@@ -52,14 +52,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var parser = new TokenParser(ctx.Web, template);
                 var siteName = parser.ParseString("{sitename}");
                 var siteId = parser.ParseString("{siteid}");
-                var site1 = parser.ParseString("~siTE/test");
-                var site2 = parser.ParseString("{site}/test");
-                var sitecol1 = parser.ParseString("~siteCOLLECTION/test");
-                var sitecol2 = parser.ParseString("{sitecollection}/test");
-                var masterUrl1 = parser.ParseString("~masterpagecatalog/test");
-                var masterUrl2 = parser.ParseString("{masterpagecatalog}/test");
-                var themeUrl1 = parser.ParseString("~themecatalog/test");
-                var themeUrl2 = parser.ParseString("{themecatalog}/test");
+                var site = parser.ParseString("{site}/test");
+                var sitecol = parser.ParseString("{sitecollection}/test");
+                var masterUrl = parser.ParseString("{masterpagecatalog}/test");
+                var themeUrl = parser.ParseString("{themecatalog}/test");
                 var parameterTest1 = parser.ParseString("abc{parameter:TEST}/test");
                 var parameterTest2 = parser.ParseString("abc{$test}/test");
                 var associatedOwnerGroup = parser.ParseString("{associatedownergroup}");
@@ -76,14 +72,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var siteOwner = parser.ParseString("{siteowner}");
                 var roleDefinitionId = parser.ParseString($"{{roledefinitionid:{roleDefinition.Name}}}");
 
-                Assert.IsTrue(site1 == $"{ctx.Web.ServerRelativeUrl}/test");
-                Assert.IsTrue(site2 == $"{ctx.Web.ServerRelativeUrl}/test");
-                Assert.IsTrue(sitecol1 == $"{ctx.Site.ServerRelativeUrl}/test");
-                Assert.IsTrue(sitecol2 == $"{ctx.Site.ServerRelativeUrl}/test");
-                Assert.IsTrue(masterUrl1 == $"{masterCatalog.RootFolder.ServerRelativeUrl}/test");
-                Assert.IsTrue(masterUrl2 == $"{masterCatalog.RootFolder.ServerRelativeUrl}/test");
-                Assert.IsTrue(themeUrl1 == $"{themesCatalog.RootFolder.ServerRelativeUrl}/test");
-                Assert.IsTrue(themeUrl2 == $"{themesCatalog.RootFolder.ServerRelativeUrl}/test");
+                Assert.IsTrue(site == $"{ctx.Web.ServerRelativeUrl}/test");
+                Assert.IsTrue(sitecol == $"{ctx.Site.ServerRelativeUrl}/test");
+                Assert.IsTrue(masterUrl == $"{masterCatalog.RootFolder.ServerRelativeUrl}/test");
+                Assert.IsTrue(themeUrl == $"{themesCatalog.RootFolder.ServerRelativeUrl}/test");
                 Assert.IsTrue(parameterTest1 == "abctest/test");
                 Assert.IsTrue(parameterTest2 == "abctest/test");
                 Assert.IsTrue(associatedOwnerGroup == ctx.Web.AssociatedOwnerGroup.Title);

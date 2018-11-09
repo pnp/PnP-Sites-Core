@@ -654,7 +654,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         hasMatch = true;
                         return match.Groups[0].Value == tokenString ? val : match.Groups[0].Value.Replace(tokenString, val);
                     }
-                    return tokenString;
+                    return match.Groups[0].Value;
                 });
             } while (hasMatch && input != output);
 
@@ -731,7 +731,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         hasMatch = true;
                         return match.Groups[0].Value == tokenString ? val : match.Groups[0].Value.Replace(tokenString, val);
                     }
-                    return match.Groups["token"].Value;
+                    return match.Groups[0].Value;
                 });
             } while (hasMatch && input != output);
 
