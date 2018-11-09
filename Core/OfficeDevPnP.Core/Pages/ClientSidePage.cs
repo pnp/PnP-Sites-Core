@@ -590,7 +590,7 @@ namespace OfficeDevPnP.Core.Pages
 
             page.sitePagesServerRelativeUrl = pagesLibrary.RootFolder.ServerRelativeUrl;
 
-            var file = page.Context.Web.GetFileByServerRelativeUrl($"{page.sitePagesServerRelativeUrl}/{page.pageName}");
+            var file = page.Context.Web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl($"{page.sitePagesServerRelativeUrl}/{page.pageName}"));
             page.Context.Web.Context.Load(file, f => f.ListItemAllFields, f => f.Exists);
             page.Context.Web.Context.ExecuteQueryRetry();
 
@@ -743,7 +743,7 @@ namespace OfficeDevPnP.Core.Pages
                             this.Context.Site.EnsureProperties(p => p.Id);
                             this.Context.Web.EnsureProperties(p => p.Id, p => p.Url);
 
-                            var previewImage = this.Context.Web.GetFileByServerRelativeUrl(previewImageServerRelativeUrl);
+                            var previewImage = this.Context.Web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(previewImageServerRelativeUrl));
                             this.Context.Load(previewImage, p => p.UniqueId);
                             this.Context.ExecuteQueryRetry();
 
@@ -1247,7 +1247,7 @@ namespace OfficeDevPnP.Core.Pages
             serverRelativePageName = $"{this.sitePagesServerRelativeUrl}/{this.pageName}";
 
             // ensure page exists
-            pageFile = this.Context.Web.GetFileByServerRelativeUrl(serverRelativePageName);
+            pageFile = this.Context.Web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativePageName));
             this.Context.Web.Context.Load(pageFile, f => f.ListItemAllFields, f => f.Exists);
             this.Context.Web.Context.ExecuteQueryRetry();
         }
