@@ -266,9 +266,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (formulaElement != null)
             {
-                field.EnsureProperty(f => f.Formula);
-
-                var formulastring = field.Formula;
+                var formulastring = formulaElement.Value;
 
                 if (formulastring != null)
                 {
@@ -276,8 +274,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     foreach (var fieldRef in fieldRefs)
                     {
                         var fieldInternalName = fieldRef.Attribute("Name").Value;
-                        var referencedField = fields.GetFieldByInternalName(fieldInternalName);
-                        formulastring = formulastring.Replace($"[{referencedField.Title}]", $"[{{fieldtitle:{fieldInternalName}}}]");
+
+                        formulastring = formulastring.Replace($"{fieldInternalName}", $"[{{fieldtitle:{fieldInternalName}}}]");
                     }
                     var fieldRefParent = schemaElement.Descendants("FieldRefs");
                     fieldRefParent.Remove();

@@ -2354,17 +2354,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var listId = fieldElement.Attribute("List") != null ? fieldElement.Attribute("List").Value : null;
 
-                    if (fieldElement.Attribute("Type").Value == "Calculated")
-                    {
-                        schemaXml = ObjectField.TokenizeFieldFormula(siteList.Fields, (FieldCalculated)field, schemaXml);
-                    }
-
-                    //Field has column Validation
-                    if (fieldElement.Elements("Validation").FirstOrDefault() != null)
-                    {
-                        schemaXml = ObjectField.TokenizeFieldValidationFormula(field, schemaXml);
-                    }
-
                     if (creationInfo.PersistMultiLanguageResources)
                     {
 #if !SP2013
@@ -2382,6 +2371,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         schemaXml = fieldElement.ToString();
 #endif
+                    }
+
+                    if (fieldElement.Attribute("Type").Value == "Calculated")
+                    {
+                        schemaXml = ObjectField.TokenizeFieldFormula(siteList.Fields, (FieldCalculated)field, schemaXml);
+                    }
+
+                    //Field has column Validation
+                    if (fieldElement.Elements("Validation").FirstOrDefault() != null)
+                    {
+                        schemaXml = ObjectField.TokenizeFieldValidationFormula(field, schemaXml);
                     }
 
                     if (listId == null)
