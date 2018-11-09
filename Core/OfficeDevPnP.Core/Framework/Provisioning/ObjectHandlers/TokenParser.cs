@@ -667,7 +667,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 foreach (string token in tokenDefinition.GetTokens())
                 {
-                    if (TokenDictionary.ContainsKey(token)) continue;
+                    var tokenKey = Regex.Unescape(token);
+
+                    if (TokenDictionary.ContainsKey(tokenKey)) continue;
 
                     int before = _web.Context.PendingRequestCount();
                     string value = tokenDefinition.GetReplaceValue();
@@ -678,10 +680,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         throw new Exception($"Token {token} triggered an ExecuteQuery on the 'current' context. Please refactor this token to use the TokenContext class.");
                     }
 
-                    TokenDictionary[Regex.Unescape(token)] = value;
+                    TokenDictionary[tokenKey] = value;
                     if (tokenDefinition is ListIdToken)
                     {
-                        ListTokenDictionary[Regex.Unescape(token)] = tokenDefinition;
+                        ListTokenDictionary[tokenKey] = tokenDefinition;
                     }
                 }
             }
