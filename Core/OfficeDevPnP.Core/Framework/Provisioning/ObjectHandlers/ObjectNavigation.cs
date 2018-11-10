@@ -459,7 +459,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (!sourceNodes.ServerObjectIsNull.Value)
                         {
-                            //we dont need to add to result - just extract Titles - to List as we need to have query executed
+                            //we dont need to add to result - just extract Titles - to List as we need to 
                             var alternateLang=(from n in sourceNodes.AsEnumerable()
                                                             select n.ToDomainModelNavigationNode(web, creationInfo.PersistMultiLanguageResources, currentCulture)).ToList();
                         }
