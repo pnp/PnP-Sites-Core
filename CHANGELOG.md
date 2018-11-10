@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
 
 ### Changed
+- Fix: Token parser #1968 #1972 [SchauDK] [phawrylak]
 
 ## [3.3.1811.0 - November 2018 release]
 
