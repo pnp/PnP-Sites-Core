@@ -8,6 +8,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using File = OfficeDevPnP.Core.Framework.Provisioning.Model.File;
 using Microsoft.SharePoint.Client.UserProfiles;
 using OfficeDevPnP.Core.Diagnostics;
+using System.Globalization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 {
@@ -95,15 +96,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
             if (CanUseAcceptLanguageHeaderForLocalization(web))
             {
                 var context = web.Context;
+                //preserve Default Language to set last since otherwise Entries in QuickLaunch can show wrong language
+                web.EnsureProperties(w => w.Language);
+                var culture = new CultureInfo((int)web.Language);
+
                 var resourceValues = parser.GetResourceTokenResourceValues(token);
-                foreach (var resourceValue in resourceValues)
+
+                var defaultLanguageRessource = resourceValues.FirstOrDefault(r => !r.Item1.Equals(culture.Name, StringComparison.InvariantCultureIgnoreCase));
+                if (defaultLanguageRessource != null)
                 {
-                    // Save property with correct locale on the request to make it stick
-                    // http://sadomovalex.blogspot.no/2015/09/localize-web-part-titles-via-client.html
-                    context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = resourceValue.Item1;
-                    view.Title = resourceValue.Item2;
+                    foreach (var resourceValue in resourceValues.Where(r => !r.Item1.Equals(culture.Name, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        // Save property with correct locale on the request to make it stick
+                        // http://sadomovalex.blogspot.no/2015/09/localize-web-part-titles-via-client.html
+                        context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = resourceValue.Item1;
+                        view.Title = resourceValue.Item2;
+                        view.Update();
+                        context.ExecuteQueryRetry();
+                    }
+                    //Set for default Language of Web
+                    context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = defaultLanguageRessource.Item1;
+                    view.Title = defaultLanguageRessource.Item2;
                     view.Update();
                     context.ExecuteQueryRetry();
+                }
+                else
+                {
+                    //skip since default language of web is not contained in ressource file
+                    scope.LogWarning(CoreResources.Provisioning_Extensions_ViewLocalization_Skip);
                 }
             }
             else
