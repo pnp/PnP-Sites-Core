@@ -552,12 +552,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             string nodeTitle = node.Title;
             if(PersistLanguage&& !string.IsNullOrWhiteSpace(nodeTitle))
             {
-                //tokenize Title and store value in res-file
-                var escapedNodeTitle = nodeTitle.Replace(" ", "_");
-
-                if (UserResourceExtensions.PersistResourceValue($"NavigationNode_{ParentNodeId}_{node.Id}_{escapedNodeTitle}_Title", currentCulture.LCID, nodeTitle))
+                if (UserResourceExtensions.PersistResourceValue($"NavigationNode_{ParentNodeId}_{node.Id}_Title", currentCulture.LCID, nodeTitle))
                 {
-                    nodeTitle = $"{{res:NavigationNode_{ParentNodeId}_{node.Id}_{escapedNodeTitle}_Title}}";
+                    nodeTitle = $"{{res:NavigationNode_{ParentNodeId}_{node.Id}_Title}}";
                 }
             }
 
