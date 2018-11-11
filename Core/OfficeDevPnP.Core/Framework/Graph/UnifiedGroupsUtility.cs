@@ -7,7 +7,6 @@ using System.Net.Http.Headers;
 using OfficeDevPnP.Core.Entities;
 using System.IO;
 using OfficeDevPnP.Core.Diagnostics;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Graph
@@ -684,7 +683,8 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         DisplayName = g.DisplayName,
                         Description = g.Description,
                         Mail = g.Mail,
-                        MailNickname = g.MailNickname
+                        MailNickname = g.MailNickname,
+                        Visibility = g.Visibility
                     };
                     if (includeSite)
                     {
@@ -700,7 +700,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                     if (includeClassification)
                     {
-                        group.Classification = GetGroupClassification(groupId, accessToken);
+                        group.Classification = g.Classification;
                     }
 
                     return (group);
@@ -778,6 +778,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                                     Description = g.Description,
                                     Mail = g.Mail,
                                     MailNickname = g.MailNickname,
+                                    Visibility = g.Visibility
                                 };
 
                                 if (includeSite)
@@ -794,7 +795,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                                 if (includeClassification)
                                 {
-                                    group.Classification = GetGroupClassification(g.Id, accessToken);
+                                    group.Classification = g.Classification;
                                 }
 
                                 groups.Add(group);
