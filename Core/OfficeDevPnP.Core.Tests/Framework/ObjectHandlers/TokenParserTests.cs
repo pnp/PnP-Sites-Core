@@ -70,6 +70,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var groupId = parser.ParseString($"{{groupid:{ownerGroupName}}}");
                 var siteOwner = parser.ParseString("{siteowner}");
                 var roleDefinitionId = parser.ParseString($"{{roledefinitionid:{roleDefinition.Name}}}");
+                var xamlEscapeString = "{}{0}Id";
+                var parsedXamlEscapeString = parser.ParseString(xamlEscapeString);
 
                 Assert.IsTrue(site == $"{ctx.Web.ServerRelativeUrl}/test");
                 Assert.IsTrue(sitecol == $"{ctx.Site.ServerRelativeUrl}/test");
@@ -91,8 +93,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(int.Parse(associatedVisitorGroupId) == ctx.Web.AssociatedVisitorGroup.Id);
                 Assert.IsTrue(associatedOwnerGroupId == groupId);
                 Assert.IsTrue(siteOwner == ctx.Site.Owner.LoginName);
-
                 Assert.IsTrue(roleDefinitionId == expectedRoleDefinitionId.ToString(), $"Role Definition Id was not parsed correctly (expected:{expectedRoleDefinitionId};returned:{roleDefinitionId})");
+                Assert.IsTrue(parsedXamlEscapeString == xamlEscapeString);
             }
         }
 
