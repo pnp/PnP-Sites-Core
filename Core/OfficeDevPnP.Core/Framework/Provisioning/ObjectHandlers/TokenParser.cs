@@ -730,8 +730,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 });
             } while (hasMatch && input != output);
 
-            if (hasMatch || !ReTokenFallback.IsMatch(output)) return output;
+            if (hasMatch) return output;
 
+            var fallbackMatches = ReTokenFallback.Matches(output);
+            if (fallbackMatches.Count == 0) return output;
+
+            // If all token constructs {...} are GUID's, we can skip the expensive fallback
+            bool needFallback = false;
+            foreach (Match match in fallbackMatches)
+            {
+                if (!ReGuid.IsMatch(match.Value)) needFallback = true;
+            }
+
+            if (!needFallback) return output;
             // Fallback for tokens which may contain { or } as part of their name
             foreach (var pair in TokenDictionary)
             {
