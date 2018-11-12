@@ -587,7 +587,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return ParseString(input, null);
         }
 
-
         static readonly Regex ReGuid = new Regex("(?<guid>\\{\\S{8}-\\S{4}-\\S{4}-\\S{4}-\\S{12}?\\})", RegexOptions.Compiled);
         /// <summary>
         /// Gets left over tokens
@@ -702,7 +701,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public string ParseString(string input, params string[] tokensToSkip)
         {
             if (string.IsNullOrWhiteSpace(input)) return input;
-
 
             if (string.IsNullOrEmpty(input) || input.IndexOfAny(TokenChars) == -1) return input;
 
