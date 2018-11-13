@@ -307,7 +307,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
                 listInstance.Url = $"lists/{listName}";
                 listInstance.Title = listName;
-                // An asset must be created by using the 
+                // An asset must be created by using the
                 // template type AND the template feature id
                 listInstance.TemplateType = 851;
                 listInstance.TemplateFeatureID = new Guid("4bcccd62-dcaf-46dc-a7d4-e38277ef33f4");
@@ -351,7 +351,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 listId = list.Id.ToString();
             }
 
-            // Update list Title using a provisioning template 
+            // Update list Title using a provisioning template
             // - Using a clean clientcontext to catch all possible "property not loaded" problems
             using (var ctx = TestCommon.CreateClientContext())
             {
@@ -1040,6 +1040,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             string detailsFieldSchema = @"<Field Name=""DetailsField"" StaticName=""DetailsField"" DisplayName=""Details Field"" Type=""Text"" ID=""" + detailsFieldId.ToString("B") + @""" Group=""PnP"" Required=""true""/>";
             string lookupFieldSchema = @"<Field Name=""LookupField"" StaticName=""LookupField"" DisplayName=""Test Lookup Field"" Type=""Lookup"" List=""Lists\" + detailsListName + @""" ShowField=""DetailsField"" ID=""" + lookupFieldId.ToString("B") + @""" Group=""PnP""></Field>";
             string lookupMultiFieldSchema = @"<Field Name=""LookupMultiField"" StaticName=""LookupMultiField"" DisplayName=""Test LookupMulti Field"" Type=""LookupMulti"" Mult=""TRUE"" List=""Lists\" + detailsListName + @""" ShowField=""DetailsField"" ID=""" + lookupMultiFieldId.ToString("B") + @""" Group=""PnP""></Field>";
+            string lookupFieldToInternalListSchema = @"<Field ID=""{6bfaba20-36bf-44b5-a1b2-eb6346d49716}"" ColName=""tp_AppAuthor"" RowOrdinal=""0"" ReadOnly=""TRUE"" Hidden=""FALSE"" Type=""Lookup"" List=""AppPrincipals"" Name=""AppAuthor"" DisplayName=""App Created By"" ShowField=""Title"" JoinColName=""Id"" SourceID=""http://schemas.microsoft.com/sharepoint/v3"" StaticName=""AppAuthor"" FromBaseType=""TRUE"" />";
 
             var template = new ProvisioningTemplate();
             var detailsList = new ListInstance();
@@ -1055,6 +1056,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             masterList.TemplateType = (int)ListTemplateType.GenericList;
             masterList.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = lookupFieldSchema });
             masterList.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = lookupMultiFieldSchema });
+            masterList.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = lookupFieldToInternalListSchema });
             template.Lists.Add(masterList);
 
             return template;
