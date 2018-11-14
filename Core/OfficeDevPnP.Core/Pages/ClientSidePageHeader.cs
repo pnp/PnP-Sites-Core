@@ -396,7 +396,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.clientContext.Site.EnsureProperties(p => p.Id);
                 this.clientContext.Web.EnsureProperties(p => p.Id);
 
-                var pageHeaderImage = this.clientContext.Web.GetFileByServerRelativeUrl(ImageServerRelativeUrl);
+                var pageHeaderImage = this.clientContext.Web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(ImageServerRelativeUrl));
                 this.clientContext.Load(pageHeaderImage, p => p.UniqueId, p => p.ListId);
                 this.clientContext.ExecuteQueryRetry();
 
