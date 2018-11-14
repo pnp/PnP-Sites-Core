@@ -1034,6 +1034,49 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             }
         }
 
+        [TestMethod]
+        public void CanTokensBeUsedInFieldDefaults()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var template = new ProvisioningTemplate();
+
+                var listUrl = string.Format("lists/{0}", listName);
+                var listTitle = listName + "_Title";
+                var listDesc = listName + "_Description";
+                var fieldDefault = listName + "_Default";
+
+                template.Parameters.Add("fieldDefault", fieldDefault);
+
+                var newList = new ListInstance()
+                {
+                    Url = listUrl,
+                    Title = listTitle,
+                    Description = listDesc,
+                    TemplateType = (int)ListTemplateType.GenericList
+                };
+
+                newList.Fields.Add(new Core.Framework.Provisioning.Model.Field()
+                {
+                    SchemaXml = "<Field ID=\"{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}\" Type=\"Text\" Name=\"ProjectID\" DisplayName=\"Project ID\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" Required=\"TRUE\" />"
+                });
+                newList.FieldDefaults.Add("ProjectID", "{parameter:fieldDefault}");
+
+                template.Lists.Add(newList);
+
+                ctx.Web.ApplyProvisioningTemplate(template);
+
+                var list = ctx.Web.GetListByUrl(listUrl, l => l.Title, l => l.Description);
+
+                var existingField = list.Fields.GetByInternalNameOrTitle("ProjectID");
+                ctx.Load(existingField, f => f.SchemaXml, f => f.DefaultValue);
+                ctx.ExecuteQueryRetry();
+
+                Assert.IsNotNull(list);
+                Assert.AreEqual(fieldDefault, existingField.DefaultValue);
+            }
+        }
+
         private ProvisioningTemplate BuildTemplateForLookupInListInstanceTest(string masterListName, string detailsListName,
             Guid lookupFieldId, Guid lookupMultiFieldId, Guid detailsFieldId)
         {
