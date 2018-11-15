@@ -47,9 +47,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
 
                 ProvisioningTemplate template = new ProvisioningTemplate();
-                template.Parameters.Add("test", "test");
-
+                template.Parameters.Add("test", "test");                                
                 var parser = new TokenParser(ctx.Web, template);
+                parser.AddToken(new FieldIdToken(ctx.Web, "DemoField", new Guid("7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0")));
+
                 var siteName = parser.ParseString("{sitename}");
                 var siteId = parser.ParseString("{siteid}");
                 var site = parser.ParseString("{site}/test");
@@ -72,6 +73,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var roleDefinitionId = parser.ParseString($"{{roledefinitionid:{roleDefinition.Name}}}");
                 var xamlEscapeString = "{}{0}Id";
                 var parsedXamlEscapeString = parser.ParseString(xamlEscapeString);
+                const string fieldRef = @"<FieldRefs><FieldRef Name=""DemoField"" ID=""{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}"" /></FieldRefs></Field>";
+                var parsedFieldRef = parser.ParseString(@"<FieldRefs><FieldRef Name=""DemoField"" ID=""{{fieldid:DemoField}}"" /></FieldRefs></Field>");
+                
 
                 Assert.IsTrue(site == $"{ctx.Web.ServerRelativeUrl}/test");
                 Assert.IsTrue(sitecol == $"{ctx.Site.ServerRelativeUrl}/test");
@@ -95,6 +99,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(siteOwner == ctx.Site.Owner.LoginName);
                 Assert.IsTrue(roleDefinitionId == expectedRoleDefinitionId.ToString(), $"Role Definition Id was not parsed correctly (expected:{expectedRoleDefinitionId};returned:{roleDefinitionId})");
                 Assert.IsTrue(parsedXamlEscapeString == xamlEscapeString);
+                Assert.IsTrue(parsedFieldRef.ToUpperInvariant() == fieldRef.ToUpperInvariant());
             }
         }
 
