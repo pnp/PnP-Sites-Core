@@ -1794,7 +1794,7 @@ namespace Microsoft.SharePoint.Client
                 bool isDirty = false;
                 foreach (ContentType contentType in contentTypes)
                 {
-                    list.EnsureProperty(ct => ct.Id);
+                    contentType.EnsureProperty(ct => ct.Id);
 
                     if (!uniqueContentTypeOrder.Contains(contentType.Id, new ContentTypeIdComparer()))
                     {
