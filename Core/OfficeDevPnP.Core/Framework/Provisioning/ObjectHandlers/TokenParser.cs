@@ -68,7 +68,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         // Heavy rebase for switching templates
         public void Rebase(Web web, ProvisioningTemplate template)
         {
-
             _web = web;
 
             foreach (var token in _tokens.Where(t => t is VolatileTokenDefinition))
@@ -825,6 +824,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             return xmlDoc.OuterXml;
+        }
+
+        internal void RemoveToken<T>(T oldToken) where T : TokenDefinition
+        {
+            for (int i = 0; i < _tokens.Count; i++)
+            {
+                var tokenDefinition = _tokens[i];
+                if (tokenDefinition.GetTokens().SequenceEqual(oldToken.GetTokens()))
+                {
+                    _tokens.RemoveAt(i);
+
+                    foreach (string token in tokenDefinition.GetTokens())
+                    {
+                        var tokenKey = Regex.Unescape(token);
+                        TokenDictionary.Remove(tokenKey);
+                    }
+
+                    break;
+                }
+            }
         }
     }
 }

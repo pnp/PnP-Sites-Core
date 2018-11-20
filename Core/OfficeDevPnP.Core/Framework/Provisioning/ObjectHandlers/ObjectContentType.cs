@@ -154,10 +154,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             if (existingContentType.Name != parser.ParseString(templateContentType.Name))
             {
+                var oldName = existingContentType.Name;
                 scope.LogPropertyUpdate("Name");
                 existingContentType.Name = parser.ParseString(templateContentType.Name);
                 isDirty = true;
                 // CT is being renamed, add an extra token to the tokenparser
+                parser.RemoveToken(new ContentTypeIdToken(web, oldName, existingContentType.StringId));
                 parser.AddToken(new ContentTypeIdToken(web, existingContentType.Name, existingContentType.StringId));
             }
             if (templateContentType.Group != null && existingContentType.Group != parser.ParseString(templateContentType.Group))
