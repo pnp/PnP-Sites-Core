@@ -54,6 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                select t;
 
             _tokens = sortedTokens.ToList();
+            BuildTokenCache();
         }
 
         // Lightweight rebase
@@ -163,6 +164,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new HostUrlToken(web));
 #if !ONPREMISES
             _tokens.Add(new SiteCollectionConnectedOffice365GroupId(web));
+            _tokens.Add(new EveryoneToken(web));
+            _tokens.Add(new EveryoneButExternalUsersToken(web));
 #endif
 
             AddListTokens(web);
