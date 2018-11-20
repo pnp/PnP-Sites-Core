@@ -122,7 +122,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                     appMetadata = manager.GetAvailable().FirstOrDefault(a => a.Id == appId);
                                 }
                                 parser.AddToken(new AppPackageIdToken(web, appFilename, appMetadata.Id));
-
+                                parser.AddToken(new AppPackageIdToken(web, appMetadata.Title, appMetadata.Id));
                             }
 
                             if (app.Action == PackageAction.Publish || app.Action == PackageAction.UploadAndPublish)
