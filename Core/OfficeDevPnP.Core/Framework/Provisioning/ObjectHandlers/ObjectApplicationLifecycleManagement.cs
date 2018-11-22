@@ -3,6 +3,7 @@ using OfficeDevPnP.Core.ALM;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
+using System.Diagnostics;
 using System.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
@@ -136,21 +137,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private void PollforAppInstalled(AppManager manager, Guid appId)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             var appMetadata = manager.GetAvailable(appId, Enums.AppCatalogScope.Tenant);
-            while (appMetadata.AppCatalogVersion != appMetadata.InstalledVersion)
+            while (appMetadata.AppCatalogVersion != appMetadata.InstalledVersion && sw.ElapsedMilliseconds < 1000 * 60 * 5)
             {
                 System.Threading.Thread.Sleep(5000); // sleep 5 seconds and try again
                 appMetadata = manager.GetAvailable(appId, Enums.AppCatalogScope.Tenant);
             }
+            if(appMetadata.AppCatalogVersion != appMetadata.InstalledVersion)
+            {
+                // We ran into a timeout
+                throw new Exception("App Install timeout hit, could not determine installed state");
+            }
+            sw.Stop();
         }
 
         private void PollforAppUninstalled(AppManager manager, Guid appId)
         {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             var appMetadata = manager.GetAvailable(appId, Enums.AppCatalogScope.Tenant);
-            while (appMetadata.InstalledVersion != null)
+            while (appMetadata.InstalledVersion != null && sw.ElapsedMilliseconds < 1000 * 60 * 5)
             {
                 System.Threading.Thread.Sleep(5000); // sleep 5 seconds and try again
                 appMetadata = manager.GetAvailable(appId, Enums.AppCatalogScope.Tenant);
+            }
+            if(appMetadata.InstalledVersion != null)
+            {
+                throw new Exception("App Uninstall timeout hit, could not determine uninstalled state.");
             }
         }
 
