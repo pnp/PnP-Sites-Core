@@ -57,6 +57,7 @@ namespace OfficeDevPnP.Core.Sites
                 context.Web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
                 && sw.ElapsedMilliseconds < 1000 * 60)
             {
+                System.Threading.Thread.Sleep(5000); // wait 5 seconds
                 context.Web.EnsureProperties(w => w.AssociatedOwnerGroup, w => w.AssociatedMemberGroup, w => w.AssociatedVisitorGroup);
             }
             sw.Stop();
