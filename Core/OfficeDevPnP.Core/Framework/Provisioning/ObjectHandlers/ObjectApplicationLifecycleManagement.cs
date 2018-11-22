@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using OfficeDevPnP.Core.Diagnostics;
+﻿using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.ALM;
+using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using System;
+using System.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -28,7 +25,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // Process the collection of Apps installed in the current Site Collection
                 var appCatalogUri = web.GetAppCatalog();
-                if(appCatalogUri != null)
+                if (appCatalogUri != null)
                 {
                     var manager = new AppManager(web.Context as ClientContext);
 
@@ -44,7 +41,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             });
                         }
                     }
-                }                
+                }
             }
             return template;
         }
@@ -109,18 +106,52 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     // We need to wait for the app management
                                     // to be completed before proceeding
+                                    switch (app.Action)
+                                    {
+                                        case AppAction.Install:
+                                        case AppAction.Update:
+                                            {
+                                                PollforAppInstalled(manager, appId);
+                                                break;
+                                            }
+                                        case AppAction.Uninstall:
+                                            {
+                                                PollforAppUninstalled(manager, appId);
+                                                break;
+                                            }
+                                    }
                                 }
                             }
                         }
                         else
                         {
                             WriteMessage($"Tenant app catalog doesn't exist. ALM step will be skipped.", ProvisioningMessageType.Warning);
-                        }                        
+                        }
                     }
                 }
             }
 
             return parser;
+        }
+
+        private void PollforAppInstalled(AppManager manager, Guid appId)
+        {
+            var appMetadata = manager.GetAvailable(appId, Enums.AppCatalogScope.Tenant);
+            while (appMetadata.AppCatalogVersion != appMetadata.InstalledVersion)
+            {
+                System.Threading.Thread.Sleep(5000); // sleep 5 seconds and try again
+                appMetadata = manager.GetAvailable(appId, Enums.AppCatalogScope.Tenant);
+            }
+        }
+
+        private void PollforAppUninstalled(AppManager manager, Guid appId)
+        {
+            var appMetadata = manager.GetAvailable(appId, Enums.AppCatalogScope.Tenant);
+            while (appMetadata.InstalledVersion != null)
+            {
+                System.Threading.Thread.Sleep(5000); // sleep 5 seconds and try again
+                appMetadata = manager.GetAvailable(appId, Enums.AppCatalogScope.Tenant);
+            }
         }
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
