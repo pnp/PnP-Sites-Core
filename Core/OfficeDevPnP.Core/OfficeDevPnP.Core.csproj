@@ -436,6 +436,7 @@
     <Compile Include="Framework\Graph\GraphHttpClient.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingValue.cs" />
     <Compile Include="Framework\Graph\Model\SiteClassificationsSettings.cs" />
+    <Compile Include="Framework\Graph\Model\GroupExtended.cs" />
     <Compile Include="Framework\Provisioning\Model\BaseHierarchyModel.cs" />
     <Compile Include="Framework\Provisioning\Model\BaseProvisioningTemplateObjectCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\CommunicationSiteCollection.cs" />

@@ -8,6 +8,7 @@ using OfficeDevPnP.Core.Entities;
 using System.IO;
 using OfficeDevPnP.Core.Diagnostics;
 using Newtonsoft.Json.Linq;
+using OfficeDevPnP.Core.Framework.Graph.Model;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
@@ -149,7 +150,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     var graphClient = CreateGraphClient(accessToken, retryCount, delay);
 
                     // Prepare the group resource object
-                    var newGroup = new Microsoft.Graph.Group
+                    var newGroup = new GroupExtended
                     {
                         DisplayName = displayName,
                         Description = description,
@@ -157,8 +158,26 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         MailEnabled = true,
                         SecurityEnabled = false,
                         Visibility = isPrivate == true ? "Private" : "Public",
-                        GroupTypes = new List<string> { "Unified" },
+                        GroupTypes = new List<string> { "Unified" }
                     };
+
+                    if (owners != null && owners.Length > 0)
+                    {
+                        var users = GetUsers(graphClient, owners);
+                        if (users != null)
+                        {
+                            newGroup.OwnersODataBind = users.Select(u => string.Format("https://graph.microsoft.com/v1.0/users/{0}", u.Id)).ToArray();
+                        }
+                    }
+
+                    if (members != null && members.Length > 0)
+                    {
+                        var users = GetUsers(graphClient, members);
+                        if (users != null)
+                        {
+                            newGroup.MembersODataBind = users.Select(u => string.Format("https://graph.microsoft.com/v1.0/users/{0}", u.Id)).ToArray();
+                        }
+                    }
 
                     Microsoft.Graph.Group addedGroup = null;
                     String modernSiteUrl = null;
@@ -244,24 +263,6 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         }
                     }
 
-                    #region Handle group's owners
-
-                    if (owners != null && owners.Length > 0)
-                    {
-                        await UpdateOwners(owners, graphClient, addedGroup);
-                    }
-
-                    #endregion
-
-                    #region Handle group's members
-
-                    if (members != null && members.Length > 0)
-                    {
-                        await UpdateMembers(members, graphClient, addedGroup);
-                    }
-
-                    #endregion
-
                     return (group);
 
                 }).GetAwaiter().GetResult();
@@ -274,6 +275,40 @@ namespace OfficeDevPnP.Core.Framework.Graph
             return (result);
         }
 
+        private static List<User> GetUsers(GraphServiceClient graphClient, string[] arrUsers)
+        {
+            if (arrUsers == null || arrUsers.Length == 0)
+            {
+                return new List<User>();
+            }
+            var result = Task.Run(async () =>
+            {
+                var usersResult = new List<User>();
+                var users = await graphClient.Users.Request().GetAsync();
+                while (users.Count > 0)
+                {
+                    foreach (var u in users)
+                    {
+                        if (arrUsers.Any(uc => string.Compare(u.UserPrincipalName, uc, true) == 0))
+                        {
+                            usersResult.Add(u);
+                        }
+                    }
+
+                    if (users.NextPageRequest != null)
+                    {
+                        users = await users.NextPageRequest.GetAsync();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                return usersResult;
+            }).GetAwaiter().GetResult();
+            return result;
+        }
         private static async Task UpdateMembers(string[] members, GraphServiceClient graphClient, Group targetGroup)
         {
             foreach (var m in members)
