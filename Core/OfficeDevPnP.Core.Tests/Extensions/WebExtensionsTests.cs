@@ -25,6 +25,8 @@ namespace Microsoft.SharePoint.Client.Tests
         const string APPNAME = "HelloWorldApp";
         const string contentTypeName = "PnP Test Content Type";
         const string contentTypeGroupName = "PnP Web Extensions Test";
+        const string fieldName = "PnPTestField";
+        const string fieldGroupName = "PnP Web Extensions Field Test";
         private ClientContext clientContext;
 
         #region Test initialize and cleanup
@@ -53,6 +55,12 @@ namespace Microsoft.SharePoint.Client.Tests
             };
 
             provisionTemplate.ContentTypes.Add(contentType);
+
+            var field = new OfficeDevPnP.Core.Framework.Provisioning.Model.Field()
+            {
+                SchemaXml = string.Format("<Field xmlns='http://schemas.microsoft.com/sharepoint/' ID='885D266E-F6DF-47D2-BF45-2213B3CF2B0D' Name='{0}' StaticName='{0}' DisplayName='{0}' Group='{1}' Type='Text' Required='FALSE' DisplaceOnUpgrade='TRUE' />", fieldName, fieldGroupName)
+            };
+            provisionTemplate.SiteFields.Add(field);
             TokenParser parser = new TokenParser(clientContext.Web, provisionTemplate);
             new ObjectContentType(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(clientContext.Web, provisionTemplate, parser,
                 new ProvisioningTemplateApplyingInformation());
@@ -494,6 +502,45 @@ namespace Microsoft.SharePoint.Client.Tests
 
                 // Assert
                 Assert.IsTrue(template.ContentTypes.Count >= 1);
+            }
+        }
+
+        [TestMethod]
+        public void GetProvisioningTemplateWithSelectedFieldsTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // Arrange
+                var creationInfo = new ProvisioningTemplateCreationInformation(web);
+                creationInfo.FieldGroupsToInclude.Add(fieldGroupName);
+                creationInfo.HandlersToProcess = Handlers.Fields;
+
+                // Act
+                var template = web.GetProvisioningTemplate(creationInfo);
+
+                // Assert
+                Assert.AreEqual(1, template.SiteFields.Count);
+            }
+        }
+
+        [TestMethod]
+        public void GetProvisioningTemplateWithOutSelectedFieldsTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // Arrange
+                var creationInfo = new ProvisioningTemplateCreationInformation(web);
+                creationInfo.HandlersToProcess = Handlers.Fields;
+
+                // Act
+                var template = web.GetProvisioningTemplate(creationInfo);
+
+                // Assert
+                Assert.IsTrue(template.SiteFields.Count >= 1);
             }
         }
         #endregion

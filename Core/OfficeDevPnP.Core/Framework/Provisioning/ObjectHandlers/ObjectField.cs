@@ -492,7 +492,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var existingFields = web.Fields;
                 web.Context.Load(web, w => w.ServerRelativeUrl);
-                web.Context.Load(existingFields, fs => fs.Include(f => f.Id, f => f.SchemaXml, f => f.TypeAsString, f => f.InternalName, f => f.Title));
+                web.Context.Load(existingFields, fs => fs.Include(f => f.Id, f => f.SchemaXml, f => f.TypeAsString, f => f.InternalName, f => f.Group, f => f.Title));
                 web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title));
                 web.Context.ExecuteQueryRetry();
 
@@ -505,7 +505,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     currentFieldIndex++;
                     WriteMessage($"Field|{field.InternalName}|{currentFieldIndex}|{fieldsToProcessCount}", ProvisioningMessageType.Progress);
-                    if (!BuiltInFieldId.Contains(field.Id))
+                    if (!BuiltInFieldId.Contains(field.Id) &&
+                    (creationInfo.FieldGroupsToInclude.Count == 0 || creationInfo.FieldGroupsToInclude.Contains(field.Group)))
                     {
                         var fieldXml = field.SchemaXml;
                         XElement element = XElement.Parse(fieldXml);
