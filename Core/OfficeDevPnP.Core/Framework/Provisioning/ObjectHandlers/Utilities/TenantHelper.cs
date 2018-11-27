@@ -121,8 +121,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                     messagesDelegate?.Invoke($"Skipping existing solution {app.Src}", ProvisioningMessageType.Progress);
                                     appMetadata = manager.GetAvailable().FirstOrDefault(a => a.Id == appId);
                                 }
-                                parser.Tokens.Add(new AppPackageIdToken(web, appFilename, appMetadata.Id));
-
+                                parser.AddToken(new AppPackageIdToken(web, appFilename, appMetadata.Id));
+                                parser.AddToken(new AppPackageIdToken(web, appMetadata.Title, appMetadata.Id));
                             }
 
                             if (app.Action == PackageAction.Publish || app.Action == PackageAction.UploadAndPublish)
@@ -186,6 +186,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         {
             if (provisioningTenant.StorageEntities != null && provisioningTenant.StorageEntities.Any())
             {
+                tenant.EnsureProperty(t => t.RootSiteUrl);
+
                 using (var context = ((ClientContext)tenant.Context).Clone(tenant.RootSiteUrl, applyingInformation.AccessTokens))
                 {
                     var web = context.Web;
