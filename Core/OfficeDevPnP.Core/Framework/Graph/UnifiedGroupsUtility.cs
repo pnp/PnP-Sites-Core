@@ -1043,7 +1043,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 {
                     foreach (var u in users)
                     {
-                        if (groupUsers.Any(o => u.UserPrincipalName.ToLower().Contains(o.ToLower())))
+                        if (groupUsers.Any(o => u.UserPrincipalName.Equals(o, StringComparison.OrdinalIgnoreCase)))
                         {
                             usersResult.Add(u);
                         }
