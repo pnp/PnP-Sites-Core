@@ -166,7 +166,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         MailEnabled = true,
                         SecurityEnabled = false,
                         Visibility = isPrivate == true ? "Private" : "Public",
-                        GroupTypes = new List<string> { "Unified" }
+                        GroupTypes = new List<string> { "Unified" },
                     };
 
                     if (owners != null && owners.Length > 0)
@@ -1042,31 +1042,31 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 var usersResult = new List<User>();
                 foreach (string groupUser in groupUsers)
                 {
-                    // Search for the user object
-                    IGraphServiceUsersCollectionPage userQuery = await graphClient.Users
-                                        .Request()
-                                        .Select("Id")
-                                        .Filter($"userPrincipalName eq '{groupUser}'")
-                                        .GetAsync();
-
-                    User user = userQuery.FirstOrDefault();
-                    if (user != null)
+                    try
                     {
-                        try
+                        // Search for the user object
+                        IGraphServiceUsersCollectionPage userQuery = await graphClient.Users
+                                            .Request()
+                                            .Select("userPrincipalName, Id")
+                                            .Filter($"userPrincipalName eq '{groupUser}'")
+                                            .GetAsync();
+
+                        User user = userQuery.FirstOrDefault();
+                        if (user != null)
                         {
                             usersResult.Add(user);
                         }
-                        catch (ServiceException ex)
-                        {
-                            if (ex.Error.Code == "Request_BadRequest" &&
+                    }
+                    catch (ServiceException ex)
+                    {
+                        if (ex.Error.Code == "Request_BadRequest" &&
                                 ex.Error.Message.Contains("added object references already exist"))
-                            {
-                                // skip
-                            }
-                            else
-                            {
-                                throw ex;
-                            }
+                        {
+                            // skip
+                        }
+                        else
+                        {
+                            throw ex;
                         }
                     }
                 }
