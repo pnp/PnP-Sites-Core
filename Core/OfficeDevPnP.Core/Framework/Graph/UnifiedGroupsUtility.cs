@@ -166,10 +166,10 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         MailEnabled = true,
                         SecurityEnabled = false,
                         Visibility = isPrivate == true ? "Private" : "Public",
-                        GroupTypes = new List<string> { "Unified" },
+                        GroupTypes = new List<string> { "Unified" }
                     };
 
-                    if(owners != null && owners.Length > 0)
+                    if (owners != null && owners.Length > 0)
                     {
                         var users = GetUsers(graphClient, owners);
                         if (users != null)
@@ -305,7 +305,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 throw;
             }
             return (result);
-        }        
+        }
 
         private static async Task UpdateMembers(string[] members, GraphServiceClient graphClient, Group targetGroup)
         {
@@ -613,7 +613,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     return (CreateUnifiedGroup(displayName, description,
                         mailNickname, accessToken, owners, members,
                         groupLogo: groupLogoStream, isPrivate: isPrivate,
-                        createTeam:createTeam, retryCount: retryCount, delay: delay));
+                        createTeam: createTeam, retryCount: retryCount, delay: delay));
                 }
             }
             else
@@ -1029,36 +1029,47 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="graphClient">Graph service client</param>
         /// <param name="groupUsers">String array of users</param>
         /// <returns></returns>
+
         private static List<User> GetUsers(GraphServiceClient graphClient, string[] groupUsers)
         {
             if (groupUsers == null)
             {
                 return new List<User>();
             }
+
             var result = Task.Run(async () =>
             {
                 var usersResult = new List<User>();
-                var users = await graphClient.Users.Request().GetAsync();
-                while (users.Count > 0)
+                foreach (string groupUser in groupUsers)
                 {
-                    foreach (var u in users)
+                    // Search for the user object
+                    IGraphServiceUsersCollectionPage userQuery = await graphClient.Users
+                                        .Request()
+                                        .Select("Id")
+                                        .Filter($"userPrincipalName eq '{groupUser}'")
+                                        .GetAsync();
+
+                    User user = userQuery.FirstOrDefault();
+                    if (user != null)
                     {
-                        if (groupUsers.Any(o => u.UserPrincipalName.Equals(o, StringComparison.OrdinalIgnoreCase)))
+                        try
                         {
-                            usersResult.Add(u);
+                            usersResult.Add(user);
+                        }
+                        catch (ServiceException ex)
+                        {
+                            if (ex.Error.Code == "Request_BadRequest" &&
+                                ex.Error.Message.Contains("added object references already exist"))
+                            {
+                                // skip
+                            }
+                            else
+                            {
+                                throw ex;
+                            }
                         }
                     }
-
-                    if (users.NextPageRequest != null)
-                    {
-                        users = await users.NextPageRequest.GetAsync();
-                    }
-                    else
-                    {
-                        break;
-                    }
                 }
-
                 return usersResult;
             }).GetAwaiter().GetResult();
             return result;
