@@ -1047,7 +1047,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         // Search for the user object
                         IGraphServiceUsersCollectionPage userQuery = await graphClient.Users
                                             .Request()
-                                            .Select("userPrincipalName, Id")
+                                            .Select("Id")
                                             .Filter($"userPrincipalName eq '{groupUser}'")
                                             .GetAsync();
 
@@ -1059,15 +1059,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     }
                     catch (ServiceException ex)
                     {
-                        if (ex.Error.Code == "Request_BadRequest" &&
-                                ex.Error.Message.Contains("added object references already exist"))
-                        {
-                            // skip
-                        }
-                        else
-                        {
-                            throw ex;
-                        }
+                        // skip, group provisioning shouldnt stop because of error in user object
                     }
                 }
                 return usersResult;
