@@ -1032,7 +1032,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
         private static List<User> GetUsers(GraphServiceClient graphClient, string[] groupUsers)
         {
-            if (groupUsers == null)
+            if (groupUsers == null || groupUsers.Length == 0)
             {
                 return new List<User>();
             }

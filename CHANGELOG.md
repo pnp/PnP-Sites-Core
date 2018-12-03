@@ -9,11 +9,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [3.4.1812.0 - unreleased]
 
 ### Added
+- Ability to create team with Group #1990 [gautamdsheth]
 
 ### Changed
 
 - New CSOM throttling implementation
 - Fix: Token parser #1968 #1972 [SchauDK] [phawrylak]
+- Improve add owner/member onn Group creating #1987 #1990 #1991 [sadomovalex] [gautamdsheth]
 
 
 ## [3.3.1811.0 - November 2018 release]
