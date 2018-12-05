@@ -45,11 +45,6 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(web, w => w.AllProperties);
             web.Context.ExecuteQueryRetry();
 
-            if (!ArePublishingFeaturesActivated(web.AllProperties))
-            {
-                throw new ArgumentException("Structural navigation settings are only supported for publishing sites");
-            }
-
             // Determine if managed navigation is used...if so the other properties are not relevant
             string webNavigationSettings = web.AllProperties.GetPropertyAsString(WebNavigationSettings);
             if (webNavigationSettings == null)
