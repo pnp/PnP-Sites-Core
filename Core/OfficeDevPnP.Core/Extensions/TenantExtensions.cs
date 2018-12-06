@@ -461,6 +461,8 @@ namespace Microsoft.SharePoint.Client
         /// <param name="userCodeMaximumLevel">A value that represents the maximum allowed resource usage for the site/</param>
         /// <param name="userCodeWarningLevel">A value that determines the level of resource usage at which a warning e-mail message is sent</param>
         /// <param name="noScriptSite">Boolean value which allows to customize the site using scripts</param>
+        /// <param name="commentsOnSitePagesDisabled">Boolean value which Enables/Disables comments on the Site Pages</param>
+        /// <param name="socialBarOnSitePagesDisabled">Boolean value which Enables/Disables likes and view count on the Site Pages</param>
         /// <param name="wait">Id true this function only returns when the tenant properties are set, if false it will return immediately</param>
         /// <param name="timeoutFunction">An optional function that will be called while waiting for the tenant properties to be set. If set will override the wait variable. Return true to cancel the wait loop.</param>
         public static void SetSiteProperties(this Tenant tenant, string siteFullUrl,
@@ -472,6 +474,8 @@ namespace Microsoft.SharePoint.Client
             double? userCodeMaximumLevel = null,
             double? userCodeWarningLevel = null,
             bool? noScriptSite = null,
+            bool? commentsOnSitePagesDisabled = null,
+            bool? socialBarOnSitePagesDisabled = null,
             bool wait = true, Func<TenantOperationMessage, bool> timeoutFunction = null
             )
         {
@@ -496,6 +500,10 @@ namespace Microsoft.SharePoint.Client
                     siteProps.Title = title;
                 if (noScriptSite != null)
                     siteProps.DenyAddAndCustomizePages = (noScriptSite == true ? DenyAddAndCustomizePagesStatus.Enabled : DenyAddAndCustomizePagesStatus.Disabled);
+                if (commentsOnSitePagesDisabled != null)
+                    siteProps.CommentsOnSitePagesDisabled = commentsOnSitePagesDisabled.Value;
+                if (socialBarOnSitePagesDisabled != null)
+                    siteProps.SocialBarOnSitePagesDisabled = socialBarOnSitePagesDisabled.Value;
 
                 var op = siteProps.Update();
                 tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
