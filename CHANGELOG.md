@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Prevent access denied exception when provisioning content types #1903 [jensotto]
 - Allow parameters in field defaults #1979 [oozoo-solutions]
 - Add token parsing when provisioning search settings #1727 [jensotto]
 - Fixed issue with calculated fields for non-English site collections #1970 [SchauDK]
