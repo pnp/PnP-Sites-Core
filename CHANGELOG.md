@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Stability improvements for updates to RoleDefinition update #1846 [sebastianmattar]
 - Prevent access denied exception when provisioning content types #1903 [jensotto]
 - Allow parameters in field defaults #1979 [oozoo-solutions]
 - Add token parsing when provisioning search settings #1727 [jensotto]
