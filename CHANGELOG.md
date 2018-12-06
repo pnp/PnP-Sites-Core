@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Ability to update content type properties #1776 [gautamdsheth]
 - Ability to create team with Group #1990 [gautamdsheth]
 - Ability to enable/disable comments, likes and view count on modern site pages #1756 [gautamdsheth]
+- Added support for themes generation via ThemeUtility.GetThemeAsJSON(primaryColor, bodyTextColor, bodyBackgroundColor) [paolopia]
 
 ### Changed
 
