@@ -592,7 +592,7 @@ namespace Microsoft.SharePoint.Client
         {
             if (l1ParentNodeTitle != null)
             {
-                var l1ParentNode = parentNodes.FirstOrDefault(n => n.Title == l1ParentNodeTitle);
+                var l1ParentNode = parentNodes.FirstOrDefault(n => n.Title.Equals(l1ParentNodeTitle, StringComparison.InvariantCultureIgnoreCase));
                 if (l1ParentNode == null)
                 {
                     return null;
@@ -602,7 +602,7 @@ namespace Microsoft.SharePoint.Client
                 parentNodes = l1ParentNode.Children;
             }
 
-            var parentNode = parentNodes.FirstOrDefault(n => n.Title == parentNodeTitle);
+            var parentNode = parentNodes.FirstOrDefault(n => n.Title.Equals(parentNodeTitle, StringComparison.InvariantCultureIgnoreCase));
             var navigationNode = parentNode?.Children.Add(nodeToCreate);
             return navigationNode;
         }
