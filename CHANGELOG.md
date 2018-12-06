@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Current user can't be removed from new SecurableObject role assignments #1584 [jensotto]
 - Use Xml token parsing for Xml data #1982 [SchauDK]
 - New CSOM throttling implementation
 - Fix: Token parser #1968 #1972 [SchauDK] [phawrylak]

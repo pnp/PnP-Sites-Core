@@ -132,7 +132,7 @@ alert(""Hello!"");
             Page page = new Page();
             page.Layout = WikiPageLayout.TwoColumns;
             page.Overwrite = true;
-            page.Url = "~site/sitepages/pagetest.aspx";
+            page.Url = "{site}/sitepages/pagetest.aspx";
 
             var security = new ObjectSecurity()
             {
