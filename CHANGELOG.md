@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Fixed issue with calculated fileds for non-English site collections #1970 [SchauDK]
 - FixLookupField. If target list is not found, just return fieldXml #1977 [SchauDK]
 - Current user can't be removed from new SecurableObject role assignments #1584 [jensotto]
 - Use Xml token parsing for Xml data #1982 [SchauDK]
