@@ -14,13 +14,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
-- Fixed issue with calculated fileds for non-English site collections #1970 [SchauDK]
+- Add token parsing when provisioning search settings #1727 [jensotto]
+- Fixed issue with calculated fields for non-English site collections #1970 [SchauDK]
 - FixLookupField. If target list is not found, just return fieldXml #1977 [SchauDK]
 - Current user can't be removed from new SecurableObject role assignments #1584 [jensotto]
 - Use Xml token parsing for Xml data #1982 [SchauDK]
 - New CSOM throttling implementation
 - Fix: Token parser #1968 #1972 [SchauDK] [phawrylak]
-- Improve add owner/member onn Group creating #1987 #1990 #1991 [sadomovalex] [gautamdsheth]
+- Improve add owner/member on Group creating #1987 #1990 #1991 [sadomovalex] [gautamdsheth]
 
 ## [3.3.1811.0 - November 2018 release]
 
