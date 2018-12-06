@@ -384,10 +384,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             //will be added at the end. To fix this issue we ordering the fields once more.
 
             createdCT.FieldLinks.Reorder(templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray());
+            createdCT.EnsureProperties(ct => ct.ReadOnly, ct => ct.Hidden, ct => ct.Sealed);
 
-            createdCT.ReadOnly = templateContentType.ReadOnly;
-            createdCT.Hidden = templateContentType.Hidden;
-            createdCT.Sealed = templateContentType.Sealed;
+            if (createdCT.ReadOnly != templateContentType.ReadOnly)
+            {
+                createdCT.ReadOnly = templateContentType.ReadOnly;
+            }
+            if (createdCT.Hidden != templateContentType.Hidden)
+            {
+                createdCT.Hidden = templateContentType.Hidden;
+            }
+            if (createdCT.Sealed != templateContentType.Sealed)
+            {
+                createdCT.Sealed = templateContentType.Sealed;
+            }
 
             if (templateContentType.DocumentSetTemplate == null)
             {
