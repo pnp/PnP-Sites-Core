@@ -21,10 +21,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 
             var groups = context.LoadQuery(context.Web.SiteGroups.Include(g => g.LoginName));
             var webRoleDefinitions = context.LoadQuery(context.Web.RoleDefinitions);
-            var securableRoleAssignments = context.LoadQuery(securable.RoleAssignments);
 
-            context.ExecuteQueryRetry();
             securable.BreakRoleInheritance(security.CopyRoleAssignments, security.ClearSubscopes);
+
+            var securableRoleAssignments = context.LoadQuery(securable.RoleAssignments);
+            context.ExecuteQueryRetry();
 
             foreach (var roleAssignment in security.RoleAssignments)
             {
