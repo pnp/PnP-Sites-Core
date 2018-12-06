@@ -9,6 +9,7 @@ using OfficeDevPnP.Core.Utilities.CanvasControl;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -35,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // pre create the needed pages so we can fill the needed tokens which might be used later on when we put web parts on those pages
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
-                    string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(clientSidePage.PageName)}.aspx";
+                    string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(parser.ParseString(clientSidePage.PageName))}.aspx";
                     string url = $"{pagesLibrary}/{pageName}";
 
                     // Write page level status messages, needed in case many pages are provisioned
@@ -47,13 +48,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var exists = true;
                     try
                     {
-                        var file = web.GetFileByServerRelativeUrl(url);
-                        web.Context.Load(file, f => f.UniqueId, f => f.ServerRelativeUrl);
+                        var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(url));
+                        web.Context.Load(file, f => f.UniqueId, f => f.ServerRelativePath);
                         web.Context.ExecuteQueryRetry();
 
                         // Fill token
-                        parser.AddToken(new PageUniqueIdToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
-                        parser.AddToken(new PageUniqueIdEncodedToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+                        parser.AddToken(new PageUniqueIdToken(web, file.ServerRelativePath.DecodedUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+                        parser.AddToken(new PageUniqueIdEncodedToken(web, file.ServerRelativePath.DecodedUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
                     }
                     catch (ServerException ex)
                     {
@@ -79,17 +80,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 page.LayoutType = Pages.ClientSidePageLayoutType.Home;
                             }
+                            else if (clientSidePage.Layout.Equals("SingleWebPartAppPage", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                page.LayoutType = Pages.ClientSidePageLayoutType.SingleWebPartAppPage;
+                            }
                         }
 
                         page.Save(pageName);
 
-                        var file = web.GetFileByServerRelativeUrl(url);
-                        web.Context.Load(file, f => f.UniqueId, f => f.ServerRelativeUrl);
+                        var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(url));
+                        web.Context.Load(file, f => f.UniqueId, f => f.ServerRelativePath);
                         web.Context.ExecuteQueryRetry();
 
                         // Fill token
-                        parser.AddToken(new PageUniqueIdToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
-                        parser.AddToken(new PageUniqueIdEncodedToken(web, file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+                        parser.AddToken(new PageUniqueIdToken(web, file.ServerRelativePath.DecodedUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+                        parser.AddToken(new PageUniqueIdEncodedToken(web, file.ServerRelativePath.DecodedUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
 
                         // Track that we pre-added this page
                         preCreatedPages.Add(url);
@@ -100,7 +105,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Iterate over the pages and create/update them
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
-                    string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(clientSidePage.PageName)}.aspx";
+                    string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(parser.ParseString(clientSidePage.PageName))}.aspx";
                     string url = $"{pagesLibrary}/{pageName}";
                     // Write page level status messages, needed in case many pages are provisioned
                     currentPageIndex++;
@@ -111,7 +116,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var exists = true;
                     try
                     {
-                        var file = web.GetFileByServerRelativeUrl(url);
+                        var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(url));
                         web.Context.Load(file);
                         web.Context.ExecuteQueryRetry();
                     }
@@ -193,6 +198,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         else if (clientSidePage.Layout.Equals("Home", StringComparison.InvariantCultureIgnoreCase))
                         {
                             page.LayoutType = Pages.ClientSidePageLayoutType.Home;
+                        }
+                        else if (clientSidePage.Layout.Equals("SingleWebPartAppPage", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            page.LayoutType = Pages.ClientSidePageLayoutType.SingleWebPartAppPage;
                         }
                     }
 
@@ -453,29 +462,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Persist the page
                     page.Save(pageName);
 
-                    // Set commenting, ignore on pages of the type Home
-                    if (page.LayoutType != Pages.ClientSidePageLayoutType.Home)
+                    if (page.LayoutType != Pages.ClientSidePageLayoutType.SingleWebPartAppPage)
                     {
-                        // Make it a news page if requested
-                        if (clientSidePage.PromoteAsNewsArticle)
+                        // Set commenting, ignore on pages of the type Home
+                        if (page.LayoutType != Pages.ClientSidePageLayoutType.Home)
                         {
-                            page.PromoteAsNewsArticle();
+                            // Make it a news page if requested
+                            if (clientSidePage.PromoteAsNewsArticle)
+                            {
+                                page.PromoteAsNewsArticle();
+                            }
                         }
-                    }
 
-                    if (clientSidePage.EnableComments)
-                    {
-                        page.EnableComments();
-                    }
-                    else
-                    {
-                        page.DisableComments();
+                        if (clientSidePage.EnableComments)
+                        {
+                            page.EnableComments();
+                        }
+                        else
+                        {
+                            page.DisableComments();
+                        }
                     }
 
                     // Publish page 
                     if (clientSidePage.Publish)
                     {
                         page.Publish();
+                    }
+
+                    // Set any security on the page
+                    if (clientSidePage.Security != null && clientSidePage.Security.RoleAssignments.Count != 0)
+                    {
+                        web.Context.Load(page.PageListItem);
+                        web.Context.ExecuteQueryRetry();
+                        page.PageListItem.SetSecurity(parser, clientSidePage.Security);
                     }
 
                 }

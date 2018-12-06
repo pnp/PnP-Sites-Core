@@ -21,17 +21,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 
             var groups = context.LoadQuery(context.Web.SiteGroups.Include(g => g.LoginName));
             var webRoleDefinitions = context.LoadQuery(context.Web.RoleDefinitions);
-            var securableRoleAssignments = context.LoadQuery(securable.RoleAssignments);
 
-            context.ExecuteQueryRetry();
             securable.BreakRoleInheritance(security.CopyRoleAssignments, security.ClearSubscopes);
+
+            var securableRoleAssignments = context.LoadQuery(securable.RoleAssignments);
+            context.ExecuteQueryRetry();
 
             foreach (var roleAssignment in security.RoleAssignments)
             {
                 if (!roleAssignment.Remove)
                 {
                     var roleAssignmentPrincipal = parser.ParseString(roleAssignment.Principal);
-                    Principal principal = groups.FirstOrDefault(g => g.LoginName == roleAssignmentPrincipal);
+                    Principal principal = groups.FirstOrDefault(g => g.LoginName.Equals(roleAssignmentPrincipal, StringComparison.OrdinalIgnoreCase));
                     if (principal == null)
                     {
                         principal = context.Web.EnsureUser(roleAssignmentPrincipal);
@@ -53,7 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                 } else
                 {
                     var roleAssignmentPrincipal = parser.ParseString(roleAssignment.Principal);
-                    Principal principal = groups.FirstOrDefault(g => g.LoginName == roleAssignmentPrincipal);
+                    Principal principal = groups.FirstOrDefault(g => g.LoginName.Equals(roleAssignmentPrincipal, StringComparison.OrdinalIgnoreCase));
                     if (principal == null)
                     {
                         principal = context.Web.EnsureUser(roleAssignmentPrincipal);

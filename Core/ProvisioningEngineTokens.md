@@ -35,6 +35,7 @@ Token|Description|Example|Returns
 {realm}|Returns the authentication ID of the current tenant/farm|{realm}|55898e77-a7bf-4799-8034-506db5521b98
 {roledefinition:[roletype]}|Returns the name of role definition given the role type|{roledefinition:Editor}|Editors
 {roledefinitionid:[rolename]}|Returns the id of the given role definition name|{roledefinitionid:My Role Definition}|23
+{sequencesiteurl:[provisioningid]}|Returns a full url of the site given its provisioning ID from the sequence|{sequencesiteurl:MYID}|https://contoso.sharepoint.com/sites/mynewsite
 {site}|Returns the server relative url of the current site|{site}|/sites/mysitecollection/mysite
 {sitecollection}|Returns the server relative url of the site collection|{sitecollection}|/sites/mysitecollection
 {sitecollectionconnectedoffice365groupid}|Returns the ID of the Office 365 group connected to the current site|{sitecollectionconnectedoffice365groupid}|767bc144-e605-4d8c-885a-3a980feb39c6

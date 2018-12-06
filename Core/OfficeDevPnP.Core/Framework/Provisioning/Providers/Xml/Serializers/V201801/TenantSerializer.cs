@@ -37,6 +37,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 // Manage the Site Designs mapping with Site Scripts
                 expressions.Add(t => t.SiteDesigns[0].SiteScripts, new SiteScriptRefFromSchemaToModelTypeResolver());
 
+                // Manage Palette of Theme
+                expressions.Add(t => t.Themes[0].Palette, new ExpressionValueResolver((s, v) => {
+
+                    String result = null;
+
+                    if (s != null)
+                    {
+                        String[] text = s.GetPublicInstancePropertyValue("Text") as String[];
+                        if (text != null && text.Length > 0)
+                        {
+                            result = text.Aggregate(String.Empty, (acc, next) => acc += (next != null ? next : String.Empty));
+                        }
+                    }
+
+                    return (result.Trim());
+                }));
+
                 PnPObjectsMapper.MapProperties(tenantSettings, template.Tenant, expressions, true);
             }
         }
@@ -50,6 +67,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 var tenantType = Type.GetType(tenantTypeName, false);
                 var siteDesignsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SiteDesignsSiteDesign, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var siteDesignsType = Type.GetType(siteDesignsTypeName, false);
+                var themeTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ThemesTheme, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var themeType = Type.GetType(themeTypeName, false);
 
                 if (tenantType != null)
                 {
@@ -63,6 +82,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                         new CdnFromModelToSchemaTypeResolver());
                     resolvers.Add($"{siteDesignsType}.SiteScripts",
                         new SiteScriptRefFromModelToSchemaTypeResolver());
+
+                    if (themeType != null)
+                    {
+                        resolvers.Add($"{themeType}.Text",
+                            new ExpressionValueResolver((s, v) => {
+                                return (new String[] { (String)s.GetPublicInstancePropertyValue("Palette") });
+                            }));
+                    }
+
 
                     PnPObjectsMapper.MapProperties(template.Tenant, target, resolvers, recursive: true);
 

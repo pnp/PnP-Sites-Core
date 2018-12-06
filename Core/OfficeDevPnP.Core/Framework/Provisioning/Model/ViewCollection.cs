@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of View objects
     /// </summary>
-    public partial class ViewCollection : ProvisioningTemplateCollection<View>
+    public partial class ViewCollection : BaseProvisioningTemplateObjectCollection<View>
     {
         /// <summary>
         /// Constructor for ViewCollection class

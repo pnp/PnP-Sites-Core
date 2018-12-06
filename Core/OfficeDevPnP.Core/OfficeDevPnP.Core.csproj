@@ -274,17 +274,14 @@
       <HintPath>..\packages\AngleSharp.0.9.9\lib\net45\AngleSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.Data.Edm, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Data.Edm.5.6.2\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+    <Reference Include="Microsoft.Data.Edm, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.8.4\lib\net40\Microsoft.Data.Edm.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Data.OData, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Data.OData.5.6.2\lib\net40\Microsoft.Data.OData.dll</HintPath>
+    <Reference Include="Microsoft.Data.OData, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.OData.5.8.4\lib\net40\Microsoft.Data.OData.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.2\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Services.Client.5.8.4\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
@@ -312,11 +309,20 @@
       <HintPath>..\packages\Microsoft.IdentityModel.6.1.7600.16394\lib\net35\Microsoft.IdentityModel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=2.29.0.1078, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.29.0\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.19.8.16603, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms, Version=2.29.0.1078, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.29.0\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll</HintPath>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.19.8.16603, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.5.2.4\lib\net45\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.5.2.4\lib\net45\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.2.4\lib\net45\Microsoft.IdentityModel.Tokens.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -341,8 +347,8 @@
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.IdentityModel.Selectors" />
-    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.4.0.0\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.2.4\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -352,9 +358,8 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Spatial, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\System.Spatial.5.6.2\lib\net40\System.Spatial.dll</HintPath>
+    <Reference Include="System.Spatial, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Spatial.5.8.4\lib\net40\System.Spatial.dll</HintPath>
     </Reference>
     <Reference Include="System.Text.Encodings.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Encodings.Web.4.0.0\lib\netstandard1.0\System.Text.Encodings.Web.dll</HintPath>
@@ -424,11 +429,23 @@
     <Compile Include="Extensions\SiteExtensions.cs" />
     <Compile Include="Extensions\TaxonomyExtensions.cs" />
     <Compile Include="Extensions\TenantExtensions.cs" />
+    <Compile Include="Extensions\TopologicalSort.cs" />
+    <Compile Include="Framework\Graph\GraphUtility.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySetting.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingTemplates.cs" />
     <Compile Include="Framework\Graph\GraphHttpClient.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingValue.cs" />
     <Compile Include="Framework\Graph\Model\SiteClassificationsSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseHierarchyModel.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseProvisioningTemplateObjectCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\CommunicationSiteCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\IProvisioningHierarchyDescendant.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningHierarchy.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseProvisioningHierarchyObjectCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningSequenceCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SubSiteCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteCollectionCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\App.cs" />
     <Compile Include="Framework\Provisioning\Model\AppCatalog.cs" />
     <Compile Include="Framework\Provisioning\Model\AppCollection.cs" />
@@ -449,6 +466,7 @@
     <Compile Include="Framework\Provisioning\Model\PackageCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ImageRenditionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\IRMSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningSequence.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteDesignCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteDesignGrant.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteDesignGrantCollection.cs" />
@@ -460,6 +478,13 @@
     <Compile Include="Framework\Provisioning\Model\SiteWebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTenant.cs" />
     <Compile Include="Framework\Provisioning\Model\StorageEntity.cs" />
+    <Compile Include="Framework\Provisioning\Model\SubSite.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningTermStore.cs" />
+    <Compile Include="Framework\Provisioning\Model\TeamNoGroupSiteCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\TeamNoGroupSubSite.cs" />
+    <Compile Include="Framework\Provisioning\Model\TeamSiteCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Theme.cs" />
+    <Compile Include="Framework\Provisioning\Model\ThemeCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\WebApiPermission.cs" />
     <Compile Include="Framework\Provisioning\Model\WebApiPermissionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Webhook.cs" />
@@ -467,11 +492,19 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\FieldAndListProvisioningStepHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\NoScriptTemplateCleaner.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectApplicationLifecycleManagement.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchyHandlerBase.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchySequenceSites.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchyTenant.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTenant.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchySequenceTermGroups.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWebApiPermissions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneButExternalUsersToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FieldIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SequenceSiteUrlToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdTokenEncoded.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\HostUrlToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\PageUniqueIdEncodedToken.cs" />
@@ -483,11 +516,16 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\StorageEntityValueToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteScriptIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteTitleToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\VolatileTokenDefinition.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ClientSidePageContentsHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AppPackageIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ConnectorFileHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUtilities.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\TenantHelper.cs" />
+    <Compile Include="Framework\Provisioning\Providers\IProvisioningHierarchyFormatter.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\TermGroupHelper.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.cs">
       <DependentUpon>ProvisioningSchema-2017-05.xsd</DependentUpon>
     </Compile>
@@ -496,6 +534,9 @@
     </Compile>
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-05.cs">
       <DependentUpon>ProvisioningSchema-2018-05.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.cs">
+      <DependentUpon>ProvisioningSchema-2018-07.xsd</DependentUpon>
     </Compile>
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\DocumentTemplateFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TermSetFromModelToSchemaTypeResolver.cs" />
@@ -517,6 +558,8 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\ClientSidePageHeaderFromSchemaToModel.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\SiteScriptRefFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\SiteScriptRefFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201807\SiteCollectionsAndSitesFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201807\SiteCollectionsAndSitesFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\WorkHourFromSchemaToModelValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FoldersFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromAuditFlagsToArrayResolver.cs" />
@@ -552,6 +595,9 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201705\ListInstancesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201801\ApplicationLifecycleManagementSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201801\TenantSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\ClientSidePagesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\ProvisioningHierarchySerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\SequenceSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WorkflowsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AuditSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SiteColumnsSerializer.cs" />
@@ -563,6 +609,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateBasePropertiesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\RegionalSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WebSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201807Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201805Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201801Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201705Serializer.cs" />
@@ -724,7 +771,7 @@
     <Compile Include="Framework\Provisioning\Model\PropertyBagEntryCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ExtensibilityHandlerCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ProviderCollection.cs" />
-    <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateDictionary.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseProvisioningTemplateObjectDictionary.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Publishing.cs" />
     <Compile Include="Framework\Provisioning\Model\RoleAssignment.cs" />
@@ -1034,6 +1081,9 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-05.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />

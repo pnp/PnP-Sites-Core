@@ -31,7 +31,7 @@
           <pnp:FieldRefs>
             <pnp:FieldRef ID="{56407FDD-C7FA-4321-8FA5-06B7AF970519}" />
           </pnp:FieldRefs>
-          <pnp:DocumentTemplate TargetName="~sitecollection/siteassets/ct1document.docx"/>
+          <pnp:DocumentTemplate TargetName="{sitecollection}/siteassets/ct1document.docx"/>
         </pnp:ContentType>
         <!-- Bare minimum -->
         <pnp:ContentType ID="0x0101008C05EC4BEB1F4DFE9D8828D2DA449D41" Name="{res:CT_2}" Description="{res:CT_2_Description}" Group="PnP Localization Demo" />

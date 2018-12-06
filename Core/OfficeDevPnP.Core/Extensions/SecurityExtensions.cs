@@ -517,7 +517,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Associate the provided groups as default owners, members or visitors groups. If a group is null then the 
+        /// Associate the provided groups as default owners, members or visitors groups. If a group is null then the
         /// association is not done
         /// </summary>
         /// <param name="web">Site to operate on</param>
@@ -801,7 +801,7 @@ namespace Microsoft.SharePoint.Client
                 {
                     roleDefinitionBindings.Add(roleDefinition);
 
-                    //update                        
+                    //update
                     roleAssignment.ImportRoleDefinitionBindings(roleDefinitionBindings);
                     roleAssignment.Update();
                     securableObject.Context.ExecuteQueryRetry();
@@ -962,7 +962,7 @@ namespace Microsoft.SharePoint.Client
                     rdc.Remove(roleDefinition);
                 }
 
-                //update                      
+                //update
                 roleAssignment.ImportRoleDefinitionBindings(rdc);
                 roleAssignment.Update();
                 securableObject.Context.ExecuteQueryRetry();
@@ -1364,8 +1364,8 @@ namespace Microsoft.SharePoint.Client
 
         /// <summary>
         /// A dictionary to cache resolved user emails. key: user login name, value: user email.
-        /// *** 
-        /// Don't use this cache in a real world application. 
+        /// ***
+        /// Don't use this cache in a real world application.
         /// ***
         /// Instead it should be replaced by a real cache with ref object to clear up intermediate records periodically.
         /// </summary>
@@ -1387,8 +1387,8 @@ namespace Microsoft.SharePoint.Client
 
         /// <summary>
         /// A dictionary to cache all user entities of a given SharePoint group. key: group login name, value: an array of user entities belongs to the group.
-        /// *** 
-        /// Don't use this cache in a real world application. 
+        /// ***
+        /// Don't use this cache in a real world application.
         /// ***
         /// Instead it should be replaced by a real cache with ref object to clear up intermediate records periodically.
         /// </summary>
@@ -1404,7 +1404,7 @@ namespace Microsoft.SharePoint.Client
             var context = obj.Context;
             if (!MockupGroupCache.ContainsKey(groupLoginName))
             {
-                var users = context.LoadQuery(obj.RoleAssignments.Groups.First(g => g.LoginName == groupLoginName).Users);
+                var users = context.LoadQuery(obj.RoleAssignments.Groups.First(g => g.LoginName.Equals(groupLoginName, StringComparison.OrdinalIgnoreCase)).Users);
                 context.ExecuteQueryRetry();
                 MockupGroupCache[groupLoginName] = (from u in users select new UserEntity()
                                                     {
@@ -1496,7 +1496,7 @@ namespace Microsoft.SharePoint.Client
                 {
                     return;
                 }
-                var roleAssignments = web.Context.LoadQuery(obj.RoleAssignments.Where(i => i.Member.LoginName == principal.LoginName));
+                var roleAssignments = web.Context.LoadQuery(obj.RoleAssignments.Where(i => i.Member.LoginName.Equals(principal.LoginName, StringComparison.OrdinalIgnoreCase)));
                 web.Context.ExecuteQueryRetry();
 
                 var assignment = roleAssignments.FirstOrDefault();

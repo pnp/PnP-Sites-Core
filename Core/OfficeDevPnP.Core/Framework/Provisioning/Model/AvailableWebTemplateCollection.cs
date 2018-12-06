@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// A collection of AvailableWebTemplate objects
     /// </summary>
-    public partial class AvailableWebTemplateCollection : ProvisioningTemplateCollection<AvailableWebTemplate>
+    public partial class AvailableWebTemplateCollection : BaseProvisioningTemplateObjectCollection<AvailableWebTemplate>
     {
         /// <summary>
         /// Constructor for AvailableWebTemplateCollection class

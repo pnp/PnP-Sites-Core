@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class SiteCollectionIdToken : TokenDefinition
     {
         public SiteCollectionIdToken(Web web)
-            : base(web, "~sitecollectionid", "{sitecollectionid}")
+            : base(web, "{sitecollectionid}")
         {
         }
 

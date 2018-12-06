@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines a collection of objects of type Webhook
     /// </summary>
-    public partial class WebhookCollection : ProvisioningTemplateCollection<Webhook>
+    public partial class WebhookCollection : BaseProvisioningTemplateObjectCollection<Webhook>
     {
         /// <summary>
         /// Constructor for WebhookCollection class

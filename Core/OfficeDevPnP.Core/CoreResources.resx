@@ -1105,6 +1105,9 @@
   <data name="Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook" xml:space="preserve">
     <value>Webhook {0} has been expired and will be skipped during creation/update of list {1}.</value>
   </data>
+  <data name="Provisioning_Extensibility_Invalid_Handler_Implementation" xml:space="preserve">
+    <value>The extensibility handler does not implement a supported extensibility handler interface. Check if the extensibility handler references the same version of OfficeDevPnP currently in use (Version {0}). Assembly: {1}. Type: {2}</value>
+  </data>
   <data name="FieldAndContentTypeExtensions_ContentTypeMissing" xml:space="preserve">
     <value>Content Type with ID {0} does not exist in the list {1}</value>
   </data>
@@ -1122,5 +1125,8 @@
   </data>
   <data name="Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed" xml:space="preserve">
     <value>Provisioning of the navigation node failed : {0}</value>
+  </data>
+  <data name="Provisioning_Extensibility_Invalid_Handler_Implementation" xml:space="preserve">
+    <value>The extensibility handler does not implement a supported extensibility handler interface. Check if the extensibility handler references the same version of OfficeDevPnP currently in use (Version {0}). Assembly: {1}. Type: {2}</value>
   </data>
 </root>

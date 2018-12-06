@@ -3,7 +3,7 @@
     /// <summary>
     /// Collection of PropertyBagEntry objects
     /// </summary>
-    public partial class PropertyBagEntryCollection : ProvisioningTemplateCollection<PropertyBagEntry>
+    public partial class PropertyBagEntryCollection : BaseProvisioningTemplateObjectCollection<PropertyBagEntry>
     {
         /// <summary>
         /// Constructor for PropertyBagEntryCollection

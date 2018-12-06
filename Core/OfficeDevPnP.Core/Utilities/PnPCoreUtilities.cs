@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Utilities
 {
+    /// <summary>
+    /// Holds PnP Core library identification tag and user-agent, and a tool to get tenant administration url based the URL of the web
+    /// </summary>
     public static class PnPCoreUtilities
     {
         /// <summary>

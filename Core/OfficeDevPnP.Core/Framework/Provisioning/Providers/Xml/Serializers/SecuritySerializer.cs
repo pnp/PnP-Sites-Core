@@ -37,6 +37,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             {
                 var securityTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Security, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var securityType = Type.GetType(securityTypeName, true);
+
+                var expressions = new Dictionary<string, IResolver>();
+
+                expressions.Add($"{securityType}.BreakRoleInheritanceSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{securityType}.ResetRoleInheritanceSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{securityType}.CopyRoleAssignmentsSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{securityType}.RemoveExistingUniqueRoleAssignmentsSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{securityType}.ClearSubscopesSpecified", new ExpressionValueResolver(() => true));
+
                 var securityPermissionsType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SecurityPermissions, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}");
                 var roleDefinitionType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.RoleDefinition, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}");
                 var roleDefinitionPermissionType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.RoleDefinitionPermission, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}");
@@ -44,7 +53,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                 var target = Activator.CreateInstance(securityType, true);
 
-                var expressions = new Dictionary<string, IResolver>();
                 expressions.Add($"{securityType}.Permissions", new PropertyObjectTypeResolver(securityPermissionsType, "SiteSecurityPermissions"));
                 expressions.Add($"{roleDefinitionType}.Permissions", new ExpressionCollectionValueResolver((i) => Enum.Parse(roleDefinitionPermissionType, i.ToString()), roleDefinitionPermissionType));
 

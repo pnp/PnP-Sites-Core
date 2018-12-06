@@ -14,6 +14,7 @@ using System.Threading;
 using System.Xml.Linq;
 using OfficeDevPnP.Core.Utilities;
 using System.Collections.Generic;
+using System.IO;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Providers
 {
@@ -638,6 +639,104 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var template2 = provider.GetTemplate("ProvisioningSchema-2018-05-FullSample-01-OUT.xml", serializer);
             Assert.IsNotNull(template2);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_SerializeDeserialize_201807()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201807Serializer();
+            var template1 = provider.GetTemplate("ProvisioningSchema-2018-07-FullSample-01.xml", serializer);
+            Assert.IsNotNull(template1);
+
+            // Add stuff that is not supported anymore, to test the serialization behavior
+            template1.AddIns.Add(new AddIn { PackagePath = "test", Source = "test" });
+
+            provider.SaveAs(template1, "ProvisioningSchema-2018-07-FullSample-01-OUT.xml", serializer);
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningSchema-2018-07-FullSample-01-OUT.xml"));
+
+            var template2 = provider.GetTemplate("ProvisioningSchema-2018-07-FullSample-01-OUT.xml", serializer);
+            Assert.IsNotNull(template2);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_ProvisioningHierarchyIsValid_201807()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201807Serializer();
+
+            // Test with a valid hierarchy file
+            var hierarchyStream = provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml");
+            var hierarchyIsValid = serializer.IsValid(hierarchyStream);
+            Assert.IsTrue(hierarchyIsValid);
+
+            // Test with a NOT valid hierarchy file
+            hierarchyStream = provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01-NOT-VALID.xml");            
+            hierarchyIsValid = serializer.IsValid(hierarchyStream);
+            Assert.IsFalse(hierarchyIsValid);            
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_ProvisioningHierarchy_Load_201807()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var hierarchy = provider.GetHierarchy("ProvisioningSchema-2018-07-FullSample-01.xml");
+            //var serializer = new XMLPnPSchemaV201807Serializer();
+            //serializer.Initialize(provider);
+
+            //var hierarchy = serializer.ToProvisioningHierarchy(provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml"));
+
+            Assert.IsNotNull(hierarchy);
+            Assert.IsNotNull(hierarchy.Templates);
+            // Assert.IsNotNull(hierarchy.Sequences);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_ProvisioningHierarchy_Save_201807()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var hierarchy = provider.GetHierarchy("ProvisioningSchema-2018-07-FullSample-01.xml");
+
+            //var serializer = new XMLPnPSchemaV201807Serializer();
+            //serializer.Initialize(provider);
+
+            //var hierarchy = serializer.ToProvisioningHierarchy(provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml"));
+
+            // Save the hierarchy
+            var outputFile = "ProvisioningSchema-2018-07-FullSample-01-OUT.xml";
+            //var mem = serializer.ToFormattedHierarchy(hierarchy);
+            //provider.Connector.SaveFileStream(outputFile, mem);
+
+            provider.SaveAs(hierarchy, outputFile);
+
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{outputFile}"));
+
+            var hierarchy2 = provider.GetHierarchy(outputFile);
+            Assert.IsNotNull(hierarchy2);
         }
 
         [TestMethod]
@@ -2438,6 +2537,36 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089", handler.Assembly);
             Assert.IsFalse(handler.Enabled);
             Assert.IsNull(handler.Configuration);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FileNotFoundException))]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_UnavailableExtensibilityHandlersThrowsException_201605()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources\Templates",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "UnavailableExtensibilityHandlerTemplates");
+
+            var serializer = new XMLPnPSchemaV201605Serializer();
+            provider.GetTemplate("ProvisioningTemplate-2016-05-Sample.xml", serializer);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FileNotFoundException))]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_UnavailableExtensibilityHandlersThrowsException_201512()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources\Templates",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "UnavailableExtensibilityHandlerTemplates");
+
+            var serializer = new XMLPnPSchemaV201512Formatter();
+            provider.GetTemplate("ProvisioningSchema-2015-12-Sample.xml", serializer);
         }
 
         [TestMethod]

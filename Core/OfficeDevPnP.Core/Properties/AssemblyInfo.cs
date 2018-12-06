@@ -39,11 +39,11 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // Convention:
-// Major version = current version 2
-// Minor version = Sequence...version 0 was with January release...so 1=Feb 2=Mar...11=Jan 2017...15=May 2017...20=Nov
+// Major version = current version 3 (released as of Aug 2018)
+// Minor version = Sequence...version 0 was with Aug 2018 release, 1 = Sept, 2 = Oct,...
 // Third part = version indenpendant showing the release month in YYMM
 // Fourth part = 0 normally or a sequence number when we do an emergency release
-[assembly: AssemblyVersion("2.29.1808.0")]
-[assembly: AssemblyFileVersion("2.29.1808.0")]
+[assembly: AssemblyVersion("3.4.1812.0")]
+[assembly: AssemblyFileVersion("3.4.1812.0")]
 
 [assembly: InternalsVisibleTo("OfficeDevPnP.Core.Tests")]

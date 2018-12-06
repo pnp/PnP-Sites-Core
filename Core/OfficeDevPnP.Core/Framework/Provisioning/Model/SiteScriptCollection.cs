@@ -3,7 +3,7 @@
     /// <summary>
     /// Collection of SiteScript objects
     /// </summary>
-    public partial class SiteScriptCollection : ProvisioningTemplateCollection<SiteScript>
+    public partial class SiteScriptCollection : BaseProvisioningTemplateObjectCollection<SiteScript>
     {
         /// <summary>
         /// Constructor for SiteScriptCollection
