@@ -176,7 +176,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            return (!web.IsSubSite() && template.ApplicationLifecycleManagement != null);
+            if (!_willProvision.HasValue && template.ApplicationLifecycleManagement != null)
+            {
+                _willProvision = (template.ApplicationLifecycleManagement.AppCatalog != null ||
+                                  template.ApplicationLifecycleManagement.Apps.Count > 0
+                                 );
+            }
+            return (!web.IsSubSite() && _willProvision.Value);
         }
     }
 #endif

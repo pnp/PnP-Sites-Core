@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Ability to update content type properties #1776 [gautamdsheth]
 - Ability to create team with Group #1990 [gautamdsheth]
 - Ability to enable/disable comments, likes and view count on modern site pages #1756 [gautamdsheth]
+- Added support for themes generation via ThemeUtility.GetThemeAsJSON(primaryColor, bodyTextColor, bodyBackgroundColor) [paolopia]
 
 ### Changed
 
@@ -28,6 +29,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - New CSOM throttling implementation
 - Fix: Token parser #1968 #1972 [SchauDK] [phawrylak]
 - Improve add owner/member on Group creating #1987 #1990 #1991 [sadomovalex] [gautamdsheth]
+- Improved handling of CustomSortOrder for terms in Term Store [TeodoraI]
+- Improved Tenant and ALM handlers to avoid useless processing [gautamdsheth]
 
 ## [3.3.1811.0 - November 2018 release]
 
