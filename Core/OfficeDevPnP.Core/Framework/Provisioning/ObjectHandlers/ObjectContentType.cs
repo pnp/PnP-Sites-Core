@@ -334,6 +334,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var group = parser.ParseString(templateContentType.Group);
 
             var createdCT = web.CreateContentType(name, description, id, group);
+            createdCT.EnsureProperties(ct => ct.ReadOnly, ct => ct.Hidden, ct => ct.Sealed);
 
             List<FieldRef> fieldsRefsToProcess = new List<FieldRef>();
             foreach (FieldRef fr in templateContentType.FieldRefs)
@@ -384,8 +385,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             //will be added at the end. To fix this issue we ordering the fields once more.
 
             createdCT.FieldLinks.Reorder(templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray());
-            createdCT.EnsureProperties(ct => ct.ReadOnly, ct => ct.Hidden, ct => ct.Sealed);
-
             if (createdCT.ReadOnly != templateContentType.ReadOnly)
             {
                 createdCT.ReadOnly = templateContentType.ReadOnly;
