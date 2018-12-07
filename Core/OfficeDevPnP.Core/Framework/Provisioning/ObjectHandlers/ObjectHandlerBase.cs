@@ -28,6 +28,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public ProvisioningMessagesDelegate MessagesDelegate { get; set; }
 
+        /// <summary>
+        /// This method allows to check if a template can be provisioned in the currently selected target
+        /// </summary>
+        /// <param name="web">The target Web</param>
+        /// <param name="template">The Template to provision</param>
+        /// <param name="applyingInformation">Any custom provisioning settings</param>
+        /// <returns>A boolean stating whether the current object handler can be run during provisioning or if there are any missing requirements</returns>
+        public virtual bool CanProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        {
+            // By default any handler can be provisioned
+            return (true);
+        }
+
         public abstract bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation);
 
         public abstract bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo);

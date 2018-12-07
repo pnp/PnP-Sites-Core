@@ -364,6 +364,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 template = cleaner.CleanUpBeforeProvisioning(template);
 
+                // Double-check if the template can be provisioned
+                Boolean canProvision = true;
                 foreach (var handler in objectHandlers)
                 {
                     if (handler.WillProvision(web, template, provisioningInfo))
@@ -377,12 +379,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             progressDelegate(handler.Name, step, count);
                             step++;
                         }
-                        tokenParser = handler.ProvisionObjects(web, template, tokenParser, provisioningInfo);
+
+                        canProvision |= handler.CanProvision(web, template, provisioningInfo);
+                    }
+                }
+
+                // If the template cannot be provisioned, raise an Error and stop
+                if (!canProvision)
+                {
+                    messagesDelegate("The current template cannot be provisioned due to some missing requirements!", ProvisioningMessageType.Error);
+                }
+                else
+                {
+                    foreach (var handler in objectHandlers)
+                    {
+                        if (handler.WillProvision(web, template, provisioningInfo))
+                        {
+                            if (messagesDelegate != null)
+                            {
+                                handler.MessagesDelegate = messagesDelegate;
+                            }
+                            if (handler.ReportProgress && progressDelegate != null)
+                            {
+                                progressDelegate(handler.Name, step, count);
+                                step++;
+                            }
+                            tokenParser = handler.ProvisionObjects(web, template, tokenParser, provisioningInfo);
+                        }
                     }
                 }
 
                 System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(currentCultureInfoValue);
-
             }
         }
     }
