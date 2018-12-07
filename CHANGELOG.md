@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+### Deprecated
+
+- Deprecated Responsive UI extension methods
+  
 ## [3.4.1812.0 - December 2018 release]
 
 ### Added
