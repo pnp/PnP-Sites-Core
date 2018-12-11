@@ -6,9 +6,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [3.5.1901.0 - unreleased]
+## [3.4.1812.1 - December 2018 release]
 
 ### Added
+
+- Added support for handling new page header options
 
 ### Changed
 

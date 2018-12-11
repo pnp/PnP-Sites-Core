@@ -10,8 +10,9 @@ namespace OfficeDevPnP.Core.Pages
     public enum ClientSidePageHeaderLayoutType
     {
         FullWidthImage,
-        NoImage
-        // TODO: 
+        NoImage,
+        ColorBlock,
+        CutInShape,
     }
 #endif
 }
