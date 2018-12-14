@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Fix to make the EveryoneExceptExternalUsers token resolve correctly in all circumstances
+
 ### Deprecated
 
 ## [3.4.1812.1 - December 2018 release]
