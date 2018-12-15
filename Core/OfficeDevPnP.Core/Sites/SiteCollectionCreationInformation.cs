@@ -73,6 +73,11 @@ namespace OfficeDevPnP.Core.Sites
         public uint Lcid { get; set; }
 
         /// <summary>
+        /// The Guid of the hub site to be used. If specified will associate the communication site to the hub site
+        /// </summary>
+        public Guid HubSiteId { get; set; }
+
+        /// <summary>
         /// Default constructor
         /// </summary>
         public CommunicationSiteCollectionCreationInformation()
@@ -181,6 +186,16 @@ namespace OfficeDevPnP.Core.Sites
         public string Classification { get; set; }
 
         public uint Lcid { get; set; }
+
+        /// <summary>
+        /// Set the owners of the modern team site. Just specify the UPN values in a string array
+        /// </summary>
+        public string[] Owners { get; set; }
+
+        /// <summary>
+        /// The Guid of the hub site to be used. If specified will associate the modern team site to the hub site
+        /// </summary>
+        public Guid HubSiteId { get; set; }
 
         public SiteCreationInformation()
         {
