@@ -101,6 +101,9 @@ namespace Microsoft.SharePoint.Client
 
 #if !ONPREMISES
             await new SynchronizationContextRemover();
+            
+            // Set the TLS preference. Needed on some server os's to work when Office 365 removes support for TLS 1.0
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 #endif
 
             var clientTag = string.Empty;

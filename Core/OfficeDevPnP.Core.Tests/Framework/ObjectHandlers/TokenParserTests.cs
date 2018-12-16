@@ -75,6 +75,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var parsedXamlEscapeString = parser.ParseString(xamlEscapeString);
                 const string fieldRef = @"<FieldRefs><FieldRef Name=""DemoField"" ID=""{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}"" /></FieldRefs></Field>";
                 var parsedFieldRef = parser.ParseString(@"<FieldRefs><FieldRef Name=""DemoField"" ID=""{{fieldid:DemoField}}"" /></FieldRefs></Field>");
+                var everyoneExceptExternals = parser.ParseString("{everyonebutexternalusers}");
                 
 
                 Assert.IsTrue(site == $"{ctx.Web.ServerRelativeUrl}/test");
