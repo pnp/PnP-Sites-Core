@@ -31,11 +31,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             }
             catch (ServerException)
             {
-                // Old tenants
-                string claimName = this.TokenContext.Web.GetEveryoneExceptExternalUsersClaimName();
-                var claim = Utility.ResolvePrincipal(this.TokenContext, this.TokenContext.Web, claimName, PrincipalType.SecurityGroup, PrincipalSource.RoleProvider, null, false);
-                this.TokenContext.ExecuteQueryRetry();
-                userIdentity = claim.Value.LoginName;
+                try
+                {
+                    // Old tenants
+                    string claimName = this.TokenContext.Web.GetEveryoneExceptExternalUsersClaimName();
+                    var claim = Utility.ResolvePrincipal(this.TokenContext, this.TokenContext.Web, claimName, PrincipalType.SecurityGroup, PrincipalSource.RoleProvider, null, false);
+                    this.TokenContext.ExecuteQueryRetry();
+                    userIdentity = claim.Value.LoginName;
+                }
+                catch { }
             }
 
             return userIdentity;
