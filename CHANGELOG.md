@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 - Fix to make the EveryoneExceptExternalUsers token resolve correctly in all circumstances
 - Fix to ensure TLS settings are correctly configured on certain OS versions (e.g. Windows Server 2012 R2)
+- Fix throttling Retry-After processing, should be in seconds, not in milliseconds
 
 ### Deprecated
 

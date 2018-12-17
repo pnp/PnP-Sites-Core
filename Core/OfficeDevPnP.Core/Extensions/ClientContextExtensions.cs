@@ -205,8 +205,8 @@ namespace Microsoft.SharePoint.Client
                             retryAfterInterval = backoffInterval;
                         }
 
-                        //Add delay for retry
-                        await Task.Delay(retryAfterInterval);
+                        //Add delay for retry, retry-after header is specified in seconds
+                        await Task.Delay(retryAfterInterval * 1000);
 #else
                         Thread.Sleep(backoffInterval);
 #endif
