@@ -392,7 +392,11 @@ namespace OfficeDevPnP.Core.Sites
                         var responseJson = JObject.Parse(responseString);
 
                         // SiteStatus 1 = Provisioning, SiteStatus 2 = Ready
+#if !NETSTANDARD2_0
                         if (Convert.ToInt32(responseJson["SiteStatus"]) == 2 || Convert.ToInt32(responseJson["SiteStatus"]) == 1)
+#else
+                        if (responseJson["SiteStatus"].Value<int>() == 2 || responseJson["SiteStatus"].Value<int>() == 1)
+#endif                  
                         {
                             responseContext = clientContext;
                         }
