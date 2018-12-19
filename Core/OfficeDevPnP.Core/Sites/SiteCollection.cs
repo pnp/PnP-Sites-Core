@@ -51,19 +51,36 @@ namespace OfficeDevPnP.Core.Sites
             // check if the associated groups have been set
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            context.Web.EnsureProperties(w => w.AssociatedOwnerGroup, w => w.AssociatedMemberGroup, w => w.AssociatedVisitorGroup);
-            while ((context.Web.AssociatedOwnerGroup.ServerObjectIsNull.Value ||
-                context.Web.AssociatedMemberGroup.ServerObjectIsNull.Value ||
-                context.Web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
+
+            try
+            {
+                context.Web.EnsureProperties(w => w.AssociatedOwnerGroup, w => w.AssociatedMemberGroup, w => w.AssociatedVisitorGroup);
+            }
+            catch
+            {
+                // In case of any exception, just ignore it and wait few more seconds ...
+            }
+
+            while ((context.Web.AssociatedOwnerGroup.ServerObjectIsNull() ||
+                context.Web.AssociatedMemberGroup.ServerObjectIsNull() ||
+                context.Web.AssociatedVisitorGroup.ServerObjectIsNull())
                 && sw.ElapsedMilliseconds < 1000 * 60)
             {
                 System.Threading.Thread.Sleep(5000); // wait 5 seconds
-                context.Web.EnsureProperties(w => w.AssociatedOwnerGroup, w => w.AssociatedMemberGroup, w => w.AssociatedVisitorGroup);
+                try
+                {
+                    context.Web.EnsureProperties(w => w.AssociatedOwnerGroup, w => w.AssociatedMemberGroup, w => w.AssociatedVisitorGroup);
+                }
+                catch
+                {
+                    // In case of any exception, just ignore it and wait few more seconds ...
+                }
             }
             sw.Stop();
-            if (context.Web.AssociatedOwnerGroup.ServerObjectIsNull.Value ||
-                context.Web.AssociatedMemberGroup.ServerObjectIsNull.Value ||
-                context.Web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
+
+            if (context.Web.AssociatedOwnerGroup.ServerObjectIsNull() ||
+                context.Web.AssociatedMemberGroup.ServerObjectIsNull() ||
+                context.Web.AssociatedVisitorGroup.ServerObjectIsNull())
             {
                 throw new Exception("Site Creation timed out");
             }
