@@ -1195,9 +1195,8 @@ namespace Microsoft.SharePoint.Client
         {
             web.EnsureProperty(w => w.Url);
 #if !NETSTANDARD2_0
-            var returnGuid = new Guid(TokenHelper.GetRealmFromTargetUrl(new Uri(web.Url)));
-
-            return returnGuid;
+            Guid.TryParse(TokenHelper.GetRealmFromTargetUrl(new Uri(web.Url)), out var g);            
+            return g;
 #else
             WebRequest request = WebRequest.Create(new Uri(web.Url) + "/_vti_bin/client.svc");
             request.Headers.Add("Authorization: Bearer ");
