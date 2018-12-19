@@ -192,18 +192,20 @@ namespace Microsoft.SharePoint.Client
                         retry = true;
 
                         // Determine the retry after value - use the retry-after header when available
-                        string retryAfterHeader = response.GetResponseHeader("Retry-After");
-                        if (!string.IsNullOrEmpty(retryAfterHeader))
-                        {
-                            if (!Int32.TryParse(retryAfterHeader, out retryAfterInterval))
-                            {
-                                retryAfterInterval = backoffInterval;
-                            }
-                        }
-                        else
-                        {
-                            retryAfterInterval = backoffInterval;
-                        }
+                        // Retry-After seems to default to a fixed 120 seconds in most cases, let's revert to our
+                        // previous logic
+                        //string retryAfterHeader = response.GetResponseHeader("Retry-After");
+                        //if (!string.IsNullOrEmpty(retryAfterHeader))
+                        //{
+                        //    if (!Int32.TryParse(retryAfterHeader, out retryAfterInterval))
+                        //    {
+                        //        retryAfterInterval = backoffInterval;
+                        //    }
+                        //}
+                        //else
+                        //{
+                        retryAfterInterval = backoffInterval;
+                        //}
 
                         //Add delay for retry, retry-after header is specified in seconds
                         await Task.Delay(retryAfterInterval * 1000);
