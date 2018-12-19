@@ -501,6 +501,8 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchySequenceTermGroups.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWebApiPermissions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneButExternalUsersToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FieldIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SequenceSiteUrlToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdTokenEncoded.cs" />
@@ -1010,6 +1012,17 @@
     <Compile Include="Utilities\PnPHttpProvider.cs" />
     <Compile Include="Utilities\PnPHttpUtility.cs" />
     <Compile Include="Utilities\RESTUtilities.cs" />
+    <Compile Include="Utilities\Themes\Palettes\Color.cs" />
+    <Compile Include="Utilities\Themes\Palettes\Colors.cs" />
+    <Compile Include="Utilities\Themes\Palettes\ColorValues.cs" />
+    <Compile Include="Utilities\Themes\Palettes\Shades.cs" />
+    <Compile Include="Utilities\Themes\Generator\IThemeRules.cs" />
+    <Compile Include="Utilities\Themes\Generator\IThemeSlotRule.cs" />
+    <Compile Include="Utilities\Themes\Generator\ThemeGenerator.cs" />
+    <Compile Include="Utilities\Themes\Generator\ThemeRules.cs" />
+    <Compile Include="Utilities\Themes\Generator\ThemeRulesStandard.cs" />
+    <Compile Include="Utilities\Themes\Generator\ThemeSlotRule.cs" />
+    <Compile Include="Utilities\Themes\ThemeUtility.cs" />
     <Compile Include="Utilities\Webhooks\ResponseModel.cs" />
     <Compile Include="Utilities\Webhooks\WebhookUtility.cs" />
     <Compile Include="Utilities\WebParts\IWebPartPostProcessor.cs" />

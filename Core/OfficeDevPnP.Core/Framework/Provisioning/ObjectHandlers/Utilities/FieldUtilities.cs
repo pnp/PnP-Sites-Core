@@ -13,12 +13,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             if (fieldType == "Lookup" || fieldType == "LookupMulti")
             {
                 var listAttr = (string)fieldElement.Attribute("List");
-                Guid g;
-                if (!Guid.TryParse(listAttr, out g))
+                if (!Guid.TryParse(listAttr, out Guid g))
                 {
-                    var targetList = web.GetList($"{web.EnsureProperty(w => w.ServerRelativeUrl).TrimEnd('/')}/{listAttr}");
-                    fieldElement.SetAttributeValue("List", targetList.EnsureProperty(l => l.Id).ToString("B"));
-                    return fieldElement.ToString();
+                    var targetList = web.GetListByUrl($"/{listAttr}");
+                    if (targetList != null)
+                    {
+                        fieldElement.SetAttributeValue("List", targetList.Id.ToString("B"));
+                        return fieldElement.ToString();
+                    }
                 }
             }
 

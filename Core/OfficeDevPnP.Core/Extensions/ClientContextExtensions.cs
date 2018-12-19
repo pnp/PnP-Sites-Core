@@ -113,6 +113,13 @@ namespace Microsoft.SharePoint.Client
 
             int retryAttempts = 0;
             int backoffInterval = delay;
+
+#if !ONPREMISES
+            int retryAfterInterval = 0;
+            bool retry = false;
+            ClientRequestWrapper wrapper = null;
+#endif
+
             if (retryCount <= 0)
                 throw new ArgumentException("Provide a retry count greater than zero.");
 
@@ -140,11 +147,25 @@ namespace Microsoft.SharePoint.Client
 
                     // DO NOT CHANGE THIS TO EXECUTEQUERYRETRY
 #if !ONPREMISES
+                    if (!retry)
+                    {
 #if !NETSTANDARD2_0
-                    await clientContext.ExecuteQueryAsync();
+                        await clientContext.ExecuteQueryAsync();
 #else
-                    clientContext.ExecuteQuery();
+                        clientContext.ExecuteQuery();
 #endif
+                    }
+                    else
+                    {
+                        if (wrapper != null && wrapper.Value != null)
+                        {
+#if !NETSTANDARD2_0
+                            await clientContext.RetryQueryAsync(wrapper.Value);
+#else
+                            clientContext.RetryQuery(wrapper.Value);
+#endif
+                        }
+                    }
 #else
                     clientContext.ExecuteQuery();
 #endif
@@ -162,9 +183,27 @@ namespace Microsoft.SharePoint.Client
                     if (response != null && (response.StatusCode == (HttpStatusCode)429 || response.StatusCode == (HttpStatusCode)503))
                     {
                         Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, backoffInterval);
-                        //Add delay for retry
+
 #if !ONPREMISES
-                        await Task.Delay(backoffInterval);
+                        wrapper = (ClientRequestWrapper)wex.Data["ClientRequest"];
+                        retry = true;
+
+                        // Determine the retry after value - use the retry-after header when available
+                        string retryAfterHeader = response.GetResponseHeader("Retry-After");
+                        if (!string.IsNullOrEmpty(retryAfterHeader))
+                        {
+                            if (!Int32.TryParse(retryAfterHeader, out retryAfterInterval))
+                            {
+                                retryAfterInterval = backoffInterval;
+                            }
+                        }
+                        else
+                        {
+                            retryAfterInterval = backoffInterval;
+                        }
+
+                        //Add delay for retry
+                        await Task.Delay(retryAfterInterval);
 #else
                         Thread.Sleep(backoffInterval);
 #endif

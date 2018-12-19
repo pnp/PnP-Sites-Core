@@ -591,22 +591,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     modelTerm.Terms.AddRange(GetTerms<Term>(context, term, defaultLanguage, isSiteCollectionTermGroup));
                 }
                 termsToReturn.Add(modelTerm);
-            }
-            if (!string.IsNullOrEmpty(customSortOrder))
-            {
-                int count = 1;
-                foreach (var id in customSortOrder.Split(new[] { ':' }))
-                {
-                    var term = termsToReturn.FirstOrDefault(t => t.Id == Guid.Parse(id));
-                    if (term != null)
-                    {
-                        term.CustomSortOrder = count;
-                        count++;
-                    }
-                }
-                termsToReturn = termsToReturn.OrderBy(t => t.CustomSortOrder).ToList();
-            }
 
+                if (!string.IsNullOrEmpty(customSortOrder))
+                {
+                    var sortOrder = customSortOrder.Split(new[] { ':' }).ToList();
+
+                    var currentTermIndex = sortOrder.Where(i => new Guid(i) == term.Id).FirstOrDefault();
+                    modelTerm.CustomSortOrder = sortOrder.IndexOf(currentTermIndex) + 1;
+
+                }
+            }
+            termsToReturn = termsToReturn.OrderBy(t => t.CustomSortOrder).ToList();
 
             return termsToReturn;
         }

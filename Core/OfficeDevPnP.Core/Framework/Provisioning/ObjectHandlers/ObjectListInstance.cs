@@ -129,9 +129,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     #region FieldRefs
 
+                    var siteFields = template.SiteFields.ToDictionary(sf => (Guid)XElement.Parse(parser.ParseString(sf.SchemaXml)).Attribute("ID"), sf => sf);
+
                     foreach (var listInfo in processedLists)
                     {
-                        ProcessFieldRefs(web, template, parser, scope, rootWeb, listInfo);
+                        ProcessFieldRefs(web, siteFields, parser, scope, rootWeb, listInfo);
                     }
 
                     #endregion FieldRefs
@@ -153,7 +155,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         foreach (var listInfo in processedLists)
                         {
-                            ProcessFieldDefaults(web, listInfo);
+                            ProcessFieldDefaults(web, parser, listInfo);
                         }
 
                         #endregion Default Field Values
@@ -282,14 +284,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static void ProcessFieldDefaults(Web web, ListInfo listInfo)
+        private static void ProcessFieldDefaults(Web web, TokenParser parser, ListInfo listInfo)
         {
             if (listInfo.TemplateList.FieldDefaults.Count > 0)
             {
                 foreach (var fieldDefault in listInfo.TemplateList.FieldDefaults)
                 {
+                    var fieldDefaultValue = parser.ParseString(fieldDefault.Value);
                     var field = listInfo.SiteList.Fields.GetByInternalNameOrTitle(fieldDefault.Key);
-                    field.DefaultValue = fieldDefault.Value;
+                    field.DefaultValue = fieldDefaultValue;
                     field.Update();
                     web.Context.ExecuteQueryRetry();
                 }
@@ -382,14 +385,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private void ProcessFieldRefs(Web web, ProvisioningTemplate template, TokenParser parser, PnPMonitoredScope scope, Web rootWeb, ListInfo listInfo)
+        private void ProcessFieldRefs(Web web, Dictionary<Guid, Model.Field> siteFields, TokenParser parser, PnPMonitoredScope scope, Web rootWeb, ListInfo listInfo)
         {
             if (listInfo.TemplateList.FieldRefs.Any())
             {
                 var fieldsRefsToProcess = listInfo.TemplateList.FieldRefs.Select(fr => new
                 {
                     FieldRef = fr,
-                    TemplateField = template.SiteFields.FirstOrDefault(tf => (Guid)XElement.Parse(parser.ParseString(tf.SchemaXml)).Attribute("ID") == fr.Id)
+                    TemplateField = siteFields.Any(sf => sf.Key.Equals(fr.Id)) ? siteFields.Single(sf => sf.Key.Equals(fr.Id)).Value : null
                 }).Where(frData =>
                     frData.TemplateField == null // Process fields refs if the target is not defined in the current template
                     || frData.TemplateField.GetFieldProvisioningStep(parser) == step // or process field ref only if the current step is matching
@@ -430,7 +433,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     parser.AddToken(new FieldIdToken(web, field.InternalName, field.Id));
 
 #if !SP2013
-                    var siteField = template.SiteFields.FirstOrDefault(f => Guid.Parse(XElement.Parse(f.SchemaXml).Attribute("ID").Value).Equals(field.Id));
+                    siteFields.TryGetValue(field.Id, out var siteField);
 
                     if (siteField != null && siteField.SchemaXml.ContainsResourceToken())
                     {
@@ -1111,6 +1114,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingList.Title = parser.ParseString(templateList.Title);
                     if (!oldTitle.Equals(existingList.Title, StringComparison.OrdinalIgnoreCase))
                     {
+                        parser.RemoveToken(new ListIdToken(web, oldTitle, existingList.Id));
+                        parser.RemoveToken(new ListUrlToken(web, oldTitle, existingList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+
                         parser.AddToken(new ListIdToken(web, existingList.Title, existingList.Id));
                         parser.AddToken(new ListUrlToken(web, existingList.Title, existingList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
                     }
@@ -1294,11 +1300,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 #endif
 
-#region UserCustomActions
+                #region UserCustomActions
 
                 isDirty |= UpdateCustomActions(web, existingList, templateList, parser, scope, isNoScriptSite);
 
-#endregion UserCustomActions
+                #endregion UserCustomActions
 
                 if (isDirty)
                 {
@@ -2389,17 +2395,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var listId = fieldElement.Attribute("List") != null ? fieldElement.Attribute("List").Value : null;
 
-                    if (fieldElement.Attribute("Type").Value == "Calculated")
-                    {
-                        schemaXml = ObjectField.TokenizeFieldFormula(siteList.Fields, (FieldCalculated)field, schemaXml);
-                    }
-
-                    //Field has column Validation
-                    if (fieldElement.Elements("Validation").FirstOrDefault() != null)
-                    {
-                        schemaXml = ObjectField.TokenizeFieldValidationFormula(field, schemaXml);
-                    }
-
                     if (creationInfo.PersistMultiLanguageResources)
                     {
 #if !SP2013
@@ -2417,6 +2412,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         schemaXml = fieldElement.ToString();
 #endif
+                    }
+
+                    if (fieldElement.Attribute("Type").Value == "Calculated")
+                    {
+                        schemaXml = ObjectField.TokenizeFieldFormula(siteList.Fields, (FieldCalculated)field, schemaXml);
+                    }
+
+                    //Field has column Validation
+                    if (fieldElement.Elements("Validation").FirstOrDefault() != null)
+                    {
+                        schemaXml = ObjectField.TokenizeFieldValidationFormula(field, schemaXml);
                     }
 
                     if (listId == null)

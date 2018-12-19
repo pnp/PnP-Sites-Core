@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             XElement schemaElement;
             if (!_fieldXmlDictionary.TryGetValue(templateField, out schemaElement)) {
-                schemaElement = XElement.Parse(parser.ParseString(templateField.SchemaXml));
+                schemaElement = XElement.Parse(parser.ParseXmlString(templateField.SchemaXml));
                 _fieldXmlDictionary[templateField] = schemaElement;
             }
             var type = (string)schemaElement.Attribute("Type");
@@ -28,7 +28,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             XElement schemaElement;
             if (!_fieldXmlDictionary.TryGetValue(templateField, out schemaElement))
             {
-                schemaElement = XElement.Parse(parser.ParseString(templateField.SchemaXml));
+                schemaElement = XElement.Parse(parser.ParseXmlString(templateField.SchemaXml));
                 _fieldXmlDictionary[templateField] = schemaElement;
             }
             var id = (Guid)schemaElement.Attribute("ID");
@@ -40,7 +40,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             XElement schemaElement;
             if (!_fieldXmlDictionary.TryGetValue(templateField, out schemaElement))
             {
-                schemaElement = XElement.Parse(parser.ParseString(templateField.SchemaXml, tokensToSkip));
+                schemaElement = XElement.Parse(parser.ParseXmlString(templateField.SchemaXml, tokensToSkip));
                 _fieldXmlDictionary[templateField] = schemaElement;
             }
             return schemaElement;

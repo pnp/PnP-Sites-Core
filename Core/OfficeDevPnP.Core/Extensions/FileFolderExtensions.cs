@@ -962,8 +962,13 @@ namespace Microsoft.SharePoint.Client
         private static async Task<Folder> EnsureFolderPathImplementation(this Web web, string webRelativeUrl, params Expression<Func<Folder, object>>[] expressions)
 #endif
         {
+            
             if (webRelativeUrl == null) { throw new ArgumentNullException(nameof(webRelativeUrl)); }
 
+            if(webRelativeUrl.EndsWith("."))
+            {
+                throw new Exception("Folder names cannot end on a period (.).");
+            }
             //Web root folder should be returned if webRelativeUrl is empty
             if (webRelativeUrl.Length != 0 && string.IsNullOrWhiteSpace(webRelativeUrl)) { throw new ArgumentException(CoreResources.FileFolderExtensions_EnsureFolderPath_Folder_URL_is_required_, nameof(webRelativeUrl)); }
 

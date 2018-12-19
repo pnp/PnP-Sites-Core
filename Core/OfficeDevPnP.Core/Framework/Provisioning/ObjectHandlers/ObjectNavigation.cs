@@ -330,7 +330,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private void ProvisionStructuralNavigationNodes(Web web, TokenParser parser, Enums.NavigationType navigationType, Model.NavigationNodeCollection nodes, PnPMonitoredScope scope, string parentNodeTitle = null)
+        private void ProvisionStructuralNavigationNodes(Web web, TokenParser parser, Enums.NavigationType navigationType, Model.NavigationNodeCollection nodes, PnPMonitoredScope scope, string parentNodeTitle = null, string l1ParentNodeTitle = null)
         {
             foreach (var node in nodes)
             {
@@ -341,7 +341,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         new Uri(parser.ParseString(node.Url), UriKind.RelativeOrAbsolute),
                         parser.ParseString(parentNodeTitle),
                         navigationType,
-                        node.IsExternal
+                        node.IsExternal,
+                        l1ParentNodeTitle: l1ParentNodeTitle
                         );
 
 #if !SP2013
@@ -368,7 +369,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 new Uri(parser.ParseString(node.Url), UriKind.RelativeOrAbsolute),
                                 parser.ParseString(parentNodeTitle),
                                 navigationType,
-                                true
+                                true,
+                                l1ParentNodeTitle: l1ParentNodeTitle
                                 );
                         }
                         catch (Exception innerEx)
@@ -388,7 +390,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     navigationType,
                     node.NavigationNodes,
                     scope,
-                    parser.ParseString(node.Title));
+                    parser.ParseString(node.Title),
+                    parentNodeTitle
+                );
             }
         }
 

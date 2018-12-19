@@ -36,6 +36,8 @@ namespace OfficeDevPnP.Core.Pages
         public const string FirstPublishedDate = "FirstPublishedDate";
         public const string FileLeafRef = "FileLeafRef";
         public const string DescriptionField = "Description";
+        public const string _AuthorByline = "_AuthorByline";
+        public const string _TopicHeader = "_TopicHeader";
 
         // feature
         public const string SitePagesFeatureId = "b6917cb1-93a0-4b97-a84d-7cf49975d4ec";
@@ -686,21 +688,44 @@ namespace OfficeDevPnP.Core.Pages
                 item[ClientSidePage.CanvasField] = this.ToHtml();
             }
 
-            // If a custom header image is set then the page must first be saved, otherwise the page contents gets erased
-            if (this.pageHeader.Type == ClientSidePageHeaderType.Custom)
-            {
-                item.Update();
-                this.Context.ExecuteQueryRetry();
-            }
+            // The page must first be saved, otherwise the page contents gets erased
+            item.Update();
+            this.Context.ExecuteQueryRetry();
 
             // Persist the page header
             if (this.pageHeader.Type == ClientSidePageHeaderType.None)
             {
                 item[ClientSidePage.PageLayoutContentField] = ClientSidePageHeader.NoHeader(this.PageTitle);
+                if (item.FieldValues.ContainsKey(ClientSidePage._AuthorByline))
+                {
+                    item[ClientSidePage._AuthorByline] = null;
+                }
+                if (item.FieldValues.ContainsKey(ClientSidePage._TopicHeader))
+                {
+                    item[ClientSidePage._TopicHeader] = null;
+                }
             }
             else
             {
                 item[ClientSidePage.PageLayoutContentField] = this.pageHeader.ToHtml(this.PageTitle);
+
+                // AuthorByline depends on a field holding the author values
+                if (this.pageHeader.AuthorByLineId > -1 && item.FieldValues.ContainsKey(ClientSidePage._AuthorByline))
+                {
+                    FieldUserValue[] userValueCollection = new FieldUserValue[1];
+                    FieldUserValue fieldUserVal = new FieldUserValue
+                    {
+                        LookupId = this.pageHeader.AuthorByLineId
+                    };
+                    userValueCollection.SetValue(fieldUserVal, 0);
+                    item[ClientSidePage._AuthorByline] = userValueCollection;
+                }
+
+                // Topic header needs to be persisted in a field
+                if (!string.IsNullOrEmpty(this.pageHeader.TopicHeader) && item.FieldValues.ContainsKey(ClientSidePage._TopicHeader))
+                {
+                    item[ClientSidePage._TopicHeader] = this.PageHeader.TopicHeader;
+                }
             }
 
             item.Update();
@@ -1308,18 +1333,34 @@ namespace OfficeDevPnP.Core.Pages
                         };
                         var sectionData = JsonConvert.DeserializeObject<ClientSideCanvasData>(controlData, jsonSerializerSettings);
 
-                        var currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).FirstOrDefault();
-                        if (currentSection == null)
+                        CanvasSection currentSection = null;
+                        if (sectionData.Position != null)
                         {
-                            this.AddSection(new CanvasSection(this), sectionData.Position.ZoneIndex);
-                            currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).First();
+                            currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).FirstOrDefault();
                         }
 
-                        var currentColumn = currentSection.Columns.Where(p => p.Order == sectionData.Position.SectionIndex).FirstOrDefault();
+                        if (currentSection == null)
+                        {
+                            if (sectionData.Position != null)
+                            {
+                                this.AddSection(new CanvasSection(this), sectionData.Position.ZoneIndex);
+                                currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).First();
+                            }
+                        }
+
+                        CanvasColumn currentColumn = null;
+                        if (sectionData.Position != null)
+                        {
+                            currentColumn = currentSection.Columns.Where(p => p.Order == sectionData.Position.SectionIndex).FirstOrDefault();
+                        }
+
                         if (currentColumn == null)
                         {
-                            currentSection.AddColumn(new CanvasColumn(currentSection, sectionData.Position.SectionIndex, sectionData.Position.SectionFactor));
-                            currentColumn = currentSection.Columns.Where(p => p.Order == sectionData.Position.SectionIndex).First();
+                            if (sectionData.Position != null)
+                            {
+                                currentSection.AddColumn(new CanvasColumn(currentSection, sectionData.Position.SectionIndex, sectionData.Position.SectionFactor));
+                                currentColumn = currentSection.Columns.Where(p => p.Order == sectionData.Position.SectionIndex).First();
+                            }
                         }
                     }
 
