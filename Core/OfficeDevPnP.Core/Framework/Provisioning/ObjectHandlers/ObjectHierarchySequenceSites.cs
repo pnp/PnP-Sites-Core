@@ -94,7 +94,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     }
                                     CommunicationSiteCollectionCreationInformation siteInfo = new CommunicationSiteCollectionCreationInformation()
                                     {
-                                        AllowFileSharingForGuestUsers = c.AllowFileSharingForGuestUsers,
+                                        ShareByEmailEnabled = c.AllowFileSharingForGuestUsers,
                                         Classification = tokenParser.ParseString(c.Classification),
                                         Description = tokenParser.ParseString(c.Description),
                                         Lcid = (uint)c.Language,

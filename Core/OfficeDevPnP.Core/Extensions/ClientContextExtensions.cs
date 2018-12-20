@@ -314,11 +314,22 @@ namespace Microsoft.SharePoint.Client
                 if (originalUri.Host != siteUrl.Host &&
                     accessTokens != null && accessTokens.Count > 0 &&
                     accessTokens.ContainsKey(siteUrl.Authority))
-                { 
+                {
                     // Let's apply that specific Access Token
                     clonedClientContext.ExecutingWebRequest += (sender, args) =>
                     {
                         args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + accessTokens[siteUrl.Authority];
+                    };
+                }
+                else if (originalUri.Host != siteUrl.Host &&
+                    accessTokens == null && clientContext is PnPClientContext &&
+                    ((PnPClientContext)clientContext).PropertyBag.ContainsKey("AccessTokens") &&
+                    ((Dictionary<string, string>)((PnPClientContext)clientContext).PropertyBag["AccessTokens"]).ContainsKey(siteUrl.Authority))
+                {
+                    // Let's apply that specific Access Token
+                    clonedClientContext.ExecutingWebRequest += (sender, args) =>
+                    {
+                        args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + ((Dictionary<string, string>)((PnPClientContext)clientContext).PropertyBag["AccessTokens"])[siteUrl.Authority];
                     };
                 }
                 else
