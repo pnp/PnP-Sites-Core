@@ -101,6 +101,9 @@ namespace Microsoft.SharePoint.Client
 
 #if !ONPREMISES
             await new SynchronizationContextRemover();
+            
+            // Set the TLS preference. Needed on some server os's to work when Office 365 removes support for TLS 1.0
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 #endif
 
             var clientTag = string.Empty;
@@ -314,11 +317,22 @@ namespace Microsoft.SharePoint.Client
                 if (originalUri.Host != siteUrl.Host &&
                     accessTokens != null && accessTokens.Count > 0 &&
                     accessTokens.ContainsKey(siteUrl.Authority))
-                { 
+                {
                     // Let's apply that specific Access Token
                     clonedClientContext.ExecutingWebRequest += (sender, args) =>
                     {
                         args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + accessTokens[siteUrl.Authority];
+                    };
+                }
+                else if (originalUri.Host != siteUrl.Host &&
+                    accessTokens == null && clientContext is PnPClientContext &&
+                    ((PnPClientContext)clientContext).PropertyBag.ContainsKey("AccessTokens") &&
+                    ((Dictionary<string, string>)((PnPClientContext)clientContext).PropertyBag["AccessTokens"]).ContainsKey(siteUrl.Authority))
+                {
+                    // Let's apply that specific Access Token
+                    clonedClientContext.ExecutingWebRequest += (sender, args) =>
+                    {
+                        args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + ((Dictionary<string, string>)((PnPClientContext)clientContext).PropertyBag["AccessTokens"])[siteUrl.Authority];
                     };
                 }
                 else
