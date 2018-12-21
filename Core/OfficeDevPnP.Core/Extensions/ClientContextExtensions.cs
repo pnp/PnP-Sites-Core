@@ -195,6 +195,11 @@ namespace Microsoft.SharePoint.Client
                             if (!Int32.TryParse(retryAfterHeader, out retryAfterInterval))
                             {
                                 retryAfterInterval = backoffInterval;
+                            } 
+                            else 
+                            {
+                                // The Retry-After is in seconds, so we need to convert to ms to use inside Task.Delay
+                                retryAfterInterval *= 1000;
                             }
                         }
                         else
@@ -219,7 +224,7 @@ namespace Microsoft.SharePoint.Client
                     }
                 }
             }
-            throw new MaximumRetryAttemptedException($"Maximum retry attempts {retryCount}, has be attempted.");
+            throw new MaximumRetryAttemptedException($"Maximum retry attempts {retryCount}, have been attempted.");
         }
 
         /// <summary>
