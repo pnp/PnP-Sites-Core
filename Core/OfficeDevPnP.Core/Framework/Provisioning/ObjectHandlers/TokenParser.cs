@@ -412,11 +412,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var tenantEntities = new List<StorageEntity>();
                 var siteEntities = new List<StorageEntity>();
                 var appCatalogUri = web.GetAppCatalog();
-                using (var clonedContext = web.Context.Clone(appCatalogUri))
+                if(appCatalogUri != null)
                 {
-                    var storageEntitiesIndex = clonedContext.Web.GetPropertyBagValueString("storageentitiesindex", "");
-                    tenantEntities = ParseStorageEntitiesString(storageEntitiesIndex);
-                }
+                    using (var clonedContext = web.Context.Clone(appCatalogUri))
+                    {
+                        var storageEntitiesIndex = clonedContext.Web.GetPropertyBagValueString("storageentitiesindex", "");
+                        tenantEntities = ParseStorageEntitiesString(storageEntitiesIndex);
+                    }
+                }                
                 var appcatalog = (web.Context as ClientContext).Site.RootWeb.SiteCollectionAppCatalog;
                 web.Context.Load(appcatalog);
                 web.Context.ExecuteQueryRetry();
