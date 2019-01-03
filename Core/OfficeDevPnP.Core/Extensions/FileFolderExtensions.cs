@@ -2448,5 +2448,64 @@ namespace Microsoft.SharePoint.Client
                                Replace(@"\?", ".") + "$";
         }
 
+        /// <summary>
+        /// Resets a file to its previous version.
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL of the file to process</param>
+        /// <param name="checkinType">The type of the checkin</param>
+        /// <param name="comment">Message to be recorded with the approval</param>
+        public static void ResetFileToPreviousVersion(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
+        {
+#if ONPREMISES
+            web.ResetFileToPreviousVersionImplementation(serverRelativeUrl, checkinType, comment);
+#else
+            Task.Run(() => web.ResetFileToPreviousVersionImplementation(serverRelativeUrl, checkinType, comment)).GetAwaiter().GetResult();
+#endif
+        }
+
+        /// <summary>
+        /// Checks in a file
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL of the file to checkin</param>
+        /// <param name="checkinType">The type of the checkin</param>
+        /// <param name="comment">Message to be recorded with the approval</param>
+#if ONPREMISES
+	    public static void ResetFileToPreviousVersionImplementation(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
+	    {
+		    var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
+#else
+        public static async Task ResetFileToPreviousVersionImplementation(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
+        {
+            var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+#endif
+            var scope = new ConditionalScope(web.Context, () => !file.ServerObjectIsNull.Value && file.Exists && file.CheckOutType != CheckOutType.None);
+
+            using (scope.StartScope())
+            {
+                web.Context.Load(file);
+            }
+#if ONPREMISES
+		    web.Context.ExecuteQueryRetry();
+#else
+            await web.Context.ExecuteQueryAsync();
+#endif
+            if (scope.TestResult.Value)
+            {
+                if (file.Versions.Count > 0)
+                {
+                    web.CheckOutFile(serverRelativeUrl);
+                    var versionLabelPrevious = file.Versions[(file.Versions.Count - 1)].VersionLabel;
+                    file.Versions.RestoreByLabel(versionLabelPrevious);
+                }
+#if ONPREMISES
+			    web.Context.ExecuteQueryRetry();
+#else
+                await web.Context.ExecuteQueryAsync();
+#endif
+                web.CheckInFile(serverRelativeUrl, checkinType, comment);
+            }
+        }
     }
 }
