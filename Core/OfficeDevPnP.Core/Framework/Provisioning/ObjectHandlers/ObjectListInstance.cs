@@ -1334,6 +1334,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static bool UpdateCustomActions(Web web, List existingList, ListInstance templateList, TokenParser parser, PnPMonitoredScope scope, bool isNoScriptSite)
         {
+            bool isDirty = false;
+
             if (!isNoScriptSite)
             {
                 // Add any UserCustomActions
@@ -1347,7 +1349,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (!existingUserCustomActions.AsEnumerable().Any(uca => uca.Name == userCustomAction.Name))
                     {
                         CreateListCustomAction(existingList, parser, userCustomAction);
-                        return true;
+                        isDirty = true;
                     }
                     else
                     {
@@ -1371,7 +1373,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 userCustomAction.RegistrationType = UserCustomActionRegistrationType.None;
                                 userCustomAction.RegistrationId = null;
                             }
-                            return true;
+                            isDirty = true;
                         }
                     }
                 }
@@ -1381,7 +1383,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions);
             }
 
-            return false;
+            return isDirty;
         }
 
         private void ConfigureContentTypes(Web web, List list, ListInstance templateList, bool isNewList, PnPMonitoredScope scope)
