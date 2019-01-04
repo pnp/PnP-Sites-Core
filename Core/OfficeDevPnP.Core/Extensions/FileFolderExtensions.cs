@@ -2449,6 +2449,7 @@ namespace Microsoft.SharePoint.Client
                                Replace(@"\?", ".") + "$";
         }
 
+#if !ONPREMISES
         /// <summary>
         /// Resets a file to its previous version.
         /// </summary>
@@ -2461,6 +2462,7 @@ namespace Microsoft.SharePoint.Client
             await new SynchronizationContextRemover();
             await web.ResetFileToPreviousVersionImplementation(serverRelativeUrl, checkinType, comment);
         }
+#endif
 
         /// <summary>
         /// Resets a file to its previous version.
