@@ -187,6 +187,7 @@ namespace Microsoft.SharePoint.Client
         private static async Task CheckOutFileImplementation(this Web web, string serverRelativeUrl)
         {
             var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+            await web.Context.ExecuteQueryAsync();
 #endif
 
             var scope = new ConditionalScope(web.Context, () => !file.ServerObjectIsNull.Value && file.Exists && file.CheckOutType == CheckOutType.None);
@@ -2455,6 +2456,19 @@ namespace Microsoft.SharePoint.Client
         /// <param name="serverRelativeUrl">The server relative URL of the file to process</param>
         /// <param name="checkinType">The type of the checkin</param>
         /// <param name="comment">Message to be recorded with the approval</param>
+        public static async Task ResetFileToPreviousVersionAsync(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
+        {
+            await new SynchronizationContextRemover();
+            await web.ResetFileToPreviousVersionImplementation(serverRelativeUrl, checkinType, comment);
+        }
+
+        /// <summary>
+        /// Resets a file to its previous version.
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL of the file to process</param>
+        /// <param name="checkinType">The type of the checkin</param>
+        /// <param name="comment">Message to be recorded with the approval</param>
         public static void ResetFileToPreviousVersion(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
         {
 #if ONPREMISES
@@ -2480,11 +2494,11 @@ namespace Microsoft.SharePoint.Client
         {
             var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
 #endif
-            var scope = new ConditionalScope(web.Context, () => !file.ServerObjectIsNull.Value && file.Exists && file.CheckOutType != CheckOutType.None);
+            var scope = new ConditionalScope(web.Context, () => !file.ServerObjectIsNull.Value && file.Exists && file.CheckOutType == CheckOutType.None);
 
             using (scope.StartScope())
             {
-                web.Context.Load(file);
+                web.Context.Load(file, f => f.Versions);
             }
 #if ONPREMISES
 		    web.Context.ExecuteQueryRetry();
@@ -2495,16 +2509,21 @@ namespace Microsoft.SharePoint.Client
             {
                 if (file.Versions.Count > 0)
                 {
+#if ONPREMISES
                     web.CheckOutFile(serverRelativeUrl);
+#else
+                    await web.CheckOutFileAsync(serverRelativeUrl);
+#endif
                     var versionLabelPrevious = file.Versions[(file.Versions.Count - 1)].VersionLabel;
                     file.Versions.RestoreByLabel(versionLabelPrevious);
                 }
 #if ONPREMISES
 			    web.Context.ExecuteQueryRetry();
+                web.CheckInFile(serverRelativeUrl, checkinType, comment);
 #else
+                await web.CheckInFileAsync(serverRelativeUrl, checkinType, comment);
                 await web.Context.ExecuteQueryAsync();
 #endif
-                web.CheckInFile(serverRelativeUrl, checkinType, comment);
             }
         }
     }

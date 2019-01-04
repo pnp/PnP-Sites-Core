@@ -54,6 +54,15 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             }
 
             var fci = new FileCreationInformation();
+            fci.Content = System.IO.File.ReadAllBytes(TestFilePath2);
+            fci.Url = folder.ServerRelativeUrl + "/office365.png";
+            fci.Overwrite = true;
+
+            file = folder.Files.Add(fci);
+            clientContext.Load(file);
+            clientContext.ExecuteQueryRetry();
+
+            // Upload it again to create a new version
             fci.Content = System.IO.File.ReadAllBytes(TestFilePath1);
             fci.Url = folder.ServerRelativeUrl + "/office365.png";
             fci.Overwrite = true;
@@ -61,6 +70,8 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             file = folder.Files.Add(fci);
             clientContext.Load(file);
             clientContext.ExecuteQueryRetry();
+
+
         }
 
         [TestCleanup()]
@@ -127,16 +138,21 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             File oldFile = clientContext.Web.GetFileByServerRelativeUrl(file.ServerRelativeUrl);
             clientContext.Load(oldFile, f => f.UIVersionLabel);
             clientContext.ExecuteQueryRetry();
-            var oldVersion = Convert.ToDouble(oldFile.UIVersionLabel);
-            var expectedNewVersion = oldVersion - 1;
 
-            clientContext.Web.ResetFileToPreviousVersion(file.ServerRelativeUrl, checkInType, commentText);
+            if (Version.TryParse(oldFile.UIVersionLabel, out Version oldVersion))
+            {
+                var expectedNewVersion = new Version(oldVersion.Major + 1, 0);
 
-            File newFile = clientContext.Web.GetFileByServerRelativeUrl(file.ServerRelativeUrl);
-            clientContext.Load(newFile, f => f.UIVersionLabel);
-            clientContext.ExecuteQueryRetry();
+                clientContext.Web.ResetFileToPreviousVersion(file.ServerRelativeUrl, checkInType, commentText);
 
-            Assert.AreEqual(newFile.UIVersionLabel, expectedNewVersion);
+                File newFile = clientContext.Web.GetFileByServerRelativeUrl(file.ServerRelativeUrl);
+                clientContext.Load(newFile, f => f.UIVersionLabel);
+                clientContext.ExecuteQueryRetry();
+
+                Version.TryParse(newFile.UIVersionLabel, out Version receivedNewVersion);
+
+                Assert.AreEqual(receivedNewVersion, expectedNewVersion);
+            }
         }
 
         [TestMethod]

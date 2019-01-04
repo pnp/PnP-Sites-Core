@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- ResetFileToPreviousVersion extension method #2030 [skaggej]
+  
 ### Changed
 
 - Fix to make the EveryoneExceptExternalUsers token resolve correctly in all circumstances
