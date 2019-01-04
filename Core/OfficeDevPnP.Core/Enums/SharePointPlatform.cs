@@ -18,7 +18,7 @@
         /// </summary>
         Office365Dedicated = 2,
         /// <summary>
-        /// SharePoint OnPremise platform
+        /// SharePoint On-Premises platform
         /// </summary>
         OnPremises = 3
     }

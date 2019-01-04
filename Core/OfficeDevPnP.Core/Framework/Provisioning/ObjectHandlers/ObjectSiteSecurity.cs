@@ -281,15 +281,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     isDirty = true;
                                 }
                                 var templateBasePermissions = new BasePermissions();
+
+                                // iterate over all possible PermissionKind values and set them on the new object
+                                foreach (PermissionKind pk in Enum.GetValues(typeof(PermissionKind)))
+                                {
+                                    if (siteRoleDefinition.BasePermissions.Has(pk))
+                                    {
+                                        templateBasePermissions.Set(pk);
+                                    }
+                                }
+
+                                // add the permissions that were specified in the template
                                 templateRoleDefinition.Permissions.ForEach(p => templateBasePermissions.Set(p));
+
                                 if (siteRoleDefinition.BasePermissions != templateBasePermissions)
                                 {
                                     isDirty = true;
-                                    foreach (var permission in templateRoleDefinition.Permissions)
-                                    {
-                                        siteRoleDefinition.BasePermissions.Set(permission);
-                                    }
+                                    siteRoleDefinition.BasePermissions = templateBasePermissions;
                                 }
+
                                 if (isDirty)
                                 {
                                     scope.LogDebug("Updating role definition {0}", parsedRoleDefinitionName);

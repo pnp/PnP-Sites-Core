@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.2.1810.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.4.1812.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-SITEPAGEPUBLISHING0template">
     <pnp:ProvisioningTemplate ID="SITEPAGEPUBLISHING0template" Version="1" BaseSiteTemplate="SITEPAGEPUBLISHING#0" Scope="RootSite">
       <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="SitePages/Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
@@ -71,7 +71,7 @@
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_ExpirationLastRun" Value="12/03/2018 1:13:04" Overwrite="false" />
         <pnp:PropertyBagEntry Key="profileschemaversion" Value="5" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_expirationlastrun" Value="9/29/2018 11:02:05 PM" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_expirationlastrun" Value="12/4/2018 12:14:29 AM" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.6927" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_sitemasterid" Value="f8b2e18f-d190-4a1b-a3da-ab24093aff57" Overwrite="false" />
@@ -79,7 +79,7 @@
         <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_PolicyUpdateLastRun" Value="11/03/2018 22:33:04" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="4;5;6" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_policyupdatelastrun" Value="10/3/2018 10:01:31 PM" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_policyupdatelastrun" Value="12/5/2018 11:19:03 PM" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
       </pnp:PropertyBagEntries>
       <pnp:Security RemoveExistingUniqueRoleAssignments="false">
@@ -462,7 +462,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{9FF8A4DB-79AA-4E09-B18B-DCBB9D1B7A9B}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSITEPAGEPUBLISHING0/Shared Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{9FF8A4DB-79AA-4E09-B18B-DCBB9D1B7A9B}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSITEPAGEPUBLISHING0/Shared Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -494,7 +494,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0102" Default="true" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{34065B31-223E-4AD9-91FF-A8C648AD0406}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="CALENDAR" TabularView="FALSE" RecurrenceRowset="TRUE" DisplayName="Calendar" Url="/sites/templateSITEPAGEPUBLISHING0/Lists/Events/calendar.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" MobileUrl="_layouts/15/mobile/viewdaily.aspx" ImageUrl="/_layouts/15/images/events.png?rev=44">
+            <View Name="{34065B31-223E-4AD9-91FF-A8C648AD0406}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="CALENDAR" TabularView="FALSE" RecurrenceRowset="TRUE" DisplayName="Calendar" Url="/sites/templateSITEPAGEPUBLISHING0/Lists/Events/calendar.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" MobileUrl="_layouts/15/mobile/viewdaily.aspx" ImageUrl="/_layouts/15/images/events.png?rev=45">
               <Query>
                 <Where>
                   <DateRangesOverlap>
@@ -521,7 +521,7 @@
                 <FieldRef Name="fAllDayEvent" />
               </ViewFields>
             </View>
-            <View Name="{77AD41F6-CD1C-41EA-B4D7-DDC023AC4D5C}" MobileView="TRUE" Type="HTML" DisplayName="All Events" Url="/sites/templateSITEPAGEPUBLISHING0/Lists/Events/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/events.png?rev=44">
+            <View Name="{77AD41F6-CD1C-41EA-B4D7-DDC023AC4D5C}" MobileView="TRUE" Type="HTML" DisplayName="All Events" Url="/sites/templateSITEPAGEPUBLISHING0/Lists/Events/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/events.png?rev=45">
               <Query>
                 <OrderBy>
                   <FieldRef Name="EventDate" />
@@ -539,7 +539,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{65547B99-EA92-412F-98F4-2EA0E829AE3F}" MobileView="TRUE" Type="HTML" RecurrenceRowset="TRUE" DisplayName="Current Events" Url="/sites/templateSITEPAGEPUBLISHING0/Lists/Events/MyItems.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/events.png?rev=44">
+            <View Name="{65547B99-EA92-412F-98F4-2EA0E829AE3F}" MobileView="TRUE" Type="HTML" RecurrenceRowset="TRUE" DisplayName="Current Events" Url="/sites/templateSITEPAGEPUBLISHING0/Lists/Events/MyItems.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/events.png?rev=45">
               <Query>
                 <Where>
                   <DateRangesOverlap>
@@ -585,7 +585,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x010100F8EF98760CBA4A94994F13BA881038FA" Default="true" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{E7CCC5FD-7DE6-4CD0-80F9-7088AFD7224B}" MobileView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSITEPAGEPUBLISHING0/FormServerTemplates/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{E7CCC5FD-7DE6-4CD0-80F9-7088AFD7224B}" MobileView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSITEPAGEPUBLISHING0/FormServerTemplates/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -600,7 +600,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{B2EC07C6-4EAD-4C4D-9D18-994F58834427}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Forms" Url="/sites/templateSITEPAGEPUBLISHING0/FormServerTemplates/Forms/All Forms.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{B2EC07C6-4EAD-4C4D-9D18-994F58834427}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Forms" Url="/sites/templateSITEPAGEPUBLISHING0/FormServerTemplates/Forms/All Forms.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="FormCategory" />
@@ -650,7 +650,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{F2E19304-D868-4FC8-826D-D1A93554127F}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="By Author" Url="/sites/templateSITEPAGEPUBLISHING0/SitePages/Forms/ByAuthor.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{F2E19304-D868-4FC8-826D-D1A93554127F}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="By Author" Url="/sites/templateSITEPAGEPUBLISHING0/SitePages/Forms/ByAuthor.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="Author" />
@@ -669,7 +669,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{05523ED7-43CB-45BF-87B5-DA772CAC0A54}" Type="HTML" DisplayName="Recent Changes" Url="/sites/templateSITEPAGEPUBLISHING0/SitePages/Forms/RecentChanges.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{05523ED7-43CB-45BF-87B5-DA772CAC0A54}" Type="HTML" DisplayName="Recent Changes" Url="/sites/templateSITEPAGEPUBLISHING0/SitePages/Forms/RecentChanges.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <OrderBy>
                   <FieldRef Name="Modified" Ascending="FALSE" />
@@ -686,7 +686,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{F60FA999-0A68-4258-920C-C260F396CBED}" Type="HTML" DisplayName="All Pages" Url="/sites/templateSITEPAGEPUBLISHING0/SitePages/Forms/AllPages.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{F60FA999-0A68-4258-920C-C260F396CBED}" Type="HTML" DisplayName="All Pages" Url="/sites/templateSITEPAGEPUBLISHING0/SitePages/Forms/AllPages.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <OrderBy>
                   <FieldRef Name="Modified" Ascending="FALSE" />
@@ -703,7 +703,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{52F36E4D-7A74-4F85-BE3F-C1E306DAA11B}" Type="HTML" DisplayName="By Editor" Url="/sites/templateSITEPAGEPUBLISHING0/SitePages/Forms/ByEditor.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{52F36E4D-7A74-4F85-BE3F-C1E306DAA11B}" Type="HTML" DisplayName="By Editor" Url="/sites/templateSITEPAGEPUBLISHING0/SitePages/Forms/ByEditor.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="Editor" />
@@ -723,7 +723,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{54E1DD06-EBE0-42D5-847E-1CA78E449502}" Type="HTML" DisplayName="Created By Me" Url="/sites/templateSITEPAGEPUBLISHING0/SitePages/Forms/CreatedByMe.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{54E1DD06-EBE0-42D5-847E-1CA78E449502}" Type="HTML" DisplayName="Created By Me" Url="/sites/templateSITEPAGEPUBLISHING0/SitePages/Forms/CreatedByMe.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <Where>
                   <Eq>
@@ -764,7 +764,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{F267F88A-730D-440F-81AB-ABDBE76D0EAA}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSITEPAGEPUBLISHING0/Style Library/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{F267F88A-730D-440F-81AB-ABDBE76D0EAA}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templateSITEPAGEPUBLISHING0/Style Library/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />

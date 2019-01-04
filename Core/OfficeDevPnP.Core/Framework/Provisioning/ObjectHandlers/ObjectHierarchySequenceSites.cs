@@ -56,7 +56,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (groupSiteInfo == null)
                                     {
                                         WriteMessage($"Creating Team Site {siteInfo.Alias}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.CreateAsync(tenant.Context as ClientContext, siteInfo).GetAwaiter().GetResult();
+                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo);
                                     }
                                     else
                                     {
@@ -94,7 +94,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     }
                                     CommunicationSiteCollectionCreationInformation siteInfo = new CommunicationSiteCollectionCreationInformation()
                                     {
-                                        AllowFileSharingForGuestUsers = c.AllowFileSharingForGuestUsers,
+                                        ShareByEmailEnabled = c.AllowFileSharingForGuestUsers,
                                         Classification = tokenParser.ParseString(c.Classification),
                                         Description = tokenParser.ParseString(c.Description),
                                         Lcid = (uint)c.Language,
@@ -126,7 +126,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     else
                                     {
                                         WriteMessage($"Creating Communications Site at {siteInfo.Url}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.CreateAsync(tenant.Context as ClientContext, siteInfo).GetAwaiter().GetResult();
+                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo);
                                     }
                                     if (c.IsHubSite)
                                     {

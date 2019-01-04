@@ -121,8 +121,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                     messagesDelegate?.Invoke($"Skipping existing solution {app.Src}", ProvisioningMessageType.Progress);
                                     appMetadata = manager.GetAvailable().FirstOrDefault(a => a.Id == appId);
                                 }
-                                parser.Tokens.Add(new AppPackageIdToken(web, appFilename, appMetadata.Id));
-
+                                parser.AddToken(new AppPackageIdToken(web, appFilename, appMetadata.Id));
+                                parser.AddToken(new AppPackageIdToken(web, appMetadata.Title, appMetadata.Id));
                             }
 
                             if (app.Action == PackageAction.Publish || app.Action == PackageAction.UploadAndPublish)
@@ -186,23 +186,61 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         {
             if (provisioningTenant.StorageEntities != null && provisioningTenant.StorageEntities.Any())
             {
-                using (var context = ((ClientContext)tenant.Context).Clone(tenant.RootSiteUrl, applyingInformation.AccessTokens))
+                var rootSiteUrl = tenant.GetRootSiteUrl();
+                tenant.Context.ExecuteQueryRetry();
+
+                using (var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl.Value, applyingInformation.AccessTokens))
                 {
                     var web = context.Web;
-                    var appCatalogUri = web.GetAppCatalog();
-                    using (var appCatalogContext = context.Clone(appCatalogUri, applyingInformation.AccessTokens))
+
+                    Uri appCatalogUri = null;
+
+                    try
                     {
-                        foreach (var entity in provisioningTenant.StorageEntities)
-                        {
-                            var key = parser.ParseString(entity.Key);
-                            var value = parser.ParseString(entity.Value);
-                            var description = parser.ParseString(entity.Description);
-                            var comment = parser.ParseString(entity.Comment);
-                            appCatalogContext.Web.SetStorageEntity(key, value, description, comment);
-                        }
-                        appCatalogContext.Web.Update();
-                        appCatalogContext.ExecuteQueryRetry();
+                        appCatalogUri = web.GetAppCatalog();
                     }
+                    catch (System.Net.WebException ex)
+                    {
+                        if (ex.Response != null)
+                        {
+                            var httpResponse = ex.Response as System.Net.HttpWebResponse;
+                            if (httpResponse != null && httpResponse.StatusCode == HttpStatusCode.Unauthorized)
+                            {
+                                // Ignore any security exception and simply keep 
+                                // the AppCatalog URI null
+                            }
+                            else
+                            {
+                                throw ex;
+                            }
+                        }
+                        else
+                        {
+                            throw ex;
+                        }
+                    }
+                    
+                    if(appCatalogUri != null)
+                    {
+                        using (var appCatalogContext = context.Clone(appCatalogUri, applyingInformation.AccessTokens))
+                        {
+                            foreach (var entity in provisioningTenant.StorageEntities)
+                            {
+                                var key = parser.ParseString(entity.Key);
+                                var value = parser.ParseString(entity.Value);
+                                var description = parser.ParseString(entity.Description);
+                                var comment = parser.ParseString(entity.Comment);
+                                appCatalogContext.Web.SetStorageEntity(key, value, description, comment);
+                            }
+                            appCatalogContext.Web.Update();
+                            appCatalogContext.ExecuteQueryRetry();
+                        }
+                    }
+                    else
+                    {
+                        messagesDelegate?.Invoke($"Tenant app catalog doesn't exist. Provisioning of storage entities will be skipped!", ProvisioningMessageType.Warning);
+                    }
+                    
                 }
             }
             return parser;

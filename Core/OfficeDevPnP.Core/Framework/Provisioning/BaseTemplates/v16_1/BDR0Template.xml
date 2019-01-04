@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.2.1810.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.4.1812.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-BDR0template">
     <pnp:ProvisioningTemplate ID="BDR0template" Version="1" BaseSiteTemplate="BDR#0" Scope="RootSite">
       <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
@@ -17,20 +17,19 @@
         <pnp:PropertyBagEntry Key="CBQMultiplier" Value="3" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
         <pnp:PropertyBagEntry Key="CBQFlushOnSiteChange" Value="False" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_PublishedLinksListId" Value="52662a60-4940-4f12-a847-0675805b9db3" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_PublishedLinksListId" Value="3b07629e-f7d1-4ebc-9dbf-3adbbf3234f4" Overwrite="false" />
         <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="WSSEndUser;#WSSCentralAdmin;#FastEndUser;#FastCentralAdmin;#MSSEndUser;#MSSCentralAdmin;#PPSDesignerEndUser;#SQLWSSAddIn" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__CacheProfileListId" Value="157d603d-1133-4afc-86be-9cd4ad0bd8c8" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_VarRelationshipsListId" Value="3f350968-c252-43ec-a097-49b38a8b7d77" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__CacheProfileListId" Value="c31161dd-658c-4c84-a185-4d35cd8742a7" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_VarRelationshipsListId" Value="0269a512-2793-4bba-ac70-5cc7cb9a6c38" Overwrite="false" />
         <pnp:PropertyBagEntry Key="SaveSiteAsTemplateEnabled" Value="false" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="dd6071d0-fa98-41fb-87d5-6a0fc5091a9e" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_ReusableContentListId" Value="3180b7c0-0689-4528-b0e6-242ada21ab9d" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="b02df60c-b0af-4016-a9fb-aa45c1b5ab11" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_ReusableContentListId" Value="d86a8682-47ae-4272-a769-480e91543efb" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associategroups" Value="5;4;3" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_SmtReportsListId" Value="de8c48ff-50ba-444f-ab2c-0bbdf337fb31" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_SmtReportsListId" Value="005a6eea-0966-469d-be2b-4194ff9d99e4" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
         <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="docid_msft_hier_siteprefix" Value="AVJTCTYW3JH7" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="profileschemaversion" Value="5" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="docid_msft_hier_siteprefix" Value="37CW5V7ZXER5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="docid_diwi_ls" Value="1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="allowmasterpageediting" Value="1" Overwrite="false" />
@@ -42,21 +41,21 @@
         <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="3;4;5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="sharepointhelpoverride" Value="SPOStandard" Overwrite="false" />
         <pnp:PropertyBagEntry Key="allowdesigner" Value="1" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__SiteColDocumentsListId" Value="56d32b41-7cd6-4c82-b4f4-70cf999c4717" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.8126" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__SiteColDocumentsListId" Value="271851fd-696c-4e34-bff4-4a09bd2a594d" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.8328" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_sitehasexpirationpolicy" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="docid_settings_ui" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot;?&gt;&#xD;&#xA;&lt;DocIdUiSettings xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;&#xD;&#xA;  &lt;Prefix /&gt;&#xD;&#xA;  &lt;AssignmentEnabled&gt;true&lt;/AssignmentEnabled&gt;&#xD;&#xA;&lt;/DocIdUiSettings&gt;" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_webnavigationsettings" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot; standalone=&quot;yes&quot;?&gt;&#xD;&#xA;&lt;WebNavigationSettings Version=&quot;1.1&quot;&gt;&#xD;&#xA;  &lt;SiteMapProviderSettings&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;CurrentNavigationSwitchableProvider&quot; TargetProviderName=&quot;CurrentNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;CurrentNavigationTaxonomyProvider&quot; TermStoreId=&quot;437b86fc-1258-45a9-85ea-87a29156ce3c&quot; TermSetId=&quot;398cd1ce-a3e4-4efb-9841-6d0d34ba6ced&quot; /&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;GlobalNavigationSwitchableProvider&quot; TargetProviderName=&quot;GlobalNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;GlobalNavigationTaxonomyProvider&quot; TermStoreId=&quot;437b86fc-1258-45a9-85ea-87a29156ce3c&quot; TermSetId=&quot;398cd1ce-a3e4-4efb-9841-6d0d34ba6ced&quot; /&gt;&#xD;&#xA;  &lt;/SiteMapProviderSettings&gt;&#xD;&#xA;  &lt;NewPageSettings AddNewPagesToNavigation=&quot;True&quot; CreateFriendlyUrlsForNewPages=&quot;True&quot; /&gt;&#xD;&#xA;&lt;/WebNavigationSettings&gt;&#xD;&#xA;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_webnavigationsettings" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot; standalone=&quot;yes&quot;?&gt;&#xD;&#xA;&lt;WebNavigationSettings Version=&quot;1.1&quot;&gt;&#xD;&#xA;  &lt;SiteMapProviderSettings&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;CurrentNavigationSwitchableProvider&quot; TargetProviderName=&quot;CurrentNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;CurrentNavigationTaxonomyProvider&quot; TermStoreId=&quot;437b86fc-1258-45a9-85ea-87a29156ce3c&quot; TermSetId=&quot;16397914-c108-46cc-973f-68c9ac98045b&quot; /&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;GlobalNavigationSwitchableProvider&quot; TargetProviderName=&quot;GlobalNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;GlobalNavigationTaxonomyProvider&quot; TermStoreId=&quot;437b86fc-1258-45a9-85ea-87a29156ce3c&quot; TermSetId=&quot;16397914-c108-46cc-973f-68c9ac98045b&quot; /&gt;&#xD;&#xA;  &lt;/SiteMapProviderSettings&gt;&#xD;&#xA;  &lt;NewPageSettings AddNewPagesToNavigation=&quot;True&quot; CreateFriendlyUrlsForNewPages=&quot;True&quot; /&gt;&#xD;&#xA;&lt;/WebNavigationSettings&gt;&#xD;&#xA;" Overwrite="false" />
         <pnp:PropertyBagEntry Key="allowslistpolicy" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="4" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="SiteCollectionGroupId437b86fc-1258-45a9-85ea-87a29156ce3c" Value="ff3b152b-29c3-4501-b770-a8641e4dccd1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="SiteCollectionGroupId437b86fc-1258-45a9-85ea-87a29156ce3c" Value="f6a67bdd-3fa8-4ae7-8023-f0f3f9cac62b" Overwrite="false" />
         <pnp:PropertyBagEntry Key="CBQFlushOnTimeChange" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_filedialogpostprocessorid" Value="{f68e6d4e-383a-4c8d-ba4d-d2139f164281}" Overwrite="false" />
         <pnp:PropertyBagEntry Key="NavigationPropertiesSet" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="metadatatimestamp" Value="437b86fc125845a985ea87a29156ce3c|2015-03-27T08:10:01.077Z" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_cmsviewformpagesanonstate" Value="False" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__SiteColImagesListId" Value="3db99729-5c56-4a3c-a9b6-194863b0f863" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_VarLabelsListId" Value="9302cd9a-3778-4dbc-b5bc-b889091a4733" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__SiteColImagesListId" Value="4dbb60b3-1f6a-4afd-9e98-f03a003610c9" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_VarLabelsListId" Value="d94fbdfa-5e1e-46d0-bee2-aa403fb99c59" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_sitehaspolicy" Value="True" Overwrite="false" />
       </pnp:PropertyBagEntries>
       <pnp:Security RemoveExistingUniqueRoleAssignments="false">
@@ -154,7 +153,7 @@
         </pnp:Permissions>
       </pnp:Security>
       <pnp:SiteFields>
-        <Field Type="Note" DisplayName="TaxKeywordTaxHTField" StaticName="TaxKeywordTaxHTField" Name="TaxKeywordTaxHTField" ID="{1390a86a-23da-45f0-8efe-ef36edadfb39}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{586e19df-0cb9-48ab-a6c3-5c975d81699e}" />
+        <Field Type="Note" DisplayName="TaxKeywordTaxHTField" StaticName="TaxKeywordTaxHTField" Name="TaxKeywordTaxHTField" ID="{1390a86a-23da-45f0-8efe-ef36edadfb39}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{2806f360-290b-4298-aaf7-865dc2f5e02f}" />
         <Field ID="{56747800-D36E-4625-ABE3-B1BC74A7D5F8}" Name="LowerValuesAreBetter" StaticName="LowerValuesAreBetter" Description="Whether lower is better or higher is better" Group="Status Indicators" Type="Boolean" DisplayName="Lower values are better" SourceID="http://schemas.microsoft.com/sharepoint/v3" />
         <Field ID="{672D9500-5649-49ae-8166-777F40527874}" Name="AbuseReportsCommentsLookup" SourceID="http://schemas.microsoft.com/sharepoint/v3" DisplaceOnUpgrade="TRUE" Group="_Hidden" Type="Lookup" List="" Mult="TRUE" DisplayName="Comments Lookup" ReadOnly="TRUE" Hidden="TRUE" AllowDeletion="FALSE" Sealed="TRUE">
           <FieldRefs>
@@ -442,7 +441,7 @@
           <Default>0</Default>
         </Field>
         <Field ID="{11A86235-9D18-4134-B58C-FA7243F4CBBA}" Name="Trend" StaticName="Trend" Description="The trend of the Indicator" Group="Status Indicators" Type="Number" DisplayName="Trend" SourceID="http://schemas.microsoft.com/sharepoint/v3" />
-        <Field ID="{ae3e2a36-125d-45d3-9051-744b513536a6}" Type="Text" DisplayName="Document ID Value" Name="_dlc_DocId" Required="FALSE" ReadOnly="TRUE" Sealed="TRUE" Description="The value of the document ID assigned to this item." ShowInDisplayForm="FALSE" ShowInListSettings="FALSE" ShowInVersionHistory="FALSE" ShowInViewForms="FALSE" SourceID="{586e19df-0cb9-48ab-a6c3-5c975d81699e}" StaticName="_dlc_DocId" />
+        <Field ID="{ae3e2a36-125d-45d3-9051-744b513536a6}" Type="Text" DisplayName="Document ID Value" Name="_dlc_DocId" Required="FALSE" ReadOnly="TRUE" Sealed="TRUE" Description="The value of the document ID assigned to this item." ShowInDisplayForm="FALSE" ShowInListSettings="FALSE" ShowInVersionHistory="FALSE" ShowInViewForms="FALSE" SourceID="{2806f360-290b-4298-aaf7-865dc2f5e02f}" StaticName="_dlc_DocId" />
         <Field ID="{3C497036-038F-41db-AEC7-C9849649B135}" Name="KpiStatus" StaticName="KpiStatus" Description="The status of the Indicator" Group="Status Indicators" Type="Number" DisplayName="Indicator Status" SourceID="http://schemas.microsoft.com/sharepoint/v3" />
         <Field ID="{DE38F937-8578-435e-8CD3-50BE3EA59253}" Name="MediaLengthInSeconds" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="MediaLengthInSeconds" Group="_Hidden" Type="Integer" DisplayName="Length (seconds)" ShowInNewForm="FALSE" ShowInEditForm="FALSE" />
         <Field ID="{F4EBD738-21DB-4797-9229-2E817DD2367D}" Name="TagEventDate" SourceID="http://schemas.microsoft.com/sharepoint/v3" Required="FALSE" ShowInFileDlg="FALSE" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ReadOnly="TRUE" StaticName="TagEventDate" Type="DateTime" DisplayName="Label Event Date" Sortable="TRUE" />
@@ -475,7 +474,7 @@
         </Field>
         <Field ID="{DC7D1E4C-C725-4ffb-995B-4FF324656E91}" Name="RoutingCustomRouter" StaticName="RoutingCustomRouter" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Document and Record Management Columns" DisplayName="Custom Router" Type="Text" Required="TRUE" CanToggleHidden="TRUE" Sealed="TRUE" MaxLength="255" />
         <Field ID="{65572D4D-445A-43F1-9C77-3358222A2C93}" DisplayName="Form Category" Type="Text" Required="FALSE" Name="FormCategory" RowOrdinal="0" Group="_Hidden" />
-        <Field ID="{3b63724f-3418-461f-868b-7706f69b029c}" Type="URL" DisplayName="Document ID" Name="_dlc_DocIdUrl" Required="FALSE" ReadOnly="TRUE" Sealed="TRUE" Description="Permanent link to this document." ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" ShowInDisplayForm="TRUE" Sortable="FALSE" AuthoringInfo="(linked to document)" SourceID="{586e19df-0cb9-48ab-a6c3-5c975d81699e}" StaticName="_dlc_DocIdUrl" />
+        <Field ID="{3b63724f-3418-461f-868b-7706f69b029c}" Type="URL" DisplayName="Document ID" Name="_dlc_DocIdUrl" Required="FALSE" ReadOnly="TRUE" Sealed="TRUE" Description="Permanent link to this document." ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" ShowInDisplayForm="TRUE" Sortable="FALSE" AuthoringInfo="(linked to document)" SourceID="{2806f360-290b-4298-aaf7-865dc2f5e02f}" StaticName="_dlc_DocIdUrl" />
         <Field ID="{a990e64f-faa3-49c1-aafa-885fda79de62}" Name="PublishingExpirationDate" StaticName="PublishingExpirationDate" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Publishing Columns" DisplayName="Scheduling End Date" Description="Scheduling End Date is a site column created by the Publishing feature. It is used to specify the date and time on which this page will no longer appear to site visitors." Type="PublishingScheduleEndDateFieldType" Required="FALSE" CanToggleHidden="TRUE" Sealed="TRUE" StorageTZ="UTC" />
         <Field ID="{d211d750-4fe6-4d92-90e8-eb16dff196c8}" Name="PublishingAssociatedVariations" StaticName="PublishingAssociatedVariations" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="_Hidden" DisplayName="Variations" Type="LayoutVariationsField" Required="FALSE" Sealed="TRUE" />
         <Field ID="{AB065451-14D6-485a-88C3-414C908D50D3}" Name="CategoryDescription" DisplayName="Description" Type="Text" SourceID="http://schemas.microsoft.com/sharepoint.v3" DisplaceOnUpgrade="TRUE" Hidden="FALSE" Sealed="FALSE" AllowDeletion="FALSE" />
@@ -643,7 +642,7 @@
         <Field ID="{D2264183-83DC-4d08-A57D-974686192D7A}" Name="TopicCount" DisplayName="Discussions" Type="Integer" SourceID="http://schemas.microsoft.com/sharepoint.v3" DisplaceOnUpgrade="TRUE" ReadOnly="TRUE" Hidden="FALSE" Sealed="FALSE" AllowDeletion="FALSE">
           <Default>0</Default>
         </Field>
-        <Field ID="{c010d384-479c-494f-968c-c413dbe3de29}" Type="Boolean" DisplayName="Persist ID" Name="_dlc_DocIdPersistId" Required="FALSE" ReadOnly="TRUE" Sealed="TRUE" Description="Keep ID on add." Hidden="TRUE" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" SourceID="{586e19df-0cb9-48ab-a6c3-5c975d81699e}" StaticName="_dlc_DocIdPersistId" />
+        <Field ID="{c010d384-479c-494f-968c-c413dbe3de29}" Type="Boolean" DisplayName="Persist ID" Name="_dlc_DocIdPersistId" Required="FALSE" ReadOnly="TRUE" Sealed="TRUE" Description="Keep ID on add." Hidden="TRUE" ShowInNewForm="FALSE" ShowInEditForm="FALSE" ShowInFileDlg="FALSE" SourceID="{2806f360-290b-4298-aaf7-865dc2f5e02f}" StaticName="_dlc_DocIdPersistId" />
         <Field ID="{FA181E85-8465-42fd-BD81-4AFEA427D3FE}" Name="DisplayTemplateLevel" StaticName="DisplayTemplateLevel" SourceID="http://schemas.microsoft.com/sharepoint/v3" Group="Display Template Columns" DisplayName="Template Level" Description="Select the level of data that this display template expects and is designed to display.  This determines where this template will appear as a selectable option in configuration UIs." Type="Choice" Required="FALSE" CanToggleHidden="TRUE" Sealed="TRUE">
           <CHOICES>
             <CHOICE>Item</CHOICE>
@@ -1672,13 +1671,13 @@
         </pnp:ContentType>
       </pnp:ContentTypes>
       <pnp:Lists>
-        <pnp:ListInstance Title="Content and Structure Reports" Description="Use the reports list to customize the queries that appear in the Content and Structure Tool views" DocumentTemplate="" TemplateType="100" Url="Reports List" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableAttachments="false" EnableFolderCreation="false" NoCrawl="true" DefaultDisplayFormUrl="{site}/Reports List/DispForm.aspx" DefaultEditFormUrl="{site}/Reports List/EditForm.aspx" DefaultNewFormUrl="{site}/Reports List/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=44" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+        <pnp:ListInstance Title="Content and Structure Reports" Description="Use the reports list to customize the queries that appear in the Content and Structure Tool views" DocumentTemplate="" TemplateType="100" Url="Reports List" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" EnableAttachments="false" EnableFolderCreation="false" NoCrawl="true" DefaultDisplayFormUrl="{site}/Reports List/DispForm.aspx" DefaultEditFormUrl="{site}/Reports List/EditForm.aspx" DefaultNewFormUrl="{site}/Reports List/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=45" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{757F189A-C22C-41ED-BC92-EE5439C4A033}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/templatebdr0/Reports List/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+            <View Name="{EB2A6728-9D6E-49B9-8A50-CB7C4709AACC}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/templatebdr0/Reports List/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=45">
               <Query>
                 <OrderBy>
                   <FieldRef Name="ID" />
@@ -1711,7 +1710,7 @@
             <pnp:FieldRef ID="8382d247-72a9-44b1-9794-7b177edc89f3" Name="_IsRecord" DisplayName="Item is a Record" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Documents" Description="" DocumentTemplate="{site}/Documents/Forms/template.dotx" TemplateType="101" Url="Documents" ForceCheckout="true" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="500" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" ContentTypesEnabled="true" EnableAttachments="false" DefaultDisplayFormUrl="{site}/Documents/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/Documents/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/Documents/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=44" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+        <pnp:ListInstance Title="Documents" Description="" DocumentTemplate="{site}/Documents/Forms/template.dotx" TemplateType="101" Url="Documents" ForceCheckout="true" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="500" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" ContentTypesEnabled="true" EnableAttachments="false" DefaultDisplayFormUrl="{site}/Documents/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/Documents/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/Documents/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=45" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0101" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
@@ -1719,7 +1718,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120D520" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{E8C7B850-E25A-4699-A62F-41295399C86A}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templatebdr0/Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{98544AF4-12FC-43C2-AB9D-92ABDEC5BBBF}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templatebdr0/Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -1742,12 +1741,12 @@
             <pnp:FieldRef ID="cbb92da4-fd46-4c7d-af6c-3128c2a5576e" Name="DocumentSetDescription" DisplayName="Description" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Form Templates" Description="This library contains administrator-approved form templates that were activated to this site collection." DocumentTemplate="" TemplateType="101" Url="FormServerTemplates" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/FormServerTemplates/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/FormServerTemplates/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/FormServerTemplates/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=44" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+        <pnp:ListInstance Title="Form Templates" Description="This library contains administrator-approved form templates that were activated to this site collection." DocumentTemplate="" TemplateType="101" Url="FormServerTemplates" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/FormServerTemplates/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/FormServerTemplates/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/FormServerTemplates/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=45" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x010100F8EF98760CBA4A94994F13BA881038FA" Default="true" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{D05421DC-6A02-42D6-B1C7-6AB9C1B7953C}" MobileView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templatebdr0/FormServerTemplates/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{5CA416F0-B6A6-48B2-8912-FE1612ADE04D}" MobileView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templatebdr0/FormServerTemplates/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -1762,7 +1761,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{7A390759-7F76-49EE-BAA6-14F5D3C51D99}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Forms" Url="/sites/templatebdr0/FormServerTemplates/Forms/All Forms.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{809782EF-D123-48AF-998E-95E19D3B3964}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Forms" Url="/sites/templatebdr0/FormServerTemplates/Forms/All Forms.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="FormCategory" />
@@ -1808,14 +1807,14 @@
             <pnp:FieldRef ID="db8d9d6d-dc9a-4fbd-85f3-4a753bfdc58c" Name="_LikeCount" DisplayName="Like count" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Reusable Content" Description="Items in this list contain HTML or text content which can be inserted into web pages. If an item has automatic update selected, the content will be inserted into web pages as a read-only reference, and the content will update if the item is changed. If the item does not have automatic update selected, the content will be inserted as a copy in the web page, and the content will not update if the item is changed." DocumentTemplate="" TemplateType="100" Url="ReusableContent" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" ContentTypesEnabled="true" EnableAttachments="false" NoCrawl="true" DefaultDisplayFormUrl="{site}/ReusableContent/DispForm.aspx" DefaultEditFormUrl="{site}/ReusableContent/EditForm.aspx" DefaultNewFormUrl="{site}/ReusableContent/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=44" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+        <pnp:ListInstance Title="Reusable Content" Description="Items in this list contain HTML or text content which can be inserted into web pages. If an item has automatic update selected, the content will be inserted into web pages as a read-only reference, and the content will update if the item is changed. If the item does not have automatic update selected, the content will be inserted as a copy in the web page, and the content will not update if the item is changed." DocumentTemplate="" TemplateType="100" Url="ReusableContent" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-de22-43b2-a848-c05709900100" ContentTypesEnabled="true" EnableAttachments="false" NoCrawl="true" DefaultDisplayFormUrl="{site}/ReusableContent/DispForm.aspx" DefaultEditFormUrl="{site}/ReusableContent/EditForm.aspx" DefaultNewFormUrl="{site}/ReusableContent/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.png?rev=45" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x01002CF74A4DAE39480396EEA7A4BA2BE5FB" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x01004D5A79BAFA4A4576B79C56FF3D0D662D" />
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{E999B9E8-8517-4A50-9891-8568A766988C}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/templatebdr0/ReusableContent/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+            <View Name="{F5FFC383-E31F-401D-B414-4F97F10DD70A}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="/sites/templatebdr0/ReusableContent/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=45">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="ContentCategory" />
@@ -1835,7 +1834,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{3495A829-DA8F-4DB6-9B60-9F9BF97448A4}" DefaultView="TRUE" Type="HTML" DisplayName="Content Preview" Url="/sites/templatebdr0/ReusableContent/Content Preview.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+            <View Name="{1388CEFE-AB5D-490F-BD16-A77741826E50}" DefaultView="TRUE" Type="HTML" DisplayName="Content Preview" Url="/sites/templatebdr0/ReusableContent/Content Preview.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=45">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="ContentCategory" />
@@ -1856,7 +1855,7 @@
               <RowLimit Paged="TRUE">200</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{39C973A0-924A-4E06-8347-0504195AD289}" Type="HTML" DisplayName="Automatic Update (Yes)" Url="/sites/templatebdr0/ReusableContent/Automatic Update Yes.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+            <View Name="{355D28F8-3830-403D-8F02-6166C967F0AA}" Type="HTML" DisplayName="Automatic Update (Yes)" Url="/sites/templatebdr0/ReusableContent/Automatic Update Yes.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=45">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="ContentCategory" />
@@ -1883,7 +1882,7 @@
               <RowLimit Paged="TRUE">200</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{FF8A6CC2-60BC-49FF-9FA5-23549ACE92D1}" Type="HTML" DisplayName="Automatic Update (No)" Url="/sites/templatebdr0/ReusableContent/Automatic Update No.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=44">
+            <View Name="{5C1B63BB-238E-4FFD-AFB9-93A7FBDB86EF}" Type="HTML" DisplayName="Automatic Update (No)" Url="/sites/templatebdr0/ReusableContent/Automatic Update No.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/generic.png?rev=45">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="ContentCategory" />
@@ -1920,13 +1919,13 @@
             <pnp:FieldRef ID="890e9d41-5a0e-4988-87bf-0fb9d80f60df" Name="ReusableText" DisplayName="Reusable Text" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Site Collection Documents" Description="This system library was created by the Publishing Resources feature to store documents that are used throughout the site collection." DocumentTemplate="{site}/SiteCollectionDocuments/Forms/template.dotx" TemplateType="101" Url="SiteCollectionDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="500" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" DefaultDisplayFormUrl="{site}/SiteCollectionDocuments/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/SiteCollectionDocuments/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/SiteCollectionDocuments/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=44" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+        <pnp:ListInstance Title="Site Collection Documents" Description="This system library was created by the Publishing Resources feature to store documents that are used throughout the site collection." DocumentTemplate="{site}/SiteCollectionDocuments/Forms/template.dotx" TemplateType="101" Url="SiteCollectionDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="500" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" DefaultDisplayFormUrl="{site}/SiteCollectionDocuments/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/SiteCollectionDocuments/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/SiteCollectionDocuments/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=45" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0101" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{1758D151-6964-4075-82DC-F292495DD350}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templatebdr0/SiteCollectionDocuments/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{721487F2-2D7C-4B73-8375-5DF2734BC02F}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templatebdr0/SiteCollectionDocuments/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -1956,7 +1955,7 @@
             <pnp:FieldRef ID="db8d9d6d-dc9a-4fbd-85f3-4a753bfdc58c" Name="_LikeCount" DisplayName="Like count" />
           </pnp:FieldRefs>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Site Collection Images" Description="This system library was created by the Publishing Resources feature to store images that are used throughout the site collection." DocumentTemplate="" TemplateType="851" Url="SiteCollectionImages" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="4bcccd62-dcaf-46dc-a7d4-e38277ef33f4" ContentTypesEnabled="true" EnableAttachments="false" DefaultDisplayFormUrl="{site}/SiteCollectionImages/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/SiteCollectionImages/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/SiteCollectionImages/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=44" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+        <pnp:ListInstance Title="Site Collection Images" Description="This system library was created by the Publishing Resources feature to store images that are used throughout the site collection." DocumentTemplate="" TemplateType="851" Url="SiteCollectionImages" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="4bcccd62-dcaf-46dc-a7d4-e38277ef33f4" ContentTypesEnabled="true" EnableAttachments="false" DefaultDisplayFormUrl="{site}/SiteCollectionImages/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/SiteCollectionImages/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/SiteCollectionImages/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=45" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0101009148F5A04DDD49CBA7127AADA5FB792B00AADE34325A8B49CDA8BB4DB53328F214" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0101009148F5A04DDD49CBA7127AADA5FB792B006973ACD696DC4858A76371B2FB2F439A" />
@@ -1966,7 +1965,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120D520A808" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{FBF543B2-3776-4C94-94F8-27DB1458EE92}" Type="HTML" DisplayName="All Assets" Url="/sites/templatebdr0/SiteCollectionImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{EE88B7BA-9E97-4CD0-8112-238A34D93E8C}" Type="HTML" DisplayName="All Assets" Url="/sites/templatebdr0/SiteCollectionImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <OrderBy>
                   <FieldRef Name="LinkFilename" />
@@ -1999,7 +1998,7 @@
               <RowLimit Paged="TRUE">20</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{DE6C1673-F26C-4874-9651-272428697C27}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Thumbnails" Url="/sites/templatebdr0/SiteCollectionImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="40" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{1886C10E-4FA6-4250-A88D-7B813B9877FC}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Thumbnails" Url="/sites/templatebdr0/SiteCollectionImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="40" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <OrderBy>
                   <FieldRef Name="LinkFilename" />
@@ -2077,13 +2076,13 @@
             </pnp:BreakRoleInheritance>
           </pnp:Security>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Style Library" Description="Use the style library to store style sheets, such as CSS or XSL files. The style sheets in this gallery can be used by this site or any of its subsites." DocumentTemplate="" TemplateType="101" Url="Style Library" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="500" DraftVersionVisibility="1" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" NoCrawl="true" DefaultDisplayFormUrl="{site}/Style Library/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/Style Library/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/Style Library/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=44" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+        <pnp:ListInstance Title="Style Library" Description="Use the style library to store style sheets, such as CSS or XSL files. The style sheets in this gallery can be used by this site or any of its subsites." DocumentTemplate="" TemplateType="101" Url="Style Library" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="500" DraftVersionVisibility="1" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" NoCrawl="true" DefaultDisplayFormUrl="{site}/Style Library/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/Style Library/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/Style Library/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=45" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0101" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{646C4D21-839B-44C7-837D-C57DC65BC108}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templatebdr0/Style Library/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=44">
+            <View Name="{6DB79307-DDC7-4872-B94C-63C5B02DEB36}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="/sites/templatebdr0/Style Library/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=45">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -2125,12 +2124,12 @@
             </pnp:BreakRoleInheritance>
           </pnp:Security>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Tasks" Description="" DocumentTemplate="" TemplateType="171" Url="Lists/Tasks" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="f9ce21f8-f437-4f7e-8bc6-946378c850f0" ContentTypesEnabled="true" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/Tasks/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/Tasks/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/Tasks/NewForm.aspx" ImageUrl="/_layouts/15/images/ittask.png?rev=44" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+        <pnp:ListInstance Title="Tasks" Description="" DocumentTemplate="" TemplateType="171" Url="Lists/Tasks" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="f9ce21f8-f437-4f7e-8bc6-946378c850f0" ContentTypesEnabled="true" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/Tasks/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/Tasks/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/Tasks/NewForm.aspx" ImageUrl="/_layouts/15/images/ittask.png?rev=45" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0108" Default="true" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{CB1EB4D0-D6C1-4929-AEAC-C12CC802224E}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Tasks" Url="/sites/templatebdr0/Lists/Tasks/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issuelst.png?rev=44">
+            <View Name="{03FC0C79-765E-4CFD-ADBD-C436E6ADB1C2}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Tasks" Url="/sites/templatebdr0/Lists/Tasks/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issuelst.png?rev=45">
               <ViewFields>
                 <FieldRef Name="Checkmark" />
                 <FieldRef Name="LinkTitle" />
@@ -2140,7 +2139,7 @@
               <RowLimit Paged="TRUE">100</RowLimit>
               <JSLink>hierarchytaskslist.js</JSLink>
             </View>
-            <View Name="{47C51F0D-3AE6-4108-BED7-63061F026617}" MobileView="TRUE" Type="HTML" DisplayName="Late Tasks" Url="/sites/templatebdr0/Lists/Tasks/late.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issuelst.png?rev=44">
+            <View Name="{C9A5A84E-3A0B-445E-89CA-C96837E7B9EF}" MobileView="TRUE" Type="HTML" DisplayName="Late Tasks" Url="/sites/templatebdr0/Lists/Tasks/late.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issuelst.png?rev=45">
               <Query>
                 <Where>
                   <And>
@@ -2175,7 +2174,7 @@
               <RowLimit Paged="TRUE">100</RowLimit>
               <JSLink>hierarchytaskslist.js</JSLink>
             </View>
-            <View Name="{15161BB9-D586-4BE6-A976-4B1B05E582C6}" MobileView="TRUE" Type="HTML" DisplayName="Upcoming" Url="/sites/templatebdr0/Lists/Tasks/Upcoming.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issuelst.png?rev=44">
+            <View Name="{52A16F3F-E867-4DF5-A13F-484D93B0298C}" MobileView="TRUE" Type="HTML" DisplayName="Upcoming" Url="/sites/templatebdr0/Lists/Tasks/Upcoming.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issuelst.png?rev=45">
               <Query>
                 <Where>
                   <And>
@@ -2206,7 +2205,7 @@
               <RowLimit Paged="TRUE">100</RowLimit>
               <JSLink>hierarchytaskslist.js</JSLink>
             </View>
-            <View Name="{6371FD6F-2DA0-4AAF-8679-B395D39CE688}" MobileView="TRUE" Type="HTML" DisplayName="Completed" Url="/sites/templatebdr0/Lists/Tasks/completed.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issuelst.png?rev=44">
+            <View Name="{16D7B111-FBE3-4D8C-973F-1BE49BE0E8F8}" MobileView="TRUE" Type="HTML" DisplayName="Completed" Url="/sites/templatebdr0/Lists/Tasks/completed.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issuelst.png?rev=45">
               <Query>
                 <Where>
                   <Geq>
@@ -2224,7 +2223,7 @@
               <RowLimit Paged="TRUE">100</RowLimit>
               <JSLink>hierarchytaskslist.js</JSLink>
             </View>
-            <View Name="{C63405A3-0227-4141-9511-AA587AF98AC7}" MobileView="TRUE" Type="HTML" DisplayName="My Tasks" Url="/sites/templatebdr0/Lists/Tasks/MyItems.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{6645D477-822A-4994-B077-8F5D6B908DFD}" MobileView="TRUE" Type="HTML" DisplayName="My Tasks" Url="/sites/templatebdr0/Lists/Tasks/MyItems.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=45">
               <Query>
                 <Where>
                   <In>
@@ -2246,7 +2245,7 @@
               <RowLimit Paged="TRUE">100</RowLimit>
               <JSLink>hierarchytaskslist.js</JSLink>
             </View>
-            <View Name="{9B2B191D-D661-4F26-A5A7-BE5F567D30E6}" Type="GANTT" DisplayName="Gantt Chart" Url="/sites/templatebdr0/Lists/Tasks/gantt.aspx" Level="1" BaseViewID="8" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issuelst.png?rev=44">
+            <View Name="{F88C1D3C-B92C-42D5-A67F-3C0DCF3BE85F}" Type="GANTT" DisplayName="Gantt Chart" Url="/sites/templatebdr0/Lists/Tasks/gantt.aspx" Level="1" BaseViewID="8" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issuelst.png?rev=45">
               <ViewFields>
                 <FieldRef Name="LinkTitle" />
                 <FieldRef Name="StartDate" />
@@ -2259,7 +2258,7 @@
               <RowLimit Paged="TRUE">100</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{48E20F51-79D1-4543-93D6-26D274D83337}" Type="CALENDAR" TabularView="FALSE" DisplayName="Calendar" Url="/sites/templatebdr0/Lists/Tasks/calendar.aspx" Level="1" BaseViewID="9" ContentTypeID="0x" MobileUrl="_layouts/15/mobile/viewdaily.aspx" ImageUrl="/_layouts/15/images/events.png?rev=44">
+            <View Name="{9856271A-E0A6-4595-8F4A-FFDD0631163C}" Type="CALENDAR" TabularView="FALSE" DisplayName="Calendar" Url="/sites/templatebdr0/Lists/Tasks/calendar.aspx" Level="1" BaseViewID="9" ContentTypeID="0x" MobileUrl="_layouts/15/mobile/viewdaily.aspx" ImageUrl="/_layouts/15/images/events.png?rev=45">
               <Query>
                 <Where>
                   <DateRangesOverlap>
@@ -2295,14 +2294,14 @@
             <pnp:FieldDefault FieldName="StartDate" />
           </pnp:FieldDefaults>
         </pnp:ListInstance>
-        <pnp:ListInstance Title="Workflow Tasks" Description="This system library was created by the Publishing feature to store workflow tasks that are created in this site." DocumentTemplate="" TemplateType="107" Url="WorkflowTasks" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-a83e-497e-9ba0-7a5c597d0107" ContentTypesEnabled="true" EnableFolderCreation="false" NoCrawl="true" DefaultDisplayFormUrl="{site}/WorkflowTasks/DispForm.aspx" DefaultEditFormUrl="{site}/WorkflowTasks/EditForm.aspx" DefaultNewFormUrl="{site}/WorkflowTasks/NewForm.aspx" ImageUrl="/_layouts/15/images/ittask.png?rev=44" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
+        <pnp:ListInstance Title="Workflow Tasks" Description="This system library was created by the Publishing feature to store workflow tasks that are created in this site." DocumentTemplate="" TemplateType="107" Url="WorkflowTasks" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-a83e-497e-9ba0-7a5c597d0107" ContentTypesEnabled="true" EnableFolderCreation="false" NoCrawl="true" DefaultDisplayFormUrl="{site}/WorkflowTasks/DispForm.aspx" DefaultEditFormUrl="{site}/WorkflowTasks/EditForm.aspx" DefaultNewFormUrl="{site}/WorkflowTasks/NewForm.aspx" ImageUrl="/_layouts/15/images/ittask.png?rev=45" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
           <pnp:ContentTypeBindings>
             <pnp:ContentTypeBinding ContentTypeID="0x0108" Default="true" />
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
             <pnp:ContentTypeBinding ContentTypeID="0x012004" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{83331AFD-1213-4617-B4BC-B8DF1D8C606D}" DefaultView="TRUE" MobileView="TRUE" Type="HTML" DisplayName="All Tasks" Url="/sites/templatebdr0/WorkflowTasks/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{D2D74E14-0DAC-4995-A308-28DA97A21847}" DefaultView="TRUE" MobileView="TRUE" Type="HTML" DisplayName="All Tasks" Url="/sites/templatebdr0/WorkflowTasks/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=45">
               <Query>
                 <OrderBy>
                   <FieldRef Name="ID" />
@@ -2321,7 +2320,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{47BB42A1-CC57-45F9-A4B2-E1D36B5DAA3D}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="My Tasks" Url="/sites/templatebdr0/WorkflowTasks/MyItems.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{839FD93A-F9F6-4076-AE29-7EC25BD2CD74}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="My Tasks" Url="/sites/templatebdr0/WorkflowTasks/MyItems.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=45">
               <Query>
                 <Where>
                   <Eq>
@@ -2346,7 +2345,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{2E8EE12B-2D46-40FF-B0BA-7CCB1A2D9C87}" Type="HTML" DisplayName="Due Today" Url="/sites/templatebdr0/WorkflowTasks/duetoday.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{218F4093-16C9-4A37-8FA0-6F4784D57B8D}" Type="HTML" DisplayName="Due Today" Url="/sites/templatebdr0/WorkflowTasks/duetoday.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=45">
               <Query>
                 <Where>
                   <Eq>
@@ -2371,7 +2370,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{1DCBFA1A-9E40-46DB-81BD-28017C8A9B0F}" Type="HTML" DisplayName="Active Tasks" Url="/sites/templatebdr0/WorkflowTasks/active.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{8DC08170-0A3C-4699-9DBF-6301A4E4F7D0}" Type="HTML" DisplayName="Active Tasks" Url="/sites/templatebdr0/WorkflowTasks/active.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=45">
               <Query>
                 <Where>
                   <Neq>
@@ -2395,7 +2394,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{F51691D2-A9BC-4D7E-AAA5-84185B9B00FD}" Type="HTML" DisplayName="By Assigned To" Url="/sites/templatebdr0/WorkflowTasks/byowner.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{7032433F-132F-4BCE-9D7C-46E11A504F92}" Type="HTML" DisplayName="By Assigned To" Url="/sites/templatebdr0/WorkflowTasks/byowner.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=45">
               <Query>
                 <OrderBy>
                   <FieldRef Name="AssignedTo" />
@@ -2414,7 +2413,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{F1758942-A0F6-4937-84D5-8E7CD86D9EEF}" Type="HTML" DisplayName="By My Groups" Url="/sites/templatebdr0/WorkflowTasks/MyGrTsks.aspx" Level="1" BaseViewID="8" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=44">
+            <View Name="{688DF279-0C05-4C9E-868C-86B426A427FA}" Type="HTML" DisplayName="By My Groups" Url="/sites/templatebdr0/WorkflowTasks/MyGrTsks.aspx" Level="1" BaseViewID="8" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=45">
               <Query>
                 <Where>
                   <Membership Type="CurrentUserGroups">

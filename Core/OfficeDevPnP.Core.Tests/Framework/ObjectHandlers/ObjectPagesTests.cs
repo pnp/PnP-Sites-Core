@@ -119,5 +119,62 @@ alert(""Hello!"");
                 Assert.IsInstanceOfType(template.Pages, typeof(PageCollection));
             }
         }
+
+        /// <summary>
+        /// For some reason this is only an issue in SharePoint 2013 (possibly also in SharePoint 2016).
+        /// It appears also to only be an issue for pages/list items and not for sites and lists.
+        /// </summary>
+        [TestMethod]
+        public void CanRemoveCurrentUserAfterBreakingRoleInheritanceWithoutCopyRoleAssignment()
+        {
+            var template = new ProvisioningTemplate();
+
+            Page page = new Page();
+            page.Layout = WikiPageLayout.TwoColumns;
+            page.Overwrite = true;
+            page.Url = "{site}/sitepages/pagetest.aspx";
+
+            var security = new ObjectSecurity()
+            {
+                ClearSubscopes = false,
+                CopyRoleAssignments = false,
+            };
+
+            page.SetSecurity(security);
+
+            template.Pages.Add(page);
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var currentUser = ctx.Web.EnsureProperty(w => w.CurrentUser);
+
+                var roleAssignment = new Core.Framework.Provisioning.Model.RoleAssignment();
+                roleAssignment.Principal = currentUser.LoginName;
+                roleAssignment.Remove = true;
+
+                roleAssignment.RoleDefinition = "{roledefinition:Administrator}";               
+
+                page.Security.RoleAssignments.Add(roleAssignment);
+
+                var parser = new TokenParser(ctx.Web, template);
+                new ObjectPages().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                ctx.Load(ctx.Web, w => w.ServerRelativeUrl);
+                ctx.ExecuteQueryRetry();
+
+                var file = ctx.Web.GetFileByServerRelativeUrl(UrlUtility.Combine(ctx.Web.ServerRelativeUrl, "/SitePages/pagetest.aspx"));
+                ctx.Load(file, f => f.Exists);
+                ctx.ExecuteQueryRetry();
+                Assert.IsTrue(file.Exists);
+
+                var listItem = file.ListItemAllFields;
+                var roleAssignments = listItem.RoleAssignments;
+                ctx.Load(roleAssignments);
+                ctx.ExecuteQueryRetry();
+
+                Assert.AreEqual(0, roleAssignments.Count);
+            }
+        }
+
     }
 }

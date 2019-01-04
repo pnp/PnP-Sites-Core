@@ -54,6 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                select t;
 
             _tokens = sortedTokens.ToList();
+            BuildTokenCache();
         }
 
         // Lightweight rebase
@@ -67,7 +68,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         // Heavy rebase for switching templates
         public void Rebase(Web web, ProvisioningTemplate template)
         {
-
             _web = web;
 
             foreach (var token in _tokens.Where(t => t is VolatileTokenDefinition))
@@ -89,7 +89,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             AddRoleDefinitionTokens(web);
         }
 
-        public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy):
+        public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy) :
             this(tenant, hierarchy, null)
         {
         }
@@ -163,6 +163,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new HostUrlToken(web));
 #if !ONPREMISES
             _tokens.Add(new SiteCollectionConnectedOffice365GroupId(web));
+            _tokens.Add(new EveryoneToken(web));
+            _tokens.Add(new EveryoneButExternalUsersToken(web));
 #endif
 
             AddListTokens(web);
@@ -410,11 +412,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var tenantEntities = new List<StorageEntity>();
                 var siteEntities = new List<StorageEntity>();
                 var appCatalogUri = web.GetAppCatalog();
-                using (var clonedContext = web.Context.Clone(appCatalogUri))
+                if(appCatalogUri != null)
                 {
-                    var storageEntitiesIndex = clonedContext.Web.GetPropertyBagValueString("storageentitiesindex", "");
-                    tenantEntities = ParseStorageEntitiesString(storageEntitiesIndex);
-                }
+                    using (var clonedContext = web.Context.Clone(appCatalogUri))
+                    {
+                        var storageEntitiesIndex = clonedContext.Web.GetPropertyBagValueString("storageentitiesindex", "");
+                        tenantEntities = ParseStorageEntitiesString(storageEntitiesIndex);
+                    }
+                }                
                 var appcatalog = (web.Context as ClientContext).Site.RootWeb.SiteCollectionAppCatalog;
                 web.Context.Load(appcatalog);
                 web.Context.ExecuteQueryRetry();
@@ -587,7 +592,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return ParseString(input, null);
         }
 
-
         static readonly Regex ReGuid = new Regex("(?<guid>\\{\\S{8}-\\S{4}-\\S{4}-\\S{4}-\\S{12}?\\})", RegexOptions.Compiled);
         /// <summary>
         /// Gets left over tokens
@@ -626,8 +630,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             BuildTokenCache();
 
             // Optimize for direct match with string search
-            string directMatch;
-            if (TokenDictionary.TryGetValue(input, out directMatch))
+            if (TokenDictionary.TryGetValue(input, out string directMatch))
             {
                 return directMatch;
             }
@@ -639,9 +642,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 hasMatch = false;
                 output = ReToken.Replace(output, match =>
                 {
-                    string tokenString = match.Groups["token"].Value;
-                    string val;
-                    if (TokenDictionary.TryGetValue(tokenString, out val))
+                    string tokenString = match.Groups[0].Value;
+                    if (TokenDictionary.TryGetValue(tokenString, out string val))
                     {
                         if (tokenString.IndexOf("listid", StringComparison.OrdinalIgnoreCase) != -1)
                         {
@@ -652,9 +654,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                         hasMatch = true;
-                        return match.Groups[0].Value == tokenString ? val : match.Groups[0].Value.Replace(tokenString, val);
+                        return val;
                     }
-                    return tokenString;
+                    return match.Groups[0].Value;
                 });
             } while (hasMatch && input != output);
 
@@ -667,7 +669,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 foreach (string token in tokenDefinition.GetTokens())
                 {
-                    if (TokenDictionary.ContainsKey(token)) continue;
+                    var tokenKey = Regex.Unescape(token);
+                    if (TokenDictionary.ContainsKey(tokenKey)) continue;
 
                     int before = _web.Context.PendingRequestCount();
                     string value = tokenDefinition.GetReplaceValue();
@@ -678,16 +681,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         throw new Exception($"Token {token} triggered an ExecuteQuery on the 'current' context. Please refactor this token to use the TokenContext class.");
                     }
 
-                    TokenDictionary[Regex.Unescape(token)] = value;
+                    TokenDictionary[tokenKey] = value;
                     if (tokenDefinition is ListIdToken)
                     {
-                        ListTokenDictionary[Regex.Unescape(token)] = tokenDefinition;
+                        ListTokenDictionary[tokenKey] = tokenDefinition;
                     }
                 }
             }
         }
 
-        private static readonly Regex ReToken = new Regex(@"(?:(?<token>\{(?:\1??[^{]*?\}))+)|(?<token>~\w+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex ReToken = new Regex(@"(?:(\{(?:\1??[^{]*?\}))+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex ReTokenFallback = new Regex(@"\{.*?\}", RegexOptions.Compiled);
 
         private static readonly char[] TokenChars = { '{', '~' };
@@ -704,14 +707,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (string.IsNullOrWhiteSpace(input)) return input;
 
-
             if (string.IsNullOrEmpty(input) || input.IndexOfAny(TokenChars) == -1) return input;
 
             BuildTokenCache();
 
             // Optimize for direct match with string search
-            string directMatch;
-            if (TokenDictionary.TryGetValue(input, out directMatch))
+            if (TokenDictionary.TryGetValue(input, out string directMatch))
             {
                 return directMatch;
             }
@@ -724,19 +725,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 hasMatch = false;
                 output = ReToken.Replace(output, match =>
                 {
-                    string tokenString = match.Groups["token"].Value;
-                    string val;
-                    if (TokenDictionary.TryGetValue(tokenString, out val))
+                    string tokenString = match.Groups[0].Value;
+                    if (TokenDictionary.TryGetValue(tokenString, out string val))
                     {
                         hasMatch = true;
-                        return match.Groups[0].Value == tokenString ? val : match.Groups[0].Value.Replace(tokenString, val);
+                        return val;
                     }
-                    return match.Groups["token"].Value;
+                    return match.Groups[0].Value;
                 });
             } while (hasMatch && input != output);
 
-            if (hasMatch || !ReTokenFallback.IsMatch(output)) return output;
+            if (hasMatch) return output;
 
+            var fallbackMatches = ReTokenFallback.Matches(output);
+            if (fallbackMatches.Count == 0) return output;
+
+            // If all token constructs {...} are GUID's, we can skip the expensive fallback
+            bool needFallback = false;
+            foreach (Match match in fallbackMatches)
+            {
+                if (!ReGuid.IsMatch(match.Value)) needFallback = true;
+            }
+
+            if (!needFallback) return output;
             // Fallback for tokens which may contain { or } as part of their name
             foreach (var pair in TokenDictionary)
             {
@@ -816,6 +827,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             return xmlDoc.OuterXml;
+        }
+
+        internal void RemoveToken<T>(T oldToken) where T : TokenDefinition
+        {
+            for (int i = 0; i < _tokens.Count; i++)
+            {
+                var tokenDefinition = _tokens[i];
+                if (tokenDefinition.GetTokens().SequenceEqual(oldToken.GetTokens()))
+                {
+                    _tokens.RemoveAt(i);
+
+                    foreach (string token in tokenDefinition.GetTokens())
+                    {
+                        var tokenKey = Regex.Unescape(token);
+                        TokenDictionary.Remove(tokenKey);
+                    }
+
+                    break;
+                }
+            }
         }
     }
 }

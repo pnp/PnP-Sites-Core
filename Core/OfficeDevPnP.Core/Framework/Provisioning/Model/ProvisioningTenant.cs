@@ -38,7 +38,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public ProvisioningTenant(AppCatalog appCatalog, ContentDeliveryNetwork cdn)
         {
-            this.AppCatalog = AppCatalog;
+            this.AppCatalog = appCatalog;
             this.ContentDeliveryNetwork = cdn;
         }
 
