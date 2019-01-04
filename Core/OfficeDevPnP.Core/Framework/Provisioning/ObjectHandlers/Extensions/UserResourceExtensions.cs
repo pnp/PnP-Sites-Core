@@ -138,7 +138,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
             return returnValue;
         }
 
-        public static bool PersistResourceValue(Microsoft.SharePoint.Client.List siteList, Guid viewId, string token, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
+        public static bool PersistResourceValue(List siteList, Guid viewId, string token, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             bool returnValue = false;
             var clientContext= siteList.Context;

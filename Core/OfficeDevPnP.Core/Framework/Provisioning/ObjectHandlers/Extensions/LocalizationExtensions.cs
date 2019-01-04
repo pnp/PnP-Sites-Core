@@ -102,8 +102,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 
                 var resourceValues = parser.GetResourceTokenResourceValues(token);
 
-                var defaultLanguageRessource = resourceValues.FirstOrDefault(r => !r.Item1.Equals(culture.Name, StringComparison.InvariantCultureIgnoreCase));
-                if (defaultLanguageRessource != null)
+                var defaultLanguageResource = resourceValues.FirstOrDefault(r => !r.Item1.Equals(culture.Name, StringComparison.InvariantCultureIgnoreCase));
+                if (defaultLanguageResource != null)
                 {
                     foreach (var resourceValue in resourceValues.Where(r => !r.Item1.Equals(culture.Name, StringComparison.InvariantCultureIgnoreCase)))
                     {
@@ -115,14 +115,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                         context.ExecuteQueryRetry();
                     }
                     //Set for default Language of Web
-                    context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = defaultLanguageRessource.Item1;
-                    view.Title = defaultLanguageRessource.Item2;
+                    context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = defaultLanguageResource.Item1;
+                    view.Title = defaultLanguageResource.Item2;
                     view.Update();
                     context.ExecuteQueryRetry();
                 }
                 else
                 {
-                    //skip since default language of web is not contained in ressource file
+                    //skip since default language of web is not contained in resource file
                     scope.LogWarning(CoreResources.Provisioning_Extensions_ViewLocalization_Skip);
                 }
             }
