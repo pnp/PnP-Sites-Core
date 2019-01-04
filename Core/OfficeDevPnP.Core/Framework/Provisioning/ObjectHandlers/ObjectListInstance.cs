@@ -497,15 +497,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             try
             {
-                var viewElement = XElement.Parse(parser.ParseString(view.SchemaXml));
-                var displayNameElement = viewElement.Attribute("DisplayName");
+                //have to maintain raw displayNameElement for displayNameElement.Value.ContainsResourceToken() at Line 717
+                var viewElementRaw = XElement.Parse(view.SchemaXml);
+                var displayNameElement = viewElementRaw.Attribute("DisplayName");
                 if (displayNameElement == null)
                 {
                     throw new ApplicationException("Invalid View element, missing a valid value for the attribute DisplayName.");
                 }
+
+                //for all other functions need Parsed SchemaXML
+                var viewElement = XElement.Parse(parser.ParseString(view.SchemaXml));
+
                 WriteMessage($"Views for list {createdList.Title}|{displayNameElement.Value}|{currentViewIndex}|{total}", ProvisioningMessageType.Progress);
                 monitoredScope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_view__0_, displayNameElement.Value);
 
+                //get from ressource file
                 var viewTitle = parser.ParseString(displayNameElement.Value);
                 var existingView = existingViews.FirstOrDefault(v => v.Title == viewTitle);
                 if (existingView != null)
@@ -2093,7 +2099,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     list = ExtractContentTypes(web, siteList, contentTypeFields, list);
 
-                    list = ExtractViews(web, siteList, list);
+                    list = ExtractViews(web, siteList, list, template, creationInfo);
 
                     list = ExtractFields(web, siteList, contentTypeFields, list, allLists, creationInfo, template);
 
@@ -2146,7 +2152,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
 #endif
 
-        private static ListInstance ExtractViews(Web web, List siteList, ListInstance list)
+        private static ListInstance ExtractViews(Web web, List siteList, ListInstance list, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             foreach (var view in siteList.Views.AsEnumerable().Where(view => !view.Hidden && view.ListViewXml != null))
             {
@@ -2194,6 +2200,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (xslLinkElement != null)
                 {
                     xslLinkElement.Remove();
+                }
+
+                if (creationInfo.PersistMultiLanguageResources)
+                {
+                    var xslDisplayName = schemaElement.Attribute("DisplayName");
+                    if (xslDisplayName != null && !string.IsNullOrWhiteSpace(xslDisplayName.Value))
+                    {
+                        var escapedListTitle = siteList.Title.Replace(" ", "_");
+                        var escapedViewTitle = xslDisplayName.Value.Replace(" ", "_");
+                        string test = xslDisplayName.Value;
+                        if (UserResourceExtensions.PersistResourceValue(siteList, view.Id, $"ListView_{escapedListTitle}_{escapedViewTitle}_Title", template, creationInfo))
+                        {
+                            xslDisplayName.Value = $"{{res:ListView_{escapedListTitle}_{escapedViewTitle}_Title}}";
+                        }
+                    }
                 }
 
                 list.Views.Add(new View { SchemaXml = schemaElement.ToString() });
