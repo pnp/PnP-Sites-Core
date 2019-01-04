@@ -554,6 +554,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
 
             string nodeTitle = node.Title;
+#if !SP2013
             if (PersistLanguage && !string.IsNullOrWhiteSpace(nodeTitle))
             {
                 if (UserResourceExtensions.PersistResourceValue($"NavigationNode_{ParentNodeId}_{node.Id}_Title", currentCulture.LCID, nodeTitle))
@@ -561,7 +562,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     nodeTitle = $"{{res:NavigationNode_{ParentNodeId}_{node.Id}_Title}}";
                 }
             }
-
+#endif
             var result = new Model.NavigationNode
             {
                 Title = nodeTitle,
@@ -570,22 +571,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             };
 
             node.Context.Load(node.Children);
+#if !SP2013
             var acceptLanguage = node.Context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"];
             if (PersistLanguage)
             {
                 node.Context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = currentCulture.Name;
             }
-
+#endif
             node.Context.ExecuteQueryRetry();
 
             result.NavigationNodes.AddRange(from n in node.Children.AsEnumerable()
                                             select n.ToDomainModelNavigationNode(web, PersistLanguage, currentCulture, node.Id));
 
+#if !SP2013
             if (PersistLanguage)
             {
                 node.Context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = acceptLanguage;
             }
-
+#endif
             return (result);
         }
     }

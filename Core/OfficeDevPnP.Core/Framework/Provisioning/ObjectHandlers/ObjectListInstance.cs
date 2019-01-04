@@ -2202,6 +2202,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     xslLinkElement.Remove();
                 }
 
+#if !SP2013
                 if (creationInfo.PersistMultiLanguageResources)
                 {
                     var xslDisplayName = schemaElement.Attribute("DisplayName");
@@ -2216,6 +2217,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                 }
+#endif
 
                 list.Views.Add(new View { SchemaXml = schemaElement.ToString() });
             }
