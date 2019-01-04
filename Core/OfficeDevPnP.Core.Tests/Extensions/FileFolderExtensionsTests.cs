@@ -121,6 +121,24 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         }
 
+        [TestMethod()]
+        public void ResetFileToPreviousVersionTest()
+        {
+            File oldFile = clientContext.Web.GetFileByServerRelativeUrl(file.ServerRelativeUrl);
+            clientContext.Load(oldFile, f => f.UIVersionLabel);
+            clientContext.ExecuteQueryRetry();
+            var oldVersion = Convert.ToDouble(oldFile.UIVersionLabel);
+            var expectedNewVersion = oldVersion - 1;
+
+            clientContext.Web.ResetFileToPreviousVersion(file.ServerRelativeUrl, checkInType, commentText);
+
+            File newFile = clientContext.Web.GetFileByServerRelativeUrl(file.ServerRelativeUrl);
+            clientContext.Load(newFile, f => f.UIVersionLabel);
+            clientContext.ExecuteQueryRetry();
+
+            Assert.AreEqual(newFile.UIVersionLabel, expectedNewVersion);
+        }
+
         [TestMethod]
         public void UploadFileTest()
         {
