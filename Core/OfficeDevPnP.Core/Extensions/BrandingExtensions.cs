@@ -1483,6 +1483,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The Web to activate the Responsive UI to</param>
         /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
+        [Obsolete]
         public static void EnableResponsiveUI(this Web web, string infrastructureUrl = null)
         {
             EnableResponsiveUIImplementation(web, infrastructureUrl);
@@ -1493,6 +1494,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="site">The Site to activate the Responsive UI to</param>
         /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
+        [Obsolete]
         public static void EnableResponsiveUI(this Site site, string infrastructureUrl = null)
         {
             EnableResponsiveUIImplementation(site, infrastructureUrl);
@@ -1611,6 +1613,7 @@ namespace Microsoft.SharePoint.Client
         /// Disables the Responsive UI on a Classic SharePoint Web
         /// </summary>
         /// <param name="web">The Web to disable the Responsive UI on</param>
+        [Obsolete]
         public static void DisableResponsiveUI(this Web web)
         {
             try
@@ -1627,6 +1630,7 @@ namespace Microsoft.SharePoint.Client
         /// Disables the Responsive UI on a Classic SharePoint Site
         /// </summary>
         /// <param name="site">The Site to disable the Responsive UI on</param>
+        [Obsolete]
         public static void DisableResponsiveUI(this Site site)
         {
             try

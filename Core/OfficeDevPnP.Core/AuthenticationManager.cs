@@ -51,7 +51,18 @@ namespace OfficeDevPnP.Core
         private string _clientId;
         private Uri _redirectUri;
 
-#region Authenticating against SharePoint Online using credentials or app-only
+        #region Construction
+        public AuthenticationManager()
+        {
+#if !ONPREMISES
+            // Set the TLS preference. Needed on some server os's to work when Office 365 removes support for TLS 1.0
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+#endif
+        }
+        #endregion  
+
+
+        #region Authenticating against SharePoint Online using credentials or app-only
         /// <summary>
         /// Returns a SharePointOnline ClientContext object
         /// </summary>
@@ -245,9 +256,7 @@ namespace OfficeDevPnP.Core
                                 Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", response.ExpiresOn);
                                 var lease = GetAccessTokenLease(response.ExpiresOn);
                                 lease =
-                                    TimeSpan.FromSeconds(
-                                        Math.Min(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds,
-                                                 TimeSpan.FromHours(1).TotalSeconds));
+                                    TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
                                 Thread.Sleep(lease);
                                 appOnlyAccessToken = null;
                             }

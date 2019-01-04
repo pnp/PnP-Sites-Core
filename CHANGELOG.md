@@ -6,17 +6,71 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [3.3.1811.0 - Unreleased]
+## [3.5.1901.0 - unreleased]
 
 ### Added
-- Added support for the `Visibility` attribute for Unified Groups (devinprejean)
+
+### Changed
+
+- Fix to make the EveryoneExceptExternalUsers token resolve correctly in all circumstances
+- Fix to ensure TLS settings are correctly configured on certain OS versions (e.g. Windows Server 2012 R2)
+- Fix throttling Retry-After processing, should be in seconds, not in milliseconds
+
+### Deprecated
+
+## [3.4.1812.1 - December 2018 release]
+
+### Added
+
+- Added support for handling new page header options
+
+### Changed
+
+### Deprecated
+
+- Deprecated Responsive UI extension methods
+  
+## [3.4.1812.0 - December 2018 release]
+
+### Added
+
+- Adding support for a 3rd navigation level in provisioning (for modern pages) #1927 [mbruckner]
+- Ability to update content type properties #1776 [gautamdsheth]
+- Ability to create team with Group #1990 [gautamdsheth]
+- Ability to enable/disable comments, likes and view count on modern site pages #1756 [gautamdsheth]
+- Added support for themes generation via ThemeUtility.GetThemeAsJSON(primaryColor, bodyTextColor, bodyBackgroundColor) [paolopia]
+
+### Changed
+
+- Stability improvements for updates to RoleDefinition update #1846 [sebastianmattar]
+- Prevent access denied exception when provisioning content types #1903 [jensotto]
+- Allow parameters in field defaults #1979 [oozoo-solutions]
+- Add token parsing when provisioning search settings #1727 [jensotto]
+- Fixed issue with calculated fields for non-English site collections #1970 [SchauDK]
+- FixLookupField. If target list is not found, just return fieldXml #1977 [SchauDK]
+- Current user can't be removed from new SecurableObject role assignments #1584 [jensotto]
+- Use Xml token parsing for Xml data #1982 [SchauDK]
+- New CSOM throttling implementation
+- Fix: Token parser #1968 #1972 [SchauDK] [phawrylak]
+- Improve add owner/member on Group creating #1987 #1990 #1991 [sadomovalex] [gautamdsheth]
+- Improved handling of CustomSortOrder for terms in Term Store [TeodoraI]
+- Improved Tenant and ALM handlers to avoid useless processing [gautamdsheth]
+
+## [3.3.1811.0 - November 2018 release]
+
+### Added
+
+- Added support for the `Visibility` attribute for Unified Groups [devinprejean]
 - Added support for language/lcid when creating modern sites using Sites.SiteCollection.CreateAsync method.
 - Added support for FieldIdToken to support customers while migrating across sites and keeping field internal name, but changing field Id.
 - Added support for Single Page WebPart App pages, will be part of SPFX 1.7
+- Added support for Resource Path API in modern pages #1936 [gautamdsheth]
 
 ### Changed
-- Get classification directly from Unified Group instead of a separate call (devinprejean)
 
+- Get classification directly from Unified Group instead of a separate call [devinprejean]
+- Removes 60 minute maximum lifetime for Access Tokens in AuthenticationManager #1957 [koskila]
+- Fix: MaxVersionLimit set to 0 issue [gautamdsheth]
 
 ### Deprecated
 

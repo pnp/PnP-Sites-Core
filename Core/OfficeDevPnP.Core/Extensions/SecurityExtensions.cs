@@ -162,144 +162,8 @@ namespace Microsoft.SharePoint.Client
                             // old tenant?
                             string userIdentity = string.Empty;
 
-                            web.Context.Load(web, w => w.Language);
-                            web.Context.ExecuteQueryRetry();
+                            userIdentity = web.GetEveryoneExceptExternalUsersClaimName();
 
-                            switch (web.Language)
-                            {
-                                case 1025: // Arabic
-                                    userIdentity = "الجميع باستثناء المستخدمين الخارجيين";
-                                    break;
-                                case 1069: // Basque
-                                    userIdentity = "Guztiak kanpoko erabiltzaileak izan ezik";
-                                    break;
-                                case 1026: // Bulgarian
-                                    userIdentity = "Всички освен външни потребители";
-                                    break;
-                                case 1027: // Catalan
-                                    userIdentity = "Tothom excepte els usuaris externs";
-                                    break;
-                                case 2052: // Chinese (Simplified)
-                                    userIdentity = "除外部用户外的任何人";
-                                    break;
-                                case 1028: // Chinese (Traditional)
-                                    userIdentity = "外部使用者以外的所有人";
-                                    break;
-                                case 1050: // Croatian
-                                    userIdentity = "Svi osim vanjskih korisnika";
-                                    break;
-                                case 1029: // Czech
-                                    userIdentity = "Všichni kromě externích uživatelů";
-                                    break;
-                                case 1030: // Danish
-                                    userIdentity = "Alle undtagen eksterne brugere";
-                                    break;
-                                case 1043: // Dutch
-                                    userIdentity = "Iedereen behalve externe gebruikers";
-                                    break;
-                                case 1033: // English
-                                    userIdentity = "Everyone except external users";
-                                    break;
-                                case 1061: // Estonian
-                                    userIdentity = "Kõik peale väliskasutajate";
-                                    break;
-                                case 1035: // Finnish
-                                    userIdentity = "Kaikki paitsi ulkoiset käyttäjät";
-                                    break;
-                                case 1036: // French
-                                    userIdentity = "Tout le monde sauf les utilisateurs externes";
-                                    break;
-                                case 1110: // Galician
-                                    userIdentity = "Todo o mundo excepto os usuarios externos";
-                                    break;
-                                case 1031: // German
-                                    userIdentity = "Jeder, außer externen Benutzern";
-                                    break;
-                                case 1032: // Greek
-                                    userIdentity = "Όλοι εκτός από εξωτερικούς χρήστες";
-                                    break;
-                                case 1037: // Hebrew
-                                    userIdentity = "כולם פרט למשתמשים חיצוניים";
-                                    break;
-                                case 1081: // Hindi
-                                    userIdentity = "बाह्य उपयोगकर्ताओं को छोड़कर सभी";
-                                    break;
-                                case 1038: // Hungarian
-                                    userIdentity = "Mindenki, kivéve külső felhasználók";
-                                    break;
-                                case 1057: // Indonesian
-                                    userIdentity = "Semua orang kecuali pengguna eksternal";
-                                    break;
-                                case 1040: // Italian
-                                    userIdentity = "Tutti tranne gli utenti esterni";
-                                    break;
-                                case 1041: // Japanese
-                                    userIdentity = "外部ユーザー以外のすべてのユーザー";
-                                    break;
-                                case 1087: // Kazakh
-                                    userIdentity = "Сыртқы пайдаланушылардан басқасының барлығы";
-                                    break;
-                                case 1042: // Korean
-                                    userIdentity = "외부 사용자를 제외한 모든 사람";
-                                    break;
-                                case 1062: // Latvian
-                                    userIdentity = "Visi, izņemot ārējos lietotājus";
-                                    break;
-                                case 1063: // Lithuanian
-                                    userIdentity = "Visi, išskyrus išorinius vartotojus";
-                                    break;
-                                case 1086: // Malay
-                                    userIdentity = "Semua orang kecuali pengguna luaran";
-                                    break;
-                                case 1044: // Norwegian (Bokmål)
-                                    userIdentity = "Alle bortsett fra eksterne brukere";
-                                    break;
-                                case 1045: // Polish
-                                    userIdentity = "Wszyscy oprócz użytkowników zewnętrznych";
-                                    break;
-                                case 1046: // Portuguese (Brazil)
-                                    userIdentity = "Todos exceto os usuários externos";
-                                    break;
-                                case 2070: // Portuguese (Portugal)
-                                    userIdentity = "Todos exceto os utilizadores externos";
-                                    break;
-                                case 1048: // Romanian
-                                    userIdentity = "Toată lumea, cu excepția utilizatorilor externi";
-                                    break;
-                                case 1049: // Russian
-                                    userIdentity = "Все, кроме внешних пользователей";
-                                    break;
-                                case 10266: // Serbian (Cyrillic, Serbia)
-                                    userIdentity = "Сви осим спољних корисника";
-                                    break;
-                                case 2074:// Serbian (Latin)
-                                    userIdentity = "Svi osim spoljnih korisnika";
-                                    break;
-                                case 1051:// Slovak
-                                    userIdentity = "Všetci okrem externých používateľov";
-                                    break;
-                                case 1060: // Slovenian
-                                    userIdentity = "Vsi razen zunanji uporabniki";
-                                    break;
-                                case 3082: // Spanish
-                                    userIdentity = "Todos excepto los usuarios externos";
-                                    break;
-                                case 1053: // Swedish
-                                    userIdentity = "Alla utom externa användare";
-                                    break;
-                                case 1054: // Thai
-                                    userIdentity = "ทุกคนยกเว้นผู้ใช้ภายนอก";
-                                    break;
-                                case 1055: // Turkish
-                                    userIdentity = "Dış kullanıcılar hariç herkes";
-                                    break;
-                                case 1058: // Ukranian
-                                    userIdentity = "Усі, крім зовнішніх користувачів";
-                                    break;
-                                case 1066: // Vietnamese
-                                    userIdentity = "Tất cả mọi người trừ người dùng bên ngoài";
-                                    break;
-                            }
                             if (!string.IsNullOrEmpty(userIdentity))
                             {
                                 spReader = web.EnsureUser(userIdentity);
@@ -322,6 +186,156 @@ namespace Microsoft.SharePoint.Client
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Returns the correct value of the "Everyone except external users" string value
+        /// </summary>
+        /// <param name="web">Web to get the language from</param>
+        /// <returns>String in correct translation</returns>
+        public static string GetEveryoneExceptExternalUsersClaimName(this Web web)
+        {
+            string userIdentity = string.Empty;
+
+            web.EnsureProperty(p => p.Language);
+
+            switch (web.Language)
+            {
+                case 1025: // Arabic
+                    userIdentity = "الجميع باستثناء المستخدمين الخارجيين";
+                    break;
+                case 1069: // Basque
+                    userIdentity = "Guztiak kanpoko erabiltzaileak izan ezik";
+                    break;
+                case 1026: // Bulgarian
+                    userIdentity = "Всички освен външни потребители";
+                    break;
+                case 1027: // Catalan
+                    userIdentity = "Tothom excepte els usuaris externs";
+                    break;
+                case 2052: // Chinese (Simplified)
+                    userIdentity = "除外部用户外的任何人";
+                    break;
+                case 1028: // Chinese (Traditional)
+                    userIdentity = "外部使用者以外的所有人";
+                    break;
+                case 1050: // Croatian
+                    userIdentity = "Svi osim vanjskih korisnika";
+                    break;
+                case 1029: // Czech
+                    userIdentity = "Všichni kromě externích uživatelů";
+                    break;
+                case 1030: // Danish
+                    userIdentity = "Alle undtagen eksterne brugere";
+                    break;
+                case 1043: // Dutch
+                    userIdentity = "Iedereen behalve externe gebruikers";
+                    break;
+                case 1033: // English
+                    userIdentity = "Everyone except external users";
+                    break;
+                case 1061: // Estonian
+                    userIdentity = "Kõik peale väliskasutajate";
+                    break;
+                case 1035: // Finnish
+                    userIdentity = "Kaikki paitsi ulkoiset käyttäjät";
+                    break;
+                case 1036: // French
+                    userIdentity = "Tout le monde sauf les utilisateurs externes";
+                    break;
+                case 1110: // Galician
+                    userIdentity = "Todo o mundo excepto os usuarios externos";
+                    break;
+                case 1031: // German
+                    userIdentity = "Jeder, außer externen Benutzern";
+                    break;
+                case 1032: // Greek
+                    userIdentity = "Όλοι εκτός από εξωτερικούς χρήστες";
+                    break;
+                case 1037: // Hebrew
+                    userIdentity = "כולם פרט למשתמשים חיצוניים";
+                    break;
+                case 1081: // Hindi
+                    userIdentity = "बाह्य उपयोगकर्ताओं को छोड़कर सभी";
+                    break;
+                case 1038: // Hungarian
+                    userIdentity = "Mindenki, kivéve külső felhasználók";
+                    break;
+                case 1057: // Indonesian
+                    userIdentity = "Semua orang kecuali pengguna eksternal";
+                    break;
+                case 1040: // Italian
+                    userIdentity = "Tutti tranne gli utenti esterni";
+                    break;
+                case 1041: // Japanese
+                    userIdentity = "外部ユーザー以外のすべてのユーザー";
+                    break;
+                case 1087: // Kazakh
+                    userIdentity = "Сыртқы пайдаланушылардан басқасының барлығы";
+                    break;
+                case 1042: // Korean
+                    userIdentity = "외부 사용자를 제외한 모든 사람";
+                    break;
+                case 1062: // Latvian
+                    userIdentity = "Visi, izņemot ārējos lietotājus";
+                    break;
+                case 1063: // Lithuanian
+                    userIdentity = "Visi, išskyrus išorinius vartotojus";
+                    break;
+                case 1086: // Malay
+                    userIdentity = "Semua orang kecuali pengguna luaran";
+                    break;
+                case 1044: // Norwegian (Bokmål)
+                    userIdentity = "Alle bortsett fra eksterne brukere";
+                    break;
+                case 1045: // Polish
+                    userIdentity = "Wszyscy oprócz użytkowników zewnętrznych";
+                    break;
+                case 1046: // Portuguese (Brazil)
+                    userIdentity = "Todos exceto os usuários externos";
+                    break;
+                case 2070: // Portuguese (Portugal)
+                    userIdentity = "Todos exceto os utilizadores externos";
+                    break;
+                case 1048: // Romanian
+                    userIdentity = "Toată lumea, cu excepția utilizatorilor externi";
+                    break;
+                case 1049: // Russian
+                    userIdentity = "Все, кроме внешних пользователей";
+                    break;
+                case 10266: // Serbian (Cyrillic, Serbia)
+                    userIdentity = "Сви осим спољних корисника";
+                    break;
+                case 2074:// Serbian (Latin)
+                    userIdentity = "Svi osim spoljnih korisnika";
+                    break;
+                case 1051:// Slovak
+                    userIdentity = "Všetci okrem externých používateľov";
+                    break;
+                case 1060: // Slovenian
+                    userIdentity = "Vsi razen zunanji uporabniki";
+                    break;
+                case 3082: // Spanish
+                    userIdentity = "Todos excepto los usuarios externos";
+                    break;
+                case 1053: // Swedish
+                    userIdentity = "Alla utom externa användare";
+                    break;
+                case 1054: // Thai
+                    userIdentity = "ทุกคนยกเว้นผู้ใช้ภายนอก";
+                    break;
+                case 1055: // Turkish
+                    userIdentity = "Dış kullanıcılar hariç herkes";
+                    break;
+                case 1058: // Ukranian
+                    userIdentity = "Усі, крім зовнішніх користувачів";
+                    break;
+                case 1066: // Vietnamese
+                    userIdentity = "Tất cả mọi người trừ người dùng bên ngoài";
+                    break;
+            }
+
+            return userIdentity;
         }
 
         #endregion
@@ -1181,9 +1195,8 @@ namespace Microsoft.SharePoint.Client
         {
             web.EnsureProperty(w => w.Url);
 #if !NETSTANDARD2_0
-            var returnGuid = new Guid(TokenHelper.GetRealmFromTargetUrl(new Uri(web.Url)));
-
-            return returnGuid;
+            Guid.TryParse(TokenHelper.GetRealmFromTargetUrl(new Uri(web.Url)), out var g);            
+            return g;
 #else
             WebRequest request = WebRequest.Create(new Uri(web.Url) + "/_vti_bin/client.svc");
             request.Headers.Add("Authorization: Bearer ");

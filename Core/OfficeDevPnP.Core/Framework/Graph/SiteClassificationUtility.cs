@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
+    /// <summary>
+    /// Utility class for managing Site Classifications settings on the target tenant using Graph.
+    /// </summary>
     public static class SiteClassificationsUtility
     {
         /// <summary>
