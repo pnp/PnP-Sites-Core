@@ -292,8 +292,9 @@ namespace OfficeDevPnP.Core
         /// </summary>
         /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
         /// <param name="icon">Optional icon to use for the popup form</param>
+        /// <param name="scriptErrorsSuppressed">Optional parameter to set WebBrowser.ScriptErrorsSuppressed value in the popup form</param>
         /// <returns>ClientContext to be used by CSOM code</returns>
-        public ClientContext GetWebLoginClientContext(string siteUrl, System.Drawing.Icon icon = null)
+        public ClientContext GetWebLoginClientContext(string siteUrl, System.Drawing.Icon icon = null, bool scriptErrorsSuppressed = true)
         {
             var authCookiesContainer = new CookieContainer();
             var siteUri = new Uri(siteUrl);
@@ -307,7 +308,7 @@ namespace OfficeDevPnP.Core
                 }
                 var browser = new System.Windows.Forms.WebBrowser
                 {
-                    ScriptErrorsSuppressed = true,
+                    ScriptErrorsSuppressed = scriptErrorsSuppressed,
                     Dock = DockStyle.Fill
                 };
 
