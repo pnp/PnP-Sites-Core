@@ -23,7 +23,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 // Extract the Home Page
-                web.EnsureProperties(w => w.RootFolder.WelcomePage, w => w.ServerRelativeUrl, w => w.Url);
+                web.EnsureProperties(w => w.RootFolder, w => w.ServerRelativeUrl, w => w.Url);
+                web.RootFolder.EnsureProperty(w => w.WelcomePage);
 
                 var homePageUrl = web.RootFolder.WelcomePage;
                 var homepageName = System.IO.Path.GetFileName(web.RootFolder.WelcomePage);
