@@ -974,7 +974,8 @@ namespace OfficeDevPnP.Core.Pages
         /// <returns>List of available <see cref="ClientSideComponent"/></returns>
         public System.Collections.Generic.IEnumerable<ClientSideComponent> AvailableClientSideComponents(string name)
         {
-            if (!this.securityInitialized)
+            // When we're using app-only we do need an accesstoken for the REST request
+            if (!this.securityInitialized && this.Context.Credentials == null)
             {
                 this.InitializeSecurity();
             }
