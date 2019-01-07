@@ -641,17 +641,51 @@ namespace OfficeDevPnP.Core.Pages
         /// <param name="pageName">Name of the page (e.g. mypage.aspx) to save</param>
         public void Save(string pageName = null)
         {
+            Save(pageName: pageName, pageFile: null, pagesLibrary: null);
+        }
+
+
+
+        /// <summary>
+        /// Persists the current <see cref="ClientSidePage"/> instance as a client side page in SharePoint
+        /// </summary>
+        /// <param name="pageName">Name of the page (e.g. mypage.aspx) to save</param>
+        /// <param name="pageFile">File of already existing page (in case of overwrite)</param>
+        /// <param name="pagesLibrary">Pages library instance</param>
+        public void Save(string pageName = null, File pageFile = null, List pagesLibrary = null)
+        {
             string serverRelativePageName;
-            File pageFile;
+            //File pageFile;
             ListItem item;
 
             // Validate we're not using "wrong" layouts for the given site type
             ValidateOneColumnFullWidthSectionUsage();
 
             // Try to load the page
-            LoadPageFile(pageName, out serverRelativePageName, out pageFile);
+            if (pageFile == null && pagesLibrary == null)
+            {
+                LoadPageFile(pageName, out serverRelativePageName, out pageFile);
+            }
+            else
+            {
+                // We know the page exists, so skip the load
+                this.spPagesLibrary = pagesLibrary;
+                this.sitePagesServerRelativeUrl = this.spPagesLibrary.RootFolder.ServerRelativeUrl;
 
-            if (!pageFile.Exists)
+                if (!String.IsNullOrWhiteSpace(pageName))
+                {
+                    this.pageName = pageName;
+                }
+
+                if (string.IsNullOrWhiteSpace(this.pageName))
+                {
+                    throw new Exception("No valid page name specified, can't save this page to SharePoint");
+                }
+
+                serverRelativePageName = $"{this.sitePagesServerRelativeUrl}/{this.pageName}";
+            }
+
+            if (this.spPagesLibrary != null && (pageFile == null || !pageFile.Exists))
             {
                 // create page listitem
                 item = this.spPagesLibrary.RootFolder.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
