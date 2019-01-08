@@ -701,7 +701,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
                 item.Update();
                 this.Context.Web.Context.Load(item);
-                this.Context.Web.Context.ExecuteQueryRetry();
+                //this.Context.Web.Context.ExecuteQueryRetry();
             }
             else
             {
@@ -724,7 +724,8 @@ namespace OfficeDevPnP.Core.Pages
 
             // The page must first be saved, otherwise the page contents gets erased
             item.Update();
-            this.Context.ExecuteQueryRetry();
+            this.Context.Web.Context.Load(item);
+            //this.Context.ExecuteQueryRetry();
 
             // Persist the page header
             if (this.pageHeader.Type == ClientSidePageHeaderType.None)
@@ -763,6 +764,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             item.Update();
+            this.Context.Web.Context.Load(item);
             this.Context.ExecuteQueryRetry();
 
             // Try to set the page banner image url if not yet set
@@ -847,6 +849,7 @@ namespace OfficeDevPnP.Core.Pages
             if (isDirty)
             {
                 item.Update();
+                this.Context.Web.Context.Load(item);
                 this.Context.ExecuteQueryRetry();
             }
 
