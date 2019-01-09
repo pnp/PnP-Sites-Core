@@ -972,6 +972,7 @@
     <Compile Include="Pages\ClientSideTextControlData.cs" />
     <Compile Include="Pages\ClientSideWebPart.cs" />
     <Compile Include="Pages\ClientSideWebPartControlData.cs" />
+    <Compile Include="Pages\ClientSideWebPartControlDataOnly.cs" />
     <Compile Include="Pages\ClientSideWebPartData.cs" />
     <Compile Include="Pages\DefaultClientSideWebParts.cs" />
     <Compile Include="Pages\PromotedState.cs" />
