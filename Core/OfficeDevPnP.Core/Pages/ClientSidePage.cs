@@ -1352,7 +1352,7 @@ namespace OfficeDevPnP.Core.Pages
                         control.FromHtml(clientSideControl);
 
                         // Handle control positioning in sections and columns
-                        ApplySectionAndColumn(control, control.SpControlData.Position);
+                        ApplySectionAndColumn(control, control.SpControlData.Position, control.SpControlData.Emphasis);
 
                         this.AddControl(control);
                     }
@@ -1365,12 +1365,13 @@ namespace OfficeDevPnP.Core.Pages
                         control.FromHtml(clientSideControl);
 
                         // Handle control positioning in sections and columns
-                        ApplySectionAndColumn(control, control.SpControlData.Position);
+                        ApplySectionAndColumn(control, control.SpControlData.Position, control.SpControlData.Emphasis);
 
                         this.AddControl(control);
                     }
                     else if (controlType == typeof(CanvasColumn))
                     {
+                        // Need to parse empty sections
                         var jsonSerializerSettings = new JsonSerializerSettings()
                         {
                             MissingMemberHandling = MissingMemberHandling.Ignore
@@ -1387,7 +1388,7 @@ namespace OfficeDevPnP.Core.Pages
                         {
                             if (sectionData.Position != null)
                             {
-                                this.AddSection(new CanvasSection(this), sectionData.Position.ZoneIndex);
+                                this.AddSection(new CanvasSection(this) { ZoneEmphasis = sectionData.Emphasis != null ? sectionData.Emphasis.ZoneEmphasis : 0}, sectionData.Position.ZoneIndex);
                                 currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).First();
                             }
                         }
@@ -1469,12 +1470,12 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
-        private void ApplySectionAndColumn(CanvasControl control, ClientSideCanvasControlPosition position)
+        private void ApplySectionAndColumn(CanvasControl control, ClientSideCanvasControlPosition position, ClientSideSectionEmphasis emphasis)
         {
             var currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).FirstOrDefault();
             if (currentSection == null)
             {
-                this.AddSection(new CanvasSection(this), position.ZoneIndex);
+                this.AddSection(new CanvasSection(this) { ZoneEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0}, position.ZoneIndex);
                 currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).First();
             }
 

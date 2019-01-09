@@ -308,6 +308,10 @@ namespace OfficeDevPnP.Core.Pages
                     SectionFactor = this.Column.ColumnFactor,
                     ControlIndex = controlIndex,
                 },
+                Emphasis = new ClientSideSectionEmphasis()
+                {
+                    ZoneEmphasis = this.Section.ZoneEmphasis,
+                }
             };
 
             // Set the control's data version to the latest version...default was 1.0, but some controls use a higher version

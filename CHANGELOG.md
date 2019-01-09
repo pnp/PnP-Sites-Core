@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Added support for modern page section backgrounds
 - ResetFileToPreviousVersion extension method #2030 [skaggej]
   
 ### Changed
@@ -19,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix throttling Retry-After processing, should be in seconds, not in milliseconds
 - Multi-lingual provisioning of list title, extraction of additional navigation node languages #1974 [czullu]
 - Updated logging logic #2018 [jensotto]
+- Performance optimization on for the client side page save action
 
 ### Deprecated
 
