@@ -915,6 +915,16 @@ namespace OfficeDevPnP.Core.Pages
                 case DefaultClientSideWebParts.Spacer: return "8654b779-4886-46d4-8ffb-b5ed960ee986";
                 case DefaultClientSideWebParts.ClientWebPart: return "243166f5-4dc3-4fe2-9df2-a7971b546a0a";
                 case DefaultClientSideWebParts.PowerApps: return "9d7e898c-f1bb-473a-9ace-8b415036578b";
+                case DefaultClientSideWebParts.CodeSnippet: return "7b317bca-c919-4982-af2f-8399173e5a1e";
+                case DefaultClientSideWebParts.PageFields: return "cf91cf5d-ac23-4a7a-9dbc-cd9ea2a4e859";
+                case DefaultClientSideWebParts.Weather: return "868ac3c3-cad7-4bd6-9a1c-14dc5cc8e823";
+                case DefaultClientSideWebParts.YouTube: return "544dd15b-cf3c-441b-96da-004d5a8cea1d";
+                case DefaultClientSideWebParts.MyDocuments: return "b519c4f1-5cf7-4586-a678-2f1c62cc175a";
+                case DefaultClientSideWebParts.YammerFullFeed: return "cb3bfe97-a47f-47ca-bffb-bb9a5ff83d75";
+                case DefaultClientSideWebParts.CountDown: return "62cac389-787f-495d-beca-e11786162ef4";
+                case DefaultClientSideWebParts.ListProperties: return "a8cd4347-f996-48c1-bcfb-75373fed2a27";
+                case DefaultClientSideWebParts.MarkDown: return "1ef5ed11-ce7b-44be-bc5e-4abd55101d16";
+                case DefaultClientSideWebParts.Planner: return "39c4c1c2-63fa-41be-8cc2-f6c0b49b253d";
                 default: return "";
             }
         }
@@ -957,6 +967,16 @@ namespace OfficeDevPnP.Core.Pages
                 case "8654b779-4886-46d4-8ffb-b5ed960ee986": return DefaultClientSideWebParts.Spacer;
                 case "243166f5-4dc3-4fe2-9df2-a7971b546a0a": return DefaultClientSideWebParts.ClientWebPart;
                 case "9d7e898c-f1bb-473a-9ace-8b415036578b": return DefaultClientSideWebParts.PowerApps;
+                case "7b317bca-c919-4982-af2f-8399173e5a1e": return DefaultClientSideWebParts.CodeSnippet;
+                case "cf91cf5d-ac23-4a7a-9dbc-cd9ea2a4e859": return DefaultClientSideWebParts.PageFields;
+                case "868ac3c3-cad7-4bd6-9a1c-14dc5cc8e823": return DefaultClientSideWebParts.Weather;
+                case "544dd15b-cf3c-441b-96da-004d5a8cea1d": return DefaultClientSideWebParts.YouTube;
+                case "b519c4f1-5cf7-4586-a678-2f1c62cc175a": return DefaultClientSideWebParts.MyDocuments;
+                case "cb3bfe97-a47f-47ca-bffb-bb9a5ff83d75": return DefaultClientSideWebParts.YammerFullFeed;
+                case "62cac389-787f-495d-beca-e11786162ef4": return DefaultClientSideWebParts.CountDown;
+                case "a8cd4347-f996-48c1-bcfb-75373fed2a27": return DefaultClientSideWebParts.ListProperties;
+                case "1ef5ed11-ce7b-44be-bc5e-4abd55101d16": return DefaultClientSideWebParts.MarkDown;
+                case "39c4c1c2-63fa-41be-8cc2-f6c0b49b253d": return DefaultClientSideWebParts.Planner;
                 default: return DefaultClientSideWebParts.ThirdParty;
             }
         }

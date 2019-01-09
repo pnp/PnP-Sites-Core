@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Added support for modern page section backgrounds
+- Added new 1st party client side web parts to the client side page API - support for provisioning engine will come with next schema update
 - ResetFileToPreviousVersion extension method #2030 [skaggej]
   
 ### Changed
