@@ -638,13 +638,19 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Persists the current <see cref="ClientSidePage"/> instance as a client side page in SharePoint
         /// </summary>
+        public void Save()
+        {
+            Save(pageName: null, pageFile: null, pagesLibrary: null);
+        }
+
+        /// <summary>
+        /// Persists the current <see cref="ClientSidePage"/> instance as a client side page in SharePoint
+        /// </summary>
         /// <param name="pageName">Name of the page (e.g. mypage.aspx) to save</param>
-        public void Save(string pageName = null)
+        public void Save(string pageName)
         {
             Save(pageName: pageName, pageFile: null, pagesLibrary: null);
         }
-
-
 
         /// <summary>
         /// Persists the current <see cref="ClientSidePage"/> instance as a client side page in SharePoint
