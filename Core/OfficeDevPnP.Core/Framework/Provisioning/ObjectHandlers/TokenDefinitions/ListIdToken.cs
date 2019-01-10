@@ -117,6 +117,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
                 }
             }
         }
-    }
 #endif
+    }
 }
