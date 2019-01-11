@@ -533,11 +533,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 _tokens.Add(new ListIdToken(web, list.Title, list.Id));
                 // _tokens.Add(new ListIdToken(web, list.Title, Guid.Empty));
+#if !SP2013
                 var mainLanguageName = GetListTitleForMainLanguage(web, list.Title);
                 if (mainLanguageName != list.Title)
                 {
                     _tokens.Add(new ListIdToken(web, mainLanguageName, list.Id));
                 }
+#endif
                 _tokens.Add(new ListUrlToken(web, list.Title, list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
 
                 foreach (var view in list.Views)
@@ -908,5 +910,5 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 #endif
     }
-    }
+}
 
