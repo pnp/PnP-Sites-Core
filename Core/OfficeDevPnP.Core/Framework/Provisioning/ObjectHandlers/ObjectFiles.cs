@@ -149,12 +149,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (webPart.Title.ContainsResourceToken())
                                     {
                                         // update data based on where it was added - needed in order to localize wp title
-#if !SP2016
                                         wpd.EnsureProperties(w => w.ZoneId, w => w.WebPart, w => w.WebPart.Properties);
                                         webPart.Zone = wpd.ZoneId;
-#else
-                                        wpd.EnsureProperties(w => w.WebPart, w => w.WebPart.Properties);
-#endif
                                         webPart.Order = (uint)wpd.WebPart.ZoneIndex;
                                         webPartsNeedLocalization = true;
                                     }
