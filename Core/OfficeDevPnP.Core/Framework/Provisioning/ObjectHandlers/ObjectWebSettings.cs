@@ -26,7 +26,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.EnsureProperties(
 #if !ONPREMISES
                     w => w.NoCrawl,
-                    w => w.RequestAccessEmail,
                     w => w.CommentsOnSitePagesDisabled,
 #endif
                     //w => w.Title,
@@ -34,6 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.MasterUrl,
                     w => w.CustomMasterUrl,
                     w => w.SiteLogoUrl,
+                    w => w.RequestAccessEmail,
                     w => w.RootFolder,
                     w => w.AlternateCssUrl,
                     w => w.ServerRelativeUrl,
@@ -42,7 +42,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var webSettings = new WebSettings();
 #if !ONPREMISES
                 webSettings.NoCrawl = web.NoCrawl;
-                webSettings.RequestAccessEmail = web.RequestAccessEmail;
                 webSettings.CommentsOnSitePagesDisabled = web.CommentsOnSitePagesDisabled;
 #endif
                 // We're not extracting Title and Description
@@ -54,6 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Notice. No tokenization needed for the welcome page, it's always relative for the site
                 webSettings.WelcomePage = web.RootFolder.WelcomePage;
                 webSettings.AlternateCSS = Tokenize(web.AlternateCssUrl, web.Url);
+                webSettings.RequestAccessEmail = web.RequestAccessEmail;
 
                 if (creationInfo.PersistBrandingFiles)
                 {
