@@ -521,6 +521,8 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AppPackageIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUpdateValue.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ListItemUtilities.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ConnectorFileHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUtilities.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\TenantHelper.cs" />
@@ -1014,6 +1016,7 @@
     <Compile Include="Utilities\PnPHttpProvider.cs" />
     <Compile Include="Utilities\PnPHttpUtility.cs" />
     <Compile Include="Utilities\RESTUtilities.cs" />
+    <Compile Include="Utilities\StringUtilities.cs" />
     <Compile Include="Utilities\Themes\Palettes\Color.cs" />
     <Compile Include="Utilities\Themes\Palettes\Colors.cs" />
     <Compile Include="Utilities\Themes\Palettes\ColorValues.cs" />
