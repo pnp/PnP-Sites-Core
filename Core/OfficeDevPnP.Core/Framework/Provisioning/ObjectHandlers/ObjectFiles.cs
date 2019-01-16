@@ -242,6 +242,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
+        public void SetFileProperties(File file, IDictionary<string, string> properties, bool checkoutIfRequired = true)
+        {
+            SetFileProperties(file, properties, null, checkoutIfRequired);
+        }
 
         public void SetFileProperties(File file, IDictionary<string, string> properties, TokenParser parser, bool checkoutIfRequired = true)
         {

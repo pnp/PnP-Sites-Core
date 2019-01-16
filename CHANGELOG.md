@@ -12,10 +12,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 - ZoneID web part property now can be used in SP2016
 - MajorVersionLimit and MajorWithMinorVersionsLimit are supported in the minimal (May 2018) version of SP2013 CSOM (Issue 1943) #1994 [tmeckel]
-- Enables Web.RequestAccessEmail for OnPrem (both 15.0 and 16.0) #1794 [biste5] 
+- Enables Web.RequestAccessEmail for OnPrem (both 15.0 and 16.0) #1794 [biste5]
 
 ### Changed
 
+- Feature/make datarow and file properties consistents #1762 [stevebeauge]
 
 ## [3.5.1901.0 - January 2019 release]
 
