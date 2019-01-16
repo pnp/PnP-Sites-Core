@@ -1080,11 +1080,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.DocumentTemplateUrl,
                 l => l.RootFolder,
                 l => l.BaseType,
-                l => l.BaseTemplate
-#if !SP2013
-, l => l.MajorWithMinorVersionsLimit
-, l => l.MajorVersionLimit
-#endif
+                l => l.BaseTemplate,
+                l => l.MajorWithMinorVersionsLimit,
+                l => l.MajorVersionLimit
 #if !ONPREMISES
 , l => l.ListExperienceOptions
 , l => l.ReadSecurity
@@ -1241,12 +1239,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     isDirty |= existingList.Set(x => x.EnableVersioning, templateList.EnableVersioning);
 
-#if !SP2013
 #if !ONPREMISES
                     isDirty |= existingList.Set(x => x.MajorVersionLimit, templateList.MaxVersionLimit > 0 ? templateList.MaxVersionLimit : 500);
 #else
                     isDirty |= existingList.Set(x => x.MajorVersionLimit, templateList.MaxVersionLimit);
-#endif
 #endif
                     if (existingList.BaseType == BaseType.DocumentLibrary)
                     {
@@ -1715,12 +1711,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 createdList.EnableVersioning = templateList.EnableVersioning;
                 if (templateList.EnableVersioning)
                 {
-#if !SP2013
 #if !ONPREMISES
                     createdList.MajorVersionLimit = templateList.MaxVersionLimit > 0 ? templateList.MaxVersionLimit : 500;
 #else
                     createdList.MajorVersionLimit = templateList.MaxVersionLimit;
-#endif
 #endif
                     // DraftVisibilityType.Approver is available only when the EnableModeration option of the list is true
                     if (DraftVisibilityType.Approver
@@ -1953,10 +1947,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.OnQuickLaunch,
                         l => l.RootFolder.ServerRelativeUrl,
                         l => l.UserCustomActions,
-#if !SP2013
                         l => l.MajorVersionLimit,
                         l => l.MajorWithMinorVersionsLimit,
-#endif
                         l => l.DraftVersionVisibility,
                         l => l.DefaultDisplayFormUrl,
                         l => l.DefaultEditFormUrl,
