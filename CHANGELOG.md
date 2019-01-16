@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.6.1902.0 - unreleased]
+
+### Added
+
+- ZoneID web part property now can be used in SP2016
+- MajorVersionLimit and MajorWithMinorVersionsLimit are supported in the minimal (May 2018) version of SP2013 CSOM
+- Enables Web.RequestAccessEmail for OnPrem (both 15.0 and 16.0) #1794 [biste5] 
+
+### Changed
+
+
 ## [3.5.1901.0 - January 2019 release]
 
 ### Added
