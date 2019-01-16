@@ -52,7 +52,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var file in filesToProcess)
                 {
                     file.Src = parser.ParseString(file.Src);
-                    var targetFileName = !String.IsNullOrEmpty(file.TargetFileName) ? file.TargetFileName : file.Src;
+                    var targetFileName = parser.ParseString(
+                        !String.IsNullOrEmpty(file.TargetFileName) ? file.TargetFileName : template.Connector.GetFilenamePart(file.Src)
+                        );
 
                     currentFileIndex++;
                     WriteMessage($"File|{targetFileName}|{currentFileIndex}|{filesToProcess.Length}", ProvisioningMessageType.Progress);
@@ -93,7 +95,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             using (var stream = GetFileStream(template, file))
                             {
-                                targetFile = UploadFile(template, file, folder, stream);
+                                targetFile = UploadFile(folder, stream, targetFileName, file.Overwrite);
                             }
                         }
                         else
@@ -106,7 +108,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         using (var stream = GetFileStream(template, file))
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_file__0_, targetFileName);
-                            targetFile = UploadFile(template, file, folder, stream);
+                            targetFile = UploadFile(folder, stream, targetFileName, file.Overwrite);
                         }
 
                         checkedOut = CheckOutIfNeeded(web, targetFile);
@@ -332,13 +334,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return _willExtract.Value;
         }
 
-        private static File UploadFile(ProvisioningTemplate template, Model.File file, Microsoft.SharePoint.Client.Folder folder, Stream stream)
+        private static File UploadFile(Microsoft.SharePoint.Client.Folder folder, Stream stream, string fileName, bool overwrite)
         {
+            if (folder == null) throw new ArgumentNullException(nameof(folder));
+            if (stream == null) throw new ArgumentNullException(nameof(stream));
+
             File targetFile = null;
-            var fileName = !String.IsNullOrEmpty(file.TargetFileName) ? file.TargetFileName : template.Connector.GetFilenamePart(file.Src);
             try
             {
-                targetFile = folder.UploadFile(fileName, stream, file.Overwrite);
+                targetFile = folder.UploadFile(fileName, stream, overwrite);
             }
             catch (ServerException ex)
             {
@@ -348,7 +352,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     fileName = WebUtility.UrlDecode(fileName);
                     try
                     {
-                        targetFile = folder.UploadFile(fileName, stream, file.Overwrite);
+                        targetFile = folder.UploadFile(fileName, stream, overwrite);
                     }
                     catch (Exception)
                     {
@@ -358,7 +362,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return targetFile;
         }
-
         /// <summary>
         /// Retrieves <see cref="Stream"/> from connector. If the file name contains special characters (e.g. "%20") and cannot be retrieved, a workaround will be performed
         /// </summary>
@@ -475,7 +478,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 directory.Folder,
                                 directory.Overwrite,
                                 null, // No WebPartPages are supported with this technique
-                                metadataProperties != null && metadataProperties.ContainsKey(directory.Src + @"\" + file) ? 
+                                metadataProperties != null && metadataProperties.ContainsKey(directory.Src + @"\" + file) ?
                                     metadataProperties[directory.Src + @"\" + file] : null,
                                 directory.Security,
                                 directory.Level
