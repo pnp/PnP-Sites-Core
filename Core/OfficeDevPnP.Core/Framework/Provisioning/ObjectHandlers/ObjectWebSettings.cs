@@ -280,6 +280,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate);
                     }
+#endif
 
                     if (!web.IsSubSite() || (web.IsSubSite() && web.HasUniqueRoleAssignments))
                     {
@@ -297,6 +298,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
+#if !ONPREMISES
                     if (web.CommentsOnSitePagesDisabled != webSettings.CommentsOnSitePagesDisabled)
                     {
                         web.CommentsOnSitePagesDisabled = webSettings.CommentsOnSitePagesDisabled;
