@@ -1874,6 +1874,20 @@ namespace Microsoft.SharePoint.Client
             }
             catch (FileNotFoundException)
             {
+                // eat the exception
+                return null;
+            }
+            catch (ServerException ex)
+            {
+                if (ex.ServerErrorTypeName.Equals("System.IO.FileNotFoundException"))
+                {
+                    // eat the exception
+                    return null;
+                }
+                else
+                {
+                    throw ex;
+                }
             }
             return formsFolder;
         }
