@@ -348,12 +348,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var fileBytes = ConnectorFileHelper.GetFileBytes(template.Connector, logoUrl);
                                 if (fileBytes != null && fileBytes.Length > 0)
                                 {
+#if !NETSTANDARD2_0
                                     var mimeType = MimeMapping.GetMimeMapping(logoUrl);
+#else
+                                    var mimeType = "";
+                                    var imgUrl = logoUrl;
+                                    if (imgUrl.Contains("?"))
+                                    {
+                                        imgUrl = imgUrl.Split(new[] { '?' })[0];
+                                    }
+                                    if(imgUrl.EndsWith(".gif",StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        mimeType = "image/gif";
+                                    }
+                                    if (imgUrl.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        mimeType = "image/png";
+                                    }
+                                    if (imgUrl.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        mimeType = "image/jpeg";
+                                    }
+#endif
                                     Sites.SiteCollection.SetGroupImage((ClientContext)web.Context, fileBytes, mimeType).GetAwaiter().GetResult();
+
                                 }
                             }
 #endif
-                        }
+                                }
                         else
                         {
                             web.SiteLogoUrl = logoUrl;
