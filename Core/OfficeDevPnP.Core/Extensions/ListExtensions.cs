@@ -1599,6 +1599,7 @@ namespace Microsoft.SharePoint.Client
 
         private static void SetDefaultColumnValuesImplementation(this List list, IEnumerable<IDefaultColumnValue> columnValues)
         {
+            if (columnValues == null || !columnValues.Any()) return;
             using (var clientContext = list.Context as ClientContext)
             {
                 try
@@ -1623,7 +1624,7 @@ namespace Microsoft.SharePoint.Client
                         path = path.Equals("/") ? list.RootFolder.ServerRelativeUrl : UrlUtility.Combine(list.RootFolder.ServerRelativeUrl, path);
                         // Find all in the same path:
                         var defaultColumnValuesInSamePath = columnValues.Where(x => x.FolderRelativePath == defaultColumnValue.FolderRelativePath);
-                        path = Utilities.HttpUtility.UrlPathEncode(path,false);
+                        path = Utilities.HttpUtility.UrlPathEncode(path, false);
 
                         var xATag = new XElement("a", new XAttribute("href", path));
 
