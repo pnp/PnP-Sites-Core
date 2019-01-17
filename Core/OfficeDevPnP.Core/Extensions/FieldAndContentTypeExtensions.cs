@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client.DocumentSet;
+using Microsoft.SharePoint.Client.Taxonomy;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -728,6 +729,74 @@ namespace Microsoft.SharePoint.Client
         {
             Field field = list.Fields.GetByInternalNameOrTitle(fieldName);
             field.SetJsLinkCustomizations(jsLink);
+        }
+
+        public static IDefaultColumnValue GetDefaultColumnValueFromField(this Field field, ClientContext clientContext, string folderRelativePath, string[] value)
+        {
+            field.EnsureProperties(f => f.TypeAsString, f => f.InternalName);
+            IDefaultColumnValue defaultColumnValue = null;
+            if (field.TypeAsString == "Text" ||
+                field.TypeAsString == "Choice" ||
+                field.TypeAsString == "MultiChoice" ||
+                field.TypeAsString == "User" ||
+                field.TypeAsString == "Boolean" ||
+                field.TypeAsString == "DateTime" ||
+                field.TypeAsString == "Number" ||
+                field.TypeAsString == "Currency"
+                )
+            {
+                var values = string.Join(";", value);
+                defaultColumnValue = new DefaultColumnTextValue()
+                {
+                    FieldInternalName = field.InternalName,
+                    FolderRelativePath = folderRelativePath,
+                    Text = values
+                };
+            }
+            else if (field.TypeAsString == "UserMulti")
+            {
+                var values = string.Join(";#", value);
+                defaultColumnValue = new DefaultColumnTextValue()
+                {
+                    FieldInternalName = field.InternalName,
+                    FolderRelativePath = folderRelativePath,
+                    Text = values
+                };
+            }
+            else
+            {
+                List<Term> terms = new List<Term>();
+                foreach (var termString in value)
+                {
+                    Guid termGuid;
+                    Term term;
+                    if (Guid.TryParse(termString, out termGuid))
+                    {
+                        var taxSession = clientContext.Site.GetTaxonomySession();
+                        term = taxSession.GetTerm(termGuid);
+                        clientContext.ExecuteQueryRetry();
+                    }
+                    else
+                    {
+                        term = clientContext.Site.GetTaxonomyItemByPath(termString) as Term;
+                    }
+                    if (term != null)
+                    {
+                        terms.Add(term);
+                    }
+                }
+                if (terms.Any())
+                {
+                    defaultColumnValue = new DefaultColumnTermValue()
+                    {
+                        FieldInternalName = field.InternalName,
+                        FolderRelativePath = folderRelativePath,
+                    };
+                    terms.ForEach(t => ((DefaultColumnTermValue)defaultColumnValue).Terms.Add(t));
+                }
+            }
+
+            return defaultColumnValue;
         }
 
         #endregion

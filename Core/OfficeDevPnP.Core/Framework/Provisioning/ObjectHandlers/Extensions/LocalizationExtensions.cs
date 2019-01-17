@@ -63,11 +63,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                 var allParts = web.GetWebParts(parser.ParseString(url)).ToList();
                 foreach (var webPart in webParts)
                 {
-#if !SP2016
                     var partOnPage = allParts.FirstOrDefault(w => w.ZoneId == webPart.Zone && w.WebPart.ZoneIndex == webPart.Order);
-#else
-                    var partOnPage = allParts.FirstOrDefault(w => w.WebPart.ZoneIndex == webPart.Order);
-#endif
                     if (webPart.Title.ContainsResourceToken() && partOnPage != null)
                     {
                         var resourceValues = parser.GetResourceTokenResourceValues(webPart.Title);

@@ -517,18 +517,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         internal void AddListTokens(Web web)
         {
-            web.EnsureProperty(w => w.ServerRelativeUrl);
+            web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Language);
 
             _tokens.RemoveAll(t => t.GetType() == typeof(ListIdToken));
             _tokens.RemoveAll(t => t.GetType() == typeof(ListUrlToken));
             _tokens.RemoveAll(t => t.GetType() == typeof(ListViewIdToken));
 
-            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views));
+            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views
+#if !SP2013
+            , l => l.TitleResource
+#endif
+            ));
             web.Context.ExecuteQueryRetry();
             foreach (var list in web.Lists)
             {
-                // _tokens.Add(new ListIdToken(web, list.Title, list.Id));
-                _tokens.Add(new ListIdToken(web, list.Title, Guid.Empty));
+                _tokens.Add(new ListIdToken(web, list.Title, list.Id));
+                // _tokens.Add(new ListIdToken(web, list.Title, Guid.Empty));
+#if !SP2013
+                var mainLanguageName = GetListTitleForMainLanguage(web, list.Title);
+                if (mainLanguageName != list.Title)
+                {
+                    _tokens.Add(new ListIdToken(web, mainLanguageName, list.Id));
+                }
+#endif
                 _tokens.Add(new ListUrlToken(web, list.Title, list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
 
                 foreach (var view in list.Views)
@@ -848,6 +859,56 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
         }
+
+#if !SP2013
+        private static Dictionary<String, String> listsTitles = new Dictionary<string, string>();
+
+        /// <summary>
+        /// This method retrieves the title of a list in the main language of the site
+        /// </summary>
+        /// <param name="web">The current Web</param>
+        /// <param name="name">The title of the list in the current user's language</param>
+        /// <returns>The title of the list in the main language of the site</returns>
+        private String GetListTitleForMainLanguage(Web web, String name)
+        {
+            if (listsTitles.ContainsKey(name))
+            {
+                // Return the title that we already have
+                return (listsTitles[name]);
+            }
+            else
+            {
+                // Get the default culture for the current web
+                var ci = new System.Globalization.CultureInfo((int)web.Language);
+
+                // Refresh the list of lists with a lock
+                lock (typeof(ListIdToken))
+                {
+                    // Reset the cache of lists titles
+                    TokenParser.listsTitles.Clear();
+
+                    // Add the new lists title using the main language of the site
+                    foreach (var list in web.Lists)
+                    {
+                        var titleResource = list.TitleResource.GetValueForUICulture(ci.Name);
+                        web.Context.ExecuteQueryRetry();
+                        TokenParser.listsTitles.Add(list.Title, titleResource.Value);
+                    }
+                }
+
+                // If now we have the list title ...
+                if (listsTitles.ContainsKey(name))
+                {
+                    // Return the title, if any
+                    return (listsTitles[name]);
+                }
+                else
+                {
+                    return (null);
+                }
+            }
+        }
+#endif
     }
 }
 

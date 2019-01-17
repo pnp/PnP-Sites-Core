@@ -6,7 +6,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [3.5.1901.0 - unreleased]
+## [3.6.1902.0 - unreleased]
+
+### Added
+
+- ZoneID web part property now can be used in SP2016
+- MajorVersionLimit and MajorWithMinorVersionsLimit are supported in the minimal (May 2018) version of SP2013 CSOM (Issue 1943) #1994 [tmeckel]
+- Enables Web.RequestAccessEmail for on-premises (both 15.0 and 16.0) #1794 [biste5]
+- Add token parsing in `targetFileName` property of file object #2036 [stevebeauge]
+
+### Changed
+
+- Feature/make datarow and file properties consistent #1762 [stevebeauge]
+
+## [3.5.1901.0 - January 2019 release]
 
 ### Added
 

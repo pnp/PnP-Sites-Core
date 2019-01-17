@@ -15,8 +15,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using OfficeDevPnP.Core.Entities;
 using ContentType = Microsoft.SharePoint.Client.ContentType;
 using Field = Microsoft.SharePoint.Client.Field;
+using Folder = Microsoft.SharePoint.Client.Folder;
 using View = OfficeDevPnP.Core.Framework.Provisioning.Model.View;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
@@ -196,11 +198,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             listInfo.SiteList.Update();
                         }
                         web.Context.ExecuteQueryRetry();
+
+                        #region Column default values
+                        foreach (var listInfo in processedLists)
+                        {
+                            var defaultFolderValues = new List<Entities.IDefaultColumnValue>();
+                            foreach (var templateListFolder in listInfo.TemplateList.Folders)
+                            {
+                                var folderName = templateListFolder.Name;
+                                ProcessDefaultFolders(web, listInfo, templateListFolder, folderName, defaultFolderValues);
+                            }
+                            listInfo.SiteList.SetDefaultColumnValues(defaultFolderValues, true);
+                        }
+                        #endregion
                     }
                     WriteMessage("Done processing lists", ProvisioningMessageType.Completed);
                 }
             }
             return parser;
+        }
+
+        private static void ProcessDefaultFolders(Web web, ListInfo listInfo, Model.Folder templateListFolder, string folderName,
+            List<IDefaultColumnValue> defaultFolderValues)
+        {
+            foreach (KeyValuePair<string, string> columnValue in templateListFolder.DefaultColumnValues)
+            {
+                string fieldName = columnValue.Key;
+                var field = listInfo.SiteList.Fields.GetByInternalNameOrTitle(fieldName);
+                var defaultValue =
+                    field.GetDefaultColumnValueFromField((ClientContext)web.Context, folderName, new[] { columnValue.Value });
+                defaultFolderValues.Add(defaultValue);
+            }
+            foreach (var folder in templateListFolder.Folders)
+            {
+                var childFolderName = folderName + "/" + folder.Name;
+                ProcessDefaultFolders(web, listInfo, folder, childFolderName, defaultFolderValues);
+            }
         }
 
         private static void ProcessIRMSettings(Web web, ListInfo list)
@@ -1080,11 +1113,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.DocumentTemplateUrl,
                 l => l.RootFolder,
                 l => l.BaseType,
-                l => l.BaseTemplate
-#if !SP2013
-, l => l.MajorWithMinorVersionsLimit
-, l => l.MajorVersionLimit
-#endif
+                l => l.BaseTemplate,
+                l => l.MajorWithMinorVersionsLimit,
+                l => l.MajorVersionLimit
 #if !ONPREMISES
 , l => l.ListExperienceOptions
 , l => l.ReadSecurity
@@ -1241,12 +1272,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     isDirty |= existingList.Set(x => x.EnableVersioning, templateList.EnableVersioning);
 
-#if !SP2013
 #if !ONPREMISES
                     isDirty |= existingList.Set(x => x.MajorVersionLimit, templateList.MaxVersionLimit > 0 ? templateList.MaxVersionLimit : 500);
 #else
                     isDirty |= existingList.Set(x => x.MajorVersionLimit, templateList.MaxVersionLimit);
-#endif
 #endif
                     if (existingList.BaseType == BaseType.DocumentLibrary)
                     {
@@ -1715,12 +1744,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 createdList.EnableVersioning = templateList.EnableVersioning;
                 if (templateList.EnableVersioning)
                 {
-#if !SP2013
 #if !ONPREMISES
                     createdList.MajorVersionLimit = templateList.MaxVersionLimit > 0 ? templateList.MaxVersionLimit : 500;
 #else
                     createdList.MajorVersionLimit = templateList.MaxVersionLimit;
-#endif
 #endif
                     // DraftVisibilityType.Approver is available only when the EnableModeration option of the list is true
                     if (DraftVisibilityType.Approver
@@ -1889,7 +1916,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             // Create it or get a reference to it
-            var currentFolder = parentFolder.EnsureFolder(targetFolderName);
+            Folder currentFolder = parentFolder.EnsureFolder(targetFolderName);
 
             if (currentFolder != null)
             {
@@ -1953,10 +1980,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.OnQuickLaunch,
                         l => l.RootFolder.ServerRelativeUrl,
                         l => l.UserCustomActions,
-#if !SP2013
                         l => l.MajorVersionLimit,
                         l => l.MajorWithMinorVersionsLimit,
-#endif
                         l => l.DraftVersionVisibility,
                         l => l.DefaultDisplayFormUrl,
                         l => l.DefaultEditFormUrl,

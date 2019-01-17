@@ -1,6 +1,7 @@
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Attributes;
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
@@ -35,7 +36,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
                 if (_listId != null)
                 {
                     CacheValue = _listId;
-                } else
+                }
+                else
                 {
                     var list = TokenContext.Web.Lists.GetByTitle(_name);
                     TokenContext.Load(list, l => l.Id);
