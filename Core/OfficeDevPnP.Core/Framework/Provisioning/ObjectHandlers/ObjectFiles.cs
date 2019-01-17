@@ -104,8 +104,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         using (var stream = GetFileStream(template, file))
                         {
-                            scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_file__0_, targetFileName);
-                            targetFile = UploadFile(template, file, folder, stream);
+                            if (stream == null)
+                            {
+                                throw new FileNotFoundException($"File {file.Src} does not exist");
+                            }
+                            else
+                            {
+                                scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_file__0_, targetFileName);
+                                targetFile = UploadFile(template, file, folder, stream);
+                            }
                         }
 
                         checkedOut = CheckOutIfNeeded(web, targetFile);
