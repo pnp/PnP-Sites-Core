@@ -114,7 +114,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             else
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_Files_Uploading_file__0_, targetFileName);
-                                targetFile = UploadFile(template, file, folder, stream);
+                                targetFile = UploadFile(folder, stream, targetFileName, file.Overwrite);
                             }
                         }
 
