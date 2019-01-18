@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'C:\github\BertPnPSitesCore\Core\Tools\OfficeDevPnP.Core.Tools.UnitTest\OfficeDevPnP.Core.Tools.UnitTest.SQL\TestModel.edmx'. 
+﻿// T4 code generation is enabled for model 'C:\github\PnP-Sites-Core\Core\Tools\OfficeDevPnP.Core.Tools.UnitTest\OfficeDevPnP.Core.Tools.UnitTest.SQL\TestModel.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

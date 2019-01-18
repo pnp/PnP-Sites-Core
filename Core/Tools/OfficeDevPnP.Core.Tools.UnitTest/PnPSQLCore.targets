@@ -18,8 +18,8 @@
     <PnPExtensionsAssembly>$(ConfigurationPath)\bin\Debug\OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.dll</PnPExtensionsAssembly>
     <ConfigurationFile>mastertestconfiguration.xml</ConfigurationFile>
     <TestResultsPath>$(PnPRepo)temp</TestResultsPath>
-    <VSTestExe>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe</VSTestExe>
-    <VSTestExtensionPath>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\Extensions</VSTestExtensionPath>
+    <VSTestExe>C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe</VSTestExe>
+    <VSTestExtensionPath>C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\CommonExtensions\Microsoft\TestWindow\Extensions</VSTestExtensionPath>
   </PropertyGroup>
 
   <!-- Git information -->

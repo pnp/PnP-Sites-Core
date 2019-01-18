@@ -1,9 +1,6 @@
-﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Client;
 
 namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildTest
 {
@@ -13,6 +10,8 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildTest
         {
             get { return 234; }
         }
+
+        IDictionary<TestOutcome, long> ITestRunStatistics.Stats => throw new System.NotImplementedException();
 
         public long this[Microsoft.VisualStudio.TestPlatform.ObjectModel.TestOutcome testOutcome]
         {
