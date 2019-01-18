@@ -74,6 +74,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             templates.Add(new BaseTemplate("STS#1"));
             templates.Add(new BaseTemplate("BLANKINTERNET#0"));
 #endif
+#if SP2019
+            templates.Add(new BaseTemplate("STS#3"));
+#endif
             templates.Add(new BaseTemplate("BICENTERSITE#0"));
             templates.Add(new BaseTemplate("SRCHCEN#0"));
             templates.Add(new BaseTemplate("BLANKINTERNETCONTAINER#0", "CMSPUBLISHING#0", "CMSPUBLISHING#0"));

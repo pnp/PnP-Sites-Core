@@ -239,7 +239,7 @@
           <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
         </Reference>
       </ItemGroup>
-    </When>    
+    </When>
     <When Condition=" '$(Configuration)' == 'debug16' Or '$(Configuration)' == 'release16' ">
       <ItemGroup>
         <Reference Include="Microsoft.Office.Client.Policy, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
@@ -1256,75 +1256,92 @@
     </WebReferenceUrl>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\STS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\STS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BLOG0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\BLOG0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\COMMUNITY0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\STS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\STS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BDR0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BICENTERSITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BLANKINTERNET0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\COMMUNITYPORTAL0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\DEV0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\EHS1Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\ENTERWIKI0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\OFFILE1Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\PROJECTSITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\SRCHCEN0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\SRCHCENTERLITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\VISPRUS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\BDR0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\BICENTERSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\COMMUNITYPORTAL0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\EHS1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\OFFILE1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\PROJECTSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\SRCHCENTERLITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\VISPRUS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\BDR0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\BICENTERSITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\BLANKINTERNET0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\BLOG0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\COMMUNITY0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\COMMUNITYPORTAL0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\DEV0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\ENTERWIKI0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\OFFILE1Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\PROJECTSITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\SRCHCEN0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\SRCHCENTERLITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\STS1Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\VISPRUS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\BDR0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\BICENTERSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\BLOG0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\COMMUNITYPORTAL0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\OFFILE1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\PROJECTSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\SRCHCENTERLITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\STS1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\VISPRUS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\CMSPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\CMSPUBLISHING0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\CMSPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\CMSPUBLISHING0Template.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\Common\Publishing-Feature-Native-Files.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\BLANKINTERNET0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\COMMUNITY0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\DEV0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\ENTERWIKI0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCEN0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\STS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\STS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\BDR0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\BICENTERSITE0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\BLOG0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\CMSPUBLISHING0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\COMMUNITYPORTAL0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\OFFILE1Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\PROJECTSITE0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCENTERLITE0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\STS1Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\VISPRUS0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\GROUP0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\SITEPAGEPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BDR0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BICENTERSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BLOG0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\CMSPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\COMMUNITYPORTAL0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\OFFILE1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\PROJECTSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\SRCHCENTERLITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\STS1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\VISPRUS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\GROUP0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\SITEPAGEPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\BDR0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\BICENTERSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\BLOG0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\COMMUNITYPORTAL0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\OFFILE1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\PROJECTSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\SRCHCENTERLITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\STS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\STS1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\STS3Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\VISPRUS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\CMSPUBLISHING0Template.xml" />
     <Content Include="pnp.ico" />
     <None Include="Resources\SP-Responsive-UI_CSS.css" />
     <None Include="Resources\SP-Responsive-UI.js" />
