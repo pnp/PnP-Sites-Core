@@ -55,6 +55,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [Ignore]
         public void ExtractBaseTemplates2()
         {
+            // IMPORTANT: extraction needs to be done with user credentials, not app-only. With app-only certain templates (like BDR) will fail
             // use these flags to save time if the process failed after delete or create sites was done
             bool deleteSites = true;
             bool createSites = true;
