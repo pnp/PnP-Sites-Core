@@ -60,8 +60,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            if (template.Tenant != null &&
-                (template.Tenant.AppCatalog != null || template.Tenant.ContentDeliveryNetwork != null))
+            if (template.Tenant != null)
             {
                 var tenantTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Tenant, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var tenantType = Type.GetType(tenantTypeName, false);
@@ -94,9 +93,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                     PnPObjectsMapper.MapProperties(template.Tenant, target, resolvers, recursive: true);
 
-                    if (target != null &&
-                        (target.GetPublicInstancePropertyValue("AppCatalog") != null ||
-                        target.GetPublicInstancePropertyValue("ContentDeliveryNetwork") != null))
+                    if (target != null)
                     {
                         persistence.GetPublicInstanceProperty("Tenant").SetValue(persistence, target);
                     }
