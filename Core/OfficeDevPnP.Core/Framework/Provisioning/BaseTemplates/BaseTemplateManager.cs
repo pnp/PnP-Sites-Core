@@ -94,7 +94,7 @@ namespace Microsoft.SharePoint.Client
                 {
                     if (v19.Build > 10000)
                     {
-                        return "2019";
+                        return "_2019";
                     }
                 }
             }
@@ -105,14 +105,14 @@ namespace Microsoft.SharePoint.Client
 
             if (name.Version.Major == 15)
             {
-                return "2013";
+                return "_2013";
             }
             else if (name.Version.Major == 16 && name.Version.Minor == 1)
             {
                 return "SPO";
             }
 
-            return "2016";
+            return "_2016";
 
         }
 
