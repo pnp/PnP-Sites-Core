@@ -911,7 +911,7 @@ namespace OfficeDevPnP.Core
                 else
                 {
                     fedAuth = new KerberosMixed().GetFedAuthCookie(siteUrl,
-                        new Uri($"https://{sts}/adfs/services/trust/13/certificatemixed"),
+                        new Uri($"https://{sts}/adfs/services/trust/13/kerberosmixed"),
                         idpId,
                         logonTokenCacheExpirationWindow);
                 }
