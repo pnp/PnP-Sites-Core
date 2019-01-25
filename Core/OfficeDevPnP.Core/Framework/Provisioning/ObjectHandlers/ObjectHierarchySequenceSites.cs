@@ -147,6 +147,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                             case TeamNoGroupSiteCollection t:
                                 {
+                                    var siteUrl = tokenParser.ParseString(t.Url);
                                     SiteEntity siteInfo = new SiteEntity()
                                     {
                                         Lcid = (uint)t.Language,
@@ -156,16 +157,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         Url = tokenParser.ParseString(t.Url),
                                         SiteOwnerLogin = tokenParser.ParseString(t.Owner),
                                     };
-                                    WriteMessage($"Creating Team Site with no Office 365 group at {siteInfo.Url}", ProvisioningMessageType.Progress);
-                                    if (tenant.SiteExists(t.Url))
+                                    WriteMessage($"Creating Team Site with no Office 365 group at {siteUrl}", ProvisioningMessageType.Progress);
+                                    if (tenant.SiteExists(siteUrl))
                                     {
-                                        WriteMessage($"Using existing Team Site at {siteInfo.Url}", ProvisioningMessageType.Progress);
-                                        siteContext = (tenant.Context as ClientContext).Clone(t.Url, applyingInformation.AccessTokens);
+                                        WriteMessage($"Using existing Team Site at {siteUrl}", ProvisioningMessageType.Progress);
+                                        siteContext = (tenant.Context as ClientContext).Clone(siteUrl, applyingInformation.AccessTokens);
                                     }
                                     else
                                     {
                                         tenant.CreateSiteCollection(siteInfo, false, true);
-                                        siteContext = tenant.Context.Clone(t.Url, applyingInformation.AccessTokens);
+                                        siteContext = tenant.Context.Clone(siteUrl, applyingInformation.AccessTokens);
                                     }
                                     if (t.IsHubSite)
                                     {
