@@ -667,6 +667,16 @@ namespace OfficeDevPnP.Core.Pages
             // Validate we're not using "wrong" layouts for the given site type
             ValidateOneColumnFullWidthSectionUsage();
 
+            // Normalize folders in page name
+            if (!string.IsNullOrEmpty(pageName) && pageName.Contains("\\"))
+            {
+                pageName = pageName.Replace("\\", "/");
+            }
+            if (!string.IsNullOrEmpty(pageName) && pageName.StartsWith("/"))
+            {
+                pageName = pageName.Substring(1);
+            }
+
             // Try to load the page
             if (pageFile == null && pagesLibrary == null)
             {
@@ -693,8 +703,20 @@ namespace OfficeDevPnP.Core.Pages
 
             if (this.spPagesLibrary != null && (pageFile == null || !pageFile.Exists))
             {
+                Folder folderHostingThePage = null;
+
+                if (pageName.Contains("/"))
+                {
+                    var folderName = pageName.Substring(0, pageName.LastIndexOf("/"));
+                    folderHostingThePage = this.Context.Web.EnsureFolderPath($"SitePages/{folderName}");
+                }
+                else
+                {
+                    folderHostingThePage = this.spPagesLibrary.RootFolder;
+                }
+
                 // create page listitem
-                item = this.spPagesLibrary.RootFolder.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
+                item = folderHostingThePage.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
                 // Fix page to be modern
                 item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.ModernArticlePage;
                 item[ClientSidePage.Title] = string.IsNullOrWhiteSpace(this.pageTitle) ? System.IO.Path.GetFileNameWithoutExtension(this.pageName) : this.pageTitle;
