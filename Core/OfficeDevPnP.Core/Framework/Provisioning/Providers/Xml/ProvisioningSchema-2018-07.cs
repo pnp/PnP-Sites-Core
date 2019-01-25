@@ -5802,10 +5802,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
         private bool requiredField;
         
         private bool hiddenField;
-        
+
+        private bool updateChildrenField;
+
         public FieldRefFull() {
             this.requiredField = false;
             this.hiddenField = false;
+            this.updateChildrenField = true;
         }
         
         /// <remarks/>
@@ -5840,6 +5843,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201807 {
             }
             set {
                 this.hiddenField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(true)]
+        public bool UpdateChildren
+        {
+            get
+            {
+                return this.updateChildrenField;
+            }
+            set
+            {
+                this.updateChildrenField = value;
             }
         }
     }

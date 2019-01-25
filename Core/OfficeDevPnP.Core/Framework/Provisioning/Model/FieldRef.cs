@@ -48,6 +48,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public bool Remove { get; set; }
 
+        /// <summary>
+        /// Used in ContentType.FieldRef. True to update content types that inherit from the content type; otherwise, false.
+        /// </summary>
+        public bool UpdateChildren { get; set; }
+
         #endregion
 
         #region Constructors

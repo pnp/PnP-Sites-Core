@@ -3513,6 +3513,14 @@
       </xsd:annotation>
     </xsd:attribute>
 
+    <xsd:attribute name="UpdateChildren" type="xsd:boolean" use="optional" default="true">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The UpdateChildren flag for field to update content types that inherit from the content type.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
   </xsd:attributeGroup>
 
   <xsd:complexType name="ListInstanceFieldRef">
