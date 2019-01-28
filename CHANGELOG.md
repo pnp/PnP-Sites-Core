@@ -10,10 +10,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Added support for creating and loading modern pages from sub folders inside the sitepages library
 - ZoneID web part property now can be used in SP2016
 - MajorVersionLimit and MajorWithMinorVersionsLimit are supported in the minimal (May 2018) version of SP2013 CSOM (Issue 1943) #1994 [tmeckel]
 - Enables Web.RequestAccessEmail for on-premises (both 15.0 and 16.0) #1794 [biste5]
 - Add token parsing in `targetFileName` property of file object #2036 [stevebeauge]
+- Added support to delete search configurations
 
 ### Changed
 
