@@ -1095,7 +1095,7 @@ namespace Microsoft.SharePoint.Client
                 var fldInfo = new FieldLinkCreationInformation();
                 fldInfo.Field = field;
                 contentType.FieldLinks.Add(fldInfo);
-                contentType.Update(true);
+                contentType.Update(updateChildren);
                 web.Context.ExecuteQueryRetry();
 
                 flink = contentType.FieldLinks.GetById(field.Id);
