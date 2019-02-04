@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         Description = "Returns the ID of the Office 365 group connected to the current site",
         Example = "{sitecollectionconnectedoffice365groupid}",
         Returns = "767bc144-e605-4d8c-885a-3a980feb39c6")]
-    internal class SiteCollectionConnectedOffice365GroupId : TokenDefinition
+    internal class SiteCollectionConnectedOffice365GroupId : VolatileTokenDefinition
     {
         public SiteCollectionConnectedOffice365GroupId(Web web)
             : base(web, "{sitecollectionconnectedoffice365groupid}")

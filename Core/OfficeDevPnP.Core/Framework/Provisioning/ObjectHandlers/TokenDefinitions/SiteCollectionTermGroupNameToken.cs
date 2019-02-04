@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         Description = "Returns the name of the site collection term group",
         Example = "{sitecollectiontermgroupname}",
         Returns = "Site Collection - mytenant.sharepoint.com-sites-mysite")]
-    internal class SiteCollectionTermGroupNameToken : TokenDefinition
+    internal class SiteCollectionTermGroupNameToken : VolatileTokenDefinition
     {
         public SiteCollectionTermGroupNameToken(Web web)
             : base(web, "{sitecollectiontermgroupname}")

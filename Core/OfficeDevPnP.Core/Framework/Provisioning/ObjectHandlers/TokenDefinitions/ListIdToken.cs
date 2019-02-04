@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
      Description = "Returns a id of the list given its name",
      Example = "{listid:My List}",
      Returns = "f2cd6d5b-1391-480e-a3dc-7f7f96137382")]
-    internal class ListIdToken : TokenDefinition
+    internal class ListIdToken : VolatileTokenDefinition
     {
         private string _listId = null;
         private string _name = null;

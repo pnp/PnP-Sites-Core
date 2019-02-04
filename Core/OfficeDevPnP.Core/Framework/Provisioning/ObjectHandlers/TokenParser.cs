@@ -74,6 +74,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 ((VolatileTokenDefinition)token).ClearVolatileCache(web);
             }
+            _tokens.RemoveAll(t => t is SiteToken);
+
+            _tokens.Add(new SiteToken(web));
+
             // remove list tokens
             AddListTokens(web); // tokens are remove in method
             // remove content type tokens
@@ -109,6 +113,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new CurrentUserLoginNameToken(web));
             _tokens.Add(new CurrentUserFullNameToken(web));
             _tokens.Add(new AuthenticationRealmToken(web));
+            _tokens.Add(new HostUrlToken(web));
             AddResourceTokens(web, hierarchy.Localizations, hierarchy.Connector);
             _initializedFromHierarchy = true;
         }
@@ -412,14 +417,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var tenantEntities = new List<StorageEntity>();
                 var siteEntities = new List<StorageEntity>();
                 var appCatalogUri = web.GetAppCatalog();
-                if(appCatalogUri != null)
+                if (appCatalogUri != null)
                 {
                     using (var clonedContext = web.Context.Clone(appCatalogUri))
                     {
                         var storageEntitiesIndex = clonedContext.Web.GetPropertyBagValueString("storageentitiesindex", "");
                         tenantEntities = ParseStorageEntitiesString(storageEntitiesIndex);
                     }
-                }                
+                }
                 var appcatalog = (web.Context as ClientContext).Site.RootWeb.SiteCollectionAppCatalog;
                 web.Context.Load(appcatalog);
                 web.Context.ExecuteQueryRetry();
