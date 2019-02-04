@@ -51,7 +51,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         Classification = tokenParser.ParseString(t.Classification),
                                         IsPublic = t.IsPublic
                                     };
-                                    
+
                                     var groupSiteInfo = Sites.SiteCollection.GetGroupInfo(tenant.Context as ClientContext, siteInfo.Alias).GetAwaiter().GetResult();
                                     if (groupSiteInfo == null)
                                     {
@@ -80,6 +80,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (!string.IsNullOrEmpty(t.ProvisioningId))
                                     {
                                         _additionalTokens.Add(new SequenceSiteUrlUrlToken(null, t.ProvisioningId, siteContext.Url));
+                                        siteContext.Web.EnsureProperty(w => w.Id);
+                                        _additionalTokens.Add(new SequenceSiteIdToken(null, t.ProvisioningId, siteContext.Web.Id));
+                                        siteContext.Site.EnsureProperties(s => s.Id, s => s.GroupId);
+                                        _additionalTokens.Add(new SequenceSiteCollectionIdToken(null, t.ProvisioningId, siteContext.Site.Id));
+                                        _additionalTokens.Add(new SequenceSiteGroupIdToken(null, t.ProvisioningId, siteContext.Site.GroupId));
                                     }
                                     break;
                                 }
@@ -142,6 +147,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (!string.IsNullOrEmpty(c.ProvisioningId))
                                     {
                                         _additionalTokens.Add(new SequenceSiteUrlUrlToken(null, c.ProvisioningId, siteInfo.Url));
+                                        siteContext.Web.EnsureProperty(w => w.Id);
+                                        _additionalTokens.Add(new SequenceSiteIdToken(null, c.ProvisioningId, siteContext.Web.Id));
+                                        siteContext.Site.EnsureProperties(s => s.Id, s => s.GroupId);
+                                        _additionalTokens.Add(new SequenceSiteCollectionIdToken(null, c.ProvisioningId, siteContext.Site.Id));
+                                        _additionalTokens.Add(new SequenceSiteGroupIdToken(null, c.ProvisioningId, siteContext.Site.GroupId));
                                     }
                                     break;
                                 }
@@ -182,6 +192,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (!string.IsNullOrEmpty(t.ProvisioningId))
                                     {
                                         _additionalTokens.Add(new SequenceSiteUrlUrlToken(null, t.ProvisioningId, siteContext.Url));
+                                        siteContext.Web.EnsureProperty(w => w.Id);
+                                        _additionalTokens.Add(new SequenceSiteIdToken(null, t.ProvisioningId, siteContext.Web.Id));
+                                        siteContext.Site.EnsureProperties(s => s.Id, s => s.GroupId);
+                                        _additionalTokens.Add(new SequenceSiteCollectionIdToken(null, t.ProvisioningId, siteContext.Site.Id));
+                                        _additionalTokens.Add(new SequenceSiteGroupIdToken(null, t.ProvisioningId, siteContext.Site.GroupId));
                                     }
                                     break;
                                 }
@@ -200,14 +215,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // System.Threading.Thread.Sleep(TimeSpan.FromMinutes(10));
 
                     WriteMessage("Applying templates", ProvisioningMessageType.Progress);
+                    var currentSite = "";
 
                     var provisioningTemplateApplyingInformation = new ProvisioningTemplateApplyingInformation();
                     provisioningTemplateApplyingInformation.AccessTokens = applyingInformation.AccessTokens;
                     provisioningTemplateApplyingInformation.MessagesDelegate = applyingInformation.MessagesDelegate;
-                    provisioningTemplateApplyingInformation.ProgressDelegate = applyingInformation.ProgressDelegate;
-                    
+                    //   provisioningTemplateApplyingInformation.ProgressDelegate = applyingInformation.ProgressDelegate;
+                    provisioningTemplateApplyingInformation.ProgressDelegate = (string message, int step, int total) =>
+                    {
+                        if (applyingInformation.ProgressDelegate != null)
+                        {
+                            applyingInformation.ProgressDelegate($"{currentSite} : {message}", step, total);
+                        }
+                    };
                     foreach (var sitecollection in sequence.SiteCollections)
                     {
+                        currentSite = sitecollection.ProvisioningId != null ? sitecollection.ProvisioningId : sitecollection.Title;
+
                         siteUrls.TryGetValue(sitecollection.Id, out string siteUrl);
                         if (siteUrl != null)
                         {
@@ -220,18 +244,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (provisioningTemplate != null)
                                     {
                                         provisioningTemplate.Connector = hierarchy.Connector;
-                                        if (siteTokenParser == null)
+                                        //if (siteTokenParser == null)
+                                        //{
+                                        siteTokenParser = new TokenParser(web, provisioningTemplate, applyingInformation);
+                                        foreach (var token in _additionalTokens)
                                         {
-                                            siteTokenParser = new TokenParser(web, provisioningTemplate, applyingInformation);
-                                            foreach(var token in _additionalTokens)
-                                            {
-                                                siteTokenParser.AddToken(token);
-                                            }
+                                            siteTokenParser.AddToken(token);
                                         }
-                                        else
-                                        {
-                                            siteTokenParser.Rebase(web, provisioningTemplate);
-                                        }
+                                        //}
+                                        //else
+                                        //{
+                                        //    siteTokenParser.Rebase(web, provisioningTemplate);
+                                        //}
                                         WriteMessage($"Applying Template", ProvisioningMessageType.Progress);
                                         new SiteToTemplateConversion().ApplyRemoteTemplate(web, provisioningTemplate, provisioningTemplateApplyingInformation, true, siteTokenParser);
                                     }
@@ -245,7 +269,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 if (siteTokenParser == null)
                                 {
                                     siteTokenParser = new TokenParser(tenant, hierarchy, applyingInformation);
-                                    foreach(var token in _additionalTokens)
+                                    foreach (var token in _additionalTokens)
                                     {
                                         siteTokenParser.AddToken(token);
                                     }
@@ -276,7 +300,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 tenant.Context.Load(hubSiteProperties);
                 tenant.Context.ExecuteQueryRetry();
             }
-            if(!string.IsNullOrEmpty(logoUrl))
+            if (!string.IsNullOrEmpty(logoUrl))
             {
                 hubSiteProperties.LogoUrl = logoUrl;
                 hubSiteProperties.Update();

@@ -8,7 +8,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         Description = "Returns the id of the current site",
         Example = "{siteidencoded}",
         Returns = "9188a794%2Dcfcf%2D48b6%2D9ac5%2Ddf2048e8aa5d")]
-    internal class SiteIdEncodedToken : TokenDefinition
+    internal class SiteIdEncodedToken : VolatileTokenDefinition
     {
         public SiteIdEncodedToken(Web web)
             : base(web, "{siteidencoded}")

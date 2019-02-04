@@ -2042,7 +2042,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 // Retrieve all not hidden lists and the Workflow History Lists, just in case there are active workflow subscriptions
-                var listsToProcess = lists.AsEnumerable().Where(l => (l.Hidden == false || ((workflowSubscriptions != null && workflowSubscriptions.Length > 0) && l.BaseTemplate == 140))).ToArray();
+                var listsToProcess = lists.AsEnumerable().Where(l => (l.Hidden == false || l.Hidden == creationInfo.IncludeHiddenLists || ((workflowSubscriptions != null && workflowSubscriptions.Length > 0) && l.BaseTemplate == 140))).ToArray();
                 var listCount = 0;
                 foreach (var siteList in listsToProcess)
                 {
