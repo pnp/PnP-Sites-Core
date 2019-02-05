@@ -29,7 +29,6 @@ namespace OfficeDevPnP.Core.Sites
         public static ClientContext Create(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
             var context = CreateAsync(clientContext, siteCollectionCreationInformation).GetAwaiter().GetResult();
-            PollForSiteCreated(context);
             return context;
         }
 
@@ -42,48 +41,7 @@ namespace OfficeDevPnP.Core.Sites
         public static ClientContext Create(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
             var context = CreateAsync(clientContext, siteCollectionCreationInformation).GetAwaiter().GetResult();
-            PollForSiteCreated(context);
             return context;
-        }
-
-        private static void PollForSiteCreated(ClientContext context)
-        {
-            // check if the associated groups have been set
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-
-            try
-            {
-                context.Web.EnsureProperties(w => w.AssociatedOwnerGroup, w => w.AssociatedMemberGroup, w => w.AssociatedVisitorGroup);
-            }
-            catch
-            {
-                // In case of any exception, just ignore it and wait few more seconds ...
-            }
-
-            while ((context.Web.AssociatedOwnerGroup.ServerObjectIsNull() ||
-                context.Web.AssociatedMemberGroup.ServerObjectIsNull() ||
-                context.Web.AssociatedVisitorGroup.ServerObjectIsNull())
-                && sw.ElapsedMilliseconds < 1000 * 60)
-            {
-                System.Threading.Thread.Sleep(5000); // wait 5 seconds
-                try
-                {
-                    context.Web.EnsureProperties(w => w.AssociatedOwnerGroup, w => w.AssociatedMemberGroup, w => w.AssociatedVisitorGroup);
-                }
-                catch
-                {
-                    // In case of any exception, just ignore it and wait few more seconds ...
-                }
-            }
-            sw.Stop();
-
-            if (context.Web.AssociatedOwnerGroup.ServerObjectIsNull() ||
-                context.Web.AssociatedMemberGroup.ServerObjectIsNull() ||
-                context.Web.AssociatedVisitorGroup.ServerObjectIsNull())
-            {
-                throw new Exception("Site Creation timed out");
-            }
         }
 
         /// <summary>
