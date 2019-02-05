@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- AssociatedGroupId token added + processing of it
+- SequenceSiteCollectionId, SequenceSiteGroupId and SequenceSiteId tokens added
 - Added support for creating and loading modern pages from sub folders inside the sitepages library
 - ZoneID web part property now can be used in SP2016
 - MajorVersionLimit and MajorWithMinorVersionsLimit are supported in the minimal (May 2018) version of SP2013 CSOM (Issue 1943) #1994 [tmeckel]
