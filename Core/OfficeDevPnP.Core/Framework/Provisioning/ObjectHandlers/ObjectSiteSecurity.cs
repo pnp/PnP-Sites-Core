@@ -214,7 +214,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var groupNeedsUpdate = false;
                         var executeQuery = false;
 
-                        if (!String.IsNullOrEmpty(parsedGroupDescription))
+                        if (parsedGroupDescription != null)
                         {
                             var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
                             web.Context.Load(groupItem, g => g["Notes"]);
