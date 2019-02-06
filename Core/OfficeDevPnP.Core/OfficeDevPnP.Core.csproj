@@ -586,7 +586,6 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchySequenceTermGroups.cs" />
-    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWebApiPermissions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AssociatedGroupIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneButExternalUsersToken.cs" />
@@ -928,7 +927,6 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectField.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectRetrieveTemplateInfo.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPersistTemplateInfo.cs" />
-    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectLookupFields.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPropertyBagEntry.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectCustomActions.cs" />
