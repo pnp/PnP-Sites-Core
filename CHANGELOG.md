@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Add support for Kerberos authentication against ADFS #2050 [tmeckel]
 - AssociatedGroupId token added + processing of it
 - SequenceSiteCollectionId, SequenceSiteGroupId and SequenceSiteId tokens added
 - Added support for creating and loading modern pages from sub folders inside the sitepages library

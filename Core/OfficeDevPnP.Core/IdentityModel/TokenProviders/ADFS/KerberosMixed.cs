@@ -4,7 +4,6 @@ using System;
 using System.IdentityModel.Protocols.WSTrust;
 using System.IdentityModel.Tokens;
 using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using System.ServiceModel;
 using System.ServiceModel.Security;
 
@@ -19,7 +18,7 @@ namespace OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS
         /// Performs active authentication against ADFS using the trust/13/usernamemixed ADFS endpoint.
         /// </summary>
         /// <param name="siteUrl">Url of the SharePoint site that's secured via ADFS</param>
-        /// <param name="certificateMixed">Uri to the ADFS certificatemixed endpoint</param>
+        /// <param name="kerberosMixed">Uri to the ADFS kerberosMixed endpoint</param>
         /// <param name="relyingPartyIdentifier">Identifier of the ADFS relying party that we're hitting</param>
         /// <param name="logonTokenCacheExpirationWindow">Logon TokenCache expiration window integer value</param>
         /// <returns>A cookiecontainer holding the FedAuth cookie</returns>
