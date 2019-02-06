@@ -59,7 +59,7 @@ namespace OfficeDevPnP.Core
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 #endif
         }
-        #endregion  
+        #endregion
 
 
         #region Authenticating against SharePoint Online using credentials or app-only
@@ -883,7 +883,94 @@ namespace OfficeDevPnP.Core
 
         }
 
+        /// <summary>
+        /// Returns a SharePoint on-premises ClientContext for sites secured via ADFS
+        /// </summary>
+        /// <param name="siteUrl">Url of the SharePoint site that's secured via ADFS</param>
+        /// <param name="sts">Hostname of the ADFS server (e.g. sts.company.com)</param>
+        /// <param name="idpId">Identifier of the ADFS relying party that we're hitting</param>
+        /// <param name="logonTokenCacheExpirationWindow">Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.</param>
+        /// <returns>ClientContext to be used by CSOM code</returns>
+        public ClientContext GetADFSKerberosMixedAuthenticationContext(string siteUrl, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
+        {
+            ClientContext clientContext = new ClientContext(siteUrl);
+            clientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
+            {
+                if (fedAuth != null)
+                {
+                    Cookie fedAuthCookie = fedAuth.GetCookies(new Uri(siteUrl))["FedAuth"];
+                    // If cookie is expired a new fedAuth cookie needs to be requested
+                    if (fedAuthCookie == null || fedAuthCookie.Expires < DateTime.Now)
+                    {
+                        fedAuth = new KerberosMixed().GetFedAuthCookie(siteUrl,
+                            new Uri($"https://{sts}/adfs/services/trust/13/kerberosmixed"),
+                            idpId,
+                            logonTokenCacheExpirationWindow);
+                    }
+                }
+                else
+                {
+                    fedAuth = new KerberosMixed().GetFedAuthCookie(siteUrl,
+                        new Uri($"https://{sts}/adfs/services/trust/13/kerberosmixed"),
+                        idpId,
+                        logonTokenCacheExpirationWindow);
+                }
 
+                if (fedAuth == null)
+                {
+                    throw new Exception("No fedAuth cookie acquired");
+                }
+
+                webRequestEventArgs.WebRequestExecutor.WebRequest.CookieContainer = fedAuth;
+            };
+            return clientContext;
+        }
+
+        /// <summary>
+        /// Refreshes the SharePoint FedAuth cookie
+        /// </summary>
+        /// <param name="siteUrl">Url of the SharePoint site that's secured via ADFS</param>
+        /// <param name="sts">Hostname of the ADFS server (e.g. sts.company.com)</param>
+        /// <param name="idpId">Identifier of the ADFS relying party that we're hitting</param>
+        /// <param name="logonTokenCacheExpirationWindow">Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.</param>
+        /// <returns>ClientContext to be used by CSOM code</returns>
+        public void RefreshADFSKerberosMixedAuthenticationContext(string siteUrl, string serialNumber, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
+        {
+            fedAuth = new KerberosMixed().GetFedAuthCookie(siteUrl,
+                new Uri($"https://{sts}/adfs/services/trust/13/kerberosmixed"),
+                idpId,
+                logonTokenCacheExpirationWindow);
+        }
+
+        public static void GetAdfsConfigurationFromTargetUri(Uri targetApplicationUri, string loginProviderName, out string adfsHost, out string adfsRelyingParty)
+        {
+            adfsHost = "";
+            adfsRelyingParty = "";
+
+            var trustEndpoint = new Uri(new Uri(targetApplicationUri.GetLeftPart(UriPartial.Authority)), !string.IsNullOrWhiteSpace(loginProviderName) ? $"/_trust/?trust={loginProviderName}" : "/_trust/");
+            var request = (HttpWebRequest)WebRequest.Create(trustEndpoint);
+            request.AllowAutoRedirect = false;
+
+            try
+            {
+                using (var response = request.GetResponse())
+                {
+                    var locationHeader = response.Headers["Location"];
+                    if (locationHeader != null)
+                    {
+                        var redirectUri = new Uri(locationHeader);
+                        Dictionary<string, string> queryParameters = Regex.Matches(redirectUri.Query, "([^?=&]+)(=([^&]*))?").Cast<Match>().ToDictionary(x => x.Groups[1].Value, x => Uri.UnescapeDataString(x.Groups[3].Value));
+                        adfsHost = redirectUri.Host;
+                        adfsRelyingParty = queryParameters["wtrealm"];
+                    }
+                }
+            }
+            catch (WebException ex)
+            {
+                throw new Exception("Endpoint does not use ADFS for authentication.", ex);
+            }
+        }
+		
         #endregion
 #endif
     }
