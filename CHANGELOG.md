@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Beta support for SP2019
+- Provision and extract associated groups #2020 [jensotto]
 - Fix provisioning navigation settings #1883 [phibsi]
 - Add support for Kerberos authentication against ADFS #2050 [tmeckel]
 - AssociatedGroupId token added + processing of it

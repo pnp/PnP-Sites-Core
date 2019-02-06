@@ -93,7 +93,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (webNeedsUpdate)
                     {
+                        // Trigger the creation and setting of the associated groups
                         web.Update();
+                        web.Context.ExecuteQueryRetry();
                     }
                 }
 
@@ -101,15 +103,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var memberGroup = web.AssociatedMemberGroup;
                 var visitorGroup = web.AssociatedVisitorGroup;
 
-                if (!PnPUtility.ServerObjectIsNull(ownerGroup))
+                if (!ownerGroup.ServerObjectIsNull())
                 {
                     web.Context.Load(ownerGroup, o => o.Title, o => o.Users);
                 }
-                if (!PnPUtility.ServerObjectIsNull(memberGroup))
+                if (!memberGroup.ServerObjectIsNull())
                 {
                     web.Context.Load(memberGroup, o => o.Title, o => o.Users);
                 }
-                if (!PnPUtility.ServerObjectIsNull(visitorGroup))
+                if (!visitorGroup.ServerObjectIsNull())
                 {
                     web.Context.Load(visitorGroup, o => o.Title, o => o.Users);
                 }
@@ -212,7 +214,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var groupNeedsUpdate = false;
                         var executeQuery = false;
 
-                        if (parsedGroupDescription != null)
+                        if (!String.IsNullOrEmpty(parsedGroupDescription))
                         {
                             var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
                             web.Context.Load(groupItem, g => g["Notes"]);
