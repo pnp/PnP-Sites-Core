@@ -138,9 +138,7 @@ namespace Microsoft.SharePoint.Client
 
                     // Make CSOM request more reliable by disabling the return value cache. Given we 
                     // often clone context objects and the default value is
-#if !ONPREMISES
-                    clientContext.DisableReturnValueCache = true;
-#elif SP2016
+#if !ONPREMISES || SP2016 || SP2019
                     clientContext.DisableReturnValueCache = true;
 #endif
                     // Add event handler to "insert" app decoration header to mark the PnP Sites Core library as a known application
@@ -291,9 +289,7 @@ namespace Microsoft.SharePoint.Client
             ClientContext clonedClientContext = new ClientContext(siteUrl);
             clonedClientContext.AuthenticationMode = clientContext.AuthenticationMode;
             clonedClientContext.ClientTag = clientContext.ClientTag;
-#if !ONPREMISES
-            clonedClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
-#elif SP2016
+#if !ONPREMISES || SP2016 || SP2019
             clonedClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
 #endif
 
