@@ -129,6 +129,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     navigationSettings.AddNewPagesToNavigation = template.Navigation.AddNewPagesToNavigation;
                     navigationSettings.CreateFriendlyUrlsForNewPages = template.Navigation.CreateFriendlyUrlsForNewPages;
 
+                    if (!isNoScriptSite)
+                    {
+                        navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
+                        web.Context.ExecuteQueryRetry();
+                    }
+
                     if (template.Navigation.GlobalNavigation != null)
                     {
                         switch (template.Navigation.GlobalNavigation.NavigationType)
@@ -156,15 +162,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 navigationSettings.GlobalNavigation.Source = StandardNavigationSource.PortalProvider;
                                 web.Navigation.UseShared = false;
 
-                                ProvisionGlobalStructuralNavigation(web,
-                                    template.Navigation.GlobalNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
-
                                 break;
                         }
+
                         if (!isNoScriptSite)
                         {
                             navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
                             web.Context.ExecuteQueryRetry();
+                        }
+
+                        // Need to set navigation nodes after update navigation settings
+                        if (template.Navigation.GlobalNavigation.NavigationType == GlobalNavigationType.Structural)
+                        {
+                            ProvisionGlobalStructuralNavigation(web,
+                                    template.Navigation.GlobalNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
                         }
                     }
 
@@ -195,9 +206,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 navigationSettings.CurrentNavigation.Source = StandardNavigationSource.PortalProvider;
 
-                                ProvisionCurrentStructuralNavigation(web,
-                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
-
                                 break;
                             case CurrentNavigationType.Structural:
                             default:
@@ -211,9 +219,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 navigationSettings.CurrentNavigation.Source = StandardNavigationSource.PortalProvider;
 
-                                ProvisionCurrentStructuralNavigation(web,
-                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
-
                                 break;
                         }
 
@@ -221,6 +226,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
                             web.Context.ExecuteQueryRetry();
+                        }
+
+                        // Need to set navigation nodes after update navigation settings
+                        if (template.Navigation.CurrentNavigation.NavigationType == CurrentNavigationType.Structural ||
+                            template.Navigation.CurrentNavigation.NavigationType == CurrentNavigationType.StructuralLocal)
+                        {
+                            ProvisionCurrentStructuralNavigation(web,
+                                template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
                         }
                     }
                 }
