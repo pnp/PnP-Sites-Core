@@ -35,21 +35,96 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     web.BreakRoleInheritance(template.Security.CopyRoleAssignments, template.Security.ClearSubscopes);
                     web.Update();
+                    web.Context.Load(web, w => w.HasUniqueRoleAssignments);
                     web.Context.ExecuteQueryRetry();
                 }
 
                 var siteSecurity = template.Security;
 
+                if (web.EnsureProperty(w => w.HasUniqueRoleAssignments))
+                {
+                    string parsedAssociatedOwnerGroupName = parser.ParseString(template.Security.AssociatedOwnerGroup);
+                    string parsedAssociatedMemberGroupName = parser.ParseString(template.Security.AssociatedMemberGroup);
+                    string parsedAssociatedVisitorGroupName = parser.ParseString(template.Security.AssociatedVisitorGroup);
+
+                    bool webNeedsUpdate = false;
+
+                    if (parsedAssociatedOwnerGroupName != null)
+                    {
+                        if (string.IsNullOrEmpty(parsedAssociatedOwnerGroupName))
+                        {
+                            web.AssociatedOwnerGroup = null;
+                        }
+                        else
+                        {
+                            web.AssociatedOwnerGroup = EnsureGroup(web, parsedAssociatedOwnerGroupName);
+                        }
+
+                        webNeedsUpdate = true;
+                    }
+
+                    if (parsedAssociatedMemberGroupName != null)
+                    {
+                        if (string.IsNullOrEmpty(parsedAssociatedMemberGroupName))
+                        {
+                            web.AssociatedMemberGroup = null;
+                        }
+                        else
+                        {
+                            web.AssociatedMemberGroup = EnsureGroup(web, parsedAssociatedMemberGroupName);
+                        }
+
+                        webNeedsUpdate = true;
+                    }
+
+                    if (parsedAssociatedVisitorGroupName != null)
+                    {
+                        if (string.IsNullOrEmpty(parsedAssociatedVisitorGroupName))
+                        {
+                            web.AssociatedVisitorGroup = null;
+                        }
+                        else
+                        {
+                            web.AssociatedVisitorGroup = EnsureGroup(web, parsedAssociatedVisitorGroupName);
+                        }
+
+                        webNeedsUpdate = true;
+                    }
+
+                    if (webNeedsUpdate)
+                    {
+                        // Trigger the creation and setting of the associated groups
+                        web.Update();
+                        web.Context.ExecuteQueryRetry();
+                    }
+                }
+
                 var ownerGroup = web.AssociatedOwnerGroup;
                 var memberGroup = web.AssociatedMemberGroup;
                 var visitorGroup = web.AssociatedVisitorGroup;
 
-                web.Context.Load(ownerGroup, o => o.Title, o => o.Users);
-                web.Context.Load(memberGroup, o => o.Title, o => o.Users);
-                web.Context.Load(visitorGroup, o => o.Title, o => o.Users);
+                if (!ownerGroup.ServerObjectIsNull())
+                {
+                    web.Context.Load(ownerGroup, o => o.Title, o => o.Users);
+                }
+                if (!memberGroup.ServerObjectIsNull())
+                {
+                    web.Context.Load(memberGroup, o => o.Title, o => o.Users);
+                }
+                if (!visitorGroup.ServerObjectIsNull())
+                {
+                    web.Context.Load(visitorGroup, o => o.Title, o => o.Users);
+                }
+
                 web.Context.Load(web.SiteUsers);
 
                 web.Context.ExecuteQueryRetry();
+
+                IEnumerable<AssociatedGroupToken> associatedGroupTokens = parser.Tokens.Where(t => t.GetType() == typeof(AssociatedGroupToken)).Cast<AssociatedGroupToken>();
+                foreach (AssociatedGroupToken associatedGroupToken in associatedGroupTokens)
+                {
+                    associatedGroupToken.ClearCache();
+                }
 
                 if (!ownerGroup.ServerObjectIsNull())
                 {
@@ -65,19 +140,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 foreach (var siteGroup in siteSecurity.SiteGroups
-                        .Sort<SiteGroup>(
-                            _grp => {
-                                string groupOwner = _grp.Owner;
-                                if (string.IsNullOrWhiteSpace(groupOwner)
-                                    || "SHAREPOINT\\system".Equals(groupOwner, StringComparison.OrdinalIgnoreCase)
-                                    || _grp.Title.Equals(groupOwner, StringComparison.OrdinalIgnoreCase)
-                                    || (groupOwner.StartsWith("{{associated") && groupOwner.EndsWith("group}}")))
-                                {
-                                    return Enumerable.Empty<SiteGroup>();
-                                }
-                                return siteSecurity.SiteGroups.Where(_item => _item.Title.Equals(groupOwner, StringComparison.OrdinalIgnoreCase));
-                            }
-                    ))
+        .Sort<SiteGroup>(
+            _grp => {
+                string groupOwner = _grp.Owner;
+                if (string.IsNullOrWhiteSpace(groupOwner)
+                    || "SHAREPOINT\\system".Equals(groupOwner, StringComparison.OrdinalIgnoreCase)
+                    || _grp.Title.Equals(groupOwner, StringComparison.OrdinalIgnoreCase)
+                    || (groupOwner.StartsWith("{{associated") && groupOwner.EndsWith("group}}")))
+                {
+                    return Enumerable.Empty<SiteGroup>();
+                }
+                return siteSecurity.SiteGroups.Where(_item => _item.Title.Equals(groupOwner, StringComparison.OrdinalIgnoreCase));
+            }
+    ))
                 {
                     Group group;
                     var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName));
@@ -101,7 +176,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         group.OnlyAllowMembersViewMembership = siteGroup.OnlyAllowMembersViewMembership;
                         group.RequestToJoinLeaveEmailSetting = siteGroup.RequestToJoinLeaveEmailSetting;
 
-                        if (parsedGroupTitle != parsedGroupOwner)
+                        if (parsedGroupOwner != null && (parsedGroupTitle != parsedGroupOwner))
                         {
                             Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName.Equals(parsedGroupOwner, StringComparison.OrdinalIgnoreCase));
                             if (ownerPrincipal == null)
@@ -109,8 +184,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 ownerPrincipal = web.EnsureUser(parsedGroupOwner);
                             }
                             group.Owner = ownerPrincipal;
-
                         }
+
                         group.Update();
                         web.Context.Load(group, g => g.Id, g => g.Title);
                         web.Context.ExecuteQueryRetry();
@@ -139,7 +214,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var groupNeedsUpdate = false;
                         var executeQuery = false;
 
-                        if (!String.IsNullOrEmpty(parsedGroupDescription))
+                        if (parsedGroupDescription != null)
                         {
                             var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
                             web.Context.Load(groupItem, g => g["Notes"]);
@@ -187,7 +262,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             group.RequestToJoinLeaveEmailSetting = siteGroup.RequestToJoinLeaveEmailSetting;
                             groupNeedsUpdate = true;
                         }
-                        if (group.Owner.LoginName != parsedGroupOwner)
+                        if (parsedGroupOwner != null && group.Owner.LoginName != parsedGroupOwner)
                         {
                             if (parsedGroupTitle != parsedGroupOwner)
                             {
@@ -363,6 +438,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
+        private static Group EnsureGroup(Web web, string groupName)
+        {
+            ExceptionHandlingScope ensureGroupScope = new ExceptionHandlingScope(web.Context);
+
+            using (ensureGroupScope.StartScope())
+            {
+                using (ensureGroupScope.StartTry())
+                {
+                    web.SiteGroups.GetByName(groupName);
+                }
+
+                using (ensureGroupScope.StartCatch())
+                {
+                    GroupCreationInformation groupCreationInfo = new GroupCreationInformation();
+                    groupCreationInfo.Title = groupName;
+                    web.SiteGroups.Add(groupCreationInfo);
+                }
+            }
+
+            return web.SiteGroups.GetByName(groupName);
+        }
+
         private static Principal GetPrincipal(Web web, TokenParser parser, PnPMonitoredScope scope, IEnumerable<Group> groups, Model.RoleAssignment roleAssignment)
         {
 
@@ -483,8 +580,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var owners = new List<User>();
                 var members = new List<User>();
                 var visitors = new List<User>();
+                var siteSecurity = new SiteSecurity();
+
                 if (!ownerGroup.ServerObjectIsNull.Value)
                 {
+                    siteSecurity.AssociatedOwnerGroup = ownerGroup.Title;
                     associatedGroupIds.Add(ownerGroup.Id);
                     foreach (var member in ownerGroup.Users)
                     {
@@ -493,6 +593,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (!memberGroup.ServerObjectIsNull.Value)
                 {
+                    siteSecurity.AssociatedMemberGroup = memberGroup.Title;
                     associatedGroupIds.Add(memberGroup.Id);
                     foreach (var member in memberGroup.Users)
                     {
@@ -501,13 +602,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (!visitorGroup.ServerObjectIsNull.Value)
                 {
+                    siteSecurity.AssociatedVisitorGroup = visitorGroup.Title;
                     associatedGroupIds.Add(visitorGroup.Id);
                     foreach (var member in visitorGroup.Users)
                     {
                         visitors.Add(new User() { Name = member.LoginName });
                     }
                 }
-                var siteSecurity = new SiteSecurity();
                 siteSecurity.AdditionalOwners.AddRange(owners);
                 siteSecurity.AdditionalMembers.AddRange(members);
                 siteSecurity.AdditionalVisitors.AddRange(visitors);

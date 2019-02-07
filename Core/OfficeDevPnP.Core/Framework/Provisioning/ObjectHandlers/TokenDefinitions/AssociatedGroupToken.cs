@@ -28,6 +28,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             _groupType = groupType;
         }
 
+        internal AssociatedGroupType GroupType { get => _groupType; set => _groupType = value; }
+
         public override string GetReplaceValue()
         {
 

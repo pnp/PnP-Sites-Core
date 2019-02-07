@@ -586,7 +586,6 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchySequenceTermGroups.cs" />
-    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWebApiPermissions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AssociatedGroupIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneButExternalUsersToken.cs" />
@@ -928,7 +927,6 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectField.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectRetrieveTemplateInfo.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPersistTemplateInfo.cs" />
-    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectLookupFields.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPropertyBagEntry.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectCustomActions.cs" />
@@ -1058,7 +1056,10 @@
     <Compile Include="Framework\TimerJobs\TimerJobRunEventArgs.cs" />
     <Compile Include="Extensions\PnPClientContext.cs" />
     <Compile Include="IdentityModel\TokenProviders\ADFS\CertificateMixed.cs" />
+    <Compile Include="IdentityModel\TokenProviders\ADFS\KerberosMixed.cs" />
     <Compile Include="IdentityModel\WSTrustBindings\CertificateWSTrustBinding.cs" />
+    <Compile Include="IdentityModel\WSTrustBindings\KerberosWSTrustBinding.cs" />
+    <Compile Include="IdentityModel\WSTrustBindings\WindowsWSTrustBinding.cs" />
     <Compile Include="Pages\ClientSideSectionEmphasis.cs" />
     <Compile Include="Pages\ClientSideText.cs" />
     <Compile Include="Pages\ClientSideTextControlData.cs" />
@@ -1373,7 +1374,7 @@ del $(ProjectDir)\obj\*.json</PreBuildEvent>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
