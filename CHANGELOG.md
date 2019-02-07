@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Add token parsing in `targetFileName` property of file object #2036 [stevebeauge]
 - Added support to delete search configurations
 - Add support for setting default sharing and sharing permissions on tenant extensions
+- Added ThemeManager class with support for ApplyTheme extension method on Web objects
 
 ### Changed
 

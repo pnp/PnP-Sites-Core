@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Utilities.Themes
 {
+#if !ONPREMISES
     /// <summary>
     /// Extension class for the Web object useful to apply custom Themes
     /// </summary>
@@ -161,4 +162,5 @@ namespace OfficeDevPnP.Core.Utilities.Themes
         /// </summary>
         UpdateTenantTheme,
     }
+#endif 
 }
