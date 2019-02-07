@@ -1117,6 +1117,7 @@
     <Compile Include="Utilities\Themes\Generator\ThemeRules.cs" />
     <Compile Include="Utilities\Themes\Generator\ThemeRulesStandard.cs" />
     <Compile Include="Utilities\Themes\Generator\ThemeSlotRule.cs" />
+    <Compile Include="Utilities\Themes\ThemeManager.cs" />
     <Compile Include="Utilities\Themes\ThemeUtility.cs" />
     <Compile Include="Utilities\Webhooks\ResponseModel.cs" />
     <Compile Include="Utilities\Webhooks\WebhookUtility.cs" />
