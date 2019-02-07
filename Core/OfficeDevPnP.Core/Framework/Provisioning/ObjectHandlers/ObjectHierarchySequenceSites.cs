@@ -220,14 +220,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var provisioningTemplateApplyingInformation = new ProvisioningTemplateApplyingInformation();
                     provisioningTemplateApplyingInformation.AccessTokens = applyingInformation.AccessTokens;
                     provisioningTemplateApplyingInformation.MessagesDelegate = applyingInformation.MessagesDelegate;
-                    //   provisioningTemplateApplyingInformation.ProgressDelegate = applyingInformation.ProgressDelegate;
                     provisioningTemplateApplyingInformation.ProgressDelegate = (string message, int step, int total) =>
                     {
-                        if (applyingInformation.ProgressDelegate != null)
-                        {
-                            applyingInformation.ProgressDelegate($"{currentSite} : {message}", step, total);
-                        }
+                        applyingInformation.ProgressDelegate?.Invoke($"{currentSite} : {message}", step, total);
                     };
+                    provisioningTemplateApplyingInformation.SiteProvisionedDelegate = applyingInformation.SiteProvisionedDelegate;
+
                     foreach (var sitecollection in sequence.SiteCollections)
                     {
                         currentSite = sitecollection.ProvisioningId != null ? sitecollection.ProvisioningId : sitecollection.Title;

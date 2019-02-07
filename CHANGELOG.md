@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added support to delete search configurations
 - Add support for setting default sharing and sharing permissions on tenant extensions
 - Added ThemeManager class with support for ApplyTheme extension method on Web objects
+- Added delegate for callback on site fully provisioned within the Provisioning Engine
 
 ### Changed
 
