@@ -11,6 +11,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Office Dev PnP Core library for SharePoint 2013")]
 #elif SP2016
 [assembly: AssemblyDescription("Office Dev PnP Core library for SharePoint 2016")]
+#elif SP2019
+[assembly: AssemblyDescription("Office Dev PnP Core library for SharePoint 2019")]
 #else
 [assembly: AssemblyDescription("Office Dev PnP Core library for SharePoint Online")]
 #endif
