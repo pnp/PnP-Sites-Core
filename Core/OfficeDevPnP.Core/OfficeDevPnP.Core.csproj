@@ -1348,6 +1348,7 @@
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\STS3Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\VISPRUS0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\CMSPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\STS3Template.xml" />
     <Content Include="pnp.ico" />
     <None Include="Resources\SP-Responsive-UI_CSS.css" />
     <None Include="Resources\SP-Responsive-UI.js" />
