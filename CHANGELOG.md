@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Fixed token handling for resource files having quotes
+
 ## [3.6.1902.0 - February 2019 release]
 
 ### Added
