@@ -26,6 +26,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added ThemeManager class with support for ApplyTheme extension method on Web objects
 - Added delegate for callback on site fully provisioned within the Provisioning Engine
 - Added STS#3 base template for SharePoint Online template extraction
+- Added support to specify the hubsite id when creating modern sites and to set owners when creating a modern team site/O365 group associated site. [gautamdsheth]
 
 ### Changed
 
