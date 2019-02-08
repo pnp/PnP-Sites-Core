@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [3.6.1902.0 - unreleased]
+## [3.6.1902.0 - February 2019 release]
 
 ### Added
 
@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Add support for setting default sharing and sharing permissions on tenant extensions
 - Added ThemeManager class with support for ApplyTheme extension method on Web objects
 - Added delegate for callback on site fully provisioned within the Provisioning Engine
+- Added STS#3 base template for SharePoint Online template extraction
 
 ### Changed
 
