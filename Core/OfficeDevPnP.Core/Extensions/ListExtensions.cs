@@ -923,6 +923,26 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Sets a label/tag on the specified list or library 
+        /// </summary>
+        /// <param name="list">List to be processed.</param>
+        /// <param name="complianceTag">The name of the label/tag.</param>
+        /// <param name="syncToItems">Apply label to existing items in the list. Defaults to false</param>
+        /// <param name="blockDeletion">Block deletion of items in the list. Defaults to false</param>
+        /// <param name="blockEdit">Block edititing of items in the list. Defaults to false</param>
+        /// <param name="executeQuery">Perform executequery. Defaults to true</param>
+        public static void SetListComplianceTag(this List list, string complianceTag, bool syncToItems = false, bool blockDeletion = false, bool blockEdit = false, bool executeQuery = true)
+        {
+            string listUrl = list.RootFolder.ServerRelativeUrl;
+            CompliancePolicy.SPPolicyStoreProxy.SetListComplianceTag(list.Context, listUrl, complianceTag, blockDeletion, blockEdit, syncToItems);
+
+            if (executeQuery)
+            {   
+                list.Context.ExecuteQueryRetry();
+            }
+        }
+
+        /// <summary>
         /// Sets the default value for a managed metadata column in the specified list. This operation will not change existing items in the list
         /// </summary>
         /// <param name="web">Extension web</param>
