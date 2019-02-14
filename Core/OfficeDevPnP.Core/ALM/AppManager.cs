@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.ALM
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// Allows Application Lifecycle Management for Apps
     /// </summary>
@@ -762,7 +762,7 @@ namespace OfficeDevPnP.Core.ALM
                 {
                     handler.SetAuthenticationCookies(context);
                 }
-
+                
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
 
@@ -831,7 +831,7 @@ namespace OfficeDevPnP.Core.ALM
             }
             return await Task.Run(() => returnValue);
         }
-        #endregion
+#endregion
     }
 #endif
-}
+            }
