@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Skip executing EnsureProperty on Principal object when the Principal is null #2066 [schaudk]
 - Fixed token handling for resource files having quotes
 - Fixed parsing of SchemaXml #2067 [schaudk]
 - Fixed typo [lafe]
