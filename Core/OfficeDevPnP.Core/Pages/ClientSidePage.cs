@@ -109,7 +109,15 @@ namespace OfficeDevPnP.Core.Pages
             }
             set
             {
-                this.pageTitle = value;
+                if (!string.IsNullOrEmpty(value) && value.IndexOf('"') > 0)
+                {
+                    // Escape double quotes used in page title
+                    this.pageTitle = value.Replace('"', '\"');
+                }
+                else
+                {
+                    this.pageTitle = value;
+                }
             }
         }
 
@@ -607,7 +615,7 @@ namespace OfficeDevPnP.Core.Pages
             if (item.FieldValues.ContainsKey(ClientSidePage.ClientSideApplicationId) && item[ClientSideApplicationId] != null && item[ClientSideApplicationId].ToString().Equals(ClientSidePage.SitePagesFeatureId, StringComparison.InvariantCultureIgnoreCase))
             {
                 page.pageListItem = item;
-                page.PageTitle = Convert.ToString(item[ClientSidePage.Title]);
+                page.pageTitle = Convert.ToString(item[ClientSidePage.Title]);
 
                 // set layout type
                 if (item.FieldValues.ContainsKey(ClientSidePage.PageLayoutType) && item[ClientSidePage.PageLayoutType] != null && !string.IsNullOrEmpty(item[ClientSidePage.PageLayoutType].ToString()))
@@ -758,7 +766,7 @@ namespace OfficeDevPnP.Core.Pages
             // Persist the page header
             if (this.pageHeader.Type == ClientSidePageHeaderType.None)
             {
-                item[ClientSidePage.PageLayoutContentField] = ClientSidePageHeader.NoHeader(this.PageTitle);
+                item[ClientSidePage.PageLayoutContentField] = ClientSidePageHeader.NoHeader(this.pageTitle);
                 if (item.FieldValues.ContainsKey(ClientSidePage._AuthorByline))
                 {
                     item[ClientSidePage._AuthorByline] = null;
@@ -770,7 +778,7 @@ namespace OfficeDevPnP.Core.Pages
             }
             else
             {
-                item[ClientSidePage.PageLayoutContentField] = this.pageHeader.ToHtml(this.PageTitle);
+                item[ClientSidePage.PageLayoutContentField] = this.pageHeader.ToHtml(this.pageTitle);
 
                 // AuthorByline depends on a field holding the author values
                 if (this.pageHeader.AuthorByLineId > -1 && item.FieldValues.ContainsKey(ClientSidePage._AuthorByline))
