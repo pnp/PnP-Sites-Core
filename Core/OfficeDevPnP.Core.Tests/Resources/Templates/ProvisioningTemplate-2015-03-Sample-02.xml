@@ -122,7 +122,7 @@
 
   <pnp:Providers>
     <pnp:Provider Assembly="OfficeDev.PnP.Provisioning.Providers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
-              Type="OfficeDev.PnP.Provisioning.Providers.FakeProvider" Enabled="true">
+              Type="OfficeDev.PnP.Provisioning.Providers.FakeProvider" Enabled="false">
       <pnp:Configuration>
         <MyProviderConfiguration id="SampleConfig" xmlns="http://schemas.somecompany.com/MyProviderConfiguration">
           <ChildNode Attribute="value">TextContent</ChildNode>

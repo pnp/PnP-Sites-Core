@@ -8,7 +8,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
       Description = "Returns the name part of the URL of the Server Relative URL of the Web",
       Example = "{webname}",
       Returns = "MyWeb")]
-    internal class WebNameToken : TokenDefinition
+    internal class WebNameToken : VolatileTokenDefinition
     {
         public WebNameToken(Web web) : base(web, "{webname}")
         {
@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (CacheValue == null)
             {
-                CacheValue = this.Web.GetName();
+                CacheValue = TokenContext.Web.GetName();
             }
             return CacheValue;
         }

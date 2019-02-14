@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// A collection of Package objects
     /// </summary>
-    public partial class PackageCollection : ProvisioningTemplateCollection<Package>
+    public partial class PackageCollection : BaseProvisioningTemplateObjectCollection<Package>
     {
         /// <summary>
         /// Constructor for PackagesCollection class

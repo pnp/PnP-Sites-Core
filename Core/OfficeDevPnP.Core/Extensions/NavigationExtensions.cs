@@ -45,11 +45,6 @@ namespace Microsoft.SharePoint.Client
             web.Context.Load(web, w => w.AllProperties);
             web.Context.ExecuteQueryRetry();
 
-            if (!ArePublishingFeaturesActivated(web.AllProperties))
-            {
-                throw new ArgumentException("Structural navigation settings are only supported for publishing sites");
-            }
-
             // Determine if managed navigation is used...if so the other properties are not relevant
             string webNavigationSettings = web.AllProperties.GetPropertyAsString(WebNavigationSettings);
             if (webNavigationSettings == null)
@@ -526,12 +521,13 @@ namespace Microsoft.SharePoint.Client
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="nodeTitle">the title of node to add</param>
         /// <param name="nodeUri">the URL of node to add</param>
-        /// <param name="parentNodeTitle">if string.Empty, then will add this node as top level node</param>
+        /// <param name="parentNodeTitle">if string.Empty, then will add this node as top level node. Contains the title of the immediate parent node, for third level nodes, providing <paramref name="l1ParentNodeTitle"/> is required.</param>
         /// <param name="navigationType">the type of navigation, quick launch, top navigation or search navigation</param>
         /// <param name="isExternal">true if the link is an external link</param>
         /// <param name="asLastNode">true if the link should be added as the last node of the collection</param>
+        /// <param name="l1ParentNodeTitle">title of the first level parent, if this node is a third level navigation node</param>
         /// <returns>Newly added NavigationNode</returns>
-        public static NavigationNode AddNavigationNode(this Web web, string nodeTitle, Uri nodeUri, string parentNodeTitle, NavigationType navigationType, bool isExternal = false, bool asLastNode = true)
+        public static NavigationNode AddNavigationNode(this Web web, string nodeTitle, Uri nodeUri, string parentNodeTitle, NavigationType navigationType, bool isExternal = false, bool asLastNode = true, string l1ParentNodeTitle=null)
         {
             web.Context.Load(web, w => w.Navigation.QuickLaunch, w => w.Navigation.TopNavigationBar);
             web.Context.ExecuteQueryRetry();
@@ -555,8 +551,7 @@ namespace Microsoft.SharePoint.Client
                     }
                     else
                     {
-                        var parentNode = quickLaunch.FirstOrDefault(n => n.Title == parentNodeTitle);
-                        navigationNode = parentNode?.Children.Add(node);
+                        navigationNode = CreateNodeAsChild(web, quickLaunch, node, parentNodeTitle, l1ParentNodeTitle);
                     }
                 }
                 else if (navigationType == NavigationType.TopNavigationBar)
@@ -564,8 +559,7 @@ namespace Microsoft.SharePoint.Client
                     var topLink = web.Navigation.TopNavigationBar;
                     if (!string.IsNullOrEmpty(parentNodeTitle))
                     {
-                        var parentNode = topLink.FirstOrDefault(n => n.Title == parentNodeTitle);
-                        navigationNode = parentNode?.Children.Add(node);
+                        navigationNode = CreateNodeAsChild(web, topLink, node, parentNodeTitle, l1ParentNodeTitle);
                     }
                     else
                     {
@@ -582,6 +576,34 @@ namespace Microsoft.SharePoint.Client
             {
                 web.Context.ExecuteQueryRetry();
             }
+            return navigationNode;
+        }
+
+        /// <summary>
+        /// Creates a navigation node as a child of another (first or second level) navigation node.
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site</param>
+        /// <param name="parentNodes">Level one nodes under which the node should be created</param>
+        /// <param name="nodeToCreate">Node information</param>
+        /// <param name="parentNodeTitle">The title of the immediate parent node (level two if child should be level three, level one otherwise)</param>
+        /// <param name="l1ParentNodeTitle">The level one parent title or null, if the node to be created should be a level two node</param>
+        /// <returns></returns>
+        private static NavigationNode CreateNodeAsChild(Web web, NavigationNodeCollection parentNodes, NavigationNodeCreationInformation nodeToCreate, string parentNodeTitle, string l1ParentNodeTitle)
+        {
+            if (l1ParentNodeTitle != null)
+            {
+                var l1ParentNode = parentNodes.FirstOrDefault(n => n.Title.Equals(l1ParentNodeTitle, StringComparison.InvariantCultureIgnoreCase));
+                if (l1ParentNode == null)
+                {
+                    return null;
+                }
+                web.Context.Load(l1ParentNode.Children);
+                web.Context.ExecuteQueryRetry();
+                parentNodes = l1ParentNode.Children;
+            }
+
+            var parentNode = parentNodes.FirstOrDefault(n => n.Title.Equals(parentNodeTitle, StringComparison.InvariantCultureIgnoreCase));
+            var navigationNode = parentNode?.Children.Add(nodeToCreate);
             return navigationNode;
         }
 

@@ -20,6 +20,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private SiteScriptCollection _siteScripts;
         private StorageEntityCollection _storageEntities;
         private WebApiPermissionCollection _webApiPermissions;
+        private ThemeCollection _themes;
 
         #endregion
 
@@ -37,7 +38,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public ProvisioningTenant(AppCatalog appCatalog, ContentDeliveryNetwork cdn)
         {
-            this.AppCatalog = AppCatalog;
+            this.AppCatalog = appCatalog;
             this.ContentDeliveryNetwork = cdn;
         }
 
@@ -193,6 +194,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
+        /// <summary>
+        /// Gets or sets StorageEntities for the tenant
+        /// </summary>
+        public ThemeCollection Themes
+        {
+            get
+            {
+                if (this._themes == null)
+                {
+                    this._themes = new ThemeCollection(this.ParentTemplate);
+                }
+                return this._themes;
+            }
+            set
+            {
+                if (this._themes != null)
+                {
+                    this._themes.ParentTemplate = null;
+                }
+                this._themes = value;
+                if (this._themes != null)
+                {
+                    this._themes.ParentTemplate = this.ParentTemplate;
+                }
+            }
+        }
+
         #endregion
 
         #region Comparison code
@@ -202,12 +230,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
                 this.AppCatalog?.GetHashCode() ?? 0,
                 this.ContentDeliveryNetwork?.GetHashCode() ?? 0,
                 this.SiteDesigns.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.SiteScripts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.StorageEntities.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.StorageEntities.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.WebApiPermissions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Themes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
@@ -241,7 +271,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.ContentDeliveryNetwork == other.ContentDeliveryNetwork &&
                 this.SiteDesigns.DeepEquals(other.SiteDesigns) &&
                 this.SiteScripts.DeepEquals(other.SiteScripts) &&
-                this.StorageEntities.DeepEquals(other.StorageEntities)
+                this.StorageEntities.DeepEquals(other.StorageEntities) &&
+                this.WebApiPermissions.DeepEquals(other.WebApiPermissions) &&
+                this.Themes.DeepEquals(other.Themes)
                 );
         }
 

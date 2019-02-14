@@ -922,7 +922,7 @@
     <value>Could not find content type with id: {0}</value>
   </data>
   <data name="ClientContextExtensions_ExecuteQueryRetry" xml:space="preserve">
-    <value>CSOM request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying.</value>
+    <value>CSOM request frequency exceeded usage limits. Sleeping for {0} seconds before retrying.</value>
   </data>
   <data name="Provisioning_Connectors_OpenXML_FileDeleted" xml:space="preserve">
     <value>File {0} deleted from folder {1}</value>
@@ -1104,6 +1104,9 @@
   </data>
   <data name="Provisioning_ObjectHandlers_ListInstances_SkipExpiredWebHook" xml:space="preserve">
     <value>Webhook {0} has been expired and will be skipped during creation/update of list {1}.</value>
+  </data>
+  <data name="Provisioning_Extensibility_Invalid_Handler_Implementation" xml:space="preserve">
+    <value>The extensibility handler does not implement a supported extensibility handler interface. Check if the extensibility handler references the same version of OfficeDevPnP currently in use (Version {0}). Assembly: {1}. Type: {2}</value>
   </data>
   <data name="FieldAndContentTypeExtensions_ContentTypeMissing" xml:space="preserve">
     <value>Content Type with ID {0} does not exist in the list {1}</value>

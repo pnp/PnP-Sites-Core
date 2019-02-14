@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of SiteWebhook objects
     /// </summary>
-    public partial class SiteWebhookCollection : ProvisioningTemplateCollection<SiteWebhook>
+    public partial class SiteWebhookCollection : BaseProvisioningTemplateObjectCollection<SiteWebhook>
     {
         /// <summary>
         /// Constructor for SiteWebhookCollection class

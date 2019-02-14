@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of ListInstance objects
     /// </summary>
-    public partial class ListInstanceCollection : ProvisioningTemplateCollection<ListInstance>
+    public partial class ListInstanceCollection : BaseProvisioningTemplateObjectCollection<ListInstance>
     {
         /// <summary>
         /// Constructor for ListInstanceCollection class

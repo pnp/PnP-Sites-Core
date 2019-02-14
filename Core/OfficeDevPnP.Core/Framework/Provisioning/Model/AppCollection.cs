@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// A collection of AddIn objects
     /// </summary>
-    public partial class AppCollection : ProvisioningTemplateCollection<App>
+    public partial class AppCollection : BaseProvisioningTemplateObjectCollection<App>
     {
         /// <summary>
         /// Constructor for AppCollection class

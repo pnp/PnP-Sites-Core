@@ -390,7 +390,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 }
                 ccTenant = CreateClientContext(tenantAdminSiteUrl);
 #else
-                // No easy way to detect tenant admin site in on-premises, so uses has to specify it            
+                // No easy way to detect tenant admin site in on-premises, so users have to specify it            
                 if (!String.IsNullOrEmpty(tenantAdminSite))
                 {
                     ccTenant = CreateClientContext(tenantAdminSite);

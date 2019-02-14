@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
-using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
-using System.IO;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using OfficeDevPnP.Core.Utilities;
+using System;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
-using Microsoft.Online.SharePoint.TenantAdministration;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -29,7 +26,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.EnsureProperties(
 #if !ONPREMISES
                     w => w.NoCrawl,
-                    w => w.RequestAccessEmail,
                     w => w.CommentsOnSitePagesDisabled,
 #endif
                     //w => w.Title,
@@ -37,6 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.MasterUrl,
                     w => w.CustomMasterUrl,
                     w => w.SiteLogoUrl,
+                    w => w.RequestAccessEmail,
                     w => w.RootFolder,
                     w => w.AlternateCssUrl,
                     w => w.ServerRelativeUrl,
@@ -45,7 +42,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var webSettings = new WebSettings();
 #if !ONPREMISES
                 webSettings.NoCrawl = web.NoCrawl;
-                webSettings.RequestAccessEmail = web.RequestAccessEmail;
                 webSettings.CommentsOnSitePagesDisabled = web.CommentsOnSitePagesDisabled;
 #endif
                 // We're not extracting Title and Description
@@ -57,6 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Notice. No tokenization needed for the welcome page, it's always relative for the site
                 webSettings.WelcomePage = web.RootFolder.WelcomePage;
                 webSettings.AlternateCSS = Tokenize(web.AlternateCssUrl, web.Url);
+                webSettings.RequestAccessEmail = web.RequestAccessEmail;
 
                 if (creationInfo.PersistBrandingFiles)
                 {
@@ -270,6 +267,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
                         w => w.CommentsOnSitePagesDisabled,
 #endif
+                        w => w.WebTemplate,
                         w => w.HasUniqueRoleAssignments);
 
                     var webSettings = template.WebSettings;
@@ -282,6 +280,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate);
                     }
+#endif
 
                     if (!web.IsSubSite() || (web.IsSubSite() && web.HasUniqueRoleAssignments))
                     {
@@ -299,7 +298,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    if(web.CommentsOnSitePagesDisabled != webSettings.CommentsOnSitePagesDisabled)
+#if !ONPREMISES
+                    if (web.CommentsOnSitePagesDisabled != webSettings.CommentsOnSitePagesDisabled)
                     {
                         web.CommentsOnSitePagesDisabled = webSettings.CommentsOnSitePagesDisabled;
                     }
@@ -338,7 +338,48 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     if (webSettings.SiteLogo != null)
                     {
-                        web.SiteLogoUrl = parser.ParseString(webSettings.SiteLogo);
+                        var logoUrl = parser.ParseString(webSettings.SiteLogo);
+                        // Modern site? Then we assume the SiteLogo is actually a filepath
+                        if (web.WebTemplate == "GROUP")
+                        {
+#if !ONPREMISES
+                            if (!string.IsNullOrEmpty(logoUrl) && !logoUrl.ToLower().Contains("_api/groupservice/getgroupimage"))
+                            {
+                                var fileBytes = ConnectorFileHelper.GetFileBytes(template.Connector, logoUrl);
+                                if (fileBytes != null && fileBytes.Length > 0)
+                                {
+#if !NETSTANDARD2_0
+                                    var mimeType = MimeMapping.GetMimeMapping(logoUrl);
+#else
+                                    var mimeType = "";
+                                    var imgUrl = logoUrl;
+                                    if (imgUrl.Contains("?"))
+                                    {
+                                        imgUrl = imgUrl.Split(new[] { '?' })[0];
+                                    }
+                                    if(imgUrl.EndsWith(".gif",StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        mimeType = "image/gif";
+                                    }
+                                    if (imgUrl.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        mimeType = "image/png";
+                                    }
+                                    if (imgUrl.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        mimeType = "image/jpeg";
+                                    }
+#endif
+                                    Sites.SiteCollection.SetGroupImage((ClientContext)web.Context, fileBytes, mimeType).GetAwaiter().GetResult();
+
+                                }
+                            }
+#endif
+                                }
+                        else
+                        {
+                            web.SiteLogoUrl = logoUrl;
+                        }
                     }
                     var welcomePage = parser.ParseString(webSettings.WelcomePage);
                     if (!string.IsNullOrEmpty(welcomePage))
@@ -359,7 +400,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var hubsiteUrl = parser.ParseString(webSettings.HubSiteUrl);
                         try
                         {
-                            using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
+                            using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl(), applyingInformation.AccessTokens))
                             {
                                 var tenant = new Tenant(tenantContext);
                                 tenant.ConnectSiteToHubSite(web.Url, hubsiteUrl);

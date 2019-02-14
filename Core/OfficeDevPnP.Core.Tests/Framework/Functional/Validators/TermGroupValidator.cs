@@ -148,6 +148,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                                 {
                                     DropAttribute(targetTerm, "IsSourceTerm");
                                 }
+                                if (sourceTerm.Attribute("Description") == null)
+                                {
+                                    DropAttribute(targetTerm, "Description");
+                                }
                                 if (sourceTerm.Attribute("IsReused") == null)
                                 {
                                     DropAttribute(targetTerm, "IsReused");

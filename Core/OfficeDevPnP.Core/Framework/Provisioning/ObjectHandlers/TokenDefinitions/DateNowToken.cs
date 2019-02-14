@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         /// </summary>
         /// <param name="web">A SharePoint site/subsite</param>
         public DateNowToken(Web web)
-            : base(web, "~now", "{now}")
+            : base(web, "{now}")
         {
         }
 

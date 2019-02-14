@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class MasterPageCatalogToken : TokenDefinition
     {
         public MasterPageCatalogToken(Web web)
-            : base(web, "~masterpagecatalog", "{masterpagecatalog}")
+            : base(web, "{masterpagecatalog}")
         {
         }
 
@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             {
                 List catalog;
                 // Check if the current web is a sub-site
-                if (Web.IsSubSite())
+                if (TokenContext.Web.IsSubSite())
                 {
                     // Master page URL needs to be retrieved from the rootweb
                     var rootWeb = TokenContext.Site.RootWeb;

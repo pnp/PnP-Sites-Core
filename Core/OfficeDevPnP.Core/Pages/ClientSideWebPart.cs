@@ -40,6 +40,7 @@ namespace OfficeDevPnP.Core.Pages
         private JObject properties;
         private JObject serverProcessedContent;
         private string webPartPreviewImage;
+        private bool usingSpControlDataOnly;
         #endregion
 
         #region construction
@@ -57,6 +58,7 @@ namespace OfficeDevPnP.Core.Pages
             this.supportsFullBleed = false;
             this.SetPropertiesJson("{}");
             this.webPartPreviewImage = "";
+            this.usingSpControlDataOnly = false;
         }
 
         /// <summary>
@@ -233,7 +235,6 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
-
         /// <summary>
         /// Value of the "data-sp-controldata" attribute
         /// </summary>
@@ -242,6 +243,21 @@ namespace OfficeDevPnP.Core.Pages
             get
             {
                 return this.spControlData;
+            }
+        }
+
+        /// <summary>
+        /// Indicates that this control is persisted/read using the data-sp-controldata attribute only
+        /// </summary>
+        public bool UsingSpControlDataOnly
+        {
+            get
+            {
+                return this.usingSpControlDataOnly;
+            }
+            set
+            {
+                this.usingSpControlDataOnly = value;
             }
         }
         #endregion
@@ -295,19 +311,30 @@ namespace OfficeDevPnP.Core.Pages
                 }
             }
 
-            // Obtain the json data
-            ClientSideWebPartControlData controlData = new ClientSideWebPartControlData()
+            ClientSideWebPartControlData controlData = null;
+            if (this.usingSpControlDataOnly)
             {
-                ControlType = this.ControlType,
-                Id = this.InstanceId.ToString("D"),
-                WebPartId = this.WebPartId,
-                Position = new ClientSideCanvasControlPosition()
-                {
-                    ZoneIndex = this.Section.Order,
-                    SectionIndex = this.Column.Order,
-                    SectionFactor = this.Column.ColumnFactor,
-                    ControlIndex = controlIndex,
-                },
+                controlData = new ClientSideWebPartControlDataOnly();
+            }
+            else
+            {
+                controlData = new ClientSideWebPartControlData();
+            }
+
+            // Obtain the json data
+            controlData.ControlType = this.ControlType;
+            controlData.Id = this.InstanceId.ToString("D");
+            controlData.WebPartId = this.WebPartId;
+            controlData.Position = new ClientSideCanvasControlPosition()
+            {
+                ZoneIndex = this.Section.Order,
+                SectionIndex = this.Column.Order,
+                SectionFactor = this.Column.ColumnFactor,
+                ControlIndex = controlIndex,
+            };
+            controlData.Emphasis = new ClientSideSectionEmphasis()
+            {
+                ZoneEmphasis = this.Section.ZoneEmphasis,
             };
 
             // Set the control's data version to the latest version...default was 1.0, but some controls use a higher version
@@ -357,9 +384,20 @@ namespace OfficeDevPnP.Core.Pages
 
             ClientSideWebPartData webpartData = new ClientSideWebPartData() { Id = controlData.WebPartId, InstanceId = controlData.Id, Title = this.Title, Description = this.Description, DataVersion = this.DataVersion, Properties = "jsonPropsToReplacePnPRules" };
 
-            this.jsonControlData = JsonConvert.SerializeObject(controlData);
-            this.jsonWebPartData = JsonConvert.SerializeObject(webpartData);
-            this.jsonWebPartData = jsonWebPartData.Replace("\"jsonPropsToReplacePnPRules\"", this.Properties.ToString(Formatting.None));
+            if (this.usingSpControlDataOnly)
+            {
+                (controlData as ClientSideWebPartControlDataOnly).WebPartData = "jsonWebPartDataToReplacePnPRules";
+                this.jsonControlData = JsonConvert.SerializeObject(controlData);
+                this.jsonWebPartData = JsonConvert.SerializeObject(webpartData);
+                this.jsonWebPartData = this.jsonWebPartData.Replace("\"jsonPropsToReplacePnPRules\"", this.Properties.ToString(Formatting.None));
+                this.jsonControlData = this.jsonControlData.Replace("\"jsonWebPartDataToReplacePnPRules\"", this.jsonWebPartData);
+            }
+            else
+            {
+                this.jsonControlData = JsonConvert.SerializeObject(controlData);
+                this.jsonWebPartData = JsonConvert.SerializeObject(webpartData);
+                this.jsonWebPartData = this.jsonWebPartData.Replace("\"jsonPropsToReplacePnPRules\"", this.Properties.ToString(Formatting.None));
+            }
 
             StringBuilder html = new StringBuilder(100);
 #if NETSTANDARD2_0
@@ -377,30 +415,42 @@ namespace OfficeDevPnP.Core.Pages
             var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), "");
             try
             {
-                htmlWriter.NewLine = string.Empty;
-                htmlWriter.AddAttribute(CanvasControlAttribute, this.CanvasControlData);
-                htmlWriter.AddAttribute(CanvasDataVersionAttribute, this.CanvasDataVersion);
-                htmlWriter.AddAttribute(ControlDataAttribute, this.JsonControlData);
-                htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
+                if (this.usingSpControlDataOnly)
+                {
+                    htmlWriter.NewLine = string.Empty;
+                    htmlWriter.AddAttribute(CanvasControlAttribute, this.CanvasControlData);
+                    htmlWriter.AddAttribute(CanvasDataVersionAttribute, this.CanvasDataVersion);
+                    htmlWriter.AddAttribute(ControlDataAttribute, this.JsonControlData);
+                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
+                    htmlWriter.RenderEndTag();
+                }
+                else
+                {
+                    htmlWriter.NewLine = string.Empty;
+                    htmlWriter.AddAttribute(CanvasControlAttribute, this.CanvasControlData);
+                    htmlWriter.AddAttribute(CanvasDataVersionAttribute, this.CanvasDataVersion);
+                    htmlWriter.AddAttribute(ControlDataAttribute, this.JsonControlData);
+                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
 
-                htmlWriter.AddAttribute(WebPartAttribute, this.WebPartData);
-                htmlWriter.AddAttribute(WebPartDataVersionAttribute, this.DataVersion);
-                htmlWriter.AddAttribute(WebPartDataAttribute, this.JsonWebPartData);
-                htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
+                    htmlWriter.AddAttribute(WebPartAttribute, this.WebPartData);
+                    htmlWriter.AddAttribute(WebPartDataVersionAttribute, this.DataVersion);
+                    htmlWriter.AddAttribute(WebPartDataAttribute, this.JsonWebPartData);
+                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
 
-                htmlWriter.AddAttribute(WebPartComponentIdAttribute, "");
-                htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
-                htmlWriter.Write(this.WebPartId);
-                htmlWriter.RenderEndTag();
+                    htmlWriter.AddAttribute(WebPartComponentIdAttribute, "");
+                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
+                    htmlWriter.Write(this.WebPartId);
+                    htmlWriter.RenderEndTag();
 
-                htmlWriter.AddAttribute(WebPartHtmlPropertiesAttribute, this.HtmlProperties);
-                htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
-                // Allow for override of the HTML value rendering if this would be needed by controls
-                RenderHtmlProperties(ref htmlWriter);
-                htmlWriter.RenderEndTag();
+                    htmlWriter.AddAttribute(WebPartHtmlPropertiesAttribute, this.HtmlProperties);
+                    htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
+                    // Allow for override of the HTML value rendering if this would be needed by controls
+                    RenderHtmlProperties(ref htmlWriter);
+                    htmlWriter.RenderEndTag();
 
-                htmlWriter.RenderEndTag();
-                htmlWriter.RenderEndTag();
+                    htmlWriter.RenderEndTag();
+                    htmlWriter.RenderEndTag();
+                }
             }
             finally
             {
@@ -529,41 +579,79 @@ namespace OfficeDevPnP.Core.Pages
             this.spControlData = JsonConvert.DeserializeObject<ClientSideWebPartControlData>(element.GetAttribute(CanvasControl.ControlDataAttribute), jsonSerializerSettings);
             this.controlType = this.spControlData.ControlType;
 
-
             var wpDiv = element.GetElementsByTagName("div").Where(a => a.HasAttribute(ClientSideWebPart.WebPartDataAttribute)).FirstOrDefault();
-            this.webPartData = wpDiv.GetAttribute(ClientSideWebPart.WebPartAttribute);
 
-            // Decode the html encoded string
-            var decoded = WebUtility.HtmlDecode(wpDiv.GetAttribute(ClientSideWebPart.WebPartDataAttribute));
-            JObject wpJObject = JObject.Parse(decoded);
-            this.title = wpJObject["title"] != null ? wpJObject["title"].Value<string>() : "";
-            this.description = wpJObject["description"] != null ? wpJObject["description"].Value<string>() : "";
-            // Set property to trigger correct loading of properties 
-            this.PropertiesJson = wpJObject["properties"].ToString(Formatting.None);
-            
-            // Set/update dataVersion if it was set in the json data
-            if (!string.IsNullOrEmpty(wpJObject["dataVersion"].ToString(Formatting.None)))
+            // Some components on the page (e.g. web parts configured with isDomainIsolated = true) are rendered differently in the HTML
+            if (wpDiv == null)
             {
-                this.dataVersion = wpJObject["dataVersion"].ToString(Formatting.None).Trim('"');
-            }
+                JObject wpJObject = JObject.Parse(element.GetAttribute(CanvasControl.ControlDataAttribute));
+                if (wpJObject["webPartData"] != null && wpJObject["webPartData"]["title"] != null)
+                {
+                    this.title = wpJObject["webPartData"]["title"].Value<string>();
+                }
+                if (wpJObject["webPartData"] != null && wpJObject["webPartData"]["description"] != null)
+                {
+                    this.title = wpJObject["webPartData"]["description"].Value<string>();
+                }
+                if (wpJObject["webPartData"] != null && wpJObject["webPartData"]["properties"] != null)
+                {
+                    this.PropertiesJson = wpJObject["webPartData"]["properties"].ToString(Formatting.None);
+                }
+                // Check for fullbleed supporting web parts
+                if (wpJObject["webPartData"] != null && wpJObject["webPartData"]["properties"] != null && wpJObject["webPartData"]["properties"]["isFullWidth"] != null)
+                {
+                    this.supportsFullBleed = wpJObject["webPartData"]["properties"]["isFullWidth"].Value<Boolean>();
+                }
 
-            // Check for fullbleed supporting web parts
-            if (wpJObject["properties"] != null && wpJObject["properties"]["isFullWidth"] != null)
+                // Store the server processed content as that's needed for full fidelity
+                if (wpJObject["webPartData"] != null && wpJObject["webPartData"]["serverProcessedContent"] != null)
+                {
+                    this.serverProcessedContent = (JObject)wpJObject["webPartData"]["serverProcessedContent"];
+                }
+
+                if (wpJObject["webPartData"] != null && wpJObject["webPartData"]["id"] != null)
+                {
+                    this.webPartId = wpJObject["webPartData"]["id"].Value<string>();
+                }
+                
+                this.usingSpControlDataOnly = true;
+            }
+            else
             {
-                this.supportsFullBleed = wpJObject["properties"]["isFullWidth"].Value<Boolean>();
+                this.webPartData = wpDiv.GetAttribute(ClientSideWebPart.WebPartAttribute);
+
+                // Decode the html encoded string
+                var decoded = WebUtility.HtmlDecode(wpDiv.GetAttribute(ClientSideWebPart.WebPartDataAttribute));
+                JObject wpJObject = JObject.Parse(decoded);
+                this.title = wpJObject["title"] != null ? wpJObject["title"].Value<string>() : "";
+                this.description = wpJObject["description"] != null ? wpJObject["description"].Value<string>() : "";
+                // Set property to trigger correct loading of properties 
+                this.PropertiesJson = wpJObject["properties"].ToString(Formatting.None);
+
+                // Set/update dataVersion if it was set in the json data
+                if (!string.IsNullOrEmpty(wpJObject["dataVersion"].ToString(Formatting.None)))
+                {
+                    this.dataVersion = wpJObject["dataVersion"].ToString(Formatting.None).Trim('"');
+                }
+
+                // Check for fullbleed supporting web parts
+                if (wpJObject["properties"] != null && wpJObject["properties"]["isFullWidth"] != null)
+                {
+                    this.supportsFullBleed = wpJObject["properties"]["isFullWidth"].Value<Boolean>();
+                }
+
+                // Store the server processed content as that's needed for full fidelity
+                if (wpJObject["serverProcessedContent"] != null)
+                {
+                    this.serverProcessedContent = (JObject)wpJObject["serverProcessedContent"];
+                }
+
+                this.webPartId = wpJObject["id"].Value<string>();
+
+                var wpHtmlProperties = wpDiv.GetElementsByTagName("div").Where(a => a.HasAttribute(ClientSideWebPart.WebPartHtmlPropertiesAttribute)).FirstOrDefault();
+                this.htmlPropertiesData = wpHtmlProperties.InnerHtml;
+                this.htmlProperties = wpHtmlProperties.GetAttribute(ClientSideWebPart.WebPartHtmlPropertiesAttribute);
             }
-
-            // Store the server processed content as that's needed for full fidelity
-            if (wpJObject["serverProcessedContent"] != null)
-            {
-                this.serverProcessedContent = (JObject)wpJObject["serverProcessedContent"];
-            }
-
-            this.webPartId = wpJObject["id"].Value<string>();
-
-            var wpHtmlProperties = wpDiv.GetElementsByTagName("div").Where(a => a.HasAttribute(ClientSideWebPart.WebPartHtmlPropertiesAttribute)).FirstOrDefault();
-            this.htmlPropertiesData = wpHtmlProperties.InnerHtml;
-            this.htmlProperties = wpHtmlProperties.GetAttribute(ClientSideWebPart.WebPartHtmlPropertiesAttribute);
         }
 
         private void SetPropertiesJson(string json)

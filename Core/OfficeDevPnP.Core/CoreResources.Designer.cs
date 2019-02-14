@@ -215,7 +215,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to CSOM request frequency exceeded usage limits. Sleeping for {0} milliseconds before retrying..
+        ///   Looks up a localized string similar to CSOM request frequency exceeded usage limits. Sleeping for {0} seconds before retrying..
         /// </summary>
         internal static string ClientContextExtensions_ExecuteQueryRetry {
             get {
@@ -944,6 +944,15 @@ namespace OfficeDevPnP.Core {
         internal static string Provisioning_Connectors_SharePoint_FileSaveFailed {
             get {
                 return ResourceManager.GetString("Provisioning_Connectors_SharePoint_FileSaveFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The extensibility handler does not implement a supported extensibility handler interface. Check if the extensibility handler references the same version of OfficeDevPnP currently in use (Version {0}). Assembly: {1}. Type: {2}.
+        /// </summary>
+        internal static string Provisioning_Extensibility_Invalid_Handler_Implementation {
+            get {
+                return ResourceManager.GetString("Provisioning_Extensibility_Invalid_Handler_Implementation", resourceCulture);
             }
         }
         

@@ -19,19 +19,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 
             var context = securable.Context as ClientContext;
 
-            var groups = context.LoadQuery(context.Web.SiteGroups.Include(g => g.LoginName));
+            var groups = context.LoadQuery(context.Web.SiteGroups.Include(g => g.LoginName, g => g.Id));
             var webRoleDefinitions = context.LoadQuery(context.Web.RoleDefinitions);
-            var securableRoleAssignments = context.LoadQuery(securable.RoleAssignments);
 
-            context.ExecuteQueryRetry();
             securable.BreakRoleInheritance(security.CopyRoleAssignments, security.ClearSubscopes);
+
+            var securableRoleAssignments = context.LoadQuery(securable.RoleAssignments);
+            context.ExecuteQueryRetry();
 
             foreach (var roleAssignment in security.RoleAssignments)
             {
                 if (!roleAssignment.Remove)
                 {
                     var roleAssignmentPrincipal = parser.ParseString(roleAssignment.Principal);
-                    Principal principal = groups.FirstOrDefault(g => g.LoginName == roleAssignmentPrincipal);
+
+                    Principal principal = groups.FirstOrDefault(g => g.LoginName.Equals(roleAssignmentPrincipal, StringComparison.OrdinalIgnoreCase));
+
+                    // Principal can be resolved via it's ID if an associatedgroupid token was used
+                    if (principal == null)
+                    {
+                        if (Int32.TryParse(roleAssignmentPrincipal, out int roleAssignmentPrincipalId))
+                        {
+                            principal = groups.FirstOrDefault(g => g.Id.Equals(roleAssignmentPrincipalId));
+                        }
+                    }
+                    
                     if (principal == null)
                     {
                         principal = context.Web.EnsureUser(roleAssignmentPrincipal);
@@ -53,7 +65,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                 } else
                 {
                     var roleAssignmentPrincipal = parser.ParseString(roleAssignment.Principal);
-                    Principal principal = groups.FirstOrDefault(g => g.LoginName == roleAssignmentPrincipal);
+
+                    Principal principal = groups.FirstOrDefault(g => g.LoginName.Equals(roleAssignmentPrincipal, StringComparison.OrdinalIgnoreCase));
+
+                    // Principal can be resolved via it's ID if an associatedgroupid token was used
+                    if (principal == null)
+                    {
+                        if (Int32.TryParse(roleAssignmentPrincipal, out int roleAssignmentPrincipalId))
+                        {
+                            principal = groups.FirstOrDefault(g => g.Id.Equals(roleAssignmentPrincipalId));
+                        }
+                    }
+
                     if (principal == null)
                     {
                         principal = context.Web.EnsureUser(roleAssignmentPrincipal);
@@ -127,15 +150,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
         {
             if (web.AssociatedOwnerGroup.ServerObjectIsNull.HasValue && !web.AssociatedOwnerGroup.ServerObjectIsNull.Value)
             {
-                loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedownergroup}");
+                loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedownergroupid}");
             }
             if (web.AssociatedMemberGroup.ServerObjectIsNull.HasValue && !web.AssociatedMemberGroup.ServerObjectIsNull.Value)
             {
-                loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmembergroup}");
+                loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmembergroupid}");
             }
             if (web.AssociatedVisitorGroup.ServerObjectIsNull.HasValue && !web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
             {
-                loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroup}");
+                loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroupid}");
             }
             return loginName;
         }

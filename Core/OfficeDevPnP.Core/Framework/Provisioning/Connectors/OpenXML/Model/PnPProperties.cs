@@ -31,5 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML.Model
         /// Name of the Generator (engine) of the PnP OpenXML file
         /// </summary>
         public String Generator { get; set; }
+
+        public String TemplateFileName { get; set; }
     }
 }

@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class KeywordsTermStoreIdToken : TokenDefinition
     {
         public KeywordsTermStoreIdToken(Web web)
-            : base(web, "~keywordstermstoreid", "{keywordstermstoreid}")
+            : base(web, "{keywordstermstoreid}")
         {
         }
 
