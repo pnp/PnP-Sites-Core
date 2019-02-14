@@ -728,26 +728,6 @@ namespace Microsoft.SharePoint.Client
 
         #endregion
 
-        #region ClientSide Package Deployment
-
-        /// <summary>
-        /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
-        /// </summary>
-        /// <param name="tenant">Tenant to operate against</param>
-        /// <returns>The Uri holding the app catalog site URL</returns>
-        public static Uri GetAppCatalog(this Tenant tenant)
-        {
-            // Assume there's only one appcatalog site
-            var results = ((tenant.Context) as ClientContext).Web.SiteSearch("contentclass:STS_Site AND SiteTemplate:APPCATALOG");
-            foreach (var site in results)
-            {
-                return new Uri(site.Url);
-            }
-
-            return null;
-        }
-        #endregion
-
         #region Private helper methods
         private static bool WaitForIsComplete(Tenant tenant, SpoOperation op, Func<TenantOperationMessage, bool> timeoutFunction = null, TenantOperationMessage operationMessage = TenantOperationMessage.None)
         {
@@ -966,6 +946,31 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
 #else
+
+#if !SP2013 && !SP2016
+
+        #region ClientSide Package Deployment
+
+        /// <summary>
+        /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
+        /// </summary>
+        /// <param name="tenant">Tenant to operate against</param>
+        /// <returns>The Uri holding the app catalog site URL</returns>
+        public static Uri GetAppCatalog(this Tenant tenant)
+        {
+            // Assume there's only one appcatalog site
+            var results = ((tenant.Context) as ClientContext).Web.SiteSearch("contentclass:STS_Site AND SiteTemplate:APPCATALOG");
+            foreach (var site in results)
+            {
+                return new Uri(site.Url);
+            }
+
+            return null;
+        }
+        #endregion
+
+#endif
+
         #region Site collection creation
         /// <summary>
         /// Adds a SiteEntity by launching site collection creation and waits for the creation to finish
