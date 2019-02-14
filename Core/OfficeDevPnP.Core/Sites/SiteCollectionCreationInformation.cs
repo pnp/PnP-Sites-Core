@@ -40,8 +40,23 @@ namespace OfficeDevPnP.Core.Sites
         /// <summary>
         /// If set to true, file sharing for guest users will be allowed.
         /// </summary>
-        public bool AllowFileSharingForGuestUsers { get; set; }
+        [Obsolete("This property is obsolete, use ShareByEmailEnabled instead")]
+        public bool AllowFileSharingForGuestUsers
+        {
+            get
+            {
+                return ShareByEmailEnabled;
+            }
+            set
+            {
+                ShareByEmailEnabled = value;
+            }
+        }
 
+        /// <summary>
+        /// If set to true sharing files by email is enabled. Defaults to false.
+        /// </summary>
+        public bool ShareByEmailEnabled { get; set; }
         /// <summary>
         /// The Site classification to use. For instance 'Contoso Classified'. See https://www.youtube.com/watch?v=E-8Z2ggHcS0 for more information
         /// </summary>
@@ -56,6 +71,11 @@ namespace OfficeDevPnP.Core.Sites
         /// The language to use for the site. If not specified will default to the language setting of the clientcontext.
         /// </summary>
         public uint Lcid { get; set; }
+
+        /// <summary>
+        /// The Guid of the hub site to be used. If specified will associate the communication site to the hub site
+        /// </summary>
+        public Guid HubSiteId { get; set; }
 
         /// <summary>
         /// Default constructor
@@ -91,11 +111,17 @@ namespace OfficeDevPnP.Core.Sites
         public bool KeepOldHomePage { get; set; }
 
         /// <summary>
+        /// Set the owners of the modern team site. Specify the UPN values in a string array.
+        /// </summary>
+        public string[] Owners { get; set; }
+
+        /// <summary>
         /// Default constructor
         /// </summary>
         public TeamSiteCollectionGroupifyInformation() : base()
         {
         }
+
 
         /// <summary>
         /// TeamSiteCollectionTeamSiteCollectionGroupifyInformationCreationInformation constructor
@@ -115,6 +141,11 @@ namespace OfficeDevPnP.Core.Sites
     /// </summary>
     public class TeamSiteCollectionCreationInformation : SiteCreationInformation
     {
+        /// <summary>
+        /// Set the owners of the modern team site. Specify the UPN values in a string array.
+        /// </summary>
+        public string[] Owners { get; set; }
+
         /// <summary>
         /// Default constructor
         /// </summary>
@@ -164,6 +195,13 @@ namespace OfficeDevPnP.Core.Sites
         /// The Site classification to use. For instance 'Contoso Classified'. See https://www.youtube.com/watch?v=E-8Z2ggHcS0 for more information
         /// </summary>
         public string Classification { get; set; }
+
+        public uint Lcid { get; set; }
+
+        /// <summary>
+        /// The Guid of the hub site to be used. If specified will associate the modern team site to the hub site.
+        /// </summary>
+        public Guid HubSiteId { get; set; }
 
         public SiteCreationInformation()
         {

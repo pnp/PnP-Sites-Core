@@ -9,10 +9,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         Description = "Returns the id of the given default site collection term store",
         Example = "{sitecollectiontermstoreid}",
         Returns = "9188a794-cfcf-48b6-9ac5-df2048e8aa5d")]
-    internal class SiteCollectionTermStoreIdToken : TokenDefinition
+    internal class SiteCollectionTermStoreIdToken : VolatileTokenDefinition
     {
         public SiteCollectionTermStoreIdToken(Web web)
-            : base(web, "~sitecollectiontermstoreid", "{sitecollectiontermstoreid}")
+            : base(web, "{sitecollectiontermstoreid}")
         {
         }
 

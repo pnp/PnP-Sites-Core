@@ -1,6 +1,7 @@
 ﻿using Microsoft.SharePoint.Client;
 using System;
 using System.Reflection;
+using System.Collections.Concurrent;
 
 namespace OfficeDevPnP.Core
 {
@@ -11,6 +12,11 @@ namespace OfficeDevPnP.Core
     {
         public int RetryCount { get; set; }
         public int Delay { get; set; }
+
+        /// <summary>
+        /// Generic property bag for the PnPClientContext
+        /// </summary>
+        public ConcurrentDictionary<string, object> PropertyBag { get; set; } = new ConcurrentDictionary<string, object>();
 
         /// <summary>
         /// Converts ClientContext into PnPClientContext

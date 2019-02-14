@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
-using OfficeDevPnP.Core.ALM;
-using System.IO;
-using System.Net;
-using Microsoft.Online.SharePoint.TenantAdministration;
-using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
@@ -36,11 +28,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (template.Tenant != null)
                 {
-                    ProcessCdns(web, template.Tenant, parser, scope);
-                    ProcessApps(web, template, parser, scope);
-                    parser = ProcessSiteScripts(web, template, parser, scope);
-                    parser = ProcessSiteDesigns(web, template, parser, scope);
-                    parser = ProcessStorageEntities(web, template, parser, scope);
+                    using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
+                    {
+                        var tenant = new Tenant(tenantContext);
+                        TenantHelper.ProcessCdns(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                        parser = TenantHelper.ProcessApps(tenant, template.Tenant, template.Connector, parser, scope, applyingInformation, MessagesDelegate);
+                        parser = TenantHelper.ProcessWebApiPermissions(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                        parser = TenantHelper.ProcessSiteScripts(tenant, template.Tenant, template.Connector, parser, scope, MessagesDelegate);
+                        parser = TenantHelper.ProcessSiteDesigns(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                        parser = TenantHelper.ProcessStorageEntities(tenant, template.Tenant, parser, scope, applyingInformation, MessagesDelegate);
+                        parser = TenantHelper.ProcessThemes(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                    }
                     // So far we do not provision CDN settings
                     // It will come in the near future
                     // NOOP on CDN
@@ -50,11 +48,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
+        /*
         private void ProcessApps(Web web, ProvisioningTemplate template, TokenParser parser, PnPMonitoredScope scope)
         {
             if (template.Tenant.AppCatalog != null && template.Tenant.AppCatalog.Packages.Count > 0)
             {
-                
+
                 var manager = new AppManager(web.Context as ClientContext);
 
                 var appCatalogUri = web.GetAppCatalog();
@@ -123,18 +122,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (template.Tenant.StorageEntities != null && template.Tenant.StorageEntities.Any())
             {
                 var appCatalogUri = web.GetAppCatalog();
-                using (var appCatalogContext = web.Context.Clone(appCatalogUri))
+                if (appCatalogUri != null)
                 {
-                    foreach (var entity in template.Tenant.StorageEntities)
+                    using (var appCatalogContext = web.Context.Clone(appCatalogUri))
                     {
-                        var key = parser.ParseString(entity.Key);
-                        var value = parser.ParseString(entity.Value);
-                        var description = parser.ParseString(entity.Description);
-                        var comment = parser.ParseString(entity.Comment);
-                        appCatalogContext.Web.SetStorageEntity(key, value, description, comment);
+                        foreach (var entity in template.Tenant.StorageEntities)
+                        {
+                            var key = parser.ParseString(entity.Key);
+                            var value = parser.ParseString(entity.Value);
+                            var description = parser.ParseString(entity.Description);
+                            var comment = parser.ParseString(entity.Comment);
+                            appCatalogContext.Web.SetStorageEntity(key, value, description, comment);
+                        }
+                        appCatalogContext.Web.Update();
+                        appCatalogContext.ExecuteQueryRetry();
                     }
-                    appCatalogContext.Web.Update();
-                    appCatalogContext.ExecuteQueryRetry();
+                }
+                else
+                {
+                    WriteMessage($"Tenant app catalog doesn't exist. Provisioning of storage entities will be skipped!", ProvisioningMessageType.Warning);
                 }
             }
             return parser;
@@ -228,7 +234,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 PreviewImageAltText = designPreviewImageAltText,
                                 IsDefault = siteDesign.IsDefault,
                             };
-                            switch((int)siteDesign.WebTemplate)
+                            switch ((int)siteDesign.WebTemplate)
                             {
                                 case 0:
                                     {
@@ -528,6 +534,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return returnDict;
         }
+        */
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
@@ -537,7 +544,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            return (template.Tenant != null);
+            if (!_willProvision.HasValue && template.Tenant != null)
+            {
+                _willProvision = (template.Tenant.AppCatalog != null ||
+                                template.Tenant.ContentDeliveryNetwork != null ||
+                                (template.Tenant.SiteDesigns != null && template.Tenant.SiteDesigns.Count > 0) ||
+                                (template.Tenant.SiteScripts!= null && template.Tenant.SiteScripts.Count > 0) ||
+                                (template.Tenant.StorageEntities != null && template.Tenant.StorageEntities.Count > 0) ||
+                                (template.Tenant.WebApiPermissions!= null && template.Tenant.WebApiPermissions.Count > 0) ||
+                                (template.Tenant.Themes != null && template.Tenant.Themes.Count > 0)
+                                );
+            }
+            return (_willProvision.Value);
         }
     }
 

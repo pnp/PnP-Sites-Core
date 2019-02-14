@@ -71,6 +71,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             return (result);
         }
 
+        public override ProvisioningHierarchy GetHierarchy(string uri)
+        {
+            if (uri == null)
+            {
+                throw new ArgumentNullException(nameof(uri));
+            }
+
+            ProvisioningHierarchy result = null;
+
+            var stream = this.Connector.GetFileStream(uri);
+
+            if (stream != null)
+            {
+                var formatter = new XMLPnPSchemaFormatter();
+
+                ITemplateFormatter specificFormatter = formatter.GetSpecificFormatterInternal(ref stream);
+                specificFormatter.Initialize(this);
+                result = ((IProvisioningHierarchyFormatter)specificFormatter).ToProvisioningHierarchy(stream);
+            }
+
+            return (result);
+        }
+
         public override ProvisioningTemplate GetTemplate(string uri)
         {
             return (this.GetTemplate(uri, (ITemplateProviderExtension[])null));
@@ -135,6 +158,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             return (provisioningTemplate);
         }
 
+        public override void Save(ProvisioningHierarchy hierarchy)
+        {
+            this.SaveAs(hierarchy, this.Uri);
+        }
+
         public override void Save(ProvisioningTemplate template)
         {
             this.Save(template, (ITemplateProviderExtension[])null);
@@ -153,6 +181,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         public override void Save(ProvisioningTemplate template, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions = null)
         {
             this.SaveAs(template, this.Uri, formatter, extensions);
+        }
+
+        public override void SaveAs(ProvisioningHierarchy hierarchy, string uri)
+        {
+            if (hierarchy == null)
+            {
+                throw new ArgumentNullException(nameof(hierarchy));
+            }
+
+            if (uri == null)
+            {
+                throw new ArgumentNullException(nameof(uri));
+            }
+
+            var formatter = XMLPnPSchemaFormatter.LatestFormatter;
+            formatter.Initialize(this);
+
+            var stream = ((IProvisioningHierarchyFormatter)formatter).ToFormattedHierarchy(hierarchy);
+
+            this.Connector.SaveFileStream(uri, stream);
+
+            if (this.Connector is ICommitableFileConnector)
+            {
+                ((ICommitableFileConnector)this.Connector).Commit();
+            }
         }
 
         public override void SaveAs(ProvisioningTemplate template, string uri)

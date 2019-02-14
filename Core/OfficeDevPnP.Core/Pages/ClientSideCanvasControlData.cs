@@ -23,6 +23,9 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         [JsonProperty(PropertyName = "position")]
         public ClientSideCanvasControlPosition Position { get; set; }
+
+        [JsonProperty(PropertyName = "emphasis", NullValueHandling = NullValueHandling.Ignore)]
+        public ClientSideSectionEmphasis Emphasis { get; set; }
     }
 #endif
 }

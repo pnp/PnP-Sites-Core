@@ -29,6 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private List<ExtensibilityHandler> extensibilityHandlers = new List<ExtensibilityHandler>();
         private Handlers handlersToProcess = Handlers.All;
         private bool includeContentTypesFromSyndication = true;
+        private bool includeHiddenLists = false;
 
         /// <summary>
         /// Provisioning Progress Delegate
@@ -172,7 +173,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 this.includeNativePublishingFiles = value;
             }
         }
-        
+
         /// <summary>
         /// If true includes all term groups in the template
         /// </summary>
@@ -212,7 +213,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <summary>
         /// List of content type groups
         /// </summary>
-        public List<String> ContentTypeGroupsToInclude {
+        public List<String> ContentTypeGroupsToInclude
+        {
             get { return this.contentTypeGroupsToInclude; }
             set { this.contentTypeGroupsToInclude = value; }
         }
@@ -294,6 +296,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return includeContentTypesFromSyndication; }
             set { includeContentTypesFromSyndication = value; }
+        }
+
+        public bool IncludeHiddenLists
+        {
+            get { return includeHiddenLists; }
+            set { includeHiddenLists = value; }
         }
     }
 }

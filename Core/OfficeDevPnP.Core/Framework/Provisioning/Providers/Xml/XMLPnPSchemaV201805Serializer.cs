@@ -20,7 +20,7 @@ using FileLevel = OfficeDevPnP.Core.Framework.Provisioning.Model.FileLevel;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
     /// <summary>
-    /// Implements the logic to serialize a schema of version 201801
+    /// Implements the logic to serialize a schema of version 201805
     /// </summary>
     internal class XMLPnPSchemaV201805Serializer : XmlPnPSchemaBaseSerializer<V201805.ProvisioningTemplate>
     {

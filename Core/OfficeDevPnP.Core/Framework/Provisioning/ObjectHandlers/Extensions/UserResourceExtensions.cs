@@ -124,6 +124,45 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 
             return returnValue;
         }
+
+        public static bool PersistResourceValue(string token, int LCID, string Title)
+        {
+            bool returnValue = false;
+
+            if (!string.IsNullOrWhiteSpace(Title))
+            {
+                returnValue = true;
+                ResourceTokens.Add(new Tuple<string, int, string>(token, LCID, Title));
+            }
+
+            return returnValue;
+        }
+
+        public static bool PersistResourceValue(List siteList, Guid viewId, string token, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
+        {
+            bool returnValue = false;
+            var clientContext= siteList.Context;
+
+            foreach (var language in template.SupportedUILanguages)
+            {
+                var culture = new CultureInfo(language.LCID);
+                var currentView = siteList.GetViewById(viewId);
+                clientContext.Load(currentView, cc => cc.Title);
+                var acceptLanguage = clientContext.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"];
+                clientContext.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = new CultureInfo(language.LCID).Name;
+                clientContext.ExecuteQueryRetry();
+
+                if(!string.IsNullOrWhiteSpace(currentView.Title))
+                {
+                    returnValue = true;
+                    ResourceTokens.Add(new Tuple<string, int, string>(token, language.LCID, currentView.Title));
+                }
+
+                clientContext.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = acceptLanguage;
+
+            }
+            return returnValue;
+        }
     }
 #endif
             }

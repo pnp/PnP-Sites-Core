@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
-using OfficeDevPnP.Core.Diagnostics;
+﻿using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.ALM;
+using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using System;
+using System.Diagnostics;
+using System.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -28,7 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // Process the collection of Apps installed in the current Site Collection
                 var appCatalogUri = web.GetAppCatalog();
-                if(appCatalogUri != null)
+                if (appCatalogUri != null)
                 {
                     var manager = new AppManager(web.Context as ClientContext);
 
@@ -44,7 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             });
                         }
                     }
-                }                
+                }
             }
             return template;
         }
@@ -109,18 +107,66 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     // We need to wait for the app management
                                     // to be completed before proceeding
+                                    switch (app.Action)
+                                    {
+                                        case AppAction.Install:
+                                        case AppAction.Update:
+                                            {
+                                                PollforAppInstalled(manager, appId);
+                                                break;
+                                            }
+                                        case AppAction.Uninstall:
+                                            {
+                                                PollforAppUninstalled(manager, appId);
+                                                break;
+                                            }
+                                    }
                                 }
                             }
                         }
                         else
                         {
                             WriteMessage($"Tenant app catalog doesn't exist. ALM step will be skipped.", ProvisioningMessageType.Warning);
-                        }                        
+                        }
                     }
                 }
             }
 
             return parser;
+        }
+
+        private void PollforAppInstalled(AppManager manager, Guid appId)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            var appMetadata = manager.GetAvailable(appId, Enums.AppCatalogScope.Tenant);
+            while (appMetadata.AppCatalogVersion != appMetadata.InstalledVersion && sw.ElapsedMilliseconds < 1000 * 60 * 5)
+            {
+                System.Threading.Thread.Sleep(5000); // sleep 5 seconds and try again
+                appMetadata = manager.GetAvailable(appId, Enums.AppCatalogScope.Tenant);
+            }
+            if(appMetadata.AppCatalogVersion != appMetadata.InstalledVersion)
+            {
+                // We ran into a timeout
+                throw new Exception("App Install timeout hit, could not determine installed state");
+            }
+            sw.Stop();
+        }
+
+        private void PollforAppUninstalled(AppManager manager, Guid appId)
+        {
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
+            var appMetadata = manager.GetAvailable(appId, Enums.AppCatalogScope.Tenant);
+            while (appMetadata.InstalledVersion != null && sw.ElapsedMilliseconds < 1000 * 60 * 5)
+            {
+                System.Threading.Thread.Sleep(5000); // sleep 5 seconds and try again
+                appMetadata = manager.GetAvailable(appId, Enums.AppCatalogScope.Tenant);
+            }
+            if(appMetadata.InstalledVersion != null)
+            {
+                throw new Exception("App Uninstall timeout hit, could not determine uninstalled state.");
+            }
         }
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
@@ -130,7 +176,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            return (!web.IsSubSite() && template.ApplicationLifecycleManagement != null);
+            if (!_willProvision.HasValue && template.ApplicationLifecycleManagement != null)
+            {
+                _willProvision = (template.ApplicationLifecycleManagement.AppCatalog != null ||
+                                  template.ApplicationLifecycleManagement.Apps.Count > 0
+                                 );
+            }
+            return (!web.IsSubSite() && _willProvision.Value);
         }
     }
 #endif

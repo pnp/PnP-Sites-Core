@@ -187,6 +187,7 @@ namespace Microsoft.SharePoint.Client
         private static async Task CheckOutFileImplementation(this Web web, string serverRelativeUrl)
         {
             var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+            await web.Context.ExecuteQueryAsync();
 #endif
 
             var scope = new ConditionalScope(web.Context, () => !file.ServerObjectIsNull.Value && file.Exists && file.CheckOutType == CheckOutType.None);
@@ -962,8 +963,13 @@ namespace Microsoft.SharePoint.Client
         private static async Task<Folder> EnsureFolderPathImplementation(this Web web, string webRelativeUrl, params Expression<Func<Folder, object>>[] expressions)
 #endif
         {
+            
             if (webRelativeUrl == null) { throw new ArgumentNullException(nameof(webRelativeUrl)); }
 
+            if(webRelativeUrl.EndsWith("."))
+            {
+                throw new Exception("Folder names cannot end on a period (.).");
+            }
             //Web root folder should be returned if webRelativeUrl is empty
             if (webRelativeUrl.Length != 0 && string.IsNullOrWhiteSpace(webRelativeUrl)) { throw new ArgumentException(CoreResources.FileFolderExtensions_EnsureFolderPath_Folder_URL_is_required_, nameof(webRelativeUrl)); }
 
@@ -2443,5 +2449,84 @@ namespace Microsoft.SharePoint.Client
                                Replace(@"\?", ".") + "$";
         }
 
+#if !ONPREMISES
+        /// <summary>
+        /// Resets a file to its previous version.
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL of the file to process</param>
+        /// <param name="checkinType">The type of the checkin</param>
+        /// <param name="comment">Message to be recorded with the approval</param>
+        public static async Task ResetFileToPreviousVersionAsync(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
+        {
+            await new SynchronizationContextRemover();
+            await web.ResetFileToPreviousVersionImplementation(serverRelativeUrl, checkinType, comment);
+        }
+#endif
+
+        /// <summary>
+        /// Resets a file to its previous version.
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL of the file to process</param>
+        /// <param name="checkinType">The type of the checkin</param>
+        /// <param name="comment">Message to be recorded with the approval</param>
+        public static void ResetFileToPreviousVersion(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
+        {
+#if ONPREMISES
+            web.ResetFileToPreviousVersionImplementation(serverRelativeUrl, checkinType, comment);
+#else
+            Task.Run(() => web.ResetFileToPreviousVersionImplementation(serverRelativeUrl, checkinType, comment)).GetAwaiter().GetResult();
+#endif
+        }
+
+        /// <summary>
+        /// Checks in a file
+        /// </summary>
+        /// <param name="web">The web to process</param>
+        /// <param name="serverRelativeUrl">The server relative URL of the file to checkin</param>
+        /// <param name="checkinType">The type of the checkin</param>
+        /// <param name="comment">Message to be recorded with the approval</param>
+#if ONPREMISES
+	    public static void ResetFileToPreviousVersionImplementation(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
+	    {
+		    var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
+#else
+        public static async Task ResetFileToPreviousVersionImplementation(this Web web, string serverRelativeUrl, CheckinType checkinType, string comment)
+        {
+            var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativeUrl));
+#endif
+            var scope = new ConditionalScope(web.Context, () => !file.ServerObjectIsNull.Value && file.Exists && file.CheckOutType == CheckOutType.None);
+
+            using (scope.StartScope())
+            {
+                web.Context.Load(file, f => f.Versions);
+            }
+#if ONPREMISES
+		    web.Context.ExecuteQueryRetry();
+#else
+            await web.Context.ExecuteQueryAsync();
+#endif
+            if (scope.TestResult.Value)
+            {
+                if (file.Versions.Count > 0)
+                {
+#if ONPREMISES
+                    web.CheckOutFile(serverRelativeUrl);
+#else
+                    await web.CheckOutFileAsync(serverRelativeUrl);
+#endif
+                    var versionLabelPrevious = file.Versions[(file.Versions.Count - 1)].VersionLabel;
+                    file.Versions.RestoreByLabel(versionLabelPrevious);
+                }
+#if ONPREMISES
+			    web.Context.ExecuteQueryRetry();
+                web.CheckInFile(serverRelativeUrl, checkinType, comment);
+#else
+                await web.CheckInFileAsync(serverRelativeUrl, checkinType, comment);
+                await web.Context.ExecuteQueryAsync();
+#endif
+            }
+        }
     }
 }

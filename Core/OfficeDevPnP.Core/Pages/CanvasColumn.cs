@@ -138,6 +138,11 @@ namespace OfficeDevPnP.Core.Pages
                             ZoneIndex = this.Section.Order,
                             SectionIndex = this.Order,
                             SectionFactor = this.ColumnFactor,
+                        },
+
+                        Emphasis = new ClientSideSectionEmphasis()
+                        {
+                            ZoneEmphasis = this.Section.ZoneEmphasis,
                         }
                     };
 

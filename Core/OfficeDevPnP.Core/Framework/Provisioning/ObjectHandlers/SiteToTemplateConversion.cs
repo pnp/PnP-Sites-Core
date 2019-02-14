@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
-using OfficeDevPnP.Core.Framework.Provisioning.Extensibility;
-using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -134,18 +133,85 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+#if !ONPREMISES
+        internal void ApplyProvisioningHierarchy(Tenant tenant, OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation provisioningInfo)
+        {
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Provisioning))
+            {
+                ProvisioningProgressDelegate progressDelegate = null;
+                ProvisioningMessagesDelegate messagesDelegate = null;
+                if (provisioningInfo == null)
+                {
+                    // When no provisioning info was passed then we want to execute all handlers
+                    provisioningInfo = new ProvisioningTemplateApplyingInformation();
+                    provisioningInfo.HandlersToProcess = Handlers.All;
+                }
+                else
+                {
+                    progressDelegate = provisioningInfo.ProgressDelegate;
+                    if (provisioningInfo.ProgressDelegate != null)
+                    {
+                        scope.LogInfo(CoreResources.SiteToTemplateConversion_ProgressDelegate_registered);
+                    }
+                    messagesDelegate = provisioningInfo.MessagesDelegate;
+                    if (provisioningInfo.MessagesDelegate != null)
+                    {
+                        scope.LogInfo(CoreResources.SiteToTemplateConversion_MessagesDelegate_registered);
+                    }
+                    if (provisioningInfo.HandlersToProcess == default(Handlers))
+                    {
+                        provisioningInfo.HandlersToProcess = Handlers.All;
+                    }
+
+                }
+
+                List<ObjectHierarchyHandlerBase> objectHandlers = new List<ObjectHierarchyHandlerBase>
+                {
+                    new ObjectHierarchyTenant(),
+                    new ObjectHierarchySequenceTermGroups(),
+                    new ObjectHierarchySequenceSites()
+                };
+
+                var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(tenant, hierarchy, sequenceId, provisioningInfo)) + 1;
+
+                progressDelegate?.Invoke("Initializing engine", 1, count); // handlers + initializing message)
+
+                int step = 2;
+
+                TokenParser sequenceTokenParser = new TokenParser(tenant, hierarchy);
+                foreach (var handler in objectHandlers)
+                {
+                    if (handler.WillProvision(tenant, hierarchy, sequenceId, provisioningInfo))
+                    {
+                        if (messagesDelegate != null)
+                        {
+                            handler.MessagesDelegate = messagesDelegate;
+                        }
+                        if (handler.ReportProgress && progressDelegate != null)
+                        {
+                            progressDelegate(handler.Name, step, count);
+                            step++;
+                        }
+                        sequenceTokenParser = handler.ProvisionObjects(tenant, hierarchy, sequenceId, sequenceTokenParser, provisioningInfo);
+                    }
+                }
+            }
+        }
+#endif
         /// <summary>
         /// Actual implementation of the apply templates
         /// </summary>
         /// <param name="web"></param>
         /// <param name="template"></param>
         /// <param name="provisioningInfo"></param>
-        internal void ApplyRemoteTemplate(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation provisioningInfo)
+        /// <param name="tokenParser"></param>
+        internal void ApplyRemoteTemplate(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation provisioningInfo, bool calledFromHierarchy = false, TokenParser tokenParser = null)
         {
             using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Provisioning))
             {
                 ProvisioningProgressDelegate progressDelegate = null;
                 ProvisioningMessagesDelegate messagesDelegate = null;
+                ProvisioningSiteProvisionedDelegate siteProvisionedDelegate = null;
                 if (provisioningInfo != null)
                 {
                     if (provisioningInfo.OverwriteSystemPropertyBagValues == true)
@@ -162,6 +228,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         scope.LogInfo(CoreResources.SiteToTemplateConversion_MessagesDelegate_registered);
                     }
+                    siteProvisionedDelegate = provisioningInfo.SiteProvisionedDelegate;
                 }
                 else
                 {
@@ -201,10 +268,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         var templatesNotMatchingWarning = String.Format(CoreResources.Provisioning_Asymmetric_Base_Templates, template.BaseSiteTemplate, targetSiteTemplateId);
                         scope.LogWarning(templatesNotMatchingWarning);
-                        if (provisioningInfo.MessagesDelegate != null)
-                        {
-                            provisioningInfo.MessagesDelegate(templatesNotMatchingWarning, ProvisioningMessageType.Warning);
-                        }
+                        messagesDelegate?.Invoke(templatesNotMatchingWarning, ProvisioningMessageType.Warning);
                     }
                 }
 
@@ -240,16 +304,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // 3rd. Create remaining objects in lists (views, user custom actions, ...)
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Lists)) objectHandlers.Add(new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings));
 
-                //if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Fields) || provisioningInfo.HandlersToProcess.HasFlag(Handlers.Lists)) objectHandlers.Add(new ObjectLookupFields());
-
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Fields) || provisioningInfo.HandlersToProcess.HasFlag(Handlers.Lists)) objectHandlers.Add(new ObjectListInstanceDataRows());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Workflows)) objectHandlers.Add(new ObjectWorkflows());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Pages)) objectHandlers.Add(new ObjectPages());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.PageContents)) objectHandlers.Add(new ObjectPageContents());
 #if !ONPREMISES
-                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Tenant)) objectHandlers.Add(new ObjectTenant());
+                if (!calledFromHierarchy && provisioningInfo.HandlersToProcess.HasFlag(Handlers.Tenant)) objectHandlers.Add(new ObjectTenant());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ApplicationLifecycleManagement)) objectHandlers.Add(new ObjectApplicationLifecycleManagement());
-                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.WebApiPermissions)) objectHandlers.Add(new ObjectWebApiPermissions());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Pages)) objectHandlers.Add(new ObjectClientSidePages());
 #endif
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.CustomActions)) objectHandlers.Add(new ObjectCustomActions());
@@ -271,11 +332,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(web, template, provisioningInfo)) + 1;
 
-                if (progressDelegate != null)
+                progressDelegate?.Invoke("Initializing engine", 1, count); // handlers + initializing message)
+                if (tokenParser == null)
                 {
-                    progressDelegate("Initializing engine", 1, count); // handlers + initializing message)
+                    tokenParser = new TokenParser(web, template);
                 }
-                var tokenParser = new TokenParser(web, template);
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders))
                 {
                     var extensibilityHandler = objectHandlers.OfType<ObjectExtensibilityHandlers>().First();
@@ -309,6 +370,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         tokenParser = handler.ProvisionObjects(web, template, tokenParser, provisioningInfo);
                     }
                 }
+
+                // Notify the completed provisioning of the site
+                web.EnsureProperties(w => w.Title, w => w.Url);
+                siteProvisionedDelegate?.Invoke(web.Title, web.Url);
 
                 System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(currentCultureInfoValue);
 
