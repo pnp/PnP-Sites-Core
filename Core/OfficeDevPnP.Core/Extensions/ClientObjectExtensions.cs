@@ -199,8 +199,11 @@ namespace Microsoft.SharePoint.Client
                             throw new Exception("Invalid arguments number");
                         }
 
-                        clientObject.Context.Load(clientObject, expression);
-                        dirty = true;
+                        if (!(clientObject is ClientObjectCollection) || ((clientObject is ClientObjectCollection) && !(clientObject as ClientObjectCollection).AreItemsAvailable))
+                        {
+                            clientObject.Context.Load(clientObject, expression);
+                            dirty = true;
+                        }                        
                     }
                     else
                     {
