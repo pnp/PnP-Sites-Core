@@ -44,6 +44,7 @@ namespace OfficeDevPnP.Core
 
         private SharePointOnlineCredentials sharepointOnlineCredentials;
         private string appOnlyAccessToken;
+        private string azureADCredentialsToken;
         private object tokenLock = new object();
         private CookieContainer fedAuth = null;
         private string _contextUrl;
@@ -519,8 +520,8 @@ namespace OfficeDevPnP.Core
             var clientContext = new ClientContext(siteUrl);
             clientContext.ExecutingWebRequest += (sender, args) =>
             {
-                String accessToken = Task.Run(() => AcquireTokenAsync(resourceUri, userPrincipalName, userPassword)).GetAwaiter().GetResult();
-                args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + accessToken;
+                EnsureAzureADCredentialsToken(resourceUri, userPrincipalName, userPassword);
+                args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + azureADCredentialsToken;
             };
 
             return clientContext;
@@ -549,6 +550,40 @@ namespace OfficeDevPnP.Core
             JObject jobject = JObject.Parse(result);
             var token = jobject["access_token"].Value<string>();
             return token;
+        }
+
+        private void EnsureAzureADCredentialsToken(string resourceUri, string userPrincipalName, string userPassword)
+        {
+            if (azureADCredentialsToken == null)
+            {
+                lock (tokenLock)
+                {
+                    if (azureADCredentialsToken == null)
+                    {
+
+                        String accessToken = Task.Run(() => AcquireTokenAsync(resourceUri, userPrincipalName, userPassword)).GetAwaiter().GetResult();
+                        ThreadPool.QueueUserWorkItem(obj =>
+                        {
+                            try
+                            {
+                                var token = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(accessToken);
+                                Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", token.ValidTo);
+                                var lease = GetAccessTokenLease(token.ValidTo);
+                                lease =
+                                    TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
+                                Thread.Sleep(lease);
+                                azureADCredentialsToken = null;
+                            }
+                            catch (Exception ex)
+                            {
+                                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.AuthenticationManger_ProblemDeterminingTokenLease, ex);
+                                azureADCredentialsToken = null;
+                            }
+                        });
+                        azureADCredentialsToken = accessToken;
+                    }
+                }
+            }
         }
 
         /// <summary>
