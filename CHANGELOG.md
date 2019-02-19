@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Authentication option based upon Azure AD credential flow in combination with the SPO Management Shell Azure AD application
+
 ### Changed
 
 - Create ClientSidePage with double quotes in Title generates wrong LayoutWebpartsContent #2058
