@@ -159,6 +159,10 @@ namespace OfficeDevPnP.Core.Pages
             {
                 pageTitle = "";
             }
+            else
+            {
+                pageTitle = EncodePageTitle(pageTitle);
+            }
 
             string header = Replace1point4Defaults(NoPageHeader);
 
@@ -342,6 +346,10 @@ namespace OfficeDevPnP.Core.Pages
             {
                 pageTitle = "";
             }
+            else
+            {
+                pageTitle = EncodePageTitle(pageTitle);
+            }
 
             // Get the web part properties
             if (!string.IsNullOrEmpty(this.ImageServerRelativeUrl) && this.clientContext != null)
@@ -421,6 +429,18 @@ namespace OfficeDevPnP.Core.Pages
         private static string Replace1point4Defaults(string header)
         {
             return header.Replace("@@showtopicheader@@", "false").Replace("@@showpublishdate@@", "false").Replace("@@topicheader@@", "");
+        }
+
+        private static string EncodePageTitle(string pageTitle)
+        {
+            string result = pageTitle;
+
+            if (result.Contains("\""))
+            {
+                result = result.Replace("\"", "\\&quot;");
+            }
+
+            return result;
         }
 
         private void ResolvePageHeaderImage()
