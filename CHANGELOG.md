@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Cloning of ClientContext objects created by AuthenticationManager using one of these methods (GetAppOnlyAuthenticatedContext, GetAzureADCredentialsContext, GetAzureADAppOnlyAuthenticatedContext) now works fine when cloning to different audience (e.g. clone from regular site to tenant admin)
 - Create ClientSidePage with double quotes in Title generates wrong LayoutWebpartsContent #2058
 - Skip executing EnsureProperty on Principal object when the Principal is null #2066 [schaudk]
 - Fixed token handling for resource files having quotes

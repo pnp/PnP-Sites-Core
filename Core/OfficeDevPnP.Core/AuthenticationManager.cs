@@ -19,6 +19,7 @@ using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Utilities.Async;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
+using OfficeDevPnP.Core.Utilities.Context;
 
 namespace OfficeDevPnP.Core
 {
@@ -141,6 +142,21 @@ namespace OfficeDevPnP.Core
         {
             EnsureToken(siteUrl, realm, appId, appSecret, acsHostUrl, globalEndPointPrefix);
             ClientContext clientContext = Utilities.TokenHelper.GetClientContextWithAccessToken(siteUrl, appOnlyAccessToken);
+
+            ClientContextSettings clientContextSettings = new ClientContextSettings()
+            {
+                Type = ClientContextType.SharePointACSAppOnly,
+                SiteUrl = siteUrl,
+                AuthenticationManager = this,
+                Realm = realm,
+                ClientId = appId,
+                ClientSecret = appSecret,
+                AcsHostUrl = acsHostUrl,
+                GlobalEndPointPrefix = globalEndPointPrefix
+            };
+
+            clientContext.AddContextSettings(clientContextSettings);
+
             return clientContext;
         }
 
@@ -524,6 +540,17 @@ namespace OfficeDevPnP.Core
                 args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + azureADCredentialsToken;
             };
 
+            ClientContextSettings clientContextSettings = new ClientContextSettings()
+            {
+                Type = ClientContextType.AzureADCredentials,
+                SiteUrl = siteUrl,
+                AuthenticationManager = this,
+                UserName = userPrincipalName,
+                Password = userPassword
+            };
+
+            clientContext.AddContextSettings(clientContextSettings);
+
             return clientContext;
         }
 
@@ -830,6 +857,19 @@ namespace OfficeDevPnP.Core
                     .GetAwaiter().GetResult();
                 args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + ar.AccessToken;
             };
+
+            ClientContextSettings clientContextSettings = new ClientContextSettings()
+            {
+                Type = ClientContextType.AzureADCertificate,
+                SiteUrl = siteUrl,
+                AuthenticationManager = this,
+                ClientId = clientId,
+                Tenant = tenant,
+                Certificate = certificate,
+                Environment = environment
+            };
+
+            clientContext.AddContextSettings(clientContextSettings);
 
             return clientContext;
         }
