@@ -42,6 +42,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added delegate for callback on site fully provisioned within the Provisioning Engine
 - Added STS#3 base template for SharePoint Online template extraction
 - Added support to specify the hubsite id when creating modern sites and to set owners when creating a modern team site/O365 group associated site. [gautamdsheth]
+- Added support for hubsiteid when creating modern sites with New-PnPSite
+- Added support to set owners when creating a modern team site with New-PnPSite
 
 ### Changed
 
