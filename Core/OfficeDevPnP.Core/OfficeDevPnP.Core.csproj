@@ -505,6 +505,7 @@
     <Compile Include="Extensions\FieldAndContentTypeExtensions.cs" />
     <Compile Include="Extensions\FileFolderExtensions.cs" />
     <Compile Include="Extensions\InformationManagementExtensions.cs" />
+    <Compile Include="Extensions\InternalClientContextExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\ListRatingExtensions.cs" />
     <Compile Include="Extensions\ObjectExtension.cs" />
@@ -1079,6 +1080,8 @@
     <Compile Include="Utilities\CanvasControl\ICanvasControlPostProcessor.cs" />
     <Compile Include="Utilities\CanvasControl\Processors\PassThroughProcessor.cs" />
     <Compile Include="Utilities\CanvasControl\Processors\ListControlPostProcessor.cs" />
+    <Compile Include="Utilities\Context\ClientContextType.cs" />
+    <Compile Include="Utilities\Context\ClientContextSettings.cs" />
     <Compile Include="Utilities\CookieReader.cs" />
     <Compile Include="Utilities\Deprecated\Utility.deprecated.cs" />
     <Compile Include="Utilities\FileTokenCache.cs" />
