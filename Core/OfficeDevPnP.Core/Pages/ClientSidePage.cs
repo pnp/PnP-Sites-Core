@@ -6,6 +6,7 @@ using OfficeDevPnP.Core.Utilities.Async;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -1568,6 +1569,13 @@ namespace OfficeDevPnP.Core.Pages
                     if (!String.IsNullOrEmpty(accessToken))
                     {
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                    else
+                    {
+                        if (context.Credentials is NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
                     }
 
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
