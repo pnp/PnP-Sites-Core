@@ -1,6 +1,6 @@
 ﻿namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// Page promotion state
     /// </summary>

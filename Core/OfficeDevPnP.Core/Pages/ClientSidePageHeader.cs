@@ -8,7 +8,7 @@ using System.Net;
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// Class that implements the client side page header
     /// </summary>

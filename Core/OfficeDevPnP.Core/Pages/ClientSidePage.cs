@@ -16,7 +16,7 @@ using System.Web.UI;
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// Represents a modern client side page with all it's contents
     /// </summary>
@@ -1600,7 +1600,11 @@ namespace OfficeDevPnP.Core.Pages
             // Let's try to grab an access token, will work when we're in app-only or user+app model
             this.Context.ExecutingWebRequest += Context_ExecutingWebRequest;
             this.Context.Load(this.Context.Web, w => w.Url);
+#if ONPREMISES
+            this.context.ExecuteQueryRetry();
+#else
             await this.context.ExecuteQueryRetryAsync();
+#endif
             this.Context.ExecutingWebRequest -= Context_ExecutingWebRequest;
             return true;
         }
