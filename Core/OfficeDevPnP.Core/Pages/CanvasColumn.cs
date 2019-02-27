@@ -87,10 +87,6 @@ namespace OfficeDevPnP.Core.Pages
             {
                 return this.columnFactor;
             }
-            set
-            {
-                this.columnFactor = value;
-            }
         }
 
         /// <summary>
@@ -169,6 +165,17 @@ namespace OfficeDevPnP.Core.Pages
 #endif
 
             return html.ToString();
+        }
+
+        /// <summary>
+        /// Resets the column, used in scenarios where a section is changed from type (e.g. from 3 column to 2 column)
+        /// </summary>
+        /// <param name="order">Column order to set</param>
+        /// <param name="columnFactor">Column factor to set</param>
+        public void ResetColumn(int order, int columnFactor)
+        {
+            this.Order = order;
+            this.columnFactor = columnFactor;
         }
         #endregion
     }
