@@ -172,7 +172,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     if (owners != null && owners.Length > 0)
                     {
                         var users = GetUsers(graphClient, owners);
-                        if (users != null)
+                        if (users != null && users.Count > 0)
                         {
                             newGroup.OwnersODataBind = users.Select(u => string.Format("https://graph.microsoft.com/v1.0/users/{0}", u.Id)).ToArray();
                         }
@@ -181,7 +181,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     if (members != null && members.Length > 0)
                     {
                         var users = GetUsers(graphClient, members);
-                        if (users != null)
+                        if (users != null && users.Count > 0)
                         {
                             newGroup.MembersODataBind = users.Select(u => string.Format("https://graph.microsoft.com/v1.0/users/{0}", u.Id)).ToArray();
                         }
@@ -314,7 +314,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 // Search for the user object
                 var memberQuery = await graphClient.Users
                     .Request()
-                    .Filter($"userPrincipalName eq '{m}'")
+                    .Filter($"userPrincipalName eq '{Uri.EscapeDataString(m.Replace("'", "''"))}'")
                     .GetAsync();
 
                 var member = memberQuery.FirstOrDefault();
@@ -390,7 +390,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 // Search for the user object
                 var ownerQuery = await graphClient.Users
                     .Request()
-                    .Filter($"userPrincipalName eq '{o}'")
+                    .Filter($"userPrincipalName eq '{Uri.EscapeDataString(o.Replace("'", "''"))}'")
                     .GetAsync();
 
                 var owner = ownerQuery.FirstOrDefault();
@@ -790,8 +790,8 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     var graphClient = CreateGraphClient(accessToken, retryCount, delay);
 
                     // Apply the DisplayName filter, if any
-                    var displayNameFilter = !String.IsNullOrEmpty(displayName) ? $" and startswith(DisplayName,'{displayName}')" : String.Empty;
-                    var mailNicknameFilter = !String.IsNullOrEmpty(mailNickname) ? $" and startswith(MailNickname,'{mailNickname}')" : String.Empty;
+                    var displayNameFilter = !String.IsNullOrEmpty(displayName) ? $" and (DisplayName eq '{Uri.EscapeDataString(displayName.Replace("'", "''"))}')" : String.Empty;
+                    var mailNicknameFilter = !String.IsNullOrEmpty(mailNickname) ? $" and (MailNickname eq '{Uri.EscapeDataString(mailNickname.Replace("'", "''"))}')" : String.Empty;
 
                     var pagedGroups = await graphClient.Groups
                         .Request()
@@ -1048,7 +1048,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         IGraphServiceUsersCollectionPage userQuery = await graphClient.Users
                                             .Request()
                                             .Select("Id")
-                                            .Filter($"userPrincipalName eq '{groupUser}'")
+                                            .Filter($"userPrincipalName eq '{Uri.EscapeDataString(groupUser.Replace("'", "''"))}'")
                                             .GetAsync();
 
                         User user = userQuery.FirstOrDefault();

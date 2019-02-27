@@ -186,7 +186,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
-            AddTermStoreTokens(web);
 
 #if !ONPREMISES
             AddSiteDesignTokens(web, applyingInformation);
@@ -209,6 +208,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
             AddAppPackagesTokens(web);
 #endif
+
+            // TermStore related tokens
+            AddTermStoreTokens(web);
+
             var sortedTokens = from t in _tokens
                                orderby t.GetTokenLength() descending
                                select t;
