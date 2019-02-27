@@ -87,6 +87,10 @@ namespace OfficeDevPnP.Core.Pages
             {
                 return this.columnFactor;
             }
+            set
+            {
+                this.columnFactor = value;
+            }
         }
 
         /// <summary>
