@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -703,6 +703,14 @@ namespace Microsoft.SharePoint.Client
                     {
                         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
                     }
+                    else
+                    {
+                        if (context.Credentials is NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
+                    }
+
                     HttpResponseMessage response = await httpClient.SendAsync(request);
 
                     if (response.IsSuccessStatusCode)

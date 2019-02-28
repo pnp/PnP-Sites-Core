@@ -8,13 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.ALM
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// Allows Application Lifecycle Management for Apps
     /// </summary>
@@ -617,6 +618,13 @@ namespace OfficeDevPnP.Core.ALM
                     {
                         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
                     }
+                    else
+                    {
+                        if (_context.Credentials is NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
+                    }
                     request.Headers.Add("X-RequestDigest", await _context.GetRequestDigest());
 
                     // Perform actual post operation
@@ -700,6 +708,13 @@ namespace OfficeDevPnP.Core.ALM
                     {
                         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
                     }
+                    else
+                    {
+                        if (context.Credentials is NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
+                    }
                     request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
 
                     if (postObject != null)
@@ -762,7 +777,7 @@ namespace OfficeDevPnP.Core.ALM
                 {
                     handler.SetAuthenticationCookies(context);
                 }
-
+                
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
 
@@ -774,6 +789,13 @@ namespace OfficeDevPnP.Core.ALM
                     if (!string.IsNullOrEmpty(accessToken))
                     {
                         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                    else
+                    {
+                        if (context.Credentials is NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
                     }
                     request.Headers.Add("X-RequestDigest", requestDigest);
                     request.Headers.Add("binaryStringRequestBody", "true");
@@ -831,7 +853,7 @@ namespace OfficeDevPnP.Core.ALM
             }
             return await Task.Run(() => returnValue);
         }
-        #endregion
+#endregion
     }
 #endif
-}
+            }
