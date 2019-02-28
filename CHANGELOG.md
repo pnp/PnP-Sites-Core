@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- ALM functions for SharePoint 2019 on premises #2074 [lafe]
 - Authentication option based upon Azure AD credential flow in combination with the SPO Management Shell Azure AD application
 
 ### Changed
