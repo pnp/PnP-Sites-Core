@@ -881,7 +881,8 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
-#if !ONPREMISES
+        
+#if !SP2013 && !SP2016
         /// <summary>
         /// Adds a client side "modern" page to a "classic" or "modern" site
         /// </summary>
@@ -899,7 +900,7 @@ namespace Microsoft.SharePoint.Client
             }
             return page;
         }
-
+        
         /// <summary>
         /// Loads a client side "modern" page
         /// </summary>
@@ -911,6 +912,7 @@ namespace Microsoft.SharePoint.Client
             return ClientSidePage.Load((web.Context as ClientContext), pageName);
         }
 #endif
+
         /// <summary>
         /// Adds a blank Wiki page to the site pages library
         /// </summary>

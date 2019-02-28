@@ -11,7 +11,7 @@ using System.Web.UI;
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// This class is used to instantiate controls of type 3 (= client side web parts). Using this class you can instantiate a control and 
     /// add it on a <see cref="ClientSidePage"/>.
