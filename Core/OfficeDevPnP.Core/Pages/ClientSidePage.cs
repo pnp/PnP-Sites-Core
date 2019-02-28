@@ -768,6 +768,7 @@ namespace OfficeDevPnP.Core.Pages
             if (this.pageHeader.Type == ClientSidePageHeaderType.None)
             {
                 item[ClientSidePage.PageLayoutContentField] = ClientSidePageHeader.NoHeader(this.pageTitle);
+#if !SP2019
                 if (item.FieldValues.ContainsKey(ClientSidePage._AuthorByline))
                 {
                     item[ClientSidePage._AuthorByline] = null;
@@ -776,11 +777,13 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     item[ClientSidePage._TopicHeader] = null;
                 }
+#endif
             }
             else
             {
                 item[ClientSidePage.PageLayoutContentField] = this.pageHeader.ToHtml(this.pageTitle);
 
+#if !SP2019
                 // AuthorByline depends on a field holding the author values
                 if (this.pageHeader.AuthorByLineId > -1 && item.FieldValues.ContainsKey(ClientSidePage._AuthorByline))
                 {
@@ -798,6 +801,7 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     item[ClientSidePage._TopicHeader] = this.PageHeader.TopicHeader;
                 }
+#endif
             }
 
             item.Update();
@@ -1302,7 +1306,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 #endregion
 
-                    #region Internal and private methods
+                #region Internal and private methods
         private void EnableCommentsImplementation(bool enable)
         {
             // ensure we do have the page list item loaded
@@ -1644,7 +1648,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
         }
-                    #endregion
+                #endregion
     }
 #endif
             }

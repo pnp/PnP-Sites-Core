@@ -11,8 +11,10 @@ namespace OfficeDevPnP.Core.Pages
     {
         FullWidthImage,
         NoImage,
+#if !SP2019
         ColorBlock,
         CutInShape,
+#endif
     }
 #endif
-}
+    }
