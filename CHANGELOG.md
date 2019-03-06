@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fixed token handling for resource files having quotes
 - Fixed parsing of SchemaXml #2067 [schaudk]
 - Fixed typo [lafe]
+- Fix #2088 - Provisioning template doesn't publish the app #2090 [gautamdsheth]
 
 ## [3.6.1902.0 - February 2019 release]
 
