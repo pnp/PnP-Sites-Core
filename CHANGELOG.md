@@ -6,6 +6,52 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.6.1902.0 - February 2019 release]
+
+### Added
+
+- Beta support for SP2019
+- Provision and extract associated groups #2020 [jensotto]
+- Fix provisioning navigation settings #1883 [phibsi]
+- Add support for Kerberos authentication against ADFS #2050 [tmeckel]
+- AssociatedGroupId token added + processing of it
+- SequenceSiteCollectionId, SequenceSiteGroupId and SequenceSiteId tokens added
+- Added support for creating and loading modern pages from sub folders inside the sitepages library
+- ZoneID web part property now can be used in SP2016
+- MajorVersionLimit and MajorWithMinorVersionsLimit are supported in the minimal (May 2018) version of SP2013 CSOM (Issue 1943) #1994 [tmeckel]
+- Enables Web.RequestAccessEmail for on-premises (both 15.0 and 16.0) #1794 [biste5]
+- Add token parsing in `targetFileName` property of file object #2036 [stevebeauge]
+- Added support to delete search configurations
+- Add support for setting default sharing and sharing permissions on tenant extensions
+- Added ThemeManager class with support for ApplyTheme extension method on Web objects
+- Added delegate for callback on site fully provisioned within the Provisioning Engine
+- Added STS#3 base template for SharePoint Online template extraction
+- Added support to specify the hubsite id when creating modern sites and to set owners when creating a modern team site/O365 group associated site. [gautamdsheth]
+
+### Changed
+
+- Feature/make datarow and file properties consistent #1762 [stevebeauge]
+
+## [3.5.1901.0 - January 2019 release]
+
+### Added
+
+- Added support for modern page section backgrounds
+- Added new 1st party client side web parts to the client side page API - support for provisioning engine will come with next schema update
+- Added support for webparts configured with isDomainIsolated=true - support for provisioning engine will come with next schema update
+- ResetFileToPreviousVersion extension method #2030 [skaggej]
+  
+### Changed
+
+- Fix to make the EveryoneExceptExternalUsers token resolve correctly in all circumstances
+- Fix to ensure TLS settings are correctly configured on certain OS versions (e.g. Windows Server 2012 R2)
+- Fix throttling Retry-After processing, should be in seconds, not in milliseconds
+- Multi-lingual provisioning of list title, extraction of additional navigation node languages #1974 [czullu]
+- Updated logging logic #2018 [jensotto]
+- Performance optimization on for the client side page save action
+
+### Deprecated
+
 ## [3.4.1812.1 - December 2018 release]
 
 ### Added

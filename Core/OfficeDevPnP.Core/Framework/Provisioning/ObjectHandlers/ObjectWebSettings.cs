@@ -26,7 +26,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.EnsureProperties(
 #if !ONPREMISES
                     w => w.NoCrawl,
-                    w => w.RequestAccessEmail,
                     w => w.CommentsOnSitePagesDisabled,
 #endif
                     //w => w.Title,
@@ -34,6 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.MasterUrl,
                     w => w.CustomMasterUrl,
                     w => w.SiteLogoUrl,
+                    w => w.RequestAccessEmail,
                     w => w.RootFolder,
                     w => w.AlternateCssUrl,
                     w => w.ServerRelativeUrl,
@@ -42,7 +42,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var webSettings = new WebSettings();
 #if !ONPREMISES
                 webSettings.NoCrawl = web.NoCrawl;
-                webSettings.RequestAccessEmail = web.RequestAccessEmail;
                 webSettings.CommentsOnSitePagesDisabled = web.CommentsOnSitePagesDisabled;
 #endif
                 // We're not extracting Title and Description
@@ -54,6 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Notice. No tokenization needed for the welcome page, it's always relative for the site
                 webSettings.WelcomePage = web.RootFolder.WelcomePage;
                 webSettings.AlternateCSS = Tokenize(web.AlternateCssUrl, web.Url);
+                webSettings.RequestAccessEmail = web.RequestAccessEmail;
 
                 if (creationInfo.PersistBrandingFiles)
                 {
@@ -280,6 +280,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate);
                     }
+#endif
 
                     if (!web.IsSubSite() || (web.IsSubSite() && web.HasUniqueRoleAssignments))
                     {
@@ -297,6 +298,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
+#if !ONPREMISES
                     if (web.CommentsOnSitePagesDisabled != webSettings.CommentsOnSitePagesDisabled)
                     {
                         web.CommentsOnSitePagesDisabled = webSettings.CommentsOnSitePagesDisabled;
@@ -346,12 +348,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var fileBytes = ConnectorFileHelper.GetFileBytes(template.Connector, logoUrl);
                                 if (fileBytes != null && fileBytes.Length > 0)
                                 {
+#if !NETSTANDARD2_0
                                     var mimeType = MimeMapping.GetMimeMapping(logoUrl);
+#else
+                                    var mimeType = "";
+                                    var imgUrl = logoUrl;
+                                    if (imgUrl.Contains("?"))
+                                    {
+                                        imgUrl = imgUrl.Split(new[] { '?' })[0];
+                                    }
+                                    if(imgUrl.EndsWith(".gif",StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        mimeType = "image/gif";
+                                    }
+                                    if (imgUrl.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        mimeType = "image/png";
+                                    }
+                                    if (imgUrl.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        mimeType = "image/jpeg";
+                                    }
+#endif
                                     Sites.SiteCollection.SetGroupImage((ClientContext)web.Context, fileBytes, mimeType).GetAwaiter().GetResult();
+
                                 }
                             }
 #endif
-                        }
+                                }
                         else
                         {
                             web.SiteLogoUrl = logoUrl;

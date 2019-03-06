@@ -29,7 +29,6 @@ namespace OfficeDevPnP.Core.Sites
         public static ClientContext Create(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
             var context = CreateAsync(clientContext, siteCollectionCreationInformation).GetAwaiter().GetResult();
-            PollForSiteCreated(context);
             return context;
         }
 
@@ -42,31 +41,7 @@ namespace OfficeDevPnP.Core.Sites
         public static ClientContext Create(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation)
         {
             var context = CreateAsync(clientContext, siteCollectionCreationInformation).GetAwaiter().GetResult();
-            PollForSiteCreated(context);
             return context;
-        }
-
-        private static void PollForSiteCreated(ClientContext context)
-        {
-            // check if the associated groups have been set
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            context.Web.EnsureProperties(w => w.AssociatedOwnerGroup, w => w.AssociatedMemberGroup, w => w.AssociatedVisitorGroup);
-            while ((context.Web.AssociatedOwnerGroup.ServerObjectIsNull.Value ||
-                context.Web.AssociatedMemberGroup.ServerObjectIsNull.Value ||
-                context.Web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
-                && sw.ElapsedMilliseconds < 1000 * 60)
-            {
-                System.Threading.Thread.Sleep(5000); // wait 5 seconds
-                context.Web.EnsureProperties(w => w.AssociatedOwnerGroup, w => w.AssociatedMemberGroup, w => w.AssociatedVisitorGroup);
-            }
-            sw.Stop();
-            if (context.Web.AssociatedOwnerGroup.ServerObjectIsNull.Value ||
-                context.Web.AssociatedMemberGroup.ServerObjectIsNull.Value ||
-                context.Web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
-            {
-                throw new Exception("Site Creation timed out");
-            }
         }
 
         /// <summary>
@@ -100,7 +75,7 @@ namespace OfficeDevPnP.Core.Sites
                     var siteDesignId = GetSiteDesignId(siteCollectionCreationInformation);
 
                     Dictionary<string, object> payload = new Dictionary<string, object>();
-                    payload.Add("__metadata", new { type = "Microsoft.SharePoint.Portal.SPSiteCreationRequest" });
+                    //payload.Add("__metadata", new { type = "Microsoft.SharePoint.Portal.SPSiteCreationRequest" });
                     payload.Add("Title", siteCollectionCreationInformation.Title);
                     payload.Add("Lcid", siteCollectionCreationInformation.Lcid);
                     payload.Add("ShareByEmailEnabled", siteCollectionCreationInformation.ShareByEmailEnabled);
@@ -111,10 +86,11 @@ namespace OfficeDevPnP.Core.Sites
                     {
                         payload.Add("SiteDesignId", siteDesignId);
                     }
-                    payload.Add("Classification", siteCollectionCreationInformation.Classification == null ? "" : siteCollectionCreationInformation.Classification);
-                    payload.Add("Description", siteCollectionCreationInformation.Description == null ? "" : siteCollectionCreationInformation.Description);
+                    payload.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
+                    payload.Add("Description", siteCollectionCreationInformation.Description ?? "");
                     payload.Add("WebTemplate", "SITEPAGEPUBLISHING#0");
                     payload.Add("WebTemplateExtensionId", Guid.Empty);
+                    payload.Add("HubSiteId", siteCollectionCreationInformation.HubSiteId);
 
                     var body = new { request = payload };
 
@@ -125,9 +101,10 @@ namespace OfficeDevPnP.Core.Sites
                     // Build Http request
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Content = requestBody;
-                    request.Headers.Add("accept", "application/json;odata=verbose");
+                    request.Headers.Add("accept", "application/json;odata.metadata=none");
+                    request.Headers.Add("odata-version", "4.0");
                     MediaTypeHeaderValue sharePointJsonMediaType = null;
-                    MediaTypeHeaderValue.TryParse("application/json;odata=verbose;charset=utf-8", out sharePointJsonMediaType);
+                    MediaTypeHeaderValue.TryParse("application/json;odata.metadata=none;charset=utf-8", out sharePointJsonMediaType);
                     requestBody.Headers.ContentType = sharePointJsonMediaType;
 
                     if (!string.IsNullOrEmpty(accessToken))
@@ -150,12 +127,12 @@ namespace OfficeDevPnP.Core.Sites
                             {
                                 var responseJson = JObject.Parse(responseString);
 #if !NETSTANDARD2_0
-                                if (Convert.ToInt32(responseJson["d"]["Create"]["SiteStatus"]) == 2)
+                                if (Convert.ToInt32(responseJson["SiteStatus"]) == 2)
 #else
-                                if(responseJson["d"]["Create"]["SiteStatus"].Value<int>() == 2)
+                                if(responseJson["SiteStatus"].Value<int>() == 2)
 #endif
                                 {
-                                    responseContext = clientContext.Clone(responseJson["d"]["Create"]["SiteUrl"].ToString());
+                                    responseContext = clientContext.Clone(responseJson["SiteUrl"].ToString());
                                 }
                                 else
                                 {
@@ -220,9 +197,20 @@ namespace OfficeDevPnP.Core.Sites
                     payload.Add("isPublic", siteCollectionCreationInformation.IsPublic);
 
                     var optionalParams = new Dictionary<string, object>();
-                    optionalParams.Add("Description", siteCollectionCreationInformation.Description != null ? siteCollectionCreationInformation.Description : "");
-                    optionalParams.Add("CreationOptions", new { results = siteCollectionCreationInformation.Lcid != 0 ? new[] { $"SPSiteLanguage:{siteCollectionCreationInformation.Lcid}" } : new object[0], Classification = siteCollectionCreationInformation.Classification != null ? siteCollectionCreationInformation.Classification : "" });
+                    optionalParams.Add("Description", siteCollectionCreationInformation.Description ?? "");
+                    optionalParams.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
+                    var creationOptionsValues = new List<string>();
+                    if (siteCollectionCreationInformation.Lcid != 0)
+                    {
+                        creationOptionsValues.Add($"SPSiteLanguage:{siteCollectionCreationInformation.Lcid}");
+                    }
+                    creationOptionsValues.Add($"HubSiteId:{siteCollectionCreationInformation.HubSiteId}");
+                    optionalParams.Add("CreationOptions", creationOptionsValues);
 
+                    if (siteCollectionCreationInformation.Owners != null && siteCollectionCreationInformation.Owners.Length > 0)
+                    {
+                        optionalParams.Add("Owners", siteCollectionCreationInformation.Owners);
+                    }
                     payload.Add("optionalParams", optionalParams);
 
                     var body = payload;
@@ -234,9 +222,10 @@ namespace OfficeDevPnP.Core.Sites
                     // Build Http request
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Content = requestBody;
-                    request.Headers.Add("accept", "application/json;odata=verbose");
+                    request.Headers.Add("accept", "application/json;odata.metadata=none");
+                    request.Headers.Add("odata-version", "4.0");
                     MediaTypeHeaderValue sharePointJsonMediaType = null;
-                    MediaTypeHeaderValue.TryParse("application/json;odata=verbose;charset=utf-8", out sharePointJsonMediaType);
+                    MediaTypeHeaderValue.TryParse("application/json;odata.metadata=none;charset=utf-8", out sharePointJsonMediaType);
                     requestBody.Headers.ContentType = sharePointJsonMediaType;
 
                     if (!string.IsNullOrEmpty(accessToken))
@@ -255,12 +244,12 @@ namespace OfficeDevPnP.Core.Sites
                         var responseString = await response.Content.ReadAsStringAsync();
                         var responseJson = JObject.Parse(responseString);
 #if !NETSTANDARD2_0
-                        if (Convert.ToInt32(responseJson["d"]["CreateGroupEx"]["SiteStatus"]) == 2)
+                        if (Convert.ToInt32(responseJson["SiteStatus"]) == 2)
 #else
-                        if (responseJson["d"]["CreateGroupEx"]["SiteStatus"].Value<int>() == 2)
+                        if (responseJson["SiteStatus"].Value<int>() == 2)
 #endif
                         {
-                            responseContext = clientContext.Clone(responseJson["d"]["CreateGroupEx"]["SiteUrl"].ToString());
+                            responseContext = clientContext.Clone(responseJson["SiteUrl"].ToString());
                         }
                         else
                         {
@@ -329,19 +318,20 @@ namespace OfficeDevPnP.Core.Sites
                     payload.Add("isPublic", siteCollectionGroupifyInformation.IsPublic);
 
                     var optionalParams = new Dictionary<string, object>();
-                    optionalParams.Add("Description", siteCollectionGroupifyInformation.Description != null ? siteCollectionGroupifyInformation.Description : "");
-
+                    optionalParams.Add("Description", siteCollectionGroupifyInformation.Description ?? "");
+                    optionalParams.Add("Classification", siteCollectionGroupifyInformation.Classification ?? "");
                     // Handle groupify options
                     var creationOptionsValues = new List<string>();
                     if (siteCollectionGroupifyInformation.KeepOldHomePage)
                     {
                         creationOptionsValues.Add("SharePointKeepOldHomepage");
                     }
-                    var creationOptions = new Dictionary<string, object>();
-                    creationOptions.Add("results", creationOptionsValues.ToArray());
-                    optionalParams.Add("CreationOptions", creationOptions);
-
-                    optionalParams.Add("Classification", siteCollectionGroupifyInformation.Classification != null ? siteCollectionGroupifyInformation.Classification : "");
+                    creationOptionsValues.Add($"HubSiteId:{siteCollectionGroupifyInformation.HubSiteId}");
+                    optionalParams.Add("CreationOptions", creationOptionsValues);
+                    if (siteCollectionGroupifyInformation.Owners != null && siteCollectionGroupifyInformation.Owners.Length > 0)
+                    {
+                        optionalParams.Add("Owners", siteCollectionGroupifyInformation.Owners);
+                    }
 
                     payload.Add("optionalParams", optionalParams);
 
@@ -354,9 +344,10 @@ namespace OfficeDevPnP.Core.Sites
                     // Build Http request
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Content = requestBody;
-                    request.Headers.Add("accept", "application/json;odata=verbose");
+                    request.Headers.Add("accept", "application/json;odata.metadata=none");
+                    request.Headers.Add("odata-version", "4.0");
                     MediaTypeHeaderValue sharePointJsonMediaType = null;
-                    MediaTypeHeaderValue.TryParse("application/json;odata=verbose;charset=utf-8", out sharePointJsonMediaType);
+                    MediaTypeHeaderValue.TryParse("application/json;odata.metadata=none;charset=utf-8", out sharePointJsonMediaType);
                     requestBody.Headers.ContentType = sharePointJsonMediaType;
 
                     if (!string.IsNullOrEmpty(accessToken))
@@ -376,7 +367,11 @@ namespace OfficeDevPnP.Core.Sites
                         var responseJson = JObject.Parse(responseString);
 
                         // SiteStatus 1 = Provisioning, SiteStatus 2 = Ready
-                        if (Convert.ToInt32(responseJson["d"]["CreateGroupForSite"]["SiteStatus"]) == 2 || Convert.ToInt32(responseJson["d"]["CreateGroupForSite"]["SiteStatus"]) == 1)
+#if !NETSTANDARD2_0
+                        if (Convert.ToInt32(responseJson["SiteStatus"]) == 2 || Convert.ToInt32(responseJson["SiteStatus"]) == 1)
+#else
+                        if (responseJson["SiteStatus"].Value<int>() == 2 || responseJson["SiteStatus"].Value<int>() == 1)
+#endif                  
                         {
                             responseContext = clientContext;
                         }
@@ -451,7 +446,7 @@ namespace OfficeDevPnP.Core.Sites
                 {
                     string requestUrl = String.Format("{0}/_api/SP.Directory.DirectorySession/Group(alias='{1}')", context.Web.Url, alias);
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
-                    request.Headers.Add("accept", "application/json;odata.metadata=minimal");
+                    request.Headers.Add("accept", "application/json;odata.metadata=none");
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     request.Headers.Add("odata-version", "4.0");
 
@@ -509,7 +504,7 @@ namespace OfficeDevPnP.Core.Sites
                 {
                     string requestUrl = String.Format("{0}/_api/SP.Directory.DirectorySession/Group(alias='{1}')", context.Web.Url, alias);
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
-                    request.Headers.Add("accept", "application/json;odata.metadata=minimal");
+                    request.Headers.Add("accept", "application/json;odata.metadata=none");
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     request.Headers.Add("odata-version", "4.0");
 
@@ -599,7 +594,7 @@ namespace OfficeDevPnP.Core.Sites
                 {
                     string requestUrl = String.Format("{0}/_api/GroupSiteManager/GetValidSiteUrlFromAlias?alias='{1}'", context.Web.Url, alias);
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
-                    request.Headers.Add("accept", "application/json;odata.metadata=minimal");
+                    request.Headers.Add("accept", "application/json;odata.metadata=none");
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     request.Headers.Add("odata-version", "4.0");
 

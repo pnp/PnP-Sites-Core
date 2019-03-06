@@ -54,6 +54,15 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             }
 
             var fci = new FileCreationInformation();
+            fci.Content = System.IO.File.ReadAllBytes(TestFilePath2);
+            fci.Url = folder.ServerRelativeUrl + "/office365.png";
+            fci.Overwrite = true;
+
+            file = folder.Files.Add(fci);
+            clientContext.Load(file);
+            clientContext.ExecuteQueryRetry();
+
+            // Upload it again to create a new version
             fci.Content = System.IO.File.ReadAllBytes(TestFilePath1);
             fci.Url = folder.ServerRelativeUrl + "/office365.png";
             fci.Overwrite = true;
@@ -61,6 +70,8 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             file = folder.Files.Add(fci);
             clientContext.Load(file);
             clientContext.ExecuteQueryRetry();
+
+
         }
 
         [TestCleanup()]
@@ -119,6 +130,29 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             Assert.AreEqual(newFile.CheckInComment, commentText);
             Assert.AreEqual(newFile.Level, FileLevel.Published);
 
+        }
+
+        [TestMethod()]
+        public void ResetFileToPreviousVersionTest()
+        {
+            File oldFile = clientContext.Web.GetFileByServerRelativeUrl(file.ServerRelativeUrl);
+            clientContext.Load(oldFile, f => f.UIVersionLabel);
+            clientContext.ExecuteQueryRetry();
+
+            if (Version.TryParse(oldFile.UIVersionLabel, out Version oldVersion))
+            {
+                var expectedNewVersion = new Version(oldVersion.Major + 1, 0);
+
+                clientContext.Web.ResetFileToPreviousVersion(file.ServerRelativeUrl, checkInType, commentText);
+
+                File newFile = clientContext.Web.GetFileByServerRelativeUrl(file.ServerRelativeUrl);
+                clientContext.Load(newFile, f => f.UIVersionLabel);
+                clientContext.ExecuteQueryRetry();
+
+                Version.TryParse(newFile.UIVersionLabel, out Version receivedNewVersion);
+
+                Assert.AreEqual(receivedNewVersion, expectedNewVersion);
+            }
         }
 
         [TestMethod]

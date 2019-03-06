@@ -117,8 +117,47 @@
         /// <summary>
         /// Web part to host PowerApps
         /// </summary>
-        PowerApps
-
+        PowerApps,
+        /// <summary>
+        /// Web part to show code
+        /// </summary>
+        CodeSnippet,
+        /// <summary>
+        /// Web part to show one or more properties of the page as page content
+        /// </summary>
+        PageFields,
+        /// <summary>
+        /// Weather web part
+        /// </summary>
+        Weather,
+        /// <summary>
+        /// YouTube embed web part
+        /// </summary>
+        YouTube,
+        /// <summary>
+        /// My documents web part
+        /// </summary>
+        MyDocuments,
+        /// <summary>
+        /// Yammer feed web part
+        /// </summary>
+        YammerFullFeed,
+        /// <summary>
+        /// CountDown web part
+        /// </summary>
+        CountDown,
+        /// <summary>
+        /// List properties web part
+        /// </summary>
+        ListProperties,
+        /// <summary>
+        /// MarkDown web part
+        /// </summary>
+        MarkDown,
+        /// <summary>
+        /// Planner web part
+        /// </summary>
+        Planner,
     }
 #endif
 }

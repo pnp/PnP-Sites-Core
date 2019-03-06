@@ -114,6 +114,10 @@ namespace OfficeDevPnP.Core.Pages
                     SectionFactor = this.Column.ColumnFactor,
                     ControlIndex = controlIndex,
                 },
+                Emphasis = new ClientSideSectionEmphasis()
+                {
+                    ZoneEmphasis = this.Section.ZoneEmphasis,
+                },
                 EditorType = "CKEditor"
             };
             jsonControlData = JsonConvert.SerializeObject(controlData);

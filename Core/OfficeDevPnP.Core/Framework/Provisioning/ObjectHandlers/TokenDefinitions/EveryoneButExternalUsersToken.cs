@@ -1,5 +1,6 @@
 ﻿#if !ONPREMISES
 using Microsoft.SharePoint.Client;
+using Microsoft.SharePoint.Client.Utilities;
 using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
@@ -19,7 +20,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
 
         public override string GetReplaceValue()
         {
-           return $"c:0-.f|rolemanager|spo-grid-all-users/{Web.GetAuthenticationRealm()}";
+            string userIdentity = "";
+            try
+            {
+                // New tenant
+                userIdentity = $"c:0-.f|rolemanager|spo-grid-all-users/{this.TokenContext.Web.GetAuthenticationRealm()}";
+                var spReader = this.TokenContext.Web.EnsureUser(userIdentity);
+                this.TokenContext.Web.Context.Load(spReader);
+                this.TokenContext.Web.Context.ExecuteQueryRetry();
+            }
+            catch (ServerException)
+            {
+                try
+                {
+                    // Old tenants
+                    string claimName = this.TokenContext.Web.GetEveryoneExceptExternalUsersClaimName();
+                    var claim = Utility.ResolvePrincipal(this.TokenContext, this.TokenContext.Web, claimName, PrincipalType.SecurityGroup, PrincipalSource.RoleProvider, null, false);
+                    this.TokenContext.ExecuteQueryRetry();
+                    userIdentity = claim.Value.LoginName;
+                }
+                catch { }
+            }
+
+            return userIdentity;
         }
     }
 }
