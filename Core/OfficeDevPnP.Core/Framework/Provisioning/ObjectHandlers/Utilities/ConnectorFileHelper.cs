@@ -48,7 +48,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         container = $@"{connector.GetContainer()}\{container}";
                     }
 #else
-                    container = $@"{template.Connector.GetContainer()}\{container}";
+                    container = $@"{connector.GetContainer()}\{container}";
 #endif
                 }
             }

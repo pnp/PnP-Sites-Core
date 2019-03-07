@@ -4,19 +4,19 @@ using OfficeDevPnP.Core.Attributes;
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
     [TokenDefinitionDescription(
-       Token = "{associatedownersgroup}",
+       Token = "{associatedownergroup}",
        Description = "Returns the title of the associated owners SharePoint group of a site",
        Example = "{associatedownersgroup}",
        Returns = "My Site Owners Group Title")]
     [TokenDefinitionDescription(
-       Token = "{associatedmembersgroup}",
+       Token = "{associatedmembergroup}",
        Description = "Returns the title of the associated members SharePoint group of a site",
-       Example = "{associatedmembersgroup}",
+       Example = "{associatedmembergroup}",
        Returns = "My Site Members Group Title")]
     [TokenDefinitionDescription(
-       Token = "{associatedvisitorsgroup}",
+       Token = "{associatedvisitorgroup}",
        Description = "Returns the title of the associated visitors SharePoint group of a site",
-       Example = "{associatedvisitorsgroup}",
+       Example = "{associatedvisitorgroup}",
        Returns = "My Site Visitors Group Title")]
     internal class AssociatedGroupToken : VolatileTokenDefinition
     {
@@ -27,6 +27,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             _groupType = groupType;
         }
+
+        internal AssociatedGroupType GroupType { get => _groupType; set => _groupType = value; }
 
         public override string GetReplaceValue()
         {

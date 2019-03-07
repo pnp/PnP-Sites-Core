@@ -7,7 +7,7 @@ using System.Web.UI;
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// Represents a section on the canvas
     /// </summary>
@@ -16,6 +16,7 @@ namespace OfficeDevPnP.Core.Pages
         #region variables
         private System.Collections.Generic.List<CanvasColumn> columns = new System.Collections.Generic.List<CanvasColumn>(3);
         private ClientSidePage page;
+        private int zoneEmphasis;
         #endregion
 
         #region construction
@@ -27,6 +28,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             this.page = page;
+            this.zoneEmphasis = 0;
             Order = 0;
         }
 
@@ -44,6 +46,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             this.page = page;
+            this.zoneEmphasis = 0;
             Type = canvasSectionTemplate;
             Order = order;
 
@@ -137,6 +140,22 @@ namespace OfficeDevPnP.Core.Pages
                 return this.columns.First();
             }
         }
+
+        /// <summary>
+        /// Color emphasis of the section 
+        /// </summary>
+        public int ZoneEmphasis
+        {
+            get
+            {
+                return this.zoneEmphasis;
+            }
+            set
+            {
+                this.zoneEmphasis = value;
+            }
+        }
+
         #endregion
 
         #region public methods

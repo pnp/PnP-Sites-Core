@@ -74,6 +74,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 ((VolatileTokenDefinition)token).ClearVolatileCache(web);
             }
+            _tokens.RemoveAll(t => t is SiteToken);
+
+            _tokens.Add(new SiteToken(web));
+
             // remove list tokens
             AddListTokens(web); // tokens are remove in method
             // remove content type tokens
@@ -109,6 +113,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new CurrentUserLoginNameToken(web));
             _tokens.Add(new CurrentUserFullNameToken(web));
             _tokens.Add(new AuthenticationRealmToken(web));
+            _tokens.Add(new HostUrlToken(web));
             AddResourceTokens(web, hierarchy.Localizations, hierarchy.Connector);
             _initializedFromHierarchy = true;
         }
@@ -150,7 +155,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new SiteIdEncodedToken(web));
             _tokens.Add(new SiteOwnerToken(web));
             _tokens.Add(new SiteTitleToken(web));
-
+            _tokens.Add(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.owners));
+            _tokens.Add(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.members));
+            _tokens.Add(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.visitors));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.members));
             _tokens.Add(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.visitors));
@@ -179,7 +186,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
-            AddTermStoreTokens(web);
 
 #if !ONPREMISES
             AddSiteDesignTokens(web, applyingInformation);
@@ -202,6 +208,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
             AddAppPackagesTokens(web);
 #endif
+
+            // TermStore related tokens
+            AddTermStoreTokens(web);
+
             var sortedTokens = from t in _tokens
                                orderby t.GetTokenLength() descending
                                select t;
@@ -230,7 +240,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 foreach (DictionaryEntry entry in resxReader)
                                 {
-                                    resourceEntries.Add(new Tuple<string, uint, string>(entry.Key.ToString(), (uint)localizationEntry.LCID, entry.Value.ToString()));
+                                    resourceEntries.Add(new Tuple<string, uint, string>(entry.Key.ToString(), (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
                                 }
                             }
                         }
@@ -412,10 +422,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var tenantEntities = new List<StorageEntity>();
                 var siteEntities = new List<StorageEntity>();
                 var appCatalogUri = web.GetAppCatalog();
-                using (var clonedContext = web.Context.Clone(appCatalogUri))
+                if (appCatalogUri != null)
                 {
-                    var storageEntitiesIndex = clonedContext.Web.GetPropertyBagValueString("storageentitiesindex", "");
-                    tenantEntities = ParseStorageEntitiesString(storageEntitiesIndex);
+                    using (var clonedContext = web.Context.Clone(appCatalogUri))
+                    {
+                        var storageEntitiesIndex = clonedContext.Web.GetPropertyBagValueString("storageentitiesindex", "");
+                        tenantEntities = ParseStorageEntitiesString(storageEntitiesIndex);
+                    }
                 }
                 var appcatalog = (web.Context as ClientContext).Site.RootWeb.SiteCollectionAppCatalog;
                 web.Context.Load(appcatalog);
@@ -514,18 +527,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         internal void AddListTokens(Web web)
         {
-            web.EnsureProperty(w => w.ServerRelativeUrl);
+            web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Language);
 
             _tokens.RemoveAll(t => t.GetType() == typeof(ListIdToken));
             _tokens.RemoveAll(t => t.GetType() == typeof(ListUrlToken));
             _tokens.RemoveAll(t => t.GetType() == typeof(ListViewIdToken));
 
-            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views));
+            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views
+#if !SP2013
+            , l => l.TitleResource
+#endif
+            ));
             web.Context.ExecuteQueryRetry();
             foreach (var list in web.Lists)
             {
-                // _tokens.Add(new ListIdToken(web, list.Title, list.Id));
-                _tokens.Add(new ListIdToken(web, list.Title, Guid.Empty));
+                _tokens.Add(new ListIdToken(web, list.Title, list.Id));
+                // _tokens.Add(new ListIdToken(web, list.Title, Guid.Empty));
+#if !SP2013
+                var mainLanguageName = GetListTitleForMainLanguage(web, list.Title);
+                if (mainLanguageName != list.Title)
+                {
+                    _tokens.Add(new ListIdToken(web, mainLanguageName, list.Id));
+                }
+#endif
                 _tokens.Add(new ListUrlToken(web, list.Title, list.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
 
                 foreach (var view in list.Views)
@@ -845,6 +869,56 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
         }
+
+#if !SP2013
+        private static Dictionary<String, String> listsTitles = new Dictionary<string, string>();
+
+        /// <summary>
+        /// This method retrieves the title of a list in the main language of the site
+        /// </summary>
+        /// <param name="web">The current Web</param>
+        /// <param name="name">The title of the list in the current user's language</param>
+        /// <returns>The title of the list in the main language of the site</returns>
+        private String GetListTitleForMainLanguage(Web web, String name)
+        {
+            if (listsTitles.ContainsKey(name))
+            {
+                // Return the title that we already have
+                return (listsTitles[name]);
+            }
+            else
+            {
+                // Get the default culture for the current web
+                var ci = new System.Globalization.CultureInfo((int)web.Language);
+
+                // Refresh the list of lists with a lock
+                lock (typeof(ListIdToken))
+                {
+                    // Reset the cache of lists titles
+                    TokenParser.listsTitles.Clear();
+
+                    // Add the new lists title using the main language of the site
+                    foreach (var list in web.Lists)
+                    {
+                        var titleResource = list.TitleResource.GetValueForUICulture(ci.Name);
+                        web.Context.ExecuteQueryRetry();
+                        TokenParser.listsTitles.Add(list.Title, titleResource.Value);
+                    }
+                }
+
+                // If now we have the list title ...
+                if (listsTitles.ContainsKey(name))
+                {
+                    // Return the title, if any
+                    return (listsTitles[name]);
+                }
+                else
+                {
+                    return (null);
+                }
+            }
+        }
+#endif
     }
 }
 

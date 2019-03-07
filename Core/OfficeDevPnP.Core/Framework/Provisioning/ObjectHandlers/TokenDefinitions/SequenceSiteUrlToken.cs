@@ -1,3 +1,4 @@
+#if !ONPREMISES
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Attributes;
 
@@ -27,3 +28,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         }
     }
 }
+#endif

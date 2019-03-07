@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using OfficeDevPnP.Core.Utilities.Async;
 using System.IdentityModel.Tokens.Jwt;
 using System.Collections.Generic;
+using OfficeDevPnP.Core.Utilities.Context;
 
 #if !ONPREMISES
 using OfficeDevPnP.Core.Sites;
@@ -101,6 +102,9 @@ namespace Microsoft.SharePoint.Client
 
 #if !ONPREMISES
             await new SynchronizationContextRemover();
+
+            // Set the TLS preference. Needed on some server os's to work when Office 365 removes support for TLS 1.0
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 #endif
 
             var clientTag = string.Empty;
@@ -135,9 +139,7 @@ namespace Microsoft.SharePoint.Client
 
                     // Make CSOM request more reliable by disabling the return value cache. Given we 
                     // often clone context objects and the default value is
-#if !ONPREMISES
-                    clientContext.DisableReturnValueCache = true;
-#elif SP2016
+#if !ONPREMISES || SP2016 || SP2019
                     clientContext.DisableReturnValueCache = true;
 #endif
                     // Add event handler to "insert" app decoration header to mark the PnP Sites Core library as a known application
@@ -189,20 +191,22 @@ namespace Microsoft.SharePoint.Client
                         retry = true;
 
                         // Determine the retry after value - use the retry-after header when available
-                        string retryAfterHeader = response.GetResponseHeader("Retry-After");
-                        if (!string.IsNullOrEmpty(retryAfterHeader))
-                        {
-                            if (!Int32.TryParse(retryAfterHeader, out retryAfterInterval))
-                            {
-                                retryAfterInterval = backoffInterval;
-                            }
-                        }
-                        else
-                        {
-                            retryAfterInterval = backoffInterval;
-                        }
+                        // Retry-After seems to default to a fixed 120 seconds in most cases, let's revert to our
+                        // previous logic
+                        //string retryAfterHeader = response.GetResponseHeader("Retry-After");
+                        //if (!string.IsNullOrEmpty(retryAfterHeader))
+                        //{
+                        //    if (!Int32.TryParse(retryAfterHeader, out retryAfterInterval))
+                        //    {
+                        //        retryAfterInterval = backoffInterval;
+                        //    }
+                        //}
+                        //else
+                        //{
+                        retryAfterInterval = backoffInterval;
+                        //}
 
-                        //Add delay for retry
+                        //Add delay for retry, retry-after header is specified in seconds
                         await Task.Delay(retryAfterInterval);
 #else
                         Thread.Sleep(backoffInterval);
@@ -286,9 +290,7 @@ namespace Microsoft.SharePoint.Client
             ClientContext clonedClientContext = new ClientContext(siteUrl);
             clonedClientContext.AuthenticationMode = clientContext.AuthenticationMode;
             clonedClientContext.ClientTag = clientContext.ClientTag;
-#if !ONPREMISES
-            clonedClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
-#elif SP2016
+#if !ONPREMISES || SP2016 || SP2019
             clonedClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
 #endif
 
@@ -300,33 +302,108 @@ namespace Microsoft.SharePoint.Client
             }
             else
             {
-                //Take over the form digest handling setting
-                clonedClientContext.FormDigestHandlingEnabled = (clientContext as ClientContext).FormDigestHandlingEnabled;
 
-                var originalUri = new Uri(clientContext.Url);
-                // If the cloned host is not the same as the original one
-                // and if there is a custom Access Token for it in the input arguments
-                if (originalUri.Host != siteUrl.Host &&
-                    accessTokens != null && accessTokens.Count > 0 &&
-                    accessTokens.ContainsKey(siteUrl.Authority))
-                { 
-                    // Let's apply that specific Access Token
-                    clonedClientContext.ExecutingWebRequest += (sender, args) =>
-                    {
-                        args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + accessTokens[siteUrl.Authority];
-                    };
-                }
-                else
+                // Check if we do have context settings
+                var contextSettings = clientContext.GetContextSettings();
+
+                if (contextSettings != null) // We do have more information about this client context, so let's use it to do a more intelligent clone
                 {
-                    // In case of app only or SAML
-                    clonedClientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
+                    string newSiteUrl = siteUrl.ToString();
+                    
+                    // A diffent host = different audience ==> new access token is needed
+                    if (contextSettings.UsesDifferentAudience(newSiteUrl))
                     {
+                        // We need to create a new context using a new authentication manager as the token expiration is handled in there
+                        OfficeDevPnP.Core.AuthenticationManager authManager = new OfficeDevPnP.Core.AuthenticationManager();
+
+                        ClientContext newClientContext = null;
+                        if (contextSettings.Type == ClientContextType.SharePointACSAppOnly)
+                        {
+                            newClientContext = authManager.GetAppOnlyAuthenticatedContext(newSiteUrl, TokenHelper.GetRealmFromTargetUrl(new Uri(newSiteUrl)), contextSettings.ClientId, contextSettings.ClientSecret, contextSettings.AcsHostUrl, contextSettings.GlobalEndPointPrefix);                            
+                        }
+#if !ONPREMISES && !NETSTANDARD2_0
+                        else if (contextSettings.Type == ClientContextType.AzureADCredentials)
+                        {
+                            newClientContext = authManager.GetAzureADCredentialsContext(newSiteUrl, contextSettings.UserName, contextSettings.Password);
+                        }
+                        else if (contextSettings.Type == ClientContextType.AzureADCertificate)
+                        {
+                            newClientContext = authManager.GetAzureADAppOnlyAuthenticatedContext(newSiteUrl, contextSettings.ClientId, contextSettings.Tenant, contextSettings.Certificate, contextSettings.Environment);
+                        }
+#endif
+
+                        if (newClientContext != null)
+                        {
+                            //Take over the form digest handling setting
+                            newClientContext.FormDigestHandlingEnabled = (clientContext as ClientContext).FormDigestHandlingEnabled;
+                            newClientContext.ClientTag = clientContext.ClientTag;
+#if !ONPREMISES || SP2016 || SP2019
+                            newClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
+#endif
+                            return newClientContext;
+                        }
+                        else
+                        {
+                            throw new Exception($"Cloning for context setting type {contextSettings.Type} was not yet implemented");
+                        }
+                    }
+                    else
+                    {
+                        // Take over the context settings, this is needed if we later on want to clone this context to a different audience
+                        contextSettings.SiteUrl = newSiteUrl;
+                        clonedClientContext.AddContextSettings(contextSettings);
+
+                        clonedClientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
+                        {
+                            // Call the ExecutingWebRequest delegate method from the original ClientContext object, but pass along the webRequestEventArgs of 
+                            // the new delegate method
+                            MethodInfo methodInfo = clientContext.GetType().GetMethod("OnExecutingWebRequest", BindingFlags.Instance | BindingFlags.NonPublic);
+                            object[] parametersArray = new object[] { webRequestEventArgs };
+                            methodInfo.Invoke(clientContext, parametersArray);
+                        };
+                    }
+                }                
+                else // Fallback the default cloning logic if there were not context settings available
+                {
+                    //Take over the form digest handling setting
+                    clonedClientContext.FormDigestHandlingEnabled = (clientContext as ClientContext).FormDigestHandlingEnabled;
+
+                    var originalUri = new Uri(clientContext.Url);
+                    // If the cloned host is not the same as the original one
+                    // and if there is a custom Access Token for it in the input arguments
+                    if (originalUri.Host != siteUrl.Host &&
+                        accessTokens != null && accessTokens.Count > 0 &&
+                        accessTokens.ContainsKey(siteUrl.Authority))
+                    {
+                        // Let's apply that specific Access Token
+                        clonedClientContext.ExecutingWebRequest += (sender, args) =>
+                        {
+                            args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + accessTokens[siteUrl.Authority];
+                        };
+                    }
+                    else if (originalUri.Host != siteUrl.Host &&
+                        accessTokens == null && clientContext is PnPClientContext &&
+                        ((PnPClientContext)clientContext).PropertyBag.ContainsKey("AccessTokens") &&
+                        ((Dictionary<string, string>)((PnPClientContext)clientContext).PropertyBag["AccessTokens"]).ContainsKey(siteUrl.Authority))
+                    {
+                        // Let's apply that specific Access Token
+                        clonedClientContext.ExecutingWebRequest += (sender, args) =>
+                        {
+                            args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + ((Dictionary<string, string>)((PnPClientContext)clientContext).PropertyBag["AccessTokens"])[siteUrl.Authority];
+                        };
+                    }
+                    else
+                    {
+                        // In case of app only or SAML
+                        clonedClientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
+                        {
                         // Call the ExecutingWebRequest delegate method from the original ClientContext object, but pass along the webRequestEventArgs of 
                         // the new delegate method
                         MethodInfo methodInfo = clientContext.GetType().GetMethod("OnExecutingWebRequest", BindingFlags.Instance | BindingFlags.NonPublic);
-                        object[] parametersArray = new object[] { webRequestEventArgs };
-                        methodInfo.Invoke(clientContext, parametersArray);
-                    };
+                            object[] parametersArray = new object[] { webRequestEventArgs };
+                            methodInfo.Invoke(clientContext, parametersArray);
+                        };
+                    }
                 }
             }
 
@@ -626,6 +703,14 @@ namespace Microsoft.SharePoint.Client
                     {
                         request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
                     }
+                    else
+                    {
+                        if (context.Credentials is NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
+                    }
+
                     HttpResponseMessage response = await httpClient.SendAsync(request);
 
                     if (response.IsSuccessStatusCode)

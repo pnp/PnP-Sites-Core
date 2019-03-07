@@ -463,8 +463,10 @@ namespace Microsoft.SharePoint.Client
         /// <param name="noScriptSite">Boolean value which allows to customize the site using scripts</param>
         /// <param name="commentsOnSitePagesDisabled">Boolean value which Enables/Disables comments on the Site Pages</param>
         /// <param name="socialBarOnSitePagesDisabled">Boolean value which Enables/Disables likes and view count on the Site Pages</param>
+        /// <param name="defaultSharingLinkType">Specifies the default link type for the site collection</param>
         /// <param name="wait">Id true this function only returns when the tenant properties are set, if false it will return immediately</param>
         /// <param name="timeoutFunction">An optional function that will be called while waiting for the tenant properties to be set. If set will override the wait variable. Return true to cancel the wait loop.</param>
+        /// <param name="defaultLinkPermission">Specifies the default link permission for the site collection</param>
         public static void SetSiteProperties(this Tenant tenant, string siteFullUrl,
             string title = null,
             bool? allowSelfServiceUpgrade = null,
@@ -476,6 +478,8 @@ namespace Microsoft.SharePoint.Client
             bool? noScriptSite = null,
             bool? commentsOnSitePagesDisabled = null,
             bool? socialBarOnSitePagesDisabled = null,
+            SharingPermissionType? defaultLinkPermission = null,
+            SharingLinkType? defaultSharingLinkType = null,
             bool wait = true, Func<TenantOperationMessage, bool> timeoutFunction = null
             )
         {
@@ -496,6 +500,10 @@ namespace Microsoft.SharePoint.Client
                     siteProps.UserCodeMaximumLevel = userCodeMaximumLevel.Value;
                 if (userCodeWarningLevel != null)
                     siteProps.UserCodeWarningLevel = userCodeWarningLevel.Value;
+                if (defaultLinkPermission != null)
+                    siteProps.DefaultLinkPermission = defaultLinkPermission.Value;
+                if (defaultSharingLinkType != null)
+                    siteProps.DefaultSharingLinkType = defaultSharingLinkType.Value;
                 if (title != null)
                     siteProps.Title = title;
                 if (noScriptSite != null)
@@ -718,26 +726,6 @@ namespace Microsoft.SharePoint.Client
         }
 #endif
 
-        #endregion
-
-        #region ClientSide Package Deployment
-
-        /// <summary>
-        /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
-        /// </summary>
-        /// <param name="tenant">Tenant to operate against</param>
-        /// <returns>The Uri holding the app catalog site URL</returns>
-        public static Uri GetAppCatalog(this Tenant tenant)
-        {
-            // Assume there's only one appcatalog site
-            var results = ((tenant.Context) as ClientContext).Web.SiteSearch("contentclass:STS_Site AND SiteTemplate:APPCATALOG");
-            foreach (var site in results)
-            {
-                return new Uri(site.Url);
-            }
-
-            return null;
-        }
         #endregion
 
         #region Private helper methods
@@ -1007,5 +995,30 @@ namespace Microsoft.SharePoint.Client
         }
         #endregion
 #endif
+
+#if !ONPREMISES || SP2019
+
+        #region ClientSide Package Deployment
+
+        /// <summary>
+        /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
+        /// </summary>
+        /// <param name="tenant">Tenant to operate against</param>
+        /// <returns>The Uri holding the app catalog site URL</returns>
+        public static Uri GetAppCatalog(this Tenant tenant)
+        {
+            // Assume there's only one appcatalog site
+            var results = ((tenant.Context) as ClientContext).Web.SiteSearch("contentclass:STS_Site AND SiteTemplate:APPCATALOG");
+            foreach (var site in results)
+            {
+                return new Uri(site.Url);
+            }
+
+            return null;
+        }
+        #endregion
+
+#endif
+
     }
 }

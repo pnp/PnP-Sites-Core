@@ -8,7 +8,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
       Description = "Returns the title of the current site",
       Example = "{sitename}",
       Returns = "My Company Portal")]
-    internal class SiteTitleToken : TokenDefinition
+    internal class SiteTitleToken : VolatileTokenDefinition
     {
         public SiteTitleToken(Web web) : base(web, "{sitetitle}", "{sitename}")
         {

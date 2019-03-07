@@ -232,13 +232,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     Order = (uint)webPart.WebPart.ZoneIndex,
                     Contents = webPartxml
                 };
-#if !SP2016
+
                 // As long as we've no CSOM library that has the ZoneID we can't use the version check as things don't compile...
                 if (web.Context.HasMinimalServerLibraryVersion(Constants.MINIMUMZONEIDREQUIREDSERVERVERSION))
                 {
                     newWp.Zone = webPart.ZoneId;
                 }
-#endif
+
                 homeFile.WebParts.Add(newWp);
             }
             template.Files.Add(homeFile);

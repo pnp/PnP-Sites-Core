@@ -8,7 +8,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
        Description = "Returns the login name of the current site owner",
        Example = "{siteowner}",
        Returns = "i:0#.f|membership|user@domain.com")]
-    internal class SiteOwnerToken : TokenDefinition
+    internal class SiteOwnerToken : VolatileTokenDefinition
     {
         public SiteOwnerToken(Web web)
             : base(web, "{siteowner}")

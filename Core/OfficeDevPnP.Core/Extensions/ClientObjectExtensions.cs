@@ -19,9 +19,13 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if the server object is null, otherwise false</returns>
         public static bool ServerObjectIsNull<T>(this T clientObject) where T : ClientObject
         {
-            return (!(clientObject.ServerObjectIsNull != null && 
-                clientObject.ServerObjectIsNull.HasValue && 
-                !clientObject.ServerObjectIsNull.Value));
+            if (clientObject == null)
+            {
+                return true;
+            }
+            return (!(clientObject.ServerObjectIsNull != null &&
+            clientObject.ServerObjectIsNull.HasValue &&
+            !clientObject.ServerObjectIsNull.Value));
         }
 
         /// <summary>
@@ -195,8 +199,11 @@ namespace Microsoft.SharePoint.Client
                             throw new Exception("Invalid arguments number");
                         }
 
-                        clientObject.Context.Load(clientObject, expression);
-                        dirty = true;
+                        if (!(clientObject is ClientObjectCollection) || ((clientObject is ClientObjectCollection) && !(clientObject as ClientObjectCollection).AreItemsAvailable))
+                        {
+                            clientObject.Context.Load(clientObject, expression);
+                            dirty = true;
+                        }                        
                     }
                     else
                     {

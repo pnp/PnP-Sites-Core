@@ -6,6 +6,7 @@ using OfficeDevPnP.Core.Diagnostics;
 using Microsoft.SharePoint.Client.Publishing.Navigation;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using System.Globalization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -78,11 +79,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 var navigationEntity = new Model.Navigation(new GlobalNavigation(globalNavigationType,
-                                                                globalNavigationType == GlobalNavigationType.Structural ? GetGlobalStructuralNavigation(web, navigationSettings) : null,
-                                                                globalNavigationType == GlobalNavigationType.Managed ? GetGlobalManagedNavigation(web, navigationSettings) : null),
+                                                                globalNavigationType == GlobalNavigationType.Structural ? GetGlobalStructuralNavigation(web, navigationSettings,template, creationInfo) : null,
+                                                                globalNavigationType == GlobalNavigationType.Managed ? GetGlobalManagedNavigation(web, navigationSettings, template, creationInfo) : null),
                                                             new CurrentNavigation(currentNavigationType,
-                                                                currentNavigationType == CurrentNavigationType.Structural | currentNavigationType == CurrentNavigationType.StructuralLocal ? GetCurrentStructuralNavigation(web, navigationSettings) : null,
-                                                                currentNavigationType == CurrentNavigationType.Managed ? GetCurrentManagedNavigation(web, navigationSettings) : null)
+                                                                currentNavigationType == CurrentNavigationType.Structural | currentNavigationType == CurrentNavigationType.StructuralLocal ? GetCurrentStructuralNavigation(web, navigationSettings, template, creationInfo) : null,
+                                                                currentNavigationType == CurrentNavigationType.Managed ? GetCurrentManagedNavigation(web, navigationSettings, template, creationInfo) : null)
                                                             );
 
                 navigationEntity.AddNewPagesToNavigation = navigationSettings.AddNewPagesToNavigation;
@@ -128,6 +129,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     navigationSettings.AddNewPagesToNavigation = template.Navigation.AddNewPagesToNavigation;
                     navigationSettings.CreateFriendlyUrlsForNewPages = template.Navigation.CreateFriendlyUrlsForNewPages;
 
+                    if (!isNoScriptSite)
+                    {
+                        navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
+                        web.Context.ExecuteQueryRetry();
+                    }
+
                     if (template.Navigation.GlobalNavigation != null)
                     {
                         switch (template.Navigation.GlobalNavigation.NavigationType)
@@ -155,15 +162,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 navigationSettings.GlobalNavigation.Source = StandardNavigationSource.PortalProvider;
                                 web.Navigation.UseShared = false;
 
-                                ProvisionGlobalStructuralNavigation(web,
-                                    template.Navigation.GlobalNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
-
                                 break;
                         }
+
                         if (!isNoScriptSite)
                         {
                             navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
                             web.Context.ExecuteQueryRetry();
+                        }
+
+                        // Need to set navigation nodes after update navigation settings
+                        if (template.Navigation.GlobalNavigation.NavigationType == GlobalNavigationType.Structural)
+                        {
+                            ProvisionGlobalStructuralNavigation(web,
+                                    template.Navigation.GlobalNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
                         }
                     }
 
@@ -194,9 +206,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 navigationSettings.CurrentNavigation.Source = StandardNavigationSource.PortalProvider;
 
-                                ProvisionCurrentStructuralNavigation(web,
-                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
-
                                 break;
                             case CurrentNavigationType.Structural:
                             default:
@@ -210,9 +219,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 navigationSettings.CurrentNavigation.Source = StandardNavigationSource.PortalProvider;
 
-                                ProvisionCurrentStructuralNavigation(web,
-                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
-
                                 break;
                         }
 
@@ -220,6 +226,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
                             web.Context.ExecuteQueryRetry();
+                        }
+
+                        // Need to set navigation nodes after update navigation settings
+                        if (template.Navigation.CurrentNavigation.NavigationType == CurrentNavigationType.Structural ||
+                            template.Navigation.CurrentNavigation.NavigationType == CurrentNavigationType.StructuralLocal)
+                        {
+                            ProvisionCurrentStructuralNavigation(web,
+                                template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
                         }
                     }
                 }
@@ -395,27 +409,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private ManagedNavigation GetGlobalManagedNavigation(Web web, WebNavigationSettings navigationSettings)
+        private ManagedNavigation GetGlobalManagedNavigation(Web web, WebNavigationSettings navigationSettings, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return GetManagedNavigation(web, navigationSettings, false);
+            return GetManagedNavigation(web, navigationSettings, false,template,creationInfo);
         }
 
-        private StructuralNavigation GetGlobalStructuralNavigation(Web web, WebNavigationSettings navigationSettings)
+        private StructuralNavigation GetGlobalStructuralNavigation(Web web, WebNavigationSettings navigationSettings, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return GetStructuralNavigation(web, navigationSettings, false);
+            return GetStructuralNavigation(web, navigationSettings, false, template, creationInfo);
         }
 
-        private ManagedNavigation GetCurrentManagedNavigation(Web web, WebNavigationSettings navigationSettings)
+        private ManagedNavigation GetCurrentManagedNavigation(Web web, WebNavigationSettings navigationSettings, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return GetManagedNavigation(web, navigationSettings, true);
+            return GetManagedNavigation(web, navigationSettings, true, template, creationInfo);
         }
 
-        private StructuralNavigation GetCurrentStructuralNavigation(Web web, WebNavigationSettings navigationSettings)
+        private StructuralNavigation GetCurrentStructuralNavigation(Web web, WebNavigationSettings navigationSettings, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return GetStructuralNavigation(web, navigationSettings, true);
+            return GetStructuralNavigation(web, navigationSettings, true, template, creationInfo);
         }
 
-        private ManagedNavigation GetManagedNavigation(Web web, WebNavigationSettings navigationSettings, Boolean currentNavigation)
+        private ManagedNavigation GetManagedNavigation(Web web, WebNavigationSettings navigationSettings, Boolean currentNavigation, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             var result = new ManagedNavigation
             {
@@ -429,21 +443,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return (result);
         }
 
-        private StructuralNavigation GetStructuralNavigation(Web web, WebNavigationSettings navigationSettings, Boolean currentNavigation)
+        private StructuralNavigation GetStructuralNavigation(Web web, WebNavigationSettings navigationSettings, Boolean currentNavigation, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             // By default avoid removing existing nodes
             var result = new StructuralNavigation { RemoveExistingNodes = false };
             Microsoft.SharePoint.Client.NavigationNodeCollection sourceNodes = currentNavigation ?
                 web.Navigation.QuickLaunch : web.Navigation.TopNavigationBar;
 
-            web.Context.Load(web, w => w.ServerRelativeUrl);
-            web.Context.Load(sourceNodes);
-            web.Context.ExecuteQueryRetry();
+            var clientContext = web.Context;
+            clientContext.Load(web, w => w.ServerRelativeUrl,w=>w.Language);
+            clientContext.Load(sourceNodes);
+            clientContext.ExecuteQueryRetry();
+            var defaultCulture = new CultureInfo((int)web.Language);
 
             if (!sourceNodes.ServerObjectIsNull.Value)
             {
                 result.NavigationNodes.AddRange(from n in sourceNodes.AsEnumerable()
-                                                select n.ToDomainModelNavigationNode(web));
+                                                select n.ToDomainModelNavigationNode(web, creationInfo.PersistMultiLanguageResources, defaultCulture));
+
+                if (creationInfo.PersistMultiLanguageResources)
+                {
+
+                    //need to get nodes and children for any other then default language
+                    foreach (var language in template.SupportedUILanguages.Where(c => c.LCID != defaultCulture.LCID))
+                    {
+                        var currentCulture = new CultureInfo(language.LCID);
+                        clientContext.Load(web, w => w.ServerRelativeUrl);
+                        clientContext.Load(sourceNodes);
+                        var acceptLanguage = clientContext.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"];
+                        clientContext.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = currentCulture.Name;
+                        clientContext.ExecuteQueryRetry();
+
+                        if (!sourceNodes.ServerObjectIsNull.Value)
+                        {
+                            //we dont need to add to result - just extract Titles - to List as we need to 
+                            var alternateLang=(from n in sourceNodes.AsEnumerable()
+                                                            select n.ToDomainModelNavigationNode(web, creationInfo.PersistMultiLanguageResources, currentCulture)).ToList();
+                        }
+
+                        clientContext.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = acceptLanguage;
+                    }
+                }
             }
             return (result);
         }
@@ -523,22 +563,45 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
     internal static class NavigationNodeExtensions
     {
-        internal static Model.NavigationNode ToDomainModelNavigationNode(this Microsoft.SharePoint.Client.NavigationNode node, Web web)
+        internal static Model.NavigationNode ToDomainModelNavigationNode(this Microsoft.SharePoint.Client.NavigationNode node, Web web, bool PersistLanguage, CultureInfo currentCulture, int ParentNodeId=0)
         {
 
+            string nodeTitle = node.Title;
+#if !SP2013
+            if (PersistLanguage && !string.IsNullOrWhiteSpace(nodeTitle))
+            {
+                if (UserResourceExtensions.PersistResourceValue($"NavigationNode_{ParentNodeId}_{node.Id}_Title", currentCulture.LCID, nodeTitle))
+                {
+                    nodeTitle = $"{{res:NavigationNode_{ParentNodeId}_{node.Id}_Title}}";
+                }
+            }
+#endif
             var result = new Model.NavigationNode
             {
-                Title = node.Title,
+                Title = nodeTitle,
                 IsExternal = node.IsExternal,
                 Url = web.ServerRelativeUrl != "/" ? node.Url.Replace(web.ServerRelativeUrl, "{site}") : $"{{site}}{node.Url}"
             };
 
             node.Context.Load(node.Children);
+#if !SP2013
+            var acceptLanguage = node.Context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"];
+            if (PersistLanguage)
+            {
+                node.Context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = currentCulture.Name;
+            }
+#endif
             node.Context.ExecuteQueryRetry();
 
             result.NavigationNodes.AddRange(from n in node.Children.AsEnumerable()
-                                            select n.ToDomainModelNavigationNode(web));
+                                            select n.ToDomainModelNavigationNode(web, PersistLanguage, currentCulture, node.Id));
 
+#if !SP2013
+            if (PersistLanguage)
+            {
+                node.Context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = acceptLanguage;
+            }
+#endif
             return (result);
         }
     }
