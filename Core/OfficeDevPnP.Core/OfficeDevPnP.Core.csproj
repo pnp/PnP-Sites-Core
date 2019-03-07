@@ -576,6 +576,7 @@
     <Compile Include="Framework\Provisioning\Model\WebApiPermissionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Webhook.cs" />
     <Compile Include="Framework\Provisioning\Model\WebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\CanProvisionResult.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\FieldAndListProvisioningStepHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\NoScriptTemplateCleaner.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectApplicationLifecycleManagement.cs" />

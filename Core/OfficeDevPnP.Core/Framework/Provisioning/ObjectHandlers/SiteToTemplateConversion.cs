@@ -134,7 +134,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 #if !ONPREMISES
-        internal void ApplyProvisioningHierarchy(Tenant tenant, OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation provisioningInfo)
+        internal void ApplyProvisioningHierarchy(Tenant tenant, OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation provisioningInfo, Boolean canProvisionOnly = false)
         {
             using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Provisioning))
             {
@@ -178,26 +178,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 int step = 2;
 
-                TokenParser sequenceTokenParser = new TokenParser(tenant, hierarchy);
-                foreach (var handler in objectHandlers)
+                // Double-check if the hierarchy can be provisioned
+                var canProvisionResult = CanProvisionHierarchy(tenant, hierarchy, sequenceId, provisioningInfo, objectHandlers);
+
+                // If the template cannot be provisioned, raise an Error and stop
+                if (!canProvisionResult.CanProvision)
                 {
-                    if (handler.WillProvision(tenant, hierarchy, sequenceId, provisioningInfo))
+                    messagesDelegate("The current hierarchy cannot be provisioned due to some missing requirements!", ProvisioningMessageType.Error);
+                    // TODO: Or do we want to output here all the issues?
+                    // TODO: Or do we want to have a dedicated delegate to let the users free to process or not to process the issues?
+                }
+                else if (!canProvisionOnly)
+                {
+                    TokenParser sequenceTokenParser = new TokenParser(tenant, hierarchy);
+                    foreach (var handler in objectHandlers)
                     {
-                        if (messagesDelegate != null)
+                        if (handler.WillProvision(tenant, hierarchy, sequenceId, provisioningInfo))
                         {
-                            handler.MessagesDelegate = messagesDelegate;
+                            if (messagesDelegate != null)
+                            {
+                                handler.MessagesDelegate = messagesDelegate;
+                            }
+                            if (handler.ReportProgress && progressDelegate != null)
+                            {
+                                progressDelegate(handler.Name, step, count);
+                                step++;
+                            }
+                            sequenceTokenParser = handler.ProvisionObjects(tenant, hierarchy, sequenceId, sequenceTokenParser, provisioningInfo);
                         }
-                        if (handler.ReportProgress && progressDelegate != null)
-                        {
-                            progressDelegate(handler.Name, step, count);
-                            step++;
-                        }
-                        sequenceTokenParser = handler.ProvisionObjects(tenant, hierarchy, sequenceId, sequenceTokenParser, provisioningInfo);
                     }
                 }
             }
         }
 #endif
+
         /// <summary>
         /// Actual implementation of the apply templates
         /// </summary>
@@ -205,7 +219,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="template"></param>
         /// <param name="provisioningInfo"></param>
         /// <param name="tokenParser"></param>
-        internal void ApplyRemoteTemplate(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation provisioningInfo, bool calledFromHierarchy = false, TokenParser tokenParser = null)
+        internal void ApplyRemoteTemplate(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation provisioningInfo, bool calledFromHierarchy = false, TokenParser tokenParser = null, Boolean canProvisionOnly = false)
         {
             using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Provisioning))
             {
@@ -355,31 +369,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 template = cleaner.CleanUpBeforeProvisioning(template);
 
                 // Double-check if the template can be provisioned
-                Boolean canProvision = true;
-                foreach (var handler in objectHandlers)
-                {
-                    if (handler.WillProvision(web, template, provisioningInfo))
-                    {
-                        if (messagesDelegate != null)
-                        {
-                            handler.MessagesDelegate = messagesDelegate;
-                        }
-                        if (handler.ReportProgress && progressDelegate != null)
-                        {
-                            progressDelegate(handler.Name, step, count);
-                            step++;
-                        }
-
-                        canProvision |= handler.CanProvision(web, template, provisioningInfo);
-                    }
-                }
+                var canProvisionResult = CanProvisionTemplate(web, template, provisioningInfo, objectHandlers);
 
                 // If the template cannot be provisioned, raise an Error and stop
-                if (!canProvision)
+                if (!canProvisionResult.CanProvision)
                 {
                     messagesDelegate("The current template cannot be provisioned due to some missing requirements!", ProvisioningMessageType.Error);
+                    // TODO: Do we want to output here all the issues?
+                    // TODO: Or do we want to have a dedicated delegate to let the users free to process or not to process the issues with their own logic?
                 }
-                else
+                else if (!canProvisionOnly)
                 {
                     foreach (var handler in objectHandlers)
                     {
@@ -397,14 +396,67 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             tokenParser = handler.ProvisionObjects(web, template, tokenParser, provisioningInfo);
                         }
                     }
-                }
 
-                // Notify the completed provisioning of the site
-                web.EnsureProperties(w => w.Title, w => w.Url);
-                siteProvisionedDelegate?.Invoke(web.Title, web.Url);
+                    // Notify the completed provisioning of the site
+                    web.EnsureProperties(w => w.Title, w => w.Url);
+                    siteProvisionedDelegate?.Invoke(web.Title, web.Url);
+                }
 
                 System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(currentCultureInfoValue);
             }
+        }
+
+        /// <summary>
+        /// This private method verifies if all the Object Handlers can provision the template/hierarchy
+        /// </summary>
+        /// <param name="web">The target web, can be optional</param>
+        /// <param name="template">The template applied</param>
+        /// <param name="provisioningInfo">The provisioning information</param>
+        /// <param name="objectHandlers">The collection of Object Handlers to test for CanProvision</param>
+        private static CanProvisionResult CanProvisionTemplate(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation provisioningInfo, List<ObjectHandlerBase> objectHandlers)
+        {
+            // By default CanProvision is true
+            var result = new CanProvisionResult { CanProvision = true };
+
+            foreach (var handler in objectHandlers)
+            {
+                if (handler.WillProvision(web, template, provisioningInfo))
+                {
+                    var canProvisionResult = handler.CanProvision(web, template, provisioningInfo);
+                    result.CanProvision |= canProvisionResult.CanProvision;
+
+                    result.Issues.AddRange(canProvisionResult.Issues);
+                }
+            }
+
+            return (result);
+        }
+
+        /// <summary>
+        /// This private method verifies if all the Object Handlers can provision the template/hierarchy
+        /// </summary>
+        /// <param name="tenant">The target Tenant</param>
+        /// <param name="hierarchy">The Template to hierarchy</param>
+        /// <param name="sequenceId">The sequence to test within the hierarchy</param>
+        /// <param name="provisioningInfo">The provisioning information</param>
+        /// <param name="objectHandlers">The collection of Object Handlers to test for CanProvision</param>
+        private static CanProvisionResult CanProvisionHierarchy(Tenant tenant, ProvisioningHierarchy hierarchy, String sequenceId, ProvisioningTemplateApplyingInformation provisioningInfo, List<ObjectHierarchyHandlerBase> objectHandlers)
+        {
+            // By default CanProvision is true
+            var result = new CanProvisionResult { CanProvision = true };
+
+            foreach (var handler in objectHandlers)
+            {
+                if (handler.WillProvision(tenant, hierarchy, sequenceId, provisioningInfo))
+                {
+                    var canProvisionResult = handler.CanProvision(tenant, hierarchy, sequenceId, provisioningInfo);
+                    result.CanProvision |= canProvisionResult.CanProvision;
+
+                    result.Issues.AddRange(canProvisionResult.Issues);
+                }
+            }
+
+            return (result);
         }
     }
 }

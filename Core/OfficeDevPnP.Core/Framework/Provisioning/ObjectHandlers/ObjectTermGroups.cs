@@ -625,7 +625,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return _willExtract.Value;
         }
 
-        public override bool CanProvision(Web web, Model.ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override CanProvisionResult CanProvision(Web web, Model.ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             return base.CanProvision(web, template, applyingInformation);
         }

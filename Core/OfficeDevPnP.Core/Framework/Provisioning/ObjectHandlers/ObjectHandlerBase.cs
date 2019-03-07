@@ -35,10 +35,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="template">The Template to provision</param>
         /// <param name="applyingInformation">Any custom provisioning settings</param>
         /// <returns>A boolean stating whether the current object handler can be run during provisioning or if there are any missing requirements</returns>
-        public virtual bool CanProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        public virtual CanProvisionResult CanProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             // By default any handler can be provisioned
-            return (true);
+            return (new CanProvisionResult { CanProvision = true, Issues = null });
         }
 
         public abstract bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation);
