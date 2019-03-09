@@ -7,6 +7,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -49,7 +50,7 @@ namespace Microsoft.SharePoint.Client
 
             try
             {
-                string baseTemplate = $"OfficeDevPnP.Core.Framework.Provisioning.BaseTemplates.v{GetSharePointVersion()}.{webTemplate}{configuration}Template.xml";
+                string baseTemplate = $"OfficeDevPnP.Core.Framework.Provisioning.BaseTemplates.{GetSharePointVersion()}.{webTemplate}{configuration}Template.xml";
                 using (Stream stream = typeof(BaseTemplateManager).Assembly.GetManifestResourceStream(baseTemplate))
                 {
                     // Figure out the formatter to use
@@ -83,7 +84,36 @@ namespace Microsoft.SharePoint.Client
         {
             Assembly asm = Assembly.GetAssembly(typeof(Site));
             AssemblyName name = asm.GetName();
-            return $"{name.Version.Major}_{name.Version.Minor}";
+
+            try
+            {
+                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
+                string version = fvi.FileVersion;
+
+                if (Version.TryParse(version, out Version v19))
+                {
+                    if (v19.Build > 10000)
+                    {
+                        return "_2019";
+                    }
+                }
+            }
+            catch
+            {
+                // catch errors here...if it goes wrong we'll fall back to the default logic, 2019 will return as 2016 at that point.
+            }
+
+            if (name.Version.Major == 15)
+            {
+                return "_2013";
+            }
+            else if (name.Version.Major == 16 && name.Version.Minor == 1)
+            {
+                return "SPO";
+            }
+
+            return "_2016";
+
         }
 
     }

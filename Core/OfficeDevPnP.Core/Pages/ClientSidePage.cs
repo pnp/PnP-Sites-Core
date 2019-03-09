@@ -6,6 +6,7 @@ using OfficeDevPnP.Core.Utilities.Async;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -16,7 +17,7 @@ using System.Web.UI;
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// Represents a modern client side page with all it's contents
     /// </summary>
@@ -36,6 +37,8 @@ namespace OfficeDevPnP.Core.Pages
         public const string FirstPublishedDate = "FirstPublishedDate";
         public const string FileLeafRef = "FileLeafRef";
         public const string DescriptionField = "Description";
+        public const string _AuthorByline = "_AuthorByline";
+        public const string _TopicHeader = "_TopicHeader";
 
         // feature
         public const string SitePagesFeatureId = "b6917cb1-93a0-4b97-a84d-7cf49975d4ec";
@@ -107,7 +110,15 @@ namespace OfficeDevPnP.Core.Pages
             }
             set
             {
-                this.pageTitle = value;
+                if (!string.IsNullOrEmpty(value) && value.IndexOf('"') > 0)
+                {
+                    // Escape double quotes used in page title
+                    this.pageTitle = value.Replace('"', '\"');
+                }
+                else
+                {
+                    this.pageTitle = value;
+                }
             }
         }
 
@@ -590,7 +601,7 @@ namespace OfficeDevPnP.Core.Pages
 
             page.sitePagesServerRelativeUrl = pagesLibrary.RootFolder.ServerRelativeUrl;
 
-            var file = page.Context.Web.GetFileByServerRelativeUrl($"{page.sitePagesServerRelativeUrl}/{page.pageName}");
+            var file = page.Context.Web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl($"{page.sitePagesServerRelativeUrl}/{page.pageName}"));
             page.Context.Web.Context.Load(file, f => f.ListItemAllFields, f => f.Exists);
             page.Context.Web.Context.ExecuteQueryRetry();
 
@@ -605,7 +616,7 @@ namespace OfficeDevPnP.Core.Pages
             if (item.FieldValues.ContainsKey(ClientSidePage.ClientSideApplicationId) && item[ClientSideApplicationId] != null && item[ClientSideApplicationId].ToString().Equals(ClientSidePage.SitePagesFeatureId, StringComparison.InvariantCultureIgnoreCase))
             {
                 page.pageListItem = item;
-                page.PageTitle = Convert.ToString(item[ClientSidePage.Title]);
+                page.pageTitle = Convert.ToString(item[ClientSidePage.Title]);
 
                 // set layout type
                 if (item.FieldValues.ContainsKey(ClientSidePage.PageLayoutType) && item[ClientSidePage.PageLayoutType] != null && !string.IsNullOrEmpty(item[ClientSidePage.PageLayoutType].ToString()))
@@ -636,23 +647,85 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Persists the current <see cref="ClientSidePage"/> instance as a client side page in SharePoint
         /// </summary>
+        public void Save()
+        {
+            Save(pageName: null, pageFile: null, pagesLibrary: null);
+        }
+
+        /// <summary>
+        /// Persists the current <see cref="ClientSidePage"/> instance as a client side page in SharePoint
+        /// </summary>
         /// <param name="pageName">Name of the page (e.g. mypage.aspx) to save</param>
-        public void Save(string pageName = null)
+        public void Save(string pageName)
+        {
+            Save(pageName: pageName, pageFile: null, pagesLibrary: null);
+        }
+
+        /// <summary>
+        /// Persists the current <see cref="ClientSidePage"/> instance as a client side page in SharePoint
+        /// </summary>
+        /// <param name="pageName">Name of the page (e.g. mypage.aspx) to save</param>
+        /// <param name="pageFile">File of already existing page (in case of overwrite)</param>
+        /// <param name="pagesLibrary">Pages library instance</param>
+        public void Save(string pageName = null, File pageFile = null, List pagesLibrary = null)
         {
             string serverRelativePageName;
-            File pageFile;
+            //File pageFile;
             ListItem item;
 
             // Validate we're not using "wrong" layouts for the given site type
             ValidateOneColumnFullWidthSectionUsage();
 
-            // Try to load the page
-            LoadPageFile(pageName, out serverRelativePageName, out pageFile);
-
-            if (!pageFile.Exists)
+            // Normalize folders in page name
+            if (!string.IsNullOrEmpty(pageName) && pageName.Contains("\\"))
             {
+                pageName = pageName.Replace("\\", "/");
+            }
+            if (!string.IsNullOrEmpty(pageName) && pageName.StartsWith("/"))
+            {
+                pageName = pageName.Substring(1);
+            }
+
+            // Try to load the page
+            if (pageFile == null && pagesLibrary == null)
+            {
+                LoadPageFile(pageName, out serverRelativePageName, out pageFile);
+            }
+            else
+            {
+                // We know the page exists, so skip the load
+                this.spPagesLibrary = pagesLibrary;
+                this.sitePagesServerRelativeUrl = this.spPagesLibrary.RootFolder.ServerRelativeUrl;
+
+                if (!String.IsNullOrWhiteSpace(pageName))
+                {
+                    this.pageName = pageName;
+                }
+
+                if (string.IsNullOrWhiteSpace(this.pageName))
+                {
+                    throw new Exception("No valid page name specified, can't save this page to SharePoint");
+                }
+
+                serverRelativePageName = $"{this.sitePagesServerRelativeUrl}/{this.pageName}";
+            }
+
+            if (this.spPagesLibrary != null && (pageFile == null || !pageFile.Exists))
+            {
+                Folder folderHostingThePage = null;
+
+                if (pageName.Contains("/"))
+                {
+                    var folderName = pageName.Substring(0, pageName.LastIndexOf("/"));
+                    folderHostingThePage = this.Context.Web.EnsureFolderPath($"SitePages/{folderName}");
+                }
+                else
+                {
+                    folderHostingThePage = this.spPagesLibrary.RootFolder;
+                }
+
                 // create page listitem
-                item = this.spPagesLibrary.RootFolder.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
+                item = folderHostingThePage.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
                 // Fix page to be modern
                 item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.ModernArticlePage;
                 item[ClientSidePage.Title] = string.IsNullOrWhiteSpace(this.pageTitle) ? System.IO.Path.GetFileNameWithoutExtension(this.pageName) : this.pageTitle;
@@ -665,7 +738,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
                 item.Update();
                 this.Context.Web.Context.Load(item);
-                this.Context.Web.Context.ExecuteQueryRetry();
+                //this.Context.Web.Context.ExecuteQueryRetry();
             }
             else
             {
@@ -686,24 +759,53 @@ namespace OfficeDevPnP.Core.Pages
                 item[ClientSidePage.CanvasField] = this.ToHtml();
             }
 
-            // If a custom header image is set then the page must first be saved, otherwise the page contents gets erased
-            if (this.pageHeader.Type == ClientSidePageHeaderType.Custom)
-            {
-                item.Update();
-                this.Context.ExecuteQueryRetry();
-            }
+            // The page must first be saved, otherwise the page contents gets erased
+            item.Update();
+            this.Context.Web.Context.Load(item);
+            //this.Context.ExecuteQueryRetry();
 
             // Persist the page header
             if (this.pageHeader.Type == ClientSidePageHeaderType.None)
             {
-                item[ClientSidePage.PageLayoutContentField] = ClientSidePageHeader.NoHeader(this.PageTitle);
+                item[ClientSidePage.PageLayoutContentField] = ClientSidePageHeader.NoHeader(this.pageTitle);
+#if !SP2019
+                if (item.FieldValues.ContainsKey(ClientSidePage._AuthorByline))
+                {
+                    item[ClientSidePage._AuthorByline] = null;
+                }
+                if (item.FieldValues.ContainsKey(ClientSidePage._TopicHeader))
+                {
+                    item[ClientSidePage._TopicHeader] = null;
+                }
+#endif
             }
             else
             {
-                item[ClientSidePage.PageLayoutContentField] = this.pageHeader.ToHtml(this.PageTitle);
+                item[ClientSidePage.PageLayoutContentField] = this.pageHeader.ToHtml(this.pageTitle);
+
+#if !SP2019
+                // AuthorByline depends on a field holding the author values
+                if (this.pageHeader.AuthorByLineId > -1 && item.FieldValues.ContainsKey(ClientSidePage._AuthorByline))
+                {
+                    FieldUserValue[] userValueCollection = new FieldUserValue[1];
+                    FieldUserValue fieldUserVal = new FieldUserValue
+                    {
+                        LookupId = this.pageHeader.AuthorByLineId
+                    };
+                    userValueCollection.SetValue(fieldUserVal, 0);
+                    item[ClientSidePage._AuthorByline] = userValueCollection;
+                }
+
+                // Topic header needs to be persisted in a field
+                if (!string.IsNullOrEmpty(this.pageHeader.TopicHeader) && item.FieldValues.ContainsKey(ClientSidePage._TopicHeader))
+                {
+                    item[ClientSidePage._TopicHeader] = this.PageHeader.TopicHeader;
+                }
+#endif
             }
 
             item.Update();
+            this.Context.Web.Context.Load(item);
             this.Context.ExecuteQueryRetry();
 
             // Try to set the page banner image url if not yet set
@@ -743,7 +845,7 @@ namespace OfficeDevPnP.Core.Pages
                             this.Context.Site.EnsureProperties(p => p.Id);
                             this.Context.Web.EnsureProperties(p => p.Id, p => p.Url);
 
-                            var previewImage = this.Context.Web.GetFileByServerRelativeUrl(previewImageServerRelativeUrl);
+                            var previewImage = this.Context.Web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(previewImageServerRelativeUrl));
                             this.Context.Load(previewImage, p => p.UniqueId);
                             this.Context.ExecuteQueryRetry();
 
@@ -788,6 +890,7 @@ namespace OfficeDevPnP.Core.Pages
             if (isDirty)
             {
                 item.Update();
+                this.Context.Web.Context.Load(item);
                 this.Context.ExecuteQueryRetry();
             }
 
@@ -821,7 +924,9 @@ namespace OfficeDevPnP.Core.Pages
             switch (webPart)
             {
                 case DefaultClientSideWebParts.ContentRollup: return "daf0b71c-6de8-4ef7-b511-faae7c388708";
+#if !ONPREMISES
                 case DefaultClientSideWebParts.BingMap: return "e377ea37-9047-43b9-8cdb-a761be2f8e09";
+#endif
                 case DefaultClientSideWebParts.ContentEmbed: return "490d7c76-1824-45b2-9de3-676421c997fa";
                 case DefaultClientSideWebParts.DocumentEmbed: return "b7dd04e1-19ce-4b24-9132-b60a1c2b910d";
                 case DefaultClientSideWebParts.Image: return "d1d91016-032f-456d-98a4-721247c305e8";
@@ -829,13 +934,17 @@ namespace OfficeDevPnP.Core.Pages
                 case DefaultClientSideWebParts.LinkPreview: return "6410b3b6-d440-4663-8744-378976dc041e";
                 case DefaultClientSideWebParts.NewsFeed: return "0ef418ba-5d19-4ade-9db0-b339873291d0";
                 case DefaultClientSideWebParts.NewsReel: return "a5df8fdf-b508-4b66-98a6-d83bc2597f63";
+#if !ONPREMISES
                 case DefaultClientSideWebParts.PowerBIReportEmbed: return "58fcd18b-e1af-4b0a-b23b-422c2c52d5a2";
+#endif
                 case DefaultClientSideWebParts.QuickChart: return "91a50c94-865f-4f5c-8b4e-e49659e69772";
                 case DefaultClientSideWebParts.SiteActivity: return "eb95c819-ab8f-4689-bd03-0c2d65d47b1f";
                 case DefaultClientSideWebParts.VideoEmbed: return "275c0095-a77e-4f6d-a2a0-6a7626911518";
                 case DefaultClientSideWebParts.YammerEmbed: return "31e9537e-f9dc-40a4-8834-0e3b7df418bc";
                 case DefaultClientSideWebParts.Events: return "20745d7d-8581-4a6c-bf26-68279bc123fc";
+#if !ONPREMISES
                 case DefaultClientSideWebParts.GroupCalendar: return "6676088b-e28e-4a90-b9cb-d0d0303cd2eb";
+#endif
                 case DefaultClientSideWebParts.Hero: return "c4bd7b2f-7b6e-4599-8485-16504575f590";
                 case DefaultClientSideWebParts.List: return "f92bf067-bc19-489e-a556-7fe95f508720";
                 case DefaultClientSideWebParts.PageTitle: return "cbe7b0a9-3504-44dd-a3a3-0e5cacd07788";
@@ -843,10 +952,24 @@ namespace OfficeDevPnP.Core.Pages
                 case DefaultClientSideWebParts.QuickLinks: return "c70391ea-0b10-4ee9-b2b4-006d3fcad0cd";
                 case DefaultClientSideWebParts.CustomMessageRegion: return "71c19a43-d08c-4178-8218-4df8554c0b0e";
                 case DefaultClientSideWebParts.Divider: return "2161a1c6-db61-4731-b97c-3cdb303f7cbb";
+#if !ONPREMISES
                 case DefaultClientSideWebParts.MicrosoftForms: return "b19b3b9e-8d13-4fec-a93c-401a091c0707";
+#endif
                 case DefaultClientSideWebParts.Spacer: return "8654b779-4886-46d4-8ffb-b5ed960ee986";
+#if !ONPREMISES
                 case DefaultClientSideWebParts.ClientWebPart: return "243166f5-4dc3-4fe2-9df2-a7971b546a0a";
                 case DefaultClientSideWebParts.PowerApps: return "9d7e898c-f1bb-473a-9ace-8b415036578b";
+                case DefaultClientSideWebParts.CodeSnippet: return "7b317bca-c919-4982-af2f-8399173e5a1e";
+                case DefaultClientSideWebParts.PageFields: return "cf91cf5d-ac23-4a7a-9dbc-cd9ea2a4e859";
+                case DefaultClientSideWebParts.Weather: return "868ac3c3-cad7-4bd6-9a1c-14dc5cc8e823";
+                case DefaultClientSideWebParts.YouTube: return "544dd15b-cf3c-441b-96da-004d5a8cea1d";
+                case DefaultClientSideWebParts.MyDocuments: return "b519c4f1-5cf7-4586-a678-2f1c62cc175a";
+                case DefaultClientSideWebParts.YammerFullFeed: return "cb3bfe97-a47f-47ca-bffb-bb9a5ff83d75";
+                case DefaultClientSideWebParts.CountDown: return "62cac389-787f-495d-beca-e11786162ef4";
+                case DefaultClientSideWebParts.ListProperties: return "a8cd4347-f996-48c1-bcfb-75373fed2a27";
+                case DefaultClientSideWebParts.MarkDown: return "1ef5ed11-ce7b-44be-bc5e-4abd55101d16";
+                case DefaultClientSideWebParts.Planner: return "39c4c1c2-63fa-41be-8cc2-f6c0b49b253d";
+#endif
                 default: return "";
             }
         }
@@ -861,7 +984,9 @@ namespace OfficeDevPnP.Core.Pages
             switch (name.ToLower())
             {
                 case "daf0b71c-6de8-4ef7-b511-faae7c388708": return DefaultClientSideWebParts.ContentRollup;
+#if !ONPREMISES
                 case "e377ea37-9047-43b9-8cdb-a761be2f8e09": return DefaultClientSideWebParts.BingMap;
+#endif
                 case "490d7c76-1824-45b2-9de3-676421c997fa": return DefaultClientSideWebParts.ContentEmbed;
                 case "b7dd04e1-19ce-4b24-9132-b60a1c2b910d": return DefaultClientSideWebParts.DocumentEmbed;
                 case "d1d91016-032f-456d-98a4-721247c305e8": return DefaultClientSideWebParts.Image;
@@ -871,13 +996,17 @@ namespace OfficeDevPnP.Core.Pages
                 case "a5df8fdf-b508-4b66-98a6-d83bc2597f63": return DefaultClientSideWebParts.NewsReel;
                 // Seems like we've been having 2 guids to identify this web part...
                 case "8c88f208-6c77-4bdb-86a0-0c47b4316588": return DefaultClientSideWebParts.NewsReel;
+#if !ONPREMISES
                 case "58fcd18b-e1af-4b0a-b23b-422c2c52d5a2": return DefaultClientSideWebParts.PowerBIReportEmbed;
+#endif
                 case "91a50c94-865f-4f5c-8b4e-e49659e69772": return DefaultClientSideWebParts.QuickChart;
                 case "eb95c819-ab8f-4689-bd03-0c2d65d47b1f": return DefaultClientSideWebParts.SiteActivity;
                 case "275c0095-a77e-4f6d-a2a0-6a7626911518": return DefaultClientSideWebParts.VideoEmbed;
                 case "31e9537e-f9dc-40a4-8834-0e3b7df418bc": return DefaultClientSideWebParts.YammerEmbed;
                 case "20745d7d-8581-4a6c-bf26-68279bc123fc": return DefaultClientSideWebParts.Events;
+#if !ONPREMISES
                 case "6676088b-e28e-4a90-b9cb-d0d0303cd2eb": return DefaultClientSideWebParts.GroupCalendar;
+#endif
                 case "c4bd7b2f-7b6e-4599-8485-16504575f590": return DefaultClientSideWebParts.Hero;
                 case "f92bf067-bc19-489e-a556-7fe95f508720": return DefaultClientSideWebParts.List;
                 case "cbe7b0a9-3504-44dd-a3a3-0e5cacd07788": return DefaultClientSideWebParts.PageTitle;
@@ -885,10 +1014,24 @@ namespace OfficeDevPnP.Core.Pages
                 case "c70391ea-0b10-4ee9-b2b4-006d3fcad0cd": return DefaultClientSideWebParts.QuickLinks;
                 case "71c19a43-d08c-4178-8218-4df8554c0b0e": return DefaultClientSideWebParts.CustomMessageRegion;
                 case "2161a1c6-db61-4731-b97c-3cdb303f7cbb": return DefaultClientSideWebParts.Divider;
+#if !ONPREMISES
                 case "b19b3b9e-8d13-4fec-a93c-401a091c0707": return DefaultClientSideWebParts.MicrosoftForms;
+#endif
                 case "8654b779-4886-46d4-8ffb-b5ed960ee986": return DefaultClientSideWebParts.Spacer;
+#if !ONPREMISES
                 case "243166f5-4dc3-4fe2-9df2-a7971b546a0a": return DefaultClientSideWebParts.ClientWebPart;
                 case "9d7e898c-f1bb-473a-9ace-8b415036578b": return DefaultClientSideWebParts.PowerApps;
+                case "7b317bca-c919-4982-af2f-8399173e5a1e": return DefaultClientSideWebParts.CodeSnippet;
+                case "cf91cf5d-ac23-4a7a-9dbc-cd9ea2a4e859": return DefaultClientSideWebParts.PageFields;
+                case "868ac3c3-cad7-4bd6-9a1c-14dc5cc8e823": return DefaultClientSideWebParts.Weather;
+                case "544dd15b-cf3c-441b-96da-004d5a8cea1d": return DefaultClientSideWebParts.YouTube;
+                case "b519c4f1-5cf7-4586-a678-2f1c62cc175a": return DefaultClientSideWebParts.MyDocuments;
+                case "cb3bfe97-a47f-47ca-bffb-bb9a5ff83d75": return DefaultClientSideWebParts.YammerFullFeed;
+                case "62cac389-787f-495d-beca-e11786162ef4": return DefaultClientSideWebParts.CountDown;
+                case "a8cd4347-f996-48c1-bcfb-75373fed2a27": return DefaultClientSideWebParts.ListProperties;
+                case "1ef5ed11-ce7b-44be-bc5e-4abd55101d16": return DefaultClientSideWebParts.MarkDown;
+                case "39c4c1c2-63fa-41be-8cc2-f6c0b49b253d": return DefaultClientSideWebParts.Planner;
+#endif
                 default: return DefaultClientSideWebParts.ThirdParty;
             }
         }
@@ -949,7 +1092,8 @@ namespace OfficeDevPnP.Core.Pages
         /// <returns>List of available <see cref="ClientSideComponent"/></returns>
         public System.Collections.Generic.IEnumerable<ClientSideComponent> AvailableClientSideComponents(string name)
         {
-            if (!this.securityInitialized)
+            // When we're using app-only we do need an accesstoken for the REST request
+            if (!this.securityInitialized && this.Context.Credentials == null)
             {
                 this.InitializeSecurity();
             }
@@ -1160,9 +1304,9 @@ namespace OfficeDevPnP.Core.Pages
                 TranslateY = translateY
             };
         }
-        #endregion
+#endregion
 
-        #region Internal and private methods
+                #region Internal and private methods
         private void EnableCommentsImplementation(bool enable)
         {
             // ensure we do have the page list item loaded
@@ -1247,7 +1391,7 @@ namespace OfficeDevPnP.Core.Pages
             serverRelativePageName = $"{this.sitePagesServerRelativeUrl}/{this.pageName}";
 
             // ensure page exists
-            pageFile = this.Context.Web.GetFileByServerRelativeUrl(serverRelativePageName);
+            pageFile = this.Context.Web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(serverRelativePageName));
             this.Context.Web.Context.Load(pageFile, f => f.ListItemAllFields, f => f.Exists);
             this.Context.Web.Context.ExecuteQueryRetry();
         }
@@ -1283,7 +1427,7 @@ namespace OfficeDevPnP.Core.Pages
                         control.FromHtml(clientSideControl);
 
                         // Handle control positioning in sections and columns
-                        ApplySectionAndColumn(control, control.SpControlData.Position);
+                        ApplySectionAndColumn(control, control.SpControlData.Position, control.SpControlData.Emphasis);
 
                         this.AddControl(control);
                     }
@@ -1296,30 +1440,47 @@ namespace OfficeDevPnP.Core.Pages
                         control.FromHtml(clientSideControl);
 
                         // Handle control positioning in sections and columns
-                        ApplySectionAndColumn(control, control.SpControlData.Position);
+                        ApplySectionAndColumn(control, control.SpControlData.Position, control.SpControlData.Emphasis);
 
                         this.AddControl(control);
                     }
                     else if (controlType == typeof(CanvasColumn))
                     {
+                        // Need to parse empty sections
                         var jsonSerializerSettings = new JsonSerializerSettings()
                         {
                             MissingMemberHandling = MissingMemberHandling.Ignore
                         };
                         var sectionData = JsonConvert.DeserializeObject<ClientSideCanvasData>(controlData, jsonSerializerSettings);
 
-                        var currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).FirstOrDefault();
-                        if (currentSection == null)
+                        CanvasSection currentSection = null;
+                        if (sectionData.Position != null)
                         {
-                            this.AddSection(new CanvasSection(this), sectionData.Position.ZoneIndex);
-                            currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).First();
+                            currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).FirstOrDefault();
                         }
 
-                        var currentColumn = currentSection.Columns.Where(p => p.Order == sectionData.Position.SectionIndex).FirstOrDefault();
+                        if (currentSection == null)
+                        {
+                            if (sectionData.Position != null)
+                            {
+                                this.AddSection(new CanvasSection(this) { ZoneEmphasis = sectionData.Emphasis != null ? sectionData.Emphasis.ZoneEmphasis : 0}, sectionData.Position.ZoneIndex);
+                                currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).First();
+                            }
+                        }
+
+                        CanvasColumn currentColumn = null;
+                        if (sectionData.Position != null)
+                        {
+                            currentColumn = currentSection.Columns.Where(p => p.Order == sectionData.Position.SectionIndex).FirstOrDefault();
+                        }
+
                         if (currentColumn == null)
                         {
-                            currentSection.AddColumn(new CanvasColumn(currentSection, sectionData.Position.SectionIndex, sectionData.Position.SectionFactor));
-                            currentColumn = currentSection.Columns.Where(p => p.Order == sectionData.Position.SectionIndex).First();
+                            if (sectionData.Position != null)
+                            {
+                                currentSection.AddColumn(new CanvasColumn(currentSection, sectionData.Position.SectionIndex, sectionData.Position.SectionFactor));
+                                currentColumn = currentSection.Columns.Where(p => p.Order == sectionData.Position.SectionIndex).First();
+                            }
                         }
                     }
 
@@ -1384,12 +1545,12 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
-        private void ApplySectionAndColumn(CanvasControl control, ClientSideCanvasControlPosition position)
+        private void ApplySectionAndColumn(CanvasControl control, ClientSideCanvasControlPosition position, ClientSideSectionEmphasis emphasis)
         {
             var currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).FirstOrDefault();
             if (currentSection == null)
             {
-                this.AddSection(new CanvasSection(this), position.ZoneIndex);
+                this.AddSection(new CanvasSection(this) { ZoneEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0}, position.ZoneIndex);
                 currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).First();
             }
 
@@ -1433,6 +1594,13 @@ namespace OfficeDevPnP.Core.Pages
                     {
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     }
+                    else
+                    {
+                        if (context.Credentials is NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
+                    }
 
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
@@ -1464,7 +1632,11 @@ namespace OfficeDevPnP.Core.Pages
             // Let's try to grab an access token, will work when we're in app-only or user+app model
             this.Context.ExecutingWebRequest += Context_ExecutingWebRequest;
             this.Context.Load(this.Context.Web, w => w.Url);
+#if ONPREMISES
+            this.context.ExecuteQueryRetry();
+#else
             await this.context.ExecuteQueryRetryAsync();
+#endif
             this.Context.ExecutingWebRequest -= Context_ExecutingWebRequest;
             return true;
         }
@@ -1476,7 +1648,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
         }
-        #endregion
+                #endregion
     }
 #endif
-}
+            }

@@ -55,6 +55,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [Ignore]
         public void ExtractBaseTemplates2()
         {
+            // IMPORTANT: extraction needs to be done with user credentials, not app-only. With app-only certain templates (like BDR) will fail
             // use these flags to save time if the process failed after delete or create sites was done
             bool deleteSites = true;
             bool createSites = true;
@@ -73,6 +74,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 #else
             templates.Add(new BaseTemplate("STS#1"));
             templates.Add(new BaseTemplate("BLANKINTERNET#0"));
+#endif
+#if !ONPREMISES || SP2019
+            templates.Add(new BaseTemplate("STS#3"));
 #endif
             templates.Add(new BaseTemplate("BICENTERSITE#0"));
             templates.Add(new BaseTemplate("SRCHCEN#0"));

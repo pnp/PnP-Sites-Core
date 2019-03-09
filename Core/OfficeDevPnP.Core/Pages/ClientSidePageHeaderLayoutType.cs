@@ -6,12 +6,15 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     public enum ClientSidePageHeaderLayoutType
     {
         FullWidthImage,
-        NoImage
-        // TODO: 
+        NoImage,
+#if !SP2019
+        ColorBlock,
+        CutInShape,
+#endif
     }
 #endif
-}
+    }

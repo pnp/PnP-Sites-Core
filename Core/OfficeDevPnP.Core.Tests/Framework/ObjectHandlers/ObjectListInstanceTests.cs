@@ -17,8 +17,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         private Guid fieldId = Guid.Parse("{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}");
         private Guid termGroupId = Guid.Empty;
 
-        private const string CalculatedFieldElementSchema = @"<Field Name=""CalculatedField"" StaticName=""CalculatedField"" DisplayName=""Test Calculated Field"" Type=""Calculated"" ResultType=""Text"" ID=""{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}"" Group=""PnP"" ReadOnly=""TRUE"" ><Formula>=DemoField&amp;""DemoField""</Formula><FieldRefs><FieldRef Name=""DemoField"" ID=""{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}"" /></FieldRefs></Field>";
-        private const string TokenizedCalculatedFieldElementSchema = @"<Field Name=""CalculatedField"" StaticName=""CalculatedField"" DisplayName=""Test Calculated Field"" Type=""Calculated"" ResultType=""Text"" ID=""{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}"" Group=""PnP"" ReadOnly=""TRUE"" ><Formula>=[{fieldtitle:DemoField}]&amp;""DemoField""</Formula></Field>";
+        private const string CalculatedFieldElementSchema = @"<Field Name=""CalculatedField"" StaticName=""CalculatedField"" DisplayName=""Test Calculated Field"" Type=""Calculated"" ResultType=""Text"" ID=""{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}"" Group=""PnP"" ReadOnly=""TRUE"" ><Formula>=DemoField&amp;""BlaBla""</Formula><FieldRefs><FieldRef Name=""DemoField"" ID=""{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}"" /></FieldRefs></Field>";
+        private const string TokenizedCalculatedFieldElementSchema = @"<Field Name=""CalculatedField"" StaticName=""CalculatedField"" DisplayName=""Test Calculated Field"" Type=""Calculated"" ResultType=""Text"" ID=""{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}"" Group=""PnP"" ReadOnly=""TRUE"" ><Formula>=[{fieldtitle:DemoField}]&amp;""BlaBla""</Formula></Field>";
         private Guid calculatedFieldId = Guid.Parse("{D1A33456-9FEB-4D8E-AFFA-177EACCE4B70}");
 
         private List<string> listsForCleanup = new List<string>();
@@ -307,7 +307,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
                 listInstance.Url = $"lists/{listName}";
                 listInstance.Title = listName;
-                // An asset must be created by using the 
+                // An asset must be created by using the
                 // template type AND the template feature id
                 listInstance.TemplateType = 851;
                 listInstance.TemplateFeatureID = new Guid("4bcccd62-dcaf-46dc-a7d4-e38277ef33f4");
@@ -351,7 +351,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 listId = list.Id.ToString();
             }
 
-            // Update list Title using a provisioning template 
+            // Update list Title using a provisioning template
             // - Using a clean clientcontext to catch all possible "property not loaded" problems
             using (var ctx = TestCommon.CreateClientContext())
             {
@@ -649,7 +649,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 XElement fieldElement = XElement.Parse(extractedTemplate.Lists.First(l => l.Title == listName).Fields.First(cf => Guid.Parse(XElement.Parse(cf.SchemaXml).Attribute("ID").Value).Equals(calculatedFieldId)).SchemaXml);
                 var formula = fieldElement.Descendants("Formula").FirstOrDefault();
 
-                Assert.AreEqual(@"=[{fieldtitle:DemoField}]&""DemoField""", formula.Value, true, "Calculated field formula is not extracted properly");
+                Assert.AreEqual(@"=[{fieldtitle:DemoField}]&""BlaBla""", formula.Value, true, "Calculated field formula is not extracted properly");
             }
         }
 
@@ -1034,12 +1034,56 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             }
         }
 
+        [TestMethod]
+        public void CanTokensBeUsedInFieldDefaults()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var template = new ProvisioningTemplate();
+
+                var listUrl = string.Format("lists/{0}", listName);
+                var listTitle = listName + "_Title";
+                var listDesc = listName + "_Description";
+                var fieldDefault = listName + "_Default";
+
+                template.Parameters.Add("fieldDefault", fieldDefault);
+
+                var newList = new ListInstance()
+                {
+                    Url = listUrl,
+                    Title = listTitle,
+                    Description = listDesc,
+                    TemplateType = (int)ListTemplateType.GenericList
+                };
+
+                newList.Fields.Add(new Core.Framework.Provisioning.Model.Field()
+                {
+                    SchemaXml = "<Field ID=\"{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}\" Type=\"Text\" Name=\"ProjectID\" DisplayName=\"Project ID\" Group=\"My Columns\" MaxLength=\"255\" AllowDeletion=\"TRUE\" Required=\"TRUE\" />"
+                });
+                newList.FieldDefaults.Add("ProjectID", "{parameter:fieldDefault}");
+
+                template.Lists.Add(newList);
+
+                ctx.Web.ApplyProvisioningTemplate(template);
+
+                var list = ctx.Web.GetListByUrl(listUrl, l => l.Title, l => l.Description);
+
+                var existingField = list.Fields.GetByInternalNameOrTitle("ProjectID");
+                ctx.Load(existingField, f => f.SchemaXml, f => f.DefaultValue);
+                ctx.ExecuteQueryRetry();
+
+                Assert.IsNotNull(list);
+                Assert.AreEqual(fieldDefault, existingField.DefaultValue);
+            }
+        }
+
         private ProvisioningTemplate BuildTemplateForLookupInListInstanceTest(string masterListName, string detailsListName,
             Guid lookupFieldId, Guid lookupMultiFieldId, Guid detailsFieldId)
         {
             string detailsFieldSchema = @"<Field Name=""DetailsField"" StaticName=""DetailsField"" DisplayName=""Details Field"" Type=""Text"" ID=""" + detailsFieldId.ToString("B") + @""" Group=""PnP"" Required=""true""/>";
             string lookupFieldSchema = @"<Field Name=""LookupField"" StaticName=""LookupField"" DisplayName=""Test Lookup Field"" Type=""Lookup"" List=""Lists\" + detailsListName + @""" ShowField=""DetailsField"" ID=""" + lookupFieldId.ToString("B") + @""" Group=""PnP""></Field>";
             string lookupMultiFieldSchema = @"<Field Name=""LookupMultiField"" StaticName=""LookupMultiField"" DisplayName=""Test LookupMulti Field"" Type=""LookupMulti"" Mult=""TRUE"" List=""Lists\" + detailsListName + @""" ShowField=""DetailsField"" ID=""" + lookupMultiFieldId.ToString("B") + @""" Group=""PnP""></Field>";
+            string lookupFieldToInternalListSchema = @"<Field ID=""{6bfaba20-36bf-44b5-a1b2-eb6346d49716}"" ColName=""tp_AppAuthor"" RowOrdinal=""0"" ReadOnly=""TRUE"" Hidden=""FALSE"" Type=""Lookup"" List=""AppPrincipals"" Name=""AppAuthor"" DisplayName=""App Created By"" ShowField=""Title"" JoinColName=""Id"" SourceID=""http://schemas.microsoft.com/sharepoint/v3"" StaticName=""AppAuthor"" FromBaseType=""TRUE"" />";
 
             var template = new ProvisioningTemplate();
             var detailsList = new ListInstance();
@@ -1055,6 +1099,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             masterList.TemplateType = (int)ListTemplateType.GenericList;
             masterList.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = lookupFieldSchema });
             masterList.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = lookupMultiFieldSchema });
+            masterList.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = lookupFieldToInternalListSchema });
             template.Lists.Add(masterList);
 
             return template;

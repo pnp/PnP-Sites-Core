@@ -60,8 +60,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            if (template.Tenant != null &&
-                (template.Tenant.AppCatalog != null || template.Tenant.ContentDeliveryNetwork != null))
+            if (template.Tenant != null && 
+                (template.Tenant.AppCatalog != null || template.Tenant.ContentDeliveryNetwork != null ||
+                template.Tenant.SiteDesigns != null || template.Tenant.SiteScripts != null ||
+                template.Tenant.StorageEntities != null || template.Tenant.Themes != null ||
+                template.Tenant.WebApiPermissions != null))
             {
                 var tenantTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Tenant, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var tenantType = Type.GetType(tenantTypeName, false);
@@ -96,7 +99,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                     if (target != null &&
                         (target.GetPublicInstancePropertyValue("AppCatalog") != null ||
-                        target.GetPublicInstancePropertyValue("ContentDeliveryNetwork") != null))
+                        target.GetPublicInstancePropertyValue("ContentDeliveryNetwork") != null ||
+                        target.GetPublicInstancePropertyValue("SiteScripts") != null ||
+                        target.GetPublicInstancePropertyValue("SiteDesigns") != null ||
+                        target.GetPublicInstancePropertyValue("StorageEntities") != null ||
+                        target.GetPublicInstancePropertyValue("Themes") != null ||
+                        target.GetPublicInstancePropertyValue("WebApiPermissions") != null))
                     {
                         persistence.GetPublicInstanceProperty("Tenant").SetValue(persistence, target);
                     }

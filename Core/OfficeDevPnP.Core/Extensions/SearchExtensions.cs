@@ -1,6 +1,7 @@
 ﻿using Microsoft.SharePoint.Client.Search.Administration;
 using Microsoft.SharePoint.Client.Search.Portability;
 using System;
+using System.IO;
 using System.Text;
 
 namespace Microsoft.SharePoint.Client
@@ -88,8 +89,43 @@ namespace Microsoft.SharePoint.Client
             {
                 throw new ArgumentNullException(nameof(searchSchemaImportFilePath));
             }
-
             SetSearchConfigurationImplementation(context, searchSettingsImportLevel, System.IO.File.ReadAllText(searchSchemaImportFilePath));
+        }
+
+        /// <summary>
+        /// Imports search settings from configuration xml.
+        /// </summary>
+        /// <param name="context">Context for SharePoint objects and operations</param>
+        /// <param name="searchConfiguration">Search schema xml file path</param>
+        /// <param name="searchSettingsImportLevel">Search settings import level
+        /// Reference: http://msdn.microsoft.com/en-us/library/microsoft.sharepoint.client.search.administration.searchobjectlevel(v=office.15).aspx
+        /// </param>
+        public static void ImportSearchSettingsConfiguration(this ClientContext context, string searchConfiguration, SearchObjectLevel searchSettingsImportLevel)
+        {
+            if (string.IsNullOrEmpty(searchConfiguration))
+            {
+                throw new ArgumentNullException(nameof(searchConfiguration));
+            }
+            SetSearchConfigurationImplementation(context, searchSettingsImportLevel, searchConfiguration);
+        }
+
+
+        /// <summary>
+        /// Delete search settings from configuration xml.
+        /// </summary>
+        /// <param name="context">Context for SharePoint objects and operations</param>
+        /// <param name="searchConfiguration">Search schema xml file path</param>
+        /// <param name="searchSettingsImportLevel">Search settings import level
+        /// Reference: http://msdn.microsoft.com/en-us/library/microsoft.sharepoint.client.search.administration.searchobjectlevel(v=office.15).aspx
+        /// </param>
+        public static void DeleteSearchSettings(this ClientContext context, string searchConfiguration, SearchObjectLevel searchSettingsImportLevel)
+        {
+            if (string.IsNullOrEmpty(searchConfiguration))
+            {
+                throw new ArgumentNullException(nameof(searchConfiguration));
+            }
+
+            DeleteSearchConfigurationImplementation(context, searchSettingsImportLevel, searchConfiguration);
 
         }
 
@@ -113,7 +149,6 @@ namespace Microsoft.SharePoint.Client
             SetSearchConfigurationImplementation(site.Context, SearchObjectLevel.SPSite, searchConfiguration);
         }
 
-
         /// <summary>
         /// Sets the search configuration at the specified object level
         /// </summary>
@@ -134,6 +169,50 @@ namespace Microsoft.SharePoint.Client
 
             // Import search configuration
             searchConfig.ImportSearchConfiguration(owner, searchConfiguration);
+            context.Load(searchConfig);
+            context.ExecuteQueryRetry();
+        }
+
+        /// <summary>
+        /// Delete the search configuration - does not apply to managed properties.
+        /// </summary>
+        /// <param name="web">A SharePoint site/subsite</param>
+        /// <param name="searchConfiguration">search configuration</param>
+        public static void DeleteSearchConfiguration(this Web web, string searchConfiguration)
+        {
+            DeleteSearchConfigurationImplementation(web.Context, SearchObjectLevel.SPWeb, searchConfiguration);
+        }
+
+        /// <summary>
+        /// Delete the search configuration - does not apply to managed properties.
+        /// </summary>
+        /// <param name="site">A SharePoint site</param>
+        /// <param name="searchConfiguration">search configuration</param>
+        public static void DeleteSearchConfiguration(this Site site, string searchConfiguration)
+        {
+            DeleteSearchConfigurationImplementation(site.Context, SearchObjectLevel.SPSite, searchConfiguration);
+        }
+
+        /// <summary>
+        /// Delete the search configuration at the specified object level - does not apply to managed properties.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="searchObjectLevel"></param>
+        /// <param name="searchConfiguration"></param>
+        private static void DeleteSearchConfigurationImplementation(ClientRuntimeContext context, SearchObjectLevel searchObjectLevel, string searchConfiguration)
+        {
+#if ONPREMISES
+            if (searchObjectLevel == SearchObjectLevel.Ssa)
+            {
+                // Reference: https://msdn.microsoft.com/en-us/library/microsoft.sharepoint.client.search.portability.searchconfigurationportability_members.aspx
+                throw new Exception("You cannot import customized search configuration settings to a Search service application (SSA).");
+            }
+#endif
+            SearchConfigurationPortability searchConfig = new SearchConfigurationPortability(context);
+            SearchObjectOwner owner = new SearchObjectOwner(context, searchObjectLevel);
+
+            // Delete search configuration
+            searchConfig.DeleteSearchConfiguration(owner, searchConfiguration);
             context.Load(searchConfig);
             context.ExecuteQueryRetry();
         }

@@ -6,17 +6,131 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [3.3.1811.0 - Unreleased]
+## [3.8.1904.0 - unreleased]
 
 ### Added
-- Added support for the `Visibility` attribute for Unified Groups (devinprejean)
+
+### Changed
+
+## [3.7.1903.0 - March 2019 release]
+
+### Added
+
+- Client Side pages API support for SP2019 #2089 [lafe]
+- ALM functions for SharePoint 2019 on premises #2074 [lafe]
+- Authentication option based upon Azure AD credential flow in combination with the SPO Management Shell Azure AD application
+
+### Changed
+
+- Cloning of ClientContext objects created by AuthenticationManager using one of these methods (GetAppOnlyAuthenticatedContext, GetAzureADCredentialsContext, GetAzureADAppOnlyAuthenticatedContext) now works fine when cloning to different audience (e.g. clone from regular site to tenant admin)
+- Create ClientSidePage with double quotes in Title generates wrong LayoutWebpartsContent #2058
+- Skip executing EnsureProperty on Principal object when the Principal is null #2066 [schaudk]
+- Fixed token handling for resource files having quotes
+- Fixed parsing of SchemaXml #2067 [schaudk]
+- Fixed typo [lafe]
+- Fix #2088 - Provisioning template doesn't publish the app #2090 [gautamdsheth]
+
+## [3.6.1902.0 - February 2019 release]
+
+### Added
+
+- Beta support for SP2019
+- Provision and extract associated groups #2020 [jensotto]
+- Fix provisioning navigation settings #1883 [phibsi]
+- Add support for Kerberos authentication against ADFS #2050 [tmeckel]
+- AssociatedGroupId token added + processing of it
+- SequenceSiteCollectionId, SequenceSiteGroupId and SequenceSiteId tokens added
+- Added support for creating and loading modern pages from sub folders inside the sitepages library
+- ZoneID web part property now can be used in SP2016
+- MajorVersionLimit and MajorWithMinorVersionsLimit are supported in the minimal (May 2018) version of SP2013 CSOM (Issue 1943) #1994 [tmeckel]
+- Enables Web.RequestAccessEmail for on-premises (both 15.0 and 16.0) #1794 [biste5]
+- Add token parsing in `targetFileName` property of file object #2036 [stevebeauge]
+- Added support to delete search configurations
+- Add support for setting default sharing and sharing permissions on tenant extensions
+- Added ThemeManager class with support for ApplyTheme extension method on Web objects
+- Added delegate for callback on site fully provisioned within the Provisioning Engine
+- Added STS#3 base template for SharePoint Online template extraction
+- Added support to specify the hubsite id when creating modern sites and to set owners when creating a modern team site/O365 group associated site. [gautamdsheth]
+- Added support for hubsiteid when creating modern sites with New-PnPSite
+- Added support to set owners when creating a modern team site with New-PnPSite
+
+### Changed
+
+- Feature/make datarow and file properties consistent #1762 [stevebeauge]
+
+## [3.5.1901.0 - January 2019 release]
+
+### Added
+
+- Added support for modern page section backgrounds
+- Added new 1st party client side web parts to the client side page API - support for provisioning engine will come with next schema update
+- Added support for webparts configured with isDomainIsolated=true - support for provisioning engine will come with next schema update
+- ResetFileToPreviousVersion extension method #2030 [skaggej]
+  
+### Changed
+
+- Fix to make the EveryoneExceptExternalUsers token resolve correctly in all circumstances
+- Fix to ensure TLS settings are correctly configured on certain OS versions (e.g. Windows Server 2012 R2)
+- Fix throttling Retry-After processing, should be in seconds, not in milliseconds
+- Multi-lingual provisioning of list title, extraction of additional navigation node languages #1974 [czullu]
+- Updated logging logic #2018 [jensotto]
+- Performance optimization on for the client side page save action
+
+### Deprecated
+
+## [3.4.1812.1 - December 2018 release]
+
+### Added
+
+- Added support for handling new page header options
+
+### Changed
+
+### Deprecated
+
+- Deprecated Responsive UI extension methods
+  
+## [3.4.1812.0 - December 2018 release]
+
+### Added
+
+- Adding support for a 3rd navigation level in provisioning (for modern pages) #1927 [mbruckner]
+- Ability to update content type properties #1776 [gautamdsheth]
+- Ability to create team with Group #1990 [gautamdsheth]
+- Ability to enable/disable comments, likes and view count on modern site pages #1756 [gautamdsheth]
+- Added support for themes generation via ThemeUtility.GetThemeAsJSON(primaryColor, bodyTextColor, bodyBackgroundColor) [paolopia]
+
+### Changed
+
+- Stability improvements for updates to RoleDefinition update #1846 [sebastianmattar]
+- Prevent access denied exception when provisioning content types #1903 [jensotto]
+- Allow parameters in field defaults #1979 [oozoo-solutions]
+- Add token parsing when provisioning search settings #1727 [jensotto]
+- Fixed issue with calculated fields for non-English site collections #1970 [SchauDK]
+- FixLookupField. If target list is not found, just return fieldXml #1977 [SchauDK]
+- Current user can't be removed from new SecurableObject role assignments #1584 [jensotto]
+- Use Xml token parsing for Xml data #1982 [SchauDK]
+- New CSOM throttling implementation
+- Fix: Token parser #1968 #1972 [SchauDK] [phawrylak]
+- Improve add owner/member on Group creating #1987 #1990 #1991 [sadomovalex] [gautamdsheth]
+- Improved handling of CustomSortOrder for terms in Term Store [TeodoraI]
+- Improved Tenant and ALM handlers to avoid useless processing [gautamdsheth]
+
+## [3.3.1811.0 - November 2018 release]
+
+### Added
+
+- Added support for the `Visibility` attribute for Unified Groups [devinprejean]
 - Added support for language/lcid when creating modern sites using Sites.SiteCollection.CreateAsync method.
 - Added support for FieldIdToken to support customers while migrating across sites and keeping field internal name, but changing field Id.
 - Added support for Single Page WebPart App pages, will be part of SPFX 1.7
+- Added support for Resource Path API in modern pages #1936 [gautamdsheth]
 
 ### Changed
-- Get classification directly from Unified Group instead of a separate call (devinprejean)
 
+- Get classification directly from Unified Group instead of a separate call [devinprejean]
+- Removes 60 minute maximum lifetime for Access Tokens in AuthenticationManager #1957 [koskila]
+- Fix: MaxVersionLimit set to 0 issue [gautamdsheth]
 
 ### Deprecated
 

@@ -1230,7 +1230,6 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region Request Access
-#if !ONPREMISES
         /// <summary>
         /// Disables the request access on the web.
         /// </summary>
@@ -1310,7 +1309,6 @@ namespace Microsoft.SharePoint.Client
 
             return emails;
         }
-#endif
         #endregion
 
         /// <summary>
@@ -1347,7 +1345,7 @@ namespace Microsoft.SharePoint.Client
             return webName;
         }
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         #region ClientSide Package Deployment
         /// <summary>
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)

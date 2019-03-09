@@ -25,6 +25,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     public delegate void ProvisioningMessagesDelegate(string message, ProvisioningMessageType messageType);
 
     /// <summary>
+    /// Message to notify the completed provisioning of a site
+    /// </summary>
+    /// <param name="title">The Title of the provisioned site</param>
+    /// <param name="url">The URL of the provisioned site</param>
+    public delegate void ProvisioningSiteProvisionedDelegate(string title, string url);
+
+    /// <summary>
     /// Handles methods for applying provisioning templates
     /// </summary>
     public partial class ProvisioningTemplateApplyingInformation
@@ -34,7 +41,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public ProvisioningProgressDelegate ProgressDelegate { get; set; }
         public ProvisioningMessagesDelegate MessagesDelegate { get; set; }
-
+        public ProvisioningSiteProvisionedDelegate SiteProvisionedDelegate { get; set; }
+        
         /// <summary>
         /// If true then persists template information
         /// </summary>

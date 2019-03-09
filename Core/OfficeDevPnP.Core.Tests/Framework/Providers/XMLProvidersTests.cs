@@ -2539,35 +2539,36 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsNull(handler.Configuration);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(FileNotFoundException))]
-        [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Deserialize_UnavailableExtensibilityHandlersThrowsException_201605()
-        {
-            XMLTemplateProvider provider =
-                new XMLFileSystemTemplateProvider(
-                    String.Format(@"{0}\..\..\Resources\Templates",
-                    AppDomain.CurrentDomain.BaseDirectory),
-                    "UnavailableExtensibilityHandlerTemplates");
+        // We're not throwing an exception anymore for invalid handlers, so skip these tests
+        //[TestMethod]
+        //[ExpectedException(typeof(FileNotFoundException))]
+        //[TestCategory(TEST_CATEGORY)]
+        //public void XMLSerializer_Deserialize_UnavailableExtensibilityHandlersThrowsException_201605()
+        //{
+        //    XMLTemplateProvider provider =
+        //        new XMLFileSystemTemplateProvider(
+        //            String.Format(@"{0}\..\..\Resources\Templates",
+        //            AppDomain.CurrentDomain.BaseDirectory),
+        //            "UnavailableExtensibilityHandlerTemplates");
 
-            var serializer = new XMLPnPSchemaV201605Serializer();
-            provider.GetTemplate("ProvisioningTemplate-2016-05-Sample.xml", serializer);
-        }
+        //    var serializer = new XMLPnPSchemaV201605Serializer();
+        //    provider.GetTemplate("ProvisioningTemplate-2016-05-Sample.xml", serializer);
+        //}
 
-        [TestMethod]
-        [ExpectedException(typeof(FileNotFoundException))]
-        [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Deserialize_UnavailableExtensibilityHandlersThrowsException_201512()
-        {
-            XMLTemplateProvider provider =
-                new XMLFileSystemTemplateProvider(
-                    String.Format(@"{0}\..\..\Resources\Templates",
-                    AppDomain.CurrentDomain.BaseDirectory),
-                    "UnavailableExtensibilityHandlerTemplates");
+        //[TestMethod]
+        //[ExpectedException(typeof(FileNotFoundException))]
+        //[TestCategory(TEST_CATEGORY)]
+        //public void XMLSerializer_Deserialize_UnavailableExtensibilityHandlersThrowsException_201512()
+        //{
+        //    XMLTemplateProvider provider =
+        //        new XMLFileSystemTemplateProvider(
+        //            String.Format(@"{0}\..\..\Resources\Templates",
+        //            AppDomain.CurrentDomain.BaseDirectory),
+        //            "UnavailableExtensibilityHandlerTemplates");
 
-            var serializer = new XMLPnPSchemaV201512Formatter();
-            provider.GetTemplate("ProvisioningSchema-2015-12-Sample.xml", serializer);
-        }
+        //    var serializer = new XMLPnPSchemaV201512Formatter();
+        //    provider.GetTemplate("ProvisioningSchema-2015-12-Sample.xml", serializer);
+        //}
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]

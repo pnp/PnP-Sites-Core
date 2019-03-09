@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client.DocumentSet;
+using Microsoft.SharePoint.Client.Taxonomy;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -730,6 +731,74 @@ namespace Microsoft.SharePoint.Client
             field.SetJsLinkCustomizations(jsLink);
         }
 
+        public static IDefaultColumnValue GetDefaultColumnValueFromField(this Field field, ClientContext clientContext, string folderRelativePath, string[] value)
+        {
+            field.EnsureProperties(f => f.TypeAsString, f => f.InternalName);
+            IDefaultColumnValue defaultColumnValue = null;
+            if (field.TypeAsString == "Text" ||
+                field.TypeAsString == "Choice" ||
+                field.TypeAsString == "MultiChoice" ||
+                field.TypeAsString == "User" ||
+                field.TypeAsString == "Boolean" ||
+                field.TypeAsString == "DateTime" ||
+                field.TypeAsString == "Number" ||
+                field.TypeAsString == "Currency"
+                )
+            {
+                var values = string.Join(";", value);
+                defaultColumnValue = new DefaultColumnTextValue()
+                {
+                    FieldInternalName = field.InternalName,
+                    FolderRelativePath = folderRelativePath,
+                    Text = values
+                };
+            }
+            else if (field.TypeAsString == "UserMulti")
+            {
+                var values = string.Join(";#", value);
+                defaultColumnValue = new DefaultColumnTextValue()
+                {
+                    FieldInternalName = field.InternalName,
+                    FolderRelativePath = folderRelativePath,
+                    Text = values
+                };
+            }
+            else
+            {
+                List<Term> terms = new List<Term>();
+                foreach (var termString in value)
+                {
+                    Guid termGuid;
+                    Term term;
+                    if (Guid.TryParse(termString, out termGuid))
+                    {
+                        var taxSession = clientContext.Site.GetTaxonomySession();
+                        term = taxSession.GetTerm(termGuid);
+                        clientContext.ExecuteQueryRetry();
+                    }
+                    else
+                    {
+                        term = clientContext.Site.GetTaxonomyItemByPath(termString) as Term;
+                    }
+                    if (term != null)
+                    {
+                        terms.Add(term);
+                    }
+                }
+                if (terms.Any())
+                {
+                    defaultColumnValue = new DefaultColumnTermValue()
+                    {
+                        FieldInternalName = field.InternalName,
+                        FolderRelativePath = folderRelativePath,
+                    };
+                    terms.ForEach(t => ((DefaultColumnTermValue)defaultColumnValue).Terms.Add(t));
+                }
+            }
+
+            return defaultColumnValue;
+        }
+
         #endregion
 
         #region Helper methods
@@ -1419,6 +1488,119 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Update existing content type of a web
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site</param>
+        /// <param name="name">Name of the content type</param>
+        /// <param name="newContentTypeName">Updated name of the content type</param>
+        /// <param name="description">Description for the content type</param>
+        /// <param name="displayFormUrl">Display form url of the content type</param>
+        /// <param name="newFormUrl">New form url of the content type</param>
+        /// <param name="editFormUrl">Edit form url of the content type</param>     
+        /// <param name="documentTemplate">Document template of the content type</param>
+        /// <param name="hidden">Toggle value indicating whether content type should be hidden or not</param>
+        /// <param name="group">Group for the content type</param>
+        /// <returns>The updated content type</returns>
+        public static ContentType UpdateContentTypeByName(this Web web, string name, string newContentTypeName = "", string description = "", string group = "",
+            string displayFormUrl = "", string newFormUrl = "", string editFormUrl = "", string documentTemplate = "", bool? hidden = null)
+        {
+            var contentType = GetContentTypeByName(web, name);
+
+            if (contentType == null)
+            {
+                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.FieldAndContentTypeExtensions_DeleteContentTypeByName, name);
+            }
+            else
+            {
+                UpdateContentTypeInternal(web, contentType, newContentTypeName, description, group, displayFormUrl, newFormUrl, editFormUrl, documentTemplate, hidden);
+            }
+            return contentType;
+        }
+
+        /// <summary>
+        /// Update existing content type of a web
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site</param>
+        /// <param name="Id">Id of the content type</param>
+        /// <param name="newContentTypeName">Updated name of the content type</param>
+        /// <param name="description">Description for the content type</param>
+        /// <param name="group">Group for the content type</param>
+        /// <param name="displayFormUrl">Display form url of the content type</param>
+        /// <param name="newFormUrl">New form url of the content type</param>
+        /// <param name="editFormUrl">Edit form url of the content type</param>     
+        /// <param name="documentTemplate">Document template of the content type</param>
+        /// <param name="hidden">Toggle value indicating whether content type should be hidden or not</param>
+        /// <returns>The updated content type</returns>
+        public static ContentType UpdateContentTypeById(this Web web, string Id, string newContentTypeName = "", string description = "", string group = "",
+            string displayFormUrl = "", string newFormUrl = "", string editFormUrl = "", string documentTemplate = "", bool? hidden = null)
+        {
+            var contentType = GetContentTypeById(web, Id);
+
+            if (contentType == null)
+            {
+                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.FieldAndContentTypeExtensions_DeleteContentTypeByName, Id);
+            }
+            else
+            {
+                UpdateContentTypeInternal(web, contentType, newContentTypeName, description, group, displayFormUrl, newFormUrl, editFormUrl, documentTemplate, hidden);
+            }
+            return contentType;
+        }
+
+        private static ContentType UpdateContentTypeInternal(this Web web, ContentType contentType, string newContentTypeName = "", string description = "", string group = "",
+            string displayFormUrl = "", string newFormUrl = "", string editFormUrl = "", string documentTemplate = "", bool? hidden = null)
+        {
+            bool isDirty = false;
+
+            if (!string.IsNullOrEmpty(newContentTypeName) && !contentType.Name.Equals(newContentTypeName, StringComparison.OrdinalIgnoreCase))
+            {
+                contentType.Name = newContentTypeName;
+                isDirty = true;
+            }
+            if (!string.IsNullOrEmpty(description))
+            {
+                contentType.Description = description;
+                isDirty = true;
+            }
+            if (!string.IsNullOrEmpty(group) && !contentType.Group.Equals(group, StringComparison.OrdinalIgnoreCase))
+            {
+                contentType.Group = group;
+                isDirty = true;
+            }
+            if (!contentType.DisplayFormUrl.Equals(displayFormUrl, StringComparison.OrdinalIgnoreCase))
+            {
+                contentType.DisplayFormUrl = displayFormUrl;
+                isDirty = true;
+            }
+            if (!contentType.NewFormUrl.Equals(newFormUrl, StringComparison.OrdinalIgnoreCase))
+            {
+                contentType.NewFormUrl = newFormUrl;
+                isDirty = true;
+            }
+            if (!contentType.EditFormUrl.Equals(editFormUrl, StringComparison.OrdinalIgnoreCase))
+            {
+                contentType.EditFormUrl = editFormUrl;
+                isDirty = true;
+            }
+            if (!string.IsNullOrEmpty(documentTemplate) && !contentType.DocumentTemplate.Equals(documentTemplate, StringComparison.OrdinalIgnoreCase))
+            {
+                contentType.DocumentTemplate = documentTemplate;
+                isDirty = true;
+            }
+            if (hidden.HasValue)
+            {
+                contentType.Hidden = hidden.Value;
+                isDirty = true;
+            }
+            if (isDirty)
+            {
+                contentType.Update(true);
+                web.Context.ExecuteQueryRetry();
+            }
+            return contentType;
+        }
+
+        /// <summary>
         /// Deletes a content type from the web by name
         /// </summary>
         /// <param name="web">Web to delete the content type from</param>
@@ -1794,7 +1976,7 @@ namespace Microsoft.SharePoint.Client
                 bool isDirty = false;
                 foreach (ContentType contentType in contentTypes)
                 {
-                    list.EnsureProperty(ct => ct.Id);
+                    contentType.EnsureProperty(ct => ct.Id);
 
                     if (!uniqueContentTypeOrder.Contains(contentType.Id, new ContentTypeIdComparer()))
                     {
@@ -1837,7 +2019,7 @@ namespace Microsoft.SharePoint.Client
             }
             foreach (ContentType contentType in contentTypes)
             {
-                list.EnsureProperty(ct => ct.Id);
+                contentType.EnsureProperty(ct => ct.Id);
 
                 ContentTypeId contentTypeIdToRemove = uniqueContentTypeOrder.FirstOrDefault(ctId => ctId.StringValue.Equals(contentType.Id.StringValue, StringComparison.OrdinalIgnoreCase));
                 if (contentTypeIdToRemove != null)
