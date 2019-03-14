@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Added SyncToTeams method on the app ALM manager to synchronize an SPFX solution to the Microsoft Teams App Catalog
+
 ### Changed
 
 ## [3.7.1903.0 - March 2019 release]
