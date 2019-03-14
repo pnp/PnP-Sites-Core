@@ -509,7 +509,11 @@ namespace OfficeDevPnP.Core.ALM
             return await BaseRequest(id, AppManagerAction.Remove, true, null, scope);
         }
 
-
+        /// <summary>
+        /// Synchronize an app from the tenant app catalog with the teams app catalog
+        /// </summary>
+        /// <param name="id">The unique id of the app. Notice that this is not the product id as listen in the app catalog</param>
+        /// <returns></returns>
         public async Task<bool> SyncToTeamsAsync(Guid id)
         {
             if (id == Guid.Empty)
@@ -522,23 +526,38 @@ namespace OfficeDevPnP.Core.ALM
             return await SyncToTeamsImplementation(id);
         }
 
-        public async Task<bool> SyncToTeamsAsync(AppMetadata app)
+        /// <summary>
+        /// Synchronize an app from the tenant app catalog with the teams app catalog
+        /// </summary>
+        /// <param name="appMetadata">The app metadata object of the app to remove.</param>
+        /// <returns></returns>
+        public async Task<bool> SyncToTeamsAsync(AppMetadata appMetadata)
         {
-            if (app == null || app.Id == null)
+            if (appMetadata == null || appMetadata.Id == null)
             {
-                throw new ArgumentException(nameof(app));
+                throw new ArgumentException(nameof(appMetadata));
             }
 
             await new SynchronizationContextRemover();
 
-            return await SyncToTeamsImplementation(app.Id);
+            return await SyncToTeamsImplementation(appMetadata.Id);
         }
 
+        /// <summary>
+        /// Synchronize an app from the tenant app catalog with the teams app catalog
+        /// </summary>
+        /// <param name="id">The unique id of the app. Notice that this is not the product id as listen in the app catalog</param>
+        /// <returns></returns>
         public bool SyncToTeams(Guid id)
         {
             return Task.Run(() => SyncToTeamsAsync(id)).GetAwaiter().GetResult();
         }
 
+        /// <summary>
+        /// Synchronize an app from the tenant app catalog with the teams app catalog
+        /// </summary>
+        /// <param name="appMetadata">The app metadata object of the app to remove.</param>
+        /// <returns></returns>
         public bool SyncToTeams(AppMetadata appMetadata)
         {
             return Task.Run(() => SyncToTeamsAsync(appMetadata)).GetAwaiter().GetResult();
