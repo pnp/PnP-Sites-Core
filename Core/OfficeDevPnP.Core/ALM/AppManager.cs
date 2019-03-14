@@ -29,7 +29,7 @@ namespace OfficeDevPnP.Core.ALM
             Remove,
             Deploy,
             Upgrade,
-            Uninstall,
+            Uninstall
         }
 
         public AppManager(ClientContext context)
