@@ -935,9 +935,18 @@ namespace Microsoft.SharePoint.Client
             {
                 optionalParams.Classification = siteCollectionGroupifyInformation.Classification;
             }
+
+            var creationOptionsValues = new List<string>();
             if (siteCollectionGroupifyInformation.KeepOldHomePage)
             {
-                optionalParams.CreationOptions = new string[] { "SharePointKeepOldHomepage" };
+                creationOptionsValues.Add("SharePointKeepOldHomepage");
+            }
+            creationOptionsValues.Add($"HubSiteId:{siteCollectionGroupifyInformation.HubSiteId}");
+            optionalParams.CreationOptions = creationOptionsValues.ToArray();
+
+            if (siteCollectionGroupifyInformation.Owners != null && siteCollectionGroupifyInformation.Owners.Length > 0)
+            {
+                optionalParams.Owners = siteCollectionGroupifyInformation.Owners;
             }
 
             tenant.CreateGroupForSite(siteUrl, siteCollectionGroupifyInformation.DisplayName, siteCollectionGroupifyInformation.Alias, siteCollectionGroupifyInformation.IsPublic, optionalParams);
