@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 {
     public static class ListItemUtilities
     {
-        private readonly static string[] WriteableReadOnlyFields = new string[] { "publishingpagelayout", "contenttypeid" };
+        private readonly static string[] WriteableReadOnlyFields = new string[] { "publishingpagelayout", "contenttypeid", "description" };
 
         public static FieldUpdateValue ParseFieldValue(Web web, string fieldValue, Field dataField)
         {
