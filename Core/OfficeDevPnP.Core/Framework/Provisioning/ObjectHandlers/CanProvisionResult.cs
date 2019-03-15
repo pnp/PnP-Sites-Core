@@ -33,37 +33,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public String Source { get; set; }
 
         /// <summary>
-        /// Declares the Severity of the Issue
-        /// </summary>
-        public CanProvisionIssueSeverity Severity { get; set; }
-
-        /// <summary>
         /// Provides a text-based description of the Issue
         /// </summary>
         public String Message { get; set; }
 
         /// <summary>
+        /// Provides a unique Tag for the current issue
+        /// </summary>
+        public Int32 Tag { get; set; }
+
+        /// <summary>
         /// Provides the Inner Exception for a blocking (Severity = Error) Issue
         /// </summary>
         public Exception InnerException { get; set; }
-    }
-
-    /// <summary>
-    /// Defines the Severity of a CanProvision Issue
-    /// </summary>
-    public enum CanProvisionIssueSeverity
-    {
-        /// <summary>
-        /// The CanProvision Issue is not blocking, it is just an informative issue, the provisioning can proceed
-        /// </summary>
-        Information,
-        /// <summary>
-        /// The CanProvision Issue is not blocking, but the provisioning can proceed upon user's confirmation
-        /// </summary>
-        Warning,
-        /// <summary>
-        /// The CanProvision Issue is blocking, the provisioning cannot proceed
-        /// </summary>
-        Error,
     }
 }

@@ -375,6 +375,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (!canProvisionResult.CanProvision)
                 {
                     messagesDelegate("The current template cannot be provisioned due to some missing requirements!", ProvisioningMessageType.Error);
+                    // canProvisionResultDelegate
                     // TODO: Do we want to output here all the issues?
                     // TODO: Or do we want to have a dedicated delegate to let the users free to process or not to process the issues with their own logic?
                 }
