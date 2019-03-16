@@ -15,6 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #region Private Members
 
         private CanvasControlCollection _controls;
+        private int zoneEmphasis;
 
         #endregion
 
@@ -38,6 +39,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Defines the type of the Canvas section for a Client-side Page.
         /// </summary>
         public CanvasSectionType Type { get; set; }
+
+        /// <summary>
+        /// Color emphasis of the section 
+        /// </summary>
+        public int ZoneEmphasis
+        {
+            get
+            {
+                return this.zoneEmphasis;
+            }
+            set
+            {
+                this.zoneEmphasis = value;
+            }
+        }
 
         #endregion
 
@@ -64,7 +80,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (String.Format("{0}|{1}|{2}|",
                 this.Controls.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 Order.GetHashCode(),
-                Type.GetHashCode()
+                Type.GetHashCode(),
+                ZoneEmphasis.GetHashCode()
             ).GetHashCode());
         }
 
@@ -96,7 +113,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             return (this.Controls.DeepEquals(other.Controls) &&
                 this.Order == other.Order &&
-                this.Type == other.Type
+                this.Type == other.Type &&
+                this.zoneEmphasis == other.zoneEmphasis
                 );
         }
 
