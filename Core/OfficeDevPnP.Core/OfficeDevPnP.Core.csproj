@@ -627,6 +627,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-05.cs">
       <DependentUpon>ProvisioningSchema-2018-05.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.extensions.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.cs">
       <DependentUpon>ProvisioningSchema-2018-07.xsd</DependentUpon>
     </Compile>
