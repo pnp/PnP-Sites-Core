@@ -67,8 +67,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             Boolean result = true;
             xml.Validate(schemas, (o, e) =>
             {
-                Diagnostics.Log.Error(e.Exception, "SchemaFormatter", "Template is not valid: {0}", e.Message);
-                result = false;
+                //temporary fix - ignore ZoneEmphasis until it's included in schema-xsd with CanvasSection
+                /*
+                 <xsd:attribute name="ZoneEmphasis" type="xsd:int" use="optional">
+                    <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                        The ZoneEmphasis of the Canvas Section for a Client-side Page.
+                    </xsd:documentation>
+                    </xsd:annotation>
+                </xsd:attribute>
+                 */
+                string localName = (o as XAttribute)?.Name.LocalName;
+
+                if (!(!string.IsNullOrWhiteSpace(localName) && localName.Equals("ZoneEmphasis", StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    Diagnostics.Log.Error(e.Exception, "SchemaFormatter", "Template is not valid: {0}", e.Message);
+                    result = false;
+                }
             });
 
             return (result);
