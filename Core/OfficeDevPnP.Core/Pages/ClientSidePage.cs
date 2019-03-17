@@ -324,9 +324,9 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         /// <param name="template">The <see cref="CanvasSectionTemplate"/> type of the section</param>
         /// <param name="order">Controls the order of the new section</param>
-        public void AddSection(CanvasSectionTemplate template, float order)
+        public void AddSection(CanvasSectionTemplate template, float order, int zoneEmphasis=0)
         {
-            var section = new CanvasSection(this, template, order);
+            var section = new CanvasSection(this, template, order, zoneEmphasis);
             AddSection(section);
         }
 
