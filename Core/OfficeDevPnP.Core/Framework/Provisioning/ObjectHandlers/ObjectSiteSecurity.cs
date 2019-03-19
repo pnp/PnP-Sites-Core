@@ -60,6 +60,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             web.AssociatedOwnerGroup = EnsureGroup(web, parsedAssociatedOwnerGroupName);
                         }
 
+                        web.AssociatedOwnerGroup.Update();
+                        web.Context.ExecuteQueryRetry(10, 1000);
                         webNeedsUpdate = true;
                     }
 
@@ -71,9 +73,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            web.AssociatedMemberGroup = EnsureGroup(web, parsedAssociatedMemberGroupName);
+                            web.AssociatedMemberGroup = EnsureGroup(web, parsedAssociatedMemberGroupName);                            
                         }
 
+                        web.AssociatedMemberGroup.Update();
+                        web.Context.ExecuteQueryRetry(10, 1000);
                         webNeedsUpdate = true;
                     }
 
@@ -87,6 +91,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             web.AssociatedVisitorGroup = EnsureGroup(web, parsedAssociatedVisitorGroupName);
                         }
+
+                        web.AssociatedVisitorGroup.Update();
+                        web.Context.ExecuteQueryRetry(10, 1000);
 
                         webNeedsUpdate = true;
                     }
