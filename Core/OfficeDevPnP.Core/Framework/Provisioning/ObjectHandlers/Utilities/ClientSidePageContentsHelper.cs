@@ -219,17 +219,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             break;
                                     }
 
+                                    string jsonControlData = "\"id\": \"" + (control as Pages.ClientSideWebPart).WebPartId + "\", \"instanceId\": \"" + (control as Pages.ClientSideWebPart).InstanceId + "\", \"title\": \"" + (control as Pages.ClientSideWebPart).Title + "\", \"description\": \"" + (control as Pages.ClientSideWebPart).Description + "\", \"dataVersion\": \"" + (control as Pages.ClientSideWebPart).DataVersion + "\", \"properties\": " + (control as Pages.ClientSideWebPart).PropertiesJson + "";
+
                                     // set the control properties
                                     if ((control as Pages.ClientSideWebPart).ServerProcessedContent != null)
                                     {
                                         // If we have serverProcessedContent then also export that one, it's important as some controls depend on this information to be present
                                         string serverProcessedContent = (control as Pages.ClientSideWebPart).ServerProcessedContent.ToString(Formatting.None);
-                                        controlInstance.JsonControlData = "{ \"dataVersion\": \"" + (control as Pages.ClientSideWebPart).DataVersion + "\", \"serverProcessedContent\": " + serverProcessedContent + ", \"properties\": " + (control as Pages.ClientSideWebPart).PropertiesJson + "}";
+                                        jsonControlData = jsonControlData + ", \"serverProcessedContent\": " + serverProcessedContent + "";
                                     }
-                                    else
+
+                                    if ((control as Pages.ClientSideWebPart).DynamicDataPaths != null)
                                     {
-                                        controlInstance.JsonControlData = "{ \"dataVersion\": \"" + (control as Pages.ClientSideWebPart).DataVersion + "\", \"properties\": " + (control as Pages.ClientSideWebPart).PropertiesJson + "}";
+                                        // If we have serverProcessedContent then also export that one, it's important as some controls depend on this information to be present
+                                        string dynamicDataPaths = (control as Pages.ClientSideWebPart).DynamicDataPaths.ToString(Formatting.None);
+                                        jsonControlData = jsonControlData + ", \"dynamicDataPaths\": " + dynamicDataPaths + "";
                                     }
+
+
+                                    if ((control as Pages.ClientSideWebPart).DynamicDataValues != null)
+                                    {
+                                        // If we have serverProcessedContent then also export that one, it's important as some controls depend on this information to be present
+                                        string dynamicDataValues = (control as Pages.ClientSideWebPart).DynamicDataValues.ToString(Formatting.None);
+                                        jsonControlData = jsonControlData + ", \"dynamicDataValues\": " + dynamicDataValues + "";
+                                    }
+
+                                    controlInstance.JsonControlData = "{" + jsonControlData + "}";
 
                                     // Tokenize the JsonControlData
                                     controlInstance.JsonControlData = TokenizeJsonControlData(web, controlInstance.JsonControlData);
