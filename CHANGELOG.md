@@ -14,7 +14,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
-- Fix: TokenParser to resolve tokens directly following each other {hosturl}{site} #2111
+- Fix: TokenParser to resolve tokens directly following each other {hosturl}{site} #2111 [czullu]
+- Fix: ClientSidePage description provisioning #2112 [czullu]
 
 ## [3.7.1903.0 - March 2019 release]
 
