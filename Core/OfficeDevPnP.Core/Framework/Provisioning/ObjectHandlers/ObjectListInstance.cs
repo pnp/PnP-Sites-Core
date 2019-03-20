@@ -2295,7 +2295,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return list;
         }
 
-        private List<string> SpecialFields => new List<string>() { "LikedBy" };
+        private List<string> SpecialFields => new List<string>() { "LikedBy", "RatedBy", "Ratings" };
 
         private ListInstance ExtractFields(Web web, List siteList, List<FieldRef> contentTypeFields, ListInstance list, List<List> lists, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
