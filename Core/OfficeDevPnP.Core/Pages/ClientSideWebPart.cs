@@ -61,6 +61,9 @@ namespace OfficeDevPnP.Core.Pages
             this.SetPropertiesJson("{}");
             this.webPartPreviewImage = "";
             this.usingSpControlDataOnly = false;
+            this.dynamicDataPaths = JObject.Parse("{}");
+            this.dynamicDataValues = JObject.Parse("{}");
+            this.serverProcessedContent = JObject.Parse("{}");
         }
 
         /// <summary>
