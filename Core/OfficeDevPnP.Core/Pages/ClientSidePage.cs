@@ -785,7 +785,7 @@ namespace OfficeDevPnP.Core.Pages
 
 #if !SP2019
                 // AuthorByline depends on a field holding the author values
-                if (this.pageHeader.AuthorByLineId > -1 && item.FieldValues.ContainsKey(ClientSidePage._AuthorByline))
+                if (this.pageHeader.AuthorByLineId > -1 /*&& item.FieldValues.ContainsKey(ClientSidePage._AuthorByline)*/)
                 {
                     FieldUserValue[] userValueCollection = new FieldUserValue[1];
                     FieldUserValue fieldUserVal = new FieldUserValue
@@ -797,7 +797,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
 
                 // Topic header needs to be persisted in a field
-                if (!string.IsNullOrEmpty(this.pageHeader.TopicHeader) && item.FieldValues.ContainsKey(ClientSidePage._TopicHeader))
+                if (!string.IsNullOrEmpty(this.pageHeader.TopicHeader) /*&& item.FieldValues.ContainsKey(ClientSidePage._TopicHeader)*/)
                 {
                     item[ClientSidePage._TopicHeader] = this.PageHeader.TopicHeader;
                 }
