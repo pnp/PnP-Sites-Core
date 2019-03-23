@@ -54,13 +54,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (string.IsNullOrEmpty(parsedAssociatedOwnerGroupName))
                         {
                             web.AssociatedOwnerGroup = null;
+                            webNeedsUpdate = true;
                         }
                         else
                         {
-                            web.AssociatedOwnerGroup = EnsureGroup(web, parsedAssociatedOwnerGroupName);
-                        }
+                            if (!web.GroupExists(parsedAssociatedOwnerGroupName))
+                            {
+                                web.AssociatedOwnerGroup = EnsureGroup(web, parsedAssociatedOwnerGroupName);
+                                webNeedsUpdate = true;
+                            }
+                            else if (!web.AssociatedOwnerGroup.ServerObjectIsNull.Value)
+                            {
+                                if (web.AssociatedOwnerGroup.Title != parsedAssociatedOwnerGroupName)
+                                {
+                                    var updatedOwnerGroup = web.SiteGroups.GetByName(parsedAssociatedOwnerGroupName);
+                                    web.Context.Load(updatedOwnerGroup);
+                                    web.Context.ExecuteQueryRetry();
 
-                        webNeedsUpdate = true;
+                                    web.AssociatedOwnerGroup = updatedOwnerGroup;
+                                    webNeedsUpdate = true;
+                                }
+                            }
+                        }
+                        if (webNeedsUpdate)
+                        {
+                            // Trigger the creation and setting of the associated owner group
+                            web.Update();
+                            web.Context.ExecuteQueryRetry();
+                        }
                     }
 
                     if (parsedAssociatedMemberGroupName != null)
@@ -68,13 +89,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (string.IsNullOrEmpty(parsedAssociatedMemberGroupName))
                         {
                             web.AssociatedMemberGroup = null;
+                            webNeedsUpdate = true;
                         }
                         else
                         {
-                            web.AssociatedMemberGroup = EnsureGroup(web, parsedAssociatedMemberGroupName);
+                            if (!web.GroupExists(parsedAssociatedMemberGroupName))
+                            {
+                                web.AssociatedMemberGroup = EnsureGroup(web, parsedAssociatedMemberGroupName);
+                                webNeedsUpdate = true;
+                            }
+                            else if (!web.AssociatedMemberGroup.ServerObjectIsNull.Value)
+                            {
+                                if (web.AssociatedMemberGroup.Title != parsedAssociatedMemberGroupName)
+                                {
+                                    var updatedMemberGroup = web.SiteGroups.GetByName(parsedAssociatedMemberGroupName);
+                                    web.Context.Load(updatedMemberGroup);
+                                    web.Context.ExecuteQueryRetry();
+
+                                    web.AssociatedMemberGroup = updatedMemberGroup;
+                                    webNeedsUpdate = true;
+                                }
+                            }
                         }
 
-                        webNeedsUpdate = true;
+                        if (webNeedsUpdate)
+                        {
+                            // Trigger the creation and setting of the associated member group
+                            web.Update();
+                            web.Context.ExecuteQueryRetry();
+                        }
                     }
 
                     if (parsedAssociatedVisitorGroupName != null)
@@ -82,20 +125,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (string.IsNullOrEmpty(parsedAssociatedVisitorGroupName))
                         {
                             web.AssociatedVisitorGroup = null;
+                            webNeedsUpdate = true;
                         }
                         else
                         {
-                            web.AssociatedVisitorGroup = EnsureGroup(web, parsedAssociatedVisitorGroupName);
+                            if (!web.GroupExists(parsedAssociatedVisitorGroupName))
+                            {
+                                web.AssociatedVisitorGroup = EnsureGroup(web, parsedAssociatedVisitorGroupName);
+                                webNeedsUpdate = true;
+                            }
+                            else if (!web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
+                            {
+                                if (web.AssociatedVisitorGroup.Title != parsedAssociatedVisitorGroupName)
+                                {
+                                    var updatedVisitorGroup = web.SiteGroups.GetByName(parsedAssociatedVisitorGroupName);
+                                    web.Context.Load(updatedVisitorGroup);
+                                    web.Context.ExecuteQueryRetry();
+
+                                    web.AssociatedVisitorGroup = updatedVisitorGroup;
+                                    webNeedsUpdate = true;
+                                }
+                            }
                         }
-
-                        webNeedsUpdate = true;
-                    }
-
-                    if (webNeedsUpdate)
-                    {
-                        // Trigger the creation and setting of the associated groups
-                        web.Update();
-                        web.Context.ExecuteQueryRetry();
+                        if (webNeedsUpdate)
+                        {
+                            // Trigger the creation and setting of the associated visitor group
+                            web.Update();
+                            web.Context.ExecuteQueryRetry();
+                        }
                     }
                 }
 
@@ -141,7 +198,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var siteGroup in siteSecurity.SiteGroups
         .Sort<SiteGroup>(
-            _grp => {
+            _grp =>
+            {
                 string groupOwner = _grp.Owner;
                 if (string.IsNullOrWhiteSpace(groupOwner)
                     || "SHAREPOINT\\system".Equals(groupOwner, StringComparison.OrdinalIgnoreCase)
