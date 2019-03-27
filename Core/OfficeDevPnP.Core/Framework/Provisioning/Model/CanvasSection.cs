@@ -39,6 +39,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public CanvasSectionType Type { get; set; }
 
+        /// <summary>
+        /// Defines the color emphasis of the section 
+        /// </summary>
+        public int ZoneEmphasis { get; set; }
+
         #endregion
 
         #region Constructors
@@ -96,7 +101,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             return (this.Controls.DeepEquals(other.Controls) &&
                 this.Order == other.Order &&
-                this.Type == other.Type
+                this.Type == other.Type &&
+                this.ZoneEmphasis == other.ZoneEmphasis
                 );
         }
 

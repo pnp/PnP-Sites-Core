@@ -38,7 +38,8 @@ namespace OfficeDevPnP.Core.Pages
         /// <param name="page"><see cref="ClientSidePage"/> instance that holds this section</param>
         /// <param name="canvasSectionTemplate">Type of section to create</param>
         /// <param name="order">Order of this section in the collection of sections on the page</param>
-        public CanvasSection(ClientSidePage page, CanvasSectionTemplate canvasSectionTemplate, float order)
+        /// <param name="zoneEmphasis">The color emphasis of this section</param>
+        public CanvasSection(ClientSidePage page, CanvasSectionTemplate canvasSectionTemplate, float order, int zoneEmphasis)
         {
             if (page == null)
             {
@@ -46,7 +47,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             this.page = page;
-            this.zoneEmphasis = 0;
+            this.zoneEmphasis = zoneEmphasis;
             Type = canvasSectionTemplate;
             Order = order;
 

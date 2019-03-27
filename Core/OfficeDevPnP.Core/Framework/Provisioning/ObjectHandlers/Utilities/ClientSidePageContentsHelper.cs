@@ -74,6 +74,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         var sectionInstance = new CanvasSection()
                         {
                             Order = section.Order,
+                            ZoneEmphasis = section.ZoneEmphasis
                         };
 
                         // Set section type

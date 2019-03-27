@@ -223,25 +223,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         switch (section.Type)
                         {
                             case CanvasSectionType.OneColumn:
-                                page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order);
+                                page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order, section.ZoneEmphasis);
                                 break;
                             case CanvasSectionType.OneColumnFullWidth:
-                                page.AddSection(Pages.CanvasSectionTemplate.OneColumnFullWidth, section.Order);
+                                page.AddSection(Pages.CanvasSectionTemplate.OneColumnFullWidth, section.Order, section.ZoneEmphasis);
                                 break;
                             case CanvasSectionType.TwoColumn:
-                                page.AddSection(Pages.CanvasSectionTemplate.TwoColumn, section.Order);
+                                page.AddSection(Pages.CanvasSectionTemplate.TwoColumn, section.Order, section.ZoneEmphasis);
                                 break;
                             case CanvasSectionType.ThreeColumn:
-                                page.AddSection(Pages.CanvasSectionTemplate.ThreeColumn, section.Order);
+                                page.AddSection(Pages.CanvasSectionTemplate.ThreeColumn, section.Order, section.ZoneEmphasis);
                                 break;
                             case CanvasSectionType.TwoColumnLeft:
-                                page.AddSection(Pages.CanvasSectionTemplate.TwoColumnLeft, section.Order);
+                                page.AddSection(Pages.CanvasSectionTemplate.TwoColumnLeft, section.Order, section.ZoneEmphasis);
                                 break;
                             case CanvasSectionType.TwoColumnRight:
-                                page.AddSection(Pages.CanvasSectionTemplate.TwoColumnRight, section.Order);
+                                page.AddSection(Pages.CanvasSectionTemplate.TwoColumnRight, section.Order, section.ZoneEmphasis);
                                 break;
                             default:
-                                page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order);
+                                page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order, section.ZoneEmphasis);
                                 break;
                         }
 

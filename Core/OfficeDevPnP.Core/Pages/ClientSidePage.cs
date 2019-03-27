@@ -245,7 +245,7 @@ namespace OfficeDevPnP.Core.Pages
                     // Add a default section if there wasn't one yet created
                     if (this.sections.Count == 0)
                     {
-                        this.sections.Add(new CanvasSection(this, CanvasSectionTemplate.OneColumn, 0));
+                        this.sections.Add(new CanvasSection(this, CanvasSectionTemplate.OneColumn, 0, 0));
                     }
 
                     return sections.First();
@@ -260,7 +260,7 @@ namespace OfficeDevPnP.Core.Pages
                     {
                         if (this.sections.Count == 0)
                         {
-                            this.sections.Add(new CanvasSection(this, CanvasSectionTemplate.OneColumn, 0));
+                            this.sections.Add(new CanvasSection(this, CanvasSectionTemplate.OneColumn, 0, 0));
                         }
 
                         return sections.First();
@@ -324,9 +324,10 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         /// <param name="template">The <see cref="CanvasSectionTemplate"/> type of the section</param>
         /// <param name="order">Controls the order of the new section</param>
-        public void AddSection(CanvasSectionTemplate template, float order)
+        /// <param name="zoneEmphasis">Controls the color emphasis of the new section</param>
+        public void AddSection(CanvasSectionTemplate template, float order, int zoneEmphasis)
         {
-            var section = new CanvasSection(this, template, order);
+            var section = new CanvasSection(this, template, order, zoneEmphasis);
             AddSection(section);
         }
 
