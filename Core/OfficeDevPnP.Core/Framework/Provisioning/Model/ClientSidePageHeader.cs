@@ -33,6 +33,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public Double? TranslateY { get; set; }
 
+        /// <summary>
+        /// Defines the layout used inside the header for the client side page.
+        /// </summary>
+        public ClientSidePageHeaderLayoutType LayoutType { get; set; }
+
         #endregion
 
         #region Comparison code
@@ -80,7 +85,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (this.Type == other.Type &&
                 this.ServerRelativeImageUrl == other.ServerRelativeImageUrl &&
                 this.TranslateX == other.TranslateX &&
-                this.TranslateY == other.TranslateY
+                this.TranslateY == other.TranslateY &&
+                this.LayoutType == other.LayoutType
                 );
         }
 
@@ -104,5 +110,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// The client side page has a custom header
         /// </summary>
         Custom,
+    }
+
+    /// <summary>
+    /// Defines the possible values for the client side page title area layout
+    /// </summary>
+    public enum ClientSidePageHeaderLayoutType
+    {
+        /// <summary>
+        /// The client side page title area has image and title
+        /// </summary>
+        FullWidthImage,
+        /// <summary>
+        /// The client side page title area is plain
+        /// </summary>
+        NoImage,
+        /// <summary>
+        /// The client side page title area has a colar block
+        /// </summary>
+        ColorBlock,
+        /// <summary>
+        /// The client side page title area has overlap
+        /// </summary>
+        CutInShape
     }
 }

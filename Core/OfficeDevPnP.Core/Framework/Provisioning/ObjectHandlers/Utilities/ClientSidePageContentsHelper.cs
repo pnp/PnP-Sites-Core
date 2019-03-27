@@ -62,7 +62,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             Type = (ClientSidePageHeaderType)Enum.Parse(typeof(Pages.ClientSidePageHeaderType),pageToExtract.PageHeader.Type.ToString()),
                             ServerRelativeImageUrl = TokenizeJsonControlData(web, pageToExtract.PageHeader.ImageServerRelativeUrl),
                             TranslateX = pageToExtract.PageHeader.TranslateX,
-                            TranslateY = pageToExtract.PageHeader.TranslateY
+                            TranslateY = pageToExtract.PageHeader.TranslateY,
+                            LayoutType = (ClientSidePageHeaderLayoutType) Enum.Parse(typeof(Pages.ClientSidePageHeaderLayoutType), pageToExtract.PageHeader.LayoutType.ToString())
                         };
                         extractedPageInstance.Header = extractedHeader;
                     }

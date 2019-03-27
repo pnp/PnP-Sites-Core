@@ -187,6 +187,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     break;
                                 }
                         }
+
+                        switch (clientSidePage.Header.LayoutType)
+                        {
+                            case ClientSidePageHeaderLayoutType.FullWidthImage:
+                                page.PageHeader.LayoutType = Pages.ClientSidePageHeaderLayoutType.FullWidthImage;
+                                break;
+                            case ClientSidePageHeaderLayoutType.NoImage:
+                                page.PageHeader.LayoutType = Pages.ClientSidePageHeaderLayoutType.NoImage;
+                                break;
+                            case ClientSidePageHeaderLayoutType.ColorBlock:
+                                page.PageHeader.LayoutType = Pages.ClientSidePageHeaderLayoutType.ColorBlock;
+                                break;
+                            case ClientSidePageHeaderLayoutType.CutInShape:
+                                page.PageHeader.LayoutType = Pages.ClientSidePageHeaderLayoutType.CutInShape;
+                                break;
+                            default:
+                                break;
+                        }
                     }
 
                     // Set page layout
