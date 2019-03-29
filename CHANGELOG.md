@@ -22,6 +22,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix : Skip creation of associated groups if they already exist #2128 [gautamdsheth]
 - Fix: Added capability to set the private CDN orgins and policies #2141 [gautamdsheth]
 - EnsureUser for external users #2136 [schaudk]
+- Don't fail on modern page save when the provided header image url is living in a different web then the client side page
 
 ## [3.7.1903.0 - March 2019 release]
 

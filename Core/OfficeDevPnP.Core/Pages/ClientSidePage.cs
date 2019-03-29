@@ -1306,7 +1306,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 #endregion
 
-                #region Internal and private methods
+#region Internal and private methods
         private void EnableCommentsImplementation(bool enable)
         {
             // ensure we do have the page list item loaded
