@@ -30,6 +30,18 @@ namespace OfficeDevPnP.Core.Utilities.Themes
             return Task.Run(() => ApplyThemeAsync(web, jsonTheme, themeName)).GetAwaiter().GetResult();
         }
 
+        /// <summary>
+        /// Extension method to apply an out of the box modern theme to a target web
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="theme">Name of the modern theme</param>
+        /// <returns></returns>
+        public static Boolean ApplyOOBModernTheme(this Web web, OOBTheme theme)
+        {
+            string jsonTheme = ThemeUtility.GetOOBModernThemeJson(theme);
+            return Task.Run(() => ApplyThemeAsync(web, jsonTheme, theme.ToString())).GetAwaiter().GetResult();
+        }
+
         public static async Task<Boolean> ApplyThemeAsync(Web web, String jsonTheme, String themeName = null)
         {
             if (web == null)
