@@ -358,7 +358,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         throw new Exception(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_Field_schema_has_no_ID_attribute___0_, field.SchemaXml));
                     }
                     var id = fieldElement.Attribute("ID").Value;
-                    var internalName = fieldElement.Attribute("InternalName")?.Value;
+                    var internalName = fieldElement.Attribute("InternalName")?.Value ?? fieldElement.Attribute("Name")?.Value;
 
                     currentFieldIndex++;
                     WriteMessage($"List Columns for list {listInfo.TemplateList.Title}|{internalName ?? id}|{currentFieldIndex}|{fieldsToProcess.Length}", ProvisioningMessageType.Progress);
