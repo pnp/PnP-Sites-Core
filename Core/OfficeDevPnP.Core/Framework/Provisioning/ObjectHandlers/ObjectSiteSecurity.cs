@@ -41,7 +41,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var siteSecurity = template.Security;
 
-                if (web.EnsureProperty(w => w.HasUniqueRoleAssignments))
+                if (web.EnsureProperty(w => w.HasUniqueRoleAssignments) && !web.IsNoScriptSite())
                 {
                     string parsedAssociatedOwnerGroupName = parser.ParseString(template.Security.AssociatedOwnerGroup);
                     string parsedAssociatedMemberGroupName = parser.ParseString(template.Security.AssociatedMemberGroup);
