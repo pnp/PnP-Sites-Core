@@ -6,6 +6,7 @@ The NuGet packages can be found at:
 - [SharePointPnPCoreOnline](https://www.nuget.org/packages/SharePointPnPCoreOnline/)
 - [SharePointPnPCore2013](https://www.nuget.org/packages/SharePointPnPCore2013/)
 - [SharePointPnPCore2016](https://www.nuget.org/packages/SharePointPnPCore2016/)
+- [SharePointPnPCore2019](https://www.nuget.org/packages/SharePointPnPCore2019/)
 
 We will be updating the package during monthly master merges with the latest component version. Please give us feedback and input on the package using [SharePoint Developer Group](http://aka.ms/sppnp-community) at Microsoft Tech Community.
 
