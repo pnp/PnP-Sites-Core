@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Failure with RatedBy and Ratings #2113 [czullu]
 - Ensure Field InternalName is correctly retrieved when logging provisision progress #2140 [NicolajHedeager]
 - Feature/Fix: Added ensureSiteAssetsLibrary method to prevent access denied #2129 [gautamdsheth]
+- Fix : Skip creation of associated groups if they already exist #2128 [gautamdsheth]
 
 ## [3.7.1903.0 - March 2019 release]
 
