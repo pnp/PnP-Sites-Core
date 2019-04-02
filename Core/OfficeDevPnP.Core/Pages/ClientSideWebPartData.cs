@@ -38,6 +38,15 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         [JsonProperty(PropertyName = "properties")]
         public string Properties { get; set; }
+
+        [JsonProperty(PropertyName = "dynamicDataPaths")]
+        public string DynamicDataPaths { get; internal set; }
+
+        [JsonProperty(PropertyName = "dynamicDataValues")]
+        public string DynamicDataValues { get; internal set; }
+
+        [JsonProperty(PropertyName = "serverProcessedContent")]
+        public string ServerProcessedContent { get; internal set; }
     }
 #endif
 }

@@ -10,7 +10,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Export and import client side web parts with dynamic data connections #2120 [YannickRe]
+- Added SyncToTeams method on the app ALM manager to synchronize an SPFX solution to the Microsoft Teams App Catalog
+- Extension method IsCommunicationSite for Site objects
+
 ### Changed
+
+- Fix: TokenParser to resolve tokens directly following each other {hosturl}{site} #2111 [czullu]
+- Fix: ClientSidePage description provisioning #2112 [czullu]
+- Fix: Failure with RatedBy and Ratings #2113 [czullu]
+- Ensure Field InternalName is correctly retrieved when logging provisision progress #2140 [NicolajHedeager]
+- Feature/Fix: Added ensureSiteAssetsLibrary method to prevent access denied #2129 [gautamdsheth]
+- Fix : Skip creation of associated groups if they already exist #2128 [gautamdsheth]
+- Fix: Added capability to set the private CDN orgins and policies #2141 [gautamdsheth]
+- EnsureUser for external users #2136 [schaudk]
+- Don't fail on modern page save when the provided header image url is living in a different web then the client side page
 
 ## [3.7.1903.0 - March 2019 release]
 

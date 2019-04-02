@@ -406,6 +406,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             Order = control.Order
                                         };
 
+                                        if (!String.IsNullOrEmpty(control.JsonControlData))
+                                        {
+                                            var json = JsonConvert.DeserializeObject<JObject>(control.JsonControlData);
+                                            if (json["instanceId"].Type != JTokenType.Null)
+                                            {
+                                                if (Guid.TryParse(json["instanceId"].Value<string>(), out Guid instanceId))
+                                                {
+                                                    myWebPart.instanceId = instanceId;
+                                                }
+                                            }
+                                        }
+
                                         // Reduce column number by 1 due 0 start indexing
                                         page.AddControl(myWebPart, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
 
