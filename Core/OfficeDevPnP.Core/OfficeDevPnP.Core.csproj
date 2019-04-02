@@ -523,6 +523,10 @@
     <Compile Include="Framework\Graph\GraphHttpClient.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingValue.cs" />
     <Compile Include="Framework\Graph\Model\SiteClassificationsSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\User.cs" />
+    <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\PasswordProfile.cs" />
+    <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\ProvisioningAzureActiveDirectory.cs" />
+    <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\UserCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\BaseHierarchyModel.cs" />
     <Compile Include="Framework\Provisioning\Model\BaseProvisioningTemplateObjectCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\CommunicationSiteCollection.cs" />
@@ -570,6 +574,7 @@
     <Compile Include="Framework\Provisioning\Model\TeamNoGroupSiteCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\TeamNoGroupSubSite.cs" />
     <Compile Include="Framework\Provisioning\Model\TeamSiteCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\ProvisioningTeams.cs" />
     <Compile Include="Framework\Provisioning\Model\Theme.cs" />
     <Compile Include="Framework\Provisioning\Model\ThemeCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\WebApiPermission.cs" />
@@ -629,6 +634,9 @@
     </Compile>
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.cs">
       <DependentUpon>ProvisioningSchema-2018-07.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.cs">
+      <DependentUpon>ProvisioningSchema-2019-03.xsd</DependentUpon>
     </Compile>
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\DocumentTemplateFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TermSetFromModelToSchemaTypeResolver.cs" />
@@ -701,6 +709,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateBasePropertiesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\RegionalSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WebSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201903Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201807Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201805Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201801Serializer.cs" />
@@ -1195,6 +1204,9 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />
