@@ -360,7 +360,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         private string userPrincipalNameField;
         
         /// <remarks/>
-        public AADUsersUserPasswordProfile passwordProfile {
+        public AADUsersUserPasswordProfile PasswordProfile {
             get {
                 return this.passwordProfileField;
             }
@@ -732,6 +732,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
     public enum TeamTabResourcesTabResourceType {
+        
+        /// <remarks/>
+        Generic,
         
         /// <remarks/>
         Notebook,
@@ -1752,7 +1755,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private bool isHubSiteFieldSpecified;
         
-        private string hubSiteLogoField;
+        private string hubSiteLogoUrlField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
@@ -1844,12 +1847,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string HubSiteLogo {
+        public string HubSiteLogoUrl {
             get {
-                return this.hubSiteLogoField;
+                return this.hubSiteLogoUrlField;
             }
             set {
-                this.hubSiteLogoField = value;
+                this.hubSiteLogoUrlField = value;
             }
         }
     }
