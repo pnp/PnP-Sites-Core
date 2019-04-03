@@ -39,6 +39,11 @@ namespace OfficeDevPnP.Core.Pages
         public const string DescriptionField = "Description";
         public const string _AuthorByline = "_AuthorByline";
         public const string _TopicHeader = "_TopicHeader";
+        public const string _OriginalSourceUrl = "_OriginalSourceUrl";
+        public const string _OriginalSourceSiteId = "_OriginalSourceSiteId";
+        public const string _OriginalSourceWebId = "_OriginalSourceWebId";
+        public const string _OriginalSourceListId = "_OriginalSourceListId";
+        public const string _OriginalSourceItemId = "_OriginalSourceItemId";
 
         // feature
         public const string SitePagesFeatureId = "b6917cb1-93a0-4b97-a84d-7cf49975d4ec";
@@ -738,7 +743,6 @@ namespace OfficeDevPnP.Core.Pages
                 }
                 item.Update();
                 this.Context.Web.Context.Load(item);
-                //this.Context.Web.Context.ExecuteQueryRetry();
             }
             else
             {
@@ -750,19 +754,33 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // Persist to page field
-            if (this.layoutType == ClientSidePageLayoutType.Home && this.KeepDefaultWebParts)
+            if (this.LayoutType == ClientSidePageLayoutType.RepostPage)
             {
+                item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.RepostPage;
                 item[ClientSidePage.CanvasField] = "";
+                item[ClientSidePage.PageLayoutContentField] = "";                
+                item.Update();
+                this.Context.Web.Context.Load(item);
+                this.Context.ExecuteQueryRetry();
+
+                this.pageListItem = item;
+                return;
             }
             else
             {
-                item[ClientSidePage.CanvasField] = this.ToHtml();
-            }
+                if (this.layoutType == ClientSidePageLayoutType.Home && this.KeepDefaultWebParts)
+                {
+                    item[ClientSidePage.CanvasField] = "";
+                }
+                else
+                {
+                    item[ClientSidePage.CanvasField] = this.ToHtml();
+                }
 
-            // The page must first be saved, otherwise the page contents gets erased
-            item.Update();
-            this.Context.Web.Context.Load(item);
-            //this.Context.ExecuteQueryRetry();
+                // The page must first be saved, otherwise the page contents gets erased
+                item.Update();
+                this.Context.Web.Context.Load(item);
+            }
 
             // Persist the page header
             if (this.pageHeader.Type == ClientSidePageHeaderType.None)
@@ -785,7 +803,7 @@ namespace OfficeDevPnP.Core.Pages
 
 #if !SP2019
                 // AuthorByline depends on a field holding the author values
-                if (this.pageHeader.AuthorByLineId > -1 /*&& item.FieldValues.ContainsKey(ClientSidePage._AuthorByline)*/)
+                if (this.pageHeader.AuthorByLineId > -1)
                 {
                     FieldUserValue[] userValueCollection = new FieldUserValue[1];
                     FieldUserValue fieldUserVal = new FieldUserValue
@@ -797,7 +815,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
 
                 // Topic header needs to be persisted in a field
-                if (!string.IsNullOrEmpty(this.pageHeader.TopicHeader) /*&& item.FieldValues.ContainsKey(ClientSidePage._TopicHeader)*/)
+                if (!string.IsNullOrEmpty(this.pageHeader.TopicHeader))
                 {
                     item[ClientSidePage._TopicHeader] = this.PageHeader.TopicHeader;
                 }
@@ -969,6 +987,7 @@ namespace OfficeDevPnP.Core.Pages
                 case DefaultClientSideWebParts.ListProperties: return "a8cd4347-f996-48c1-bcfb-75373fed2a27";
                 case DefaultClientSideWebParts.MarkDown: return "1ef5ed11-ce7b-44be-bc5e-4abd55101d16";
                 case DefaultClientSideWebParts.Planner: return "39c4c1c2-63fa-41be-8cc2-f6c0b49b253d";
+                case DefaultClientSideWebParts.Sites: return "7cba020c-5ccb-42e8-b6fc-75b3149aba7b";
 #endif
                 default: return "";
             }
@@ -1031,6 +1050,7 @@ namespace OfficeDevPnP.Core.Pages
                 case "a8cd4347-f996-48c1-bcfb-75373fed2a27": return DefaultClientSideWebParts.ListProperties;
                 case "1ef5ed11-ce7b-44be-bc5e-4abd55101d16": return DefaultClientSideWebParts.MarkDown;
                 case "39c4c1c2-63fa-41be-8cc2-f6c0b49b253d": return DefaultClientSideWebParts.Planner;
+                case "7cba020c-5ccb-42e8-b6fc-75b3149aba7b": return DefaultClientSideWebParts.Sites;
 #endif
                 default: return DefaultClientSideWebParts.ThirdParty;
             }
