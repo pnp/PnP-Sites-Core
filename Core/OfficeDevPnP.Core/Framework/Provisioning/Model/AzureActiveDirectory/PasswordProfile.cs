@@ -12,6 +12,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
     /// </summary>
     public class PasswordProfile : BaseModel, IEquatable<PasswordProfile>
     {
+        #region Public Members
+
         /// <summary>
         /// Defines whether to force password change at next sign-in for the user
         /// </summary>
@@ -26,6 +28,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
         /// The Password for the user
         /// </summary>
         public SecureString Password { get; set; }
+
+        #endregion
 
         #region Comparison code
 

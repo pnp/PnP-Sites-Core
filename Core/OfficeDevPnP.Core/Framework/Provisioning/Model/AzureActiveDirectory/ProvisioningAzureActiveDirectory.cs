@@ -12,15 +12,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
     /// </summary>
     public class ProvisioningAzureActiveDirectory: BaseModel, IEquatable<ProvisioningAzureActiveDirectory>
     {
+        #region Public members
         /// <summary>
         /// Defines a collection of users to create in AAD
         /// </summary>
         public UserCollection Users { get; private set; }
 
+        #endregion
+
+        #region Constructors
+
         public ProvisioningAzureActiveDirectory()
         {
             this.Users = new UserCollection(this.ParentTemplate);
         }
+
+        #endregion
 
         #region Comparison code
         /// <summary>
@@ -49,7 +56,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
         }
 
         /// <summary>
-        /// Compares ProvisioningAzureActiveDirectory object based on AppCatalog and Cdn properties.
+        /// Compares ProvisioningAzureActiveDirectory object based on Users
         /// </summary>
         /// <param name="other">ProvisioningAzureActiveDirectory object</param>
         /// <returns>true if the ProvisioningAzureActiveDirectory object is equal to the current object; otherwise, false.</returns>

@@ -11,6 +11,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
     /// </summary>
     public class User : BaseModel, IEquatable<User>
     {
+        #region Public Members
+
         /// <summary>
         /// The Password Profile for the user
         /// </summary>
@@ -41,6 +43,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
         /// </summary>
         public String UserPrincipalName { get; set; }
 
+        #endregion
+
         #region Comparison code
 
         /// <summary>
@@ -49,7 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|",
                 PasswordProfile.GetHashCode(),
                 AccountEnabled.GetHashCode(),
                 DisplayName?.GetHashCode() ?? 0,
