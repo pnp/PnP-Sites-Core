@@ -3152,46 +3152,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         Text,
         
         /// <remarks/>
-        ContentRollup,
+        BingMap,
         
         /// <remarks/>
-        BingMap,
+        ClientWebPart,
+        
+        /// <remarks/>
+        CodeSnippet,
         
         /// <remarks/>
         ContentEmbed,
         
         /// <remarks/>
+        ContentRollup,
+        
+        /// <remarks/>
+        CountDown,
+        
+        /// <remarks/>
+        CustomMessageRegion,
+        
+        /// <remarks/>
+        Divider,
+        
+        /// <remarks/>
         DocumentEmbed,
-        
-        /// <remarks/>
-        Image,
-        
-        /// <remarks/>
-        ImageGallery,
-        
-        /// <remarks/>
-        LinkPreview,
-        
-        /// <remarks/>
-        NewsFeed,
-        
-        /// <remarks/>
-        NewsReel,
-        
-        /// <remarks/>
-        PowerBIReportEmbed,
-        
-        /// <remarks/>
-        QuickChart,
-        
-        /// <remarks/>
-        SiteActivity,
-        
-        /// <remarks/>
-        VideoEmbed,
-        
-        /// <remarks/>
-        YammerEmbed,
         
         /// <remarks/>
         Events,
@@ -3203,7 +3188,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         Hero,
         
         /// <remarks/>
+        Image,
+        
+        /// <remarks/>
+        ImageGallery,
+        
+        /// <remarks/>
+        LinkPreview,
+        
+        /// <remarks/>
         List,
+        
+        /// <remarks/>
+        ListProperties,
+        
+        /// <remarks/>
+        MarkDown,
+        
+        /// <remarks/>
+        MicrosoftForms,
+        
+        /// <remarks/>
+        MyDocuments,
+        
+        /// <remarks/>
+        NewsFeed,
+        
+        /// <remarks/>
+        NewsReel,
+        
+        /// <remarks/>
+        PageFields,
         
         /// <remarks/>
         PageTitle,
@@ -3212,22 +3227,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         People,
         
         /// <remarks/>
+        Planner,
+        
+        /// <remarks/>
+        PowerApps,
+        
+        /// <remarks/>
+        PowerBIReportEmbed,
+        
+        /// <remarks/>
+        QuickChart,
+        
+        /// <remarks/>
         QuickLinks,
         
         /// <remarks/>
-        CustomMessageRegion,
-        
-        /// <remarks/>
-        Divider,
-        
-        /// <remarks/>
-        MicrosoftForms,
+        SiteActivity,
         
         /// <remarks/>
         Spacer,
         
         /// <remarks/>
-        ClientWebPart,
+        ThirdParty,
+        
+        /// <remarks/>
+        VideoEmbed,
+        
+        /// <remarks/>
+        Weather,
+        
+        /// <remarks/>
+        YammerEmbed,
+        
+        /// <remarks/>
+        YammerFullFeed,
+        
+        /// <remarks/>
+        YouTube,
     }
     
     /// <remarks/>
