@@ -628,7 +628,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 createdView.ListViewXml = viewInnerXml;
                 if (hidden) createdView.Hidden = hidden;
                 createdView.Update();
-                createdView.EnsureProperties(v => v.Scope, v => v.JSLink, v => v.Title, v => v.Aggregations, v => v.MobileView, v => v.MobileDefaultView, v => v.ViewData);
+                createdView.EnsureProperties(v => v.Scope, v => v.JSLink, v => v.Title, v => v.Aggregations, v => v.MobileView, v => v.MobileDefaultView, v => v.ViewData, v => v.CustomFormatter);
                 web.Context.ExecuteQueryRetry();
 
                 if (urlHasValue)
@@ -729,6 +729,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
+                // CustomFormatter
+                var customFormatterElement = viewElement.Descendants("CustomFormatter").FirstOrDefault();
+                if(customFormatterElement != null)
+                {
+                    var customFormatter = customFormatterElement.Value;
+                    customFormatter = customFormatter.Replace("&", "&amp;");
+                    if(createdView.CustomFormatter != customFormatter)
+                    {
+                        createdView.CustomFormatter = customFormatter;
+                        createdView.Update();
+                    }
+                }
+
                 // View Data
                 var viewDataElement = viewElement.Descendants("ViewData").FirstOrDefault();
                 if (viewDataElement != null && viewDataElement.HasElements)
@@ -745,6 +758,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
+                
                 createdList.Update();
                 web.Context.ExecuteQueryRetry();
 
