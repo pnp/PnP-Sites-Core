@@ -1483,7 +1483,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private BaseTeam[] itemsField;
         
-        private TeamsAppsApp[][] appsField;
+        private TeamsAppsApp[] appsField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("Team", typeof(TeamWithSettings))]
@@ -1498,8 +1498,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("App", typeof(TeamsAppsApp), IsNullable=false)]
-        public TeamsAppsApp[][] Apps {
+        [System.Xml.Serialization.XmlArrayItemAttribute("App", IsNullable=false)]
+        public TeamsAppsApp[] Apps {
             get {
                 return this.appsField;
             }

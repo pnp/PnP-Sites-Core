@@ -7127,7 +7127,7 @@
         </xsd:element>
       </xsd:choice>
 
-      <xsd:element name="Apps" type="pnp:TeamsApps" minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="Apps" type="pnp:TeamsApps" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
           <xsd:documentation xml:lang="en">
