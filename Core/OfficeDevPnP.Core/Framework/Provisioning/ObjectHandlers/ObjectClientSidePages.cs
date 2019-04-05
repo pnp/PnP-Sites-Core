@@ -85,6 +85,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 page.LayoutType = Pages.ClientSidePageLayoutType.SingleWebPartAppPage;
                             }
+                            else if (clientSidePage.Layout.Equals("RepostPage", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                page.LayoutType = Pages.ClientSidePageLayoutType.RepostPage;
+                            }
                         }
 
                         page.Save(pageName);
@@ -170,7 +174,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                             case ClientSidePageHeaderType.Default:
                                 {
-                                    page.SetDefaultPageHeader();
+                                    if (page.LayoutType == Pages.ClientSidePageLayoutType.RepostPage)
+                                    {
+                                        var serverRelativeImageUrl = parser.ParseString(clientSidePage.Header.ServerRelativeImageUrl);
+                                        if (clientSidePage.Header.TranslateX.HasValue && clientSidePage.Header.TranslateY.HasValue)
+                                        {
+                                            page.SetCustomPageHeader(serverRelativeImageUrl, clientSidePage.Header.TranslateX.Value, clientSidePage.Header.TranslateY.Value);
+                                        }
+                                        else
+                                        {
+                                            page.SetCustomPageHeader(serverRelativeImageUrl);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        page.SetDefaultPageHeader();
+                                    }
                                     break;
                                 }
                             case ClientSidePageHeaderType.Custom:
