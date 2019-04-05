@@ -828,12 +828,12 @@ namespace OfficeDevPnP.Core.Pages
 
             // Try to set the page banner image url if not yet set
             bool isDirty = false;
-            if (this.layoutType == ClientSidePageLayoutType.Article && item[ClientSidePage.BannerImageUrl] != null)
+            if ((this.layoutType == ClientSidePageLayoutType.Article || this.layoutType == ClientSidePageLayoutType.RepostPage) && item[ClientSidePage.BannerImageUrl] != null)
             {
                 if (string.IsNullOrEmpty((item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url) || (item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url.IndexOf("/_layouts/15/images/sitepagethumbnail.png", StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
                     string previewImageServerRelativeUrl = "";
-                    if (this.pageHeader.Type == ClientSidePageHeaderType.Custom && !string.IsNullOrEmpty(this.pageHeader.ImageServerRelativeUrl))
+                    if ((this.pageHeader.Type == ClientSidePageHeaderType.Custom || (this.layoutType == ClientSidePageLayoutType.RepostPage && this.pageHeader.Type == ClientSidePageHeaderType.Default)) && !string.IsNullOrEmpty(this.pageHeader.ImageServerRelativeUrl))
                     {
                         previewImageServerRelativeUrl = this.pageHeader.ImageServerRelativeUrl;
                     }
