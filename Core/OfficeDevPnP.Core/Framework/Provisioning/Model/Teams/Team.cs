@@ -42,12 +42,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// Defines the Channels for the Team
         /// </summary>
-        public TeamChannelCollection Channels { get; set; }
+        public TeamChannelCollection Channels { get; private set; }
 
         /// <summary>
         /// Defines the Apps to install or update on the Team
         /// </summary>
-        public TeamAppInstanceCollection Apps { get; set; }
+        public TeamAppInstanceCollection Apps { get; private set; }
 
         public TeamSpecialization Specialization { get; set; }
 
@@ -64,6 +64,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         #endregion
 
         #region Constructors
+
+        /// <summary>
+        /// Constructor for Team
+        /// </summary>
+        public Team()
+        {
+            this.Channels = new TeamChannelCollection(this.ParentTemplate);
+            this.Apps = new TeamAppInstanceCollection(this.ParentTemplate);
+        }
+
         #endregion
 
         #region Comparison code

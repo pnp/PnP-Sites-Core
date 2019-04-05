@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// Defines the Owners of the Team
         /// </summary>
-        public TeamSecurityUserCollection Owners { get; set; }
+        public TeamSecurityUserCollection Owners { get; private set; }
 
         /// <summary>
         /// Declares whether to clear existing owners before adding new ones
@@ -27,12 +27,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// Defines the Members of the Team
         /// </summary>
-        public TeamSecurityUserCollection Members { get; set; }
+        public TeamSecurityUserCollection Members { get; private set; }
 
         /// <summary>
         /// Declares whether to clear existing members before adding new ones
         /// </summary>
         public Boolean ClearExistingMembers { get; set; }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Constructor for TeamSecurity
+        /// </summary>
+        public TeamSecurity()
+        {
+            this.Owners = new TeamSecurityUserCollection(this.ParentTemplate);
+            this.Members = new TeamSecurityUserCollection(this.ParentTemplate);
+        }
 
         #endregion
 

@@ -17,17 +17,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// A collection of Teams to provision starting from a Template
         /// </summary>
-        public TeamTemplateCollection TeamTemplates { get; set; }
+        public TeamTemplateCollection TeamTemplates { get; private set; }
 
         /// <summary>
         /// A collection of Teams to provision/update
         /// </summary>
-        public TeamCollection Teams { get; set; }
+        public TeamCollection Teams { get; private set; }
 
         /// <summary>
         /// A collection of Team Apps to provision
         /// </summary>
-        public TeamAppCollection Apps { get; set; }
+        public TeamAppCollection Apps { get; private set; }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Constructor for ProvisioningTeams
+        /// </summary>
+        public ProvisioningTeams()
+        {
+            this.TeamTemplates = new TeamTemplateCollection(this.ParentTemplate);
+            this.Teams = new TeamCollection(this.ParentTemplate);
+            this.Apps = new TeamAppCollection(this.ParentTemplate);
+        }
 
         #endregion
 
