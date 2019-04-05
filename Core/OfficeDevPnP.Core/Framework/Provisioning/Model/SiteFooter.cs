@@ -37,7 +37,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the Footer Links for the target site
         /// </summary>
-        public SiteFooterLinkCollection FooterLinks { get; set; }
+        public SiteFooterLinkCollection FooterLinks { get; private set; }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Constructor for SiteFooter
+        /// </summary>
+        public SiteFooter()
+        {
+            this.FooterLinks = new SiteFooterLinkCollection(this.ParentTemplate);
+        }
 
         #endregion
 
