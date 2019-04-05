@@ -62,6 +62,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public Boolean PromoteAsNewsArticle { get; set; }
 
         /// <summary>
+        /// Defines whether to promote the page as a template, optional attribute
+        /// </summary>
+        public Boolean PromoteAsTemplate { get; set; }
+
+        /// <summary>
         /// Defines whether the page can be overwritten if it exists
         /// </summary>
         public Boolean Overwrite { get; set; }
@@ -119,6 +124,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public Dictionary<String, String> FieldValues { get; set; } = new Dictionary<string, string>();
 
+        /// <summary>
+        /// Defines property bag properties for the client side page
+        /// </summary>
+        public Dictionary<String, String> Properties { get; set; } = new Dictionary<string, string>();
+
         #endregion
 
         #region Constructors
@@ -141,7 +151,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|",
                 this.Sections.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.PageName?.GetHashCode() ?? 0,
                 this.PromoteAsNewsArticle.GetHashCode(),
@@ -151,7 +161,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.EnableComments.GetHashCode(),
                 this.Title?.GetHashCode() ?? 0,
                 this.FieldValues.Aggregate(0, (acc, next) => acc += (next.Value != null ? next.Value.GetHashCode() : 0)),
-                this.ContentTypeID.GetHashCode()
+                this.ContentTypeID.GetHashCode(),
+                this.Properties.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.PromoteAsTemplate.GetHashCode()
             ).GetHashCode());
         }
 
@@ -170,7 +182,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares ClientSidePage object based on Sections, PageName, PromoteAsNewsArticle, Overwrite, Layout, Publish, EnableComments, and Title
+        /// Compares ClientSidePage object based on Sections, PageName, PromoteAsNewsArticle, Overwrite, Layout, Publish, EnableComments, Title, Properties, and PromoteAsTemplate
         /// </summary>
         /// <param name="other">ClientSidePage Class object</param>
         /// <returns>true if the ClientSidePage object is equal to the current object; otherwise, false.</returns>
@@ -190,7 +202,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.EnableComments == other.EnableComments &&
                 this.Title == other.Title &&
                 this.FieldValues.DeepEquals(other.FieldValues) &&
-                this.ContentTypeID == other.ContentTypeID
+                this.ContentTypeID == other.ContentTypeID &&
+                this.Properties.DeepEquals(other.Properties) &&
+                this.PromoteAsTemplate == other.PromoteAsTemplate
                 );
         }
 
