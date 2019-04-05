@@ -24,10 +24,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         [Obsolete("The PnP Provisioning Schema v201605 is obsolete and deprecated, please use the latest version available at https://github.com/OfficeDev/PnP-Provisioning-Schema")]
         public const String PROVISIONING_SCHEMA_NAMESPACE_2016_05 = "http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema";
 
+        [Obsolete("The PnP Provisioning Schema v201705 is obsolete and deprecated, please use the latest version available at https://github.com/OfficeDev/PnP-Provisioning-Schema")]
         public const String PROVISIONING_SCHEMA_NAMESPACE_2017_05 = "http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema";
+
         public const String PROVISIONING_SCHEMA_NAMESPACE_2018_01 = "http://schemas.dev.office.com/PnP/2018/01/ProvisioningSchema";
         public const String PROVISIONING_SCHEMA_NAMESPACE_2018_05 = "http://schemas.dev.office.com/PnP/2018/05/ProvisioningSchema";
         public const String PROVISIONING_SCHEMA_NAMESPACE_2018_07 = "http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema";
+        public const String PROVISIONING_SCHEMA_NAMESPACE_2019_03 = "http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema";
     }
 }
 

@@ -52,6 +52,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private ApplicationLifecycleManagement _applicationLifecycleManagement;
         private Double _version;
 
+        private SiteHeader _header = null;
+        private SiteFooter _footer = null;
+        private ProvisioningTemplateWebhookCollection _provisioningTemplateWebhooks;
+
         #endregion
 
         #region Constructors
@@ -96,6 +100,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             this._applicationLifecycleManagement = new ApplicationLifecycleManagement();
             this._applicationLifecycleManagement.ParentTemplate = this;
+
+            this._provisioningTemplateWebhooks = new ProvisioningTemplateWebhookCollection(this);
         }
 
         /// <summary>
@@ -595,6 +601,66 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 if (this._applicationLifecycleManagement != null)
                 {
                     this._applicationLifecycleManagement.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The Header of the Site
+        /// </summary>
+        public SiteHeader Header
+        {
+            get { return this._header; }
+            set
+            {
+                if (this._header != null)
+                {
+                    this._header.ParentTemplate = null;
+                }
+                this._header = value;
+                if (this._header != null)
+                {
+                    this._header.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The Footer of the Site
+        /// </summary>
+        public SiteFooter Footer
+        {
+            get { return this._footer; }
+            set
+            {
+                if (this._footer != null)
+                {
+                    this._footer.ParentTemplate = null;
+                }
+                this._footer = value;
+                if (this._footer != null)
+                {
+                    this._footer.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The Webhooks for the Provisioning Template
+        /// </summary>
+        public ProvisioningTemplateWebhookCollection ProvisioningTemplateWebhooks
+        {
+            get { return this._provisioningTemplateWebhooks; }
+            set
+            {
+                if (this._provisioningTemplateWebhooks != null)
+                {
+                    this._provisioningTemplateWebhooks.ParentTemplate = null;
+                }
+                this._provisioningTemplateWebhooks = value;
+                if (this._provisioningTemplateWebhooks != null)
+                {
+                    this._provisioningTemplateWebhooks.ParentTemplate = this;
                 }
             }
         }
