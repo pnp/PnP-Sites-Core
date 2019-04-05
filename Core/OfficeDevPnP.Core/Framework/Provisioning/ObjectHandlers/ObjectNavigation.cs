@@ -387,7 +387,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var navNode = web.AddNavigationNode(
                         parser.ParseString(node.Title),
-                        new Uri(fileUrl), UriKind.RelativeOrAbsolute),
+                        new Uri(fileUrl, UriKind.RelativeOrAbsolute),
                         parser.ParseString(parentNodeTitle),
                         navigationType,
                         node.IsExternal,
@@ -413,6 +413,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         try
                         {
+                            string fileUrl = ReplaceFileUniqueToken(web, parser.ParseString(node.Url));
                             var navNode = web.AddNavigationNode(
                                 parser.ParseString(node.Title),
                                 new Uri(fileUrl, UriKind.RelativeOrAbsolute),
