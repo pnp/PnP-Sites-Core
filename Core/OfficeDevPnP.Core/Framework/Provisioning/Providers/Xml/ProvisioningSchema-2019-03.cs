@@ -952,6 +952,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private TeamWithSettingsApp[] appsField;
         
+        private string groupIdField;
+        
         private TeamWithSettingsSpecialization specializationField;
         
         private bool specializationFieldSpecified;
@@ -1033,6 +1035,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.appsField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string GroupId {
+            get {
+                return this.groupIdField;
+            }
+            set {
+                this.groupIdField = value;
             }
         }
         

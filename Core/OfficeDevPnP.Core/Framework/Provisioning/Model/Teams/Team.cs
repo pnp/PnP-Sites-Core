@@ -52,6 +52,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         public TeamSpecialization Specialization { get; set; }
 
         /// <summary>
+        /// Declares the ID of the targt Group/Team to update, optional attribute. Cannot be used together with CloneFrom.
+        /// </summary>
+        public String GroupId { get; set; }
+
+        /// <summary>
         /// Declares the ID of another Team to Clone the current Team from
         /// </summary>
         public String CloneFrom { get; set; }
@@ -84,7 +89,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|",
                 FunSettings?.GetHashCode() ?? 0,
                 GuestSettings?.GetHashCode() ?? 0,
                 MemberSettings?.GetHashCode() ?? 0,
@@ -94,7 +99,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
                 Apps?.GetHashCode() ?? 0,
                 Specialization.GetHashCode(),
                 CloneFrom?.GetHashCode() ?? 0,
-                Archived.GetHashCode()
+                Archived.GetHashCode(),
+                GroupId?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 
@@ -113,7 +119,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         }
 
         /// <summary>
-        /// Compares Team object based on FunSettings, GuestSettings, MembersSettings, MessagingSettings, Security, Channels, Apps, Specialization, CloneFrom, and Archived
+        /// Compares Team object based on FunSettings, GuestSettings, MembersSettings, MessagingSettings, Security, Channels, Apps, Specialization, CloneFrom, Archived, and GroupId
         /// </summary>
         /// <param name="other">Team Class object</param>
         /// <returns>true if the Team object is equal to the current object; otherwise, false.</returns>
@@ -133,7 +139,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
                 this.Apps.DeepEquals(other.Apps) &&
                 this.Specialization == other.Specialization &&
                 this.CloneFrom == other.CloneFrom &&
-                this.Archived == other.Archived
+                this.Archived == other.Archived &&
+                this.GroupId == other.GroupId
                 );
         }
 
