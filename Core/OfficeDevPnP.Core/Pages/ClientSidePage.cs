@@ -758,7 +758,26 @@ namespace OfficeDevPnP.Core.Pages
             {
                 item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.RepostPage;
                 item[ClientSidePage.CanvasField] = "";
-                item[ClientSidePage.PageLayoutContentField] = "";                
+                item[ClientSidePage.PageLayoutContentField] = "";       
+                if(!string.IsNullOrWhiteSpace(this.pageHeader.ImageServerRelativeUrl))
+                {
+                    // Validate the found preview image url
+                    try
+                    {
+                        this.Context.Site.EnsureProperties(p => p.Id);
+                        this.Context.Web.EnsureProperties(p => p.Id, p => p.Url);
+
+                        var previewImage = this.Context.Web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(this.pageHeader.ImageServerRelativeUrl));
+                        this.Context.Load(previewImage, p => p.UniqueId);
+                        this.Context.ExecuteQueryRetry();
+
+                        Uri rootUri = new Uri(this.Context.Web.Url);
+                        rootUri = new Uri(rootUri, "/");
+
+                        item[ClientSidePage.BannerImageUrl] = $"{rootUri}_layouts/15/getpreview.ashx?guidSite={this.Context.Site.Id.ToString()}&guidWeb={this.Context.Web.Id.ToString()}&guidFile={previewImage.UniqueId.ToString()}";
+                    }
+                    catch { }
+                }
                 item.Update();
                 this.Context.Web.Context.Load(item);
                 this.Context.ExecuteQueryRetry();
@@ -828,12 +847,12 @@ namespace OfficeDevPnP.Core.Pages
 
             // Try to set the page banner image url if not yet set
             bool isDirty = false;
-            if ((this.layoutType == ClientSidePageLayoutType.Article || this.layoutType == ClientSidePageLayoutType.RepostPage) && item[ClientSidePage.BannerImageUrl] != null)
+            if (this.layoutType == ClientSidePageLayoutType.Article && item[ClientSidePage.BannerImageUrl] != null)
             {
                 if (string.IsNullOrEmpty((item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url) || (item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url.IndexOf("/_layouts/15/images/sitepagethumbnail.png", StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
                     string previewImageServerRelativeUrl = "";
-                    if ((this.pageHeader.Type == ClientSidePageHeaderType.Custom || (this.layoutType == ClientSidePageLayoutType.RepostPage && this.pageHeader.Type == ClientSidePageHeaderType.Default)) && !string.IsNullOrEmpty(this.pageHeader.ImageServerRelativeUrl))
+                    if (this.pageHeader.Type == ClientSidePageHeaderType.Custom  && !string.IsNullOrEmpty(this.pageHeader.ImageServerRelativeUrl))
                     {
                         previewImageServerRelativeUrl = this.pageHeader.ImageServerRelativeUrl;
                     }
