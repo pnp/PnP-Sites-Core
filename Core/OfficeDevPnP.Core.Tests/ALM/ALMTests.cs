@@ -1,4 +1,4 @@
-﻿#if !ONPREMISES
+﻿#if !SP2013 && !SP2016
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -31,69 +31,60 @@ namespace OfficeDevPnP.Core.Tests.Sites
         }
 
         [TestMethod]
-        public async Task GetAvailableTestAsync()
-        {
-            using (var clientContext = TestCommon.CreateClientContext())
-            {
-                AppManager manager = new AppManager(clientContext);
-                var results = await manager.GetAvailableAsync();
-
-                Assert.IsNotNull(results);
-
-                var singleResults = await manager.GetAvailableAsync(results.FirstOrDefault().Id);
-
-                Assert.IsNotNull(singleResults);
-            }
-        }
-
-        [TestMethod]
-        public void GetAvailable()
-        {
-            using (var clientContext = TestCommon.CreateClientContext())
-            {
-                AppManager manager = new AppManager(clientContext);
-                var results = manager.GetAvailable();
-
-                Assert.IsNotNull(results);
-
-                var singleResult = manager.GetAvailable(results.FirstOrDefault().Id);
-
-                Assert.IsNotNull(results);
-            }
-        }
-
-        [TestMethod]
-        public async Task AddRemoveAppTestAsync()
+        public async Task AddCheckRemoveAppTestAsync()
         {
             using (var clientContext = TestCommon.CreateClientContext())
             {
                 AppManager manager = new AppManager(clientContext);
                 var appBytes = OfficeDevPnP.Core.Tests.Properties.Resources.alm;
 
-                var results = await manager.AddAsync(appBytes, $"app-{appGuid}.sppkg");
+                //Test adding app
+                var addedApp = await manager.AddAsync(appBytes, $"app-{appGuid}.sppkg", true);
 
-                Assert.IsNotNull(results);
+                Assert.IsNotNull(addedApp);
 
-                var removeResults = await manager.RemoveAsync(results.Id);
+
+                //Test availability of apps
+                var availableApps = await manager.GetAvailableAsync();
+
+                Assert.IsNotNull(availableApps);
+                CollectionAssert.Contains(availableApps.Select(app => app.Id).ToList(), addedApp.Id);
+
+                var retrievedApp = await manager.GetAvailableAsync(addedApp.Id);
+                Assert.AreEqual(addedApp.Id, retrievedApp.Id);
+
+                //Test removal
+                var removeResults = await manager.RemoveAsync(addedApp.Id);
 
                 Assert.IsTrue(removeResults);
             }
         }
 
         [TestMethod]
-        public void AddRemoveAppTest()
+        public void AddCheckRemoveAppTest()
         {
             using (var clientContext = TestCommon.CreateClientContext())
             {
                 AppManager manager = new AppManager(clientContext);
                 var appBytes = OfficeDevPnP.Core.Tests.Properties.Resources.alm;
 
-                var results = manager.Add(appBytes, $"app-{appGuid}.sppkg", true);
+                //Test adding app
+                var addedApp = manager.Add(appBytes, $"app-{appGuid}.sppkg", true);
 
-                Assert.IsNotNull(results);
+                Assert.IsNotNull(addedApp);
 
-                var removeResults = manager.Remove(results.Id);
+                //Test availability of apps
+                var availableApps = manager.GetAvailable();
 
+                Assert.IsNotNull(availableApps);
+                CollectionAssert.Contains(availableApps.Select(app => app.Id).ToList(), addedApp.Id);
+
+                var retrievedApp = manager.GetAvailable(addedApp.Id);
+                Assert.AreEqual(addedApp.Id, retrievedApp.Id);
+
+                //Test removal
+                var removeResults = manager.Remove(addedApp.Id);
+                
                 Assert.IsTrue(removeResults);
             }
         }

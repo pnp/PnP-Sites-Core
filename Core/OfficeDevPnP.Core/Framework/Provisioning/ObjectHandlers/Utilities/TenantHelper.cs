@@ -133,11 +133,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         .FirstOrDefault(a => a.Id == Guid.Parse(parser.ParseString(app.PackageId)));
                                 }
                                 if (appMetadata != null)
-                                {
-                                    if (appMetadata.Deployed == false)
-                                    {
-                                        manager.Deploy(appMetadata, app.SkipFeatureDeployment);
-                                    }
+                                {                                    
+                                    manager.Deploy(appMetadata, app.SkipFeatureDeployment);
                                 }
                                 else
                                 {

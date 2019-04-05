@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// Base class for a canvas control 
     /// </summary>

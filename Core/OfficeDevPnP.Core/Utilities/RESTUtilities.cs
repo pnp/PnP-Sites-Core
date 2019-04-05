@@ -3,9 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Utilities
 {
@@ -18,12 +16,12 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="context"></param>
         public static void SetAuthenticationCookies(this HttpClientHandler handler, ClientContext context)
         {
-            if (context.Credentials != null)
+            if (context.Credentials is SharePointOnlineCredentials spCred)
             {
                 handler.Credentials = context.Credentials;
-                handler.CookieContainer.SetCookies(new Uri(context.Web.Url), (context.Credentials as SharePointOnlineCredentials).GetAuthenticationCookie(new Uri(context.Web.Url)));
+                handler.CookieContainer.SetCookies(new Uri(context.Web.Url), spCred.GetAuthenticationCookie(new Uri(context.Web.Url)));
             }
-            else
+            else if (context.Credentials == null)
             {
                 var cookieString = CookieReader.GetCookie(context.Web.Url).Replace("; ", ",").Replace(";", ",");
                 var authCookiesContainer = new System.Net.CookieContainer();

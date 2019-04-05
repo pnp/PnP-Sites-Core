@@ -21,15 +21,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (string.IsNullOrEmpty(CacheValue))
             {
-                // The token is requested. Check if the group exists and if not, create it
-                var site = TokenContext.Site;
-                var session = TaxonomySession.GetTaxonomySession(TokenContext);
-                var termstore = session.GetDefaultSiteCollectionTermStore();
-                var termGroup = termstore.GetSiteCollectionGroup(site, true);
-                TokenContext.Load(termGroup);
-                TokenContext.ExecuteQueryRetry();
+                try
+                {
+                    // The token is requested. Check if the group exists and if not, create it
+                    var site = TokenContext.Site;
+                    var session = TaxonomySession.GetTaxonomySession(TokenContext);
+                    var termstore = session.GetDefaultSiteCollectionTermStore();
+                    var termGroup = termstore.GetSiteCollectionGroup(site, true);
+                    TokenContext.Load(termGroup);
+                    TokenContext.ExecuteQueryRetry();
 
-                CacheValue = termGroup.Name.ToString();
+                    CacheValue = termGroup.Name.ToString();
+                }
+                catch (ServerUnauthorizedAccessException)
+                { }
             }
             return CacheValue;
         }
