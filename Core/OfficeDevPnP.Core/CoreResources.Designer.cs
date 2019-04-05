@@ -242,6 +242,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The {0} image set as page header lives in a different web and will not be set..
+        /// </summary>
+        internal static string ClientSidePageHeader_ImageInDifferentWeb {
+            get {
+                return ResourceManager.GetString("ClientSidePageHeader_ImageInDifferentWeb", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The provided page header image &apos;{0}&apos; cannot be found. .
         /// </summary>
         internal static string ClientSidePageHeader_ImageNotFound {

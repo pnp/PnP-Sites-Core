@@ -167,6 +167,10 @@
         /// Planner web part
         /// </summary>
         Planner,
+        /// <summary>
+        /// Sites web part
+        /// </summary>
+        Sites
 #endif
     }
 #endif

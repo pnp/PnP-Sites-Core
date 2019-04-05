@@ -121,8 +121,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                     messagesDelegate?.Invoke($"Skipping existing solution {app.Src}", ProvisioningMessageType.Progress);
                                     appMetadata = manager.GetAvailable().FirstOrDefault(a => a.Id == appId);
                                 }
-                                parser.AddToken(new AppPackageIdToken(web, appFilename, appMetadata.Id));
-                                parser.AddToken(new AppPackageIdToken(web, appMetadata.Title, appMetadata.Id));
+                                if (appMetadata != null)
+                                {
+                                    parser.AddToken(new AppPackageIdToken(web, appFilename, appMetadata.Id));
+                                    parser.AddToken(new AppPackageIdToken(web, appMetadata.Title, appMetadata.Id));
+                                }
                             }
 
                             if (app.Action == PackageAction.Publish || app.Action == PackageAction.UploadAndPublish)
@@ -532,14 +535,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 {
                     if (privateCdnEnabled.Value != privateCdn.Enabled)
                     {
-                        scope.LogInfo($"Private CDN is set to {(publicCdn.Enabled ? "Enabled" : "Disabled")}");
+                        scope.LogInfo($"Private CDN is set to {(privateCdn.Enabled ? "Enabled" : "Disabled")}");
                         tenant.SetTenantCdnEnabled(SPOTenantCdnType.Private, privateCdn.Enabled);
                         tenant.Context.ExecuteQueryRetry();
                     }
                     if (privateCdn.Enabled)
                     {
-                        ProcessOrigins(tenant, publicCdn, SPOTenantCdnType.Public, parser, scope);
-                        ProcessPolicies(tenant, publicCdn, SPOTenantCdnType.Public, parser, scope);
+                        ProcessOrigins(tenant, privateCdn, SPOTenantCdnType.Private, parser, scope);
+                        ProcessPolicies(tenant, privateCdn, SPOTenantCdnType.Private, parser, scope);
                     }
                 }
             }
