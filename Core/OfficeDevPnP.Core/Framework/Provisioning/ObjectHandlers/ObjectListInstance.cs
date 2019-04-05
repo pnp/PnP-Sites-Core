@@ -729,6 +729,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
+#if !SP2013 && !SP2016
                 // CustomFormatter
                 var customFormatterElement = viewElement.Descendants("CustomFormatter").FirstOrDefault();
                 if(customFormatterElement != null)
@@ -741,7 +742,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         createdView.Update();
                     }
                 }
-
+#endif
                 // View Data
                 var viewDataElement = viewElement.Descendants("ViewData").FirstOrDefault();
                 if (viewDataElement != null && viewDataElement.HasElements)
@@ -1343,11 +1344,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 #endif
 
-                #region UserCustomActions
+#region UserCustomActions
 
                 isDirty |= UpdateCustomActions(web, existingList, templateList, parser, scope, isNoScriptSite);
 
-                #endregion UserCustomActions
+#endregion UserCustomActions
 
                 if (isDirty)
                 {
