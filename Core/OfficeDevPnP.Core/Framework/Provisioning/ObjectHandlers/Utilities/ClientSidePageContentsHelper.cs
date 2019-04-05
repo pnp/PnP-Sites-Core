@@ -57,10 +57,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                     if(pageToExtract.PageHeader != null)
                     {
+                        string ServerRelativeImageUrl = TokenizeJsonControlData(web, pageToExtract.PageHeader.ImageServerRelativeUrl);
+                        if (string.IsNullOrWhiteSpace(ServerRelativeImageUrl) && pageToExtract.LayoutType== Pages.ClientSidePageLayoutType.RepostPage)
+                        {
+                            if(pageToExtract.PageListItem.FieldValues.ContainsKey("BannerImageUrl"))
+                            {
+                                var bannerImageUrl = pageToExtract.PageListItem.FieldValues["BannerImageUrl"] as FieldUrlValue;
+                                if(bannerImageUrl!=null)
+                                {
+                                    ServerRelativeImageUrl = TokenizeJsonControlData(web, bannerImageUrl.Url);
+                                }
+                            }
+                        }
+
                         var extractedHeader = new ClientSidePageHeader()
                         {
                             Type = (ClientSidePageHeaderType)Enum.Parse(typeof(Pages.ClientSidePageHeaderType),pageToExtract.PageHeader.Type.ToString()),
-                            ServerRelativeImageUrl = TokenizeJsonControlData(web, pageToExtract.PageHeader.ImageServerRelativeUrl),
+                            ServerRelativeImageUrl = ServerRelativeImageUrl,
                             TranslateX = pageToExtract.PageHeader.TranslateX,
                             TranslateY = pageToExtract.PageHeader.TranslateY
                         };
