@@ -640,6 +640,14 @@ namespace OfficeDevPnP.Core.Pages
                     var pageHeaderHtml = item[ClientSidePage.PageLayoutContentField] != null ? item[ClientSidePage.PageLayoutContentField].ToString() : "";
                     page.LoadFromHtml(html, pageHeaderHtml);
                 }
+                else if (page.LayoutType== ClientSidePageLayoutType.RepostPage)
+                {
+                    var bannerImageUrl = item[ClientSidePage.BannerImageUrl] as FieldUrlValue;
+                    if(bannerImageUrl!=null)
+                    {
+                        page.pageHeader.ImageServerRelativeUrl = bannerImageUrl.Url;
+                    }
+                }
             }
             else
             {
@@ -761,22 +769,11 @@ namespace OfficeDevPnP.Core.Pages
                 item[ClientSidePage.PageLayoutContentField] = "";       
                 if(!string.IsNullOrWhiteSpace(this.pageHeader.ImageServerRelativeUrl))
                 {
-                    // Validate the found preview image url
-                    try
+                    Uri imageUri;
+                    if (Uri.TryCreate(this.pageHeader.ImageServerRelativeUrl, UriKind.RelativeOrAbsolute, out imageUri))
                     {
-                        this.Context.Site.EnsureProperties(p => p.Id);
-                        this.Context.Web.EnsureProperties(p => p.Id, p => p.Url);
-
-                        var previewImage = this.Context.Web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(this.pageHeader.ImageServerRelativeUrl));
-                        this.Context.Load(previewImage, p => p.UniqueId);
-                        this.Context.ExecuteQueryRetry();
-
-                        Uri rootUri = new Uri(this.Context.Web.Url);
-                        rootUri = new Uri(rootUri, "/");
-
-                        item[ClientSidePage.BannerImageUrl] = $"{rootUri}_layouts/15/getpreview.ashx?guidSite={this.Context.Site.Id.ToString()}&guidWeb={this.Context.Web.Id.ToString()}&guidFile={previewImage.UniqueId.ToString()}";
+                        item[ClientSidePage.BannerImageUrl] = imageUri.OriginalString;
                     }
-                    catch { }
                 }
                 item.Update();
                 this.Context.Web.Context.Load(item);
