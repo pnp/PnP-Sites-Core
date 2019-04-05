@@ -409,7 +409,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         if (!String.IsNullOrEmpty(control.JsonControlData))
                                         {
                                             var json = JsonConvert.DeserializeObject<JObject>(control.JsonControlData);
-                                            if (json["instanceId"].Type != JTokenType.Null)
+                                            if (json["instanceId"] != null && json["instanceId"].Type != JTokenType.Null)
                                             {
                                                 if (Guid.TryParse(json["instanceId"].Value<string>(), out Guid instanceId))
                                                 {

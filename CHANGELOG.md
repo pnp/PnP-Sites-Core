@@ -6,7 +6,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [3.8.1904.0 - unreleased]
+## [3.9.1905.0 - unreleased]
+
+### Added
+
+### Changed
+
+## [3.8.1904.0 - April 2019 release]
 
 ### Added
 
@@ -25,6 +31,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Added capability to set the private CDN orgins and policies #2141 [gautamdsheth]
 - EnsureUser for external users #2136 [schaudk]
 - Don't fail on modern page save when the provided header image url is living in a different web then the client side page
+- Correctly save a modern repost page
 
 ## [3.7.1903.0 - March 2019 release]
 
