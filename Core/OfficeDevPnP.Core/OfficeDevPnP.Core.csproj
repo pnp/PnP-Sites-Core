@@ -523,6 +523,10 @@
     <Compile Include="Framework\Graph\GraphHttpClient.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingValue.cs" />
     <Compile Include="Framework\Graph\Model\SiteClassificationsSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\User.cs" />
+    <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\PasswordProfile.cs" />
+    <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\ProvisioningAzureActiveDirectory.cs" />
+    <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\UserCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\BaseHierarchyModel.cs" />
     <Compile Include="Framework\Provisioning\Model\BaseProvisioningTemplateObjectCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\CommunicationSiteCollection.cs" />
@@ -530,6 +534,12 @@
     <Compile Include="Framework\Provisioning\Model\ProvisioningHierarchy.cs" />
     <Compile Include="Framework\Provisioning\Model\BaseProvisioningHierarchyObjectCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningSequenceCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateWebhook.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateWebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteFooter.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteFooterLink.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteFooterLinkCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteHeader.cs" />
     <Compile Include="Framework\Provisioning\Model\SubSiteCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteCollectionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteCollection.cs" />
@@ -570,6 +580,32 @@
     <Compile Include="Framework\Provisioning\Model\TeamNoGroupSiteCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\TeamNoGroupSubSite.cs" />
     <Compile Include="Framework\Provisioning\Model\TeamSiteCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\BaseTeam.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamTabCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamTabConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamTabResourceCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamChannelMessageCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamTabResource.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamTab.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamChannelMessage.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamFunSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamGuestSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamMemberSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamMessagingSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\ProvisioningTeams.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamAppInstance.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamAppInstanceCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamChannel.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamChannelCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamSecurity.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamSecurityUser.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamSecurityUserCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamTemplate.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamApp.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamAppCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamTemplateCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\Team.cs" />
     <Compile Include="Framework\Provisioning\Model\Theme.cs" />
     <Compile Include="Framework\Provisioning\Model\ThemeCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\WebApiPermission.cs" />
@@ -629,6 +665,9 @@
     </Compile>
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.cs">
       <DependentUpon>ProvisioningSchema-2018-07.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.cs">
+      <DependentUpon>ProvisioningSchema-2019-03.xsd</DependentUpon>
     </Compile>
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\DocumentTemplateFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TermSetFromModelToSchemaTypeResolver.cs" />
@@ -701,6 +740,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateBasePropertiesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\RegionalSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WebSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201903Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201807Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201805Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201801Serializer.cs" />
@@ -1195,6 +1235,9 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />

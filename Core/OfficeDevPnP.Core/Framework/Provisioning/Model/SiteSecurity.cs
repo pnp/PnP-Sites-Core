@@ -48,6 +48,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// Declares whether to clear existing administrators before adding new ones
+        /// </summary>
+        public Boolean ClearExistingAdministrators { get; set; }
+
+        /// <summary>
         /// A Collection of users that are associated to the sites owners group
         /// </summary>
         public UserCollection AdditionalOwners
@@ -55,6 +60,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             get { return _additionalOwners; }
             private set { _additionalOwners = value; }
         }
+
+        /// <summary>
+        /// Declares whether to clear existing owners before adding new ones
+        /// </summary>
+        public Boolean ClearExistingOwners { get; set; }
 
         /// <summary>
         /// A Collection of users that are associated to the sites members group
@@ -66,6 +76,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// Declares whether to clear existing members before adding new ones
+        /// </summary>
+        public Boolean ClearExistingMembers { get; set; }
+
+        /// <summary>
         /// A Collection of users taht are associated to the sites visitors group
         /// </summary>
         public UserCollection AdditionalVisitors
@@ -73,6 +88,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             get { return _additionalVisitors; }
             private set { _additionalVisitors = value; }
         }
+
+        /// <summary>
+        /// Declares whether to clear existing visitors before adding new ones
+        /// </summary>
+        public Boolean ClearExistingVisitors { get; set; }
 
         /// <summary>
         /// List of additional Groups for the Site
