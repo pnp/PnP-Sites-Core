@@ -2976,11 +2976,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private HeaderMenuStyle menuStyleField;
         
-        private int backgroundEmphasisField;
+        private HeaderBackgroundEmphasis backgroundEmphasisField;
         
         public Header() {
             this.menuStyleField = HeaderMenuStyle.Cascading;
-            this.backgroundEmphasisField = 0;
+            this.backgroundEmphasisField = HeaderBackgroundEmphasis.None;
         }
         
         /// <remarks/>
@@ -3008,8 +3008,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(0)]
-        public int BackgroundEmphasis {
+        [System.ComponentModel.DefaultValueAttribute(HeaderBackgroundEmphasis.None)]
+        public HeaderBackgroundEmphasis BackgroundEmphasis {
             get {
                 return this.backgroundEmphasisField;
             }
@@ -3043,6 +3043,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         /// <remarks/>
         Cascading,
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
+    public enum HeaderBackgroundEmphasis {
+        
+        /// <remarks/>
+        Neutral,
+        
+        /// <remarks/>
+        None,
+        
+        /// <remarks/>
+        Soft,
+        
+        /// <remarks/>
+        Strong,
     }
     
     /// <remarks/>

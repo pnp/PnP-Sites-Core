@@ -26,7 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the Background Emphasis of the Header
         /// </summary>
-        public Int32 BackgroundEmphasis { get; set; }
+        public SiteHeaderBackgroundEmphasis BackgroundEmphasis { get; set; }
 
         #endregion
 
@@ -108,5 +108,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Defines the Cascading Style for the Site Menu
         /// </summary>
         Cascading,
+    }
+
+    /// <summary>
+    /// Defines the Background Emphasis of the Header
+    /// </summary>
+    public enum SiteHeaderBackgroundEmphasis
+    {
+        /// <summary>
+        /// Defines the Neutral emphasis for the Site Header
+        /// </summary>
+        Neutral,
+        /// <summary>
+        /// Defines No emphasis for the Site Header.
+        /// </summary>
+        None,
+        /// <summary>
+        /// Defines the Soft emphasis for the Site Header.
+        /// </summary>
+        Soft,
+        /// <summary>
+        /// Defines the Strong emphasis for the Site Header.
+        /// </summary>
+        Strong,
     }
 }
