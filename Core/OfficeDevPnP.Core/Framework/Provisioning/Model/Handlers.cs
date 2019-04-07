@@ -121,8 +121,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         SiteHeader = 67108864,
         /// <summary>
+        /// Value 134217728, represents Site Footer
+        /// </summary>
+        SiteFooter = 134217728,
+        /// <summary>
         /// Takes all handlers
         /// </summary>
-        All = AuditSettings | ComposedLook | CustomActions | ExtensibilityProviders | Features | Fields | Files | Lists | Pages | Publishing | RegionalSettings | SearchSettings | SitePolicy | SupportedUILanguages | TermGroups | Workflows | SiteSecurity | ContentTypes | PropertyBagEntries | PageContents | WebSettings | Navigation | ImageRenditions | ApplicationLifecycleManagement | Tenant | WebApiPermissions | SiteHeader
+        All = AuditSettings | ComposedLook | CustomActions | ExtensibilityProviders | Features | Fields | Files | Lists | Pages | Publishing | RegionalSettings | SearchSettings | SitePolicy | SupportedUILanguages | TermGroups | Workflows | SiteSecurity | ContentTypes | PropertyBagEntries | PageContents | WebSettings | Navigation | ImageRenditions | ApplicationLifecycleManagement | Tenant | WebApiPermissions | SiteHeader | SiteFooter
     }
 }
