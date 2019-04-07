@@ -25,9 +25,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public String Logo { get; set; }
 
         /// <summary>
-        /// Defines whether to show the Footer name or not
+        /// Defiones the name of the footer. Only visible if "NameVisiblity" has been set to true.
         /// </summary>
-        public Boolean NameVisibility { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Defines whether the existing site Footer links should be removed
@@ -64,7 +64,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (String.Format("{0}|{1}|{2}|{3}|{4}|",
                 Enabled.GetHashCode(),
                 Logo?.GetHashCode() ?? 0,
-                NameVisibility.GetHashCode(),
+                Name?.GetHashCode(),
                 RemoveExistingNodes.GetHashCode(),
                 FooterLinks.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
@@ -98,7 +98,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             return (this.Enabled == other.Enabled &&
                 this.Logo == other.Logo &&
-                this.NameVisibility == other.NameVisibility &&
+                this.Name == other.Name &&
                 this.RemoveExistingNodes == other.RemoveExistingNodes &&
                 this.FooterLinks.DeepEquals(other.FooterLinks)
                 );

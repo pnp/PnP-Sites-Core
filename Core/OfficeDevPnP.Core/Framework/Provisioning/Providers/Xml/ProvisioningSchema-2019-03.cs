@@ -2886,10 +2886,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private string logoField;
         
-        private bool nameVisibilityField;
-        
-        private bool nameVisibilityFieldSpecified;
-        
         private string nameField;
         
         private bool removeExistingNodesField;
@@ -2928,28 +2924,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.logoField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public bool NameVisibility {
-            get {
-                return this.nameVisibilityField;
-            }
-            set {
-                this.nameVisibilityField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool NameVisibilitySpecified {
-            get {
-                return this.nameVisibilityFieldSpecified;
-            }
-            set {
-                this.nameVisibilityFieldSpecified = value;
             }
         }
         
