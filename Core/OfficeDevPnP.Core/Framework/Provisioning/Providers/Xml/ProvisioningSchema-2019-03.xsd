@@ -4478,6 +4478,15 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
+    
+    <xsd:attribute name="Name" type="pnp:ReplaceableString" use="optional">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines the name of the footer, which is visible when NameVisibility has been set to true. Optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
 
     <xsd:attribute name="RemoveExistingNodes" type="xsd:boolean" use="optional" default="true">
       <xsd:annotation>
