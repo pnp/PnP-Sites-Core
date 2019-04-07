@@ -618,6 +618,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchyHandlerBase.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchySequenceSites.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchyTenant.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSiteHeaderSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTenant.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
