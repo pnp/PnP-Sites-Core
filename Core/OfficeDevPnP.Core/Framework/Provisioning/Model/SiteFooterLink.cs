@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines a collection of children Footer Link for the current Footer Link (which represents an header)
         /// </summary>
-        public SiteFooterLinkCollection FooterLinks { get; set; }
+        public SiteFooterLinkCollection FooterLinks { get; private set; }
 
         /// <summary>
         /// Defines the DisplayName for the Footer Link for the target site
@@ -28,6 +28,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Defines the URL for the Footer Link for the target site
         /// </summary>
         public String Url { get; set; }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Constructor for SiteFooter
+        /// </summary>
+        public SiteFooterLink()
+        {
+            this.FooterLinks = new SiteFooterLinkCollection(this.ParentTemplate);
+        }
 
         #endregion
 
