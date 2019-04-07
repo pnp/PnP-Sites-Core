@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines a collection of children Footer Link for the current Footer Link (which represents an header)
         /// </summary>
-        public SiteFooterLinkCollection FooterLinks { get; private set; }
+        public SiteFooterLinkCollection FooterLinks { get; internal set; }
 
         /// <summary>
         /// Defines the DisplayName for the Footer Link for the target site
