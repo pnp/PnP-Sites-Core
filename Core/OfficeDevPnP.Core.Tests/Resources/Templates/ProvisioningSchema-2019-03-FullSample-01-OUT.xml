@@ -184,6 +184,10 @@
             <pnp:NavigationNode Title="Privacy" Url="http://www.company.com/privacy/" IsExternal="true" />
           </pnp:StructuralNavigation>
         </pnp:CurrentNavigation>
+        <pnp:SearchNavigation RemoveExistingNodes="false">
+          <pnp:NavigationNode Title="Sample Search Node 01" Url="{sitecollection}/pages/search01.aspx" IsExternal="true" />
+          <pnp:NavigationNode Title="Sample Search Node 02" Url="{sitecollection}/pages/search02.aspx" />
+        </pnp:SearchNavigation>
       </pnp:Navigation>
       <pnp:SiteFields>
         <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="{localization:intranet:ProjectID}" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />

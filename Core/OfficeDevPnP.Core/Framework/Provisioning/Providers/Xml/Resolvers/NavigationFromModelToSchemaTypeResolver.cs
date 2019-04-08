@@ -111,6 +111,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                         }
 
                         break;
+                    case "SearchNavigation":
+                        var searchNavigation = modelSource.SearchNavigation;
+                        if (searchNavigation != null)
+                        {
+                            target = Activator.CreateInstance(structuralNavigationType);
+
+                            if (!resolvers.ContainsKey($"{target.GetType().FullName}.NavigationNode"))
+                            {
+                                resolvers.Add($"{target.GetType().FullName}.NavigationNode", new NavigationNodeFromModelToSchemaTypeResolver());
+                            }
+                            PnPObjectsMapper.MapProperties(modelSource.SearchNavigation, target, resolvers, true);
+                        }
+
+                        break;
                 }
             }
 
