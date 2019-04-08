@@ -735,6 +735,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\SequenceSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SiteFooterSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SiteHeaderSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\ProvisioningTemplateWebhooksSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WorkflowsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AuditSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SiteColumnsSerializer.cs" />

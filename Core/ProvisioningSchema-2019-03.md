@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 4/5/2019*
+* Topic automatically generated on 4/8/2019*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -2409,7 +2409,7 @@ Defines the Header settings for the target site.
 <pnp:Header
       Layout=""
       MenuStyle=""
-      BackgroundEmphasis="xsd:int">
+      BackgroundEmphasis="">
 </pnp:Header>
 ```
 
@@ -2421,7 +2421,7 @@ Attibute|Type|Description
 --------|----|-----------
 Layout||Defines the Layout of the Header, required attribute.
 MenuStyle||Defines the Menu Style, required attribute.
-BackgroundEmphasis|xsd:int|Defines the Background Emphasis of the Header, optional attribute.
+BackgroundEmphasis||Defines the Background Emphasis of the Header, optional attribute.
 <a name="footer"></a>
 ### Footer
 Defines the Footer settings for the target site.
@@ -2431,6 +2431,7 @@ Defines the Footer settings for the target site.
       Enabled="xsd:boolean"
       Logo="pnp:ReplaceableString"
       NameVisibility="xsd:boolean"
+      Name="pnp:ReplaceableString"
       RemoveExistingNodes="xsd:boolean">
    <pnp:FooterLinks />
 </pnp:Footer>
@@ -2452,6 +2453,7 @@ Attibute|Type|Description
 Enabled|xsd:boolean|Defines whether the site Footer is enabled or not, required attribute.
 Logo|ReplaceableString|Defines the Logo to render in the Footer, optional attribute.
 NameVisibility|xsd:boolean|Defines whether to show the Footer name or not, optional attribute.
+Name|ReplaceableString|Defines the name of the footer, which is visible when NameVisibility has been set to true. Optional attribute.
 RemoveExistingNodes|xsd:boolean|Defines whether the existing site Footer links should be removed, optional attribute.
 <a name="footerlinks"></a>
 ### FooterLinks
@@ -2525,7 +2527,7 @@ Defines a single Provisioning Template Webhook
       Method=""
       BodyFormat=""
       Async="xsd:boolean">
-   <pnp:Parameter />
+   <pnp:Parameters />
 </pnp:ProvisioningTemplateWebhook>
 ```
 
@@ -2535,7 +2537,7 @@ Here follow the available child elements for the  element.
 
 Element|Type|Description
 -------|----|-----------
-Parameter|[StringDictionaryItem](#stringdictionaryitem)|A custom parameter that will be provided to the webhook request
+Parameters|[Parameters](#parameters)|A collection of custom parameters that will be provided to the webhook request
 
 Here follow the available attributes for the  element.
 
@@ -3845,6 +3847,7 @@ Defines a new Team to create or update
 
 ```xml
 <pnp:TeamWithSettings
+      GroupId="pnp:ReplaceableString"
       Specialization=""
       CloneFrom="pnp:ReplaceableString"
       Archived="xsd:boolean">
@@ -3857,6 +3860,7 @@ Here follow the available attributes for the TeamWithSettings element.
 
 Attibute|Type|Description
 --------|----|-----------
+GroupId|ReplaceableString|Declares the ID of the targt Group/Team to update, optional attribute. Cannot be used together with CloneFrom.
 Specialization||The Specialization for the Team, optional attribute.
 CloneFrom|ReplaceableString|Declares the ID of another Team to Clone the current Team from, optional attribute.
 Archived|xsd:boolean|Declares whether the Team is archived or not, optional attribute.

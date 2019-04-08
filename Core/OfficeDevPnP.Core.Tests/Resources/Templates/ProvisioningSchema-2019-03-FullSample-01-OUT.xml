@@ -642,6 +642,21 @@
           </pnp:FooterLink>
         </pnp:FooterLinks>
       </pnp:Footer>
+      <pnp:ProvisioningTemplateWebhooks>
+        <pnp:ProvisioningTemplateWebhook Kind="ProvisioningStarted" Url="https://mywebhook.azurefunctions.net/function01?par1={WebhookParam:Param01}&amp;site={sitecollection}&amp;par2={WebhookParam:Param02}&amp;par3={WebhookParam:Param03}" Method="GET">
+          <pnp:Parameters>
+            <pnp:Parameter Key="Param01" Value="Value01" />
+            <pnp:Parameter Key="Param02" Value="Value02" />
+            <pnp:Parameter Key="Param03" Value="Value03" />
+          </pnp:Parameters>
+        </pnp:ProvisioningTemplateWebhook>
+        <pnp:ProvisioningTemplateWebhook Kind="ProvisioningCompleted" Url="https://mywebhook.azurefunctions.net/function01" Method="POST">
+          <pnp:Parameters>
+            <pnp:Parameter Key="Param01" Value="Value01" />
+            <pnp:Parameter Key="Site" Value="{sitecollection}" />
+          </pnp:Parameters>
+        </pnp:ProvisioningTemplateWebhook>
+      </pnp:ProvisioningTemplateWebhooks>
     </pnp:ProvisioningTemplate>
   </pnp:Templates>
 </pnp:Provisioning>

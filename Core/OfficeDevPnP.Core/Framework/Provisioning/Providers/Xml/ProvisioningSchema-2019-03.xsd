@@ -4469,7 +4469,16 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-   
+
+    <xsd:attribute name="NameVisibility" type="xsd:boolean" use="optional">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines whether to show the Footer name or not, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
     <xsd:attribute name="Name" type="pnp:ReplaceableString" use="optional">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -4548,13 +4557,25 @@
 
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="Parameter" type="pnp:StringDictionaryItem" minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="Parameters" minOccurs="0" maxOccurs="1">
               <xsd:annotation>
                 <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
                 <xsd:documentation xml:lang="en">
-                  A custom parameter that will be provided to the webhook request
+                  A collection of custom parameters that will be provided to the webhook request
                 </xsd:documentation>
               </xsd:annotation>
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element name="Parameter" type="pnp:StringDictionaryItem" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:annotation>
+                      <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+                      <xsd:documentation xml:lang="en">
+                        A custom parameter that will be provided to the webhook request
+                      </xsd:documentation>
+                    </xsd:annotation>
+                  </xsd:element>
+                </xsd:sequence>
+              </xsd:complexType>
             </xsd:element>
           </xsd:sequence>
 

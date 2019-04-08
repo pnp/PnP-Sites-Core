@@ -282,8 +282,8 @@
           </pnp:StructuralNavigation>
         </pnp:CurrentNavigation>
         <pnp:SearchNavigation RemoveExistingNodes="false">
-          <pnp:NavigationNode Title="Sample Search Node 01" Url="{sitecollection}/pages/search01.aspx" IsExternal="true" IsVisible="true" /> 
-          <pnp:NavigationNode Title="Sample Search Node 02" Url="{sitecollection}/pages/search02.aspx" IsExternal="false" IsVisible="false" /> 
+          <pnp:NavigationNode Title="Sample Search Node 01" Url="{sitecollection}/pages/search01.aspx" IsExternal="true" IsVisible="true" />
+          <pnp:NavigationNode Title="Sample Search Node 02" Url="{sitecollection}/pages/search02.aspx" IsExternal="false" IsVisible="false" />
         </pnp:SearchNavigation>
       </pnp:Navigation>
 
@@ -924,8 +924,8 @@
       </pnp:ClientSidePages>
 
       <pnp:Header Layout="Standard" MenuStyle="MegaMenu" BackgroundEmphasis="Soft" />
-      
-      <pnp:Footer Enabled="true" Logo="logo.png" Name="FooterName" RemoveExistingNodes="true">
+
+      <pnp:Footer Enabled="true" Logo="logo.png" Name="FooterName" NameVisibility="true" RemoveExistingNodes="true">
         <pnp:FooterLinks>
           <pnp:FooterLink DisplayName="Link 01" Url="www.link01.com" />
           <pnp:FooterLink DisplayName="Link 02" Url="www.link02.com" />
@@ -952,14 +952,18 @@
       <pnp:ProvisioningTemplateWebhooks>
         <pnp:ProvisioningTemplateWebhook Url="https://mywebhook.azurefunctions.net/function01?par1={WebhookParam:Param01}&amp;site={sitecollection}&amp;par2={WebhookParam:Param02}&amp;par3={WebhookParam:Param03}"
                                          Method="GET" Kind="ProvisioningStarted">
-          <pnp:Parameter Key="Param01" Value="Value01"/>
-          <pnp:Parameter Key="Param02" Value="Value02"/>
-          <pnp:Parameter Key="Param03" Value="Value03"/>
+          <pnp:Parameters>
+            <pnp:Parameter Key="Param01" Value="Value01"/>
+            <pnp:Parameter Key="Param02" Value="Value02"/>
+            <pnp:Parameter Key="Param03" Value="Value03"/>
+          </pnp:Parameters>
         </pnp:ProvisioningTemplateWebhook>
         <pnp:ProvisioningTemplateWebhook Url="https://mywebhook.azurefunctions.net/function01"
                                          Method="POST" Kind="ProvisioningCompleted" BodyFormat="Json" Async="true">
-          <pnp:Parameter Key="Param01" Value="Value01"/>
-          <pnp:Parameter Key="Site" Value="{sitecollection}"/>
+          <pnp:Parameters>
+            <pnp:Parameter Key="Param01" Value="Value01"/>
+            <pnp:Parameter Key="Site" Value="{sitecollection}"/>
+          </pnp:Parameters>
         </pnp:ProvisioningTemplateWebhook>
       </pnp:ProvisioningTemplateWebhooks>
 
@@ -1133,14 +1137,14 @@
   </pnp:Sequence>
 
   <pnp:Teams>
-    
+
     <pnp:TeamTemplate DisplayName="Team from Template 01" Description="Sample Team from Template"
                       Classification="Custom" Visibility="Public">
       <![CDATA[
         { here goes the team template JSON }
       ]]>
     </pnp:TeamTemplate>
-    
+
     <pnp:Team DisplayName="Sample Team 01" Description="This is just a sample Team 01"
               CloneFrom="{TeamId:GroupMailNickname}">
       <pnp:Security>
@@ -1161,8 +1165,8 @@
                        AllowStickersAndMemes="true" AllowCustomMemes="true"/>
       <pnp:GuestSettings AllowCreateUpdateChannels="true" AllowDeleteChannels="false"/>
       <pnp:MembersSettings AllowCreateUpdateChannels="true" AllowDeleteChannels="false"
-                           AllowAddRemoveApps="true" 
-                           AllowCreateUpdateRemoveConnectors="true" 
+                           AllowAddRemoveApps="true"
+                           AllowCreateUpdateRemoveConnectors="true"
                            AllowCreateUpdateRemoveTabs="false" />
       <pnp:MessagingSettings AllowUserEditMessages="true" AllowUserDeleteMessages="true"
                              AllowOwnerDeleteMessages="false"
@@ -1186,7 +1190,7 @@
           <pnp:Tabs>
             <pnp:Tab DisplayName="My Tab 01" TeamsAppId="12345">
               <pnp:Configuration EntityId="2DCA2E6C7A10415CAF6B8AB6661B3154"
-                                 ContentUrl="https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView" 
+                                 ContentUrl="https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView"
                                  WebsiteUrl="https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154"
                                  RemoveUrl="https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/uninstallTab" />
             </pnp:Tab>
@@ -1250,7 +1254,7 @@
       <pnp:App AppId="APP001" PackageUrl="./custom-app-01.json" />
       <pnp:App AppId="APP002" PackageUrl="./custom-app-02.zip" />
     </pnp:Apps>
-    
+
   </pnp:Teams>
 
   <pnp:AzureActiveDirectory>
@@ -1260,7 +1264,7 @@
                 MailNickname="john.white"
                 UserPrincipalName="john.white@{parameter:domain}.onmicrosoft.com">
         <pnp:PasswordProfile ForceChangePasswordNextSignIn="true"
-                             Password="Pass@w0rd"/>        
+                             Password="Pass@w0rd"/>
       </pnp:User>
       <pnp:User AccountEnabled="true"
                 DisplayName="Jim Black"
@@ -1271,5 +1275,5 @@
       </pnp:User>
     </pnp:Users>
   </pnp:AzureActiveDirectory>
-  
+
 </pnp:Provisioning>

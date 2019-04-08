@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// Class to serialize/deserialize the Site Footer
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 820, DeserializationSequence = 820,
-        MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
+        MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201903,
         Default = true)]
     internal class SiteFooterSerializer : PnPBaseSchemaSerializer<SiteFooter>
     {
@@ -39,7 +39,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                 var resolvers = new Dictionary<String, IResolver>();
 
-                resolvers.Add($"{siteFooterType}.NameVisibilitySpecified", new ExpressionValueResolver(() => true));
                 resolvers.Add($"{siteFooterType}.FooterLinks",
                     new SiteFooterLinkFromModelToSchemaTypeResolver());
 
