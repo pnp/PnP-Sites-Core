@@ -186,7 +186,7 @@
         </pnp:CurrentNavigation>
         <pnp:SearchNavigation RemoveExistingNodes="false">
           <pnp:NavigationNode Title="Sample Search Node 01" Url="{sitecollection}/pages/search01.aspx" IsExternal="true" />
-          <pnp:NavigationNode Title="Sample Search Node 02" Url="{sitecollection}/pages/search02.aspx" />
+          <pnp:NavigationNode Title="Sample Search Node 02" Url="{sitecollection}/pages/search02.aspx" IsVisible="false" />
         </pnp:SearchNavigation>
       </pnp:Navigation>
       <pnp:SiteFields>
