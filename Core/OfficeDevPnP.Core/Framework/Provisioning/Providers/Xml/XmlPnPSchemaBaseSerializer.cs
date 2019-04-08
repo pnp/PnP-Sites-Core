@@ -391,6 +391,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             var ts = new TenantSerializer();
             ts.Serialize(template, wrapper);
 
+            // Handle the Teams of the schema wrapper, if any
+            var tms = new TeamsSerializer();
+            tms.Serialize(template, wrapper);
+
+            // Handle the Azure Active Directory of the schema wrapper, if any
+            var aads = new AzureActiveDirectorySerializer();
+            aads.Serialize(template, wrapper);
+
             // Configure the basic properties of the wrapper
             if (template.ParentHierarchy != null)
             {
@@ -695,6 +703,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 // Handle the Tenant-wide settings of the schema wrapper, if any
                 var ts = new TenantSerializer();
                 ts.Deserialize(wrapper, dummyTemplate);
+
+                // Handle the Teams settings of the schema wrapper, if any
+                var tms = new TeamsSerializer();
+                tms.Deserialize(wrapper, dummyTemplate);
+
+                // Handle the Azure Active Directory settings of the schema wrapper, if any
+                var aads = new AzureActiveDirectorySerializer();
+                aads.Deserialize(wrapper, dummyTemplate);
 
                 // Handle the Sequences
                 var ss = new SequenceSerializer();

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<pnp:Provisioning Author="John White" Generator="Human being" ImagePreviewUrl="https://sharepointpnp.com/ImagePreview.png" DisplayName="Sample Provisioning" Description="A sample Provisioning document" xmlns:pnp="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.2.1810.0, Culture=neutral, PublicKeyToken=null">
+<pnp:Provisioning Author="John White" Generator="Human being" ImagePreviewUrl="https://sharepointpnp.com/ImagePreview.png" DisplayName="Sample Provisioning" Description="A sample Provisioning document" xmlns:pnp="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.9.1905.0, Culture=neutral, PublicKeyToken=null">
     <pnp:Parameters>
       <pnp:Parameter Key="O365TenantName">contoso</pnp:Parameter>
       <pnp:Parameter Key="CodeProvidedParam" />
@@ -123,7 +123,7 @@
         }</pnp:Theme>
     </pnp:Themes>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-DUMMY-7468e4c7-89ee-4d94-bea8-18ed5ed6bb11">
+  <pnp:Templates ID="CONTAINER-DUMMY-36f44d2a-f6b2-4bde-b055-2a217820a18c">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
@@ -148,30 +148,8 @@
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
       </pnp:PropertyBagEntries>
       <pnp:Security BreakRoleInheritance="true" ResetRoleInheritance="true" RemoveExistingUniqueRoleAssignments="true" ClearSubscopes="true" AssociatedGroups="Test Value" AssociatedOwnerGroup="{parameter:AssociatedOwnerGroup}" AssociatedMemberGroup="{parameter:AssociatedMemberGroup}" AssociatedVisitorGroup="{parameter:AssociatedVisitorGroup}">
-        <pnp:AdditionalAdministrators>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalAdministrators>
-        <pnp:AdditionalOwners>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalOwners>
-        <pnp:AdditionalMembers>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalMembers>
-        <pnp:AdditionalVisitors>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalVisitors>
         <pnp:SiteGroups>
-          <pnp:SiteGroup Title="Power Users" Description="Group of Power Users" Owner="admin@contoso.com" AllowMembersEditMembership="false" AllowRequestToJoinLeave="false" AutoAcceptRequestToJoinLeave="false" OnlyAllowMembersViewMembership="false">
-            <pnp:Members>
-              <pnp:User Name="user1@contoso.com" />
-              <pnp:User Name="user2@contoso.com" />
-              <pnp:User Name="user3@contoso.com" />
-            </pnp:Members>
-          </pnp:SiteGroup>
+          <pnp:SiteGroup Title="Power Users" Description="Group of Power Users" Owner="admin@contoso.com" AllowMembersEditMembership="false" AllowRequestToJoinLeave="false" AutoAcceptRequestToJoinLeave="false" OnlyAllowMembersViewMembership="false" />
         </pnp:SiteGroups>
         <pnp:Permissions>
           <pnp:RoleDefinitions>
@@ -216,17 +194,17 @@
       <pnp:ContentTypes>
         <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" />
-            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" />
-            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" />
-            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" />
+            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" UpdateChildren="false" />
+            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" UpdateChildren="false" />
+            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" UpdateChildren="false" />
+            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" UpdateChildren="false" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x0120D5200039D83CD2C9BA4A4499AEE6BE3562E023" Name="ProjectDocumentSet" Description="Document Set for a Project" Group="Document Sets Samples">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" />
-            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" />
-            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" />
+            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" UpdateChildren="false" />
+            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" UpdateChildren="false" />
+            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" UpdateChildren="false" />
           </pnp:FieldRefs>
           <pnp:DocumentSetTemplate WelcomePage="{sitecollection}/_cts/ProjectDocumentSet/ProjectHomePage.aspx">
             <pnp:AllowedContentTypes>
@@ -614,9 +592,9 @@
         <pnp:Webhook ServerNotificationUrl="http://myapp.azurewebsites.net/WebHookListener" ExpiresInDays="120" SiteWebhookType="WebDeleted" />
       </pnp:SiteWebhooks>
       <pnp:ClientSidePages>
-        <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" Overwrite="true" Title="Client Side Page Title" ContentTypeID="0x01010012345">
+        <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" PromoteAsTemplate="false" Overwrite="true" Title="Client Side Page Title" ContentTypeID="0x01010012345">
           <pnp:Sections>
-            <pnp:Section Order="1" Type="OneColumn">
+            <pnp:Section Order="1" Type="OneColumn" ZoneEmphasis="0">
               <pnp:Controls>
                 <pnp:CanvasControl WebPartType="Image" CustomWebPartName="..." JsonControlData="{}" ControlId="0eaba53f-55d8-44b5-9f7c-61301c7f1e0e" Order="1">
                   <pnp:CanvasControlProperties>
@@ -626,7 +604,7 @@
               </pnp:Controls>
             </pnp:Section>
           </pnp:Sections>
-          <pnp:Header Type="Custom" ServerRelativeImageUrl="./site%20assets/picture.png" TranslateX="10.56" TranslateY="15.12345" />
+          <pnp:Header Type="Custom" ServerRelativeImageUrl="./site%20assets/picture.png" TranslateX="10.56" TranslateY="15.12345" LayoutType="FullWidthImage" TextAlignment="Center" ShowTopicHeader="false" ShowPublishDate="false" AuthorByLineId="0" />
           <pnp:FieldValues>
             <pnp:FieldValue Key="Category" Value="Marketing" />
             <pnp:FieldValue Key="Tags" Value="Tag01,Tag02,Tag03" />
@@ -648,25 +626,6 @@
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security RemoveExistingUniqueRoleAssignments="false">
-        <pnp:AdditionalAdministrators>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalAdministrators>
-        <pnp:AdditionalOwners>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalOwners>
-        <pnp:AdditionalMembers>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalMembers>
-        <pnp:AdditionalVisitors>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalVisitors>
-        <pnp:Permissions />
-      </pnp:Security>
       <pnp:SiteFields>
         <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
         <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="ProjectName" DisplayName="Project Name" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
@@ -676,10 +635,10 @@
       <pnp:ContentTypes>
         <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" />
-            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" />
-            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" />
-            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" />
+            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" UpdateChildren="false" />
+            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" UpdateChildren="false" />
+            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" UpdateChildren="false" />
+            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" UpdateChildren="false" />
           </pnp:FieldRefs>
         </pnp:ContentType>
       </pnp:ContentTypes>
@@ -778,25 +737,6 @@ function showAlert(){alert("Hello!")};
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security RemoveExistingUniqueRoleAssignments="false">
-        <pnp:AdditionalAdministrators>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalAdministrators>
-        <pnp:AdditionalOwners>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalOwners>
-        <pnp:AdditionalMembers>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalMembers>
-        <pnp:AdditionalVisitors>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalVisitors>
-        <pnp:Permissions />
-      </pnp:Security>
       <pnp:SiteFields>
         <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
         <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="ProjectName" DisplayName="Project Name" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
@@ -806,10 +746,10 @@ function showAlert(){alert("Hello!")};
       <pnp:ContentTypes>
         <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" />
-            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" />
-            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" />
-            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" />
+            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" UpdateChildren="false" />
+            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" UpdateChildren="false" />
+            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" UpdateChildren="false" />
+            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" UpdateChildren="false" />
           </pnp:FieldRefs>
         </pnp:ContentType>
       </pnp:ContentTypes>
@@ -910,25 +850,6 @@ function showAlert(){alert("Hello!")};
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security RemoveExistingUniqueRoleAssignments="false">
-        <pnp:AdditionalAdministrators>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalAdministrators>
-        <pnp:AdditionalOwners>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalOwners>
-        <pnp:AdditionalMembers>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalMembers>
-        <pnp:AdditionalVisitors>
-          <pnp:User Name="user@contoso.com" />
-          <pnp:User Name="U_SHAREPOINT_ADMINS" />
-        </pnp:AdditionalVisitors>
-        <pnp:Permissions />
-      </pnp:Security>
       <pnp:SiteFields>
         <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
         <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="ProjectName" DisplayName="Project Name" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
@@ -938,10 +859,10 @@ function showAlert(){alert("Hello!")};
       <pnp:ContentTypes>
         <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" />
-            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" />
-            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" />
-            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" />
+            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" UpdateChildren="false" />
+            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" UpdateChildren="false" />
+            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" UpdateChildren="false" />
+            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" UpdateChildren="false" />
           </pnp:FieldRefs>
         </pnp:ContentType>
       </pnp:ContentTypes>
