@@ -248,14 +248,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                     {
                                         // If we have serverProcessedContent then also export that one, it's important as some controls depend on this information to be present
                                         string HtmlProperties = (control as Pages.ClientSideWebPart).HtmlProperties;
-                                        jsonControlData = jsonControlData + ", \"htmlProperties\": " + HtmlProperties + "";
+                                        if (!string.IsNullOrWhiteSpace(HtmlProperties))
+                                        {
+                                            jsonControlData = jsonControlData + ", \"htmlProperties\": " + HtmlProperties + "";
+                                        }
                                     }
 
                                     if ((control as Pages.ClientSideWebPart).HtmlPropertiesData != null)
                                     {
                                         // If we have serverProcessedContent then also export that one, it's important as some controls depend on this information to be present
                                         string HtmlPropertiesData = (control as Pages.ClientSideWebPart).HtmlPropertiesData;
-                                        jsonControlData = jsonControlData + ", \"htmlPropertiesData\": " + HtmlPropertiesData + "";
+                                        if (!string.IsNullOrWhiteSpace(HtmlPropertiesData))
+                                        {
+                                            jsonControlData = jsonControlData + ", \"htmlPropertiesData\": " + HtmlPropertiesData + "";
+                                        }
                                     }
 
                                     controlInstance.JsonControlData = "{" + jsonControlData + "}";
