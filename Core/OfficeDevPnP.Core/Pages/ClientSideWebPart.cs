@@ -768,20 +768,20 @@ namespace OfficeDevPnP.Core.Pages
 
             if (parsedJson["webPartData"] != null && parsedJson["webPartData"]["htmlProperties"] != null)
             {
-                this.htmlProperties = JsonConvert.DeserializeObject<string>(parsedJson["webPartData"]["htmlProperties"].ToString());
+                this.htmlProperties = parsedJson["webPartData"]["htmlProperties"].ToString();
             }
             else if (parsedJson["htmlProperties"] != null)
             {
-                this.htmlProperties = JsonConvert.DeserializeObject<string>(parsedJson["htmlProperties"].ToString());
+                this.htmlProperties = parsedJson["htmlProperties"].ToString();
             }
 
             if (parsedJson["webPartData"] != null && parsedJson["webPartData"]["htmlPropertiesData"] != null)
             {
-                this.htmlPropertiesData = JsonConvert.DeserializeObject<string>(parsedJson["webPartData"]["htmlPropertiesData"].ToString());
+                this.htmlPropertiesData = parsedJson["webPartData"]["htmlPropertiesData"].ToString();
             }
             else if (parsedJson["htmlPropertiesData"] != null)
             {
-                this.htmlPropertiesData = JsonConvert.DeserializeObject<string>(parsedJson["htmlPropertiesData"].ToString());
+                this.htmlPropertiesData = parsedJson["htmlPropertiesData"].ToString();
             }
         }
         #endregion
