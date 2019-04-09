@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 #if !NETSTANDARD2_0
 using System.Web.UI;
 #endif
@@ -767,20 +768,20 @@ namespace OfficeDevPnP.Core.Pages
 
             if (parsedJson["webPartData"] != null && parsedJson["webPartData"]["htmlProperties"] != null)
             {
-                this.htmlProperties = parsedJson["webPartData"]["htmlProperties"].ToString();
+                this.htmlProperties = Regex.Unescape(parsedJson["webPartData"]["htmlProperties"].ToString());
             }
             else if (parsedJson["htmlProperties"] != null)
             {
-                this.htmlProperties = parsedJson["htmlProperties"].ToString();
+                this.htmlProperties = Regex.Unescape(parsedJson["htmlProperties"].ToString());
             }
 
             if (parsedJson["webPartData"] != null && parsedJson["webPartData"]["htmlPropertiesData"] != null)
             {
-                this.htmlPropertiesData = parsedJson["webPartData"]["htmlPropertiesData"].ToString();
+                this.htmlPropertiesData = Regex.Unescape(parsedJson["webPartData"]["htmlPropertiesData"].ToString());
             }
             else if (parsedJson["htmlPropertiesData"] != null)
             {
-                this.htmlPropertiesData = parsedJson["htmlPropertiesData"].ToString();
+                this.htmlPropertiesData = Regex.Unescape(parsedJson["htmlPropertiesData"].ToString());
             }
         }
         #endregion

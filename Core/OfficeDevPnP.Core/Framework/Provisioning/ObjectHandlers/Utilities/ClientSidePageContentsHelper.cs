@@ -250,7 +250,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         string HtmlProperties = (control as Pages.ClientSideWebPart).HtmlProperties;
                                         if (!string.IsNullOrWhiteSpace(HtmlProperties))
                                         {
-                                            jsonControlData = jsonControlData + ", \"htmlProperties\": " + HtmlProperties + "";
+                                            jsonControlData = jsonControlData + ", \"htmlProperties\": " + Regex.Escape(HtmlProperties) + "";
                                         }
                                     }
 
@@ -260,7 +260,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         string HtmlPropertiesData = (control as Pages.ClientSideWebPart).HtmlPropertiesData;
                                         if (!string.IsNullOrWhiteSpace(HtmlPropertiesData))
                                         {
-                                            jsonControlData = jsonControlData + ", \"htmlPropertiesData\": " + HtmlPropertiesData + "";
+                                            
+                                            jsonControlData = jsonControlData + ", \"htmlPropertiesData\": " + Regex.Escape(HtmlPropertiesData) + "";
                                         }
                                     }
 
