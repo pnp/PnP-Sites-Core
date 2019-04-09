@@ -21,40 +21,44 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
-            //var tenantSettings = persistence.GetPublicInstancePropertyValue("Tenant");
+            var teams = persistence.GetPublicInstancePropertyValue("Teams");
 
-            //if (tenantSettings != null)
-            //{
-            //    var expressions = new Dictionary<Expression<Func<ProvisioningTenant, Object>>, IResolver>();
+            if (teams != null)
+            {
+                var expressions = new Dictionary<Expression<Func<ProvisioningTeams, Object>>, IResolver>();
 
-            //    // Manage the AppCatalog
-            //    expressions.Add(t => t.AppCatalog, new AppCatalogFromSchemaToModelTypeResolver());
+                // Manage Teams
+                expressions.Add(t => t.TeamTemplates, new TeamTemplatesFromSchemaToModelTypeResolver());
 
-            //    // Manage the CDN
-            //    expressions.Add(t => t.ContentDeliveryNetwork, new CdnFromSchemaToModelTypeResolver());
+                //// Manage the Apps
+                //expressions.Add(t => t.Apps, new AppCatalogFromSchemaToModelTypeResolver());
 
-            //    // Manage the Site Designs mapping with Site Scripts
-            //    expressions.Add(t => t.SiteDesigns[0].SiteScripts, new SiteScriptRefFromSchemaToModelTypeResolver());
+                //// Manage the CDN
+                //expressions.Add(t => t.ContentDeliveryNetwork, new CdnFromSchemaToModelTypeResolver());
 
-            //    // Manage Palette of Theme
-            //    expressions.Add(t => t.Themes[0].Palette, new ExpressionValueResolver((s, v) => {
+                //// Manage the Site Designs mapping with Site Scripts
+                //expressions.Add(t => t.SiteDesigns[0].SiteScripts, new SiteScriptRefFromSchemaToModelTypeResolver());
 
-            //        String result = null;
+                //// Manage Palette of Theme
+                //expressions.Add(t => t.Themes[0].Palette, new ExpressionValueResolver((s, v) =>
+                //{
 
-            //        if (s != null)
-            //        {
-            //            String[] text = s.GetPublicInstancePropertyValue("Text") as String[];
-            //            if (text != null && text.Length > 0)
-            //            {
-            //                result = text.Aggregate(String.Empty, (acc, next) => acc += (next != null ? next : String.Empty));
-            //            }
-            //        }
+                //    String result = null;
 
-            //        return (result.Trim());
-            //    }));
+                //    if (s != null)
+                //    {
+                //        String[] text = s.GetPublicInstancePropertyValue("Text") as String[];
+                //        if (text != null && text.Length > 0)
+                //        {
+                //            result = text.Aggregate(String.Empty, (acc, next) => acc += (next != null ? next : String.Empty));
+                //        }
+                //    }
 
-            //    PnPObjectsMapper.MapProperties(tenantSettings, template.Tenant, expressions, true);
-            //}
+                //    return (result.Trim());
+                //}));
+
+                PnPObjectsMapper.MapProperties(teams, template.ParentHierarchy.Teams, expressions, true);
+            }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)

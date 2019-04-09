@@ -53,7 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     new FromStringToGuidValueResolver());
 
                 // Manage Header for client side page
-                expressions.Add(cp => cp.Header, new ClientSidePageHeaderFromSchemaToModel());
+                expressions.Add(cp => cp.Header, new ClientSidePageHeaderFromSchemaToModelTypeResolver());
 
                 template.ClientSidePages.AddRange(
                     PnPObjectsMapper.MapObjects(clientSidePages,
@@ -114,7 +114,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                 if (null != clientSidePageHeaderType)
                 {
-                    expressions.Add($"{clientSidePageType}.Header", new ClientSidePageHeaderFromModelToSchema());
+                    expressions.Add($"{clientSidePageType}.Header", new ClientSidePageHeaderFromModelToSchemaTypeResolver());
                     expressions.Add($"{clientSidePageHeaderType}.TranslateX", new FromNullableToSpecifiedValueResolver<double>("TranslateXSpecified"));
                     expressions.Add($"{clientSidePageHeaderType}.TranslateY", new FromNullableToSpecifiedValueResolver<double>("TranslateYSpecified"));
                 }
