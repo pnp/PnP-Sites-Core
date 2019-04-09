@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -27,35 +28,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             {
                 var expressions = new Dictionary<Expression<Func<ProvisioningTeams, Object>>, IResolver>();
 
-                // Manage Teams
+                // Manage Team Templates
                 expressions.Add(t => t.TeamTemplates, new TeamTemplatesFromSchemaToModelTypeResolver());
+                expressions.Add(t => t.TeamTemplates[0].JsonTemplate, new ExpressionValueResolver((s, v) => {
+                    // Concatenate all the string values in the Text array of strings and return as the content of the JSON template
+                    return ((s.GetPublicInstancePropertyValue("Text") as String[])?.Aggregate(String.Empty, (acc, next) => acc += (next != null ? next : String.Empty)));
+                }));
 
-                //// Manage the Apps
-                //expressions.Add(t => t.Apps, new AppCatalogFromSchemaToModelTypeResolver());
+                // Manage Teams
+                expressions.Add(t => t.Teams, new TeamsFromSchemaToModelTypeResolver());
+                expressions.Add(t => t.Teams[0].FunSettings, 
+                    new ComplexTypeFromSchemaToModelTypeResolver<TeamFunSettings>("FunSettings"));
+                expressions.Add(t => t.Teams[0].GuestSettings, 
+                    new ComplexTypeFromSchemaToModelTypeResolver<TeamGuestSettings>("GuestSettings"));
+                expressions.Add(t => t.Teams[0].MemberSettings,
+                    new ComplexTypeFromSchemaToModelTypeResolver<TeamMemberSettings>("MembersSettings"));
+                expressions.Add(t => t.Teams[0].MessagingSettings,
+                    new ComplexTypeFromSchemaToModelTypeResolver<TeamMessagingSettings>("MessagingSettings"));
+                expressions.Add(t => t.Teams[0].Security, new TeamSecurityFromSchemaToModelTypeResolver());
 
-                //// Manage the CDN
-                //expressions.Add(t => t.ContentDeliveryNetwork, new CdnFromSchemaToModelTypeResolver());
+                expressions.Add(t => t.Teams[0].Channels[0].Tabs[0].Configuration,
+                    new ComplexTypeFromSchemaToModelTypeResolver<TeamTabConfiguration>("Configuration"));
 
-                //// Manage the Site Designs mapping with Site Scripts
-                //expressions.Add(t => t.SiteDesigns[0].SiteScripts, new SiteScriptRefFromSchemaToModelTypeResolver());
-
-                //// Manage Palette of Theme
-                //expressions.Add(t => t.Themes[0].Palette, new ExpressionValueResolver((s, v) =>
-                //{
-
-                //    String result = null;
-
-                //    if (s != null)
-                //    {
-                //        String[] text = s.GetPublicInstancePropertyValue("Text") as String[];
-                //        if (text != null && text.Length > 0)
-                //        {
-                //            result = text.Aggregate(String.Empty, (acc, next) => acc += (next != null ? next : String.Empty));
-                //        }
-                //    }
-
-                //    return (result.Trim());
-                //}));
+                // Handle the JSON content of the Message to send to the channel
+                expressions.Add(t => t.Teams[0].Channels[0].Messages[0].Message, new ExpressionValueResolver((s, v) => s));
 
                 PnPObjectsMapper.MapProperties(teams, template.ParentHierarchy.Teams, expressions, true);
             }
