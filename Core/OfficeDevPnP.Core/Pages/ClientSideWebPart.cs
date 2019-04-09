@@ -25,7 +25,7 @@ namespace OfficeDevPnP.Core.Pages
         public const string WebPartDataVersionAttribute = "data-sp-webpartdataversion";
         public const string WebPartDataAttribute = "data-sp-webpartdata";
         public const string WebPartComponentIdAttribute = "data-sp-componentid";
-        public const string WebPartHtmlPropertiesAttribute = "data-sp-htmlproperties";        
+        public const string WebPartHtmlPropertiesAttribute = "data-sp-htmlproperties";
 
         private ClientSideComponent component;
         private string jsonWebPartData;
@@ -540,6 +540,7 @@ namespace OfficeDevPnP.Core.Pages
 #else
         protected virtual void RenderHtmlProperties(ref HtmlTextWriter htmlWriter)
         {
+            bool createdFromServerProcessedContent = false;
             if (this.ServerProcessedContent != null)
             {
                 if (this.ServerProcessedContent["searchablePlainTexts"] != null)
@@ -552,6 +553,7 @@ namespace OfficeDevPnP.Core.Pages
                         htmlWriter.Write(property.Value.ToString());
                         htmlWriter.RenderEndTag();
                     }
+                    createdFromServerProcessedContent = true;
                 }
 
                 if (this.ServerProcessedContent["imageSources"] != null)
@@ -566,6 +568,7 @@ namespace OfficeDevPnP.Core.Pages
                         htmlWriter.RenderBeginTag(HtmlTextWriterTag.Img);
                         htmlWriter.RenderEndTag();
                     }
+                    createdFromServerProcessedContent = true;
                 }
 
                 if (this.ServerProcessedContent["links"] != null)
@@ -577,9 +580,11 @@ namespace OfficeDevPnP.Core.Pages
                         htmlWriter.RenderBeginTag(HtmlTextWriterTag.A);
                         htmlWriter.RenderEndTag();
                     }
+                    createdFromServerProcessedContent = true;
                 }
             }
-            else
+
+            if(!string.IsNullOrWhiteSpace(this.HtmlPropertiesData) && !createdFromServerProcessedContent)
             {
                 htmlWriter.Write(this.HtmlPropertiesData);
             }
