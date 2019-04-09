@@ -123,7 +123,7 @@
         }</pnp:Theme>
     </pnp:Themes>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-DUMMY-397003f8-a2f6-4e18-9266-efefe0c62267">
+  <pnp:Templates ID="CONTAINER-DUMMY-aefab863-1c69-4f2d-99e1-7f82ee330f4a">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
@@ -1099,12 +1099,35 @@ function showAlert(){alert("Hello!")};
     <pnp:TeamTemplate DisplayName="Team from Template 01" Description="Sample Team from Template" Classification="Custom" Visibility="Public">
         { here goes the team template JSON }
       </pnp:TeamTemplate>
-    <pnp:Team DisplayName="Sample Team 01" Description="This is just a sample Team 01" Visibility="Private" Specialization="None" CloneFrom="{TeamId:GroupMailNickname}" />
+    <pnp:Team DisplayName="Sample Team 01" Description="This is just a sample Team 01" Visibility="Private" Specialization="None" CloneFrom="{TeamId:GroupMailNickname}">
+      <pnp:Security>
+        <pnp:Owners ClearExistingItems="true">
+          <pnp:User UserPrincipalName="owner01@domain.onmicrosoft.com" />
+          <pnp:User UserPrincipalName="owner02@domain.onmicrosoft.com" />
+        </pnp:Owners>
+        <pnp:Members ClearExistingItems="true">
+          <pnp:User UserPrincipalName="user01@domain.onmicrosoft.com" />
+          <pnp:User UserPrincipalName="user02@domain.onmicrosoft.com" />
+          <pnp:User UserPrincipalName="user03@domain.onmicrosoft.com" />
+        </pnp:Members>
+      </pnp:Security>
+    </pnp:Team>
     <pnp:Team DisplayName="Sample Team 02" Description="This is just a sample Team 02" Classification="Private" Visibility="Public" GroupId="{groupid:DisplayName}" Specialization="EducationStandard">
       <pnp:FunSettings GiphyContentRating="Strict" />
       <pnp:GuestSettings />
       <pnp:MembersSettings AllowDeleteChannels="false" AllowCreateUpdateRemoveTabs="false" />
       <pnp:MessagingSettings AllowOwnerDeleteMessages="false" />
+      <pnp:Security>
+        <pnp:Owners ClearExistingItems="true">
+          <pnp:User UserPrincipalName="owner01@domain.onmicrosoft.com" />
+          <pnp:User UserPrincipalName="owner02@domain.onmicrosoft.com" />
+        </pnp:Owners>
+        <pnp:Members ClearExistingItems="true">
+          <pnp:User UserPrincipalName="user01@domain.onmicrosoft.com" />
+          <pnp:User UserPrincipalName="user02@domain.onmicrosoft.com" />
+          <pnp:User UserPrincipalName="user03@domain.onmicrosoft.com" />
+        </pnp:Members>
+      </pnp:Security>
       <pnp:Channels>
         <pnp:Channel DisplayName="Sample Channel 01" Description="This is just a Sample Channel" IsFavoriteByDefault="true">
           <pnp:Tabs>

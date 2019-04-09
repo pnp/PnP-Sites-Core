@@ -45,7 +45,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     new ComplexTypeFromSchemaToModelTypeResolver<TeamMemberSettings>("MembersSettings"));
                 expressions.Add(t => t.Teams[0].MessagingSettings,
                     new ComplexTypeFromSchemaToModelTypeResolver<TeamMessagingSettings>("MessagingSettings"));
-                expressions.Add(t => t.Teams[0].Security, new TeamSecurityFromSchemaToModelTypeResolver());
+                expressions.Add(t => t.Teams[0].Security,
+                    new TeamSecurityFromSchemaToModelTypeResolver());
 
                 expressions.Add(t => t.Teams[0].Channels[0].Tabs[0].Configuration,
                     new ComplexTypeFromSchemaToModelTypeResolver<TeamTabConfiguration>("Configuration"));
@@ -102,6 +103,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                         // Return the JSON template as text for the node content
                         return (new String[1] { (s as TeamTemplate)?.JsonTemplate });
                     }));
+
+                    // Handle Security for TeamWithSettings
+                    resolvers.Add($"{teamWithSettingType}.Security",
+                        new TeamSecurityFromModelToSchemaTypeResolver());
 
                     // Handle all the settings for the TeamWithSettings objects
                     resolvers.Add($"{teamWithSettingType}.FunSettings",
