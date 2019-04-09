@@ -764,6 +764,24 @@ namespace OfficeDevPnP.Core.Pages
             {
                 this.dynamicDataValues = (JObject)parsedJson["dynamicDataValues"];
             }
+
+            if (parsedJson["webPartData"] != null && parsedJson["webPartData"]["htmlProperties"] != null)
+            {
+                this.htmlProperties = parsedJson["webPartData"]["htmlProperties"].ToString();
+            }
+            else if (parsedJson["htmlProperties"] != null)
+            {
+                this.htmlProperties = parsedJson["htmlProperties"].ToString();
+            }
+
+            if (parsedJson["webPartData"] != null && parsedJson["webPartData"]["htmlPropertiesData"] != null)
+            {
+                this.htmlPropertiesData = parsedJson["webPartData"]["htmlPropertiesData"].ToString();
+            }
+            else if (parsedJson["htmlPropertiesData"] != null)
+            {
+                this.htmlPropertiesData = parsedJson["htmlPropertiesData"].ToString();
+            }
         }
         #endregion
     }
