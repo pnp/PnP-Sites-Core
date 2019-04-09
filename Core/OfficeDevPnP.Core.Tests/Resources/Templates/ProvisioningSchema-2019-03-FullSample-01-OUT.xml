@@ -123,7 +123,7 @@
         }</pnp:Theme>
     </pnp:Themes>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-DUMMY-fa27e028-92a9-47f3-9401-593245d286cf">
+  <pnp:Templates ID="CONTAINER-DUMMY-397003f8-a2f6-4e18-9266-efefe0c62267">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
@@ -1096,6 +1096,65 @@ function showAlert(){alert("Hello!")};
     </pnp:TermStore>
   </pnp:Sequence>
   <pnp:Teams>
+    <pnp:TeamTemplate DisplayName="Team from Template 01" Description="Sample Team from Template" Classification="Custom" Visibility="Public">
+        { here goes the team template JSON }
+      </pnp:TeamTemplate>
+    <pnp:Team DisplayName="Sample Team 01" Description="This is just a sample Team 01" Visibility="Private" Specialization="None" CloneFrom="{TeamId:GroupMailNickname}" />
+    <pnp:Team DisplayName="Sample Team 02" Description="This is just a sample Team 02" Classification="Private" Visibility="Public" GroupId="{groupid:DisplayName}" Specialization="EducationStandard">
+      <pnp:FunSettings GiphyContentRating="Strict" />
+      <pnp:GuestSettings />
+      <pnp:MembersSettings AllowDeleteChannels="false" AllowCreateUpdateRemoveTabs="false" />
+      <pnp:MessagingSettings AllowOwnerDeleteMessages="false" />
+      <pnp:Channels>
+        <pnp:Channel DisplayName="Sample Channel 01" Description="This is just a Sample Channel" IsFavoriteByDefault="true">
+          <pnp:Tabs>
+            <pnp:Tab DisplayName="My Tab 01" TeamsAppId="12345">
+              <pnp:Configuration EntityId="2DCA2E6C7A10415CAF6B8AB6661B3154" ContentUrl="https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView" RemoveUrl="https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/uninstallTab" WebsiteUrl="https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154" />
+            </pnp:Tab>
+          </pnp:Tabs>
+          <pnp:TabResources>
+            <pnp:TabResource Type="Notebook" TargetTabId="{TeamsTabId:TabDisplayName}">
+              <pnp:TabResourceSettings> 
+                {
+                  "displayName": "Notebook name"
+                }
+                </pnp:TabResourceSettings>
+            </pnp:TabResource>
+            <pnp:TabResource Type="Planner" TargetTabId="{TeamsTabId:TabDisplayName}">
+              <pnp:TabResourceSettings> 
+                {
+                  "displayName": "Planner name"
+                }
+                </pnp:TabResourceSettings>
+            </pnp:TabResource>
+            <pnp:TabResource Type="Schedule" TargetTabId="{TeamsTabId:TabDisplayName}">
+              <pnp:TabResourceSettings> 
+                {
+                  "displayName": "Schedule name"
+                }
+                </pnp:TabResourceSettings>
+            </pnp:TabResource>
+          </pnp:TabResources>
+          <pnp:Messages>
+            <pnp:Message> 
+              {
+                "body": {
+                  "contentType": "html",
+                  "content": "Hello World"
+                },
+                "subject": "Welcome to this channel"
+              }
+              </pnp:Message>
+          </pnp:Messages>
+        </pnp:Channel>
+        <pnp:Channel DisplayName="Sample Channel 02" Description="This is just a Sample Channel" />
+        <pnp:Channel DisplayName="Sample Channel 03" Description="This is just a Sample Channel" />
+      </pnp:Channels>
+      <pnp:Apps>
+        <pnp:App AppId="12345678-9abc-def0-123456789a" />
+        <pnp:App AppId="{TeamsAppId:APP002}" />
+      </pnp:Apps>
+    </pnp:Team>
     <pnp:Apps>
       <pnp:App AppId="APP001" PackageUrl="./custom-app-01.json" />
       <pnp:App AppId="APP002" PackageUrl="./custom-app-02.zip" />

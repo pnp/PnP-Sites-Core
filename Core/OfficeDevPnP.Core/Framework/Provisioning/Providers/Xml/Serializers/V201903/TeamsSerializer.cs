@@ -69,26 +69,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                 if (teamsType != null)
                 {
+                    var teamTemplateTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamTemplate, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamTemplateType = Type.GetType(teamTemplateTypeName, true);
+                    var teamWithSettingTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamWithSettings, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamWithSettingType = Type.GetType(teamWithSettingTypeName, true);
+                    var teamChannelTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamChannel, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamChannelType = Type.GetType(teamChannelTypeName, true);
+
+                    var teamFunSettingsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamWithSettingsFunSettings, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamFunSettingsType = Type.GetType(teamFunSettingsTypeName, true);
+                    var teamGuestSettingsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamWithSettingsGuestSettings, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamGuestSettingsType = Type.GetType(teamGuestSettingsTypeName, true);
+                    var teamMembersSettingsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamWithSettingsMembersSettings, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamMembersSettingsType = Type.GetType(teamMembersSettingsTypeName, true);
+                    var teamMessagingSettingsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamWithSettingsMessagingSettings, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamMessagingSettingsType = Type.GetType(teamMessagingSettingsTypeName, true);
+                    var teamChannelTabTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamChannelTabsTab, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamChannelTabType = Type.GetType(teamChannelTabTypeName, true);
+                    var teamChannelTabConfigurationTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamChannelTabsTabConfiguration, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamChannelTabConfigurationType = Type.GetType(teamChannelTabConfigurationTypeName, true);                    
+
                     var target = Activator.CreateInstance(teamsType, true);
 
                     var resolvers = new Dictionary<String, IResolver>();
 
-                    //resolvers.Add($"{teamsType}.AppCatalog",
-                    //    new AppCatalogFromModelToSchemaTypeResolver());
-                    //resolvers.Add($"{teamsType}.ContentDeliveryNetwork",
-                    //    new CdnFromModelToSchemaTypeResolver());
-                    //resolvers.Add($"{teamsType}.SiteScripts",
-                    //    new SiteScriptRefFromModelToSchemaTypeResolver());
+                    // Handle generic team objects (TeamTemplate and TeamWithSettings)
+                    resolvers.Add($"{teamsType}.Items",
+                        new TeamsItemsFromModelToSchemaTypeResolver());
 
-                    //if (themeType != null)
-                    //{
-                    //    resolvers.Add($"{themeType}.Text",
-                    //        new ExpressionValueResolver((s, v) =>
-                    //        {
-                    //            return (new String[] { (String)s.GetPublicInstancePropertyValue("Palette") });
-                    //        }));
-                    //}
+                    // Handle JSON template for the TeamTemplate objects
+                    resolvers.Add($"{teamTemplateType}.Text", new ExpressionValueResolver((s, v) => {
+                        // Return the JSON template as text for the node content
+                        return (new String[1] { (s as TeamTemplate)?.JsonTemplate });
+                    }));
 
+                    // Handle all the settings for the TeamWithSettings objects
+                    resolvers.Add($"{teamWithSettingType}.FunSettings",
+                        new ComplexTypeFromModelToSchemaTypeResolver(teamFunSettingsType, "FunSettings"));
+                    resolvers.Add($"{teamWithSettingType}.GuestSettings",
+                        new ComplexTypeFromModelToSchemaTypeResolver(teamGuestSettingsType, "GuestSettings"));
+                    resolvers.Add($"{teamWithSettingType}.MembersSettings",
+                        new ComplexTypeFromModelToSchemaTypeResolver(teamMembersSettingsType, "MemberSettings"));
+                    resolvers.Add($"{teamWithSettingType}.MessagingSettings",
+                        new ComplexTypeFromModelToSchemaTypeResolver(teamMessagingSettingsType, "MessagingSettings"));
+
+                    // Handle channel Messages for TeamsWithSettings objects
+                    resolvers.Add($"{teamChannelType}.Messages", new ExpressionValueResolver((s, v) => {
+                        // Return the JSON messages as an array of Strings
+                        return ((s as TeamChannel)?.Messages.Count > 0 ? (s as TeamChannel)?.Messages.Select(m => m.Message).ToArray() : null);
+                    }));
+
+                    // Handle channel Tab Configuration for TeamsWithSettings objects
+                    resolvers.Add($"{teamChannelTabType}.Configuration",
+                        new ComplexTypeFromModelToSchemaTypeResolver(teamChannelTabConfigurationType, "Configuration"));
 
                     PnPObjectsMapper.MapProperties(template.ParentHierarchy.Teams, target, resolvers, recursive: true);
 
