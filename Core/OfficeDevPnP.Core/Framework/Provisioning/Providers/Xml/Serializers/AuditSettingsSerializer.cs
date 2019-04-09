@@ -25,7 +25,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             if (auditSettings != null)
             {
                 var expressions = new Dictionary<Expression<Func<AuditSettings, Object>>, IResolver>();
-                expressions.Add(a => a.AuditFlags, new FromArrayToAuditFlagsResolver());
+                expressions.Add(a => a.AuditFlags, new FromArrayToAuditFlagsValueResolver());
 
                 template.AuditSettings = new AuditSettings();
                 PnPObjectsMapper.MapProperties(auditSettings, template.AuditSettings, expressions, true);
@@ -41,7 +41,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 var expressions = new Dictionary<string, IResolver>();
                 expressions.Add($"{auditSettingsType}.AuditLogTrimmingRetentionSpecified", new ExpressionValueResolver((s, p) => true));
                 expressions.Add($"{auditSettingsType}.TrimAuditLogSpecified", new ExpressionValueResolver((s, p) => true));
-                expressions.Add($"{auditSettingsType}.Audit", new FromAuditFlagsToArrayResolver());
+                expressions.Add($"{auditSettingsType}.Audit", new FromAuditFlagsToArrayValueResolver());
 
                 PnPObjectsMapper.MapProperties(template.AuditSettings, target, expressions, recursive: true);
 

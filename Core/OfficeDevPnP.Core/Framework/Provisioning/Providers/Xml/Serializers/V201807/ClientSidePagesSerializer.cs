@@ -53,7 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                     new FromStringToGuidValueResolver());
 
                 // Manage Header for client side page
-                expressions.Add(cp => cp.Header, new ClientSidePageHeaderFromSchemaToModel());
+                expressions.Add(cp => cp.Header, new ClientSidePageHeaderFromSchemaToModelTypeResolver());
 
                 // Manage Security for client side page
                 expressions.Add(cp => cp.Security, new PropertyObjectTypeResolver<File>(fl => fl.Security,
@@ -121,7 +121,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
 
                 if (null != clientSidePageHeaderType)
                 {
-                    expressions.Add($"{clientSidePageType}.Header", new ClientSidePageHeaderFromModelToSchema());
+                    expressions.Add($"{clientSidePageType}.Header", new ClientSidePageHeaderFromModelToSchemaTypeResolver());
                     expressions.Add($"{clientSidePageHeaderType}.TranslateX", new FromNullableToSpecifiedValueResolver<double>("TranslateXSpecified"));
                     expressions.Add($"{clientSidePageHeaderType}.TranslateY", new FromNullableToSpecifiedValueResolver<double>("TranslateYSpecified"));
                 }
