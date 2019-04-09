@@ -59,56 +59,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            //if (template.Tenant != null && 
-            //    (template.Tenant.AppCatalog != null || template.Tenant.ContentDeliveryNetwork != null ||
-            //    template.Tenant.SiteDesigns != null || template.Tenant.SiteScripts != null ||
-            //    template.Tenant.StorageEntities != null || template.Tenant.Themes != null ||
-            //    template.Tenant.WebApiPermissions != null))
-            //{
-            //    var tenantTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Tenant, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            //    var tenantType = Type.GetType(tenantTypeName, false);
-            //    var siteDesignsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SiteDesignsSiteDesign, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            //    var siteDesignsType = Type.GetType(siteDesignsTypeName, false);
-            //    var themeTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ThemesTheme, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            //    var themeType = Type.GetType(themeTypeName, false);
+            if (template.ParentHierarchy != null && template.ParentHierarchy.Teams != null &&
+                (template.ParentHierarchy.Teams.Apps != null ||
+                template.ParentHierarchy.Teams.Teams != null ||
+                template.ParentHierarchy.Teams.TeamTemplates != null))
+            {
+                var teamsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Teams, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var teamsType = Type.GetType(teamsTypeName, false);
 
-            //    if (tenantType != null)
-            //    {
-            //        var target = Activator.CreateInstance(tenantType, true);
+                if (teamsType != null)
+                {
+                    var target = Activator.CreateInstance(teamsType, true);
 
-            //        var resolvers = new Dictionary<String, IResolver>();
+                    var resolvers = new Dictionary<String, IResolver>();
 
-            //        resolvers.Add($"{tenantType}.AppCatalog",
-            //            new AppCatalogFromModelToSchemaTypeResolver());
-            //        resolvers.Add($"{tenantType}.ContentDeliveryNetwork",
-            //            new CdnFromModelToSchemaTypeResolver());
-            //        resolvers.Add($"{siteDesignsType}.SiteScripts",
-            //            new SiteScriptRefFromModelToSchemaTypeResolver());
+                    //resolvers.Add($"{teamsType}.AppCatalog",
+                    //    new AppCatalogFromModelToSchemaTypeResolver());
+                    //resolvers.Add($"{teamsType}.ContentDeliveryNetwork",
+                    //    new CdnFromModelToSchemaTypeResolver());
+                    //resolvers.Add($"{teamsType}.SiteScripts",
+                    //    new SiteScriptRefFromModelToSchemaTypeResolver());
 
-            //        if (themeType != null)
-            //        {
-            //            resolvers.Add($"{themeType}.Text",
-            //                new ExpressionValueResolver((s, v) => {
-            //                    return (new String[] { (String)s.GetPublicInstancePropertyValue("Palette") });
-            //                }));
-            //        }
+                    //if (themeType != null)
+                    //{
+                    //    resolvers.Add($"{themeType}.Text",
+                    //        new ExpressionValueResolver((s, v) =>
+                    //        {
+                    //            return (new String[] { (String)s.GetPublicInstancePropertyValue("Palette") });
+                    //        }));
+                    //}
 
 
-            //        PnPObjectsMapper.MapProperties(template.Tenant, target, resolvers, recursive: true);
+                    PnPObjectsMapper.MapProperties(template.ParentHierarchy.Teams, target, resolvers, recursive: true);
 
-            //        if (target != null &&
-            //            (target.GetPublicInstancePropertyValue("AppCatalog") != null ||
-            //            target.GetPublicInstancePropertyValue("ContentDeliveryNetwork") != null ||
-            //            target.GetPublicInstancePropertyValue("SiteScripts") != null ||
-            //            target.GetPublicInstancePropertyValue("SiteDesigns") != null ||
-            //            target.GetPublicInstancePropertyValue("StorageEntities") != null ||
-            //            target.GetPublicInstancePropertyValue("Themes") != null ||
-            //            target.GetPublicInstancePropertyValue("WebApiPermissions") != null))
-            //        {
-            //            persistence.GetPublicInstanceProperty("Tenant").SetValue(persistence, target);
-            //        }
-            //    }
-            //}
+                    if (target != null &&
+                        (target.GetPublicInstancePropertyValue("Apps") != null ||
+                        target.GetPublicInstancePropertyValue("Items") != null))
+                    {
+                        persistence.GetPublicInstanceProperty("Teams").SetValue(persistence, target);
+                    }
+                }
+            }
         }
     }
 }

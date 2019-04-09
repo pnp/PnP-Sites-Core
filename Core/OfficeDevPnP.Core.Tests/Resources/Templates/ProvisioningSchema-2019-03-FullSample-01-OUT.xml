@@ -123,7 +123,7 @@
         }</pnp:Theme>
     </pnp:Themes>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-DUMMY-25a92984-fc34-4b89-a56c-bdd81b64753f">
+  <pnp:Templates ID="CONTAINER-DUMMY-fa27e028-92a9-47f3-9401-593245d286cf">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
@@ -1095,6 +1095,12 @@ function showAlert(){alert("Hello!")};
       </pnp:TermGroup>
     </pnp:TermStore>
   </pnp:Sequence>
+  <pnp:Teams>
+    <pnp:Apps>
+      <pnp:App AppId="APP001" PackageUrl="./custom-app-01.json" />
+      <pnp:App AppId="APP002" PackageUrl="./custom-app-02.zip" />
+    </pnp:Apps>
+  </pnp:Teams>
   <pnp:AzureActiveDirectory>
     <pnp:Users>
       <pnp:User AccountEnabled="true" DisplayName="John White" MailNickname="john.white" UserPrincipalName="john.white@{parameter:domain}.onmicrosoft.com">
