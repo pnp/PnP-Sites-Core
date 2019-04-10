@@ -8,6 +8,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -17,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201801,
         SerializationSequence = -1, DeserializationSequence = -1,
-        Default = false)]
+        Scope = SerializerScope.Tenant)]
     internal class TenantSerializer : PnPBaseSchemaSerializer<ProvisioningTenant>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)

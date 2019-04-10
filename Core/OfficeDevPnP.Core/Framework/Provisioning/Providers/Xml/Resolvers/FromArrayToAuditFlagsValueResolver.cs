@@ -5,13 +5,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 {
     /// <summary>
     /// Resolves an array of Strings into an enum bit mask of AuditFlags
     /// </summary>
-    internal class FromArrayToAuditFlagsResolver : IValueResolver
+    internal class FromArrayToAuditFlagsValueResolver : IValueResolver
     {
         public string Name => this.GetType().Name;
 

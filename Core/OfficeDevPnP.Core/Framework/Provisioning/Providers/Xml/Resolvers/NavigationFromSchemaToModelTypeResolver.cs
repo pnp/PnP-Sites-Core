@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 {
@@ -41,11 +42,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                     navigation = source.GetPublicInstancePropertyValue("CurrentNavigation");
                     targetIsGlobal = false;
                     break;
+                case "SearchNavigation":
+                    navigation = source.GetPublicInstancePropertyValue("SearchNavigation");
+                    break;
             }
 
             if (navigation != null)
             {
-                var navigationType = navigation.GetPublicInstancePropertyValue("NavigationType");
+                var navigationType = this._navigationType != "SearchNavigation" ?
+                    navigation.GetPublicInstancePropertyValue("NavigationType") :
+                    this._navigationType;
                 switch (navigationType.ToString())
                 {
                     case "Managed":
@@ -98,6 +104,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                         {
                             target = new Model.CurrentNavigation(Model.CurrentNavigationType.Inherit, null, null);
                         }
+                        break;
+                    case "SearchNavigation":
+                        target = new Model.StructuralNavigation();
+                        var searchNavigationNodes = navigation.GetPublicInstancePropertyValue("NavigationNode");
+
+                        if (!resolvers.ContainsKey($"{target.GetType().FullName}.NavigationNodes"))
+                        {
+                            resolvers.Add($"{target.GetType().FullName}.NavigationNodes", new NavigationNodeFromSchemaToModelTypeResolver());
+                        }
+
+                        PnPObjectsMapper.MapProperties(navigation, target, resolvers, true);
+
                         break;
                 }
                 return (target);

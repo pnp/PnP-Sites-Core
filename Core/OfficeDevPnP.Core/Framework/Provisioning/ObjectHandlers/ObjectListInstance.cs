@@ -1643,8 +1643,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var listTemplates = site.GetCustomListTemplates(web);
                     web.Context.Load(listTemplates);
                     web.Context.ExecuteQueryRetry();
-                    var matchingTemplates = listTemplates.Where(t => t.FeatureId == templateList.TemplateFeatureID &&
-                            t.ListTemplateTypeKind == templateList.TemplateType).ToList();
+
+                    var matchingTemplatesFilter = listTemplates.Where(t => t.FeatureId == templateList.TemplateFeatureID &&
+                            t.ListTemplateTypeKind == templateList.TemplateType);
+
+                    // Support for named stp's from schema 2019/03
+                    if (!string.IsNullOrWhiteSpace(templateList.TemplateInternalName))
+                    {                        
+                        matchingTemplatesFilter = matchingTemplatesFilter.Where(t => t.InternalName.Equals(templateList.TemplateInternalName,
+                            StringComparison.InvariantCultureIgnoreCase));
+                    }
+
+                    var matchingTemplates = matchingTemplatesFilter.ToList();
                     if (matchingTemplates.Count == 1)
                     {
                         listCreate.ListTemplate = matchingTemplates[0];

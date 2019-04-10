@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using System.Xml;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -14,7 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 2100, DeserializationSequence = 2100,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
-        Default = true)]
+        Scope = SerializerScope.Template)]
     internal class ExtensibilityHandlersSerializer : PnPBaseSchemaSerializer<ExtensibilityHandler>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)

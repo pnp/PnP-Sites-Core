@@ -2886,6 +2886,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private string logoField;
         
+        private bool nameVisibilityField;
+        
+        private bool nameVisibilityFieldSpecified;
+        
         private string nameField;
         
         private bool removeExistingNodesField;
@@ -2924,6 +2928,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.logoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool NameVisibility {
+            get {
+                return this.nameVisibilityField;
+            }
+            set {
+                this.nameVisibilityField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool NameVisibilitySpecified {
+            get {
+                return this.nameVisibilityFieldSpecified;
+            }
+            set {
+                this.nameVisibilityFieldSpecified = value;
             }
         }
         
@@ -10938,7 +10964,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
     public partial class ProvisioningTemplateWebhooksProvisioningTemplateWebhook {
         
-        private StringDictionaryItem[] parameterField;
+        private StringDictionaryItem[] parametersField;
         
         private ProvisioningTemplateWebhooksProvisioningTemplateWebhookKind kindField;
         
@@ -10956,13 +10982,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Parameter")]
-        public StringDictionaryItem[] Parameter {
+        [System.Xml.Serialization.XmlArrayItemAttribute("Parameter", IsNullable=false)]
+        public StringDictionaryItem[] Parameters {
             get {
-                return this.parameterField;
+                return this.parametersField;
             }
             set {
-                this.parameterField = value;
+                this.parametersField = value;
             }
         }
         

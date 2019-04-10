@@ -4,16 +4,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201805
 {
-    internal class ClientSidePageHeaderFromSchemaToModel : ITypeResolver
+    internal class ClientSidePageHeaderFromSchemaToModelTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
 
         public bool CustomCollectionResolver => false;
 
-        public ClientSidePageHeaderFromSchemaToModel()
+        public ClientSidePageHeaderFromSchemaToModelTypeResolver()
         {
         }
 

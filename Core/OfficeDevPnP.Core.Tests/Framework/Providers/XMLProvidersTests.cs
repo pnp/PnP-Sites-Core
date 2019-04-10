@@ -762,6 +762,44 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_ProvisioningHierarchy_Load_201903()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var hierarchy = provider.GetHierarchy("ProvisioningSchema-2019-03-FullSample-01.xml");
+
+            Assert.IsNotNull(hierarchy);
+            Assert.IsNotNull(hierarchy.Templates);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_ProvisioningHierarchy_Save_201903()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var hierarchy = provider.GetHierarchy("ProvisioningSchema-2019-03-FullSample-01.xml");
+
+            // Save the hierarchy
+            var outputFile = "ProvisioningSchema-2019-03-FullSample-01-OUT.xml";
+            provider.SaveAs(hierarchy, outputFile);
+
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{outputFile}"));
+
+            var hierarchy2 = provider.GetHierarchy(outputFile);
+            Assert.IsNotNull(hierarchy2);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_ContentTypes_201605()
         {
             XMLTemplateProvider provider =

@@ -508,7 +508,7 @@
     <Compile Include="Extensions\InternalClientContextExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\ListRatingExtensions.cs" />
-    <Compile Include="Extensions\ObjectExtension.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\ProvisioningExtensions.cs" />
     <Compile Include="Extensions\PublishingExtensions.cs" />
     <Compile Include="Extensions\RecordsManagementExtensions.cs" />
@@ -625,6 +625,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchySequenceTermGroups.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\PnPProvisioningContext.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AssociatedGroupIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneButExternalUsersToken.cs" />
@@ -674,8 +675,16 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.cs">
       <DependentUpon>ProvisioningSchema-2019-03.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\201903\SiteFooterLinkFromModelToSchemaTypeResolver.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\201903\SiteFooterLinkFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\ComplexTypeFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TeamSecurityFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TeamsItemsFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\AADUsersFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\AADUsersPasswordProfileFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\AADUsersPasswordProfileFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\AADUsersFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TeamSecurityFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\SiteFooterLinkFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\SiteFooterLinkFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\DocumentTemplateFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TermSetFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionTypeResolver.cs" />
@@ -692,16 +701,19 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\CdnFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\CdnFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\AppCatalogFromModelToSchemaTypeResolver.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\ClientSidePageHeaderFromModelToSchema.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\ClientSidePageHeaderFromSchemaToModel.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\ClientSidePageHeaderFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\ClientSidePageHeaderFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\SiteScriptRefFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\SiteScriptRefFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201807\SiteCollectionsAndSitesFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201807\SiteCollectionsAndSitesFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\ComplexTypeFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TeamsFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TeamTemplatesFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\WorkHourFromSchemaToModelValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FoldersFromModelToSchemaTypeResolver.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromAuditFlagsToArrayResolver.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromArrayToAuditFlagsResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromAuditFlagsToArrayValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromArrayToAuditFlagsValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromBasePermissionsToStringValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromNullableToSpecifiedValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\PageLayoutsFromModelToSchemaTypeResolver.cs" />
@@ -736,8 +748,12 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\ClientSidePagesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\ProvisioningHierarchySerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\SequenceSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\NavigationSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SiteFooterSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SiteHeaderSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\ProvisioningTemplateWebhooksSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\AzureActiveDirectorySerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\TeamsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WorkflowsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AuditSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SiteColumnsSerializer.cs" />
