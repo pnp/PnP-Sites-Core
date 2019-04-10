@@ -17,8 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 1100, DeserializationSequence = 1100,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
-        Scope = SerializerScope.Template,
-        Default = true)]
+        Scope = SerializerScope.Template)]
     internal class ListInstancesSerializer : PnPBaseSchemaSerializer<ListInstance>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)

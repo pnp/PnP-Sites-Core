@@ -16,8 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201903,
         SerializationSequence = 810, DeserializationSequence = 810,
-        Scope = SerializerScope.Template,
-        Default = false)]
+        Scope = SerializerScope.Template)]
     internal class SiteHeaderSerializer : PnPBaseSchemaSerializer<SiteHeader>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)

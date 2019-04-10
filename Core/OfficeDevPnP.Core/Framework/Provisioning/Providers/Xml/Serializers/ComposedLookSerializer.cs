@@ -13,8 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 1700, DeserializationSequence = 1700,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
-        Scope = SerializerScope.Template,
-        Default = true)]
+        Scope = SerializerScope.Template)]
     internal class ComposedLookSerializer : PnPBaseSchemaSerializer<ComposedLook>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)

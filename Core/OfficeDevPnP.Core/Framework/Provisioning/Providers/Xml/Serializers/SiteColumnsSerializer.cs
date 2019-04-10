@@ -16,8 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         SerializationSequence = 900, DeserializationSequence = 900,
-        Scope = SerializerScope.Template,
-        Default = false)]
+        Scope = SerializerScope.Template)]
     internal class SiteColumnsSerializer : PnPBaseSchemaSerializer<Field>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)

@@ -33,11 +33,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         public Int32 DeserializationSequence { get; set; } = 0;
 
         /// <summary>
-        /// Defines whether to automatically include the serializer in the serialization process or not
-        /// </summary>
-        public Boolean Default { get; set; } = true;
-
-        /// <summary>
         /// Defines the scope of the serializer
         /// </summary>
         /// <remarks>
