@@ -460,14 +460,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     //check if it's FieldRef to Field on List Level
-                    if(listInfo.TemplateList.FieldRefs.Any(f=>f.Id == fieldRef.Id))
+                    if (listInfo.TemplateList.Fields.Any(f => f.GetFieldId(parser) == fieldRef.Id))
                     {
-                        listInfo.SiteList.EnsureProperties(l => l.ContentTypesEnabled, l => l.ContentTypes.Include(c => c.Id, c => c.FieldLinks));
+                        listInfo.SiteList.EnsureProperties(l => l.ContentTypesEnabled, l => l.ContentTypes.Include(c => c.Id, c => c.FieldLinks, c => c.Sealed));
                         //if none are enabled it seems the FieldLink is added to the Default ContentType
-                        if (listInfo.SiteList.ContentTypesEnabled && !listInfo.SiteList.ContentTypes.Any(c=>c.FieldLinks.Any(f=>f.Id == fieldRef.Id)))
+                        if (!listInfo.SiteList.ContentTypes.Any(c => c.FieldLinks.Any(f => f.Id == fieldRef.Id)))
                         {
                             //Add Field to any ContentType on the List
-                            foreach(var ct in listInfo.SiteList.ContentTypes)
+                            foreach (var ct in listInfo.SiteList.ContentTypes.Where(c => !c.Sealed))
                             {
                                 ct.FieldLinks.Add(new FieldLinkCreationInformation { Field = field });
                                 ct.Update(false);
