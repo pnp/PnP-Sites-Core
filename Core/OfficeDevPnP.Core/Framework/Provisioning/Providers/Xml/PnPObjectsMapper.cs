@@ -57,12 +57,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         public static void MapProperties(Object source, Object destination, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {
             // Retrieve the list of destination properties
-            var destinationProperties = destination.GetType().GetProperties(
+            var destinationProperties = destination?.GetType().GetProperties(
                 System.Reflection.BindingFlags.Instance |
                 System.Reflection.BindingFlags.Public);
 
             // Retrieve the list of source properties
-            var sourceProperties = source.GetType().GetProperties(
+            var sourceProperties = source?.GetType().GetProperties(
                 System.Reflection.BindingFlags.Instance |
                 System.Reflection.BindingFlags.Public);
 
@@ -74,7 +74,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             // Just for the properties that are not collection or complex types of the model
             // and that are not array or Xml domain model related
-            var filteredProperties = destinationProperties.Where(
+            var filteredProperties = destinationProperties?.Where(
                 p => (!Attribute.IsDefined(p, typeof(ObsoleteAttribute)) &&
                 (p.PropertyType.BaseType.Name != typeof(BaseProvisioningTemplateObjectCollection<>).Name || recursive) &&
                 (p.PropertyType.BaseType.Name != typeof(BaseProvisioningHierarchyObjectCollection<>).Name || recursive) &&
@@ -89,9 +89,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 var resolver = resolvers != null && resolvers.ContainsKey(resolverKey) ? resolvers[resolverKey] : null;
 
                 // Search for the matching source property
-                var sp = sourceProperties.FirstOrDefault(p => p.Name.Equals(dp.Name, StringComparison.InvariantCultureIgnoreCase));
-                var spSpecified = sourceProperties.FirstOrDefault(p => p.Name.Equals($"{dp.Name}Specified", StringComparison.InvariantCultureIgnoreCase));
-                var dpSpecified = destinationProperties.FirstOrDefault(p => p.Name.Equals($"{dp.Name}Specified", StringComparison.InvariantCultureIgnoreCase));
+                var sp = sourceProperties?.FirstOrDefault(p => p.Name.Equals(dp.Name, StringComparison.InvariantCultureIgnoreCase));
+                var spSpecified = sourceProperties?.FirstOrDefault(p => p.Name.Equals($"{dp.Name}Specified", StringComparison.InvariantCultureIgnoreCase));
+                var dpSpecified = destinationProperties?.FirstOrDefault(p => p.Name.Equals($"{dp.Name}Specified", StringComparison.InvariantCultureIgnoreCase));
                 if (null != sp || null != resolver)
                 {
                     if (null != resolver)

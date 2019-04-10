@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201705;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V201705
 {

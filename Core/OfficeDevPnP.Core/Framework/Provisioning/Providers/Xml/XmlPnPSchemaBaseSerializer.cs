@@ -14,6 +14,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers;
 using System.Collections;
 using System.Reflection;
 using System.Xml.XPath;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
@@ -125,10 +126,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 ts.Deserialize(wrapper, result);
 
                 // Get the list of templates, if any, wrapped by the wrapper
-                var wrapperTemplates = wrapperType.GetProperty("Templates", 
-                    System.Reflection.BindingFlags.Instance | 
-                    System.Reflection.BindingFlags.Public | 
-                    System.Reflection.BindingFlags.IgnoreCase).GetValue(wrapper);
+                var wrapperTemplates = wrapper.GetPublicInstancePropertyValue("Templates");
 
                 if (wrapperTemplates != null)
                 {
@@ -136,20 +134,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     foreach (var templates in (IEnumerable)wrapperTemplates)
                     {
                         // Let's see if we have an in-place template with the provided ID or if we don't have a provided ID at all
-                        var provisioningTemplates = templates.GetType()
-                            .GetProperty("ProvisioningTemplate",
-                                System.Reflection.BindingFlags.Instance |
-                                System.Reflection.BindingFlags.Public |
-                                System.Reflection.BindingFlags.IgnoreCase).GetValue(templates);
+                        var provisioningTemplates = templates.GetPublicInstancePropertyValue("ProvisioningTemplate");
 
                         if (provisioningTemplates != null)
                         {
                             foreach (var t in (IEnumerable)provisioningTemplates)
                             {
-                                var templateId = (String)t.GetType().GetProperty("ID",
-                                    System.Reflection.BindingFlags.Instance |
-                                    System.Reflection.BindingFlags.Public |
-                                    System.Reflection.BindingFlags.IgnoreCase).GetValue(t);
+                                var templateId = t.GetPublicInstancePropertyValue("ID") as String;
 
                                 if ((templateId != null && templateId == identifier) || String.IsNullOrEmpty(identifier))
                                 {
@@ -159,40 +150,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
                             if (source == null)
                             {
-                                var provisioningTemplateFiles = templates.GetType()
-                                    .GetProperty("ProvisioningTemplateFile",
-                                        System.Reflection.BindingFlags.Instance |
-                                        System.Reflection.BindingFlags.Public |
-                                        System.Reflection.BindingFlags.IgnoreCase).GetValue(templates);
+                                var provisioningTemplateFiles = templates.GetPublicInstancePropertyValue("ProvisioningTemplateFile");
 
                                 // If we don't have a template, but there are external file references
                                 if (source == null && provisioningTemplateFiles != null)
                                 {
                                     foreach (var f in (IEnumerable)provisioningTemplateFiles)
                                     {
-                                        var templateId = (String)f.GetType().GetProperty("ID",
-                                            System.Reflection.BindingFlags.Instance |
-                                            System.Reflection.BindingFlags.Public |
-                                            System.Reflection.BindingFlags.IgnoreCase).GetValue(f);
+                                        var templateId = f.GetPublicInstancePropertyValue("ID") as String;
 
                                         if ((templateId != null && templateId == identifier) || String.IsNullOrEmpty(identifier))
                                         {
                                             // Let's see if we have an external file for the template
-                                            var externalFile = (String)f.GetType().GetProperty("File",
-                                                System.Reflection.BindingFlags.Instance |
-                                                System.Reflection.BindingFlags.Public |
-                                                System.Reflection.BindingFlags.IgnoreCase).GetValue(f);
+                                            var externalFile = f.GetPublicInstancePropertyValue("File") as String;
 
-                                            Stream externalFileStream = this.Provider.Connector.GetFileStream(externalFile);
-                                            xml = XDocument.Load(externalFileStream);
+                                            if (!String.IsNullOrEmpty(externalFile))
+                                            {
+                                                Stream externalFileStream = this.Provider.Connector.GetFileStream(externalFile);
+                                                xml = XDocument.Load(externalFileStream);
 
-                                            if (xml.Root.Name != pnp + "ProvisioningTemplate")
-                                            {
-                                                throw new ApplicationException("Invalid external file format. Expected a ProvisioningTemplate file!");
-                                            }
-                                            else
-                                            {
-                                                source = XMLSerializer.Deserialize<TSchemaTemplate>(xml);
+                                                if (xml.Root.Name != pnp + "ProvisioningTemplate")
+                                                {
+                                                    throw new ApplicationException("Invalid external file format. Expected a ProvisioningTemplate file!");
+                                                }
+                                                else
+                                                {
+                                                    source = XMLSerializer.Deserialize<TSchemaTemplate>(xml);
+                                                }
+
                                             }
                                         }
                                     }
@@ -328,17 +313,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             var provisioningTemplates = Array.CreateInstance(typeof(TSchemaTemplate), 1);
             provisioningTemplates.SetValue(result, 0);
 
-            templatesItem.GetType().GetProperty("ProvisioningTemplate",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.IgnoreCase).SetValue(templatesItem, provisioningTemplates);
+            templatesItem.SetPublicInstancePropertyValue("ProvisioningTemplate", provisioningTemplates);
 
             templates.SetValue(templatesItem, 0);
 
-            wrapperType.GetProperty("Templates",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper, templates);
+            wrapper.SetPublicInstancePropertyValue("Templates", templates);
 
             SerializeTemplate(template, result);
 
@@ -372,10 +351,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             var preferencesType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Preferences, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
             Object preferences = Activator.CreateInstance(preferencesType);
 
-            wrapper.GetType().GetProperty("Preferences",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper, preferences);
+            wrapper.SetPublicInstancePropertyValue("Preferences", preferences);
 
             // Handle the Parameters of the schema wrapper, if any
             var tps = new TemplateParametersSerializer();
@@ -400,76 +376,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             // Configure the basic properties of the wrapper
             if (template.ParentHierarchy != null)
             {
-                var author = wrapper.GetType().GetProperty("Author",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase);
-                if (author != null)
-                {
-                    author.SetValue(wrapper,
-                        template.ParentHierarchy.Author);
-                }
-                var displayName = wrapper.GetType().GetProperty("DisplayName",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase);
-                if (displayName != null)
-                {
-                    displayName.SetValue(wrapper,
-                        template.ParentHierarchy.DisplayName);
-                }
-                var description = wrapper.GetType().GetProperty("Description",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase);
-                if (description != null)
-                {
-                    description.SetValue(wrapper,
-                        template.ParentHierarchy.Description);
-                }
-                var imagePreviewUrl = wrapper.GetType().GetProperty("ImagePreviewUrl",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase);
-                if (imagePreviewUrl != null)
-                {
-                    imagePreviewUrl.SetValue(wrapper,
-                        template.ParentHierarchy.ImagePreviewUrl);
-                }
-                var generator = wrapper.GetType().GetProperty("Generator",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase);
-                if (generator != null)
-                {
-                    generator.SetValue(wrapper,
-                        template.ParentHierarchy.Generator);
-                }
-                var version = wrapper.GetType().GetProperty("Version",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase);
-                if (version != null)
-                {
-                    version.SetValue(wrapper,
-                        (Decimal)template.ParentHierarchy.Version);
-                }
+                wrapper.SetPublicInstancePropertyValue("Author", template.ParentHierarchy.Author);
+                wrapper.SetPublicInstancePropertyValue("DisplayName", template.ParentHierarchy.DisplayName);
+                wrapper.SetPublicInstancePropertyValue("Description", template.ParentHierarchy.Description);
+                wrapper.SetPublicInstancePropertyValue("ImagePreviewUrl", template.ParentHierarchy.ImagePreviewUrl);
+                wrapper.SetPublicInstancePropertyValue("Generator", template.ParentHierarchy.Generator);
+                wrapper.SetPublicInstancePropertyValue("Version", (Decimal)template.ParentHierarchy.Version);
             }
 
             // Configure the Generator
-            preferences.GetType().GetProperty("Generator",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.IgnoreCase).SetValue(preferences, this.GetType().Assembly.FullName);
+            preferences.SetPublicInstancePropertyValue("Generator", this.GetType().Assembly.FullName);
 
             // Configure the output Template
             var templatesType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Templates, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", true);
             templates = Array.CreateInstance(templatesType, 1);
             templatesItem = Activator.CreateInstance(templatesType);
-            templatesItem.GetType().GetProperty("ID",
-                System.Reflection.BindingFlags.Instance |
-                System.Reflection.BindingFlags.Public |
-                System.Reflection.BindingFlags.IgnoreCase).SetValue(templatesItem, $"CONTAINER-{template.Id}");
+            templatesItem.SetPublicInstancePropertyValue("ID", $"CONTAINER-{template.Id}");
         }
 
         protected virtual void SerializeTemplate(ProvisioningTemplate template, Object persistenceTemplate)
@@ -569,17 +491,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     provisioningTemplates.SetValue(outputTemplate, c);
                 }
 
-                templatesItem.GetType().GetProperty("ProvisioningTemplate",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase).SetValue(templatesItem, provisioningTemplates);
+                templatesItem.SetPublicInstancePropertyValue("ProvisioningTemplate", provisioningTemplates);
 
                 templates.SetValue(templatesItem, 0);
 
-                wrapperType.GetProperty("Templates",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public |
-                    System.Reflection.BindingFlags.IgnoreCase).SetValue(wrapper, templates);
+                wrapper.SetPublicInstancePropertyValue("Templates", templates);
 
                 XmlSerializerNamespaces ns =
                     new XmlSerializerNamespaces();
