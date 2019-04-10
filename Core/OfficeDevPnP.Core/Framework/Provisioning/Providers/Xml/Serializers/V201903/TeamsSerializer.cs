@@ -60,10 +60,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            if (template.ParentHierarchy != null && template.ParentHierarchy.Teams != null &&
-                (template.ParentHierarchy.Teams.Apps != null ||
-                template.ParentHierarchy.Teams.Teams != null ||
-                template.ParentHierarchy.Teams.TeamTemplates != null))
+            if (template.ParentHierarchy?.Teams != null &&
+                (template.ParentHierarchy?.Teams?.Apps != null ||
+                template.ParentHierarchy?.Teams?.Teams != null ||
+                template.ParentHierarchy?.Teams?.TeamTemplates != null))
             {
                 var teamsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Teams, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var teamsType = Type.GetType(teamsTypeName, false);
