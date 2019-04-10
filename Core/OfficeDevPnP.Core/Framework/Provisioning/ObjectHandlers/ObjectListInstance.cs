@@ -445,7 +445,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (field == null)
                     {
                         //if the Field already exists on the List we can add it and do not have to skip it
-                        if (!listInfo.SiteList.FieldExistsById(fieldRef.Id))
+                        if (listInfo.SiteList.FieldExistsById(fieldRef.Id))
+                        {
+                            field = listInfo.SiteList.GetFieldById(fieldRef.Id);
+                        }
+                        else
                         {
                             // log missing referenced field
                             this.WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference, listInfo.TemplateList.Title, fieldRef.Name, fieldRef.Id), ProvisioningMessageType.Error);
