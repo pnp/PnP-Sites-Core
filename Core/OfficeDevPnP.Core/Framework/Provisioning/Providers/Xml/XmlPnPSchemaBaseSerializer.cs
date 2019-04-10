@@ -33,12 +33,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         public XmlPnPSchemaBaseSerializer(Stream referenceSchema)
         {
-            if (referenceSchema == null)
-            {
+            this._referenceSchema = referenceSchema ?? 
                 throw new ArgumentNullException("referenceSchema");
-            }
-
-            this._referenceSchema = referenceSchema;
         }
 
         public abstract string NamespacePrefix { get; }
@@ -49,6 +45,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             this._provider = provider;
         }
 
+        /// <summary>
+        /// Checks if the provided source Stream (the XML) is valid against the current XSD schema
+        /// </summary>
+        /// <param name="template">The source Stream (the XML)</param>
+        /// <returns>Whether the XML template is valid or not</returns>
         public bool IsValid(Stream template)
         {
             if (template == null)
@@ -75,6 +76,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             return (result);
         }
 
+        /// <summary>
+        /// Converts a Stream of bytes (the XML) into a XML-based object created using XmlSerializer
+        /// </summary>
+        /// <param name="template">The source Stream of bytes (the XML)</param>
+        /// <param name="identifier">An optional identifier for the template to extract from the XML</param>
+        /// <param name="result">A reference ProvisioningTemplate object</param>
+        /// <returns>The resulting XML-based object extracted from the Stream</returns>
         protected Object ProcessInputStream(Stream template, string identifier, ProvisioningTemplate result)
         {
             if (template == null)
@@ -215,11 +223,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             return (source);
         }
 
+        /// <summary>
+        /// Deserializes a Stream of bytes (the XML) into a Provisioning Template
+        /// </summary>
+        /// <param name="template">The source Stream of bytes (the XML)</param>
+        /// <returns>The deserialized Provisioning Template</returns>
         public ProvisioningTemplate ToProvisioningTemplate(Stream template)
         {
             return (this.ToProvisioningTemplate(template, null));
         }
 
+        /// <summary>
+        /// Deserializes a Stream of bytes (the XML) into a Provisioning Template, based on an optional identifier
+        /// </summary>
+        /// <param name="template">The source Stream of bytes (the XML)</param>
+        /// <param name="identifier">An optional identifier for the template to deserialize</param>
+        /// <returns>The deserialized Provisioning Template</returns>
         public ProvisioningTemplate ToProvisioningTemplate(Stream template, string identifier)
         {
             using (var scope = new PnPSerializationScope(typeof(TSchemaTemplate)))
@@ -236,6 +255,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
         }
 
+        /// <summary>
+        /// This method deserializes an XML-based object, created with XmlSerializer, into a Provisioning Template
+        /// </summary>
+        /// <param name="persistenceTemplate">The XML-based object</param>
+        /// <param name="template">The resulting template</param>
         protected virtual void DeserializeTemplate(Object persistenceTemplate, ProvisioningTemplate template)
         {
             // Get all serializers to run in automated mode, ordered by DeserializationSequence
@@ -244,20 +268,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             XMLPnPSchemaVersion currentSchemaVersion = GetCurrentSchemaVersion();
 
             var serializers = currentAssembly.GetTypes()
+                // Get all the serializers
                 .Where(t => t.GetInterface(typeof(IPnPSchemaSerializer).FullName) != null
                        && t.BaseType.Name == typeof(Xml.PnPBaseSchemaSerializer<>).Name)
+                // Filter out those that are not targeting the current schema version or that are not in scope Template
                 .Where(t => 
                 {
                     var a = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
                     return (a.MinimalSupportedSchemaVersion <= currentSchemaVersion && a.Scope == SerializerScope.Template);
                 })
+                // Order the remainings by supported schema version descendant, to get first the newest ones
                 .OrderByDescending(s =>
                 {
                     var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
                     return (a.MinimalSupportedSchemaVersion);
                 }
                 )
+                // Group those with the same target type (which is the first generic Type argument)
                 .GroupBy(t => t.BaseType.GenericTypeArguments.FirstOrDefault()?.FullName)
+                // Order the result by DeserializationSequence
                 .OrderBy(g =>
                 {
                     var maxInGroup = g.OrderByDescending(s =>
@@ -271,18 +300,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             foreach (var group in serializers)
             {
+                // Get the first serializer only for each group (i.e. the most recent one for the current schema)
                 var serializerType = group.FirstOrDefault();
                 if (serializerType != null)
                 {
+                    // Create an instance of the serializer
                     var serializer = Activator.CreateInstance(serializerType) as IPnPSchemaSerializer;
                     if (serializer != null)
                     {
+                        // And run the Deserialize method
                         serializer.Deserialize(persistenceTemplate, template);
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Serializes an in-memory ProvisioningTemplate into a Stream (the XML)
+        /// </summary>
+        /// <param name="template">The ProvisioningTemplate to serialize</param>
+        /// <returns>The resulting Stream (the XML)</returns>
         public Stream ToFormattedTemplate(ProvisioningTemplate template)
         {
             if (template == null)
@@ -302,6 +339,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
         }
 
+        /// <summary>
+        /// Serializes an in-memory ProvisioningTemplate into a Stream (the XML)
+        /// </summary>
+        /// <param name="template">The ProvisioningTemplate to serialize</param>
+        /// <param name="result">The typed XML-based object defined using XmlSerializer</param>
+        /// <returns>The resulting Stream (the XML)</returns>
         protected Stream ProcessOutputStream(ProvisioningTemplate template, TSchemaTemplate result)
         {
             // Prepare the output wrapper
@@ -309,6 +352,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             object wrapper, templatesItem;
             Array templates;
 
+            // Process the hierarchy part of the template
             ProcessOutputHierarchy(template, out wrapperType, out wrapper, out templates, out templatesItem);
 
             // Add the single template to the output
@@ -321,8 +365,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             wrapper.SetPublicInstancePropertyValue("Templates", templates);
 
+            // Serialize the template mapping the ProvisioningTemplate object to the XML-based object
             SerializeTemplate(template, result);
 
+            // Serialize the XML-based object into a Stream (the XML)
             XmlSerializerNamespaces ns =
                 new XmlSerializerNamespaces();
             ns.Add(((IXMLSchemaFormatter)this).NamespacePrefix,
@@ -339,10 +385,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 xmlSerializer.Serialize(output, wrapper);
             }
 
+            // Re-base the Stream and return it
             output.Position = 0;
             return (output);
         }
 
+        /// <summary>
+        /// Prepares a ProvisioningTemplate to be wrapped into the Hierarchy container object
+        /// </summary>
+        /// <param name="template">The ProvisioningTemplate to wrap</param>
+        /// <param name="wrapperType">The Type of the wrapper</param>
+        /// <param name="wrapper">The wrapper</param>
+        /// <param name="templates">The collection of template within the wrapper</param>
+        /// <param name="templatesItem">The template to add</param>
         private void ProcessOutputHierarchy(ProvisioningTemplate template, out Type wrapperType, out object wrapper, out Array templates, out object templatesItem)
         {
             // Create the wrapper
@@ -398,6 +453,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             templatesItem.SetPublicInstancePropertyValue("ID", $"CONTAINER-{template.Id}");
         }
 
+        /// <summary>
+        /// Serializes a ProvisioningTemplate into a XML-based object generated with XmlSerializer
+        /// </summary>
+        /// <param name="template">The ProvisioningTemplate to serialize</param>
+        /// <param name="persistenceTemplate">The XML-based object to serialize the template into</param>
         protected virtual void SerializeTemplate(ProvisioningTemplate template, Object persistenceTemplate)
         {
             // Get all serializers to run in automated mode, ordered by DeserializationSequence
@@ -406,20 +466,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             XMLPnPSchemaVersion currentSchemaVersion = GetCurrentSchemaVersion();
 
             var serializers = currentAssembly.GetTypes()
+                // Get all the serializers
                 .Where(t => t.GetInterface(typeof(IPnPSchemaSerializer).FullName) != null
                        && t.BaseType.Name == typeof(Xml.PnPBaseSchemaSerializer<>).Name)
+                // Filter out those that are not targeting the current schema version or that are not in scope Template
                 .Where(t =>
                 {
                     var a = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
                     return (a.MinimalSupportedSchemaVersion <= currentSchemaVersion && a.Scope == SerializerScope.Template);
                 })
+                // Order the remainings by supported schema version descendant, to get first the newest ones
                 .OrderByDescending(s =>
                 {
                     var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
                     return (a.MinimalSupportedSchemaVersion);
                 }
                 )
+                // Group those with the same target type (which is the first generic Type argument)
                 .GroupBy(t => t.BaseType.GenericTypeArguments.FirstOrDefault()?.FullName)
+                // Order the result by SerializationSequence
                 .OrderBy(g =>
                 {
                     var maxInGroup = g.OrderByDescending(s =>
@@ -433,18 +498,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             foreach (var group in serializers)
             {
+                // Get the first serializer only for each group (i.e. the most recent one for the current schema)
                 var serializerType = group.FirstOrDefault();
                 if (serializerType != null)
                 {
+                    // Create an instance of the serializer
                     var serializer = Activator.CreateInstance(serializerType) as IPnPSchemaSerializer;
                     if (serializer != null)
                     {
+                        // And run the Serialize method
                         serializer.Serialize(template, persistenceTemplate);
                     }
                 }
             }
         }
 
+        /// <summary>
+        /// Allows to retrieve the current XML Schema version
+        /// </summary>
+        /// <returns>The current XML schema version</returns>
         private static XMLPnPSchemaVersion GetCurrentSchemaVersion()
         {
             var currentSchemaTemplateNamespace = typeof(TSchemaTemplate).Namespace;
@@ -453,6 +525,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             return currentSchemaVersion;
         }
 
+        /// <summary>
+        /// Serializes a ProvisioningHierarchy into a Stream (the XML)
+        /// </summary>
+        /// <param name="hierarchy">The ProvisioningHierarchy to serialize</param>
+        /// <returns>The resulting Stream (the XML)</returns>
         public Stream ToFormattedHierarchy(ProvisioningHierarchy hierarchy)
         {
             if (hierarchy == null)
@@ -501,6 +578,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
                 wrapper.SetPublicInstancePropertyValue("Templates", templates);
 
+                // Serialize the XML-based object into a Stream
                 XmlSerializerNamespaces ns =
                     new XmlSerializerNamespaces();
                 ns.Add(((IXMLSchemaFormatter)this).NamespacePrefix,
@@ -517,11 +595,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     xmlSerializer.Serialize(output, wrapper);
                 }
 
+                // Re-base the Stream and return it
                 output.Position = 0;
                 return (output);
             }
         }
 
+        /// <summary>
+        /// Deserializes a source Stream (the XML) into a ProvisioningHierarchy 
+        /// </summary>
+        /// <param name="hierarchy">The source Stream (the XML)</param>
+        /// <returns>The resulting ProvisioningHierarchy object</returns>
         public ProvisioningHierarchy ToProvisioningHierarchy(Stream hierarchy)
         {
             // Create a copy of the source stream
