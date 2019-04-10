@@ -45,7 +45,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     new ComplexTypeFromSchemaToModelTypeResolver<TeamMemberSettings>("MembersSettings"));
                 expressions.Add(t => t.Teams[0].MessagingSettings,
                     new ComplexTypeFromSchemaToModelTypeResolver<TeamMessagingSettings>("MessagingSettings"));
-                expressions.Add(t => t.Teams[0].Security, new TeamSecurityFromSchemaToModelTypeResolver());
+                expressions.Add(t => t.Teams[0].Security,
+                    new TeamSecurityFromSchemaToModelTypeResolver());
 
                 expressions.Add(t => t.Teams[0].Channels[0].Tabs[0].Configuration,
                     new ComplexTypeFromSchemaToModelTypeResolver<TeamTabConfiguration>("Configuration"));
@@ -59,56 +60,84 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            //if (template.Tenant != null && 
-            //    (template.Tenant.AppCatalog != null || template.Tenant.ContentDeliveryNetwork != null ||
-            //    template.Tenant.SiteDesigns != null || template.Tenant.SiteScripts != null ||
-            //    template.Tenant.StorageEntities != null || template.Tenant.Themes != null ||
-            //    template.Tenant.WebApiPermissions != null))
-            //{
-            //    var tenantTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Tenant, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            //    var tenantType = Type.GetType(tenantTypeName, false);
-            //    var siteDesignsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SiteDesignsSiteDesign, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            //    var siteDesignsType = Type.GetType(siteDesignsTypeName, false);
-            //    var themeTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ThemesTheme, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            //    var themeType = Type.GetType(themeTypeName, false);
+            if (template.ParentHierarchy != null && template.ParentHierarchy.Teams != null &&
+                (template.ParentHierarchy.Teams.Apps != null ||
+                template.ParentHierarchy.Teams.Teams != null ||
+                template.ParentHierarchy.Teams.TeamTemplates != null))
+            {
+                var teamsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Teams, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var teamsType = Type.GetType(teamsTypeName, false);
 
-            //    if (tenantType != null)
-            //    {
-            //        var target = Activator.CreateInstance(tenantType, true);
+                if (teamsType != null)
+                {
+                    var teamTemplateTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamTemplate, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamTemplateType = Type.GetType(teamTemplateTypeName, true);
+                    var teamWithSettingTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamWithSettings, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamWithSettingType = Type.GetType(teamWithSettingTypeName, true);
+                    var teamChannelTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamChannel, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamChannelType = Type.GetType(teamChannelTypeName, true);
 
-            //        var resolvers = new Dictionary<String, IResolver>();
+                    var teamFunSettingsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamWithSettingsFunSettings, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamFunSettingsType = Type.GetType(teamFunSettingsTypeName, true);
+                    var teamGuestSettingsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamWithSettingsGuestSettings, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamGuestSettingsType = Type.GetType(teamGuestSettingsTypeName, true);
+                    var teamMembersSettingsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamWithSettingsMembersSettings, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamMembersSettingsType = Type.GetType(teamMembersSettingsTypeName, true);
+                    var teamMessagingSettingsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamWithSettingsMessagingSettings, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamMessagingSettingsType = Type.GetType(teamMessagingSettingsTypeName, true);
+                    var teamChannelTabTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamChannelTabsTab, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamChannelTabType = Type.GetType(teamChannelTabTypeName, true);
+                    var teamChannelTabConfigurationTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamChannelTabsTabConfiguration, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var teamChannelTabConfigurationType = Type.GetType(teamChannelTabConfigurationTypeName, true);                    
 
-            //        resolvers.Add($"{tenantType}.AppCatalog",
-            //            new AppCatalogFromModelToSchemaTypeResolver());
-            //        resolvers.Add($"{tenantType}.ContentDeliveryNetwork",
-            //            new CdnFromModelToSchemaTypeResolver());
-            //        resolvers.Add($"{siteDesignsType}.SiteScripts",
-            //            new SiteScriptRefFromModelToSchemaTypeResolver());
+                    var target = Activator.CreateInstance(teamsType, true);
 
-            //        if (themeType != null)
-            //        {
-            //            resolvers.Add($"{themeType}.Text",
-            //                new ExpressionValueResolver((s, v) => {
-            //                    return (new String[] { (String)s.GetPublicInstancePropertyValue("Palette") });
-            //                }));
-            //        }
+                    var resolvers = new Dictionary<String, IResolver>();
 
+                    // Handle generic team objects (TeamTemplate and TeamWithSettings)
+                    resolvers.Add($"{teamsType}.Items",
+                        new TeamsItemsFromModelToSchemaTypeResolver());
 
-            //        PnPObjectsMapper.MapProperties(template.Tenant, target, resolvers, recursive: true);
+                    // Handle JSON template for the TeamTemplate objects
+                    resolvers.Add($"{teamTemplateType}.Text", new ExpressionValueResolver((s, v) => {
+                        // Return the JSON template as text for the node content
+                        return (new String[1] { (s as TeamTemplate)?.JsonTemplate });
+                    }));
 
-            //        if (target != null &&
-            //            (target.GetPublicInstancePropertyValue("AppCatalog") != null ||
-            //            target.GetPublicInstancePropertyValue("ContentDeliveryNetwork") != null ||
-            //            target.GetPublicInstancePropertyValue("SiteScripts") != null ||
-            //            target.GetPublicInstancePropertyValue("SiteDesigns") != null ||
-            //            target.GetPublicInstancePropertyValue("StorageEntities") != null ||
-            //            target.GetPublicInstancePropertyValue("Themes") != null ||
-            //            target.GetPublicInstancePropertyValue("WebApiPermissions") != null))
-            //        {
-            //            persistence.GetPublicInstanceProperty("Tenant").SetValue(persistence, target);
-            //        }
-            //    }
-            //}
+                    // Handle Security for TeamWithSettings
+                    resolvers.Add($"{teamWithSettingType}.Security",
+                        new TeamSecurityFromModelToSchemaTypeResolver());
+
+                    // Handle all the settings for the TeamWithSettings objects
+                    resolvers.Add($"{teamWithSettingType}.FunSettings",
+                        new ComplexTypeFromModelToSchemaTypeResolver(teamFunSettingsType, "FunSettings"));
+                    resolvers.Add($"{teamWithSettingType}.GuestSettings",
+                        new ComplexTypeFromModelToSchemaTypeResolver(teamGuestSettingsType, "GuestSettings"));
+                    resolvers.Add($"{teamWithSettingType}.MembersSettings",
+                        new ComplexTypeFromModelToSchemaTypeResolver(teamMembersSettingsType, "MemberSettings"));
+                    resolvers.Add($"{teamWithSettingType}.MessagingSettings",
+                        new ComplexTypeFromModelToSchemaTypeResolver(teamMessagingSettingsType, "MessagingSettings"));
+
+                    // Handle channel Messages for TeamsWithSettings objects
+                    resolvers.Add($"{teamChannelType}.Messages", new ExpressionValueResolver((s, v) => {
+                        // Return the JSON messages as an array of Strings
+                        return ((s as TeamChannel)?.Messages.Count > 0 ? (s as TeamChannel)?.Messages.Select(m => m.Message).ToArray() : null);
+                    }));
+
+                    // Handle channel Tab Configuration for TeamsWithSettings objects
+                    resolvers.Add($"{teamChannelTabType}.Configuration",
+                        new ComplexTypeFromModelToSchemaTypeResolver(teamChannelTabConfigurationType, "Configuration"));
+
+                    PnPObjectsMapper.MapProperties(template.ParentHierarchy.Teams, target, resolvers, recursive: true);
+
+                    if (target != null &&
+                        (target.GetPublicInstancePropertyValue("Apps") != null ||
+                        target.GetPublicInstancePropertyValue("Items") != null))
+                    {
+                        persistence.GetPublicInstanceProperty("Teams").SetValue(persistence, target);
+                    }
+                }
+            }
         }
     }
 }

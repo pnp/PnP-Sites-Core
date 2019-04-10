@@ -671,6 +671,9 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.cs">
       <DependentUpon>ProvisioningSchema-2019-03.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\ComplexTypeFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TeamSecurityFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TeamsItemsFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\AADUsersFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\AADUsersPasswordProfileFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\AADUsersPasswordProfileFromSchemaToModelTypeResolver.cs" />
