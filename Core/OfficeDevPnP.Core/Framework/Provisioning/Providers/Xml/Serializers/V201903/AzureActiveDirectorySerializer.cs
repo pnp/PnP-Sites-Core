@@ -41,38 +41,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            if (template.ParentHierarchy.AzureActiveDirectory != null &&
-                template.ParentHierarchy.AzureActiveDirectory.Users != null)
+            if (template.ParentHierarchy?.AzureActiveDirectory?.Users == null) return;
+
+            var aadTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.AzureActiveDirectory, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var aadType = Type.GetType(aadTypeName, false);
+            var aadUserTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.AADUsersUser, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var aadUserType = Type.GetType(aadUserTypeName, false);
+            var aadUserPasswordProfileTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.AADUsersUserPasswordProfile, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var aadUserPasswordProfileType = Type.GetType(aadUserPasswordProfileTypeName, false);
+
+            if (aadType != null && 
+                aadUserType != null &&
+                aadUserPasswordProfileType != null)
             {
-                var aadTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.AzureActiveDirectory, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-                var aadType = Type.GetType(aadTypeName, false);
-                var aadUserTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.AADUsersUser, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-                var aadUserType = Type.GetType(aadUserTypeName, false);
-                var aadUserPasswordProfileTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.AADUsersUserPasswordProfile, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-                var aadUserPasswordProfileType = Type.GetType(aadUserPasswordProfileTypeName, false);
+                var target = Activator.CreateInstance(aadType, true);
 
-                if (aadType != null && 
-                    aadUserType != null &&
-                    aadUserPasswordProfileType != null)
+                var resolvers = new Dictionary<String, IResolver>();
+
+                resolvers.Add($"{aadType}.Users",
+                    new AADUsersFromModelToSchemaTypeResolver());
+                resolvers.Add($"{aadUserType}.PasswordProfile",
+                    new AADUsersPasswordProfileFromModelToSchemaTypeResolver());
+                resolvers.Add($"{aadUserPasswordProfileType}.Password",
+                    new ExpressionValueResolver((s, p) => EncryptionUtility.ToInsecureString((SecureString)p)));
+
+                PnPObjectsMapper.MapProperties(template.ParentHierarchy.AzureActiveDirectory, target, resolvers, recursive: true);
+
+                if (target != null &&
+                    target.GetPublicInstancePropertyValue("Users") != null)
                 {
-                    var target = Activator.CreateInstance(aadType, true);
-
-                    var resolvers = new Dictionary<String, IResolver>();
-
-                    resolvers.Add($"{aadType}.Users",
-                        new AADUsersFromModelToSchemaTypeResolver());
-                    resolvers.Add($"{aadUserType}.PasswordProfile",
-                        new AADUsersPasswordProfileFromModelToSchemaTypeResolver());
-                    resolvers.Add($"{aadUserPasswordProfileType}.Password",
-                        new ExpressionValueResolver((s, p) => EncryptionUtility.ToInsecureString((SecureString)p)));
-
-                    PnPObjectsMapper.MapProperties(template.ParentHierarchy.AzureActiveDirectory, target, resolvers, recursive: true);
-
-                    if (target != null &&
-                        target.GetPublicInstancePropertyValue("Users") != null)
-                    {
-                        persistence.GetPublicInstanceProperty("AzureActiveDirectory").SetValue(persistence, target);
-                    }
+                    persistence.GetPublicInstanceProperty("AzureActiveDirectory").SetValue(persistence, target);
                 }
             }
         }
