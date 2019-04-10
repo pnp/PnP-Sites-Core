@@ -16,6 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201903,
         SerializationSequence = 810, DeserializationSequence = 810,
+        Scope = SerializerScope.Template,
         Default = false)]
     internal class SiteHeaderSerializer : PnPBaseSchemaSerializer<SiteHeader>
     {

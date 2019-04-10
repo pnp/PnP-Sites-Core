@@ -113,6 +113,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     wrapper = xmlSerializer.Deserialize(reader);
                 }
 
+                // TODO: Refactor here
+
                 // Handle the Parameters of the schema wrapper, if any
                 var tps = new TemplateParametersSerializer();
                 tps.Deserialize(wrapper, result);
@@ -247,7 +249,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 .Where(t => 
                 {
                     var a = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
-                    return (a.MinimalSupportedSchemaVersion <= currentSchemaVersion && a.DeserializationSequence >= 0);
+                    return (a.MinimalSupportedSchemaVersion <= currentSchemaVersion && a.Scope == SerializerScope.Template);
                 })
                 .OrderByDescending(s =>
                 {
@@ -264,7 +266,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         return (a.MinimalSupportedSchemaVersion);
                     }
                     ).FirstOrDefault();
-                    return (maxInGroup.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault()?.SerializationSequence);
+                    return (maxInGroup.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault()?.DeserializationSequence);
                 });
 
             foreach (var group in serializers)
@@ -353,6 +355,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             wrapper.SetPublicInstancePropertyValue("Preferences", preferences);
 
+            // TODO: Refactor here
+
             // Handle the Parameters of the schema wrapper, if any
             var tps = new TemplateParametersSerializer();
             tps.Serialize(template, wrapper);
@@ -407,7 +411,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 .Where(t =>
                 {
                     var a = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
-                    return (a.MinimalSupportedSchemaVersion <= currentSchemaVersion && a.SerializationSequence >= 0);
+                    return (a.MinimalSupportedSchemaVersion <= currentSchemaVersion && a.Scope == SerializerScope.Template);
                 })
                 .OrderByDescending(s =>
                 {
@@ -424,7 +428,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         return (a.MinimalSupportedSchemaVersion);
                     }
                     ).FirstOrDefault();
-                    return (maxInGroup.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault()?.DeserializationSequence);
+                    return (maxInGroup.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault()?.SerializationSequence);
                 });
 
             foreach (var group in serializers)
@@ -605,6 +609,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 {
                     wrapper = xmlSerializer.Deserialize(reader);
                 }
+
+                // TODO: Refactor here
 
                 // Handle the Parameters of the schema wrapper, if any
                 var tps = new TemplateParametersSerializer();

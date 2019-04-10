@@ -16,6 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         SerializationSequence = 600, DeserializationSequence = 600,
+        Scope = SerializerScope.Template,
         Default = false)]
     internal class AuditSettingsSerializer : PnPBaseSchemaSerializer<AuditSettings>
     {

@@ -13,6 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 1900, DeserializationSequence = 1900,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
+        Scope = SerializerScope.Template,
         Default = true)]
     internal class PublishingSerializer : PnPBaseSchemaSerializer<Publishing>
     {

@@ -14,6 +14,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
+        Scope = SerializerScope.Tenant,
         Default = false)]
     internal class TemplateParametersSerializer : IPnPSchemaSerializer
     {

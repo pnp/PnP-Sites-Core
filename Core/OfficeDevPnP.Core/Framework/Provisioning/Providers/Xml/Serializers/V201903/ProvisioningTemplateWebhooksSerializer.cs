@@ -16,6 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201903,
         SerializationSequence = 2500, DeserializationSequence = 2500,
+        Scope = SerializerScope.Template,
         Default = true)]
     internal class ProvisioningTemplateWebhooksSerializer : PnPBaseSchemaSerializer<ProvisioningTemplateWebhook>
     {

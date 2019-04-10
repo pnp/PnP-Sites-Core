@@ -17,6 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201807,
         SerializationSequence = -1, DeserializationSequence = -1,
+        Scope = SerializerScope.Tenant,
         Default = false)]
     internal class ProvisioningHierarchySerializer : PnPBaseSchemaSerializer<ProvisioningHierarchy>
     {

@@ -17,6 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201801,
         SerializationSequence = 2400, DeserializationSequence = 2400,
+        Scope = SerializerScope.Template,
         Default = true)]
     internal class ApplicationLifecycleManagementSerializer : PnPBaseSchemaSerializer<ApplicationLifecycleManagement>
     {

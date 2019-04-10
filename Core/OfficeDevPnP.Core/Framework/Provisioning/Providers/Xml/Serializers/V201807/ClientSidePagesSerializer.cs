@@ -17,6 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201807,
         SerializationSequence = 2300, DeserializationSequence = 2300,
+        Scope = SerializerScope.Template,
         Default = true)]
     internal class ClientSidePagesSerializer : PnPBaseSchemaSerializer<ClientSidePage>
     {

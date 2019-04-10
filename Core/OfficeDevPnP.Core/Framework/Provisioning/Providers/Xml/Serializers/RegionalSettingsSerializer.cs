@@ -13,6 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 400, DeserializationSequence = 400,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
+        Scope = SerializerScope.Template,
         Default = true)]
     internal class RegionalSettingsSerializer : PnPBaseSchemaSerializer<Model.RegionalSettings>
     {

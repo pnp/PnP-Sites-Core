@@ -15,6 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         SerializationSequence = 500, DeserializationSequence = 500,
+        Scope = SerializerScope.Template,
         Default = false)]
     internal class SupportedUILanguagesSerializer : PnPBaseSchemaSerializer<SupportedUILanguage>
     {

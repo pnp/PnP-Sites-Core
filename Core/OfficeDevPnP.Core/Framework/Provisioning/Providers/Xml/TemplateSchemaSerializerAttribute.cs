@@ -36,5 +36,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// Defines whether to automatically include the serializer in the serialization process or not
         /// </summary>
         public Boolean Default { get; set; } = true;
+
+        /// <summary>
+        /// Defines the scope of the serializer
+        /// </summary>
+        /// <remarks>
+        /// By default the serializers target a single Provisioning Template
+        /// </remarks>
+        public SerializerScope Scope { get; set; } = SerializerScope.Template;
+    }
+
+    /// <summary>
+    /// Defines the scope of a serializer
+    /// </summary>
+    public enum SerializerScope
+    {
+        /// <summary>
+        /// The serializer targets a single Provisioning Template
+        /// </summary>
+        Template,
+        /// <summary>
+        /// The serializer targets the whole Tenant
+        /// </summary>
+        Tenant,
     }
 }
