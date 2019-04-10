@@ -12,6 +12,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return "Client Side Page Contents"; }
         }
+
+        public override string InternalName => "ClientSidePageContents";
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             // This handler only extracts contents and adds them to the Files and Pages collection.

@@ -35,6 +35,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
         }
 
+        public override string InternalName => "ListInstances";
+
         public ObjectListInstance(FieldAndListProvisioningStepHelper.Step stage)
         {
             this.step = stage;

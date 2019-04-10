@@ -15,6 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override string Name => "Term Groups";
 
+        public override string InternalName => "TermGroups";
         public override TokenParser ProvisionObjects(Web web, Model.ProvisioningTemplate template, TokenParser parser,
             ProvisioningTemplateApplyingInformation applyingInformation)
         {
