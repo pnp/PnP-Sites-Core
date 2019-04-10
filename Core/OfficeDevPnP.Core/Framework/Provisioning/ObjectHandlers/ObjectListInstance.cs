@@ -444,11 +444,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var field = rootWeb.GetFieldById(fieldRef.Id);
                     if (field == null)
                     {
-                        // log missing referenced field
-                        this.WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference, listInfo.TemplateList.Title, fieldRef.Name, fieldRef.Id), ProvisioningMessageType.Error);
+                        //if the Field already exists on the List we can add it and do not have to skip it
+                        if (!listInfo.SiteList.FieldExistsById(fieldRef.Id))
+                        {
+                            // log missing referenced field
+                            this.WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference, listInfo.TemplateList.Title, fieldRef.Name, fieldRef.Id), ProvisioningMessageType.Error);
 
-                        // move onto next field reference
-                        continue;
+                            // move onto next field reference
+                            continue;
+                        }
                     }
 
                     if (!listInfo.SiteList.FieldExistsById(fieldRef.Id))
