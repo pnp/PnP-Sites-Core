@@ -37,15 +37,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public AcquireTokenAsyncDelegate AcquireTokenAsync { get; private set; }
         public AcquireCookieAsyncDelegate AcquireCookieAsync { get; private set; }
 
+        public Dictionary<String, Object> Properties { get; private set; } = 
+            new Dictionary<string, object>();
+
         public PnPProvisioningContext(
             AcquireTokenAsyncDelegate acquireTokenAsyncDelegate = null,
-            AcquireCookieAsyncDelegate acquireCookieAsyncDelegate = null)
+            AcquireCookieAsyncDelegate acquireCookieAsyncDelegate = null,
+            Dictionary<String, Object> properties = null)
         {
             // Save the delegate to acquire the access token
             this.AcquireTokenAsync = acquireTokenAsyncDelegate;
 
             // Save the delegate to acquire the cookie
             this.AcquireCookieAsync = acquireCookieAsyncDelegate;
+
+            // Add the initial set of properties, if any
+            if (properties != null)
+            {
+                foreach (var p in properties)
+                {
+                    this.Properties.Add(p.Key, p.Value);
+                }
+            }
 
             // Save the previous context, if any
             this._previous = Current;
