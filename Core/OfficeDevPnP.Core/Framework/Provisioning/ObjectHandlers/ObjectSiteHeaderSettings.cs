@@ -9,6 +9,7 @@ using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
+#if !ONPREMISES
     internal class ObjectSiteHeaderSettings : ObjectHandlerBase
     {
         public override string Name
@@ -23,7 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.EnsureProperties(w => w.HeaderEmphasis, w => w.HeaderLayout, w => w.MegaMenuEnabled);
                 var header = new SiteHeader();
                 header.MenuStyle = web.MegaMenuEnabled ? SiteHeaderMenuStyle.MegaMenu : SiteHeaderMenuStyle.Cascading;
-                switch(web.HeaderLayout)
+                switch (web.HeaderLayout)
                 {
                     case HeaderLayoutType.Compact:
                         {
@@ -37,8 +38,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             break;
                         }
                 }
-                
-                if(Enum.TryParse<SiteHeaderBackgroundEmphasis>(web.HeaderEmphasis.ToString(),out SiteHeaderBackgroundEmphasis backgroundEmphasis))
+
+                if (Enum.TryParse<SiteHeaderBackgroundEmphasis>(web.HeaderEmphasis.ToString(), out SiteHeaderBackgroundEmphasis backgroundEmphasis))
                 {
                     header.BackgroundEmphasis = backgroundEmphasis;
                 }
@@ -53,7 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (template.Header != null)
                 {
-                    switch(template.Header.Layout)
+                    switch (template.Header.Layout)
                     {
                         case SiteHeaderLayout.Compact:
                             {
@@ -69,6 +70,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.HeaderEmphasis = (SPVariantThemeType)Enum.Parse(typeof(SPVariantThemeType), template.Header.BackgroundEmphasis.ToString());
                     web.MegaMenuEnabled = template.Header.MenuStyle == SiteHeaderMenuStyle.MegaMenu;
                     web.Update();
+                    web.Context.ExecuteQueryRetry();
                 }
             }
 
@@ -77,27 +79,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-#if !ONPREMISES
-            web.EnsureProperties(w => w.Configuration, w => w.WebTemplate);
-            var webTemplate = $"{web.WebTemplate}#{web.Configuration}";
-            if (webTemplate.Equals("GROUP#0", StringComparison.InvariantCultureIgnoreCase) || webTemplate.Equals("SITEPAGEPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase))
+            var baseTemplateValue = web.GetBaseTemplateId();
+            if (baseTemplateValue.Equals("GROUP#0", StringComparison.InvariantCultureIgnoreCase) || baseTemplateValue.Equals("SITEPAGEPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase) || baseTemplateValue.Equals("STS#3", StringComparison.InvariantCultureIgnoreCase))
             {
                 return true;
-            } else
+            }
+            else
             {
                 return false;
             }
-#else
-            return false
-#endif
         }
 
         public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-#if !ONPREMISES
-            web.EnsureProperties(w => w.Configuration, w => w.WebTemplate);
-            var webTemplate = $"{web.WebTemplate}#{web.Configuration}";
-            if (webTemplate.Equals("GROUP#0", StringComparison.InvariantCultureIgnoreCase) || webTemplate.Equals("SITEPAGEPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase))
+            var baseTemplateValue = web.GetBaseTemplateId();
+            if (baseTemplateValue.Equals("GROUP#0", StringComparison.InvariantCultureIgnoreCase) || baseTemplateValue.Equals("SITEPAGEPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase) || baseTemplateValue.Equals("STS#3", StringComparison.InvariantCultureIgnoreCase))
             {
                 return template.Header != null;
             }
@@ -105,9 +101,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 return false;
             }
-#else
-            return false
-#endif
         }
     }
+#endif
 }

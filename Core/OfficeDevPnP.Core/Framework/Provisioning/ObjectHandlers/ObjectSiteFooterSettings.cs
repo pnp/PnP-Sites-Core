@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
+#if !ONPREMISES
     internal class ObjectSiteFooterSettings : ObjectHandlerBase
     {
         const string footerNodeKey = "13b7c916-4fea-4bb2-8994-5cf274aeb530";
@@ -200,10 +201,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-#if !ONPREMISES
-            web.EnsureProperties(w => w.Configuration, w => w.WebTemplate);
-            var webTemplate = $"{web.WebTemplate}#{web.Configuration}";
-            if (webTemplate.Equals("SITEPAGEPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase))
+            var baseTemplateValue = web.GetBaseTemplateId();
+            if (baseTemplateValue.Equals("SITEPAGEPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase))
             {
                 return true;
             }
@@ -211,17 +210,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 return false;
             }
-#else
-            return false
-#endif
         }
 
         public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-#if !ONPREMISES
-            web.EnsureProperties(w => w.Configuration, w => w.WebTemplate);
-            var webTemplate = $"{web.WebTemplate}#{web.Configuration}";
-            if (webTemplate.Equals("SITEPAGEPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase))
+            var baseTemplateValue = web.GetBaseTemplateId();
+            if (baseTemplateValue.Equals("SITEPAGEPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase))
             {
                 return template.Footer != null;
             }
@@ -229,9 +223,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 return false;
             }
-#else
-            return false
-#endif
         }
 
         private class MenuState
@@ -275,4 +266,5 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             public MenuState MenuState { get; set; }
         }
     }
+#endif
 }
