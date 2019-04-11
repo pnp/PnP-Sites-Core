@@ -51,6 +51,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// </summary>
         Template,
         /// <summary>
+        /// The serializer targets a full Provisioning file but not a tenant Template
+        /// </summary>
+        Provisioning,
+        /// <summary>
         /// The serializer targets the whole Tenant
         /// </summary>
         Tenant,
