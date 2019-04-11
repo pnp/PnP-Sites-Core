@@ -125,6 +125,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     var termSetLanguage = modelTermSet.Language.HasValue ? modelTermSet.Language.Value : termStore.DefaultLanguage;
                     set = group.CreateTermSet(normalizedTermSetName.Value, modelTermSet.Id, termSetLanguage);
                     parser.AddToken(new TermSetIdToken(context.Web, group.Name, normalizedTermSetName.Value, modelTermSet.Id));
+
+                    if (group.EnsureProperty(g => g.IsSiteCollectionGroup))
+                    {
+                        parser.AddToken(new TermSetIdToken(context.Web, "{sitecollectiontermgroupname}", normalizedTermSetName.Value, modelTermSet.Id));
+                    }
+
                     if (siteCollectionTermGroup != null && !siteCollectionTermGroup.ServerObjectIsNull.Value)
                     {
                         if (group.Name == siteCollectionTermGroup.Name)

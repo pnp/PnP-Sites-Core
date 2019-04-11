@@ -348,9 +348,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
                 foreach (var termGroup in termStore.Groups)
                 {
+                    var termGroupName = termGroup.Name;
+
+                    if (termGroup.EnsureProperty(t => t.IsSiteCollectionGroup))
+                    {
+                        termGroupName = "{sitecollectiontermgroupname}";
+                    }
+
                     foreach (var termSet in termGroup.TermSets)
                     {
-                        _tokens.Add(new TermSetIdToken(web, termGroup.Name, termSet.Name, termSet.Id));
+                        _tokens.Add(new TermSetIdToken(web, termGroupName, termSet.Name, termSet.Id));
                     }
                 }
             }
