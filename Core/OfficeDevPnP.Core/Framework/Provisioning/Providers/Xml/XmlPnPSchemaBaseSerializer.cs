@@ -452,47 +452,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
         }
 
-        private IOrderedEnumerable<IGrouping<string, Type>> GetSerializersForCurrentContext(SerializerScope scope, 
-            Func<TemplateSchemaSerializerAttribute, Int32?> sortingSelector)
-        {
-            // Get all serializers to run in automated mode, ordered by sortingSelector
-            var currentAssembly = this.GetType().Assembly;
-
-            XMLPnPSchemaVersion currentSchemaVersion = GetCurrentSchemaVersion();
-
-            var serializers = currentAssembly.GetTypes()
-                // Get all the serializers
-                .Where(t => t.GetInterface(typeof(IPnPSchemaSerializer).FullName) != null
-                       && t.BaseType.Name == typeof(Xml.PnPBaseSchemaSerializer<>).Name)
-                // Filter out those that are not targeting the current schema version or that are not in scope Template
-                .Where(t =>
-                {
-                    var a = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
-                    return (a.MinimalSupportedSchemaVersion <= currentSchemaVersion && a.Scope == scope);
-                })
-                // Order the remainings by supported schema version descendant, to get first the newest ones
-                .OrderByDescending(s =>
-                {
-                    var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
-                    return (a.MinimalSupportedSchemaVersion);
-                }
-                )
-                // Group those with the same target type (which is the first generic Type argument)
-                .GroupBy(t => t.BaseType.GenericTypeArguments.FirstOrDefault()?.FullName)
-                // Order the result by SerializationSequence
-                .OrderBy(g =>
-                {
-                    var maxInGroup = g.OrderByDescending(s =>
-                    {
-                        var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
-                        return (a.MinimalSupportedSchemaVersion);
-                    }
-                    ).FirstOrDefault();
-                    return sortingSelector(maxInGroup.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault());
-                });
-            return serializers;
-        }
-
         /// <summary>
         /// Allows to retrieve the current XML Schema version
         /// </summary>
@@ -709,6 +668,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             }
 
             return (resultHierarchy);
+        }
+
+        private IOrderedEnumerable<IGrouping<string, Type>> GetSerializersForCurrentContext(SerializerScope scope,
+            Func<TemplateSchemaSerializerAttribute, Int32?> sortingSelector)
+        {
+            // Get all serializers to run in automated mode, ordered by sortingSelector
+            var currentAssembly = this.GetType().Assembly;
+
+            XMLPnPSchemaVersion currentSchemaVersion = GetCurrentSchemaVersion();
+
+            var serializers = currentAssembly.GetTypes()
+                // Get all the serializers
+                .Where(t => t.GetInterface(typeof(IPnPSchemaSerializer).FullName) != null
+                       && t.BaseType.Name == typeof(Xml.PnPBaseSchemaSerializer<>).Name)
+                // Filter out those that are not targeting the current schema version or that are not in scope Template
+                .Where(t =>
+                {
+                    var a = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                    return (a.MinimalSupportedSchemaVersion <= currentSchemaVersion && a.Scope == scope);
+                })
+                // Order the remainings by supported schema version descendant, to get first the newest ones
+                .OrderByDescending(s =>
+                {
+                    var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                    return (a.MinimalSupportedSchemaVersion);
+                }
+                )
+                // Group those with the same target type (which is the first generic Type argument)
+                .GroupBy(t => t.BaseType.GenericTypeArguments.FirstOrDefault()?.FullName)
+                // Order the result by SerializationSequence
+                .OrderBy(g =>
+                {
+                    var maxInGroup = g.OrderByDescending(s =>
+                    {
+                        var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                        return (a.MinimalSupportedSchemaVersion);
+                    }
+                    ).FirstOrDefault();
+                    return sortingSelector(maxInGroup.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault());
+                });
+            return serializers;
         }
     }
 }
