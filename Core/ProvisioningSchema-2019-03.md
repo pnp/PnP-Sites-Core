@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 4/8/2019*
+* Topic automatically generated on 4/11/2019*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -2430,7 +2430,6 @@ Defines the Footer settings for the target site.
 <pnp:Footer
       Enabled="xsd:boolean"
       Logo="pnp:ReplaceableString"
-      NameVisibility="xsd:boolean"
       Name="pnp:ReplaceableString"
       RemoveExistingNodes="xsd:boolean">
    <pnp:FooterLinks />
@@ -2452,7 +2451,6 @@ Attibute|Type|Description
 --------|----|-----------
 Enabled|xsd:boolean|Defines whether the site Footer is enabled or not, required attribute.
 Logo|ReplaceableString|Defines the Logo to render in the Footer, optional attribute.
-NameVisibility|xsd:boolean|Defines whether to show the Footer name or not, optional attribute.
 Name|ReplaceableString|Defines the name of the footer, which is visible when NameVisibility has been set to true. Optional attribute.
 RemoveExistingNodes|xsd:boolean|Defines whether the existing site Footer links should be removed, optional attribute.
 <a name="footerlinks"></a>
@@ -3127,7 +3125,8 @@ Defines the settings for a Public or Private CDN.
 
 ```xml
 <pnp:CdnSetting
-      Enabled="xsd:boolean">
+      Enabled="xsd:boolean"
+      NoDefaultOrigins="xsd:boolean">
    <pnp:Origins />
    <pnp:IncludeFileExtensions />
    <pnp:ExcludeRestrictedSiteClassifications />
@@ -3152,6 +3151,7 @@ Here follow the available attributes for the CdnSetting element.
 Attibute|Type|Description
 --------|----|-----------
 Enabled|xsd:boolean|Defines whether the CDN has to be enabled or disabled, required attribute.
+NoDefaultOrigins|xsd:boolean|Defines whether the CDN should have default origins, optional attribute.
 <a name="origins"></a>
 ### Origins
 Defines the CDN Origins for the current CDN.
