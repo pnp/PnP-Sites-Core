@@ -21,6 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
+#if !ONPREMISES
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 // Here we're going to invoke the handlers for:
@@ -28,6 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // - Teams
                 // - Apps
             }
+#endif
 
             return (parser);
         }
@@ -40,11 +42,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
+#if !ONPREMISES
             if (!_willProvision.HasValue)
             {
                 _willProvision = template.ParentHierarchy.Teams?.TeamTemplates?.Any() |
                     template.ParentHierarchy.Teams?.Teams?.Any();
             }
+#else
+            if (!_willProvision.HasValue)
+            {
+                _willProvision = false;
+            }
+#endif            
             return _willProvision.Value;
         }
 
