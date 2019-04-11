@@ -477,11 +477,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if(clientSidePage.FieldValues != null && clientSidePage.FieldValues.Any())
                     {
-                        List<FieldUpdateValue> fieldValues = clientSidePage.FieldValues.Select(s => new FieldUpdateValue(parser.ParseString(s.Key), parser.ParseString(s.Value))).ToList();
+                        //List<FieldUpdateValue> fieldValues = clientSidePage.FieldValues.Select(s => new FieldUpdateValue(parser.ParseString(s.Key), parser.ParseString(s.Value))).ToList();
                         Microsoft.SharePoint.Client.FieldCollection fields = page.PageListItem.ParentList.Fields;
                         web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind, f => f.TypeAsString, f => f.ReadOnlyField, f => f.Title));
                         web.Context.ExecuteQueryRetry();
-                        ListItemUtilities.UpdateListItem(web, page.PageListItem, fields, fieldValues);
+                        ListItemUtilities.UpdateListItem(web, page.PageListItem,parser, fields, clientSidePage.FieldValues);
                     }
 
                     if (page.LayoutType != Pages.ClientSidePageLayoutType.SingleWebPartAppPage)
