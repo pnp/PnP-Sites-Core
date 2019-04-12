@@ -13,6 +13,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return "Retrieve Template Info"; }
         }
 
+        public override string InternalName => "RetrieveTemplateInfo";
+
         public ObjectRetrieveTemplateInfo()
         {
             this.ReportProgress = false;
