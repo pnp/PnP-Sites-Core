@@ -38,7 +38,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// <remarks>
         /// By default the serializers target a single Provisioning Template
         /// </remarks>
-        public SerializerScope Scope { get; set; } = SerializerScope.Template;
+        public SerializerScope Scope { get; set; } = SerializerScope.ProvisioningTemplate;
     }
 
     /// <summary>
@@ -49,11 +49,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// <summary>
         /// The serializer targets a single Provisioning Template
         /// </summary>
-        Template,
+        ProvisioningTemplate,
         /// <summary>
         /// The serializer targets a full Provisioning file but not a tenant Template
         /// </summary>
         Provisioning,
+        /// <summary>
+        /// The serializer targets a Provisioning Hierarchy
+        /// </summary>
+        ProvisioningHierarchy,
         /// <summary>
         /// The serializer targets the whole Tenant
         /// </summary>
