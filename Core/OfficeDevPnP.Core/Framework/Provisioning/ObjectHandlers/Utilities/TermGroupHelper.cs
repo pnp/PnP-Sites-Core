@@ -145,7 +145,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                     if (modelTermSet.Owner != null)
                     {
-                        set.Owner = modelTermSet.Owner;
+                        set.Owner = parser.ParseString(modelTermSet.Owner);
                     }
                     termStore.CommitAll();
                     context.Load(set);
