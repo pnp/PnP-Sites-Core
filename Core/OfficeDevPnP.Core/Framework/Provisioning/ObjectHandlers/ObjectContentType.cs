@@ -30,6 +30,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
         }
 
+        public override string InternalName => "ContentTypes";
+
         public ObjectContentType(FieldAndListProvisioningStepHelper.Step step)
         {
             this._step = step;
