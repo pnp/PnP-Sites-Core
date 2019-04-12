@@ -6899,7 +6899,7 @@
     </xsd:annotation>
     <xsd:complexContent>
       <xsd:extension base="pnp:TaxonomyItem">
-        <xsd:attribute name="Owner" type="xsd:string" use="optional">
+        <xsd:attribute name="Owner" type="pnp:ReplaceableString" use="optional">
           <xsd:annotation>
             <xsd:documentation xml:lang="en">
               The Owner of the Term Set Item, optional attribute.
