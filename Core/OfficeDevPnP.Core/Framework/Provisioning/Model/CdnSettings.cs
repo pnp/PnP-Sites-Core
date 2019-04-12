@@ -55,6 +55,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public Boolean Enabled { get; set; }
 
         /// <summary>
+        /// Defines whether the CDN should have default origins
+        /// </summary>
+        public Boolean NoDefaultOrigins { get; set; }
+
+        /// <summary>
         /// Defines the file extensions to include in the CDN policy.
         /// </summary>
         public String IncludeFileExtensions { get; set; }

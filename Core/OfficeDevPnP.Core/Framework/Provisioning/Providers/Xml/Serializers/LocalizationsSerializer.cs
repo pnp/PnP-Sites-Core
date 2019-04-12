@@ -14,8 +14,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
-        SerializationSequence = -1, DeserializationSequence = -1,
-        Scope = SerializerScope.Tenant)]
+        SerializationSequence = 200, DeserializationSequence = 200,
+        Scope = SerializerScope.Provisioning)]
     internal class LocalizationsSerializer : PnPBaseSchemaSerializer<Localization>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)

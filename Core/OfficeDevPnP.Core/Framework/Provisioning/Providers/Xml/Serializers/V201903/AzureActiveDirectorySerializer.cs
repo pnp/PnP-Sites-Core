@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201903,
-        SerializationSequence = -1, DeserializationSequence = -1,
+        SerializationSequence = 200, DeserializationSequence = 200,
         Scope = SerializerScope.Tenant)]
     internal class AzureActiveDirectorySerializer : PnPBaseSchemaSerializer<ProvisioningAzureActiveDirectory>
     {

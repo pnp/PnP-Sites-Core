@@ -34,18 +34,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     {
         private readonly PnPProvisioningContext _previous;
 
+        /// <summary>
+        /// Asynchronous delegate to acquire an access token for a specific resource and with a specific scope
+        /// </summary>
         public AcquireTokenAsyncDelegate AcquireTokenAsync { get; private set; }
+
+        /// <summary>
+        /// Asynchronous delegate to acquire a cookie for a specific resource
+        /// </summary>
         public AcquireCookieAsyncDelegate AcquireCookieAsync { get; private set; }
 
+        /// <summary>
+        /// Property Bag of properties for the current context
+        /// </summary>
+        public Dictionary<String, Object> Properties { get; private set; } = 
+            new Dictionary<string, object>();
+
+        /// <summary>
+        /// Constructor for the content
+        /// </summary>
+        /// <param name="acquireTokenAsyncDelegate">Asynchronous delegate to acquire an access token for a specific resource and with a specific scope</param>
+        /// <param name="acquireCookieAsyncDelegate">Asynchronous delegate to acquire a cookie for a specific resource</param>
+        /// <param name="properties">Properties to add to the Property Bag of the current context</param>
         public PnPProvisioningContext(
             AcquireTokenAsyncDelegate acquireTokenAsyncDelegate = null,
-            AcquireCookieAsyncDelegate acquireCookieAsyncDelegate = null)
+            AcquireCookieAsyncDelegate acquireCookieAsyncDelegate = null,
+            Dictionary<String, Object> properties = null)
         {
             // Save the delegate to acquire the access token
             this.AcquireTokenAsync = acquireTokenAsyncDelegate;
 
             // Save the delegate to acquire the cookie
             this.AcquireCookieAsync = acquireCookieAsyncDelegate;
+
+            // Add the initial set of properties, if any
+            if (properties != null)
+            {
+                foreach (var p in properties)
+                {
+                    this.Properties.Add(p.Key, p.Value);
+                }
+            }
 
             // Save the previous context, if any
             this._previous = Current;
@@ -54,11 +83,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             Current = this;
         }
 
+        /// <summary>
+        /// Synchronous delegate to acquire an access token for a specific resource and with a specific scope
+        /// </summary>
+        /// <param name="resource">The target resource</param>
+        /// <param name="scope">The scope for the target resource</param>
+        /// <returns>The Access Token for the requested resource, with the requested scope</returns>
         public String AcquireToken(String resource, String scope)
         {
             return(this.AcquireTokenAsync(resource, scope).GetAwaiter().GetResult());
         }
 
+        /// <summary>
+        /// Synchronous delegate to acquire a cookie for a specific resource
+        /// </summary>
+        /// <param name="resource">The target resource</param>
+        /// <returns>The Cookie for the requested resource</returns>
         public String AcquireCookie(String resource)
         {
             return (this.AcquireCookieAsync(resource).GetAwaiter().GetResult());

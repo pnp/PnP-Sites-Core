@@ -121,19 +121,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     wrapper = xmlSerializer.Deserialize(reader);
                 }
 
-                // TODO: Refactor here
+                // Get all Provisioning-level serializers to run in automated mode, ordered by DeserializationSequence
+                var serializers = GetSerializersForCurrentContext(SerializerScope.Provisioning, a => a?.DeserializationSequence);
 
-                // Handle the Parameters of the schema wrapper, if any
-                var tps = new TemplateParametersSerializer();
-                tps.Deserialize(wrapper, result);
-
-                // Handle the Localizations of the schema wrapper, if any
-                var ls = new LocalizationsSerializer();
-                ls.Deserialize(wrapper, result);
-
-                // Handle the Tenant-wide settings of the schema wrapper, if any
-                var ts = new TenantSerializer();
-                ts.Deserialize(wrapper, result);
+                // Invoke all the Provisioning-level serializers
+                InvokeSerializers(result, wrapper, serializers, SerializationAction.Deserialize);
 
                 // Get the list of templates, if any, wrapped by the wrapper
                 var wrapperTemplates = wrapper.GetPublicInstancePropertyValue("Templates");
@@ -247,8 +239,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 var result = new ProvisioningTemplate();
 
                 // Prepare a variable to hold the single source formatted template
+                // We provide the result instance of ProvisioningTemplate in order
+                // to configure the tenant/hierarchy level items
+                // We get back the XML-based object to use with the other serializers
                 var source = ProcessInputStream(template, identifier, result);
 
+                // We process the chain of deserialization 
+                // with the Provisioning-level serializers
                 DeserializeTemplate(source, result);
 
                 return (result);
@@ -262,57 +259,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// <param name="template">The resulting template</param>
         protected virtual void DeserializeTemplate(Object persistenceTemplate, ProvisioningTemplate template)
         {
-            // Get all serializers to run in automated mode, ordered by DeserializationSequence
-            var currentAssembly = this.GetType().Assembly;
+            // Get all ProvisioningTemplate-level serializers to run in automated mode, ordered by DeserializationSequence
+            var serializers = GetSerializersForCurrentContext(SerializerScope.ProvisioningTemplate, a => a?.DeserializationSequence);
 
-            XMLPnPSchemaVersion currentSchemaVersion = GetCurrentSchemaVersion();
-
-            var serializers = currentAssembly.GetTypes()
-                // Get all the serializers
-                .Where(t => t.GetInterface(typeof(IPnPSchemaSerializer).FullName) != null
-                       && t.BaseType.Name == typeof(Xml.PnPBaseSchemaSerializer<>).Name)
-                // Filter out those that are not targeting the current schema version or that are not in scope Template
-                .Where(t => 
-                {
-                    var a = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
-                    return (a.MinimalSupportedSchemaVersion <= currentSchemaVersion && a.Scope == SerializerScope.Template);
-                })
-                // Order the remainings by supported schema version descendant, to get first the newest ones
-                .OrderByDescending(s =>
-                {
-                    var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
-                    return (a.MinimalSupportedSchemaVersion);
-                }
-                )
-                // Group those with the same target type (which is the first generic Type argument)
-                .GroupBy(t => t.BaseType.GenericTypeArguments.FirstOrDefault()?.FullName)
-                // Order the result by DeserializationSequence
-                .OrderBy(g =>
-                {
-                    var maxInGroup = g.OrderByDescending(s =>
-                    {
-                        var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
-                        return (a.MinimalSupportedSchemaVersion);
-                    }
-                    ).FirstOrDefault();
-                    return (maxInGroup.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault()?.DeserializationSequence);
-                });
-
-            foreach (var group in serializers)
-            {
-                // Get the first serializer only for each group (i.e. the most recent one for the current schema)
-                var serializerType = group.FirstOrDefault();
-                if (serializerType != null)
-                {
-                    // Create an instance of the serializer
-                    var serializer = Activator.CreateInstance(serializerType) as IPnPSchemaSerializer;
-                    if (serializer != null)
-                    {
-                        // And run the Deserialize method
-                        serializer.Deserialize(persistenceTemplate, template);
-                    }
-                }
-            }
+            // Invoke all the ProvisioningTemplate-level serializers
+            InvokeSerializers(template, persistenceTemplate, serializers, SerializationAction.Deserialize);
         }
 
         /// <summary>
@@ -410,27 +361,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             wrapper.SetPublicInstancePropertyValue("Preferences", preferences);
 
-            // TODO: Refactor here
+            // Get all Provisioning-level serializers to run in automated mode, ordered by SerializationSequence
+            var serializers = GetSerializersForCurrentContext(SerializerScope.Provisioning, a => a?.SerializationSequence);
 
-            // Handle the Parameters of the schema wrapper, if any
-            var tps = new TemplateParametersSerializer();
-            tps.Serialize(template, wrapper);
+            // Invoke all the Provisioning-level serializers
+            InvokeSerializers(template, wrapper, serializers, SerializationAction.Serialize);
 
-            // Handle the Localizations of the schema wrapper, if any
-            var ls = new LocalizationsSerializer();
-            ls.Serialize(template, wrapper);
+            // Get all Tenant-levelserializers to run in automated mode, ordered by SerializationSequence
+            serializers = GetSerializersForCurrentContext(SerializerScope.Tenant, a => a?.SerializationSequence);
 
-            // Handle the Tenant-wide of the schema wrapper, if any
-            var ts = new TenantSerializer();
-            ts.Serialize(template, wrapper);
-
-            // Handle the Teams of the schema wrapper, if any
-            var tms = new TeamsSerializer();
-            tms.Serialize(template, wrapper);
-
-            // Handle the Azure Active Directory of the schema wrapper, if any
-            var aads = new AzureActiveDirectorySerializer();
-            aads.Serialize(template, wrapper);
+            // Invoke all the Tenant-levelserializers
+            InvokeSerializers(template, wrapper, serializers, SerializationAction.Serialize);
 
             // Configure the basic properties of the wrapper
             if (template.ParentHierarchy != null)
@@ -460,57 +401,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// <param name="persistenceTemplate">The XML-based object to serialize the template into</param>
         protected virtual void SerializeTemplate(ProvisioningTemplate template, Object persistenceTemplate)
         {
-            // Get all serializers to run in automated mode, ordered by DeserializationSequence
-            var currentAssembly = this.GetType().Assembly;
+            // Get all ProvisioningTemplate-level serializers to run in automated mode, ordered by DeserializationSequence
+            var serializers = GetSerializersForCurrentContext(SerializerScope.ProvisioningTemplate, a => a?.SerializationSequence);
 
-            XMLPnPSchemaVersion currentSchemaVersion = GetCurrentSchemaVersion();
-
-            var serializers = currentAssembly.GetTypes()
-                // Get all the serializers
-                .Where(t => t.GetInterface(typeof(IPnPSchemaSerializer).FullName) != null
-                       && t.BaseType.Name == typeof(Xml.PnPBaseSchemaSerializer<>).Name)
-                // Filter out those that are not targeting the current schema version or that are not in scope Template
-                .Where(t =>
-                {
-                    var a = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
-                    return (a.MinimalSupportedSchemaVersion <= currentSchemaVersion && a.Scope == SerializerScope.Template);
-                })
-                // Order the remainings by supported schema version descendant, to get first the newest ones
-                .OrderByDescending(s =>
-                {
-                    var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
-                    return (a.MinimalSupportedSchemaVersion);
-                }
-                )
-                // Group those with the same target type (which is the first generic Type argument)
-                .GroupBy(t => t.BaseType.GenericTypeArguments.FirstOrDefault()?.FullName)
-                // Order the result by SerializationSequence
-                .OrderBy(g =>
-                {
-                    var maxInGroup = g.OrderByDescending(s =>
-                    {
-                        var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
-                        return (a.MinimalSupportedSchemaVersion);
-                    }
-                    ).FirstOrDefault();
-                    return (maxInGroup.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault()?.SerializationSequence);
-                });
-
-            foreach (var group in serializers)
-            {
-                // Get the first serializer only for each group (i.e. the most recent one for the current schema)
-                var serializerType = group.FirstOrDefault();
-                if (serializerType != null)
-                {
-                    // Create an instance of the serializer
-                    var serializer = Activator.CreateInstance(serializerType) as IPnPSchemaSerializer;
-                    if (serializer != null)
-                    {
-                        // And run the Serialize method
-                        serializer.Serialize(template, persistenceTemplate);
-                    }
-                }
-            }
+            // Invoke all the ProvisioningTemplate-level serializers
+            InvokeSerializers(template, persistenceTemplate, serializers, SerializationAction.Serialize);
         }
 
         /// <summary>
@@ -552,8 +447,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 ProcessOutputHierarchy(dummyTemplate, out wrapperType, out wrapper, out templates, out templatesItem);
 
                 // Handle the Sequences, if any
-                var ts = new SequenceSerializer();
-                ts.Serialize(dummyTemplate, wrapper);
+                // Get all ProvisioningHierarchy-level serializers to run in automated mode, ordered by SerializationSequence
+                var serializers = GetSerializersForCurrentContext(SerializerScope.ProvisioningHierarchy, a => a?.SerializationSequence);
+
+                // Invoke all the ProvisioningHierarchy-level serializers
+                InvokeSerializers(dummyTemplate, wrapper, serializers, SerializationAction.Serialize);
 
                 // Remove the dummy template
                 hierarchy.Templates.Remove(dummyTemplate);
@@ -694,35 +592,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     wrapper = xmlSerializer.Deserialize(reader);
                 }
 
-                // TODO: Refactor here
+                #region Process Provisioning level serializers
 
-                // Handle the Parameters of the schema wrapper, if any
-                var tps = new TemplateParametersSerializer();
-                tps.Deserialize(wrapper, dummyTemplate);
+                // Get all serializers to run in automated mode, ordered by DeserializationSequence
+                var serializers = GetSerializersForCurrentContext(SerializerScope.Provisioning, a => a?.DeserializationSequence);
 
-                // Handle the Localizations of the schema wrapper, if any
-                var ls = new LocalizationsSerializer();
-                ls.Deserialize(wrapper, dummyTemplate);
+                // Invoke all the serializers
+                InvokeSerializers(dummyTemplate, wrapper, serializers, SerializationAction.Deserialize);
 
-                // Handle the Tenant-wide settings of the schema wrapper, if any
-                var ts = new TenantSerializer();
-                ts.Deserialize(wrapper, dummyTemplate);
+                #endregion
 
-                // Handle the Teams settings of the schema wrapper, if any
-                var tms = new TeamsSerializer();
-                tms.Deserialize(wrapper, dummyTemplate);
+                #region Process Tenant level serializers
 
-                // Handle the Azure Active Directory settings of the schema wrapper, if any
-                var aads = new AzureActiveDirectorySerializer();
-                aads.Deserialize(wrapper, dummyTemplate);
+                // Get all serializers to run in automated mode, ordered by DeserializationSequence
+                serializers = GetSerializersForCurrentContext(SerializerScope.Tenant, a => a?.DeserializationSequence);
 
-                // Handle the Sequences
-                var ss = new SequenceSerializer();
-                ss.Deserialize(wrapper, dummyTemplate);
+                // Invoke all the serializers
+                InvokeSerializers(dummyTemplate, wrapper, serializers, SerializationAction.Deserialize);
 
-                // Handle the Provisioning Hierarchy properties
-                var phs = new ProvisioningHierarchySerializer();
-                phs.Deserialize(wrapper, dummyTemplate);
+                #endregion
+
+                #region Process ProvisioningHierarchy level serializers
+
+                // Get all serializers to run in automated mode, ordered by DeserializationSequence
+                serializers = GetSerializersForCurrentContext(SerializerScope.ProvisioningHierarchy, a => a?.DeserializationSequence);
+
+                // Invoke all the serializers
+                InvokeSerializers(dummyTemplate, wrapper, serializers, SerializationAction.Deserialize);
+
+                #endregion
 
                 // Remove the dummy template from the hierarchy
                 resultHierarchy.Templates.Remove(dummyTemplate);
@@ -730,5 +628,88 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             return (resultHierarchy);
         }
+
+        private IOrderedEnumerable<IGrouping<string, Type>> GetSerializersForCurrentContext(SerializerScope scope,
+            Func<TemplateSchemaSerializerAttribute, Int32?> sortingSelector)
+        {
+            // Get all serializers to run in automated mode, ordered by sortingSelector
+            var currentAssembly = this.GetType().Assembly;
+
+            XMLPnPSchemaVersion currentSchemaVersion = GetCurrentSchemaVersion();
+
+            var serializers = currentAssembly.GetTypes()
+                // Get all the serializers
+                .Where(t => t.GetInterface(typeof(IPnPSchemaSerializer).FullName) != null
+                       && t.BaseType.Name == typeof(Xml.PnPBaseSchemaSerializer<>).Name)
+                // Filter out those that are not targeting the current schema version or that are not in scope Template
+                .Where(t =>
+                {
+                    var a = t.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                    return (a.MinimalSupportedSchemaVersion <= currentSchemaVersion && a.Scope == scope);
+                })
+                // Order the remainings by supported schema version descendant, to get first the newest ones
+                .OrderByDescending(s =>
+                {
+                    var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                    return (a.MinimalSupportedSchemaVersion);
+                }
+                )
+                // Group those with the same target type (which is the first generic Type argument)
+                .GroupBy(t => t.BaseType.GenericTypeArguments.FirstOrDefault()?.FullName)
+                // Order the result by SerializationSequence
+                .OrderBy(g =>
+                {
+                    var maxInGroup = g.OrderByDescending(s =>
+                    {
+                        var a = s.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault();
+                        return (a.MinimalSupportedSchemaVersion);
+                    }
+                    ).FirstOrDefault();
+                    return sortingSelector(maxInGroup.GetCustomAttributes<TemplateSchemaSerializerAttribute>(false).FirstOrDefault());
+                });
+            return serializers;
+        }
+
+        private static void InvokeSerializers(ProvisioningTemplate template, object persistenceTemplate,
+            IOrderedEnumerable<IGrouping<string, Type>> serializers, SerializationAction action)
+        {
+            foreach (var group in serializers)
+            {
+                // Get the first serializer only for each group (i.e. the most recent one for the current schema)
+                var serializerType = group.FirstOrDefault();
+                if (serializerType != null)
+                {
+                    // Create an instance of the serializer
+                    var serializer = Activator.CreateInstance(serializerType) as IPnPSchemaSerializer;
+                    if (serializer != null)
+                    {
+                        // And run the Deserialize/Serialize method
+                        if (action == SerializationAction.Serialize)
+                        {
+                            serializer.Serialize(template, persistenceTemplate);
+                        }
+                        else
+                        {
+                            serializer.Deserialize(persistenceTemplate, template);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Defines the action to execute with a pool of serializers
+    /// </summary>
+    internal enum SerializationAction
+    {
+        /// <summary>
+        /// Will serialize content
+        /// </summary>
+        Serialize,
+        /// <summary>
+        /// Will deserialize content
+        /// </summary>
+        Deserialize
     }
 }

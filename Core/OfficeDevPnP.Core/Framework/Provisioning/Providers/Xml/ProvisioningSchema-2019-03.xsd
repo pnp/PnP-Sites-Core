@@ -4470,15 +4470,6 @@
       </xsd:annotation>
     </xsd:attribute>
 
-    <xsd:attribute name="NameVisibility" type="xsd:boolean" use="optional">
-      <xsd:annotation>
-        <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-        <xsd:documentation xml:lang="en">
-          Defines whether to show the Footer name or not, optional attribute.
-        </xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute>
-
     <xsd:attribute name="Name" type="pnp:ReplaceableString" use="optional">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -6036,6 +6027,15 @@
         <xsd:appinfo>Added with schema version 201801</xsd:appinfo>
         <xsd:documentation xml:lang="en">
           Defines whether the CDN has to be enabled or disabled, required attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="NoDefaultOrigins" type="xsd:boolean" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines whether the CDN should have default origins, optional attribute.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>

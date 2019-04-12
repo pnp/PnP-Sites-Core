@@ -31,11 +31,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            if (template.ParentHierarchy != null)
-            {
-                var resolvers = new Dictionary<String, IResolver>();
-                PnPObjectsMapper.MapProperties(template.ParentHierarchy, persistence, resolvers, recursive: false);
-            }
+            //if (template.ParentHierarchy != null)
+            //{
+            //    var resolvers = new Dictionary<String, IResolver>();
+            //    PnPObjectsMapper.MapProperties(template.ParentHierarchy, persistence, resolvers, recursive: false);
+            //}
         }
     }
 }
