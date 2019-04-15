@@ -526,8 +526,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="isExternal">true if the link is an external link</param>
         /// <param name="asLastNode">true if the link should be added as the last node of the collection</param>
         /// <param name="l1ParentNodeTitle">title of the first level parent, if this node is a third level navigation node</param>
+        /// <param name="isVisible"></param>
         /// <returns>Newly added NavigationNode</returns>
-        public static NavigationNode AddNavigationNode(this Web web, string nodeTitle, Uri nodeUri, string parentNodeTitle, NavigationType navigationType, bool isExternal = false, bool asLastNode = true, string l1ParentNodeTitle=null)
+        public static NavigationNode AddNavigationNode(this Web web, string nodeTitle, Uri nodeUri, string parentNodeTitle, NavigationType navigationType, bool isExternal = false, bool asLastNode = true, string l1ParentNodeTitle = null, bool isVisible = true)
         {
             web.Context.Load(web, w => w.Navigation.QuickLaunch, w => w.Navigation.TopNavigationBar);
             web.Context.ExecuteQueryRetry();
@@ -571,6 +572,9 @@ namespace Microsoft.SharePoint.Client
                     var searchNavigation = web.LoadSearchNavigation();
                     navigationNode = searchNavigation.Add(node);
                 }
+
+                navigationNode.IsVisible = isVisible;
+                navigationNode.Update();
             }
             finally
             {

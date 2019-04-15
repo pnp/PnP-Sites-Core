@@ -111,6 +111,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         /// <param name="globalNavigation">GlobalNavigation object</param>
         /// <param name="currentNavigation">CurrentNavigation object</param>
+        /// <param name="searchNavigation">SearchNavigation object</param>
         public Navigation(GlobalNavigation globalNavigation = null, CurrentNavigation currentNavigation = null, StructuralNavigation searchNavigation = null)
         {
             this.GlobalNavigation = globalNavigation;
