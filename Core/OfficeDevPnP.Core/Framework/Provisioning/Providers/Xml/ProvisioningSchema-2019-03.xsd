@@ -4474,7 +4474,7 @@
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
         <xsd:documentation xml:lang="en">
-          Defines the name of the footer, which is visible when NameVisibility has been set to true. Optional attribute.
+          Defines the name of the footer, optional attribute.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
@@ -8139,6 +8139,64 @@
               </xsd:complexType>
 
             </xsd:element>
+            <xsd:element name="Licenses" minOccurs="0" maxOccurs="1">
+              <xsd:annotation>
+                <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+                <xsd:documentation xml:lang="en">
+                  Defines a collection of licenses to activate/associate with the user, optional element.
+                </xsd:documentation>
+              </xsd:annotation>
+
+              <xsd:complexType>
+                <xsd:sequence>
+                  <xsd:element name="License" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:annotation>
+                      <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+                      <xsd:documentation xml:lang="en">
+                        Defines a license to activate/associate with the user.
+                      </xsd:documentation>
+                    </xsd:annotation>
+
+                    <xsd:complexType>
+
+                      <xsd:sequence>
+                        <xsd:element name="DisabledPlans" minOccurs="1" maxOccurs="1">
+                          <xsd:annotation>
+                            <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+                            <xsd:documentation xml:lang="en">
+                              List of disabled plans.
+                            </xsd:documentation>
+                          </xsd:annotation>
+
+                          <xsd:complexType>
+                            <xsd:sequence>
+                              <xsd:element name="DisabledPlan" type="xsd:string" minOccurs="1" maxOccurs="unbounded">
+                                <xsd:annotation>
+                                  <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+                                  <xsd:documentation xml:lang="en">
+                                    A disabled plan, collection of elements.
+                                  </xsd:documentation>
+                                </xsd:annotation>
+                              </xsd:element>
+                            </xsd:sequence>
+                          </xsd:complexType>
+                        </xsd:element>
+                      </xsd:sequence>
+
+                      <xsd:attribute name="SkuId" type="pnp:ReplaceableString" use="required">
+                        <xsd:annotation>
+                          <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+                          <xsd:documentation xml:lang="en">
+                            Defines the SKU of the license, required attribute.
+                          </xsd:documentation>
+                        </xsd:annotation>
+                      </xsd:attribute>
+                    </xsd:complexType>
+                  </xsd:element>
+                </xsd:sequence>
+              </xsd:complexType>
+
+            </xsd:element>
           </xsd:sequence>
 
           <xsd:attribute name="AccountEnabled" type="xsd:boolean" use="required">
@@ -8178,6 +8236,14 @@
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
               <xsd:documentation xml:lang="en">
                 The UPN for the user, required attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="ProfilePhoto" type="xsd:string" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                The URL of the Photo for the user, optional attribute.
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>

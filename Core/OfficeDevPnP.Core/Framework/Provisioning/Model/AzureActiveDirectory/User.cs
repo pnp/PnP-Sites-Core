@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OfficeDevPnP.Core.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,6 +44,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
         /// </summary>
         public String UserPrincipalName { get; set; }
 
+        /// <summary>
+        /// The Profile Photo for the user
+        /// </summary>
+        public String ProfilePhoto { get; set; }
+
+        /// <summary>
+        /// Collection of user's licenses
+        /// </summary>
+        public UserLicenseCollection Licenses { get; private set; }
+
+        #endregion
+
+        #region Constructors
+
+        public User(): base()
+        {
+            this.Licenses = new UserLicenseCollection(this.ParentTemplate);
+        }
+
         #endregion
 
         #region Comparison code
@@ -53,13 +73,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|",
                 PasswordProfile.GetHashCode(),
                 AccountEnabled.GetHashCode(),
                 DisplayName?.GetHashCode() ?? 0,
                 MailNickname?.GetHashCode() ?? 0,
                 PasswordPolicies?.GetHashCode() ?? 0,
-                UserPrincipalName?.GetHashCode() ?? 0
+                UserPrincipalName?.GetHashCode() ?? 0,
+                ProfilePhoto?.GetHashCode() ?? 0,
+                Licenses.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
@@ -94,7 +116,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
                 this.DisplayName == other.DisplayName &&
                 this.MailNickname == other.MailNickname &&
                 this.PasswordPolicies == other.PasswordPolicies &&
-                this.UserPrincipalName == other.UserPrincipalName
+                this.UserPrincipalName == other.UserPrincipalName &&
+                this.ProfilePhoto == other.ProfilePhoto &&
+                this.Licenses.DeepEquals(other.Licenses)
                 );
         }
 

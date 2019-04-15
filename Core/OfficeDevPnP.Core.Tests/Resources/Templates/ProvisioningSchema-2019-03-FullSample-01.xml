@@ -1265,6 +1265,22 @@
                 UserPrincipalName="john.white@{parameter:domain}.onmicrosoft.com">
         <pnp:PasswordProfile ForceChangePasswordNextSignIn="true"
                              Password="Pass@w0rd"/>
+        <pnp:Licenses>
+          <pnp:License SkuId="26d45bd9-adf1-46cd-a9e1-51e9a5524128">
+            <pnp:DisabledPlans>
+              <pnp:DisabledPlan>e212cbc7-0961-4c40-9825-01117710dcb1</pnp:DisabledPlan>
+              <pnp:DisabledPlan>3fb82609-8c27-4f7b-bd51-30634711ee67</pnp:DisabledPlan>
+              <pnp:DisabledPlan>b1188c4c-1b36-4018-b48b-ee07604f6feb</pnp:DisabledPlan>
+            </pnp:DisabledPlans>
+          </pnp:License>
+          <pnp:License SkuId="26d45bd9-adf1-46cd-a9e1-51e9a5524128">
+            <pnp:DisabledPlans>
+              <pnp:DisabledPlan>e212cbc7-0961-4c40-9825-01117710dcb1</pnp:DisabledPlan>
+              <pnp:DisabledPlan>3fb82609-8c27-4f7b-bd51-30634711ee67</pnp:DisabledPlan>
+              <pnp:DisabledPlan>b1188c4c-1b36-4018-b48b-ee07604f6feb</pnp:DisabledPlan>
+            </pnp:DisabledPlans>
+          </pnp:License>
+        </pnp:Licenses>
       </pnp:User>
       <pnp:User AccountEnabled="true"
                 DisplayName="Jim Black"

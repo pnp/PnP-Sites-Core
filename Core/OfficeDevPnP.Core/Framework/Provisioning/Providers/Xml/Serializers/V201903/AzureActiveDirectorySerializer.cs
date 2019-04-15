@@ -36,6 +36,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add(a => a.Users[0].PasswordProfile.Password,
                     new ExpressionValueResolver((s, p) => EncryptionUtility.ToSecureString((String)p)));
 
+                // Manage licenses for users
+                expressions.Add(a => a.Users[0].Licenses[0].DisabledPlans,
+                    new ExpressionValueResolver((s, p) =>  s.GetPublicInstancePropertyValue("DisabledPlans")));
+
                 PnPObjectsMapper.MapProperties(aad, template.ParentHierarchy.AzureActiveDirectory, expressions, recursive: true);
             }
         }
@@ -50,6 +54,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 var aadUserType = Type.GetType(aadUserTypeName, false);
                 var aadUserPasswordProfileTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.AADUsersUserPasswordProfile, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var aadUserPasswordProfileType = Type.GetType(aadUserPasswordProfileTypeName, false);
+                var aadUserLicenseProfileTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.AADUsersUserLicense, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var aadUserLicenseProfileType = Type.GetType(aadUserLicenseProfileTypeName, false);
 
                 if (aadType != null &&
                     aadUserType != null &&
@@ -65,6 +71,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                         new AADUsersPasswordProfileFromModelToSchemaTypeResolver());
                     resolvers.Add($"{aadUserPasswordProfileType}.Password",
                         new ExpressionValueResolver((s, p) => EncryptionUtility.ToInsecureString((SecureString)p)));
+                    resolvers.Add($"{aadUserLicenseProfileType}.DisabledPlans",
+                        new ExpressionValueResolver((s, p) => ((UserLicense)s).DisabledPlans));
 
                     PnPObjectsMapper.MapProperties(template.ParentHierarchy.AzureActiveDirectory, target, resolvers, recursive: true);
 

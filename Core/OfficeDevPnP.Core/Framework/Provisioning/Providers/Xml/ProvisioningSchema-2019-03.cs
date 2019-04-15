@@ -349,6 +349,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private AADUsersUserPasswordProfile passwordProfileField;
         
+        private AADUsersUserLicense[] licensesField;
+        
         private bool accountEnabledField;
         
         private string displayNameField;
@@ -359,6 +361,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private string userPrincipalNameField;
         
+        private string profilePhotoField;
+        
         /// <remarks/>
         public AADUsersUserPasswordProfile PasswordProfile {
             get {
@@ -366,6 +370,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.passwordProfileField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute("License", IsNullable=false)]
+        public AADUsersUserLicense[] Licenses {
+            get {
+                return this.licensesField;
+            }
+            set {
+                this.licensesField = value;
             }
         }
         
@@ -423,6 +438,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
                 this.userPrincipalNameField = value;
             }
         }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ProfilePhoto {
+            get {
+                return this.profilePhotoField;
+            }
+            set {
+                this.profilePhotoField = value;
+            }
+        }
     }
     
     /// <remarks/>
@@ -476,6 +502,41 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.passwordField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
+    public partial class AADUsersUserLicense {
+        
+        private string[] disabledPlansField;
+        
+        private string skuIdField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute("DisabledPlan", IsNullable=false)]
+        public string[] DisabledPlans {
+            get {
+                return this.disabledPlansField;
+            }
+            set {
+                this.disabledPlansField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string SkuId {
+            get {
+                return this.skuIdField;
+            }
+            set {
+                this.skuIdField = value;
             }
         }
     }

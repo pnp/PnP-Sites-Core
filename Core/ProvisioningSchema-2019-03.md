@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 4/11/2019*
+* Topic automatically generated on 4/15/2019*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -2451,7 +2451,7 @@ Attibute|Type|Description
 --------|----|-----------
 Enabled|xsd:boolean|Defines whether the site Footer is enabled or not, required attribute.
 Logo|ReplaceableString|Defines the Logo to render in the Footer, optional attribute.
-Name|ReplaceableString|Defines the name of the footer, which is visible when NameVisibility has been set to true. Optional attribute.
+Name|ReplaceableString|Defines the name of the footer, optional attribute.
 RemoveExistingNodes|xsd:boolean|Defines whether the existing site Footer links should be removed, optional attribute.
 <a name="footerlinks"></a>
 ### FooterLinks
@@ -3649,7 +3649,7 @@ Base type for TermSets and Terms
 
 ```xml
 <pnp:TermSetItem
-      Owner="xsd:string"
+      Owner="pnp:ReplaceableString"
       Description="xsd:string"
       IsAvailableForTagging="xsd:boolean">
 </pnp:TermSetItem>
@@ -3661,7 +3661,7 @@ Here follow the available attributes for the TermSetItem element.
 
 Attibute|Type|Description
 --------|----|-----------
-Owner|xsd:string|The Owner of the Term Set Item, optional attribute.
+Owner|ReplaceableString|The Owner of the Term Set Item, optional attribute.
 Description|xsd:string|The Description of the Term Set Item, optional attribute.
 IsAvailableForTagging|xsd:boolean|Declares whether the Term Set Item is available for tagging, optional attribute.
 <a name="termset"></a>
@@ -4143,8 +4143,10 @@ User|[User](#user)|
       DisplayName="xsd:string"
       MailNickname="xsd:string"
       PasswordPolicies="xsd:string"
-      UserPrincipalName="pnp:ReplaceableString">
+      UserPrincipalName="pnp:ReplaceableString"
+      ProfilePhoto="xsd:string">
    <pnp:PasswordProfile />
+   <pnp:Licenses />
 </pnp:User>
 ```
 
@@ -4155,6 +4157,7 @@ Here follow the available child elements for the  element.
 Element|Type|Description
 -------|----|-----------
 PasswordProfile|[PasswordProfile](#passwordprofile)|The Password Profile for the user, required element.
+Licenses|[Licenses](#licenses)|Defines a collection of licenses to activate/associate with the user, optional element.
 
 Here follow the available attributes for the  element.
 
@@ -4166,3 +4169,4 @@ DisplayName|xsd:string|The Display Name of the user, required attribute.
 MailNickname|xsd:string|The Mail Nickname of the user, required attribute.
 PasswordPolicies|xsd:string|The Password Policies for the user, optional attribute.
 UserPrincipalName|ReplaceableString|The UPN for the user, required attribute.
+ProfilePhoto|xsd:string|The URL of the Photo for the user, optional attribute.
