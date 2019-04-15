@@ -6,13 +6,13 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using OfficeDevPnP.Core.Extensions;
 
-namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
+namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V201903
 {
     /// <summary>
     /// Class to serialize/deserialize the Security settings
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 700, DeserializationSequence = 700,
-        MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
+        MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201903,
         Scope = SerializerScope.ProvisioningTemplate)]
     internal class SecuritySerializer : PnPBaseSchemaSerializer<SiteSecurity>
     {
@@ -27,7 +27,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add(s => s.SiteSecurityPermissions, new PropertyObjectTypeResolver<SiteSecurity>(s => s.SiteSecurityPermissions, o => o.GetPublicInstancePropertyValue("Permissions")));
                 expressions.Add(s => s.SiteSecurityPermissions.RoleDefinitions[0].Permissions, 
                     new ExpressionCollectionValueResolver<PermissionKind>((i) => (PermissionKind)Enum.Parse(typeof(PermissionKind), i.ToString())));
-                
+
+                expressions.Add(s => s.AdditionalAdministrators,
+                    new TemplateSecurityUsersFromSchemaToModelTypeResolver("AdditionalAdministrators"));
+                expressions.Add(s => s.ClearExistingAdministrators,
+                    new ExpressionValueResolver((s, p) =>
+                    {
+                        var clearValues = s?.GetPublicInstancePropertyValue("AdditionalAdministrators")?.GetPublicInstancePropertyValue("ClearExistingItems");
+                        return(clearValues != null ? (Boolean)clearValues : false);
+                    }));
+                expressions.Add(s => s.AdditionalOwners,
+                    new TemplateSecurityUsersFromSchemaToModelTypeResolver("AdditionalOwners"));
+                expressions.Add(s => s.ClearExistingOwners,
+                    new ExpressionValueResolver((s, p) =>
+                    {
+                        var clearValues = s?.GetPublicInstancePropertyValue("AdditionalOwners")?.GetPublicInstancePropertyValue("ClearExistingItems");
+                        return (clearValues != null ? (Boolean)clearValues : false);
+                    }));
+                expressions.Add(s => s.AdditionalMembers,
+                    new TemplateSecurityUsersFromSchemaToModelTypeResolver("AdditionalMembers"));
+                expressions.Add(s => s.ClearExistingMembers,
+                    new ExpressionValueResolver((s, p) =>
+                    {
+                        var clearValues = s?.GetPublicInstancePropertyValue("AdditionalMembers")?.GetPublicInstancePropertyValue("ClearExistingItems");
+                        return (clearValues != null ? (Boolean)clearValues : false);
+                    }));
+                expressions.Add(s => s.AdditionalVisitors,
+                    new TemplateSecurityUsersFromSchemaToModelTypeResolver("AdditionalVisitors"));
+                expressions.Add(s => s.ClearExistingVisitors,
+                    new ExpressionValueResolver((s, p) =>
+                    {
+                        var clearValues = s?.GetPublicInstancePropertyValue("AdditionalVisitors")?.GetPublicInstancePropertyValue("ClearExistingItems");
+                        return (clearValues != null ? (Boolean)clearValues : false);
+                    }));
+
                 PnPObjectsMapper.MapProperties(security, template.Security, expressions, true);
             }
         }
@@ -61,6 +94,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add($"{siteGroupType}.AllowRequestToJoinLeaveSpecified", new ExpressionValueResolver(() => true));
                 expressions.Add($"{siteGroupType}.AutoAcceptRequestToJoinLeaveSpecified", new ExpressionValueResolver(() => true));
                 expressions.Add($"{siteGroupType}.OnlyAllowMembersViewMembershipSpecified", new ExpressionValueResolver(() => true));
+
+                expressions.Add($"{securityType}.AdditionalAdministrators",
+                    new TemplateSecurityUsersFromModelToSchemaTypeResolver("AdditionalAdministrators", "ClearExistingAdministrators"));
+                expressions.Add($"{securityType}.AdditionalOwners",
+                    new TemplateSecurityUsersFromModelToSchemaTypeResolver("AdditionalOwners", "ClearExistingOwners"));
+                expressions.Add($"{securityType}.AdditionalMembers",
+                    new TemplateSecurityUsersFromModelToSchemaTypeResolver("AdditionalMembers", "ClearExistingMembers"));
+                expressions.Add($"{securityType}.AdditionalVisitors",
+                    new TemplateSecurityUsersFromModelToSchemaTypeResolver("AdditionalVisitors", "ClearExistingVisitors"));
+
                 PnPObjectsMapper.MapProperties(template.Security, target, expressions, recursive: true);
 
                 if (target != null &&

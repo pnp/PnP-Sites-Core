@@ -115,7 +115,7 @@
         }</pnp:Theme>
     </pnp:Themes>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-DUMMY-28eed639-67cd-4598-9108-0136dbe87d45">
+  <pnp:Templates ID="CONTAINER-DUMMY-2565fcc3-8d27-4bb6-bbf5-9f1565112deb">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
@@ -140,6 +140,22 @@
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
       </pnp:PropertyBagEntries>
       <pnp:Security BreakRoleInheritance="true" ResetRoleInheritance="true" RemoveExistingUniqueRoleAssignments="true" ClearSubscopes="true" AssociatedGroups="Test Value" AssociatedOwnerGroup="{parameter:AssociatedOwnerGroup}" AssociatedMemberGroup="{parameter:AssociatedMemberGroup}" AssociatedVisitorGroup="{parameter:AssociatedVisitorGroup}">
+        <pnp:AdditionalAdministrators>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalAdministrators>
+        <pnp:AdditionalOwners ClearExistingItems="true">
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalOwners>
+        <pnp:AdditionalMembers>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalMembers>
+        <pnp:AdditionalVisitors>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalVisitors>
         <pnp:SiteGroups>
           <pnp:SiteGroup Title="Power Users" Description="Group of Power Users" Owner="admin@contoso.com" AllowMembersEditMembership="false" AllowRequestToJoinLeave="false" AutoAcceptRequestToJoinLeave="false" OnlyAllowMembersViewMembership="false" />
         </pnp:SiteGroups>
@@ -661,6 +677,25 @@
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
       </pnp:PropertyBagEntries>
+      <pnp:Security RemoveExistingUniqueRoleAssignments="false">
+        <pnp:AdditionalAdministrators>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalAdministrators>
+        <pnp:AdditionalOwners>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalOwners>
+        <pnp:AdditionalMembers>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalMembers>
+        <pnp:AdditionalVisitors>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalVisitors>
+        <pnp:Permissions />
+      </pnp:Security>
       <pnp:SiteFields>
         <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
         <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="ProjectName" DisplayName="Project Name" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
@@ -772,6 +807,25 @@ function showAlert(){alert("Hello!")};
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
       </pnp:PropertyBagEntries>
+      <pnp:Security RemoveExistingUniqueRoleAssignments="false">
+        <pnp:AdditionalAdministrators>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalAdministrators>
+        <pnp:AdditionalOwners>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalOwners>
+        <pnp:AdditionalMembers>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalMembers>
+        <pnp:AdditionalVisitors>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalVisitors>
+        <pnp:Permissions />
+      </pnp:Security>
       <pnp:SiteFields>
         <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
         <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="ProjectName" DisplayName="Project Name" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
@@ -885,6 +939,25 @@ function showAlert(){alert("Hello!")};
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
       </pnp:PropertyBagEntries>
+      <pnp:Security RemoveExistingUniqueRoleAssignments="false">
+        <pnp:AdditionalAdministrators>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalAdministrators>
+        <pnp:AdditionalOwners>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalOwners>
+        <pnp:AdditionalMembers>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalMembers>
+        <pnp:AdditionalVisitors>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalVisitors>
+        <pnp:Permissions />
+      </pnp:Security>
       <pnp:SiteFields>
         <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
         <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="ProjectName" DisplayName="Project Name" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />

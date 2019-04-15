@@ -678,10 +678,10 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.cs">
       <DependentUpon>ProvisioningSchema-2019-03.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\AADUsersLicenseDisabledPlansFromModelToSchemaTypeResolver.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\AADUsersLicenseDisabledPlansFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\ComplexTypeFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TemplateSecurityUsersFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TeamSecurityFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TemplateSecurityUsersFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TeamsItemsFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\AADUsersFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\AADUsersPasswordProfileFromModelToSchemaTypeResolver.cs" />
@@ -754,6 +754,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\ProvisioningHierarchySerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\SequenceSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\NavigationSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SecuritySerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SiteFooterSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SiteHeaderSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\ProvisioningTemplateWebhooksSerializer.cs" />
