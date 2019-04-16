@@ -1134,6 +1134,16 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if the group exists, false otherwise</returns>
         public static bool GroupExists(this Web web, string groupName)
         {
+            if (web == null)
+            {
+                throw new ArgumentNullException(nameof(web));
+            }
+
+            if (string.IsNullOrEmpty(groupName))
+            {
+                throw new ArgumentNullException(nameof(groupName));
+            }
+
 #if SP2013
             IEnumerable<Group> groups;
             groups = web.Context.LoadQuery(web.SiteGroups.Include(g => g.LoginName));
@@ -1149,21 +1159,21 @@ namespace Microsoft.SharePoint.Client
 #else
             return PnPCoreUtilities.RunWithDisableReturnValueCache(web.Context, () =>
             {
-                ExceptionHandlingScope groupexistsScope = new ExceptionHandlingScope(web.Context);
+                ExceptionHandlingScope groupExistsScope = new ExceptionHandlingScope(web.Context);
 
-                using (groupexistsScope.StartScope())
+                using (groupExistsScope.StartScope())
                 {
-                    using (groupexistsScope.StartTry())
+                    using (groupExistsScope.StartTry())
                     {
                         web.SiteGroups.GetByName(groupName);
                     }
 
-                    using (groupexistsScope.StartCatch())
+                    using (groupExistsScope.StartCatch())
                     {
                     }
                 }
                 web.Context.ExecuteQuery();
-                return !groupexistsScope.HasException;
+                return !groupExistsScope.HasException;
             });
 #endif            
         }
