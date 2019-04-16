@@ -269,6 +269,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 // Load the base template which will be used for the comparison work
                 var creationInfo = new ProvisioningTemplateCreationInformation(web) { BaseTemplate = web.GetBaseTemplate() };
                 creationInfo.IncludeSiteGroups = true;
+                creationInfo.IncludeDefaultAssociatedGroups = true;
                 var template = new ProvisioningTemplate();
                 template = new ObjectSiteSecurity().ExtractObjects(web, template, creationInfo);
 
@@ -305,10 +306,23 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var template = new ProvisioningTemplate();
                 template = new ObjectSiteSecurity().ExtractObjects(web, template, creationInfo);
 
+                Assert.IsFalse(template.Security.SiteGroups.Any());
+            }
+        }
+
+        public void CanSkipExtractAssociatedGroups()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                Web web = clientContext.Web;
+                var creationInfo = new ProvisioningTemplateCreationInformation(web) { BaseTemplate = web.GetBaseTemplate() };
+                creationInfo.IncludeDefaultAssociatedGroups = false;
+                var template = new ProvisioningTemplate();
+                template = new ObjectSiteSecurity().ExtractObjects(web, template, creationInfo);
+
                 Assert.IsNull(template.Security.AssociatedOwnerGroup);
                 Assert.IsNull(template.Security.AssociatedMemberGroup);
                 Assert.IsNull(template.Security.AssociatedVisitorGroup);
-                Assert.IsFalse(template.Security.SiteGroups.Any());
             }
         }
 

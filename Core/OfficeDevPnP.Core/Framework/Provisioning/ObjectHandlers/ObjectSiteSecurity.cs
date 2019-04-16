@@ -629,7 +629,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (!ownerGroup.ServerObjectIsNull.Value)
                 {
-                    if (creationInfo.IncludeSiteGroups)
+                    if (creationInfo.IncludeDefaultAssociatedGroups)
                     {
                         siteSecurity.AssociatedOwnerGroup = SiteTitleToken.GetReplaceToken(ownerGroup.Title, web);
                     }
@@ -641,7 +641,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (!memberGroup.ServerObjectIsNull.Value)
                 {
-                    if (creationInfo.IncludeSiteGroups)
+                    if (creationInfo.IncludeDefaultAssociatedGroups)
                     {
                         siteSecurity.AssociatedMemberGroup = SiteTitleToken.GetReplaceToken(memberGroup.Title, web);
                     }
@@ -653,7 +653,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (!visitorGroup.ServerObjectIsNull.Value)
                 {
-                    if (creationInfo.IncludeSiteGroups)
+                    if (creationInfo.IncludeDefaultAssociatedGroups)
                     {
                         siteSecurity.AssociatedVisitorGroup = SiteTitleToken.GetReplaceToken(visitorGroup.Title, web);
                     }

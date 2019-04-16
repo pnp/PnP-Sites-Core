@@ -19,6 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private bool includeAllTermGroups = false;
         private bool includeSiteCollectionTermGroup = false;
         private bool includeSiteGroups = false;
+        private bool includeDefaultAssociatedGroups = false;
         private bool includeTermGroupsSecurity = false;
         private bool includeSearchConfiguration = false;
         private List<String> propertyBagPropertiesToPreserve;
@@ -229,6 +230,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 return this.includeSiteGroups;
             }
             set { this.includeSiteGroups = value; }
+        }
+
+        /// <summary>
+        /// If true, includes configuration of associated owner, member, and visitor groups
+        /// in the template.
+        /// This does not affect the extraction of groups specified by IncludeSiteGroups,
+        /// but rather the configuration of what group should be the
+        /// associated owner, member, and visitor groups.
+        /// </summary>
+        public bool IncludeDefaultAssociatedGroups
+        {
+            get { return includeDefaultAssociatedGroups; }
+            set { includeDefaultAssociatedGroups = value; }
         }
 
         /// <summary>
