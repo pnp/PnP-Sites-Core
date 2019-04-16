@@ -347,9 +347,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             Url = parser.ParseString(node.Url),
                         });
 
-                        navNode.IsVisible = node.IsVisible;
-                        navNode.Update();
-
                         if (node.Title.ContainsResourceToken())
                         {
                             navNode.LocalizeNavigationNode(web, node.Title, parser, scope);
@@ -407,8 +404,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         parser.ParseString(parentNodeTitle),
                         navigationType,
                         node.IsExternal,
-                        l1ParentNodeTitle: l1ParentNodeTitle,
-                        isVisible: node.IsVisible
+                        l1ParentNodeTitle: l1ParentNodeTitle
                         );
 
 #if !SP2013
@@ -436,8 +432,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 parser.ParseString(parentNodeTitle),
                                 navigationType,
                                 true,
-                                l1ParentNodeTitle: l1ParentNodeTitle,
-                                isVisible: node.IsVisible
+                                l1ParentNodeTitle: l1ParentNodeTitle
                                 );
                         }
                         catch (Exception innerEx)
@@ -635,8 +630,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 Title = nodeTitle,
                 IsExternal = node.IsExternal,
-                Url = web.ServerRelativeUrl != "/" ? node.Url.Replace(web.ServerRelativeUrl, "{site}") : $"{{site}}{node.Url}",
-                IsVisible = node.IsVisible
+                Url = web.ServerRelativeUrl != "/" ? node.Url.Replace(web.ServerRelativeUrl, "{site}") : $"{{site}}{node.Url}"
             };
 
             node.Context.Load(node.Children);

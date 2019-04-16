@@ -546,6 +546,7 @@
     <Compile Include="Framework\Provisioning\Model\BaseHierarchyModel.cs" />
     <Compile Include="Framework\Provisioning\Model\BaseProvisioningTemplateObjectCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\CommunicationSiteCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Deprecated\NavigationNode.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Model\IProvisioningHierarchyDescendant.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningHierarchy.cs" />
     <Compile Include="Framework\Provisioning\Model\BaseProvisioningHierarchyObjectCollection.cs" />

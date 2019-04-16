@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 4/15/2019*
+* Topic automatically generated on 4/16/2019*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -1032,8 +1032,7 @@ Defines a Navigation Node for the Structural Navigation of a site.
 <pnp:NavigationNode
       Title="pnp:ReplaceableString"
       Url="pnp:ReplaceableString"
-      IsExternal="xsd:boolean"
-      IsVisible="xsd:boolean">
+      IsExternal="xsd:boolean">
    <pnp:NavigationNode />
 </pnp:NavigationNode>
 ```
@@ -1054,7 +1053,6 @@ Attibute|Type|Description
 Title|ReplaceableString|Defines the Title of a Navigation Node for the Structural Navigation of a site.
 Url|ReplaceableString|Defines the Url of a Navigation Node for the Structural Navigation of a site.
 IsExternal|xsd:boolean|Defines whether the Navigation Node for the Structural Navigation targets an External resource.
-IsVisible|xsd:boolean|Defines whether the Navigation Node for the Structural Navigation is visible or not.
 <a name="features"></a>
 ### Features
 The Features (Site or Web) to activate or deactivate while applying the Provisioning Template, optional collection of elements.

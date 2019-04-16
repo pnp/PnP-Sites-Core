@@ -282,8 +282,8 @@
           </pnp:StructuralNavigation>
         </pnp:CurrentNavigation>
         <pnp:SearchNavigation RemoveExistingNodes="false">
-          <pnp:NavigationNode Title="Sample Search Node 01" Url="{sitecollection}/pages/search01.aspx" IsExternal="true" IsVisible="true" />
-          <pnp:NavigationNode Title="Sample Search Node 02" Url="{sitecollection}/pages/search02.aspx" IsExternal="false" IsVisible="false" />
+          <pnp:NavigationNode Title="Sample Search Node 01" Url="{sitecollection}/pages/search01.aspx" IsExternal="true" />
+          <pnp:NavigationNode Title="Sample Search Node 02" Url="{sitecollection}/pages/search02.aspx" IsExternal="false" />
         </pnp:SearchNavigation>
       </pnp:Navigation>
 

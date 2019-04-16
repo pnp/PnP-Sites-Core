@@ -8442,11 +8442,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private bool isExternalField;
         
-        private bool isVisibleField;
-        
         public NavigationNode() {
             this.isExternalField = false;
-            this.isVisibleField = true;
         }
         
         /// <remarks/>
@@ -8491,18 +8488,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.isExternalField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(true)]
-        public bool IsVisible {
-            get {
-                return this.isVisibleField;
-            }
-            set {
-                this.isVisibleField = value;
             }
         }
     }
