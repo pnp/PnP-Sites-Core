@@ -114,7 +114,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                             }
                         }
-
                         if (webNeedsUpdate)
                         {
                             // Trigger the creation and setting of the associated member group
@@ -180,6 +179,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 web.Context.ExecuteQueryRetry();
 
+                if (siteSecurity.ClearExistingOwners)
+                {
+                    ClearExistingUsers(web.AssociatedOwnerGroup);
+                }
+                if (siteSecurity.ClearExistingMembers)
+                {
+                    ClearExistingUsers(web.AssociatedMemberGroup);
+                }
+                if (siteSecurity.ClearExistingVisitors)
+                {
+                    ClearExistingUsers(web.AssociatedVisitorGroup);
+                }
+
                 IEnumerable<AssociatedGroupToken> associatedGroupTokens = parser.Tokens.Where(t => t.GetType() == typeof(AssociatedGroupToken)).Cast<AssociatedGroupToken>();
                 foreach (AssociatedGroupToken associatedGroupToken in associatedGroupTokens)
                 {
@@ -200,20 +212,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 foreach (var siteGroup in siteSecurity.SiteGroups
-        .Sort<SiteGroup>(
-            _grp =>
-            {
-                string groupOwner = _grp.Owner;
-                if (string.IsNullOrWhiteSpace(groupOwner)
-                    || "SHAREPOINT\\system".Equals(groupOwner, StringComparison.OrdinalIgnoreCase)
-                    || _grp.Title.Equals(groupOwner, StringComparison.OrdinalIgnoreCase)
-                    || (groupOwner.StartsWith("{{associated") && groupOwner.EndsWith("group}}")))
-                {
-                    return Enumerable.Empty<SiteGroup>();
-                }
-                return siteSecurity.SiteGroups.Where(_item => _item.Title.Equals(groupOwner, StringComparison.OrdinalIgnoreCase));
-            }
-    ))
+                    .Sort<SiteGroup>(
+                        _grp =>
+                        {
+                            string groupOwner = _grp.Owner;
+                            if (string.IsNullOrWhiteSpace(groupOwner)
+                                || "SHAREPOINT\\system".Equals(groupOwner, StringComparison.OrdinalIgnoreCase)
+                                || _grp.Title.Equals(groupOwner, StringComparison.OrdinalIgnoreCase)
+                                || (groupOwner.StartsWith("{{associated") && groupOwner.EndsWith("group}}")))
+                            {
+                                return Enumerable.Empty<SiteGroup>();
+                            }
+                            return siteSecurity.SiteGroups.Where(_item => _item.Title.Equals(groupOwner, StringComparison.OrdinalIgnoreCase));
+                        }
+                ))
                 {
                     Group group;
                     var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName));
@@ -356,6 +368,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         AddUserToGroup(web, group, siteGroup.Members, scope, parser);
                     }
+                }
+
+                if (siteSecurity.ClearExistingAdministrators)
+                {
+                    ClearExistingAdministrators(web);
                 }
 
                 foreach (var admin in siteSecurity.AdditionalAdministrators)
@@ -501,6 +518,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
             return parser;
+        }
+
+        private static void ClearExistingUsers(Group group)
+        {
+            group.EnsureProperties(g => g.Users);
+            while (group.Users.Count > 0)
+            {
+                var user = group.Users[0];
+                group.Users.Remove(user);
+            }
+            group.Update();
+            group.Context.ExecuteQueryRetry();
+        }
+
+        private static void ClearExistingAdministrators(Web web)
+        {
+            var admins = web.GetAdministrators();
+            foreach (var admin in admins)
+            {
+                web.RemoveAdministrator(admin);
+            }
         }
 
         private static Group EnsureGroup(Web web, string groupName)
@@ -940,8 +978,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                   template.Security.AdditionalOwners.Any() ||
                                   template.Security.AdditionalVisitors.Any() ||
                                   template.Security.SiteGroups.Any() ||
-                                  template.Security.SiteSecurityPermissions.RoleAssignments.Any() ||
-                                  template.Security.SiteSecurityPermissions.RoleDefinitions.Any());
+                                  (template.Security.SiteSecurityPermissions != null ? template.Security.SiteSecurityPermissions.RoleAssignments.Any() : true) ||
+                                  (template.Security.SiteSecurityPermissions != null ? template.Security.SiteSecurityPermissions.RoleDefinitions.Any() : true));
                 if (_willProvision == true)
                 {
                     // if subweb and site inheritance is not broken
