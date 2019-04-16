@@ -523,6 +523,8 @@
     <Compile Include="Framework\Graph\GraphHttpClient.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingValue.cs" />
     <Compile Include="Framework\Graph\Model\SiteClassificationsSettings.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionIssueTags.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRuleAttribute.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRulesManager.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\Rules\CanProvisionAppsRuleSite.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRuleOffice365Base.cs" />

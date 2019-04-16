@@ -16,8 +16,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules
     {
         public string Name { get => this.GetType().FullName; }
 
-        public int Sequence { get => 0; }
-
         /// <summary>
         /// This method allows to check if a template can be provisioned in the currently selected target
         /// </summary>

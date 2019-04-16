@@ -24,7 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules
         /// <summary>
         /// Provides a unique Tag for the current issue
         /// </summary>
-        public String Tag { get; set; }
+        public CanProvisionIssueTags Tag { get; set; }
 
         /// <summary>
         /// Provides the Inner Exception of an Issue

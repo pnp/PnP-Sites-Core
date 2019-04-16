@@ -11,6 +11,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
 {
+    [CanProvisionRule(Scope = CanProvisionScope.Site, Sequence = 100)]
     internal class CanProvisionAppsRuleSite : CanProvisionRuleSiteBase
     {
         public override CanProvisionResult CanProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
@@ -33,7 +34,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                         result.Issues.Add(new CanProvisionIssue()
                         {
                             Source = this.Name,
-                            Tag = "MISSING_APP_CATALOG", // Do we want to have a list of constants with numeric value?
+                            Tag = CanProvisionIssueTags.MISSING_APP_CATALOG,
                             Message = "The template cannote be provisioned because the target environment is missing the tenant AppCatalog!", // TODO: Consider using resource strings
                             InnerException = null, // Here we don't have any specific exception
                         });

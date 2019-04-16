@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules
 {
     /// <summary>
-    /// Basic interface for any CanProvision Rule
+    /// List of Tags for CanProvision Issues
     /// </summary>
-    interface ICanProvisionRuleBase
+    public enum CanProvisionIssueTags
     {
         /// <summary>
-        /// The name of the CanProvision Rule
+        /// The App Catalog is missing
         /// </summary>
-        String Name { get; }
+        MISSING_APP_CATALOG,
     }
 }
