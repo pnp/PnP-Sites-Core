@@ -57,34 +57,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (string.IsNullOrEmpty(parsedAssociatedOwnerGroupName))
                         {
                             web.AssociatedOwnerGroup = null;
-                            webNeedsUpdate = true;
                         }
                         else
                         {
-                            if (!web.GroupExists(parsedAssociatedOwnerGroupName))
-                            {
-                                web.AssociatedOwnerGroup = EnsureGroup(web, parsedAssociatedOwnerGroupName);
-                                webNeedsUpdate = true;
-                            }
-                            else if (!web.AssociatedOwnerGroup.ServerObjectIsNull.Value)
-                            {
-                                if (web.AssociatedOwnerGroup.Title != parsedAssociatedOwnerGroupName)
-                                {
-                                    var updatedOwnerGroup = web.SiteGroups.GetByName(parsedAssociatedOwnerGroupName);
-                                    web.Context.Load(updatedOwnerGroup);
-                                    web.Context.ExecuteQueryRetry();
+                            web.AssociatedOwnerGroup = EnsureGroup(web, parsedAssociatedOwnerGroupName);
+                        }
 
-                                    web.AssociatedOwnerGroup = updatedOwnerGroup;
-                                    webNeedsUpdate = true;
-                                }
-                            }
-                        }
-                        if (webNeedsUpdate)
-                        {
-                            // Trigger the creation and setting of the associated owner group
-                            web.Update();
-                            web.Context.ExecuteQueryRetry();
-                        }
+                        webNeedsUpdate = true;
                     }
 
                     if (parsedAssociatedMemberGroupName != null)
@@ -92,34 +71,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (string.IsNullOrEmpty(parsedAssociatedMemberGroupName))
                         {
                             web.AssociatedMemberGroup = null;
-                            webNeedsUpdate = true;
                         }
                         else
                         {
-                            if (!web.GroupExists(parsedAssociatedMemberGroupName))
-                            {
-                                web.AssociatedMemberGroup = EnsureGroup(web, parsedAssociatedMemberGroupName);
-                                webNeedsUpdate = true;
-                            }
-                            else if (!web.AssociatedMemberGroup.ServerObjectIsNull.Value)
-                            {
-                                if (web.AssociatedMemberGroup.Title != parsedAssociatedMemberGroupName)
-                                {
-                                    var updatedMemberGroup = web.SiteGroups.GetByName(parsedAssociatedMemberGroupName);
-                                    web.Context.Load(updatedMemberGroup);
-                                    web.Context.ExecuteQueryRetry();
+                            web.AssociatedMemberGroup = EnsureGroup(web, parsedAssociatedMemberGroupName);
+                        }
 
-                                    web.AssociatedMemberGroup = updatedMemberGroup;
-                                    webNeedsUpdate = true;
-                                }
-                            }
-                        }
-                        if (webNeedsUpdate)
-                        {
-                            // Trigger the creation and setting of the associated member group
-                            web.Update();
-                            web.Context.ExecuteQueryRetry();
-                        }
+                        webNeedsUpdate = true;
                     }
 
                     if (parsedAssociatedVisitorGroupName != null)
@@ -127,34 +85,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (string.IsNullOrEmpty(parsedAssociatedVisitorGroupName))
                         {
                             web.AssociatedVisitorGroup = null;
-                            webNeedsUpdate = true;
                         }
                         else
                         {
-                            if (!web.GroupExists(parsedAssociatedVisitorGroupName))
-                            {
-                                web.AssociatedVisitorGroup = EnsureGroup(web, parsedAssociatedVisitorGroupName);
-                                webNeedsUpdate = true;
-                            }
-                            else if (!web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
-                            {
-                                if (web.AssociatedVisitorGroup.Title != parsedAssociatedVisitorGroupName)
-                                {
-                                    var updatedVisitorGroup = web.SiteGroups.GetByName(parsedAssociatedVisitorGroupName);
-                                    web.Context.Load(updatedVisitorGroup);
-                                    web.Context.ExecuteQueryRetry();
+                            web.AssociatedVisitorGroup = EnsureGroup(web, parsedAssociatedVisitorGroupName);
+                        }
 
-                                    web.AssociatedVisitorGroup = updatedVisitorGroup;
-                                    webNeedsUpdate = true;
-                                }
-                            }
-                        }
-                        if (webNeedsUpdate)
-                        {
-                            // Trigger the creation and setting of the associated visitor group
-                            web.Update();
-                            web.Context.ExecuteQueryRetry();
-                        }
+                        webNeedsUpdate = true;
+                    }
+
+                    if (webNeedsUpdate)
+                    {
+                        // Trigger the creation and setting of the associated groups
+                        web.Update();
+                        web.Context.ExecuteQueryRetry();
                     }
                 }
 
