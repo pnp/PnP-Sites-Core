@@ -405,6 +405,7 @@
     <Compile Include="Extensions\NavigationExtensionsTests.cs" />
     <Compile Include="Authentication\AuthenticationTests.cs" />
     <Compile Include="Diagnostics\LogTests.cs" />
+    <Compile Include="Framework\CanProvisionRules\CanProvisionTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorAzureTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorFileSystemTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorOpenXmlTests.cs" />

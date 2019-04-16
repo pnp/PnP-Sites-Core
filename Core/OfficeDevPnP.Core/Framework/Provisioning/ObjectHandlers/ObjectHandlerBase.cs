@@ -10,8 +10,6 @@ using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-    internal delegate bool ShouldProvisionTest(Web web, ProvisioningTemplate template);
-
     internal abstract class ObjectHandlerBase
     {
         internal bool? _willExtract;

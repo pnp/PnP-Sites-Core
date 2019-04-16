@@ -34,11 +34,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public Boolean IsExternal { get; set; }
 
-        /// <summary>
-        /// Defines whether the Navigation Node for the Structural Navigation is visible or not
-        /// </summary>
-        public Boolean IsVisible { get; set; }
-
         #endregion
 
         #region Constructors
