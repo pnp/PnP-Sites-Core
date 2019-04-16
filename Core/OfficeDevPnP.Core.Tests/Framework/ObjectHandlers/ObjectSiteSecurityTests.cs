@@ -249,13 +249,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         {
             using (var ctx = TestCommon.CreateClientContext())
             {
-                Web web = ctx.Web;
-                ctx.Load(web,
-                    w => w.AssociatedOwnerGroup.Title,
-                    w => w.AssociatedMemberGroup.Title,
-                    w => w.AssociatedVisitorGroup.Title);
-                ctx.ExecuteQuery();
-
                 // Load the base template which will be used for the comparison work
                 var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
 
@@ -263,9 +256,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 template = new ObjectSiteSecurity().ExtractObjects(ctx.Web, template, creationInfo);
 
                 Assert.IsTrue(template.Security.AdditionalAdministrators.Any());
-                Assert.AreEqual(web.AssociatedOwnerGroup.Title, template.Security.AssociatedOwnerGroup);
-                Assert.AreEqual(web.AssociatedMemberGroup.Title, template.Security.AssociatedMemberGroup);
-                Assert.AreEqual(web.AssociatedVisitorGroup.Title, template.Security.AssociatedVisitorGroup);
             }
         }
 
@@ -274,15 +264,51 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         {
             using (var ctx = TestCommon.CreateClientContext())
             {
+                Web web = ctx.Web;
+
                 // Load the base template which will be used for the comparison work
-                var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
+                var creationInfo = new ProvisioningTemplateCreationInformation(web) { BaseTemplate = web.GetBaseTemplate() };
                 creationInfo.IncludeSiteGroups = true;
                 var template = new ProvisioningTemplate();
-                template = new ObjectSiteSecurity().ExtractObjects(ctx.Web, template, creationInfo);
+                template = new ObjectSiteSecurity().ExtractObjects(web, template, creationInfo);
+
+                ctx.Load(web,
+                    w => w.AssociatedOwnerGroup.Title,
+                    w => w.AssociatedMemberGroup.Title,
+                    w => w.AssociatedVisitorGroup.Title);
+                ctx.ExecuteQuery();
 
                 Assert.IsTrue(template.Security.AdditionalAdministrators.Any());
                 Assert.IsTrue(template.Security.SiteGroups.Any());
+                Assert.AreEqual(SiteTitleToken.GetReplaceToken(web.AssociatedOwnerGroup.Title, web), template.Security.AssociatedOwnerGroup, "Associated owner group title mismatch.");
+                Assert.AreEqual(SiteTitleToken.GetReplaceToken(web.AssociatedMemberGroup.Title, web), template.Security.AssociatedMemberGroup, "Associated member group title mismatch.");
+                Assert.AreEqual(SiteTitleToken.GetReplaceToken(web.AssociatedVisitorGroup.Title, web), template.Security.AssociatedVisitorGroup, "Associated visitor group title mismatch.");
 
+                // These three assertions will fail if the site collection does not have the
+                // default groups created during site creation assigned as associated owner group,
+                // associated member group, and associated visitor group.
+                // This is a prerequisite for the site collection used for unit testing purposes.                
+                Assert.IsTrue(template.Security.AssociatedOwnerGroup.Contains("{sitetitle}"), "Associated owner group title does not contain the Site Title token.");
+                Assert.IsTrue(template.Security.AssociatedMemberGroup.Contains("{sitetitle}"), "Associated owner group title does not contain the Site Title token.");
+                Assert.IsTrue(template.Security.AssociatedVisitorGroup.Contains("{sitetitle}"), "Associated owner group title does not contain the Site Title token.");
+            }
+        }
+
+        [TestMethod]
+        public void CanSkipExtractSiteGroups()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                Web web = clientContext.Web;
+                var creationInfo = new ProvisioningTemplateCreationInformation(web) { BaseTemplate = web.GetBaseTemplate() };
+                creationInfo.IncludeSiteGroups = false;
+                var template = new ProvisioningTemplate();
+                template = new ObjectSiteSecurity().ExtractObjects(web, template, creationInfo);
+
+                Assert.IsNull(template.Security.AssociatedOwnerGroup);
+                Assert.IsNull(template.Security.AssociatedMemberGroup);
+                Assert.IsNull(template.Security.AssociatedVisitorGroup);
+                Assert.IsFalse(template.Security.SiteGroups.Any());
             }
         }
 

@@ -68,5 +68,53 @@ namespace OfficeDevPnP.Core.Utilities
                 return $"https://{uriParts[0]}-admin.{string.Join(".", uriParts.Skip(1))}";
             return null;
         }
+
+#if !SP2013
+        /// <summary>
+        /// Executes the specified method with Return Value Cache disabled on the Client Runtime Context.
+        /// </summary>
+        /// <typeparam name="TResult"></typeparam>
+        /// <param name="context"></param>
+        /// <param name="disabledReturnValueCacheCode">The code that is to run with Return Value Cache disabled.</param>
+        /// <returns>Returns value from the code specified by <paramref name="disabledReturnValueCacheCode"/></returns>
+        public static TResult RunWithDisableReturnValueCache<TResult>(ClientRuntimeContext context, Func<TResult> disabledReturnValueCacheCode)
+        {
+            if (context == null)
+            {
+                throw new ArgumentNullException(nameof(context));
+            }
+
+            if (disabledReturnValueCacheCode == null)
+            {
+                throw new ArgumentNullException(nameof(disabledReturnValueCacheCode));
+            }
+
+            bool disableReturnValueCache = context.DisableReturnValueCache;
+
+            try
+            {
+                context.DisableReturnValueCache = true;
+                return disabledReturnValueCacheCode();
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                context.DisableReturnValueCache = disableReturnValueCache;
+            }
+        }
+
+        /// <summary>
+        /// Executes the specified method with Return Value Cache disabled on the Client Runtime Context.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="disabledReturnValueCacheCode">The code that is to run with Return Value Cache disabled.</param>
+        public static void RunWithDisableReturnValueCache(ClientRuntimeContext context, Action disabledReturnValueCacheCode)
+        {
+            RunWithDisableReturnValueCache<object>(context, () => { disabledReturnValueCacheCode(); return default; } );
+        }
+#endif
     }
 }

@@ -24,5 +24,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             }
             return CacheValue;
         }
+
+        /// <summary>
+        /// Replaces the specified value with the Site Title token.
+        /// </summary>
+        /// <param name="value">String value to replace with site title token.</param>
+        /// <param name="web">The web used to match <paramref name="value"/> with the web's title.</param>
+        /// <returns></returns>
+        public static string GetReplaceToken(string value, Web web)
+        {
+            web.EnsureProperty(w => w.Title);
+
+            if (string.IsNullOrEmpty(web.Title))
+            {
+                return value;
+            }
+            else
+            {
+                return value.Replace(web.Title, "{sitetitle}");
+            }
+        }
     }
 }

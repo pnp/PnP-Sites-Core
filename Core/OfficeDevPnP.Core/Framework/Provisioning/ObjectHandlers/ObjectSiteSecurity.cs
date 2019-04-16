@@ -10,6 +10,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using RoleDefinition = Microsoft.SharePoint.Client.RoleDefinition;
 using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Extensions;
+using System.Globalization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -487,24 +488,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static Group EnsureGroup(Web web, string groupName)
         {
-            ExceptionHandlingScope ensureGroupScope = new ExceptionHandlingScope(web.Context);
+#if SP2013
+            IEnumerable<Group> groups;
+            groups = web.Context.LoadQuery(web.SiteGroups.Include(g => g.LoginName));
+            web.Context.Load(web, w => w.Language);
+            web.Context.ExecuteQuery();
 
-            using (ensureGroupScope.StartScope())
+            // The Compare method should be using Web.Locale instead of Web.Language to specify the CultureInfo,
+            // but that value is not exposed through CSOM. Web.Language is therefore a best effort
+            // to provide a culture specific comparison for group name.
+            Group group = groups.FirstOrDefault(g => string.Compare(g.LoginName, groupName, true, new CultureInfo((int)web.Language)) == 0);
+
+            if (group == null)
             {
-                using (ensureGroupScope.StartTry())
-                {
-                    web.SiteGroups.GetByName(groupName);
-                }
-
-                using (ensureGroupScope.StartCatch())
-                {
-                    GroupCreationInformation groupCreationInfo = new GroupCreationInformation();
-                    groupCreationInfo.Title = groupName;
-                    web.SiteGroups.Add(groupCreationInfo);
-                }
+                GroupCreationInformation groupCreationInfo = new GroupCreationInformation();
+                groupCreationInfo.Title = groupName;
+                group = web.SiteGroups.Add(groupCreationInfo);
             }
 
-            return web.SiteGroups.GetByName(groupName);
+            return group;
+#else
+            return PnPCoreUtilities.RunWithDisableReturnValueCache(web.Context, () =>
+            {
+                ExceptionHandlingScope ensureGroupScope = new ExceptionHandlingScope(web.Context);
+
+                using (ensureGroupScope.StartScope())
+                {
+                    using (ensureGroupScope.StartTry())
+                    {
+                        web.SiteGroups.GetByName(groupName);
+                    }
+
+                    using (ensureGroupScope.StartCatch())
+                    {
+                        GroupCreationInformation groupCreationInfo = new GroupCreationInformation();
+                        groupCreationInfo.Title = groupName;
+                        web.SiteGroups.Add(groupCreationInfo);
+                    }
+                }
+                return web.SiteGroups.GetByName(groupName);
+            });
+#endif            
         }
 
         private static Principal GetPrincipal(Web web, TokenParser parser, PnPMonitoredScope scope, IEnumerable<Group> groups, Model.RoleAssignment roleAssignment)
@@ -605,7 +629,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (!ownerGroup.ServerObjectIsNull.Value)
                 {
-                    siteSecurity.AssociatedOwnerGroup = ownerGroup.Title;
+                    if (creationInfo.IncludeSiteGroups)
+                    {
+                        siteSecurity.AssociatedOwnerGroup = SiteTitleToken.GetReplaceToken(ownerGroup.Title, web);
+                    }
                     associatedGroupIds.Add(ownerGroup.Id);
                     foreach (var member in ownerGroup.Users)
                     {
@@ -614,7 +641,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (!memberGroup.ServerObjectIsNull.Value)
                 {
-                    siteSecurity.AssociatedMemberGroup = memberGroup.Title;
+                    if (creationInfo.IncludeSiteGroups)
+                    {
+                        siteSecurity.AssociatedMemberGroup = SiteTitleToken.GetReplaceToken(memberGroup.Title, web);
+                    }
                     associatedGroupIds.Add(memberGroup.Id);
                     foreach (var member in memberGroup.Users)
                     {
@@ -623,7 +653,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (!visitorGroup.ServerObjectIsNull.Value)
                 {
-                    siteSecurity.AssociatedVisitorGroup = visitorGroup.Title;
+                    if (creationInfo.IncludeSiteGroups)
+                    {
+                        siteSecurity.AssociatedVisitorGroup = SiteTitleToken.GetReplaceToken(visitorGroup.Title, web);
+                    }
                     associatedGroupIds.Add(visitorGroup.Id);
                     foreach (var member in visitorGroup.Users)
                     {
@@ -677,7 +710,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             scope.LogDebug("Processing group {0}", group.Title);
                             var siteGroup = new SiteGroup()
                             {
-                                Title = !string.IsNullOrEmpty(web.Title) ? group.Title.Replace(web.Title, "{sitename}") : group.Title,
+                                Title = SiteTitleToken.GetReplaceToken(group.Title, web),
                                 AllowMembersEditMembership = group.AllowMembersEditMembership,
                                 AutoAcceptRequestToJoinLeave = group.AutoAcceptRequestToJoinLeave,
                                 AllowRequestToJoinLeave = group.AllowRequestToJoinLeave,

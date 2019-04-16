@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 #if NETSTANDARD2_0
 using System.Net;
@@ -1133,35 +1134,38 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if the group exists, false otherwise</returns>
         public static bool GroupExists(this Web web, string groupName)
         {
-            if (string.IsNullOrEmpty(groupName))
-                throw new ArgumentNullException("groupName");
+#if SP2013
+            IEnumerable<Group> groups;
+            groups = web.Context.LoadQuery(web.SiteGroups.Include(g => g.LoginName));
+            web.Context.Load(web, w => w.Language);
+            web.Context.ExecuteQuery();
 
-            bool result = false;
+            // The Compare method should be using Web.Locale instead of Web.Language to specify the CultureInfo,
+            // but that value is not exposed through CSOM. Web.Language is therefore a best effort
+            // to provide a culture specific comparison for group name.
+            Group group = groups.FirstOrDefault(g => string.Compare(g.LoginName, groupName, true, new CultureInfo((int)web.Language)) == 0);
 
-            try
+            return group != null;
+#else
+            return PnPCoreUtilities.RunWithDisableReturnValueCache(web.Context, () =>
             {
-                var group = web.SiteGroups.GetByName(groupName);
-                web.Context.Load(group);
-                web.Context.ExecuteQueryRetry();
-                if (group != null)
-                {
-                    result = true;
-                }
-            }
-            catch (ServerException ex)
-            {
-                if (IsGroupCannotBeFoundException(ex))
-                {
-                    //eat the exception
-                }
-                else
-                {
-                    //rethrow exception
-                    throw;
-                }
-            }
+                ExceptionHandlingScope groupexistsScope = new ExceptionHandlingScope(web.Context);
 
-            return result;
+                using (groupexistsScope.StartScope())
+                {
+                    using (groupexistsScope.StartTry())
+                    {
+                        web.SiteGroups.GetByName(groupName);
+                    }
+
+                    using (groupexistsScope.StartCatch())
+                    {
+                    }
+                }
+                web.Context.ExecuteQuery();
+                return !groupexistsScope.HasException;
+            });
+#endif            
         }
 
         private static bool IsGroupCannotBeFoundException(Exception ex)
