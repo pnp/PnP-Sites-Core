@@ -266,6 +266,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 // note: this check that the IDs of the source and reused term are the same to document this behavior
                 Assert.AreEqual(sourceTerm.Id, newTermGroup.TermSets[0].Terms[0].Id);
                 Assert.AreEqual(sourceTerm.Id, newTermGroup.TermSets[1].Terms[0].Id);
+                Assert.IsTrue(newTermGroup.TermSets[0].Terms[0].IsReused);
+                Assert.IsTrue(newTermGroup.TermSets[1].Terms[0].IsReused);
             }
         }
 
