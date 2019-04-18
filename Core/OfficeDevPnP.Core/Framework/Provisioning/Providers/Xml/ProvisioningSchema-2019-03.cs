@@ -11087,6 +11087,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         /// <remarks/>
         ProvisioningCompleted,
+        
+        /// <remarks/>
+        ExceptionOccurred,
     }
     
     /// <remarks/>
