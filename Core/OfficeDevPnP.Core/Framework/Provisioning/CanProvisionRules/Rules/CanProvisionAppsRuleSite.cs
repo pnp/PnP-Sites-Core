@@ -16,9 +16,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
     {
         public override CanProvisionResult CanProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
+
             // Prepare the default output
             var result = new CanProvisionResult();
-
+#if !ONPREMISES
             // Verify if we need the App Catalog (i.e. the template contains apps or packages)
             if ((template.ApplicationLifecycleManagement?.Apps != null && template.ApplicationLifecycleManagement?.Apps?.Count > 0) ||
                 template.ApplicationLifecycleManagement?.AppCatalog != null)
@@ -41,8 +42,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                     }
                 }
             }
-
-            return (result);
+#else
+            result.CanProvision = false;
+#endif
+            return result;
         }
     }
 }
