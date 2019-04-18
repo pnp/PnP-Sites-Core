@@ -364,7 +364,8 @@ namespace OfficeDevPnP.Core.Tests
 #if !ONPREMISES
         public static string AcquireTokenAsync(string resource, string scope = null)
         {
-            var tenantId = GetTenantIdByUrl(TestCommon.AppSetting("SPOTenantUrl"));
+            var tenantId = TenantExtensions.GetTenantIdByUrl(TestCommon.AppSetting("SPOTenantUrl"));
+            //var tenantId = GetTenantIdByUrl(TestCommon.AppSetting("SPOTenantUrl"));
             if (tenantId == null) return null;
 
             var clientId = TestCommon.AppSetting("AppId");
@@ -386,35 +387,6 @@ namespace OfficeDevPnP.Core.Tests
 
             var json = JToken.Parse(response);
             return json["access_token"].ToString();
-        }
-
-        private static string GetTenantIdByUrl(string tenantUrl)
-        {
-            var tenantName = GetTenantNameFromUrl(tenantUrl);
-            if (tenantName == null) return null;
-
-            var url = $"https://login.microsoftonline.com/{tenantName}.onmicrosoft.com/.well-known/openid-configuration";
-            var response = HttpHelper.MakeGetRequestForString(url);
-            var json = JToken.Parse(response);
-
-            var tokenEndpointUrl = json["token_endpoint"].ToString();
-            return GetTenantIdFromAadEndpointUrl(tokenEndpointUrl);
-        }
-
-        private static string GetTenantNameFromUrl(string tenantUrl)
-        {
-            return GetSubstringFromMiddle(tenantUrl, "https://", "-admin.sharepoint.com");
-        }
-
-        private static string GetTenantIdFromAadEndpointUrl(string aadEndpointUrl)
-        {
-            return GetSubstringFromMiddle(aadEndpointUrl, "https://login.microsoftonline.com/", "/oauth2/");
-        }
-
-        private static string GetSubstringFromMiddle(string originalString, string prefix, string suffix)
-        {
-            var index = originalString.IndexOf(suffix, StringComparison.OrdinalIgnoreCase);
-            return index != -1 ? originalString.Substring(prefix.Length, index - prefix.Length) : null;
         }
 #endif
     }
