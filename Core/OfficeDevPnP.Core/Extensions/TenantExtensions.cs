@@ -1000,7 +1000,7 @@ namespace Microsoft.SharePoint.Client
 
 #if !ONPREMISES || SP2019
 
-        #region ClientSide Package Deployment
+#region ClientSide Package Deployment
 
         /// <summary>
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
@@ -1018,11 +1018,12 @@ namespace Microsoft.SharePoint.Client
 
             return null;
         }
-        #endregion
+#endregion
 
 #endif
-        #region Utilities
+#region Utilities
 
+#if !ONPREMISES
         public static string GetTenantIdByUrl(string tenantUrl)
         {
             var tenantName = GetTenantNameFromUrl(tenantUrl);
@@ -1035,16 +1036,17 @@ namespace Microsoft.SharePoint.Client
             var tokenEndpointUrl = json["token_endpoint"].ToString();
             return GetTenantIdFromAadEndpointUrl(tokenEndpointUrl);
         }
+#endif
 
         private static string GetTenantNameFromUrl(string tenantUrl)
         {
-            if (tenantUrl.ToLower().Contains("-admin.sharepoint"))
+            if (tenantUrl.ToLower().Contains("-admin.sharepoint."))
             {
-                return GetSubstringFromMiddle(tenantUrl, "https://", "-admin.sharepoint.com");
+                return GetSubstringFromMiddle(tenantUrl, "https://", "-admin.sharepoint.");
             }
             else
             {
-                return GetSubstringFromMiddle(tenantUrl, "https://", ".sharepoint.com");
+                return GetSubstringFromMiddle(tenantUrl, "https://", ".sharepoint.");
             }
         }
 
@@ -1059,7 +1061,7 @@ namespace Microsoft.SharePoint.Client
             return index != -1 ? originalString.Substring(prefix.Length, index - prefix.Length) : null;
         }
 
-        #endregion
+#endregion
 
     }
 }
