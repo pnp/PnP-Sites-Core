@@ -29,7 +29,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestCleanup]
         public void CleanUp()
         {
-            using (new PnPProvisioningContext((resource, scope) => Task.FromResult(AcquireTokenAsync(resource, scope))))
+            using (new PnPProvisioningContext((resource, scope) => Task.FromResult(TestCommon.AcquireTokenAsync(resource, scope))))
             {
                 foreach (var teamName in _teamNames)
                 {
@@ -67,6 +67,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod]
         public void CanProvisionObjects()
         {
+#if !ONPREMISES
             var template = new ProvisioningTemplate {ParentHierarchy = new ProvisioningHierarchy()};
 
             foreach (var teamTemplate in _teamTemplates)
@@ -74,7 +75,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 template.ParentHierarchy.Teams.TeamTemplates.Add(new TeamTemplate { JsonTemplate = teamTemplate });
             }
 
-            using (new PnPProvisioningContext((resource, scope) => Task.FromResult(AcquireTokenAsync(resource, scope))))
+            using (new PnPProvisioningContext((resource, scope) => Task.FromResult(TestCommon.AcquireTokenAsync(resource, scope))))
             {
                 using (var ctx = TestCommon.CreateClientContext())
                 {
@@ -84,6 +85,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 Assert.IsTrue(TeamsHaveBeenProvisioned());
             }
+#else
+            Assert.Inconclusive();
+#endif
         }
 
         private bool TeamsHaveBeenProvisioned()
@@ -95,62 +99,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             }
 
             return true;
-        }
-
-        private static string AcquireTokenAsync(string resource, string scope = null)
-        {
-            var tenantId = GetTenantIdByUrl(TestCommon.AppSetting("SPOTenantUrl"));
-            if (tenantId == null) return null;
-
-            var clientId = TestCommon.AppSetting("AppId");
-            var clientSecret = TestCommon.AppSetting("AppSecret");
-            var username = TestCommon.AppSetting("SPOUserName");
-            var password = TestCommon.AppSetting("SPOPassword");
-
-            string body;
-            string response;
-            if (scope == null) // use v1 endpoint
-            {
-                body = $"grant_type=password&client_id={clientId}&username={username}&password={password}&resource={resource}&client_secret={WebUtility.UrlEncode(clientSecret)}";
-                response = HttpHelper.MakePostRequestForString($"https://login.microsoftonline.com/{tenantId}/oauth2/token", body, "application/x-www-form-urlencoded");
-            }
-            else // use v2 endpoint
-            {
-                body = $"grant_type=password&client_id={clientId}&username={username}&password={password}&scope={scope}&client_secret={WebUtility.UrlEncode(clientSecret)}";
-                response = HttpHelper.MakePostRequestForString($"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token", body, "application/x-www-form-urlencoded");
-            }
-
-            var json = JToken.Parse(response);
-            return json["access_token"].ToString();
-        }
-
-        private static string GetTenantIdByUrl(string tenantUrl)
-        {
-            var tenantName = GetTenantNameFromUrl(tenantUrl);
-            if (tenantName == null) return null;
-
-            var url = $"https://login.microsoftonline.com/{tenantName}.onmicrosoft.com/.well-known/openid-configuration";
-            var response = HttpHelper.MakeGetRequestForString(url);
-            var json = JToken.Parse(response);
-
-            var tokenEndpointUrl = json["token_endpoint"].ToString();
-            return GetTenantIdFromAadEndpointUrl(tokenEndpointUrl);
-        }
-
-        private static string GetTenantNameFromUrl(string tenantUrl)
-        {
-            return GetSubstringFromMiddle(tenantUrl, "https://", "-admin.sharepoint.com");
-        }
-
-        private static string GetTenantIdFromAadEndpointUrl(string aadEndpointUrl)
-        {
-            return GetSubstringFromMiddle(aadEndpointUrl, "https://login.microsoftonline.com/", "/oauth2/");
-        }
-
-        private static string GetSubstringFromMiddle(string originalString, string prefix, string suffix)
-        {
-            var index = originalString.IndexOf(suffix, StringComparison.OrdinalIgnoreCase);
-            return index != -1 ? originalString.Substring(prefix.Length, index - prefix.Length) : null;
         }
     }
 }
