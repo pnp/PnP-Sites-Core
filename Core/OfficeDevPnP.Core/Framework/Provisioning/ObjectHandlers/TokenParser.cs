@@ -2,7 +2,9 @@
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.ALM;
+using OfficeDevPnP.Core.Framework.Graph;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
@@ -66,7 +68,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
         // Heavy rebase for switching templates
-        public void Rebase(Web web, ProvisioningTemplate template)
+        public void Rebase(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation = null)
         {
             _web = web;
 
@@ -87,7 +89,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             AddFieldTokens(web);
             // remove group tokens
             _tokens.RemoveAll(t => t is GroupIdToken || t is AssociatedGroupToken);
-            AddGroupTokens(web);
+            AddGroupTokens(web, applyingInformation);
             // remove role definition tokens
             _tokens.RemoveAll(t => t is RoleDefinitionToken || t is RoleDefinitionIdToken);
             AddRoleDefinitionTokens(web);
@@ -202,7 +204,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             AddRoleDefinitionTokens(web);
 
             // Groups
-            AddGroupTokens(web);
+            AddGroupTokens(web, applyingInformation);
 
             // AppPackages tokens
 #if !ONPREMISES
@@ -299,12 +301,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private void AddGroupTokens(Web web)
+        private void AddGroupTokens(Web web, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             web.EnsureProperty(w => w.SiteGroups.Include(g => g.Title, g => g.Id));
             foreach (var siteGroup in web.SiteGroups)
             {
-                _tokens.Add(new GroupIdToken(web, siteGroup.Title, siteGroup.Id));
+                _tokens.Add(new GroupIdToken(web, siteGroup.Title, siteGroup.Id.ToString()));
             }
             web.EnsureProperty(w => w.AssociatedVisitorGroup).EnsureProperties(g => g.Id, g => g.Title);
             web.EnsureProperty(w => w.AssociatedMemberGroup).EnsureProperties(g => g.Id, g => g.Title);
@@ -312,17 +314,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (!web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
             {
-                _tokens.Add(new GroupIdToken(web, "associatedvisitorgroup", web.AssociatedVisitorGroup.Id));
+                _tokens.Add(new GroupIdToken(web, "associatedvisitorgroup", web.AssociatedVisitorGroup.Id.ToString()));
             }
             if (!web.AssociatedMemberGroup.ServerObjectIsNull.Value)
             {
-                _tokens.Add(new GroupIdToken(web, "associatedmembergroup", web.AssociatedMemberGroup.Id));
+                _tokens.Add(new GroupIdToken(web, "associatedmembergroup", web.AssociatedMemberGroup.Id.ToString()));
             }
             if (!web.AssociatedOwnerGroup.ServerObjectIsNull.Value)
             {
-                _tokens.Add(new GroupIdToken(web, "associatedownergroup", web.AssociatedOwnerGroup.Id));
+                _tokens.Add(new GroupIdToken(web, "associatedownergroup", web.AssociatedOwnerGroup.Id.ToString()));
+            }
+
+            var accessToken = PnPProvisioningContext.Current.AcquireToken("https://graph.microsoft.com/", "Group.Read.All");
+            if (accessToken != null)
+            {
+                // Get Office 365 Groups
+
+                var officeGroups = HttpHelper.MakeGetRequestForString("https://graph.microsoft.com/v1.0/groups?$filter=groupTypes/any(c:c+eq+'Unified')&$select=id,displayName", accessToken);
+                var returnObject = JObject.Parse(officeGroups);
+                var groupsArray = returnObject["value"].Value<JArray>();
+                foreach (var group in groupsArray)
+                {
+                    _tokens.Add(new GroupIdToken(web, group["displayName"].Value<string>(), group["id"].Value<string>()));
+                }
             }
         }
+
+
 
         private void AddTermStoreTokens(Web web)
         {
