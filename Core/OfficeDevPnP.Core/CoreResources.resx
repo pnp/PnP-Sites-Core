@@ -1130,7 +1130,7 @@
     <value>The {0} image set as page header lives in a different web and will not be set.</value>
   </data>
   <data name="Provisioning_ObjectHandlers_Teams_TeamTemplate_ProvisioningError" xml:space="preserve">
-    <value>Provisioning a team based on a team template failed. {0}</value>
+    <value>Provisioning a team based on a team template failed. Ensure that the JSON template markup is valid and contains all the required properties. {0}</value>
   </data>
   <data name="Provisioning_ObjectHandlers_Teams_TeamTemplate_FetchingError" xml:space="preserve">
     <value>Failed to get team information after provisioning.</value>

@@ -2021,7 +2021,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Provisioning a team based on a team template failed. {0}.
+        ///   Looks up a localized string similar to Provisioning a team based on a team template failed. Ensure that the JSON template markup is valid and contains all the required properties. {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_Teams_TeamTemplate_ProvisioningError {
             get {
