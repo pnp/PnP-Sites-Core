@@ -81,7 +81,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             HttpResponseHeaders responseHeaders;
             try
             {
-                var content = parser.ParseString(teamTemplate.JsonTemplate);
+                var content = OverwriteJsonTemplateProperties(parser, teamTemplate);
                 responseHeaders = HttpHelper.MakePostRequestForHeaders("https://graph.microsoft.com/beta/teams", content, "application/json", accessToken);
             }
             catch (Exception ex)
@@ -102,6 +102,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             return null;
+        }
+
+        private static string OverwriteJsonTemplateProperties(TokenParser parser, TeamTemplate teamTemplate)
+        {
+            var jsonTemplate = parser.ParseString(teamTemplate.JsonTemplate);
+            var team = JToken.Parse(jsonTemplate);
+
+            if (teamTemplate.DisplayName != null) team["displayName"] = teamTemplate.DisplayName;
+            if (teamTemplate.Description != null) team["description"] = teamTemplate.Description;
+            if (teamTemplate.Classification != null) team["classification"] = teamTemplate.Classification;
+            if (teamTemplate.Visibility != null) team["visibility"] = teamTemplate.Visibility.ToString();
+
+            return team.ToString();
         }
     }
 }
