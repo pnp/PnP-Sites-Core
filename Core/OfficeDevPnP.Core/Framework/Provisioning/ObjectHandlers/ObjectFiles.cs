@@ -140,11 +140,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         parser.AddToken(new FileUniqueIdToken(web, targetFile.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), targetFile.UniqueId));
                         parser.AddToken(new FileUniqueIdEncodedToken(web, targetFile.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), targetFile.UniqueId));
 #endif
-                        if (file.Properties != null && file.Properties.Any())
-                        {
-                            Dictionary<string, string> transformedProperties = file.Properties.ToDictionary(property => property.Key, property => parser.ParseString(property.Value));
-                            SetFileProperties(targetFile, transformedProperties, parser, false);
-                        }
 
 #if !SP2013
                         bool webPartsNeedLocalization = false;
@@ -216,6 +211,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             targetFile.ListItemAllFields.SetSecurity(parser, file.Security);
                         }
+
+                        if (file.Properties != null && file.Properties.Any())
+                        {
+                            Dictionary<string, string> transformedProperties = file.Properties.ToDictionary(property => property.Key, property => parser.ParseString(property.Value));
+                            SetFileProperties(targetFile, transformedProperties, parser, false);
+                        }
+
                     }
 
                     web = originalWeb; // restore context in case files are provisioned to the master page gallery #1059
@@ -290,13 +292,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-                var web = parentList.ParentWeb;
-                var fields = parentList.Fields;
-                web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind, f => f.TypeAsString, f => f.ReadOnlyField, f => f.Title));
-                web.Context.ExecuteQueryRetry();
-
-                ListItemUtilities.UpdateListItem(web, file.ListItemAllFields, parser, parentList.Fields, properties);
-
+                ListItemUtilities.UpdateListItem(file.ListItemAllFields, parser, properties, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion);
             }
         }
 

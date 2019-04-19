@@ -18,9 +18,11 @@
         /// Search Navigation
         /// </summary>
         SearchNav = 2,
+#if !ONPREMISES
         /// <summary>
         /// Footer Navigation
         /// </summary>
         Footer = 3
+#endif
     }
 }

@@ -120,6 +120,16 @@ namespace OfficeDevPnP.Core.Utilities
                 resultPredicate: r => r.Content.ReadAsStringAsync().Result));
         }
 
+        public static HttpResponseHeaders MakePostRequestForHeaders(string requestUrl, object content = null, string contentType = null, string accessToken = null)
+        {
+            return MakeHttpRequest("POST",
+                requestUrl,
+                accessToken,
+                content: content,
+                contentType: contentType,
+                resultPredicate: response => response.Headers);
+        }
+
         /// <summary>
         /// This helper method makes an HTTP PUT request without a response
         /// </summary>
@@ -289,21 +299,18 @@ namespace OfficeDevPnP.Core.Utilities
                 requestContent = new StreamContent(streamContent);
                 requestContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
             }
-            else
+            else if (content != null)
             {
-                requestContent =
-                    (content != null) ?
-                    new StringContent(JsonConvert.SerializeObject(content,
-                        Formatting.None,
-                        new JsonSerializerSettings
-                        {
-                            NullValueHandling = NullValueHandling.Ignore,
-                            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-                        }),
-                    Encoding.UTF8, contentType) :
-                    null;
+                var jsonString = content is string
+                    ? content.ToString()
+                    : JsonConvert.SerializeObject(content, Formatting.None, new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                        ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                    });
+                requestContent = new StringContent(jsonString, Encoding.UTF8, contentType);
             }
-
+            
             // Prepare the HTTP request message with the proper HTTP method
             HttpRequestMessage request = new HttpRequestMessage(
                 new HttpMethod(httpMethod), requestUrl);

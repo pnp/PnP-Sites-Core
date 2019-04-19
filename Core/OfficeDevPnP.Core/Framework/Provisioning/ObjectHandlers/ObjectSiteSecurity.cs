@@ -262,7 +262,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         group.Update();
                         web.Context.Load(group, g => g.Id, g => g.Title);
                         web.Context.ExecuteQueryRetry();
-                        parser.AddToken(new GroupIdToken(web, group.Title, group.Id));
+                        parser.AddToken(new GroupIdToken(web, group.Title, group.Id.ToString()));
 
                         var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
                         groupItem["Notes"] = parsedGroupDescription;

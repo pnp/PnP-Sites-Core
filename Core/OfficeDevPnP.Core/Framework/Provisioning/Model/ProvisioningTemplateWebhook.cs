@@ -120,6 +120,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Provisioning Completed
         /// </summary>
         ProvisioningCompleted,
+        /// <summary>
+        /// An Exception Occurred
+        /// </summary>
+        ExceptionOccurred,
     }
 
     /// <summary>

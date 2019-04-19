@@ -14,10 +14,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectSiteFooterSettings : ObjectHandlerBase
     {
-        const string footerNodeKey = "13b7c916-4fea-4bb2-8994-5cf274aeb530";
-        const string titleNodeKey = "7376cd83-67ac-4753-b156-6a7b3fa0fc1f";
-        const string logoNodeKey = "2e456c2e-3ded-4a6c-a9ea-f7ac4c1b5100";
-        const string menuNodeKey = "3a94b35f-030b-468e-80e3-b75ee84ae0ad";
+        //const string footerNodeKey = "13b7c916-4fea-4bb2-8994-5cf274aeb530";
+        //const string titleNodeKey = "7376cd83-67ac-4753-b156-6a7b3fa0fc1f";
+        //const string logoNodeKey = "2e456c2e-3ded-4a6c-a9ea-f7ac4c1b5100";
+        //const string menuNodeKey = "3a94b35f-030b-468e-80e3-b75ee84ae0ad";
         public override string Name
         {
             get { return "Site Footer"; }
@@ -27,7 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-
+#if !ONPREMISES
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 web.EnsureProperties(w => w.FooterEnabled, w => w.ServerRelativeUrl);
@@ -35,27 +35,40 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var footer = new SiteFooter();
 
                 footer.Enabled = web.FooterEnabled;
-                var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{footerNodeKey}'").GetAwaiter().GetResult();
+                var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
                 var menuState = JsonConvert.DeserializeObject<MenuState>(structureString);
 
                 if (menuState.Nodes.Count > 1)
                 {
                     // Find the title node
-                    var titleNode = menuState.Nodes.FirstOrDefault(n => n.Title == "2e456c2e-3ded-4a6c-a9ea-f7ac4c1b5100");
+                    var titleNode = menuState.Nodes.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_TITLENODEKEY);
                     if (titleNode != null)
                     {
-                        if (!string.IsNullOrEmpty(titleNode.SimpleUrl))
+                        var titleNodeNodes = titleNode.Nodes;
+                        if (titleNodeNodes.Count > 0)
                         {
-                            footer.Logo = Tokenize(titleNode.SimpleUrl, web.ServerRelativeUrl);
+                            if (!string.IsNullOrEmpty(titleNodeNodes[0].SimpleUrl))
+                            {
+                                footer.Logo = Tokenize(titleNodeNodes[0].SimpleUrl, web.ServerRelativeUrl);
+                            }
+                            if (!string.IsNullOrEmpty(titleNodeNodes[0].Title))
+                            {
+                                footer.Name = titleNodeNodes[0].Title;
+                            }
                         }
-                        if (!string.IsNullOrEmpty(titleNode.Title))
+                    }
+                    // find the logo node
+                    if(string.IsNullOrEmpty(footer.Logo))
+                    {
+                        var logoNode = menuState.Nodes.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_LOGONODEKEY);
+                        if(logoNode != null)
                         {
-                            footer.Name = titleNode.Title;
+                            footer.Logo = Tokenize(logoNode.SimpleUrl, web.ServerRelativeUrl);
                         }
                     }
                 }
                 // find the menu Nodes
-                var menuNodesNode = menuState.Nodes.FirstOrDefault(n => n.Title == "3a94b35f-030b-468e-80e3-b75ee84ae0ad");
+                var menuNodesNode = menuState.Nodes.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_MENUNODEKEY);
                 if (menuNodesNode != null)
                 {
                     foreach (var innerMenuNode in menuNodesNode.Nodes)
@@ -65,6 +78,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 template.Footer = footer;
             }
+#endif
             return template;
         }
 
@@ -87,6 +101,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
+#if !ONPREMISES
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 if (template.Footer != null)
@@ -96,7 +111,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.Update();
 
 
-                    var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{footerNodeKey}'").GetAwaiter().GetResult();
+                    var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
                     var menuState = JsonConvert.DeserializeObject<MenuState>(structureString);
 
                     var n1 = web.Navigation.GetNodeById(Convert.ToInt32(menuState.StartingNodeKey));
@@ -104,7 +119,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.Context.Load(n1, n => n.Children.IncludeWithDefaultProperties());
                     web.Context.ExecuteQueryRetry();
 
-                    var menuNode = n1.Children.FirstOrDefault(n => n.Title == menuNodeKey);
+                    var menuNode = n1.Children.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_MENUNODEKEY);
                     if (menuNode != null)
                     {
                         if (template.Footer.RemoveExistingNodes == true)
@@ -114,7 +129,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                             menuNode = n1.Children.Add(new NavigationNodeCreationInformation()
                             {
-                                Title = menuNodeKey
+                                Title = Constants.SITEFOOTER_MENUNODEKEY
                             });
                         }
                     }
@@ -122,7 +137,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         menuNode = n1.Children.Add(new NavigationNodeCreationInformation()
                         {
-                            Title = menuNodeKey
+                            Title = Constants.SITEFOOTER_MENUNODEKEY
                         });
                     }
                     foreach (var footerLink in template.Footer.FooterLinks)
@@ -138,7 +153,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.ExecuteQueryRetry();
                     }
 
-                    var logoNode = n1.Children.FirstOrDefault(n => n.Title == logoNodeKey);
+                    var logoNode = n1.Children.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_LOGONODEKEY);
                     if (logoNode != null)
                     {
                         if (string.IsNullOrEmpty(template.Footer.Logo))
@@ -157,7 +172,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             logoNode = n1.Children.Add(new NavigationNodeCreationInformation()
                             {
-                                Title = logoNodeKey,
+                                Title = Constants.SITEFOOTER_LOGONODEKEY,
                                 Url = parser.ParseString(template.Footer.Logo)
                             });
                         }
@@ -167,7 +182,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.ExecuteQueryRetry();
                     }
 
-                    var titleNode = n1.Children.FirstOrDefault(n => n.Title == titleNodeKey);
+                    var titleNode = n1.Children.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_TITLENODEKEY);
                     if (titleNode != null)
                     {
                         titleNode.EnsureProperty(n => n.Children);
@@ -186,7 +201,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (!string.IsNullOrEmpty(template.Footer.Name))
                         {
-                            titleNode = n1.Children.Add(new NavigationNodeCreationInformation() { Title = titleNodeKey });
+                            titleNode = n1.Children.Add(new NavigationNodeCreationInformation() { Title = Constants.SITEFOOTER_TITLENODEKEY });
                             titleNode.Children.Add(new NavigationNodeCreationInformation() { Title = template.Footer.Name });
                         }
                     }
@@ -196,7 +211,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
-
+#endif
             return parser;
         }
 
@@ -214,7 +229,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 return false;
             }
 #else
-            return false
+            return false;
 #endif
         }
 
@@ -232,7 +247,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 return false;
             }
 #else
-            return false
+            return false;
 #endif
         }
 

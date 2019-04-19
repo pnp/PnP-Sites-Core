@@ -361,7 +361,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     else
                     {
-                        tokenParser.Rebase(subweb, provisioningTemplate);
+                        tokenParser.Rebase(subweb, provisioningTemplate, provisioningTemplateApplyingInformation);
                     }
                     new SiteToTemplateConversion().ApplyRemoteTemplate(subweb, provisioningTemplate, provisioningTemplateApplyingInformation, true, tokenParser);
                 }
