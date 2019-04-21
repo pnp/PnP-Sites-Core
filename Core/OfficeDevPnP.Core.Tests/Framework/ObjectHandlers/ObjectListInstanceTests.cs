@@ -24,6 +24,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         private List<string> listsForCleanup = new List<string>();
         private string listName;
         private string datarowListName;
+        private string multivaluechoicefieldListName;
 
         [TestInitialize]
         public void Initialize()
@@ -31,6 +32,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             listName = string.Format("Test_{0}", DateTime.Now.Ticks);
             listsForCleanup.Add(listName);
             datarowListName = $"DataRowTest_{DateTime.Now.Ticks}";
+            multivaluechoicefieldListName = $"DataRowTest_{DateTime.Now.Ticks}_2"; // use DataRowTest_ prefix to use same deletion logic
 
         }
         [TestCleanup]
@@ -701,6 +703,49 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 rowCount = ctx.Web.GetListByTitle(datarowListName).ItemCount;
                 Assert.IsTrue(rowCount == 4, "Row count not equals 4");
 
+            }
+        }
+
+        [TestMethod]
+        public void DataRowMultiValueChoiceFieldValuesCanBeProvisionedTest()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var template = new ProvisioningTemplate();
+                template.TemplateCultureInfo = "1033";
+                var listinstance = new ListInstance()
+                {
+                    Title = multivaluechoicefieldListName,
+                    Url = $"lists/{multivaluechoicefieldListName}",
+                    TemplateType = 100,
+                };
+                listinstance.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = $@"<Field DisplayName=""Key"" FillInChoice=""FALSE"" Format=""Dropdown"" Name=""Key"" Title=""Key"" Type=""MultiChoice"" ID=""{(Guid.NewGuid().ToString("B"))}"" StaticName=""Key"" ColName=""ntext2"" RowOrdinal=""0""> <CHOICES> <CHOICE>1</CHOICE> <CHOICE>2</CHOICE> <CHOICE>c#;3</CHOICE> <CHOICE>c#4</CHOICE> <CHOICE>c;5</CHOICE> <CHOICE>c,6</CHOICE> <CHOICE>c.7</CHOICE> <CHOICE>c-8</CHOICE> <CHOICE>cö9</CHOICE> <CHOICE>a</CHOICE> <CHOICE>b</CHOICE> </CHOICES> </Field>" });
+
+                var datarows = new List<DataRow>()
+                {
+                    // set using a single plain value
+                    new DataRow(new Dictionary<string, string>{ { "Title", "Test -1-"}, { "Key", "1" } }),
+                    // set using JSON array syntax
+                    new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -2-"}, { "Key", "[2]" } }),
+                    new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -3-"}, { "Key", @"[""a""]" } }),
+                    new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -3-"}, { "Key", @"[""a"", ""b""]" } })
+                };
+                listinstance.DataRows.AddRange(datarows);
+                template.Lists.Add(listinstance);
+                ctx.Web.ApplyProvisioningTemplate(template);
+
+                var list = ctx.Web.GetListByTitle(multivaluechoicefieldListName);
+                var rowCount = list.ItemCount;
+                Assert.IsTrue(rowCount == 4, "Row count not equals 4");
+
+                var items = list.GetItems(CamlQuery.CreateAllItemsQuery());
+                ctx.Load(items);
+                ctx.ExecuteQueryRetry();
+
+                CollectionAssert.AreEqual(items[0].FieldValues["Key"] as string[], new string[] { "1" });
+                CollectionAssert.AreEqual(items[1].FieldValues["Key"] as string[], new string[] { "2" });
+                CollectionAssert.AreEqual(items[2].FieldValues["Key"] as string[], new string[] { "a" });
+                CollectionAssert.AreEqual(items[3].FieldValues["Key"] as string[], new string[] { "a", "b" });
             }
         }
 
