@@ -2,9 +2,13 @@
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Web;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -91,6 +95,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Publishing)) objectHandlers.Add(new ObjectPublishing());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Workflows)) objectHandlers.Add(new ObjectWorkflows());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
+                if (creationInfo.HandlersToProcess.HasFlag(Handlers.SiteHeader)) objectHandlers.Add(new ObjectSiteHeaderSettings());
+                if (creationInfo.HandlersToProcess.HasFlag(Handlers.SiteFooter)) objectHandlers.Add(new ObjectSiteFooterSettings());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Navigation)) objectHandlers.Add(new ObjectNavigation());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.ImageRenditions)) objectHandlers.Add(new ObjectImageRenditions());
                 objectHandlers.Add(new ObjectLocalization()); // Always add this one, check is done in the handler
@@ -204,6 +210,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="web"></param>
         /// <param name="template"></param>
         /// <param name="provisioningInfo"></param>
+        /// <param name="calledFromHierarchy"></param>
         /// <param name="tokenParser"></param>
         internal void ApplyRemoteTemplate(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation provisioningInfo, bool calledFromHierarchy = false, TokenParser tokenParser = null)
         {
@@ -319,6 +326,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SearchSettings)) objectHandlers.Add(new ObjectSearchSettings());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.PropertyBagEntries)) objectHandlers.Add(new ObjectPropertyBagEntry());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
+                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SiteHeader)) objectHandlers.Add(new ObjectSiteHeaderSettings());
+                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SiteFooter)) objectHandlers.Add(new ObjectSiteFooterSettings());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Navigation)) objectHandlers.Add(new ObjectNavigation());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ImageRenditions)) objectHandlers.Add(new ObjectImageRenditions());
                 objectHandlers.Add(new ObjectLocalization()); // Always add this one, check is done in the handler
@@ -354,6 +363,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 template = cleaner.CleanUpBeforeProvisioning(template);
 
+                CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ProvisioningStarted);
+
                 foreach (var handler in objectHandlers)
                 {
                     if (handler.WillProvision(web, template, provisioningInfo))
@@ -367,7 +378,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             progressDelegate(handler.Name, step, count);
                             step++;
                         }
+                        CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted);
                         tokenParser = handler.ProvisionObjects(web, template, tokenParser, provisioningInfo);
+                        CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted);
                     }
                 }
 
@@ -375,8 +388,110 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.EnsureProperties(w => w.Title, w => w.Url);
                 siteProvisionedDelegate?.Invoke(web.Title, web.Url);
 
+                CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ProvisioningCompleted);
+
                 System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(currentCultureInfoValue);
 
+            }
+        }
+
+        private void CallWebHooks(ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateWebhookKind kind, ObjectHandlerBase objectHandler = null)
+        {
+            using (var scope = new PnPMonitoredScope("ProvisioningTemplate WebHook Call"))
+            { 
+                if (template.ProvisioningTemplateWebhooks != null && template.ProvisioningTemplateWebhooks.Any())
+            {
+                    foreach (var webhook in template.ProvisioningTemplateWebhooks.Where(w => w.Kind == kind))
+                    {
+                        SimpleTokenParser internalParser = new SimpleTokenParser();
+                        foreach (var webhookparam in webhook.Parameters)
+                        {
+                            internalParser.AddToken(new WebhookParameter(parser.ParseString(webhookparam.Key), parser.ParseString(webhookparam.Value)));
+                        }
+                        var url = parser.ParseString(webhook.Url); // parse for template scoped parameters
+                        url = internalParser.ParseString(url); // parse for webhook scoped parameters
+
+
+                        switch (webhook.Method)
+                        {
+                            case ProvisioningTemplateWebhookMethod.GET:
+                                {
+                                    if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted)
+                                    {
+                                        url += $"&__handler={objectHandler.InternalName}";
+                                    }
+                                    try
+                                    {
+                                        using (var client = new HttpClient())
+                                        {
+                                            if (webhook.Async)
+                                            {
+                                                client.GetAsync(url);
+                                            }
+                                            else
+                                            {
+                                                client.GetAsync(url).GetAwaiter().GetResult();
+                                            }
+                                        }
+                                    }
+                                    catch (HttpRequestException ex)
+                                    {
+                                        scope.LogError(ex,"Error calling provisioning template webhook");
+                                    }
+                                    break;
+                                }
+                            case ProvisioningTemplateWebhookMethod.POST:
+                                {
+                                    if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted)
+                                    {
+                                        webhook.Parameters.Add("__handler", objectHandler.InternalName);
+                                    }
+                                    try
+                                    {
+                                        using (var client = new HttpClient())
+                                        {
+                                            if (webhook.Async)
+                                            {
+                                                switch (webhook.BodyFormat)
+                                                {
+                                                    case ProvisioningTemplateWebhookBodyFormat.Json:
+                                                        client.PostAsJsonAsync(url, webhook.Parameters);
+                                                        break;
+                                                    case ProvisioningTemplateWebhookBodyFormat.Xml:
+                                                        client.PostAsXmlAsync(url, webhook.Parameters);
+                                                        break;
+                                                    case ProvisioningTemplateWebhookBodyFormat.FormUrlEncoded:
+                                                        var content = new FormUrlEncodedContent(webhook.Parameters);
+                                                        client.PostAsync(url, content);
+                                                        break;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                switch (webhook.BodyFormat)
+                                                {
+                                                    case ProvisioningTemplateWebhookBodyFormat.Json:
+                                                        client.PostAsJsonAsync(url, webhook.Parameters).GetAwaiter().GetResult();
+                                                        break;
+                                                    case ProvisioningTemplateWebhookBodyFormat.Xml:
+                                                        client.PostAsXmlAsync(url, webhook.Parameters).GetAwaiter().GetResult();
+                                                        break;
+                                                    case ProvisioningTemplateWebhookBodyFormat.FormUrlEncoded:
+                                                        var content = new FormUrlEncodedContent(webhook.Parameters);
+                                                        client.PostAsync(url, content).GetAwaiter().GetResult();
+                                                        break;
+                                                }
+                                            }
+                                        }
+                                    } catch (HttpRequestException ex)
+                                    {
+                                        scope.LogError(ex, "Error calling provisioning template webhook");
+                                    }
+                                    break;
+                                }
+                        }
+                    }
+                }
             }
         }
     }

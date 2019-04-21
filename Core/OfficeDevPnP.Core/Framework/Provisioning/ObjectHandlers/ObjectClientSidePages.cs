@@ -22,6 +22,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return "ClientSidePages"; }
         }
 
+        public override string InternalName => "ClientSidePages";
+
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -475,13 +477,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Persist the page
                     page.Save(pageName);
 
-                    if(clientSidePage.FieldValues != null && clientSidePage.FieldValues.Any())
+                    if (clientSidePage.FieldValues != null && clientSidePage.FieldValues.Any())
                     {
-                        List<FieldUpdateValue> fieldValues = clientSidePage.FieldValues.Select(s => new FieldUpdateValue(parser.ParseString(s.Key), parser.ParseString(s.Value))).ToList();
-                        Microsoft.SharePoint.Client.FieldCollection fields = page.PageListItem.ParentList.Fields;
-                        web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind, f => f.TypeAsString, f => f.ReadOnlyField, f => f.Title));
-                        web.Context.ExecuteQueryRetry();
-                        ListItemUtilities.UpdateListItem(web, page.PageListItem, fields, fieldValues);
+                        ListItemUtilities.UpdateListItem(page.PageListItem, parser, clientSidePage.FieldValues, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion);
                     }
 
                     if (page.LayoutType != Pages.ClientSidePageLayoutType.SingleWebPartAppPage)

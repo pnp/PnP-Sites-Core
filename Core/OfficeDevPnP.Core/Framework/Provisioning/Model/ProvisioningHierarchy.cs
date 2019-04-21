@@ -16,6 +16,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this.Sequences = new ProvisioningSequenceCollection(this);
             this.Localizations = new LocalizationCollection(null);
             this.Tenant = new ProvisioningTenant();
+            this.Teams = new Teams.ProvisioningTeams();
+            this.AzureActiveDirectory = new AzureActiveDirectory.ProvisioningAzureActiveDirectory();
         }
 
         #endregion
@@ -81,6 +83,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// A collection of Provisioning Sequence objects, if any
         /// </summary>
         public ProvisioningSequenceCollection Sequences { get; private set; }
+
+        /// <summary>
+        /// Settings for provisioning Teams objects, if any
+        /// </summary>
+        public Teams.ProvisioningTeams Teams { get; private set; }
+
+        /// <summary>
+        /// Settings for provisioning Azure Active Directory objects, if any
+        /// </summary>
+        public AzureActiveDirectory.ProvisioningAzureActiveDirectory AzureActiveDirectory { get; private set; }
 
         #endregion
     }

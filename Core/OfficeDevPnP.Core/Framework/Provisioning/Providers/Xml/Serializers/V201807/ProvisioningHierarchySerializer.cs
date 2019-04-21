@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201807,
         SerializationSequence = -1, DeserializationSequence = -1,
-        Default = false)]
+        Scope = SerializerScope.Tenant)]
     internal class ProvisioningHierarchySerializer : PnPBaseSchemaSerializer<ProvisioningHierarchy>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
@@ -31,11 +31,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            if (template.ParentHierarchy != null)
-            {
-                var resolvers = new Dictionary<String, IResolver>();
-                PnPObjectsMapper.MapProperties(template.ParentHierarchy, persistence, resolvers, recursive: false);
-            }
+            //if (template.ParentHierarchy != null)
+            //{
+            //    var resolvers = new Dictionary<String, IResolver>();
+            //    PnPObjectsMapper.MapProperties(template.ParentHierarchy, persistence, resolvers, recursive: false);
+            //}
         }
     }
 }

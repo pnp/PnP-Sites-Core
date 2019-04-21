@@ -16,6 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return "List instances Data Rows"; }
         }
 
+        public override string InternalName => "ListInstanceDataRows";
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -121,7 +122,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         listitem = list.AddItem(listitemCI);
                                     }
 
-                                    ListItemUtilities.UpdateListItem(web, listitem, parser, fields, dataRow.Values);
+                                    ListItemUtilities.UpdateListItem(listitem, parser, dataRow.Values, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion);
 
                                     if (dataRow.Security != null && (dataRow.Security.ClearSubscopes || dataRow.Security.CopyRoleAssignments || dataRow.Security.RoleAssignments.Count > 0))
                                     {

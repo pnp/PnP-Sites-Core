@@ -22,8 +22,10 @@ namespace OfficeDevPnP.Core
         // EnableAppSideLoading
         public static readonly Guid FeatureId_Site_AppSideLoading = new Guid("AE3A1339-61F5-4f8f-81A7-ABD2DA956A7D");
 
-
-
+        internal const string SITEFOOTER_NODEKEY = "13b7c916-4fea-4bb2-8994-5cf274aeb530";
+        internal const string SITEFOOTER_TITLENODEKEY = "7376cd83-67ac-4753-b156-6a7b3fa0fc1f";
+        internal const string SITEFOOTER_LOGONODEKEY = "2e456c2e-3ded-4a6c-a9ea-f7ac4c1b5100";
+        internal const string SITEFOOTER_MENUNODEKEY = "3a94b35f-030b-468e-80e3-b75ee84ae0ad";
 
         internal const string LOGGING_SOURCE = "OfficeDevPnP.Core";
         internal const string LOGGING_SOURCE_FRAMEWORK_PROVISIONING = "PnP Provisioning";

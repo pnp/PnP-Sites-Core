@@ -5,6 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201705;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V201705
 {
@@ -13,7 +14,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 1000, DeserializationSequence = 1000,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201705,
-        Default = true)]
+        Scope = SerializerScope.ProvisioningTemplate)]
     internal class ContentTypesSerializer : PnPBaseSchemaSerializer<ContentType>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)

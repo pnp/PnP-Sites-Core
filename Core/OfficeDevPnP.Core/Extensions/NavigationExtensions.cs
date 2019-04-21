@@ -10,6 +10,10 @@ using System.Collections;
 using System.Linq.Expressions;
 using Microsoft.SharePoint.Client.Publishing.Navigation;
 using Microsoft.SharePoint.Client.Taxonomy;
+using OfficeDevPnP.Core.Utilities;
+using Newtonsoft.Json;
+using OfficeDevPnP.Core;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -527,7 +531,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="asLastNode">true if the link should be added as the last node of the collection</param>
         /// <param name="l1ParentNodeTitle">title of the first level parent, if this node is a third level navigation node</param>
         /// <returns>Newly added NavigationNode</returns>
-        public static NavigationNode AddNavigationNode(this Web web, string nodeTitle, Uri nodeUri, string parentNodeTitle, NavigationType navigationType, bool isExternal = false, bool asLastNode = true, string l1ParentNodeTitle=null)
+        public static NavigationNode AddNavigationNode(this Web web, string nodeTitle, Uri nodeUri, string parentNodeTitle, NavigationType navigationType, bool isExternal = false, bool asLastNode = true, string l1ParentNodeTitle = null)
         {
             web.Context.Load(web, w => w.Navigation.QuickLaunch, w => w.Navigation.TopNavigationBar);
             web.Context.ExecuteQueryRetry();
@@ -715,6 +719,16 @@ namespace Microsoft.SharePoint.Client
                     searchNavigation[i].DeleteObject();
                 }
                 web.Context.ExecuteQueryRetry();
+#if !ONPREMISES
+            } else if  (navigationType == NavigationType.Footer)
+            {
+                var footerNavigation = web.LoadFooterNavigation();
+                for(var i = footerNavigation.Count - 1;i >= 0; i--)
+                {
+                    footerNavigation[i].DeleteObject();
+                }
+                web.Context.ExecuteQueryRetry();
+#endif
             }
         }
 
@@ -744,6 +758,22 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
             return nodeCollection;
         }
+
+#if !ONPREMISES
+        public static NavigationNodeCollection LoadFooterNavigation(this Web web)
+        {
+            var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
+            var menuState = JObject.Parse(structureString);
+
+            var nodes = menuState["nodes"] as JArray;
+            var topNode = web.Navigation.GetNodeById(Convert.ToInt32(menuState["StartingNodeKey"].Value<string>()));
+            web.Context.Load(topNode, n => n.Children.IncludeWithDefaultProperties());
+            web.Context.ExecuteQueryRetry();
+            var menuNode = topNode.Children.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_MENUNODEKEY);
+            menuNode.EnsureProperty(n => n.Children.IncludeWithDefaultProperties());
+            return menuNode.Children;
+        }
+#endif
         #endregion
 
         #region Custom actions
@@ -921,7 +951,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="site">The site to process</param>
         /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>Returns all custom actions</returns>
-        public static IEnumerable<UserCustomAction> GetCustomActions(this Site site, params Expression<Func<UserCustomAction,object>>[] expressions)
+        public static IEnumerable<UserCustomAction> GetCustomActions(this Site site, params Expression<Func<UserCustomAction, object>>[] expressions)
         {
             var clientContext = (ClientContext)site.Context;
 
@@ -1049,7 +1079,7 @@ namespace Microsoft.SharePoint.Client
             return false;
         }
 
-#endregion
+        #endregion
     }
 
     /// <summary>

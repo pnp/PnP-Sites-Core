@@ -29,6 +29,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
         }
 
+        public override string InternalName => "Fields";
+
         public ObjectField(FieldAndListProvisioningStepHelper.Step step)
         {
             this._step = step;

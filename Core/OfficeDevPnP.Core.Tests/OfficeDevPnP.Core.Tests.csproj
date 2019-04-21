@@ -405,6 +405,7 @@
     <Compile Include="Extensions\NavigationExtensionsTests.cs" />
     <Compile Include="Authentication\AuthenticationTests.cs" />
     <Compile Include="Diagnostics\LogTests.cs" />
+    <Compile Include="Framework\CanProvisionRules\CanProvisionTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorAzureTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorFileSystemTests.cs" />
     <Compile Include="Framework\Connectors\ConnectorOpenXmlTests.cs" />
@@ -507,6 +508,7 @@
     <Compile Include="Framework\ObjectHandlers\ObjectRegionalSettingsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectSupportedUILanguagesTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectComposedLookTests.cs" />
+    <Compile Include="Framework\ObjectHandlers\ObjectTeamsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectTermGroupsTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectPagesTests.cs" />
     <Compile Include="Framework\ObjectHandlers\ObjectSiteSecurityTests.cs" />
@@ -766,6 +768,8 @@
     <Content Include="Resources\Templates\ProvisioningSchema-2018-07-FullSample-01-NOT-VALID.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2018-07-FullSample-01-OUT.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2018-07-FullSample-01.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2019-03-FullSample-01-OUT.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2019-03-FullSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-03-Sample-01.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

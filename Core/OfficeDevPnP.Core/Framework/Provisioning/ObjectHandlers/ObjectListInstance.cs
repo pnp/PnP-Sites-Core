@@ -35,6 +35,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
         }
 
+        public override string InternalName => "ListInstances";
+
         public ObjectListInstance(FieldAndListProvisioningStepHelper.Step stage)
         {
             this.step = stage;
@@ -736,7 +738,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES || SP2019
                 // CustomFormatter
                 var customFormatterElement = viewElement.Descendants("CustomFormatter").FirstOrDefault();
-                if(customFormatterElement != null)
+                if (customFormatterElement != null)
                 {
                     var customFormatter = customFormatterElement.Value;
                     customFormatter = customFormatter.Replace("&", "&amp;");
@@ -764,7 +766,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-                
+
                 createdList.Update();
                 web.Context.ExecuteQueryRetry();
 
@@ -1349,11 +1351,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 #endif
 
-#region UserCustomActions
+                #region UserCustomActions
 
                 isDirty |= UpdateCustomActions(web, existingList, templateList, parser, scope, isNoScriptSite);
 
-#endregion UserCustomActions
+                #endregion UserCustomActions
 
                 if (isDirty)
                 {
@@ -1641,8 +1643,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var listTemplates = site.GetCustomListTemplates(web);
                     web.Context.Load(listTemplates);
                     web.Context.ExecuteQueryRetry();
-                    var matchingTemplates = listTemplates.Where(t => t.FeatureId == templateList.TemplateFeatureID &&
-                            t.ListTemplateTypeKind == templateList.TemplateType).ToList();
+
+                    var matchingTemplatesFilter = listTemplates.Where(t => t.FeatureId == templateList.TemplateFeatureID &&
+                            t.ListTemplateTypeKind == templateList.TemplateType);
+
+                    // Support for named stp's from schema 2019/03
+                    if (!string.IsNullOrWhiteSpace(templateList.TemplateInternalName))
+                    {
+                        matchingTemplatesFilter = matchingTemplatesFilter.Where(t => t.InternalName.Equals(templateList.TemplateInternalName,
+                            StringComparison.InvariantCultureIgnoreCase));
+                    }
+
+                    var matchingTemplates = matchingTemplatesFilter.ToList();
                     if (matchingTemplates.Count == 1)
                     {
                         listCreate.ListTemplate = matchingTemplates[0];
@@ -2187,22 +2199,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (var webhook in addedWebhooks.Where(x => !string.IsNullOrEmpty(x.NotificationUrl)))
             {
-                list.Webhooks.Add(new Webhook
+                var expireInDays = webhook.ExpirationDateTime.Subtract(DateTime.Now).Days + 1;
+                if (expireInDays > 0)
                 {
-                    ExpiresInDays = webhook.ExpirationDateTime.Subtract(DateTime.Now).Days + 1,
-                    ServerNotificationUrl = webhook.NotificationUrl,
-                });
+                    list.Webhooks.Add(new Webhook
+                    {
+                        ExpiresInDays = webhook.ExpirationDateTime.Subtract(DateTime.Now).Days + 1,
+                        ServerNotificationUrl = webhook.NotificationUrl,
+                    });
+                }
             }
-
             return list;
         }
 
 #endif
 
-        private static ListInstance ExtractViews(Web web, List siteList, ListInstance list, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
+        private ListInstance ExtractViews(Web web, List siteList, ListInstance list, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             foreach (var view in siteList.Views.AsEnumerable().Where(view => !view.Hidden && view.ListViewXml != null))
             {
+
                 var schemaElement = XElement.Parse(view.ListViewXml);
 
                 // exclude survey and events list as they dont support jsLink customizations
@@ -2265,8 +2281,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 #endif
-
-                list.Views.Add(new View { SchemaXml = schemaElement.ToString() });
+                list.Views.Add(new View { SchemaXml = Tokenize(schemaElement.ToString(), web.Url) });
             }
 
             return list;
@@ -2393,6 +2408,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             || field.InternalName == "Modified_x0020_By"
                             || field.InternalName == "Created_x0020_By"
                             || field.InternalName == "_DisplayName"
+                            || field.InternalName == "ComplianceAssetId"
+                            || field.InternalName == "_ComplianceFlags"
+                            || field.InternalName == "_ComplianceTag"
+                            || field.InternalName == "_ComplianceTagWrittenTime"
+                            || field.InternalName == "_ComplianceTagUserId"
+                            || field.InternalName == "_IsRecord"
                             )
                         {
                             addField = false;

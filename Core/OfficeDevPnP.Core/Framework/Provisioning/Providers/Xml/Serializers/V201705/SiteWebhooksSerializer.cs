@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -14,7 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201705,
         SerializationSequence = 2200, DeserializationSequence = 2200,
-        Default = true)]
+        Scope = SerializerScope.ProvisioningTemplate)]
     internal class SiteWebhooksSerializer : PnPBaseSchemaSerializer<SiteWebhook>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)

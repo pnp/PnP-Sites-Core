@@ -19,6 +19,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return "Navigation"; }
         }
 
+        public override string InternalName => "Navigation";
+
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -78,12 +80,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         break;
                 }
 
+                var searchNavigation = GetStructuralNavigation(web, navigationSettings, Enums.NavigationType.SearchNav, template, creationInfo);
                 var navigationEntity = new Model.Navigation(new GlobalNavigation(globalNavigationType,
-                                                                globalNavigationType == GlobalNavigationType.Structural ? GetGlobalStructuralNavigation(web, navigationSettings,template, creationInfo) : null,
+                                                                globalNavigationType == GlobalNavigationType.Structural ? GetGlobalStructuralNavigation(web, navigationSettings, template, creationInfo) : null,
                                                                 globalNavigationType == GlobalNavigationType.Managed ? GetGlobalManagedNavigation(web, navigationSettings, template, creationInfo) : null),
                                                             new CurrentNavigation(currentNavigationType,
                                                                 currentNavigationType == CurrentNavigationType.Structural | currentNavigationType == CurrentNavigationType.StructuralLocal ? GetCurrentStructuralNavigation(web, navigationSettings, template, creationInfo) : null,
-                                                                currentNavigationType == CurrentNavigationType.Managed ? GetCurrentManagedNavigation(web, navigationSettings, template, creationInfo) : null)
+                                                                currentNavigationType == CurrentNavigationType.Managed ? GetCurrentManagedNavigation(web, navigationSettings, template, creationInfo) : null),
+                                                           searchNavigation.NavigationNodes.Any() ? searchNavigation : null
                                                             );
 
                 navigationEntity.AddNewPagesToNavigation = navigationSettings.AddNewPagesToNavigation;
@@ -236,6 +240,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
                         }
                     }
+
+                    if (template.Navigation.SearchNavigation != null)
+                    {
+                        var structuralNavigation = new StructuralNavigation();
+                        structuralNavigation.NavigationNodes.AddRange(template.Navigation.SearchNavigation.NavigationNodes);
+                        structuralNavigation.RemoveExistingNodes = template.Navigation.SearchNavigation.RemoveExistingNodes;
+                        ProvisionSearchNavigation(web, structuralNavigation, parser, applyingInformation.ClearNavigation, scope);
+                    }
                 }
             }
 
@@ -302,20 +314,57 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private void ProvisionGlobalStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool clearNavigation, PnPMonitoredScope scope)
         {
-            ProvisionStructuralNavigation(web, structuralNavigation, parser, false, clearNavigation, scope);
+            ProvisionStructuralNavigation(web, structuralNavigation, parser, Enums.NavigationType.TopNavigationBar, clearNavigation, scope);
         }
 
         private void ProvisionCurrentStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool clearNavigation, PnPMonitoredScope scope)
         {
-            ProvisionStructuralNavigation(web, structuralNavigation, parser, true, clearNavigation, scope);
+            ProvisionStructuralNavigation(web, structuralNavigation, parser, Enums.NavigationType.QuickLaunch, clearNavigation, scope);
         }
 
-        private void ProvisionStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool currentNavigation, bool clearNavigation, PnPMonitoredScope scope)
+        private void ProvisionSearchNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool clearNavigation, PnPMonitoredScope scope)
+        {
+            if (structuralNavigation != null)
+            {
+                {
+                    if (!structuralNavigation.RemoveExistingNodes && !ClearWarningShown)
+                    {
+                        WriteMessage("You chose to override the template value RemoveExistingNodes=\"false\" by specifying ClearNavigation", ProvisioningMessageType.Warning);
+                        ClearWarningShown = true;
+                    }
+                    web.DeleteAllNavigationNodes(Enums.NavigationType.SearchNav);
+                }
+
+                if (structuralNavigation.NavigationNodes.Any())
+                {
+                    var searchNav = web.LoadSearchNavigation();
+                    foreach (var node in structuralNavigation.NavigationNodes)
+                    {
+                        var navNode = searchNav.Add(new NavigationNodeCreationInformation()
+                        {
+                            Title = parser.ParseString(node.Title),
+                            IsExternal = node.IsExternal,
+                            Url = parser.ParseString(node.Url),
+                        });
+
+                        if (node.Title.ContainsResourceToken())
+                        {
+                            navNode.LocalizeNavigationNode(web, node.Title, parser, scope);
+                        }
+
+                        web.Context.ExecuteQueryRetry();
+                    }
+                }
+            }
+            ProvisionStructuralNavigation(web, structuralNavigation, parser, Enums.NavigationType.SearchNav, clearNavigation, scope);
+        }
+
+        private void ProvisionStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, Enums.NavigationType navigationType, bool clearNavigation, PnPMonitoredScope scope)
         {
             // Determine the target structural navigation
-            var navigationType = currentNavigation ?
-                Enums.NavigationType.QuickLaunch :
-                Enums.NavigationType.TopNavigationBar;
+            //var navigationType = currentNavigation ?
+            //    Enums.NavigationType.QuickLaunch :
+            //    Enums.NavigationType.TopNavigationBar;
             if (structuralNavigation != null)
             {
                 // Remove existing nodes, if requested
@@ -411,12 +460,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private ManagedNavigation GetGlobalManagedNavigation(Web web, WebNavigationSettings navigationSettings, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return GetManagedNavigation(web, navigationSettings, false,template,creationInfo);
+            return GetManagedNavigation(web, navigationSettings, false, template, creationInfo);
         }
 
         private StructuralNavigation GetGlobalStructuralNavigation(Web web, WebNavigationSettings navigationSettings, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return GetStructuralNavigation(web, navigationSettings, false, template, creationInfo);
+            return GetStructuralNavigation(web, navigationSettings, Enums.NavigationType.TopNavigationBar, template, creationInfo);
         }
 
         private ManagedNavigation GetCurrentManagedNavigation(Web web, WebNavigationSettings navigationSettings, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
@@ -426,7 +475,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private StructuralNavigation GetCurrentStructuralNavigation(Web web, WebNavigationSettings navigationSettings, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return GetStructuralNavigation(web, navigationSettings, true, template, creationInfo);
+            return GetStructuralNavigation(web, navigationSettings, Enums.NavigationType.QuickLaunch, template, creationInfo);
         }
 
         private ManagedNavigation GetManagedNavigation(Web web, WebNavigationSettings navigationSettings, Boolean currentNavigation, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
@@ -443,15 +492,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return (result);
         }
 
-        private StructuralNavigation GetStructuralNavigation(Web web, WebNavigationSettings navigationSettings, Boolean currentNavigation, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
+        private StructuralNavigation GetStructuralNavigation(Web web, WebNavigationSettings navigationSettings, Enums.NavigationType navigationType, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             // By default avoid removing existing nodes
             var result = new StructuralNavigation { RemoveExistingNodes = false };
-            Microsoft.SharePoint.Client.NavigationNodeCollection sourceNodes = currentNavigation ?
-                web.Navigation.QuickLaunch : web.Navigation.TopNavigationBar;
+
+            Microsoft.SharePoint.Client.NavigationNodeCollection sourceNodes = navigationType == Enums.NavigationType.QuickLaunch ?
+                web.Navigation.QuickLaunch : navigationType == Enums.NavigationType.TopNavigationBar ? web.Navigation.TopNavigationBar : web.LoadSearchNavigation();
 
             var clientContext = web.Context;
-            clientContext.Load(web, w => w.ServerRelativeUrl,w=>w.Language);
+            clientContext.Load(web, w => w.ServerRelativeUrl, w => w.Language);
             clientContext.Load(sourceNodes);
             clientContext.ExecuteQueryRetry();
             var defaultCulture = new CultureInfo((int)web.Language);
@@ -477,8 +527,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (!sourceNodes.ServerObjectIsNull.Value)
                         {
                             //we dont need to add to result - just extract Titles - to List as we need to 
-                            var alternateLang=(from n in sourceNodes.AsEnumerable()
-                                                            select n.ToDomainModelNavigationNode(web, creationInfo.PersistMultiLanguageResources, currentCulture)).ToList();
+                            var alternateLang = (from n in sourceNodes.AsEnumerable()
+                                                 select n.ToDomainModelNavigationNode(web, creationInfo.PersistMultiLanguageResources, currentCulture)).ToList();
                         }
 
                         clientContext.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = acceptLanguage;
@@ -563,7 +613,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
     internal static class NavigationNodeExtensions
     {
-        internal static Model.NavigationNode ToDomainModelNavigationNode(this Microsoft.SharePoint.Client.NavigationNode node, Web web, bool PersistLanguage, CultureInfo currentCulture, int ParentNodeId=0)
+        internal static Model.NavigationNode ToDomainModelNavigationNode(this Microsoft.SharePoint.Client.NavigationNode node, Web web, bool PersistLanguage, CultureInfo currentCulture, int ParentNodeId = 0)
         {
 
             string nodeTitle = node.Title;

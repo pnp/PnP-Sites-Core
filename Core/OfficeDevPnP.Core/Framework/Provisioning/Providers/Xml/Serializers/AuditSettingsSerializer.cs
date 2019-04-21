@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -15,7 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         SerializationSequence = 600, DeserializationSequence = 600,
-        Default = false)]
+        Scope = SerializerScope.ProvisioningTemplate)]
     internal class AuditSettingsSerializer : PnPBaseSchemaSerializer<AuditSettings>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
@@ -25,7 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             if (auditSettings != null)
             {
                 var expressions = new Dictionary<Expression<Func<AuditSettings, Object>>, IResolver>();
-                expressions.Add(a => a.AuditFlags, new FromArrayToAuditFlagsResolver());
+                expressions.Add(a => a.AuditFlags, new FromArrayToAuditFlagsValueResolver());
 
                 template.AuditSettings = new AuditSettings();
                 PnPObjectsMapper.MapProperties(auditSettings, template.AuditSettings, expressions, true);
@@ -41,7 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 var expressions = new Dictionary<string, IResolver>();
                 expressions.Add($"{auditSettingsType}.AuditLogTrimmingRetentionSpecified", new ExpressionValueResolver((s, p) => true));
                 expressions.Add($"{auditSettingsType}.TrimAuditLogSpecified", new ExpressionValueResolver((s, p) => true));
-                expressions.Add($"{auditSettingsType}.Audit", new FromAuditFlagsToArrayResolver());
+                expressions.Add($"{auditSettingsType}.Audit", new FromAuditFlagsToArrayValueResolver());
 
                 PnPObjectsMapper.MapProperties(template.AuditSettings, target, expressions, recursive: true);
 

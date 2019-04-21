@@ -4,6 +4,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -12,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 700, DeserializationSequence = 700,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
-        Default = true)]
+        Scope = SerializerScope.ProvisioningTemplate)]
     internal class SecuritySerializer : PnPBaseSchemaSerializer<SiteSecurity>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
@@ -26,7 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add(s => s.SiteSecurityPermissions, new PropertyObjectTypeResolver<SiteSecurity>(s => s.SiteSecurityPermissions, o => o.GetPublicInstancePropertyValue("Permissions")));
                 expressions.Add(s => s.SiteSecurityPermissions.RoleDefinitions[0].Permissions, 
                     new ExpressionCollectionValueResolver<PermissionKind>((i) => (PermissionKind)Enum.Parse(typeof(PermissionKind), i.ToString())));
-
+                
                 PnPObjectsMapper.MapProperties(security, template.Security, expressions, true);
             }
         }

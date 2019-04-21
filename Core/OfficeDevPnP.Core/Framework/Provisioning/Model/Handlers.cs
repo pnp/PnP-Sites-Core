@@ -117,8 +117,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         WebApiPermissions = 33554432,
         /// <summary>
+        /// Value 67108864, represents Site Header
+        /// </summary>
+        SiteHeader = 67108864,
+        /// <summary>
+        /// Value 134217728, represents Site Footer
+        /// </summary>
+        SiteFooter = 134217728,
+        /// <summary>
         /// Takes all handlers
         /// </summary>
-        All = AuditSettings | ComposedLook | CustomActions | ExtensibilityProviders | Features | Fields | Files | Lists | Pages | Publishing | RegionalSettings | SearchSettings | SitePolicy | SupportedUILanguages | TermGroups | Workflows | SiteSecurity | ContentTypes | PropertyBagEntries | PageContents | WebSettings | Navigation | ImageRenditions | ApplicationLifecycleManagement | Tenant | WebApiPermissions
+        All = AuditSettings | ComposedLook | CustomActions | ExtensibilityProviders | Features | Fields | Files | Lists | Pages | Publishing | RegionalSettings | SearchSettings | SitePolicy | SupportedUILanguages | TermGroups | Workflows | SiteSecurity | ContentTypes | PropertyBagEntries | PageContents | WebSettings | Navigation | ImageRenditions | ApplicationLifecycleManagement | Tenant | WebApiPermissions | SiteHeader | SiteFooter
     }
 }

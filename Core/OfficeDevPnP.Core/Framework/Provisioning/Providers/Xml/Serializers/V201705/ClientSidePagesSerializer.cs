@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -16,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201705,
         SerializationSequence = 2300, DeserializationSequence = 2300,
-        Default = true)]
+        Scope = SerializerScope.ProvisioningTemplate)]
     internal class ClientSidePagesSerializer : PnPBaseSchemaSerializer<ClientSidePage>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
@@ -53,7 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     new FromStringToGuidValueResolver());
 
                 // Manage Header for client side page
-                expressions.Add(cp => cp.Header, new ClientSidePageHeaderFromSchemaToModel());
+                expressions.Add(cp => cp.Header, new ClientSidePageHeaderFromSchemaToModelTypeResolver());
 
                 template.ClientSidePages.AddRange(
                     PnPObjectsMapper.MapObjects(clientSidePages,
@@ -114,7 +115,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                 if (null != clientSidePageHeaderType)
                 {
-                    expressions.Add($"{clientSidePageType}.Header", new ClientSidePageHeaderFromModelToSchema());
+                    expressions.Add($"{clientSidePageType}.Header", new ClientSidePageHeaderFromModelToSchemaTypeResolver());
                     expressions.Add($"{clientSidePageHeaderType}.TranslateX", new FromNullableToSpecifiedValueResolver<double>("TranslateXSpecified"));
                     expressions.Add($"{clientSidePageHeaderType}.TranslateY", new FromNullableToSpecifiedValueResolver<double>("TranslateYSpecified"));
                 }
