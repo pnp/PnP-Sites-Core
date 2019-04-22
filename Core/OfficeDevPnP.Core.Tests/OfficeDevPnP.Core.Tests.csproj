@@ -524,6 +524,7 @@
     <Compile Include="Framework\Providers\Extensibility\SecureXml.cs" />
     <Compile Include="Framework\Providers\Extensibility\XMLEncryptionTemplateProviderExtension.cs" />
     <Compile Include="Framework\Providers\XMLProvidersTests.cs" />
+    <Compile Include="Framework\Providers\XMLSerializer201903Tests.cs" />
     <Compile Include="Framework\ProvisioningTemplates\DomainModelTests.cs" />
     <Compile Include="Framework\ProvisioningTemplates\ProvisioningTests.cs" />
     <Compile Include="Pages\ClientSidePagesTests.cs" />
