@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
-using OfficeDevPnP.Core.Utilities;
 using User = OfficeDevPnP.Core.Framework.Provisioning.Model.User;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
@@ -463,6 +464,95 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.AreEqual(ownersGroupTitle, web.AssociatedOwnerGroup.Title, "Associated owner group ID mismatch.");
                 Assert.AreEqual(membersGroup.Title, web.AssociatedMemberGroup.Title, "Associated member group ID mismatch.");
                 Assert.IsTrue(web.AssociatedVisitorGroup.ServerObjectIsNull.Value);
+            }
+        }
+
+        // ensure #2127 does not occur again; specifically check that not too many groups are created
+        [TestMethod()]
+        public async Task CanExportAndImportAssociatedGroupsProperly()
+        {
+            var newCommSiteUrl = "";
+            var newSiteTitle = "Comm Site Test - Groups";
+            var loginName = "";
+            ProvisioningTemplate template;
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                // get the template from real site as this produced the template that lead to too many groups being created which lead to #2127
+                var creationInfo = new ProvisioningTemplateCreationInformation(clientContext.Web);
+                creationInfo.HandlersToProcess = Handlers.SiteSecurity;
+                template = clientContext.Web.GetProvisioningTemplate();
+
+                var user = clientContext.Web.CurrentUser;
+                clientContext.Load(user);
+                clientContext.ExecuteQueryRetry();
+                loginName = user.LoginName;
+                template.Security.AdditionalMembers.Add(new User() { Name = loginName });
+                template.Security.AdditionalOwners.Add(new User() { Name = loginName });
+                template.Security.AdditionalVisitors.Add(new User() { Name = loginName });
+
+                var communicationSiteGuid = Guid.NewGuid().ToString("N");
+                var baseUri = new Uri(clientContext.Url);
+                var baseUrl = $"{baseUri.Scheme}://{baseUri.Host}:{baseUri.Port}";
+                newCommSiteUrl = $"{baseUrl}/sites/site{communicationSiteGuid}";
+
+                // create new site to apply template to
+                var commResults = await clientContext.CreateSiteAsync(new Core.Sites.CommunicationSiteCollectionCreationInformation()
+                {
+                    Url = $"{baseUrl}/sites/site{communicationSiteGuid}",
+                    SiteDesign = Core.Sites.CommunicationSiteDesign.Blank,
+                    Title = newSiteTitle,
+                    Lcid = 1033
+                });
+                Assert.IsNotNull(commResults);
+            }
+            try
+            {
+                using (var ctx = TestCommon.CreateClientContext(newCommSiteUrl))
+                {
+                    Web web = ctx.Web;
+
+                    var parser = new TokenParser(ctx.Web, template);
+                    new ObjectSiteSecurity().ProvisionObjects(web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                    const int maxWaitMs = 5 * 60 * 1000;
+                    const int checkIntervalMs = 5000;
+                    const string tempTitleToCheckFor = "Site Owners";
+                    var waitMs = 0;
+                    // wait for async group title rename action to complete (can take ~2 minutes, is done by SharePoint)
+                    do
+                    {
+                        await Task.Delay(checkIntervalMs);
+                        waitMs += checkIntervalMs;
+                        ctx.Load(web,
+                            w => w.AssociatedOwnerGroup.Title);
+                        ctx.ExecuteQueryRetry();
+                    } while (web.AssociatedOwnerGroup.Title == tempTitleToCheckFor && waitMs < maxWaitMs);
+
+                    ctx.Load(web,
+                        w => w.SiteGroups,
+                        w => w.AssociatedOwnerGroup.Users,
+                        w => w.AssociatedOwnerGroup.Title,
+                        w => w.AssociatedMemberGroup.Users,
+                        w => w.AssociatedMemberGroup.Title,
+                        w => w.AssociatedVisitorGroup.Users,
+                        w => w.AssociatedVisitorGroup.Title);
+                    ctx.ExecuteQueryRetry();
+
+                    Assert.AreEqual(3, web.SiteGroups.Count, "Unexpected number of groups found");
+                    Assert.AreEqual(1, web.AssociatedVisitorGroup.Users.Count(u => u.LoginName == loginName));
+                    Assert.AreEqual(1, web.AssociatedMemberGroup.Users.Count(u => u.LoginName == loginName));
+                    Assert.AreEqual(1, web.AssociatedOwnerGroup.Users.Count(u => u.LoginName == loginName));
+                    Assert.AreEqual(newSiteTitle + " Visitors", web.AssociatedVisitorGroup.Title);
+                    Assert.AreEqual(newSiteTitle + " Members", web.AssociatedMemberGroup.Title);
+                    Assert.AreEqual(newSiteTitle + " Owners", web.AssociatedOwnerGroup.Title);
+                }
+            } finally
+            {
+                using (var clientContext = TestCommon.CreateTenantClientContext())
+                {
+                    var tenant = new Tenant(clientContext);
+                    tenant.DeleteSiteCollection(newCommSiteUrl, false);
+                }
             }
         }
     }
