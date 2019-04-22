@@ -878,6 +878,12 @@ namespace OfficeDevPnP.Core.Pages
                 }
             }
 
+            if(item[ClientSidePage.PageLayoutType] as string != this.layoutType.ToString())
+            {
+                item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
+                isDirty = true;
+            }
+
             // Try to set the page description if not yet set
             if (this.layoutType == ClientSidePageLayoutType.Article && item.FieldValues.ContainsKey(ClientSidePage.DescriptionField))
             {
