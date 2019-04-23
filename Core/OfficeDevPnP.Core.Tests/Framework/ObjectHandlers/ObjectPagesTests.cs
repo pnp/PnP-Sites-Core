@@ -189,6 +189,7 @@ alert(""Hello!"");
                 var newPage = ctx.Web.AddClientSidePage();
                 newPage.LayoutType = Pages.ClientSidePageLayoutType.Article;
                 newPage.PageHeader.TopicHeader = "HEY HEADER";
+                newPage.PageHeader.LayoutType = Pages.ClientSidePageHeaderLayoutType.NoImage;
                 newPage.PageHeader.ShowTopicHeader = true;
                 newPage.PageHeader.TranslateX = 1.0;
                 newPage.PageHeader.TranslateY = 2.0;
@@ -200,6 +201,7 @@ alert(""Hello!"");
                     Assert.AreEqual(readPage.LayoutType, Pages.ClientSidePageLayoutType.Article);
                     Assert.AreEqual("HEY HEADER", readPage.PageHeader.TopicHeader);
                     Assert.IsTrue(readPage.PageHeader.ShowTopicHeader);
+                    Assert.AreEqual(Pages.ClientSidePageHeaderLayoutType.NoImage, readPage.PageHeader.LayoutType);
                     Assert.AreEqual(1.0, readPage.PageHeader.TranslateX);
                     Assert.AreEqual(2.0, readPage.PageHeader.TranslateY);
                 }
