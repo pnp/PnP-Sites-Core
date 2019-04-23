@@ -471,6 +471,11 @@
     <Compile Include="ALM\AppManager.cs" />
     <Compile Include="ALM\AppMetadata.cs" />
     <Compile Include="Attributes\TokenDefinitionDescriptionAttribute.cs" />
+    <Compile Include="CanProvisionIssuesMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CanProvisionIssuesMessages.resx</DependentUpon>
+    </Compile>
     <Compile Include="CoreResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -526,6 +531,7 @@
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionIssueTags.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRuleAttribute.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRulesManager.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\Rules\CanProvisionTermStoreRuleSite.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\Rules\CanProvisionAppsRuleSite.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRuleOffice365Base.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRuleTenantBase.cs" />
@@ -1247,6 +1253,10 @@
     <Compile Include="Utilities\YammerUtility.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="CanProvisionIssuesMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CanProvisionIssuesMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="CoreResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>

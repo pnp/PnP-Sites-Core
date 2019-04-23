@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                         {
                             Source = this.Name,
                             Tag = CanProvisionIssueTags.MISSING_APP_CATALOG,
-                            Message = "The template cannote be provisioned because the target environment is missing the tenant AppCatalog!", // TODO: Consider using resource strings
+                            Message = CanProvisionIssuesMessages.Missing_App_Catalog,
                             InnerException = null, // Here we don't have any specific exception
                         });
                     }

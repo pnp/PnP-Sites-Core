@@ -1,0 +1,78 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.Online.SharePoint.TenantAdministration;
+using Microsoft.SharePoint.Client;
+using Microsoft.SharePoint.Client.Taxonomy;
+using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
+
+namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
+{
+    [CanProvisionRule(Scope = CanProvisionScope.Site, Sequence = 200)]
+    internal class CanProvisionTermStoreRuleSite : CanProvisionRuleSiteBase
+    {
+        public override CanProvisionResult CanProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
+        {
+
+            // Prepare the default output
+            var result = new CanProvisionResult();
+#if !ONPREMISES
+            // Verify if we need the Term Store permissions (i.e. the template contains term groups to provision)
+            if (template.TermGroups != null && template.TermGroups?.Count > 0)
+            {
+                using (var scope = new PnPMonitoredScope(this.Name))
+                {
+                    try
+                    {
+                        // Try to access the Term Store
+                        TaxonomySession taxSession = TaxonomySession.GetTaxonomySession(web.Context);
+                        TermStore termStore = taxSession.GetDefaultKeywordsTermStore();
+                        web.Context.Load(termStore,
+                            ts => ts.Languages,
+                            ts => ts.DefaultLanguage,
+                            ts => ts.Groups.Include(
+                                tg => tg.Name,
+                                tg => tg.Id,
+                                tg => tg.TermSets.Include(
+                                    tset => tset.Name,
+                                    tset => tset.Id)));
+                        var siteCollectionTermGroup = termStore.GetSiteCollectionGroup((web.Context as ClientContext).Site, false);
+                        web.Context.Load(siteCollectionTermGroup);
+                        web.Context.ExecuteQueryRetry();
+
+                        var termGroupId = Guid.NewGuid();
+                        var group = termStore.CreateGroup($"Temp-{termGroupId.ToString()}", termGroupId);
+                        termStore.CommitAll();
+                        web.Context.Load(group);
+                        web.Context.ExecuteQueryRetry();
+
+                        // Now delete the just created termGroup, to cleanup the Term Store
+                        group.DeleteObject();
+                        web.Context.ExecuteQueryRetry();
+                    }
+                    catch (Exception ex)
+                    {
+                        // And if we fail, raise a CanProvisionIssue
+                        result.CanProvision = false;
+                        result.Issues.Add(new CanProvisionIssue()
+                        {
+                            Source = this.Name,
+                            Tag = CanProvisionIssueTags.MISSING_TERMSTORE_PERMISSIONS,
+                            Message = CanProvisionIssuesMessages.Term_Store_Not_Admin,
+                            InnerException = ex, 
+                        });
+                    }
+                }
+            }
+#else
+            result.CanProvision = false;
+#endif
+            return result;
+        }
+    }
+}
