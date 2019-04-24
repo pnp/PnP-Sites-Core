@@ -66,6 +66,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// </summary>
         public Boolean Archived { get; set; }
 
+        /// <summary>
+        /// Declares the nickname for the Team, optional attribute
+        /// </summary>
+        public String MailNickname { get; set; }
+
         #endregion
 
         #region Constructors
