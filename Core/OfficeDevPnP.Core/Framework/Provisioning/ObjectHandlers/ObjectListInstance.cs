@@ -201,6 +201,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         web.Context.ExecuteQueryRetry();
 
+                        #region Property Bag Entries
+
+                        // Configure Property Bag Entries
+                        foreach (var list in processedLists)
+                        {
+                            ProcessPropertyBagEntries(parser, scope, list);
+                        }
+
+                        #endregion Property Bag Entries
+
                         #region Column default values
                         foreach (var listInfo in processedLists)
                         {
@@ -502,6 +512,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 listInfo.SiteList.Update();
                 web.Context.ExecuteQueryRetry();
+            }
+        }
+
+        private void ProcessPropertyBagEntries(TokenParser parser, PnPMonitoredScope scope, ListInfo list)
+        {
+            // Handle root folder property bag
+            var rootFolder = list.SiteList.RootFolder;
+            list.SiteList.Context.Load(rootFolder, f => f.Properties);
+            list.SiteList.Context.ExecuteQueryRetry();
+            if (list.TemplateList.PropertyBagEntries != null && list.TemplateList.PropertyBagEntries.Count > 0)
+            {
+                foreach (var p in list.TemplateList.PropertyBagEntries)
+                {
+                    if (!rootFolder.Properties.FieldValues.ContainsKey(p.Key) || p.Overwrite)
+                    {
+                        list.SiteList.SetPropertyBagValue(p.Key, parser.ParseString(p.Value));
+                        if (p.Indexed)
+                        {
+                            list.SiteList.AddIndexedPropertyBagKey(p.Key);
+                        }
+                        else
+                        {
+                            list.SiteList.RemoveIndexedPropertyBagKey(p.Key);
+                        }
+                    }
+                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1, p.Key, list.SiteList.Title);
+                }
             }
         }
 
@@ -2172,6 +2209,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     list = ExtractInformationRightsManagement(web, siteList, list, creationInfo, template);
 
+                    list = ExtractPropertyBagEntries(siteList, list);
+
                     if (baseTemplateList != null)
                     {
                         if (!baseTemplateList.Equals(list))
@@ -2615,6 +2654,38 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             return list;
+        }
+
+        private static ListInstance ExtractPropertyBagEntries(List siteList, ListInstance list)
+        {
+            var systemPropertyBagEntriesExclusions = new List<string>(new[]
+            {
+                "vti_"
+            });
+
+            var indexedPropertyBagKeys = siteList.GetIndexedPropertyBagKeys().ToList();
+
+            var propertyBagEntries = siteList.RootFolder.Properties;
+            siteList.Context.Load(propertyBagEntries);
+            siteList.Context.ExecuteQueryRetry();
+
+            foreach (var fieldValue in propertyBagEntries.FieldValues)
+            {
+                var systemProp = systemPropertyBagEntriesExclusions.Any(k => fieldValue.Key.StartsWith(k, StringComparison.OrdinalIgnoreCase));
+                if (!systemProp)
+                {
+                    var propertyBagEntry = new PropertyBagEntry()
+                    {
+                        Key = fieldValue.Key,
+                        Value = fieldValue.Value.ToString(),
+                        Indexed = indexedPropertyBagKeys.Contains(fieldValue.Key),
+                        Overwrite = false
+                    };
+                    list.PropertyBagEntries.Add(propertyBagEntry);
+                }
+            }
+
+            return (list);
         }
 
         private string ParseFieldSchema(string schemaXml, Web web, List<List> lists)
