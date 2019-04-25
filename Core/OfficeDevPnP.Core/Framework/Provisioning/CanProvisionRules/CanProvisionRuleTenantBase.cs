@@ -46,7 +46,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules
             {
                 // Evaluate the corresponding Site rule
                 var innerRule = Activator.CreateInstance(typeof(CanProvisionRuleSite)) as CanProvisionRuleSiteBase;
+
+                Model.ProvisioningTemplate dummyTemplate = null;
+
+                // If we don't have templates
+                if (hierarchy.Templates.Count == 0)
+                {
+                    dummyTemplate = new Model.ProvisioningTemplate();
+                    dummyTemplate.Id = $"DUMMY-{Guid.NewGuid()}";
+                    hierarchy.Templates.Add(dummyTemplate);
+                }
+
+                // Invoke the Site level rule
                 result = innerRule.CanProvision(context.Web, hierarchy.Templates[0], applyingInformation);
+
+                if (dummyTemplate != null)
+                {
+                    // Remove the dummy template, if any
+                    hierarchy.Templates.Remove(dummyTemplate);
+                }
             }
 
             return (result);

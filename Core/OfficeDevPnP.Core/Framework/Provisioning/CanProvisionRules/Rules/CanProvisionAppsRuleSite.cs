@@ -21,9 +21,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
 
 #if !ONPREMISES
 
+            Model.ProvisioningTemplate targetTemplate = null;
+
+            if (template.ParentHierarchy != null)
+            {
+                // If we have a hierarchy, search for a template with ALM settings, if any
+                targetTemplate = template.ParentHierarchy.Templates.FirstOrDefault(t => t.ApplicationLifecycleManagement.Apps.Count > 0 ||
+                    (t.ApplicationLifecycleManagement.AppCatalog != null && t.ApplicationLifecycleManagement.AppCatalog.Packages.Count > 0));
+
+                if (targetTemplate == null)
+                {
+                    // or use the first in the hierarchy
+                    targetTemplate = template.ParentHierarchy.Templates[0];
+                }
+            }
+            else
+            {
+                // Otherwise, use the provided template
+                targetTemplate = template;
+            }
+
             // Verify if we need the App Catalog (i.e. the template contains apps or packages)
-            if ((template.ApplicationLifecycleManagement?.Apps != null && template.ApplicationLifecycleManagement?.Apps?.Count > 0) ||
-                template.ApplicationLifecycleManagement?.AppCatalog != null)
+            if ((targetTemplate.ApplicationLifecycleManagement?.Apps != null && targetTemplate.ApplicationLifecycleManagement?.Apps?.Count > 0) ||
+                targetTemplate.ApplicationLifecycleManagement?.AppCatalog != null ||
+                (targetTemplate.ParentHierarchy != null && targetTemplate.ParentHierarchy?.Tenant?.AppCatalog != null &&
+                targetTemplate.ParentHierarchy?.Tenant?.AppCatalog?.Packages != null && targetTemplate.ParentHierarchy?.Tenant?.AppCatalog?.Packages.Count > 0))
             {
                 // First of all check if the currently connected user is a Tenant Admin
                 if (!TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext))
