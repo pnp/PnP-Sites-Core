@@ -531,6 +531,8 @@
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionIssueTags.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRuleAttribute.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRulesManager.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\Rules\CanProvisionAppsRuleTenant.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\Rules\CanProvisionTermStoreRuleTenant.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\Rules\CanProvisionTermStoreRuleSite.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\Rules\CanProvisionAppsRuleSite.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRuleOffice365Base.cs" />
