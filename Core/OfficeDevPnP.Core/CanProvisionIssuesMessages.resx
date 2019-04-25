@@ -123,4 +123,7 @@
   <data name="Term_Store_Not_Admin" xml:space="preserve">
     <value>In order to provision the template you need to be Term Store Administrator. Please, change the Term Store settings (for instructions you can read this document: https://go.microsoft.com/fwlink/?linkid=2087340) and try again.</value>
   </data>
+  <data name="User_Is_Not_Tenant_Admin" xml:space="preserve">
+    <value>In order to provision the template you need Tenant Admin rights. Please ask a Tenant Admin to provision the template for you or to promote yourself to a Tenant Admin.</value>
+  </data>
 </root>

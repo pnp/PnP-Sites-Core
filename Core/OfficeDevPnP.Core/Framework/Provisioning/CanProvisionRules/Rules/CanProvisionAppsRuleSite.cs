@@ -16,14 +16,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
     {
         public override CanProvisionResult CanProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-
             // Prepare the default output
             var result = new CanProvisionResult();
+
 #if !ONPREMISES
+
             // Verify if we need the App Catalog (i.e. the template contains apps or packages)
             if ((template.ApplicationLifecycleManagement?.Apps != null && template.ApplicationLifecycleManagement?.Apps?.Count > 0) ||
                 template.ApplicationLifecycleManagement?.AppCatalog != null)
             {
+                // First of all check if the currently connected user is a Tenant Admin
+                if (!TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext))
+                {
+                    result.CanProvision = false;
+                    result.Issues.Add(new CanProvisionIssue()
+                    {
+                        Source = this.Name,
+                        Tag = CanProvisionIssueTags.USER_IS_NOT_TENANT_ADMIN,
+                        Message = CanProvisionIssuesMessages.User_Is_Not_Tenant_Admin,
+                        InnerException = null, // Here we don't have any specific exception
+                    });
+                }
+
                 using (var scope = new PnPMonitoredScope(this.Name))
                 {
                     // Try to access the AppCatalog

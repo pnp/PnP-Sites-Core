@@ -19,5 +19,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules
         /// Lack of Permissions to access the TermStore
         /// </summary>
         MISSING_TERMSTORE_PERMISSIONS,
+        /// <summary>
+        /// Lack of Permissions, the user is not a Tenant Admin, which is required by the rule
+        /// </summary>
+        USER_IS_NOT_TENANT_ADMIN,
     }
 }

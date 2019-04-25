@@ -77,5 +77,14 @@ namespace OfficeDevPnP.Core {
                 return ResourceManager.GetString("Term_Store_Not_Admin", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In order to provision the template you need Tenant Admin rights. Please ask a Tenant Admin to provision the template for you or to promote yourself to a Tenant Admin..
+        /// </summary>
+        internal static string User_Is_Not_Tenant_Admin {
+            get {
+                return ResourceManager.GetString("User_Is_Not_Tenant_Admin", resourceCulture);
+            }
+        }
     }
 }
