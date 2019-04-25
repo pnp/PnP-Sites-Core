@@ -186,7 +186,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
-            AddTermStoreTokens(web);
 
 #if !ONPREMISES
             AddSiteDesignTokens(web, applyingInformation);
@@ -209,6 +208,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
             AddAppPackagesTokens(web);
 #endif
+
+            // TermStore related tokens
+            AddTermStoreTokens(web);
+
             var sortedTokens = from t in _tokens
                                orderby t.GetTokenLength() descending
                                select t;
@@ -237,7 +240,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 foreach (DictionaryEntry entry in resxReader)
                                 {
-                                    resourceEntries.Add(new Tuple<string, uint, string>(entry.Key.ToString(), (uint)localizationEntry.LCID, entry.Value.ToString()));
+                                    resourceEntries.Add(new Tuple<string, uint, string>(entry.Key.ToString(), (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
                                 }
                             }
                         }
@@ -708,7 +711,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static readonly Regex ReToken = new Regex(@"(?:(\{(?:\1??[^{]*?\}))+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private static readonly Regex ReToken = new Regex(@"(?:(\{(?:\1??[^{]*?\})))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex ReTokenFallback = new Regex(@"\{.*?\}", RegexOptions.Compiled);
 
         private static readonly char[] TokenChars = { '{', '~' };

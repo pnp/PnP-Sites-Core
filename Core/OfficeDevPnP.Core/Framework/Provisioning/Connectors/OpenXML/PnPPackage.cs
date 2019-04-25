@@ -355,12 +355,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
                 value = new byte[] { };
             }
 
-            using (Stream stream = part.GetStream(FileMode.Create))
+            using (Stream stream = part.GetStream(FileMode.OpenOrCreate))
             {
-                using (stream)
-                {
+                //using (stream)
+                //{
                     stream.Write(value, 0, value.Length);
-                }
+                //}
             }
         }
 

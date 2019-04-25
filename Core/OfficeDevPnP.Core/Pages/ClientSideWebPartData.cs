@@ -2,7 +2,7 @@
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// Json web part data that will be included in each client side web part (de-)serialization (data-sp-webpartdata)
     /// </summary>
@@ -38,6 +38,15 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         [JsonProperty(PropertyName = "properties")]
         public string Properties { get; set; }
+
+        [JsonProperty(PropertyName = "dynamicDataPaths")]
+        public string DynamicDataPaths { get; internal set; }
+
+        [JsonProperty(PropertyName = "dynamicDataValues")]
+        public string DynamicDataValues { get; internal set; }
+
+        [JsonProperty(PropertyName = "serverProcessedContent")]
+        public string ServerProcessedContent { get; internal set; }
     }
 #endif
 }

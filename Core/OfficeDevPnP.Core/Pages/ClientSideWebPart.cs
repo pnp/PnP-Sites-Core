@@ -11,7 +11,7 @@ using System.Web.UI;
 
 namespace OfficeDevPnP.Core.Pages
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// This class is used to instantiate controls of type 3 (= client side web parts). Using this class you can instantiate a control and 
     /// add it on a <see cref="ClientSidePage"/>.
@@ -39,6 +39,8 @@ namespace OfficeDevPnP.Core.Pages
         private ClientSideWebPartControlData spControlData;
         private JObject properties;
         private JObject serverProcessedContent;
+        private JObject dynamicDataPaths;
+        private JObject dynamicDataValues;
         private string webPartPreviewImage;
         private bool usingSpControlDataOnly;
         #endregion
@@ -59,6 +61,9 @@ namespace OfficeDevPnP.Core.Pages
             this.SetPropertiesJson("{}");
             this.webPartPreviewImage = "";
             this.usingSpControlDataOnly = false;
+            this.dynamicDataPaths = JObject.Parse("{}");
+            this.dynamicDataValues = JObject.Parse("{}");
+            this.serverProcessedContent = JObject.Parse("{}");
         }
 
         /// <summary>
@@ -224,6 +229,22 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        public JObject DynamicDataPaths
+        {
+            get
+            {
+                return this.dynamicDataPaths;
+            }
+        }
+
+        public JObject DynamicDataValues
+        {
+            get
+            {
+                return this.dynamicDataValues;
+            }
+        }
+
         /// <summary>
         /// Return <see cref="Type"/> of the client side web part
         /// </summary>
@@ -382,7 +403,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
             }
 
-            ClientSideWebPartData webpartData = new ClientSideWebPartData() { Id = controlData.WebPartId, InstanceId = controlData.Id, Title = this.Title, Description = this.Description, DataVersion = this.DataVersion, Properties = "jsonPropsToReplacePnPRules" };
+            ClientSideWebPartData webpartData = new ClientSideWebPartData() { Id = controlData.WebPartId, InstanceId = controlData.Id, Title = this.Title, Description = this.Description, DataVersion = this.DataVersion, Properties = "jsonPropsToReplacePnPRules", DynamicDataPaths = "jsonDynamicDataPathsToReplacePnPRules", DynamicDataValues = "jsonDynamicDataValuesToReplacePnPRules", ServerProcessedContent = "jsonServerProcessedContentToReplacePnPRules" };
 
             if (this.usingSpControlDataOnly)
             {
@@ -390,6 +411,9 @@ namespace OfficeDevPnP.Core.Pages
                 this.jsonControlData = JsonConvert.SerializeObject(controlData);
                 this.jsonWebPartData = JsonConvert.SerializeObject(webpartData);
                 this.jsonWebPartData = this.jsonWebPartData.Replace("\"jsonPropsToReplacePnPRules\"", this.Properties.ToString(Formatting.None));
+                this.jsonWebPartData = this.jsonWebPartData.Replace("\"jsonServerProcessedContentToReplacePnPRules\"", this.ServerProcessedContent.ToString(Formatting.None));
+                this.jsonWebPartData = this.jsonWebPartData.Replace("\"jsonDynamicDataPathsToReplacePnPRules\"", this.DynamicDataPaths.ToString(Formatting.None));
+                this.jsonWebPartData = this.jsonWebPartData.Replace("\"jsonDynamicDataValuesToReplacePnPRules\"", this.DynamicDataValues.ToString(Formatting.None));
                 this.jsonControlData = this.jsonControlData.Replace("\"jsonWebPartDataToReplacePnPRules\"", this.jsonWebPartData);
             }
             else
@@ -397,6 +421,9 @@ namespace OfficeDevPnP.Core.Pages
                 this.jsonControlData = JsonConvert.SerializeObject(controlData);
                 this.jsonWebPartData = JsonConvert.SerializeObject(webpartData);
                 this.jsonWebPartData = this.jsonWebPartData.Replace("\"jsonPropsToReplacePnPRules\"", this.Properties.ToString(Formatting.None));
+                this.jsonWebPartData = this.jsonWebPartData.Replace("\"jsonServerProcessedContentToReplacePnPRules\"", this.ServerProcessedContent.ToString(Formatting.None));
+                this.jsonWebPartData = this.jsonWebPartData.Replace("\"jsonDynamicDataPathsToReplacePnPRules\"", this.DynamicDataPaths.ToString(Formatting.None));
+                this.jsonWebPartData = this.jsonWebPartData.Replace("\"jsonDynamicDataValuesToReplacePnPRules\"", this.DynamicDataValues.ToString(Formatting.None));
             }
 
             StringBuilder html = new StringBuilder(100);
@@ -609,6 +636,16 @@ namespace OfficeDevPnP.Core.Pages
                     this.serverProcessedContent = (JObject)wpJObject["webPartData"]["serverProcessedContent"];
                 }
 
+                if (wpJObject["webPartData"] != null && wpJObject["webPartData"]["dynamicDataPaths"] != null)
+                {
+                    this.dynamicDataPaths = (JObject)wpJObject["webPartData"]["dynamicDataPaths"];
+                }
+
+                if (wpJObject["webPartData"] != null && wpJObject["webPartData"]["dynamicDataValues"] != null)
+                {
+                    this.dynamicDataValues = (JObject)wpJObject["webPartData"]["dynamicDataValues"];
+                }
+
                 if (wpJObject["webPartData"] != null && wpJObject["webPartData"]["id"] != null)
                 {
                     this.webPartId = wpJObject["webPartData"]["id"].Value<string>();
@@ -644,6 +681,16 @@ namespace OfficeDevPnP.Core.Pages
                 if (wpJObject["serverProcessedContent"] != null)
                 {
                     this.serverProcessedContent = (JObject)wpJObject["serverProcessedContent"];
+                }
+
+                if (wpJObject["dynamicDataPaths"] != null)
+                {
+                    this.dynamicDataPaths = (JObject)wpJObject["dynamicDataPaths"];
+                }
+
+                if (wpJObject["dynamicDataValues"] != null)
+                {
+                    this.dynamicDataValues = (JObject)wpJObject["dynamicDataValues"];
                 }
 
                 this.webPartId = wpJObject["id"].Value<string>();
@@ -700,6 +747,23 @@ namespace OfficeDevPnP.Core.Pages
                 this.serverProcessedContent = (JObject)parsedJson["serverProcessedContent"];
             }
 
+            if (parsedJson["webPartData"] != null && parsedJson["webPartData"]["dynamicDataPaths"] != null)
+            {
+                this.dynamicDataPaths = (JObject)parsedJson["webPartData"]["dynamicDataPaths"];
+            }
+            else if (parsedJson["dynamicDataPaths"] != null)
+            {
+                this.dynamicDataPaths = (JObject)parsedJson["dynamicDataPaths"];
+            }
+
+            if (parsedJson["webPartData"] != null && parsedJson["webPartData"]["dynamicDataValues"] != null)
+            {
+                this.dynamicDataValues = (JObject)parsedJson["webPartData"]["dynamicDataValues"];
+            }
+            else if (parsedJson["dynamicDataValues"] != null)
+            {
+                this.dynamicDataValues = (JObject)parsedJson["dynamicDataValues"];
+            }
         }
         #endregion
     }

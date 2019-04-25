@@ -1,7 +1,6 @@
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Attributes;
-using System;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
@@ -33,9 +32,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
 
                     CacheValue = termGroup.Id.ToString();
                 }
-                catch
+                catch(ServerUnauthorizedAccessException)
                 {
-                    // termstore.GetSiteCollectionGroup(site, true) doesn't create the group with a context based on access token
                 }
             }
             return CacheValue;

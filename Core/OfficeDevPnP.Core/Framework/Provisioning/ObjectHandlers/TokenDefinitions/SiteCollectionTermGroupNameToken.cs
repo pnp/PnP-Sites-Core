@@ -32,12 +32,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
                     TokenContext.ExecuteQueryRetry();
 
                     CacheValue = termGroup.Name.ToString();
-
                 }
-                catch
-                {
-                    // termstore.GetSiteCollectionGroup(site, true) doesn't create the group with a context based on access token
-                }
+                catch (ServerUnauthorizedAccessException)
+                { }
             }
             return CacheValue;
         }

@@ -6,6 +6,45 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.8.1904.0 - April 2019 release]
+
+### Added
+
+- Export and import client side web parts with dynamic data connections #2120 [YannickRe]
+- Added SyncToTeams method on the app ALM manager to synchronize an SPFX solution to the Microsoft Teams App Catalog
+- Extension method IsCommunicationSite for Site objects
+
+### Changed
+
+- Fix: TokenParser to resolve tokens directly following each other {hosturl}{site} #2111 [czullu]
+- Fix: ClientSidePage description provisioning #2112 [czullu]
+- Fix: Failure with RatedBy and Ratings #2113 [czullu]
+- Ensure Field InternalName is correctly retrieved when logging provisision progress #2140 [NicolajHedeager]
+- Feature/Fix: Added ensureSiteAssetsLibrary method to prevent access denied #2129 [gautamdsheth]
+- Fix : Skip creation of associated groups if they already exist #2128 [gautamdsheth]
+- Fix: Added capability to set the private CDN orgins and policies #2141 [gautamdsheth]
+- EnsureUser for external users #2136 [schaudk]
+- Don't fail on modern page save when the provided header image url is living in a different web then the client side page
+- Correctly save a modern repost page
+
+## [3.7.1903.0 - March 2019 release]
+
+### Added
+
+- Client Side pages API support for SP2019 #2089 [lafe]
+- ALM functions for SharePoint 2019 on premises #2074 [lafe]
+- Authentication option based upon Azure AD credential flow in combination with the SPO Management Shell Azure AD application
+
+### Changed
+
+- Cloning of ClientContext objects created by AuthenticationManager using one of these methods (GetAppOnlyAuthenticatedContext, GetAzureADCredentialsContext, GetAzureADAppOnlyAuthenticatedContext) now works fine when cloning to different audience (e.g. clone from regular site to tenant admin)
+- Create ClientSidePage with double quotes in Title generates wrong LayoutWebpartsContent #2058
+- Skip executing EnsureProperty on Principal object when the Principal is null #2066 [schaudk]
+- Fixed token handling for resource files having quotes
+- Fixed parsing of SchemaXml #2067 [schaudk]
+- Fixed typo [lafe]
+- Fix #2088 - Provisioning template doesn't publish the app #2090 [gautamdsheth]
+
 ## [3.6.1902.0 - February 2019 release]
 
 ### Added
@@ -27,6 +66,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added delegate for callback on site fully provisioned within the Provisioning Engine
 - Added STS#3 base template for SharePoint Online template extraction
 - Added support to specify the hubsite id when creating modern sites and to set owners when creating a modern team site/O365 group associated site. [gautamdsheth]
+- Added support for hubsiteid when creating modern sites with New-PnPSite
+- Added support to set owners when creating a modern team site with New-PnPSite
 
 ### Changed
 

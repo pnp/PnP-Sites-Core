@@ -422,8 +422,8 @@
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="SharePointPnP.IdentityModel.Extensions, Version=1.2.3.0, Culture=neutral, PublicKeyToken=5e633289e95c321a, processorArchitecture=MSIL">
-      <HintPath>..\packages\SharePointPnP.IdentityModel.Extensions.1.2.3\lib\net45\SharePointPnP.IdentityModel.Extensions.dll</HintPath>
+    <Reference Include="SharePointPnP.IdentityModel.Extensions, Version=1.2.4.0, Culture=neutral, PublicKeyToken=5e633289e95c321a, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharePointPnP.IdentityModel.Extensions.1.2.4\lib\net45\SharePointPnP.IdentityModel.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -505,6 +505,7 @@
     <Compile Include="Extensions\FieldAndContentTypeExtensions.cs" />
     <Compile Include="Extensions\FileFolderExtensions.cs" />
     <Compile Include="Extensions\InformationManagementExtensions.cs" />
+    <Compile Include="Extensions\InternalClientContextExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\ListRatingExtensions.cs" />
     <Compile Include="Extensions\ObjectExtension.cs" />
@@ -1079,6 +1080,8 @@
     <Compile Include="Utilities\CanvasControl\ICanvasControlPostProcessor.cs" />
     <Compile Include="Utilities\CanvasControl\Processors\PassThroughProcessor.cs" />
     <Compile Include="Utilities\CanvasControl\Processors\ListControlPostProcessor.cs" />
+    <Compile Include="Utilities\Context\ClientContextType.cs" />
+    <Compile Include="Utilities\Context\ClientContextSettings.cs" />
     <Compile Include="Utilities\CookieReader.cs" />
     <Compile Include="Utilities\Deprecated\Utility.deprecated.cs" />
     <Compile Include="Utilities\FileTokenCache.cs" />

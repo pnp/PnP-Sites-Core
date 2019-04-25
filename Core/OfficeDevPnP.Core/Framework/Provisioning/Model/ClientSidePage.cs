@@ -87,6 +87,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public String Title { get; set; }
 
         /// <summary>
+        /// Defines the ContentTypeID for the client-side page
+        /// </summary>
+        public String ContentTypeID { get; set; }
+
+        /// <summary>
         /// Defines the Header for the client-side page
         /// </summary>
         public ClientSidePageHeader Header
@@ -113,11 +118,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Defines the page fields values, if any
         /// </summary>
         public Dictionary<String, String> FieldValues { get; set; } = new Dictionary<string, string>();
-
-        /// <summary>
-        /// Defines the Content Type ID for the page, if it is a custom one
-        /// </summary>
-        public String ContentTypeID { get; set; }
 
         #endregion
 
