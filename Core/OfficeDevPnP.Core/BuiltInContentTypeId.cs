@@ -99,6 +99,7 @@ namespace OfficeDevPnP.Core
         /// Contains the content identifier (ID) for content types used in the modern page infrastructure
         /// </summary>
         public const string ModernArticlePage = "0x0101009D1CB255DA76424F860D91F20E6C4118";
+        public const string RepostPage = "0x0101009D1CB255DA76424F860D91F20E6C4118002A50BFCFB7614729B56886FADA02339B";
 
 
         private static Dictionary<string, bool> s_dict = (Dictionary<string, bool>) null;

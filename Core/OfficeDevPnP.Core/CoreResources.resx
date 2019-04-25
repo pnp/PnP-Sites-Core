@@ -1126,4 +1126,7 @@
   <data name="Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed" xml:space="preserve">
     <value>Provisioning of the navigation node failed : {0}</value>
   </data>
+  <data name="ClientSidePageHeader_ImageInDifferentWeb" xml:space="preserve">
+    <value>The {0} image set as page header lives in a different web and will not be set.</value>
+  </data>
 </root>

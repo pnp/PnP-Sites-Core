@@ -73,6 +73,28 @@ namespace Microsoft.SharePoint.Client
             site.EnsureProperty(s => s.Classification);
             return (site.Classification);
         }
+
+        /// <summary>
+        /// Checks if the current Site Collection is a "modern" Communication Site
+        /// </summary>
+        /// <param name="site">The target site</param>
+        /// <returns>Returns true if the site is a Communication Site</returns>
+        public static Boolean IsCommunicationSite(this Site site)
+        {
+            // First of all check if the site is full Communication Site
+            var templateId = site.RootWeb.GetBaseTemplateId();
+
+            var result = (templateId == "SITEPAGEPUBLISHING#0");
+
+            if (!result)
+            {
+                // Otherwise check if the Communication Site feature is enabled
+                var commSiteFeatureId = new Guid("f39dad74-ea79-46ef-9ef7-fe2370754f6f");
+                result = site.RootWeb.IsFeatureActive(commSiteFeatureId);
+            }
+
+            return (result);
+        }
 #endif
     }
 }

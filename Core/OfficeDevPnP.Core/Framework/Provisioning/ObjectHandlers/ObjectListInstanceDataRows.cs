@@ -34,9 +34,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (listInstance.DataRows != null && listInstance.DataRows.Any())
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_, listInstance.Title);
-                        // Retrieve the target list
-                        var list = web.Lists.GetByTitle(parser.ParseString(listInstance.Title));
-                        web.Context.Load(list);
+                        // Retrieve the target list                        
+                        var list = web.GetListByUrl(parser.ParseString(listInstance.Url));
 
                         // Retrieve the fields' types from the list
                         Microsoft.SharePoint.Client.FieldCollection fields = list.Fields;

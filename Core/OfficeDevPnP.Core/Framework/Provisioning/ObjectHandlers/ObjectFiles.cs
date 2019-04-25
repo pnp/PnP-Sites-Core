@@ -47,6 +47,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 var filesToProcess = template.Files.Union(directoryFiles).ToArray();
+
+                var siteAssetsFiles = filesToProcess.Where(f => f.Folder.ToLower().Contains("siteassets")).FirstOrDefault();
+                if (siteAssetsFiles != null)
+                {
+                    // Need this so that we dont have access denied error during the first time upload, especially for modern sites
+                    web.Lists.EnsureSiteAssetsLibrary();
+                    web.Context.ExecuteQueryRetry();
+                }
+
                 var currentFileIndex = 0;
                 var originalWeb = web; // Used to store and re-store context in case files are deployed to masterpage gallery
                 foreach (var file in filesToProcess)
@@ -469,13 +478,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (!String.IsNullOrEmpty(directory.IncludedExtensions) && directory.IncludedExtensions != "*.*")
             {
-                var includedExtensions = directory.IncludedExtensions.Split(new [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var includedExtensions = directory.IncludedExtensions.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 files = files.Where(f => includedExtensions.Contains($"*{Path.GetExtension(f).ToLower()}")).ToList();
             }
 
             if (!String.IsNullOrEmpty(directory.ExcludedExtensions))
             {
-                var excludedExtensions = directory.ExcludedExtensions.Split(new [] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var excludedExtensions = directory.ExcludedExtensions.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
                 files = files.Where(f => !excludedExtensions.Contains($"*{Path.GetExtension(f).ToLower()}")).ToList();
             }
 
