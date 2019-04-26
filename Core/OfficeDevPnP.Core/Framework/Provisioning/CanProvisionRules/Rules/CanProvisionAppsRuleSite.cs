@@ -56,7 +56,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                         Source = this.Name,
                         Tag = CanProvisionIssueTags.USER_IS_NOT_TENANT_ADMIN,
                         Message = CanProvisionIssuesMessages.User_Is_Not_Tenant_Admin,
-                        InnerException = null, // Here we don't have any specific exception
+                        ExceptionMessage = null, // Here we don't have any specific exception
+                        ExceptionStackTrace = null, // Here we don't have any specific exception
                     });
                 }
 
@@ -73,7 +74,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                             Source = this.Name,
                             Tag = CanProvisionIssueTags.MISSING_APP_CATALOG,
                             Message = CanProvisionIssuesMessages.Missing_App_Catalog,
-                            InnerException = null, // Here we don't have any specific exception
+                            ExceptionMessage = null, // Here we don't have any specific exception
+                            ExceptionStackTrace = null, // Here we don't have any specific exception
                         });
                     }
                 }

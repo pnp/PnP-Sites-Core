@@ -27,8 +27,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules
         public CanProvisionIssueTags Tag { get; set; }
 
         /// <summary>
-        /// Provides the Inner Exception of an Issue
+        /// Provides the Message of the source Exception of an Issue
         /// </summary>
-        public Exception InnerException { get; set; }
+        public String ExceptionMessage { get; set; }
+
+        /// <summary>
+        /// Provides the StackTrace of the source Exception of an Issue
+        /// </summary>
+        public String ExceptionStackTrace { get; set; }
     }
 }

@@ -22,8 +22,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
             // Prepare the default output
             var result = new CanProvisionResult();
 #if !ONPREMISES
-            // Verify if we need the Term Store permissions (i.e. the template contains term groups to provision)
-            if (template.TermGroups != null && template.TermGroups?.Count > 0)
+
+            Model.ProvisioningTemplate targetTemplate = null;
+
+            if (template.ParentHierarchy != null)
+            {
+                // If we have a hierarchy, search for a template with Taxonomy settings, if any
+                targetTemplate = template.ParentHierarchy.Templates.FirstOrDefault(t => t.TermGroups.Count > 0);
+
+                if (targetTemplate == null)
+                {
+                    // or use the first in the hierarchy
+                    targetTemplate = template.ParentHierarchy.Templates[0];
+                }
+            }
+            else
+            {
+                // Otherwise, use the provided template
+                targetTemplate = template;
+            }
+
+
+            // Verify if we need the Term Store permissions (i.e. the template contains term groups to provision, or sequences with TermStore settings)
+            if ((targetTemplate.TermGroups != null && targetTemplate.TermGroups?.Count > 0) ||
+                targetTemplate.ParentHierarchy.Sequences.Any(
+                    s => s.TermStore?.TermGroups != null && s.TermStore?.TermGroups?.Count > 0))
             {
                 using (var scope = new PnPMonitoredScope(this.Name))
                 {
@@ -64,7 +87,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                             Source = this.Name,
                             Tag = CanProvisionIssueTags.MISSING_TERMSTORE_PERMISSIONS,
                             Message = CanProvisionIssuesMessages.Term_Store_Not_Admin,
-                            InnerException = ex, 
+                            ExceptionMessage = ex.Message, // Here we have a specific exception
+                            ExceptionStackTrace = ex.StackTrace, // Here we have a specific exception
                         });
                     }
                 }
