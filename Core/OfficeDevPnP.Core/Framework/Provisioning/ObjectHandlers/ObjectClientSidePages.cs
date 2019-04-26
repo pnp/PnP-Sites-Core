@@ -18,6 +18,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     internal class ObjectClientSidePages : ObjectHandlerBase
     {
         private const string ContentTypeIdField = "ContentTypeId";
+        private const string FileRefField = "FileRef";
+        private const string SPSitePageFlagsField = "_SPSitePageFlags";
 
         public override string Name
         {
@@ -42,6 +44,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(parser.ParseString(clientSidePage.PageName))}.aspx";
+
+                    if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
+                    {
+                        pageName = $"Templates/{pageName}";
+                    }
+
                     string url = $"{pagesLibrary}/{pageName}";
 
                     // Write page level status messages, needed in case many pages are provisioned
@@ -100,7 +108,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(parser.ParseString(clientSidePage.PageName))}.aspx";
+
+                    if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
+                    {
+                        pageName = $"Templates/{pageName}";
+                    }
+
                     string url = $"{pagesLibrary}/{pageName}";
+
                     // Write page level status messages, needed in case many pages are provisioned
                     currentPageIndex++;
                     WriteMessage($"ClientSidePage|{pageName}|{currentPageIndex}|{template.ClientSidePages.Count}", ProvisioningMessageType.Progress);
@@ -484,7 +499,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Set page property bag values
                     if (clientSidePage.Properties != null && clientSidePage.Properties.Any())
                     {
-                        string pageFilePath = page.PageListItem["FileRef"].ToString();
+                        string pageFilePath = page.PageListItem[FileRefField].ToString();
                         var pageFile = web.GetFileByServerRelativeUrl(pageFilePath);
                         web.Context.Load(pageFile, p => p.Properties);
 
@@ -500,6 +515,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         isDirty = true;
                     }
 
+                    if (clientSidePage.PromoteAsTemplate && page.LayoutType == Pages.ClientSidePageLayoutType.Article)
+                    {
+                        // Choice field, currently there's only one value possible and that's Template
+                        page.PageListItem[SPSitePageFlagsField] = ";#Template;#";
+                        page.PageListItem.Update();
+                        web.Context.Load(page.PageListItem);
+                        isDirty = true;
+                    }
+
                     if (isDirty)
                     {
                         web.Context.ExecuteQueryRetry();
@@ -512,8 +536,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (page.LayoutType != Pages.ClientSidePageLayoutType.SingleWebPartAppPage)
                     {
-                        // Set commenting, ignore on pages of the type Home
-                        if (page.LayoutType != Pages.ClientSidePageLayoutType.Home)
+                        // Set commenting, ignore on pages of the type Home or page templates
+                        if (page.LayoutType != Pages.ClientSidePageLayoutType.Home && !clientSidePage.PromoteAsTemplate)
                         {
                             // Make it a news page if requested
                             if (clientSidePage.PromoteAsNewsArticle)
@@ -535,8 +559,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-                    // Publish page 
-                    if (clientSidePage.Publish)
+                    // Publish page, page templates cannot be published
+                    if (clientSidePage.Publish && !clientSidePage.PromoteAsTemplate)
                     {
                         page.Publish();
                     }
