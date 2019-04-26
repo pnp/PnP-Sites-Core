@@ -1,6 +1,7 @@
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Attributes;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
@@ -34,6 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
                 }
                 catch(ServerUnauthorizedAccessException)
                 {
+                    Log.Warning(Constants.LOGGING_SOURCE, CoreResources.TermGroup_No_Access);
                 }
             }
             return CacheValue;

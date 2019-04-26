@@ -435,8 +435,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                     }
-                }
-                // SiteCollection TermSets, only when we're not working in app-only
+                }                
 
                 if (tokenIds.Contains("sitecollectiontermgroupid"))
                     _tokens.Add(new SiteCollectionTermGroupIdToken(web));
