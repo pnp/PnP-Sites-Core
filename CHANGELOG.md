@@ -9,7 +9,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [3.9.1905.0 - unreleased]
 
 ### Added
+
 - Support to export terms with a specific lcid in TaxonomyExtensions.ExportTermSet
+- Support for new page header and section backgrounds in the modern client side page provisioning [NicolajHedeager]
 
 ### Changed
 
