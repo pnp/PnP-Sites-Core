@@ -773,7 +773,7 @@ namespace OfficeDevPnP.Core.Pages
             {
                 item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.RepostPage;
                 item[ClientSidePage.CanvasField] = "";
-                item[ClientSidePage.PageLayoutContentField] = "";                
+                item[ClientSidePage.PageLayoutContentField] = "";
                 item.Update();
                 this.Context.Web.Context.Load(item);
                 this.Context.ExecuteQueryRetry();
@@ -893,7 +893,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
             }
 
-            if(item[ClientSidePage.PageLayoutType] as string != this.layoutType.ToString())
+            if (item[ClientSidePage.PageLayoutType] as string != this.layoutType.ToString())
             {
                 item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
                 isDirty = true;
@@ -1345,9 +1345,9 @@ namespace OfficeDevPnP.Core.Pages
                 TranslateY = translateY
             };
         }
-#endregion
+        #endregion
 
-#region Internal and private methods
+        #region Internal and private methods
         private void EnableCommentsImplementation(bool enable)
         {
             // ensure we do have the page list item loaded
@@ -1504,7 +1504,7 @@ namespace OfficeDevPnP.Core.Pages
                         {
                             if (sectionData.Position != null)
                             {
-                                this.AddSection(new CanvasSection(this) { ZoneEmphasis = sectionData.Emphasis != null ? sectionData.Emphasis.ZoneEmphasis : 0}, sectionData.Position.ZoneIndex);
+                                this.AddSection(new CanvasSection(this) { ZoneEmphasis = sectionData.Emphasis != null ? sectionData.Emphasis.ZoneEmphasis : 0 }, sectionData.Position.ZoneIndex);
                                 currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).First();
                             }
                         }
@@ -1591,7 +1591,7 @@ namespace OfficeDevPnP.Core.Pages
             var currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).FirstOrDefault();
             if (currentSection == null)
             {
-                this.AddSection(new CanvasSection(this) { ZoneEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0}, position.ZoneIndex);
+                this.AddSection(new CanvasSection(this) { ZoneEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0 }, position.ZoneIndex);
                 currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).First();
             }
 
@@ -1689,7 +1689,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
         }
-                #endregion
+        #endregion
     }
 #endif
-            }
+}
