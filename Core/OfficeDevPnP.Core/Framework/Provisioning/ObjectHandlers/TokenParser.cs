@@ -4,7 +4,6 @@ using Microsoft.SharePoint.Client.Taxonomy;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.ALM;
-using OfficeDevPnP.Core.Framework.Graph;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
@@ -16,6 +15,7 @@ using System.Globalization;
 using System.Linq;
 using System.Resources;
 using System.Text.RegularExpressions;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -464,12 +464,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     catch (ServerUnauthorizedAccessException)
                     {
                         // If we don't have permission to access the TermGroup, just skip it
+                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.TermGroup_No_Access);
                     }
                     catch (NullReferenceException)
                     {
                         // If there isn't a default TermGroup for the Site Collection, we skip the terms in token handler
                     }
-                }                
+                }
             }
         }
 
