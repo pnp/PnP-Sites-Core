@@ -1023,6 +1023,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private bool archivedField;
         
+        private string mailNicknameField;
+        
         public TeamWithSettings() {
             this.archivedField = false;
         }
@@ -1152,6 +1154,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.archivedField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MailNickname {
+            get {
+                return this.mailNicknameField;
+            }
+            set {
+                this.mailNicknameField = value;
             }
         }
     }

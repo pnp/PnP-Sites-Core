@@ -42,6 +42,7 @@ namespace Microsoft.SharePoint.Client
             engine.ApplyProvisioningHierarchy(tenant, hierarchy, sequenceId, applyingInformation);
         }
         #endregion
+
         #region Site collection creation
         /// <summary>
         /// Adds a SiteEntity by launching site collection creation and waits for the creation to finish
@@ -947,6 +948,50 @@ namespace Microsoft.SharePoint.Client
         }
         #endregion
 
+        #region User rights
+
+        public static Boolean IsCurrentUserTenantAdmin(ClientContext clientContext)
+        {
+            // Get the URL of the current site collection
+            var site = clientContext.Site;
+            site.EnsureProperty(s => s.Url);
+
+            // If we are already with a context for the Admin Site, all good, the user is an admin
+            if (site.Url.Contains("-admin.sharepoint.com"))
+            {
+                return (true);
+            }
+            else
+            {
+                // Otherwise, we need to target the Admin Site
+                var siteUrl = site.Url.EndsWith("/") ? site.Url : $"{site.Url}/";
+                var rootSiteUrl = siteUrl.Substring(0, siteUrl.IndexOf("/", siteUrl.IndexOf("sharepoint.com/")));
+                var adminSiteUrl = rootSiteUrl.Replace(".sharepoint.com", "-admin.sharepoint.com");
+
+                try
+                {
+                    // Connect to the Admin Site
+                    using (var adminContext = clientContext.Clone(adminSiteUrl))
+                    {
+                        // Do something with the Tenant Admin Context
+                        Tenant tenant = new Tenant(adminContext);
+                        tenant.EnsureProperty(t => t.RootSiteUrl);
+
+                        // If we've got access to the tenant admin context, 
+                        // it means that the currently connecte user is an admin
+                        return (true);
+                    }
+                }
+                catch
+                {
+                    // In case of any connection exception, the user is not an admin
+                    return (false);
+                }
+            }
+        }
+        
+        #endregion
+
 #else
         #region Site collection creation
         /// <summary>
@@ -1000,7 +1045,7 @@ namespace Microsoft.SharePoint.Client
 
 #if !ONPREMISES || SP2019
 
-#region ClientSide Package Deployment
+        #region ClientSide Package Deployment
 
         /// <summary>
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)

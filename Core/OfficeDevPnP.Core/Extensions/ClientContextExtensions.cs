@@ -16,6 +16,7 @@ using OfficeDevPnP.Core.Utilities.Async;
 using System.IdentityModel.Tokens.Jwt;
 using System.Collections.Generic;
 using OfficeDevPnP.Core.Utilities.Context;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 
 #if !ONPREMISES
 using OfficeDevPnP.Core.Sites;
@@ -370,8 +371,20 @@ namespace Microsoft.SharePoint.Client
 
                     var originalUri = new Uri(clientContext.Url);
                     // If the cloned host is not the same as the original one
-                    // and if there is a custom Access Token for it in the input arguments
+                    // and if there is an active PnPProvisioningContext
                     if (originalUri.Host != siteUrl.Host &&
+                        PnPProvisioningContext.Current != null)
+                    {
+                        // Let's apply that specific Access Token
+                        clonedClientContext.ExecutingWebRequest += (sender, args) =>
+                        {
+                            var accessToken = PnPProvisioningContext.Current.AcquireToken(siteUrl.Authority, null);
+                            args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + accessToken;
+                        };
+                    }
+                    // Else if the cloned host is not the same as the original one
+                    // and if there is a custom Access Token for it in the input arguments
+                    else if (originalUri.Host != siteUrl.Host &&
                         accessTokens != null && accessTokens.Count > 0 &&
                         accessTokens.ContainsKey(siteUrl.Authority))
                     {
@@ -381,6 +394,8 @@ namespace Microsoft.SharePoint.Client
                             args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + accessTokens[siteUrl.Authority];
                         };
                     }
+                    // Else if the cloned host is not the same as the original one
+                    // and if the client context is a PnPClientContext with custom access tokens in its property bag
                     else if (originalUri.Host != siteUrl.Host &&
                         accessTokens == null && clientContext is PnPClientContext &&
                         ((PnPClientContext)clientContext).PropertyBag.ContainsKey("AccessTokens") &&
@@ -395,11 +410,11 @@ namespace Microsoft.SharePoint.Client
                     else
                     {
                         // In case of app only or SAML
-                        clonedClientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
+                        clonedClientContext.ExecutingWebRequest += (sender, webRequestEventArgs) =>
                         {
-                        // Call the ExecutingWebRequest delegate method from the original ClientContext object, but pass along the webRequestEventArgs of 
-                        // the new delegate method
-                        MethodInfo methodInfo = clientContext.GetType().GetMethod("OnExecutingWebRequest", BindingFlags.Instance | BindingFlags.NonPublic);
+                            // Call the ExecutingWebRequest delegate method from the original ClientContext object, but pass along the webRequestEventArgs of 
+                            // the new delegate method
+                            MethodInfo methodInfo = clientContext.GetType().GetMethod("OnExecutingWebRequest", BindingFlags.Instance | BindingFlags.NonPublic);
                             object[] parametersArray = new object[] { webRequestEventArgs };
                             methodInfo.Invoke(clientContext, parametersArray);
                         };
