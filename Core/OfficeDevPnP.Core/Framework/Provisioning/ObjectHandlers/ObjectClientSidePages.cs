@@ -471,11 +471,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Persist the page
                     page.Save(pageName);
 
+                    // Update page content type
+                    bool isDirty = false;
                     if (!string.IsNullOrEmpty(clientSidePage.ContentTypeID))
                     {
                         page.PageListItem[ContentTypeIdField] = clientSidePage.ContentTypeID;
                         page.PageListItem.Update();
                         web.Context.Load(page.PageListItem);
+                        isDirty = true;
+                    }
+
+                    // Set page property bag values
+                    if (clientSidePage.Properties != null && clientSidePage.Properties.Any())
+                    {
+                        string pageFilePath = page.PageListItem["FileRef"].ToString();
+                        var pageFile = web.GetFileByServerRelativeUrl(pageFilePath);
+                        web.Context.Load(pageFile, p => p.Properties);
+
+                        foreach (var pageProperty in clientSidePage.Properties)
+                        {
+                            if (!string.IsNullOrEmpty(pageProperty.Key))
+                            {
+                                pageFile.Properties[pageProperty.Key] = pageProperty.Value;
+                            }
+                        }
+
+                        pageFile.Update();
+                        isDirty = true;
+                    }
+
+                    if (isDirty)
+                    {
                         web.Context.ExecuteQueryRetry();
                     }
 
