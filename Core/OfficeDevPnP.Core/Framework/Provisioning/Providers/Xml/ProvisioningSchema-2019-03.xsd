@@ -7665,6 +7665,15 @@
           </xsd:annotation>
         </xsd:attribute>
 
+        <xsd:attribute name="MailNickname" type="xsd:string" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Declares the nickname for the Team, optional attribute. Required for new Teams.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
       </xsd:extension>
     </xsd:complexContent>
 
@@ -7829,7 +7838,7 @@
         <xsd:complexType>
 
           <xsd:sequence>
-            <xsd:element name="Configuration" minOccurs="1" maxOccurs="1">
+            <xsd:element name="Configuration" minOccurs="0" maxOccurs="1">
               <xsd:annotation>
                 <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
                 <xsd:documentation xml:lang="en">
