@@ -12,8 +12,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 - Support to export terms with a specific lcid in TaxonomyExtensions.ExportTermSet
 - Support for new page header and section backgrounds in the modern client side page provisioning [NicolajHedeager]
+- Support for provisioning client side page templates
 
 ### Changed
+
+- Allow fileuniqueid in NavigationNodes for Group OneNote Url #2150 [czullu]
 
 ## [3.8.1904.0 - April 2019 release]
 
