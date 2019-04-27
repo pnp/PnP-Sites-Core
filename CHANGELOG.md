@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - Allow fileuniqueid in NavigationNodes for Group OneNote Url #2150 [czullu]
+- fixing client side page existence check sometimes flags page as existing although it isn't #2185 [heinrich-ulbricht]
 
 ## [3.8.1904.0 - April 2019 release]
 
