@@ -648,13 +648,15 @@ namespace OfficeDevPnP.Core.Pages
                     throw new Exception($"Page layout type could not be determined for page {pageName}");
                 }
 
+                // default canvas content for an empty page (this field contains the page's web part properties)
+                var canvasContent1Html = @"<div><div data-sp-canvascontrol="""" data-sp-canvasdataversion=""1.0"" data-sp-controldata=""&#123;&quot;controlType&quot;&#58;0,&quot;pageSettingsSlice&quot;&#58;&#123;&quot;isDefaultDescription&quot;&#58;true,&quot;isDefaultThumbnail&quot;&#58;true&#125;&#125;""></div></div>";
                 // If the canvasfield1 field is present and filled then let's parse it
                 if (item.FieldValues.ContainsKey(ClientSidePage.CanvasField) && !(item[ClientSidePage.CanvasField] == null || string.IsNullOrEmpty(item[ClientSidePage.CanvasField].ToString())))
                 {
-                    var html = item[ClientSidePage.CanvasField].ToString();
-                    var pageHeaderHtml = item[ClientSidePage.PageLayoutContentField] != null ? item[ClientSidePage.PageLayoutContentField].ToString() : "";
-                    page.LoadFromHtml(html, pageHeaderHtml);
+                    canvasContent1Html = item[ClientSidePage.CanvasField].ToString();
                 }
+                var pageHeaderHtml = item[ClientSidePage.PageLayoutContentField] != null ? item[ClientSidePage.PageLayoutContentField].ToString() : "";
+                page.LoadFromHtml(canvasContent1Html, pageHeaderHtml);
             }
             else
             {
