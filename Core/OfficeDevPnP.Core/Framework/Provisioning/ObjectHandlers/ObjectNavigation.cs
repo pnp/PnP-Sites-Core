@@ -7,6 +7,7 @@ using Microsoft.SharePoint.Client.Publishing.Navigation;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -256,6 +257,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         #region Utility methods
 
+        private string ReplaceFileUniqueToken(Web web, string UrlValue)
+        {
+            if (!string.IsNullOrWhiteSpace(UrlValue))
+            {
+                Regex regex = new Regex("(?:=[{]{1,2})(?<tokenname>fileuniqueid|fileuniqueidencoded)(?::)(?<fileurl>[^}]*)", RegexOptions.Compiled | RegexOptions.Multiline);
+
+                Match match = regex.Match(UrlValue);
+                if (match.Success)
+                {
+                    if (match.Groups["fileurl"].Success)
+                    {
+                        try
+                        {
+                            var spFile = web.GetFileByUrl(match.Groups["fileurl"].Value);
+                            web.Context.Load(spFile, f => f.UniqueId);
+                            web.Context.ExecuteQuery();
+                            string fileId = spFile.UniqueId.ToString();
+                            if (match.Groups["tokenname"].Value.Equals("fileuniqueidencoded", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                fileId = fileId.Replace("-", "%2D");
+                            }
+                            UrlValue = Regex.Replace(UrlValue, $"{{{match.Groups["tokenname"].Value}:{match.Groups["fileurl"].Value}}}", fileId, RegexOptions.IgnoreCase);
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+                    }
+                }
+            }
+            return UrlValue;
+        }
+
         private bool WebSupportsProvisionNavigation(Web web, ProvisioningTemplate template)
         {
             bool isNavSupported = true;
@@ -398,9 +432,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 try
                 {
+                    string fileUrl = ReplaceFileUniqueToken(web, parser.ParseString(node.Url));
+
                     var navNode = web.AddNavigationNode(
                         parser.ParseString(node.Title),
-                        new Uri(parser.ParseString(node.Url), UriKind.RelativeOrAbsolute),
+                        new Uri(fileUrl, UriKind.RelativeOrAbsolute),
                         parser.ParseString(parentNodeTitle),
                         navigationType,
                         node.IsExternal,
@@ -426,9 +462,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         try
                         {
+                            string fileUrl = ReplaceFileUniqueToken(web, parser.ParseString(node.Url));
                             var navNode = web.AddNavigationNode(
                                 parser.ParseString(node.Title),
-                                new Uri(parser.ParseString(node.Url), UriKind.RelativeOrAbsolute),
+                                new Uri(fileUrl, UriKind.RelativeOrAbsolute),
                                 parser.ParseString(parentNodeTitle),
                                 navigationType,
                                 true,
