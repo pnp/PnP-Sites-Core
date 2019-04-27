@@ -259,6 +259,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private string ReplaceFileUniqueToken(Web web, string UrlValue)
         {
+#if !SP2013 && !SP2016
             if (!string.IsNullOrWhiteSpace(UrlValue))
             {
                 Regex regex = new Regex("(?:=[{]{1,2})(?<tokenname>fileuniqueid|fileuniqueidencoded)(?::)(?<fileurl>[^}]*)", RegexOptions.Compiled | RegexOptions.Multiline);
@@ -287,6 +288,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
+#endif
             return UrlValue;
         }
 
@@ -634,7 +636,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        #endregion
+#endregion
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
