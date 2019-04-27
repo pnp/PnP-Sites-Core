@@ -62,12 +62,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     try
                     {
                         var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(url));
-                        web.Context.Load(file, f => f.UniqueId, f => f.ServerRelativePath);
+                        web.Context.Load(file, f => f.UniqueId, f => f.ServerRelativePath, f => f.Exists);
                         web.Context.ExecuteQueryRetry();
 
                         // Fill token
                         parser.AddToken(new PageUniqueIdToken(web, file.ServerRelativePath.DecodedUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
                         parser.AddToken(new PageUniqueIdEncodedToken(web, file.ServerRelativePath.DecodedUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+
+                        exists = file.Exists;
                     }
                     catch (ServerException ex)
                     {
