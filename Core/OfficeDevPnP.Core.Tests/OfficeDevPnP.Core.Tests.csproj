@@ -525,6 +525,7 @@
     <Compile Include="Framework\Providers\Extensibility\XMLEncryptionTemplateProviderExtension.cs" />
     <Compile Include="Framework\Providers\XMLProvidersTests.cs" />
     <Compile Include="Framework\ProvisioningTemplates\DomainModelTests.cs" />
+    <Compile Include="Framework\ProvisioningTemplates\ClientSidePageProvisioningTests.cs" />
     <Compile Include="Framework\ProvisioningTemplates\ProvisioningTests.cs" />
     <Compile Include="Pages\ClientSidePagesTests.cs" />
     <Compile Include="Sites\SiteCollectionTests.cs" />
@@ -752,6 +753,9 @@
     <None Include="Resources\Templates\TestTemplateOriginal.pnp" />
     <None Include="Resources\Templates\TestTemplateOriginal2.pnp" />
     <None Include="Resources\TestSolution.wsp" />
+    <Content Include="Resources\Templates\ClientSidePagesWithHeader.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\Templates\MeetingsTemplate.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-05-FullSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2015-05-ReferenceSample-01.xml" />

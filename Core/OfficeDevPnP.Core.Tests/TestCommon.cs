@@ -389,5 +389,17 @@ namespace OfficeDevPnP.Core.Tests
             return json["access_token"].ToString();
         }
 #endif
+        public static void DeleteFile(ClientContext ctx, string serverRelativeFileUrl)
+        {
+            var file = ctx.Web.GetFileByServerRelativeUrl(serverRelativeFileUrl);
+            ctx.Load(file, f => f.Exists);
+            ctx.ExecuteQueryRetry();
+
+            if (file.Exists)
+            {
+                file.DeleteObject();
+                ctx.ExecuteQueryRetry();
+            }
+        }
     }
 }

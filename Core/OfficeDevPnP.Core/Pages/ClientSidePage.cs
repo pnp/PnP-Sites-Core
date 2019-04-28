@@ -708,6 +708,14 @@ namespace OfficeDevPnP.Core.Pages
                 pageName = pageName.Substring(1);
             }
 
+            var pageHeaderHtml = "";
+            if (this.pageHeader != null && this.pageHeader.Type != ClientSidePageHeaderType.None)
+            {
+                // this triggers resolving of the header image which has to be done early as otherwise there will be version conflicts
+                // (see here: https://github.com/SharePoint/PnP-Sites-Core/issues/2203)
+                pageHeaderHtml = this.pageHeader.ToHtml(this.PageTitle);
+            }
+
             // Try to load the page
             if (pageFile == null && pagesLibrary == null)
             {
@@ -816,7 +824,7 @@ namespace OfficeDevPnP.Core.Pages
             }
             else
             {
-                item[ClientSidePage.PageLayoutContentField] = this.pageHeader.ToHtml(this.pageTitle);
+                item[ClientSidePage.PageLayoutContentField] = pageHeaderHtml;
 
 #if !SP2019
                 // AuthorByline depends on a field holding the author values
