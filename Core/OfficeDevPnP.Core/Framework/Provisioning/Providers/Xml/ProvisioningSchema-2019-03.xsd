@@ -1652,7 +1652,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="RemoveExistingUniqueRoleAssignments" type="xsd:boolean" use="optional">
+    <xsd:attribute name="RemoveExistingUniqueRoleAssignments" type="xsd:boolean" use="optional" default="false">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
         <xsd:documentation xml:lang="en">

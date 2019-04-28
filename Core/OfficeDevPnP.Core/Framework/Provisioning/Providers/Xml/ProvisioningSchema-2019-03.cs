@@ -9173,8 +9173,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private bool removeExistingUniqueRoleAssignmentsField;
         
-        private bool removeExistingUniqueRoleAssignmentsFieldSpecified;
-        
         private bool clearSubscopesField;
         
         private string associatedGroupsField;
@@ -9189,6 +9187,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             this.breakRoleInheritanceField = false;
             this.resetRoleInheritanceField = false;
             this.copyRoleAssignmentsField = false;
+            this.removeExistingUniqueRoleAssignmentsField = false;
             this.clearSubscopesField = false;
         }
         
@@ -9291,23 +9290,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
         public bool RemoveExistingUniqueRoleAssignments {
             get {
                 return this.removeExistingUniqueRoleAssignmentsField;
             }
             set {
                 this.removeExistingUniqueRoleAssignmentsField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool RemoveExistingUniqueRoleAssignmentsSpecified {
-            get {
-                return this.removeExistingUniqueRoleAssignmentsFieldSpecified;
-            }
-            set {
-                this.removeExistingUniqueRoleAssignmentsFieldSpecified = value;
             }
         }
         
