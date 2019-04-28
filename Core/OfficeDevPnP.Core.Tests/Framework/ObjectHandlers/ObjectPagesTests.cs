@@ -45,6 +45,20 @@ alert(""Hello!"");
   </webPart>
 </webParts>";
 
+        private void DeleteFile(ClientContext ctx, string serverRelativeFileUrl)
+        {
+            var file = ctx.Web.GetFileByServerRelativeUrl(serverRelativeFileUrl);
+            ctx.Load(file, f => f.Exists);
+            ctx.ExecuteQueryRetry();
+
+            if (file.Exists)
+            {
+                file.DeleteObject();
+                ctx.ExecuteQueryRetry();
+            }
+
+        }
+
         [TestCleanup]
         public void Cleanup()
         {
@@ -53,16 +67,7 @@ alert(""Hello!"");
                 ctx.Load(ctx.Web, w => w.ServerRelativeUrl);
                 ctx.ExecuteQueryRetry();
 
-
-                var file = ctx.Web.GetFileByServerRelativeUrl(UrlUtility.Combine(ctx.Web.ServerRelativeUrl, "/SitePages/pagetest.aspx"));
-                ctx.Load(file, f => f.Exists);
-                ctx.ExecuteQueryRetry();
-
-                if (file.Exists)
-                {
-                    file.DeleteObject();
-                    ctx.ExecuteQueryRetry();
-                }
+                DeleteFile(ctx, UrlUtility.Combine(ctx.Web.ServerRelativeUrl, "/SitePages/pagetest.aspx"));
             }
         }
         [TestMethod]
@@ -176,5 +181,44 @@ alert(""Hello!"");
             }
         }
 
+#if !ONPREMISES
+        [TestMethod]
+        public void CanSaveAndLoadHeaderProperties()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                ctx.Load(ctx.Web, w => w.ServerRelativeUrl);
+                ctx.ExecuteQueryRetry();
+                var imgUrl = UrlUtility.Combine(ctx.Web.ServerRelativeUrl, "/SiteAssets/__siteIcon__.png");
+
+                var pageName = $"{Guid.NewGuid().ToString()}.aspx";
+                var newPage = ctx.Web.AddClientSidePage();
+                newPage.LayoutType = Pages.ClientSidePageLayoutType.Article;
+                newPage.PageHeader.TopicHeader = "HEY HEADER";
+                newPage.PageHeader.LayoutType = Pages.ClientSidePageHeaderLayoutType.NoImage;
+                newPage.PageHeader.ShowTopicHeader = true;
+                newPage.PageHeader.ImageServerRelativeUrl = imgUrl;
+                newPage.PageHeader.TranslateX = 1.0;
+                newPage.PageHeader.TranslateY = 2.0;
+                newPage.Save(pageName);
+                newPage.Publish();
+                try
+                {
+                    var readPage = ctx.Web.LoadClientSidePage(pageName);
+                    Assert.AreEqual(readPage.LayoutType, Pages.ClientSidePageLayoutType.Article);
+                    Assert.AreEqual("HEY HEADER", readPage.PageHeader.TopicHeader);
+                    Assert.IsTrue(readPage.PageHeader.ShowTopicHeader);
+                    Assert.AreEqual(Pages.ClientSidePageHeaderLayoutType.NoImage, readPage.PageHeader.LayoutType);
+                    Assert.AreEqual(imgUrl, readPage.PageHeader.ImageServerRelativeUrl);
+                    Assert.AreEqual(1.0, readPage.PageHeader.TranslateX);
+                    Assert.AreEqual(2.0, readPage.PageHeader.TranslateY);
+                }
+                finally
+                {
+                    DeleteFile(ctx, UrlUtility.Combine(ctx.Web.ServerRelativeUrl, "/SitePages/" + pageName));
+                }
+            }
+        }
+#endif
     }
 }
