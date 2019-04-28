@@ -44,6 +44,7 @@ alert(""Hello!"");
     </data>
   </webPart>
 </webParts>";
+        private string TestFilePath = "..\\..\\Resources\\office365.png";
 
         private void DeleteFile(ClientContext ctx, string serverRelativeFileUrl)
         {
@@ -59,6 +60,30 @@ alert(""Hello!"");
 
         }
 
+
+        [TestInitialize()]
+        public void Initialize()
+        {
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                ctx.Web.EnsureProperty(p => p.ServerRelativeUrl);
+
+                var assetsLibrary = ctx.Web.GetList($"{ctx.Web.ServerRelativeUrl}/SiteAssets");
+                ctx.Load(assetsLibrary, p => p.RootFolder);
+                ctx.ExecuteQueryRetry();
+                var folder = assetsLibrary.RootFolder;
+
+                var fci = new FileCreationInformation();
+                fci.Content = System.IO.File.ReadAllBytes(TestFilePath);
+                fci.Url = folder.ServerRelativeUrl + "/office365.png";
+                fci.Overwrite = true;
+
+                Microsoft.SharePoint.Client.File file = folder.Files.Add(fci);
+                ctx.Load(file);
+                ctx.ExecuteQueryRetry();
+            }
+        }
+
         [TestCleanup]
         public void Cleanup()
         {
@@ -68,6 +93,7 @@ alert(""Hello!"");
                 ctx.ExecuteQueryRetry();
 
                 DeleteFile(ctx, UrlUtility.Combine(ctx.Web.ServerRelativeUrl, "/SitePages/pagetest.aspx"));
+                DeleteFile(ctx, UrlUtility.Combine(ctx.Web.ServerRelativeUrl, "/SiteAssets/office365.png"));
             }
         }
         [TestMethod]
@@ -189,7 +215,7 @@ alert(""Hello!"");
             {
                 ctx.Load(ctx.Web, w => w.ServerRelativeUrl);
                 ctx.ExecuteQueryRetry();
-                var imgUrl = UrlUtility.Combine(ctx.Web.ServerRelativeUrl, "/SiteAssets/__siteIcon__.png");
+                var imgUrl = UrlUtility.Combine(ctx.Web.ServerRelativeUrl, "/SiteAssets/office365.png");
 
                 var pageName = $"{Guid.NewGuid().ToString()}.aspx";
                 var newPage = ctx.Web.AddClientSidePage();
