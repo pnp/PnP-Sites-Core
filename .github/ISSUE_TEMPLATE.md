@@ -4,7 +4,7 @@ Thank you for reporting an issue or suggesting an enhancement. We appreciate you
 *Please navigate to the appropriate repository by clicking on the link below and create your issue there. You can delete this section after you have navigated to the correct repository.*
 - PnP Samples - https://github.com/OfficeDev/PnP
 - PnP Sites Core - https://github.com/OfficeDev/PnP-Sites-Core
-- PnP JS Core - https://github.com/OfficeDev/PnP-JS-Core
+- PnPjs - https://github.com/pnp/pnpjs
 - PnP PowerShell - https://github.com/OfficeDev/PnP-PowerShell
 
 #### Category
