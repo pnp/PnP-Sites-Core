@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - fixing client side page existence check sometimes flags page as existing although it isn't #2185 [heinrich-ulbricht]
 - Fix loading of ClientSidePage contents if CanvasContent1 property is empty #2199 [heinrich-ulbricht]
 - Adding test for saving and loading of ClientSidePage header #2198 [heinrich-ulbricht]
+- Fix: conflict when provisioning client side pages with headers #2208 [heinrich-ulbricht]
 
 ## [3.8.1904.0 - April 2019 release]
 
