@@ -4078,7 +4078,7 @@
               </xsd:restriction>
             </xsd:simpleType>
           </xsd:attribute>
-          <xsd:attribute name="TextAlignment" use="optional">
+          <xsd:attribute name="TextAlignment" use="optional" default="Left">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
               <xsd:documentation xml:lang="en">
@@ -4087,19 +4087,19 @@
             </xsd:annotation>
             <xsd:simpleType>
               <xsd:restriction base="xsd:string">
-                <xsd:enumeration value="Center">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      Align Center
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
                 <xsd:enumeration value="Left">
                   <xsd:annotation>
                     <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
                     <xsd:documentation xml:lang="en">
                       Align Left
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:enumeration>
+                <xsd:enumeration value="Center">
+                  <xsd:annotation>
+                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+                    <xsd:documentation xml:lang="en">
+                      Align Center
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:enumeration>

@@ -3747,8 +3747,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private ClientSidePageHeaderTextAlignment textAlignmentField;
         
-        private bool textAlignmentFieldSpecified;
-        
         private bool showTopicHeaderField;
         
         private bool showTopicHeaderFieldSpecified;
@@ -3768,6 +3766,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         private int authorByLineIdField;
         
         private bool authorByLineIdFieldSpecified;
+        
+        public ClientSidePageHeader() {
+            this.textAlignmentField = ClientSidePageHeaderTextAlignment.Left;
+        }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -3859,23 +3861,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(ClientSidePageHeaderTextAlignment.Left)]
         public ClientSidePageHeaderTextAlignment TextAlignment {
             get {
                 return this.textAlignmentField;
             }
             set {
                 this.textAlignmentField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool TextAlignmentSpecified {
-            get {
-                return this.textAlignmentFieldSpecified;
-            }
-            set {
-                this.textAlignmentFieldSpecified = value;
             }
         }
         
@@ -4032,10 +4024,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
     public enum ClientSidePageHeaderTextAlignment {
         
         /// <remarks/>
-        Center,
+        Left,
         
         /// <remarks/>
-        Left,
+        Center,
     }
     
     /// <remarks/>

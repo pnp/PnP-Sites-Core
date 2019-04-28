@@ -199,12 +199,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     public enum ClientSidePageHeaderTextAlignment
     {
         /// <summary>
-        /// Align Center
-        /// </summary>
-        Center,
-        /// <summary>
         /// Align Left
         /// </summary>
         Left,
+        /// <summary>
+        /// Align Center
+        /// </summary>
+        Center,
     }
 }
