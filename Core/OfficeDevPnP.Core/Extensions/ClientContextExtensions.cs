@@ -378,6 +378,7 @@ namespace Microsoft.SharePoint.Client
                         // Let's apply that specific Access Token
                         clonedClientContext.ExecutingWebRequest += (sender, args) =>
                         {
+                            // We get a fresh new Access Token for every request, to avoid using an expired one
                             var accessToken = PnPProvisioningContext.Current.AcquireToken(siteUrl.Authority, null);
                             args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + accessToken;
                         };
