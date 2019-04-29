@@ -15,11 +15,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Support for provisioning client side page templates
 - Support for Provisioning Schema 201903
 - Support for provisioning Microsoft Teams
+- Support for provisioning Site Header settings
+- Support for provisioning Site Footer links 
 - New PnPProvisioningContext object for security scope management
 - New tenant extension method (tenant.EnableCommSite) to to convert the root site collection of a tenant into a communication site
 
 ### Changed
 
+- Added support to apply an OOTB theme using web.ApplyTheme() [gautamdsheth]
 - Added support for setting owners and hubsite id in GroupifySite [gautamdsheth]
 - Allow fileuniqueid in NavigationNodes for Group OneNote Url #2150 [czullu]
 - fixing client side page existence check sometimes flags page as existing although it isn't #2185 [heinrich-ulbricht]
