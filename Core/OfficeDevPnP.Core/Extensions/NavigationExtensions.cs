@@ -724,11 +724,14 @@ namespace Microsoft.SharePoint.Client
             else if (navigationType == NavigationType.Footer)
             {
                 var footerNavigation = web.LoadFooterNavigation();
-                for (var i = footerNavigation.Count - 1; i >= 0; i--)
+                if (footerNavigation != null)
                 {
-                    footerNavigation[i].DeleteObject();
+                    for (var i = footerNavigation.Count - 1; i >= 0; i--)
+                    {
+                        footerNavigation[i].DeleteObject();
+                    }
+                    web.Context.ExecuteQueryRetry();
                 }
-                web.Context.ExecuteQueryRetry();
 #endif
             }
         }
