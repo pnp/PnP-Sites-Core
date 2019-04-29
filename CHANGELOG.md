@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Support for Provisioning Schema 201903
 - Support for provisioning Microsoft Teams
 - New PnPProvisioningContext object for security scope management
+- New tenant extension method (tenant.EnableCommSite) to to convert the root site collection of a tenant into a communication site
 
 ### Changed
 
