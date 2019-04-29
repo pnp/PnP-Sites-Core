@@ -43,6 +43,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                     new FromArrayToDictionaryValueResolver<String, String>(
                         stringDictionaryType, stringDictionaryKeySelector, stringDictionaryValueSelector));
 
+                // Properties
+                expressions.Add(cp => cp.Properties,
+                    new FromArrayToDictionaryValueResolver<String, String>(
+                        stringDictionaryType, stringDictionaryKeySelector, stringDictionaryValueSelector));
+
                 // Manage WebPartType for CanvasControl
                 expressions.Add(cp => cp.Sections[0].Controls[0].Type,
                     new ExpressionValueResolver(
@@ -116,6 +121,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                         dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector, "ControlProperties"));
 
                 expressions.Add($"{clientSidePageType}.FieldValues", new FromDictionaryToArrayValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
+
+                expressions.Add($"{clientSidePageType}.Properties", new FromDictionaryToArrayValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
 
                 // Manage Header for client side page
                 var clientSidePageHeaderType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ClientSidePageHeader, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", false);

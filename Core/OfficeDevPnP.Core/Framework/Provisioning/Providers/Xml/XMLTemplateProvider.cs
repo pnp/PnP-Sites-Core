@@ -158,6 +158,64 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             return (provisioningTemplate);
         }
 
+        public override ProvisioningTemplate GetTemplate(Stream stream)
+        {
+            return (this.GetTemplate(stream, (ITemplateProviderExtension[])null));
+        }
+
+        public override ProvisioningTemplate GetTemplate(Stream stream, ITemplateProviderExtension[] extensions = null)
+        {
+            return (this.GetTemplate(stream, null, null, extensions));
+        }
+
+        public override ProvisioningTemplate GetTemplate(Stream stream, string identifier)
+        {
+            return (this.GetTemplate(stream, identifier, null));
+        }
+
+        public override ProvisioningTemplate GetTemplate(Stream stream, ITemplateFormatter formatter)
+        {
+            return (this.GetTemplate(stream, null, formatter));
+        }
+
+        public override ProvisioningTemplate GetTemplate(Stream stream, string identifier, ITemplateFormatter formatter)
+        {
+            return (this.GetTemplate(stream, identifier, formatter, null));
+        }
+
+        public override ProvisioningTemplate GetTemplate(Stream stream, string identifier, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions = null)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentException(nameof(stream));
+            }
+
+            if (formatter == null)
+            {
+                formatter = new XMLPnPSchemaFormatter();
+                formatter.Initialize(this);
+            }
+
+            // Handle any pre-processing extension
+            stream = PreProcessGetTemplateExtensions(extensions, stream);
+
+            //Resolve xml includes if any
+            stream = ResolveXIncludes(stream);
+
+            // And convert it into a ProvisioningTemplate
+            ProvisioningTemplate provisioningTemplate = formatter.ToProvisioningTemplate(stream, identifier);
+
+            // Handle any post-processing extension
+            provisioningTemplate = PostProcessGetTemplateExtensions(extensions, provisioningTemplate);
+
+            // Store the identifier of this template, is needed for latter save operation
+            this.Uri = null;
+
+            return (provisioningTemplate);
+        }
+
+
+
         public override void Save(ProvisioningHierarchy hierarchy)
         {
             this.SaveAs(hierarchy, this.Uri);
@@ -259,7 +317,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         private Stream ResolveXIncludes(Stream stream)
         {
-            if(stream == null)
+            if (stream == null)
             {
                 throw new ArgumentNullException(nameof(stream));
             }
@@ -277,20 +335,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     Boolean includeResolved = false;
 
                     // Resolve xInclude and replace
-                    String href = (String)xi.Attribute("href") ?? String.Empty; 
+                    String href = (String)xi.Attribute("href") ?? String.Empty;
 
                     // If there is the href attribute
                     if (!String.IsNullOrEmpty(href))
                     {
                         Stream incStream = this.Connector.GetFileStream(href);
                         // And if the referenced file can be loaded/resolved
-                        if(incStream == null)
+                        if (incStream == null)
                         {
                             //check if include has fallback
                             XName xiFallback = XName.Get("{http://www.w3.org/2001/XInclude}fallback");
                             var fallback = xi.Elements(xiFallback).FirstOrDefault();
-                            if ((fallback != null)&&
-                                ((fallback.Elements().Count() > 0)||!string.IsNullOrEmpty(fallback.Value)))
+                            if ((fallback != null) &&
+                                ((fallback.Elements().Count() > 0) || !string.IsNullOrEmpty(fallback.Value)))
                             {
                                 var innerXml = fallback.ToXmlElement().InnerXml;
                                 incStream = new MemoryStream(Encoding.UTF8.GetBytes(innerXml));

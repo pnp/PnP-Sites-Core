@@ -42,6 +42,7 @@ namespace Microsoft.SharePoint.Client
             engine.ApplyProvisioningHierarchy(tenant, hierarchy, sequenceId, applyingInformation);
         }
         #endregion
+
         #region Site collection creation
         /// <summary>
         /// Adds a SiteEntity by launching site collection creation and waits for the creation to finish
@@ -937,12 +938,86 @@ namespace Microsoft.SharePoint.Client
             {
                 optionalParams.Classification = siteCollectionGroupifyInformation.Classification;
             }
+
+            var creationOptionsValues = new List<string>();
             if (siteCollectionGroupifyInformation.KeepOldHomePage)
             {
-                optionalParams.CreationOptions = new string[] { "SharePointKeepOldHomepage" };
+                creationOptionsValues.Add("SharePointKeepOldHomepage");
+            }
+            creationOptionsValues.Add($"HubSiteId:{siteCollectionGroupifyInformation.HubSiteId}");
+            optionalParams.CreationOptions = creationOptionsValues.ToArray();
+
+            if (siteCollectionGroupifyInformation.Owners != null && siteCollectionGroupifyInformation.Owners.Length > 0)
+            {
+                optionalParams.Owners = siteCollectionGroupifyInformation.Owners;
             }
 
             tenant.CreateGroupForSite(siteUrl, siteCollectionGroupifyInformation.DisplayName, siteCollectionGroupifyInformation.Alias, siteCollectionGroupifyInformation.IsPublic, optionalParams);
+            tenant.Context.ExecuteQueryRetry();
+        }
+        #endregion
+
+        #region User rights
+
+        public static Boolean IsCurrentUserTenantAdmin(ClientContext clientContext)
+        {
+            // Get the URL of the current site collection
+            var site = clientContext.Site;
+            site.EnsureProperty(s => s.Url);
+
+            // If we are already with a context for the Admin Site, all good, the user is an admin
+            if (site.Url.Contains("-admin.sharepoint.com"))
+            {
+                return (true);
+            }
+            else
+            {
+                // Otherwise, we need to target the Admin Site
+                var siteUrl = site.Url.EndsWith("/") ? site.Url : $"{site.Url}/";
+                var rootSiteUrl = siteUrl.Substring(0, siteUrl.IndexOf("/", siteUrl.IndexOf("sharepoint.com/")));
+                var adminSiteUrl = rootSiteUrl.Replace(".sharepoint.com", "-admin.sharepoint.com");
+
+                try
+                {
+                    // Connect to the Admin Site
+                    using (var adminContext = clientContext.Clone(adminSiteUrl))
+                    {
+                        // Do something with the Tenant Admin Context
+                        Tenant tenant = new Tenant(adminContext);
+                        tenant.EnsureProperty(t => t.RootSiteUrl);
+
+                        // If we've got access to the tenant admin context, 
+                        // it means that the currently connecte user is an admin
+                        return (true);
+                    }
+                }
+                catch
+                {
+                    // In case of any connection exception, the user is not an admin
+                    return (false);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Enable Comm Site
+
+        private static readonly Guid COMMSITEDESIGNPACKAGEID = new Guid("d604dac3-50d3-405e-9ab9-d4713cda74ef");
+        /// <summary>
+        /// Enable communication site on the root site of a tenant
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
+        /// <param name="siteUrl">Root site url of your tenant</param>
+        public static void EnableCommSite(this Tenant tenant, string siteUrl = "")
+        {
+            if (string.IsNullOrWhiteSpace(siteUrl))
+            {
+                var rootUrl = tenant.GetRootSiteUrl();
+                tenant.Context.ExecuteQueryRetry();
+                siteUrl = rootUrl.Value;
+            }
+            tenant.EnableCommSite(siteUrl, COMMSITEDESIGNPACKAGEID);
             tenant.Context.ExecuteQueryRetry();
         }
         #endregion
@@ -1000,7 +1075,7 @@ namespace Microsoft.SharePoint.Client
 
 #if !ONPREMISES || SP2019
 
-#region ClientSide Package Deployment
+        #region ClientSide Package Deployment
 
         /// <summary>
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
@@ -1018,10 +1093,10 @@ namespace Microsoft.SharePoint.Client
 
             return null;
         }
-#endregion
+        #endregion
 
 #endif
-#region Utilities
+        #region Utilities
 
 #if !ONPREMISES
         public static string GetTenantIdByUrl(string tenantUrl)
@@ -1061,7 +1136,7 @@ namespace Microsoft.SharePoint.Client
             return index != -1 ? originalString.Substring(prefix.Length, index - prefix.Length) : null;
         }
 
-#endregion
+        #endregion
 
     }
 }

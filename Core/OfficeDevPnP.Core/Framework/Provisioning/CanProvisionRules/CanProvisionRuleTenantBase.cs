@@ -31,5 +31,44 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules
             // By default everything can be provisioned
             return (new CanProvisionResult { CanProvision = true, Issues = null });
         }
+
+        protected CanProvisionResult EvaluateSiteRule<CanProvisionRuleSite>(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation)
+            where CanProvisionRuleSite: CanProvisionRuleSiteBase
+        {
+            // Prepare the default output
+            var result = new CanProvisionResult();
+
+            // Target the root site collection
+            tenant.EnsureProperty(t => t.RootSiteUrl);
+
+            // Connect to the root site collection
+            using (var context = tenant.Context.Clone(tenant.RootSiteUrl))
+            {
+                // Evaluate the corresponding Site rule
+                var innerRule = Activator.CreateInstance(typeof(CanProvisionRuleSite)) as CanProvisionRuleSiteBase;
+
+                Model.ProvisioningTemplate dummyTemplate = null;
+
+                // If we don't have templates
+                if (hierarchy.Templates.Count == 0)
+                {
+                    dummyTemplate = new Model.ProvisioningTemplate();
+                    dummyTemplate.Id = $"DUMMY-{Guid.NewGuid()}";
+                    hierarchy.Templates.Add(dummyTemplate);
+                }
+
+                // Invoke the Site level rule
+                result = innerRule.CanProvision(context.Web, hierarchy.Templates[0], applyingInformation);
+
+                if (dummyTemplate != null)
+                {
+                    // Remove the dummy template, if any
+                    hierarchy.Templates.Remove(dummyTemplate);
+                }
+            }
+
+            return (result);
+
+        }
     }
 }
