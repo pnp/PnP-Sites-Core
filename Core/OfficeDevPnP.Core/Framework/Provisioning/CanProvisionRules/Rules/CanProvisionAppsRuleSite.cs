@@ -16,14 +16,51 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
     {
         public override CanProvisionResult CanProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-
             // Prepare the default output
             var result = new CanProvisionResult();
+
 #if !ONPREMISES
-            // Verify if we need the App Catalog (i.e. the template contains apps or packages)
-            if ((template.ApplicationLifecycleManagement?.Apps != null && template.ApplicationLifecycleManagement?.Apps?.Count > 0) ||
-                template.ApplicationLifecycleManagement?.AppCatalog != null)
+
+            Model.ProvisioningTemplate targetTemplate = null;
+
+            if (template.ParentHierarchy != null)
             {
+                // If we have a hierarchy, search for a template with ALM settings, if any
+                targetTemplate = template.ParentHierarchy.Templates.FirstOrDefault(t => t.ApplicationLifecycleManagement.Apps.Count > 0 ||
+                    (t.ApplicationLifecycleManagement.AppCatalog != null && t.ApplicationLifecycleManagement.AppCatalog.Packages.Count > 0));
+
+                if (targetTemplate == null)
+                {
+                    // or use the first in the hierarchy
+                    targetTemplate = template.ParentHierarchy.Templates[0];
+                }
+            }
+            else
+            {
+                // Otherwise, use the provided template
+                targetTemplate = template;
+            }
+
+            // Verify if we need the App Catalog (i.e. the template contains apps or packages)
+            if ((targetTemplate.ApplicationLifecycleManagement?.Apps != null && targetTemplate.ApplicationLifecycleManagement?.Apps?.Count > 0) ||
+                targetTemplate.ApplicationLifecycleManagement?.AppCatalog != null ||
+                (targetTemplate.ParentHierarchy != null && targetTemplate.ParentHierarchy?.Tenant?.AppCatalog != null &&
+                targetTemplate.ParentHierarchy?.Tenant?.AppCatalog?.Packages != null && targetTemplate.ParentHierarchy?.Tenant?.AppCatalog?.Packages.Count > 0))
+            {
+                // First of all check if the currently connected user is a Tenant Admin
+                if (!TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext))
+                {
+                    result.CanProvision = false;
+                    result.Issues.Add(new CanProvisionIssue()
+                    {
+                        Source = this.Name,
+                        Tag = CanProvisionIssueTags.USER_IS_NOT_TENANT_ADMIN,
+                        Message = CanProvisionIssuesMessages.User_Is_Not_Tenant_Admin,
+                        ExceptionMessage = null, // Here we don't have any specific exception
+                        ExceptionStackTrace = null, // Here we don't have any specific exception
+                    });
+                }
+
                 using (var scope = new PnPMonitoredScope(this.Name))
                 {
                     // Try to access the AppCatalog
@@ -36,8 +73,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                         {
                             Source = this.Name,
                             Tag = CanProvisionIssueTags.MISSING_APP_CATALOG,
-                            Message = "The template cannote be provisioned because the target environment is missing the tenant AppCatalog!", // TODO: Consider using resource strings
-                            InnerException = null, // Here we don't have any specific exception
+                            Message = CanProvisionIssuesMessages.Missing_App_Catalog,
+                            ExceptionMessage = null, // Here we don't have any specific exception
+                            ExceptionStackTrace = null, // Here we don't have any specific exception
                         });
                     }
                 }

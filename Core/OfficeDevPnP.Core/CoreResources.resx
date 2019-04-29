@@ -1135,6 +1135,9 @@
   <data name="Provisioning_ObjectHandlers_Teams_TeamTemplate_FetchingError" xml:space="preserve">
     <value>Failed to get team information after provisioning.</value>
   </data>
+  <data name="TermGroup_No_Access" xml:space="preserve">
+    <value>Login context does not have access to the TermGroup. If using app context, add app@sharepoint to the term group access list.</value>
+  </data>
   <data name="Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1" xml:space="preserve">
     <value>Added property bag entry {0} to list {1}</value>
   </data>
