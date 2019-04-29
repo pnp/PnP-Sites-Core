@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Added support for setting owners and hubsite id in GroupifySite [gautamdsheth]
 - Allow fileuniqueid in NavigationNodes for Group OneNote Url #2150 [czullu]
 - fixing client side page existence check sometimes flags page as existing although it isn't #2185 [heinrich-ulbricht]
 - Fix loading of ClientSidePage contents if CanvasContent1 property is empty #2199 [heinrich-ulbricht]
