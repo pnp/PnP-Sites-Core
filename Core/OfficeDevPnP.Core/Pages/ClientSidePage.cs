@@ -709,7 +709,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             var pageHeaderHtml = "";
-            if (this.pageHeader != null && this.pageHeader.Type != ClientSidePageHeaderType.None)
+            if (this.pageHeader != null && this.pageHeader.Type != ClientSidePageHeaderType.None && this.LayoutType != ClientSidePageLayoutType.RepostPage)
             {
                 // this triggers resolving of the header image which has to be done early as otherwise there will be version conflicts
                 // (see here: https://github.com/SharePoint/PnP-Sites-Core/issues/2203)

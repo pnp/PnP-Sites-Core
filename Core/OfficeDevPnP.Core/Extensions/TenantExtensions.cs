@@ -938,9 +938,18 @@ namespace Microsoft.SharePoint.Client
             {
                 optionalParams.Classification = siteCollectionGroupifyInformation.Classification;
             }
+
+            var creationOptionsValues = new List<string>();
             if (siteCollectionGroupifyInformation.KeepOldHomePage)
             {
-                optionalParams.CreationOptions = new string[] { "SharePointKeepOldHomepage" };
+                creationOptionsValues.Add("SharePointKeepOldHomepage");
+            }
+            creationOptionsValues.Add($"HubSiteId:{siteCollectionGroupifyInformation.HubSiteId}");
+            optionalParams.CreationOptions = creationOptionsValues.ToArray();
+
+            if (siteCollectionGroupifyInformation.Owners != null && siteCollectionGroupifyInformation.Owners.Length > 0)
+            {
+                optionalParams.Owners = siteCollectionGroupifyInformation.Owners;
             }
 
             tenant.CreateGroupForSite(siteUrl, siteCollectionGroupifyInformation.DisplayName, siteCollectionGroupifyInformation.Alias, siteCollectionGroupifyInformation.IsPublic, optionalParams);
@@ -989,7 +998,28 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
-        
+
+        #endregion
+
+        #region Enable Comm Site
+
+        private static readonly Guid COMMSITEDESIGNPACKAGEID = new Guid("d604dac3-50d3-405e-9ab9-d4713cda74ef");
+        /// <summary>
+        /// Enable communication site on the root site of a tenant
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
+        /// <param name="siteUrl">Root site url of your tenant</param>
+        public static void EnableCommSite(this Tenant tenant, string siteUrl = "")
+        {
+            if (string.IsNullOrWhiteSpace(siteUrl))
+            {
+                var rootUrl = tenant.GetRootSiteUrl();
+                tenant.Context.ExecuteQueryRetry();
+                siteUrl = rootUrl.Value;
+            }
+            tenant.EnableCommSite(siteUrl, COMMSITEDESIGNPACKAGEID);
+            tenant.Context.ExecuteQueryRetry();
+        }
         #endregion
 
 #else
@@ -1063,10 +1093,10 @@ namespace Microsoft.SharePoint.Client
 
             return null;
         }
-#endregion
+        #endregion
 
 #endif
-#region Utilities
+        #region Utilities
 
 #if !ONPREMISES
         public static string GetTenantIdByUrl(string tenantUrl)
@@ -1106,7 +1136,7 @@ namespace Microsoft.SharePoint.Client
             return index != -1 ? originalString.Substring(prefix.Length, index - prefix.Length) : null;
         }
 
-#endregion
+        #endregion
 
     }
 }
