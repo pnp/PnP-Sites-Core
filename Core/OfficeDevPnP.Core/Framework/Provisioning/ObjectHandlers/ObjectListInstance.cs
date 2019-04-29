@@ -539,7 +539,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 					list.SiteList.RemoveIndexedPropertyBagKey(parsedKey);
 				}
 			}
-			scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1, p.Key, list.SiteList.Title);
+			scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1, parsedKey, list.SiteList.Title);
 		}
 	}
 }
