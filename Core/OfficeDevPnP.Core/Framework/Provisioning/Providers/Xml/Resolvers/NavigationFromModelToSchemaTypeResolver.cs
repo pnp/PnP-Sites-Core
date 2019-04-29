@@ -50,31 +50,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                     case "GlobalNavigation":
                         navigation = modelSource.GlobalNavigation;
 
-                        target = Activator.CreateInstance(globalNavigationType);
-                        target.SetPublicInstancePropertyValue("NavigationType", Enum.Parse(globalNavigationTypeType, modelSource.GlobalNavigation.NavigationType.ToString()));
-
-                        switch (modelSource.GlobalNavigation.NavigationType)
+                        if (navigation != null)
                         {
-                            case Model.GlobalNavigationType.Managed:
-                                var managedNavigation = Activator.CreateInstance(managedNavigationType);
+                            target = Activator.CreateInstance(globalNavigationType);
+                            target.SetPublicInstancePropertyValue("NavigationType", Enum.Parse(globalNavigationTypeType, modelSource.GlobalNavigation.NavigationType.ToString()));
 
-                                PnPObjectsMapper.MapProperties(modelSource.GlobalNavigation.ManagedNavigation, managedNavigation, resolvers, true);
-                                target.SetPublicInstancePropertyValue("ManagedNavigation", managedNavigation);
+                            switch (modelSource.GlobalNavigation.NavigationType)
+                            {
+                                case Model.GlobalNavigationType.Managed:
+                                    var managedNavigation = Activator.CreateInstance(managedNavigationType);
 
-                                break;
-                            case Model.GlobalNavigationType.Structural:
-                                var structuralNavigation = Activator.CreateInstance(structuralNavigationType);
+                                    PnPObjectsMapper.MapProperties(modelSource.GlobalNavigation.ManagedNavigation, managedNavigation, resolvers, true);
+                                    target.SetPublicInstancePropertyValue("ManagedNavigation", managedNavigation);
 
-                                if (!resolvers.ContainsKey($"{structuralNavigation.GetType().FullName}.NavigationNode"))
-                                {
-                                    resolvers.Add($"{structuralNavigation.GetType().FullName}.NavigationNode", new NavigationNodeFromModelToSchemaTypeResolver());
-                                }
-                                PnPObjectsMapper.MapProperties(modelSource.GlobalNavigation.StructuralNavigation, structuralNavigation, resolvers, true);
-                                target.SetPublicInstancePropertyValue("StructuralNavigation", structuralNavigation);
+                                    break;
+                                case Model.GlobalNavigationType.Structural:
+                                    var structuralNavigation = Activator.CreateInstance(structuralNavigationType);
 
-                                break;
-                            case Model.GlobalNavigationType.Inherit:
-                                break;
+                                    if (!resolvers.ContainsKey($"{structuralNavigation.GetType().FullName}.NavigationNode"))
+                                    {
+                                        resolvers.Add($"{structuralNavigation.GetType().FullName}.NavigationNode", new NavigationNodeFromModelToSchemaTypeResolver());
+                                    }
+                                    PnPObjectsMapper.MapProperties(modelSource.GlobalNavigation.StructuralNavigation, structuralNavigation, resolvers, true);
+                                    target.SetPublicInstancePropertyValue("StructuralNavigation", structuralNavigation);
+
+                                    break;
+                                case Model.GlobalNavigationType.Inherit:
+                                    break;
+                            } 
                         }
 
                         break;
