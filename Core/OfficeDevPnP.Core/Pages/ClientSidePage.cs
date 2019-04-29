@@ -329,6 +329,21 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         /// <param name="template">The <see cref="CanvasSectionTemplate"/> type of the section</param>
         /// <param name="order">Controls the order of the new section</param>
+        /// <param name="zoneEmphasis">Zone emphasis (section background)</param>
+        public void AddSection(CanvasSectionTemplate template, float order, int zoneEmphasis)
+        {
+            var section = new CanvasSection(this, template, order)
+            {
+                ZoneEmphasis = zoneEmphasis
+            };
+            AddSection(section);
+        }
+
+        /// <summary>
+        /// Adds a new section to your client side page
+        /// </summary>
+        /// <param name="template">The <see cref="CanvasSectionTemplate"/> type of the section</param>
+        /// <param name="order">Controls the order of the new section</param>
         public void AddSection(CanvasSectionTemplate template, float order)
         {
             var section = new CanvasSection(this, template, order);
@@ -633,13 +648,15 @@ namespace OfficeDevPnP.Core.Pages
                     throw new Exception($"Page layout type could not be determined for page {pageName}");
                 }
 
+                // default canvas content for an empty page (this field contains the page's web part properties)
+                var canvasContent1Html = @"<div><div data-sp-canvascontrol="""" data-sp-canvasdataversion=""1.0"" data-sp-controldata=""&#123;&quot;controlType&quot;&#58;0,&quot;pageSettingsSlice&quot;&#58;&#123;&quot;isDefaultDescription&quot;&#58;true,&quot;isDefaultThumbnail&quot;&#58;true&#125;&#125;""></div></div>";
                 // If the canvasfield1 field is present and filled then let's parse it
                 if (item.FieldValues.ContainsKey(ClientSidePage.CanvasField) && !(item[ClientSidePage.CanvasField] == null || string.IsNullOrEmpty(item[ClientSidePage.CanvasField].ToString())))
                 {
-                    var html = item[ClientSidePage.CanvasField].ToString();
-                    var pageHeaderHtml = item[ClientSidePage.PageLayoutContentField] != null ? item[ClientSidePage.PageLayoutContentField].ToString() : "";
-                    page.LoadFromHtml(html, pageHeaderHtml);
+                    canvasContent1Html = item[ClientSidePage.CanvasField].ToString();
                 }
+                var pageHeaderHtml = item[ClientSidePage.PageLayoutContentField] != null ? item[ClientSidePage.PageLayoutContentField].ToString() : "";
+                page.LoadFromHtml(canvasContent1Html, pageHeaderHtml);
             }
             else
             {
@@ -689,6 +706,14 @@ namespace OfficeDevPnP.Core.Pages
             if (!string.IsNullOrEmpty(pageName) && pageName.StartsWith("/"))
             {
                 pageName = pageName.Substring(1);
+            }
+
+            var pageHeaderHtml = "";
+            if (this.pageHeader != null && this.pageHeader.Type != ClientSidePageHeaderType.None && this.LayoutType != ClientSidePageLayoutType.RepostPage)
+            {
+                // this triggers resolving of the header image which has to be done early as otherwise there will be version conflicts
+                // (see here: https://github.com/SharePoint/PnP-Sites-Core/issues/2203)
+                pageHeaderHtml = this.pageHeader.ToHtml(this.PageTitle);
             }
 
             // Try to load the page
@@ -758,7 +783,7 @@ namespace OfficeDevPnP.Core.Pages
             {
                 item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.RepostPage;
                 item[ClientSidePage.CanvasField] = "";
-                item[ClientSidePage.PageLayoutContentField] = "";                
+                item[ClientSidePage.PageLayoutContentField] = "";
                 item.Update();
                 this.Context.Web.Context.Load(item);
                 this.Context.ExecuteQueryRetry();
@@ -799,7 +824,7 @@ namespace OfficeDevPnP.Core.Pages
             }
             else
             {
-                item[ClientSidePage.PageLayoutContentField] = this.pageHeader.ToHtml(this.pageTitle);
+                item[ClientSidePage.PageLayoutContentField] = pageHeaderHtml;
 
 #if !SP2019
                 // AuthorByline depends on a field holding the author values
@@ -878,7 +903,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
             }
 
-            if(item[ClientSidePage.PageLayoutType] as string != this.layoutType.ToString())
+            if (item[ClientSidePage.PageLayoutType] as string != this.layoutType.ToString())
             {
                 item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
                 isDirty = true;
@@ -1330,9 +1355,9 @@ namespace OfficeDevPnP.Core.Pages
                 TranslateY = translateY
             };
         }
-#endregion
+        #endregion
 
-#region Internal and private methods
+        #region Internal and private methods
         private void EnableCommentsImplementation(bool enable)
         {
             // ensure we do have the page list item loaded
@@ -1489,7 +1514,7 @@ namespace OfficeDevPnP.Core.Pages
                         {
                             if (sectionData.Position != null)
                             {
-                                this.AddSection(new CanvasSection(this) { ZoneEmphasis = sectionData.Emphasis != null ? sectionData.Emphasis.ZoneEmphasis : 0}, sectionData.Position.ZoneIndex);
+                                this.AddSection(new CanvasSection(this) { ZoneEmphasis = sectionData.Emphasis != null ? sectionData.Emphasis.ZoneEmphasis : 0 }, sectionData.Position.ZoneIndex);
                                 currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).First();
                             }
                         }
@@ -1576,7 +1601,7 @@ namespace OfficeDevPnP.Core.Pages
             var currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).FirstOrDefault();
             if (currentSection == null)
             {
-                this.AddSection(new CanvasSection(this) { ZoneEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0}, position.ZoneIndex);
+                this.AddSection(new CanvasSection(this) { ZoneEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0 }, position.ZoneIndex);
                 currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).First();
             }
 
@@ -1674,7 +1699,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
         }
-                #endregion
+        #endregion
     }
 #endif
-            }
+}
