@@ -205,8 +205,8 @@
       </pnp:AuditSettings>
 
       <pnp:PropertyBagEntries>
-        <pnp:PropertyBagEntry Key="KEY1" Value ="value1" Overwrite="true" />
-        <pnp:PropertyBagEntry Key="KEY2" Value ="value2" />
+        <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="true" />
+        <pnp:PropertyBagEntry Key="KEY2" Value="value2" Indexed="true" />
       </pnp:PropertyBagEntries>
 
       <pnp:Security BreakRoleInheritance="true"
@@ -243,6 +243,20 @@
               <pnp:User Name="user1@contoso.com" />
               <pnp:User Name="user2@contoso.com" />
               <pnp:User Name="user3@contoso.com" />
+            </pnp:Members>
+          </pnp:SiteGroup>
+          <pnp:SiteGroup
+            AllowMembersEditMembership="true"
+            AllowRequestToJoinLeave="true"
+            AutoAcceptRequestToJoinLeave="true"
+            Description="Test Group 1"
+            OnlyAllowMembersViewMembership="true"
+            Owner="user1@contoso.com"
+            RequestToJoinLeaveEmailSetting="group1@contoso.com"
+            Title="TestGroup1">
+            <pnp:Members>
+              <pnp:User Name="user1@contoso.com"/>
+              <pnp:User Name="user2@contoso.com"/>
             </pnp:Members>
           </pnp:SiteGroup>
         </pnp:SiteGroups>

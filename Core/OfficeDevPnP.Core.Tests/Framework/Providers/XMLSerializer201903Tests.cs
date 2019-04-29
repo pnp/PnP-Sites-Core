@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Security;
 using System.Xml.Linq;
+using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory;
@@ -11,15 +12,27 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model.Teams;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903;
 using OfficeDevPnP.Core.Utilities;
+using App = OfficeDevPnP.Core.Framework.Provisioning.Model.App;
+using CalendarType = Microsoft.SharePoint.Client.CalendarType;
+using DayOfWeek = System.DayOfWeek;
 using File = System.IO.File;
 using ProvisioningTemplate = OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate;
 using TeamTemplate = OfficeDevPnP.Core.Framework.Provisioning.Model.Teams.TeamTemplate;
+using WorkHour = OfficeDevPnP.Core.Framework.Provisioning.Model.WorkHour;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Providers
 {
     /// <summary>
     /// Covers below objects:
     /// ProvisioningTemplate:
+    ///     Properties
+    ///     SitePolicy
+    ///     WebSettings 
+    ///     RegionalSettings
+    ///     SupportedUILanguages
+    ///     AuditSettings
+    ///     PropertyBagEntries
+    ///     Security
     ///     ALM
     ///     Header
     ///     Footer
@@ -28,9 +41,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     ///     TeamTemplate
     ///     Team
     ///     Apps
-    /// AzureActiveDirectory
+    /// AzureActiveDirectory:
     ///     Users
-    /// Tenant
+    /// Tenant:
     ///     AppCatalog
     ///     WebApiPermissions
     ///     ContentDeliveryNetwork
@@ -65,7 +78,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_Apps()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var serializer = new XMLPnPSchemaV201903Serializer();
             var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
@@ -82,7 +95,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Serialize_Apps()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var result = new ProvisioningTemplate();
 
@@ -130,7 +143,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_SiteHeader()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var serializer = new XMLPnPSchemaV201903Serializer();
             var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
@@ -144,7 +157,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Serialize_SiteHeader()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var result = new ProvisioningTemplate
             {
@@ -176,7 +189,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_SiteFooter()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var serializer = new XMLPnPSchemaV201903Serializer();
             var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
@@ -199,7 +212,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Serialize_SiteFooter()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var result = new ProvisioningTemplate
             {
@@ -263,7 +276,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_AppCatalog()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var serializer = new XMLPnPSchemaV201903Serializer();
             var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
@@ -289,7 +302,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Serialize_AppCatalog()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var result = new ProvisioningTemplate();
 
@@ -344,7 +357,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_ProvisioningTemplateWebhook()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var serializer = new XMLPnPSchemaV201903Serializer();
             var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
@@ -365,7 +378,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Serialize_ProvisioningTemplateWebhook()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var result = new ProvisioningTemplate();
 
@@ -426,7 +439,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_TeamTemplate()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
             var teamsTemplate = hierarchy.Teams.TeamTemplates;
@@ -443,7 +456,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Serialize_TeamTemplate()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
 
@@ -480,7 +493,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_Team()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
             var teams = hierarchy.Teams.Teams;
@@ -559,7 +572,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Serialize_Team()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
 
@@ -761,7 +774,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_TeamApps()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
             var apps = hierarchy.Teams.Apps;
@@ -775,7 +788,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Serialize_TeamApps()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
 
@@ -804,7 +817,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_AzureAD()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
             var users = hierarchy.AzureActiveDirectory.Users;
@@ -833,7 +846,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Serialize_AzureAD()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var passWord = new SecureString();
             foreach (char c in "Pass@w0rd") passWord.AppendChar(c);
@@ -897,7 +910,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_Tenant_AppCatalog()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
             var appCatalog = hierarchy.Tenant.AppCatalog;
@@ -915,7 +928,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Seserialize_Tenant_AppCatalog()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var passWord = new SecureString();
             foreach (char c in "Pass@w0rd") passWord.AppendChar(c);
@@ -960,7 +973,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_Tenant_WebApiPermissions()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
             var apiPermission = hierarchy.Tenant.WebApiPermissions;
@@ -973,7 +986,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Seserialize_Tenant_WebApiPermissions()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var passWord = new SecureString();
             foreach (char c in "Pass@w0rd") passWord.AppendChar(c);
@@ -1006,7 +1019,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_Tenant_ContentDeliveryNetwork()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
             var cdn = hierarchy.Tenant.ContentDeliveryNetwork;
@@ -1031,7 +1044,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Seserialize_Tenant_ContentDeliveryNetwork()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var passWord = new SecureString();
             foreach (char c in "Pass@w0rd") passWord.AppendChar(c);
@@ -1083,7 +1096,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_Tenant_SiteDesigns()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
             var siteDesigns = hierarchy.Tenant.SiteDesigns;
@@ -1107,7 +1120,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Seserialize_Tenant_SiteDesigns()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var passWord = new SecureString();
             foreach (char c in "Pass@w0rd") passWord.AppendChar(c);
@@ -1125,7 +1138,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 PreviewImageAltText = "PnP Site Design Preview",
                 PreviewImageUrl = "PnPSiteDesign.png",
                 Title = "PnP Site Design",
-                WebTemplate = (SiteDesignWebTemplate)1, // xml serializer requires different numbers for web template
+                WebTemplate = SiteDesignWebTemplate.CommunicationSite,
                 Grants =
                 {
                     new SiteDesignGrant
@@ -1164,7 +1177,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_Tenant_SiteScripts()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
             var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
             var siteScripts = hierarchy.Tenant.SiteScripts;
 
@@ -1179,7 +1192,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Seserialize_Tenant_SiteScripts()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var passWord = new SecureString();
             foreach (char c in "Pass@w0rd") passWord.AppendChar(c);
@@ -1225,22 +1238,22 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_Tenant_StorageEntities()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
             var storageEntities = hierarchy.Tenant.StorageEntities;
 
-           Assert.AreEqual("Description 01", storageEntities[0].Description);
-           Assert.AreEqual("Comment 01", storageEntities[0].Comment);
-           Assert.AreEqual("PnPKey01", storageEntities[0].Key);
-           Assert.AreEqual("My custom tenant-wide value 01", storageEntities[0].Value);
+            Assert.AreEqual("Description 01", storageEntities[0].Description);
+            Assert.AreEqual("Comment 01", storageEntities[0].Comment);
+            Assert.AreEqual("PnPKey01", storageEntities[0].Key);
+            Assert.AreEqual("My custom tenant-wide value 01", storageEntities[0].Value);
         }
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Seserialize_Tenant_StorageEntities()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var passWord = new SecureString();
             foreach (char c in "Pass@w0rd") passWord.AppendChar(c);
@@ -1277,7 +1290,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_Tenant_Themes()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
             var themes = hierarchy.Tenant.Themes;
@@ -1292,7 +1305,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Seserialize_Tenant_Themes()
         {
-            var provider = new XMLFileSystemTemplateProvider(String.Format(@"{0}\..\..\Resources", AppDomain.CurrentDomain.BaseDirectory), "Templates");
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var passWord = new SecureString();
             foreach (char c in "Pass@w0rd") passWord.AppendChar(c);
@@ -1321,6 +1334,688 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(false, themes[0].IsInverted);
             Assert.AreEqual("CustomOrange", themes[0].Name);
             Assert.IsTrue(themes[0].Text[0].Contains("\"neutralQuaternaryAlt\": \"#dadada\""));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Properties()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+            var properties = template.Properties;
+
+            Assert.IsTrue(properties.ContainsKey("Something"));
+            Assert.AreEqual("One property", properties["Something"]);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Properties()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.Properties.Add("Something", "One property");
+
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            var properties = template.Properties;
+
+            Assert.IsTrue(properties.Where(p => p.Key.Equals("Something")).Count() == 1);
+            Assert.AreEqual("One property", properties.Single(p => p.Key.Equals("Something")).Value);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_SitePolicy()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+            var sitePolicy = template.SitePolicy;
+
+            Assert.AreEqual("HBI", sitePolicy);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_SitePolicy()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate { SitePolicy = "HBI" };
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            var sitePolicy = template.SitePolicy;
+
+            Assert.AreEqual("HBI", sitePolicy);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_WebSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+            var webSettings = template.WebSettings;
+
+            Assert.AreEqual("someone@company.com", webSettings.RequestAccessEmail);
+            Assert.AreEqual(false, webSettings.NoCrawl);
+            Assert.AreEqual("/Pages/Home.aspx", webSettings.WelcomePage);
+            Assert.AreEqual("Site Title", webSettings.Title);
+            Assert.AreEqual("Site Description", webSettings.Description);
+            Assert.AreEqual("{sitecollection}/SiteAssets/Logo.png", webSettings.SiteLogo);
+            Assert.AreEqual("{sitecollection}/Resources/Themes/Contoso/Contoso.css", webSettings.AlternateCSS);
+            Assert.AreEqual("{sitecollection}/_catalogs/MasterPage/oslo.master", webSettings.MasterPageUrl);
+            Assert.AreEqual("{sitecollection}/_catalogs/MasterPage/CustomMaster.master", webSettings.CustomMasterPageUrl);
+            Assert.AreEqual("/sites/hubsite", webSettings.HubSiteUrl);
+            Assert.AreEqual(false, webSettings.CommentsOnSitePagesDisabled);
+            Assert.AreEqual(true, webSettings.QuickLaunchEnabled);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_WebSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate
+            {
+                WebSettings = new Core.Framework.Provisioning.Model.WebSettings
+                {
+                    RequestAccessEmail = "someone@company.com",
+                    NoCrawl = false,
+                    WelcomePage = "/Pages/Home.aspx",
+                    Title = "Site Title",
+                    Description = "Site Description",
+                    SiteLogo = "{sitecollection}/SiteAssets/Logo.png",
+                    AlternateCSS = "{sitecollection}/Resources/Themes/Contoso/Contoso.css",
+                    MasterPageUrl = "{sitecollection}/_catalogs/MasterPage/oslo.master",
+                    CustomMasterPageUrl = "{sitecollection}/_catalogs/MasterPage/CustomMaster.master",
+                    HubSiteUrl = "/sites/hubsite",
+                    CommentsOnSitePagesDisabled = false,
+                    QuickLaunchEnabled = true
+                }
+            };
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            var webSettings = template.WebSettings;
+
+            Assert.AreEqual("someone@company.com", webSettings.RequestAccessEmail);
+            Assert.AreEqual(false, webSettings.NoCrawl);
+            Assert.AreEqual("/Pages/Home.aspx", webSettings.WelcomePage);
+            Assert.AreEqual("Site Title", webSettings.Title);
+            Assert.AreEqual("Site Description", webSettings.Description);
+            Assert.AreEqual("{sitecollection}/SiteAssets/Logo.png", webSettings.SiteLogo);
+            Assert.AreEqual("{sitecollection}/Resources/Themes/Contoso/Contoso.css", webSettings.AlternateCSS);
+            Assert.AreEqual("{sitecollection}/_catalogs/MasterPage/oslo.master", webSettings.MasterPageUrl);
+            Assert.AreEqual("{sitecollection}/_catalogs/MasterPage/CustomMaster.master", webSettings.CustomMasterPageUrl);
+            Assert.AreEqual("/sites/hubsite", webSettings.HubSiteUrl);
+            Assert.AreEqual(false, webSettings.CommentsOnSitePagesDisabled);
+            Assert.AreEqual(true, webSettings.QuickLaunchEnabled);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_RegionalSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+            var regionalSettings = template.RegionalSettings;
+
+            Assert.AreEqual(1, regionalSettings.AdjustHijriDays);
+            Assert.AreEqual(CalendarType.ChineseLunar, regionalSettings.AlternateCalendarType);
+            Assert.AreEqual(CalendarType.Hebrew, regionalSettings.CalendarType);
+            Assert.AreEqual(5, regionalSettings.Collation);
+            Assert.AreEqual(DayOfWeek.Sunday, regionalSettings.FirstDayOfWeek);
+            Assert.AreEqual(1, regionalSettings.FirstWeekOfYear);
+            Assert.AreEqual(1040, regionalSettings.LocaleId);
+            Assert.AreEqual(true, regionalSettings.ShowWeeks);
+            Assert.AreEqual(true, regionalSettings.Time24);
+            Assert.AreEqual(4, regionalSettings.TimeZone);
+            Assert.AreEqual(WorkHour.PM0500, regionalSettings.WorkDayEndHour);
+            Assert.AreEqual(WorkHour.AM0900, regionalSettings.WorkDayStartHour);
+            Assert.AreEqual(62, regionalSettings.WorkDays);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_RegionalSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate
+            {
+                RegionalSettings = new Core.Framework.Provisioning.Model.RegionalSettings
+                {
+                    AdjustHijriDays = 1,
+                    AlternateCalendarType = CalendarType.ChineseLunar,
+                    CalendarType = CalendarType.Hebrew,
+                    Collation = 5,
+                    FirstDayOfWeek = DayOfWeek.Sunday,
+                    FirstWeekOfYear = 1,
+                    LocaleId = 1040,
+                    ShowWeeks = true,
+                    Time24 = true,
+                    TimeZone = 4,
+                    WorkDayEndHour = WorkHour.PM0500,
+                    WorkDayStartHour = WorkHour.AM0900,
+                    WorkDays = 62
+                }
+            };
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            var regionalSettings = template.RegionalSettings;
+
+            Assert.AreEqual(1, regionalSettings.AdjustHijriDays);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.CalendarType.ChineseLunar, regionalSettings.AlternateCalendarType);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.CalendarType.Hebrew, regionalSettings.CalendarType);
+            Assert.AreEqual(5, regionalSettings.Collation);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.DayOfWeek.Sunday, regionalSettings.FirstDayOfWeek);
+            Assert.AreEqual(1, regionalSettings.FirstWeekOfYear);
+            Assert.AreEqual(1040, regionalSettings.LocaleId);
+            Assert.AreEqual(true, regionalSettings.ShowWeeks);
+            Assert.AreEqual(true, regionalSettings.Time24);
+            Assert.AreEqual("4", regionalSettings.TimeZone);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.WorkHour.Item500PM, regionalSettings.WorkDayEndHour);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.WorkHour.Item900AM, regionalSettings.WorkDayStartHour);
+            Assert.AreEqual(62, regionalSettings.WorkDays);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_SupportedUILanguages()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+            var supportedUiLanguages = template.SupportedUILanguages;
+
+            Assert.AreEqual(3, supportedUiLanguages.Count);
+            Assert.AreEqual(1033, supportedUiLanguages[0].LCID);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_SupportedUILanguages()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate();
+            result.SupportedUILanguages.Add(new SupportedUILanguage
+            {
+                LCID = 1033
+            });
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            var supportedUiLanguages = template.SupportedUILanguages;
+
+            Assert.AreEqual(1, supportedUiLanguages.Count());
+            Assert.AreEqual(1033, supportedUiLanguages[0].LCID);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_AuditSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+            var auditSettings = template.AuditSettings;
+
+            Assert.AreEqual(50, auditSettings.AuditLogTrimmingRetention);
+            Assert.AreEqual(true, auditSettings.TrimAuditLog);
+            Assert.AreEqual(AuditMaskType.CheckIn | AuditMaskType.CheckOut | AuditMaskType.Update | AuditMaskType.View, auditSettings.AuditFlags);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_AuditSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate
+            {
+                AuditSettings = new Core.Framework.Provisioning.Model.AuditSettings
+                {
+                    TrimAuditLog = true,
+                    AuditLogTrimmingRetention = 50,
+                    AuditFlags = AuditMaskType.CheckIn | AuditMaskType.CheckOut | AuditMaskType.Update |
+                                 AuditMaskType.View
+                }
+            };
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            var auditSettings = template.AuditSettings;
+
+            Assert.AreEqual(50, auditSettings.AuditLogTrimmingRetention);
+            Assert.AreEqual(true, auditSettings.TrimAuditLog);
+            Assert.IsTrue(auditSettings.Audit.SingleOrDefault(a => a.AuditFlag == AuditSettingsAuditAuditFlag.CheckIn) != null);
+            Assert.IsTrue(auditSettings.Audit.SingleOrDefault(a => a.AuditFlag == AuditSettingsAuditAuditFlag.CheckOut) != null);
+            Assert.IsTrue(auditSettings.Audit.SingleOrDefault(a => a.AuditFlag == AuditSettingsAuditAuditFlag.Update) != null);
+            Assert.IsTrue(auditSettings.Audit.SingleOrDefault(a => a.AuditFlag == AuditSettingsAuditAuditFlag.View) != null);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_PropertyBagEntries()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+            var propertyBagEntries = template.PropertyBagEntries;
+
+            Assert.AreEqual(true, propertyBagEntries[0].Overwrite);
+            Assert.AreEqual("KEY1", propertyBagEntries[0].Key);
+            Assert.AreEqual("value1", propertyBagEntries[0].Value);
+            Assert.AreEqual(true, propertyBagEntries[1].Indexed);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_PropertyBagEntries()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate();
+            result.PropertyBagEntries.Add(new Core.Framework.Provisioning.Model.PropertyBagEntry
+            {
+                Overwrite = true,
+                Key = "KEY1",
+                Value = "value1"
+            });
+            result.PropertyBagEntries.Add(new Core.Framework.Provisioning.Model.PropertyBagEntry
+            {
+                Indexed = true,
+                Key = "KEY2",
+                Value = "value2"
+            });
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            var propertyBagEntries = template.PropertyBagEntries;
+
+            Assert.AreEqual(true, propertyBagEntries[0].Overwrite);
+            Assert.AreEqual("KEY1", propertyBagEntries[0].Key);
+            Assert.AreEqual("value1", propertyBagEntries[0].Value);
+            Assert.AreEqual(true, propertyBagEntries[1].Indexed);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Security()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+            var security = template.Security;
+
+            // security common properties
+            Assert.IsNotNull(security);
+            Assert.IsTrue(security.BreakRoleInheritance);
+            Assert.IsTrue(security.ClearSubscopes);
+            Assert.IsFalse(security.CopyRoleAssignments);
+            Assert.AreEqual("Test Value", security.AssociatedGroups);
+            Assert.AreEqual("{parameter:AssociatedMemberGroup}", security.AssociatedMemberGroup);
+            Assert.AreEqual("{parameter:AssociatedOwnerGroup}", security.AssociatedOwnerGroup);
+            Assert.AreEqual("{parameter:AssociatedVisitorGroup}", security.AssociatedVisitorGroup);
+            Assert.AreEqual(true, security.RemoveExistingUniqueRoleAssignments);
+            Assert.AreEqual(true, security.ResetRoleInheritance);
+
+            // additional administrators
+            Assert.IsNotNull(security.AdditionalAdministrators);
+            Assert.AreEqual(2, security.AdditionalAdministrators.Count);
+            Assert.IsNotNull(security.AdditionalAdministrators.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(security.AdditionalAdministrators.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsFalse(security.ClearExistingAdministrators);
+
+            // additional owners
+            Assert.IsNotNull(security.AdditionalOwners);
+            Assert.AreEqual(2, security.AdditionalOwners.Count);
+            Assert.IsNotNull(security.AdditionalOwners.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(security.AdditionalOwners.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsTrue(security.ClearExistingOwners);
+
+            // additional members
+            Assert.IsNotNull(security.AdditionalMembers);
+            Assert.AreEqual(2, security.AdditionalMembers.Count);
+            Assert.IsNotNull(security.AdditionalMembers.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(security.AdditionalMembers.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsFalse(security.ClearExistingMembers);
+
+            // additional visitors
+            Assert.IsNotNull(security.AdditionalVisitors);
+            Assert.AreEqual(2, security.AdditionalVisitors.Count);
+            Assert.IsNotNull(security.AdditionalVisitors.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(security.AdditionalVisitors.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+
+            // permissions
+            Assert.IsNotNull(security.SiteSecurityPermissions);
+            Assert.IsNotNull(security.SiteSecurityPermissions.RoleDefinitions);
+            Assert.AreEqual(1, security.SiteSecurityPermissions.RoleDefinitions.Count);
+            var role = security.SiteSecurityPermissions.RoleDefinitions.FirstOrDefault(r => r.Name == "Manage List Items");
+            Assert.IsNotNull(role);
+            Assert.AreEqual("Allows a user to manage list items", role.Description);
+            Assert.IsNotNull(role.Permissions);
+            Assert.AreEqual(4, role.Permissions.Count);
+            Assert.IsTrue(role.Permissions.Contains(PermissionKind.ViewListItems));
+            Assert.IsTrue(role.Permissions.Contains(PermissionKind.AddListItems));
+            Assert.IsTrue(role.Permissions.Contains(PermissionKind.EditListItems));
+            Assert.IsTrue(role.Permissions.Contains(PermissionKind.DeleteListItems));
+
+            Assert.IsNotNull(security.SiteSecurityPermissions.RoleAssignments);
+            Assert.AreEqual(4, security.SiteSecurityPermissions.RoleAssignments.Count);
+
+            // role assignments
+            var assign = security.SiteSecurityPermissions.RoleAssignments.FirstOrDefault(p => p.Principal == "user1@contoso.com");
+            Assert.IsNotNull(assign);
+            Assert.AreEqual("Manage List Items", assign.RoleDefinition);
+
+            Assert.IsNotNull(security.SiteGroups);
+            Assert.AreEqual(2, security.SiteGroups.Count);
+
+            // site groups
+            var group = security.SiteGroups.FirstOrDefault(g => g.Title == "TestGroup1");
+            Assert.IsNotNull(group);
+            Assert.AreEqual("Test Group 1", group.Description);
+            Assert.AreEqual("user1@contoso.com", group.Owner);
+            Assert.AreEqual("group1@contoso.com", group.RequestToJoinLeaveEmailSetting);
+            Assert.IsTrue(group.AllowMembersEditMembership);
+            Assert.IsTrue(group.AllowRequestToJoinLeave);
+            Assert.IsTrue(group.AutoAcceptRequestToJoinLeave);
+            Assert.IsTrue(group.OnlyAllowMembersViewMembership);
+            Assert.IsNotNull(group.Members);
+            Assert.AreEqual(2, group.Members.Count);
+            Assert.IsNotNull(group.Members.FirstOrDefault(m => m.Name == "user1@contoso.com"));
+            Assert.IsNotNull(group.Members.FirstOrDefault(m => m.Name == "user2@contoso.com"));
+            Assert.IsFalse(group.ClearExistingMembers);
+
+            group = security.SiteGroups.FirstOrDefault(g => g.Title == "Power Users");
+            Assert.IsNotNull(group);
+            Assert.AreEqual("admin@contoso.com", group.Owner);
+            Assert.IsTrue(string.IsNullOrEmpty(group.RequestToJoinLeaveEmailSetting));
+            Assert.IsFalse(group.AllowMembersEditMembership);
+            Assert.IsFalse(group.AllowRequestToJoinLeave);
+            Assert.IsFalse(group.AutoAcceptRequestToJoinLeave);
+            Assert.IsFalse(group.OnlyAllowMembersViewMembership);
+            Assert.AreEqual(3, group.Members.Count);
+            Assert.IsTrue(group.ClearExistingMembers);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Security()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate();
+            result.Security = new SiteSecurity()
+            {
+                BreakRoleInheritance = true,
+                ClearSubscopes = true,
+                CopyRoleAssignments = true,
+                AssociatedGroups = "Test Value",
+                AssociatedMemberGroup = "{parameter:AssociatedMemberGroup}",
+                AssociatedOwnerGroup = "{parameter:AssociatedOwnerGroup}",
+                AssociatedVisitorGroup = "{parameter:AssociatedVisitorGroup}",
+                ClearExistingAdministrators = true,
+                ClearExistingVisitors = true,
+                ResetRoleInheritance = true,
+                RemoveExistingUniqueRoleAssignments = true
+            };
+            result.Security.AdditionalAdministrators.Add(new Core.Framework.Provisioning.Model.User() { Name = "user@contoso.com" });
+            result.Security.AdditionalAdministrators.Add(new Core.Framework.Provisioning.Model.User() { Name = "U_SHAREPOINT_ADMINS" });
+            result.Security.AdditionalOwners.Add(new Core.Framework.Provisioning.Model.User() { Name = "user@contoso.com" });
+            result.Security.AdditionalOwners.Add(new Core.Framework.Provisioning.Model.User() { Name = "U_SHAREPOINT_ADMINS" });
+            result.Security.AdditionalMembers.Add(new Core.Framework.Provisioning.Model.User() { Name = "user@contoso.com" });
+            result.Security.AdditionalMembers.Add(new Core.Framework.Provisioning.Model.User() { Name = "U_SHAREPOINT_ADMINS" });
+            result.Security.AdditionalVisitors.Add(new Core.Framework.Provisioning.Model.User() { Name = "user@contoso.com" });
+            result.Security.AdditionalVisitors.Add(new Core.Framework.Provisioning.Model.User() { Name = "U_SHAREPOINT_ADMINS" });
+
+            result.Security.SiteSecurityPermissions.RoleDefinitions.Add(new Core.Framework.Provisioning.Model.RoleDefinition(new List<PermissionKind> {
+                PermissionKind.ViewListItems,
+                PermissionKind.AddListItems
+            })
+            {
+                Name = "User",
+                Description = "User Role"
+            });
+            result.Security.SiteSecurityPermissions.RoleDefinitions.Add(new Core.Framework.Provisioning.Model.RoleDefinition(new List<PermissionKind> {
+                PermissionKind.EmptyMask
+            })
+            {
+                Name = "EmptyRole",
+                Description = "Empty Role"
+            });
+            result.Security.SiteSecurityPermissions.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment
+            {
+                Principal = "admin@contoso.com",
+                RoleDefinition = "Owner"
+            });
+            result.Security.SiteSecurityPermissions.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment
+            {
+                Principal = "user@contoso.com",
+                RoleDefinition = "User"
+            });
+
+            result.Security.SiteGroups.Add(new Core.Framework.Provisioning.Model.SiteGroup(new List<Core.Framework.Provisioning.Model.User>
+            {
+                new Core.Framework.Provisioning.Model.User
+                {
+                     Name = "user1@contoso.com"
+                },
+                new Core.Framework.Provisioning.Model.User
+                {
+                     Name = "user2@contoso.com"
+                }
+            })
+            {
+                AllowMembersEditMembership = true,
+                AllowRequestToJoinLeave = true,
+                AutoAcceptRequestToJoinLeave = true,
+                Description = "Test Group 1",
+                OnlyAllowMembersViewMembership = true,
+                Owner = "user1@contoso.com",
+                RequestToJoinLeaveEmailSetting = "group1@contoso.com",
+                Title = "TestGroup1",
+                ClearExistingMembers = true
+            });
+            result.Security.SiteGroups.Add(new Core.Framework.Provisioning.Model.SiteGroup(new List<Core.Framework.Provisioning.Model.User>
+            {
+                new Core.Framework.Provisioning.Model.User
+                {
+                    Name = "user1@contoso.com"
+                }
+            })
+            {
+                Title = "TestGroup2",
+                Owner = "user2@contoso.com"
+            });
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            //security common properties
+            Assert.IsNotNull(template.Security);
+            Assert.IsTrue(template.Security.BreakRoleInheritance);
+            Assert.IsTrue(template.Security.ClearSubscopes);
+            Assert.IsTrue(template.Security.CopyRoleAssignments);
+            Assert.AreEqual("Test Value", template.Security.AssociatedGroups);
+            Assert.AreEqual("{parameter:AssociatedMemberGroup}", template.Security.AssociatedMemberGroup);
+            Assert.AreEqual("{parameter:AssociatedOwnerGroup}", template.Security.AssociatedOwnerGroup);
+            Assert.AreEqual("{parameter:AssociatedVisitorGroup}", template.Security.AssociatedVisitorGroup);
+            Assert.AreEqual(true, template.Security.RemoveExistingUniqueRoleAssignments);
+            Assert.AreEqual(true, template.Security.ResetRoleInheritance);
+
+            // additional adminstrators
+            Assert.IsNotNull(template.Security.AdditionalAdministrators);
+            Assert.AreEqual(2, template.Security.AdditionalAdministrators.User.Length);
+            Assert.IsNotNull(template.Security.AdditionalAdministrators.User.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalAdministrators.User.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsTrue(template.Security.AdditionalAdministrators.ClearExistingItems);
+
+            // additional owners
+            Assert.IsNotNull(template.Security.AdditionalOwners);
+            Assert.AreEqual(2, template.Security.AdditionalOwners.User.Length);
+            Assert.IsNotNull(template.Security.AdditionalOwners.User.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalOwners.User.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+
+            // additional members
+            Assert.IsNotNull(template.Security.AdditionalMembers);
+            Assert.AreEqual(2, template.Security.AdditionalMembers.User.Length);
+            Assert.IsNotNull(template.Security.AdditionalMembers.User.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalMembers.User.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsFalse(template.Security.AdditionalMembers.ClearExistingItems);
+
+            // additional visitors
+            Assert.IsNotNull(template.Security.AdditionalVisitors);
+            Assert.AreEqual(2, template.Security.AdditionalVisitors.User.Length);
+            Assert.IsNotNull(template.Security.AdditionalVisitors.User.FirstOrDefault(u => u.Name == "user@contoso.com"));
+            Assert.IsNotNull(template.Security.AdditionalVisitors.User.FirstOrDefault(u => u.Name == "U_SHAREPOINT_ADMINS"));
+            Assert.IsTrue(template.Security.AdditionalVisitors.ClearExistingItems);
+
+            // permissions
+            Assert.IsNotNull(template.Security.Permissions);
+            Assert.IsNotNull(template.Security.Permissions.RoleDefinitions);
+            Assert.AreEqual(2, template.Security.Permissions.RoleDefinitions.Length);
+            var role = template.Security.Permissions.RoleDefinitions.FirstOrDefault(r => r.Name == "User");
+            Assert.IsNotNull(role);
+            Assert.AreEqual("User Role", role.Description);
+            Assert.IsNotNull(role.Permissions);
+            Assert.AreEqual(2, role.Permissions.Length);
+            Assert.IsTrue(role.Permissions.Contains(RoleDefinitionPermission.ViewListItems));
+            Assert.IsTrue(role.Permissions.Contains(RoleDefinitionPermission.AddListItems));
+
+            role = template.Security.Permissions.RoleDefinitions.FirstOrDefault(r => r.Name == "EmptyRole");
+            Assert.IsNotNull(role);
+            Assert.AreEqual("Empty Role", role.Description);
+            Assert.IsNotNull(role.Permissions);
+            Assert.AreEqual(1, role.Permissions.Length);
+            Assert.IsTrue(role.Permissions.Contains(RoleDefinitionPermission.EmptyMask));
+
+            Assert.IsNotNull(template.Security.Permissions);
+            Assert.IsNotNull(template.Security.Permissions.RoleAssignments);
+            Assert.AreEqual(2, template.Security.Permissions.RoleAssignments.Length);
+            var assign = template.Security.Permissions.RoleAssignments.FirstOrDefault(p => p.Principal == "admin@contoso.com");
+            Assert.IsNotNull(assign);
+            Assert.AreEqual("Owner", assign.RoleDefinition);
+            assign = template.Security.Permissions.RoleAssignments.FirstOrDefault(p => p.Principal == "user@contoso.com");
+            Assert.IsNotNull(assign);
+            Assert.AreEqual("User", assign.RoleDefinition);
+
+            // site groups
+            Assert.IsNotNull(template.Security.SiteGroups);
+            Assert.AreEqual(2, template.Security.SiteGroups.Length);
+            var group = template.Security.SiteGroups.FirstOrDefault(g => g.Title == "TestGroup1");
+            Assert.IsNotNull(group);
+            Assert.AreEqual("Test Group 1", group.Description);
+            Assert.AreEqual("user1@contoso.com", group.Owner);
+            Assert.AreEqual("group1@contoso.com", group.RequestToJoinLeaveEmailSetting);
+            Assert.IsTrue(group.AllowMembersEditMembership);
+            Assert.IsTrue(group.AllowMembersEditMembershipSpecified);
+            Assert.IsTrue(group.AllowRequestToJoinLeave);
+            Assert.IsTrue(group.AllowRequestToJoinLeaveSpecified);
+            Assert.IsTrue(group.AutoAcceptRequestToJoinLeave);
+            Assert.IsTrue(group.AutoAcceptRequestToJoinLeaveSpecified);
+            Assert.IsTrue(group.OnlyAllowMembersViewMembership);
+            Assert.IsTrue(group.OnlyAllowMembersViewMembershipSpecified);
+            Assert.IsNotNull(group.Members);
+            Assert.AreEqual(2, group.Members.User.Length);
+            Assert.IsNotNull(group.Members.User.FirstOrDefault(m => m.Name == "user1@contoso.com"));
+            Assert.IsNotNull(group.Members.User.FirstOrDefault(m => m.Name == "user2@contoso.com"));
+            Assert.IsTrue(group.Members.ClearExistingItems);
+
+            group = template.Security.SiteGroups.FirstOrDefault(g => g.Title == "TestGroup2");
+            Assert.IsNotNull(group);
+            Assert.AreEqual("user2@contoso.com", group.Owner);
+            Assert.IsTrue(string.IsNullOrEmpty(group.Description));
+            Assert.IsTrue(string.IsNullOrEmpty(group.RequestToJoinLeaveEmailSetting));
+            Assert.IsFalse(group.AllowMembersEditMembership);
+            Assert.IsFalse(group.AllowRequestToJoinLeave);
+            Assert.IsFalse(group.AutoAcceptRequestToJoinLeave);
+            Assert.IsFalse(group.OnlyAllowMembersViewMembership);
+            Assert.IsFalse(group.Members.ClearExistingItems);
         }
     }
 }
