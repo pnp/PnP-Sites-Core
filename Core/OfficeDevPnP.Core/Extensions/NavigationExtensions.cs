@@ -720,10 +720,11 @@ namespace Microsoft.SharePoint.Client
                 }
                 web.Context.ExecuteQueryRetry();
 #if !ONPREMISES
-            } else if  (navigationType == NavigationType.Footer)
+            }
+            else if (navigationType == NavigationType.Footer)
             {
                 var footerNavigation = web.LoadFooterNavigation();
-                for(var i = footerNavigation.Count - 1;i >= 0; i--)
+                for (var i = footerNavigation.Count - 1; i >= 0; i--)
                 {
                     footerNavigation[i].DeleteObject();
                 }
@@ -765,13 +766,20 @@ namespace Microsoft.SharePoint.Client
             var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
             var menuState = JObject.Parse(structureString);
 
-            var nodes = menuState["nodes"] as JArray;
-            var topNode = web.Navigation.GetNodeById(Convert.ToInt32(menuState["StartingNodeKey"].Value<string>()));
-            web.Context.Load(topNode, n => n.Children.IncludeWithDefaultProperties());
-            web.Context.ExecuteQueryRetry();
-            var menuNode = topNode.Children.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_MENUNODEKEY);
-            menuNode.EnsureProperty(n => n.Children.IncludeWithDefaultProperties());
-            return menuNode.Children;
+            if (menuState["nodes"] != null)
+            {
+                var nodes = menuState["nodes"] as JArray;
+                var topNode = web.Navigation.GetNodeById(Convert.ToInt32(menuState["StartingNodeKey"].Value<string>()));
+                web.Context.Load(topNode, n => n.Children.IncludeWithDefaultProperties());
+                web.Context.ExecuteQueryRetry();
+                var menuNode = topNode.Children.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_MENUNODEKEY);
+                menuNode.EnsureProperty(n => n.Children.IncludeWithDefaultProperties());
+                return menuNode.Children;
+            }
+            else
+            {
+                return null;
+            }
         }
 #endif
         #endregion
