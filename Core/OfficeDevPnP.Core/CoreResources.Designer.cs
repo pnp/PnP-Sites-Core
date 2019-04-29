@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class CoreResources {
@@ -2008,6 +2008,168 @@ namespace OfficeDevPnP.Core {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_sec" +
                         "urity_provisioning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to add member to team..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_AddingMemberError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_AddingMemberError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to add owner to team..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_AddingOwnerError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_AddingOwnerError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Team already exists.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_AlreadyExists {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot register App for Team..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_AppProvisioningError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_AppProvisioningError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot send a message to the target Channel..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_CannotSendMessage {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_CannotSendMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Channel already exists..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_ChannelAlreadyExists {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_ChannelAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to create group for team.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_CreatingGroupError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_CreatingGroupError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exception while archiving/unarchiving Team with ID {0}. Details: {1}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_FailedArchiveUnarchive {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_FailedArchiveUnarchive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to get team information after provisioning..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_FetchingError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_FetchingError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to get user by upn information..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_FetchingUserError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_FetchingUserError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Group already exists.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_GroupAlreadyExists {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_GroupAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Group with ID {0} does not exist..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_GroupDoesNotExists {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_GroupDoesNotExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to list team members..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_ListingMembersError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_ListingMembersError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to list team owners..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_ListingOwnersError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_ListingOwnersError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provisioning a team failed..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_ProvisioningError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_ProvisioningError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to remove member from team..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to remove owner from team..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_RemovingOwnerError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_RemovingOwnerError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tab already exists..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_TabAlreadyExists {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_TabAlreadyExists", resourceCulture);
             }
         }
         
