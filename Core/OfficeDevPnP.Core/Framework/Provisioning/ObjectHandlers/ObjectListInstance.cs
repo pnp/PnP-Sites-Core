@@ -516,55 +516,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         private void ProcessPropertyBagEntries(TokenParser parser, PnPMonitoredScope scope, ListInfo list)
-{
-	if (list.TemplateList.PropertyBagEntries != null && list.TemplateList.PropertyBagEntries.Count > 0)
-	{
-		// Handle root folder property bag
-		var rootFolder = list.SiteList.RootFolder;
-		list.SiteList.Context.Load(rootFolder, f => f.Properties);
-		list.SiteList.Context.ExecuteQueryRetry();
-		
-		foreach (var p in list.TemplateList.PropertyBagEntries)
-		{
-			var parsedKey = parser.ParseString(p.Key);
-			if (!rootFolder.Properties.FieldValues.ContainsKey(parsedKey) || p.Overwrite)
-			{
-				list.SiteList.SetPropertyBagValue(parsedKey, parser.ParseString(p.Value));
-				if (p.Indexed)
-				{
-					list.SiteList.AddIndexedPropertyBagKey(parsedKey);
-				}
-				else
-				{
-					list.SiteList.RemoveIndexedPropertyBagKey(parsedKey);
-				}
-			}
-			scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1, parsedKey, list.SiteList.Title);
-		}
-	}
-}
         {
-            // Handle root folder property bag
-            var rootFolder = list.SiteList.RootFolder;
-            list.SiteList.Context.Load(rootFolder, f => f.Properties);
-            list.SiteList.Context.ExecuteQueryRetry();
             if (list.TemplateList.PropertyBagEntries != null && list.TemplateList.PropertyBagEntries.Count > 0)
             {
+                // Handle root folder property bag
+                var rootFolder = list.SiteList.RootFolder;
+                list.SiteList.Context.Load(rootFolder, f => f.Properties);
+                list.SiteList.Context.ExecuteQueryRetry();
+
                 foreach (var p in list.TemplateList.PropertyBagEntries)
                 {
-                    if (!rootFolder.Properties.FieldValues.ContainsKey(p.Key) || p.Overwrite)
+                    var parsedKey = parser.ParseString(p.Key);
+                    if (!rootFolder.Properties.FieldValues.ContainsKey(parsedKey) || p.Overwrite)
                     {
-                        list.SiteList.SetPropertyBagValue(p.Key, parser.ParseString(p.Value));
+                        list.SiteList.SetPropertyBagValue(parsedKey, parser.ParseString(p.Value));
                         if (p.Indexed)
                         {
-                            list.SiteList.AddIndexedPropertyBagKey(p.Key);
+                            list.SiteList.AddIndexedPropertyBagKey(parsedKey);
                         }
                         else
                         {
-                            list.SiteList.RemoveIndexedPropertyBagKey(p.Key);
+                            list.SiteList.RemoveIndexedPropertyBagKey(parsedKey);
                         }
                     }
-                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1, p.Key, list.SiteList.Title);
+                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1, parsedKey, list.SiteList.Title);
                 }
             }
         }
