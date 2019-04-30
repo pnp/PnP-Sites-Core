@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using OfficeDevPnP.Core.Extensions;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201903;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -86,6 +87,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                         new CdnFromModelToSchemaTypeResolver());
                     resolvers.Add($"{siteDesignsType}.SiteScripts",
                         new SiteScriptRefFromModelToSchemaTypeResolver());
+                    resolvers.Add($"{siteDesignsType}.WebTemplate", 
+                        new TenantSiteDesignsWebTemplateFromModelToSchemaValueResolver());
 
                     if (themeType != null)
                     {
