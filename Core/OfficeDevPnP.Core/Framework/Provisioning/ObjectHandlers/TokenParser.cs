@@ -381,17 +381,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new GroupIdToken(web, "associatedownergroup", web.AssociatedOwnerGroup.Id.ToString()));
             }
 
-            var accessToken = PnPProvisioningContext.Current.AcquireToken("https://graph.microsoft.com/", "Group.Read.All");
-            if (accessToken != null)
+            if (PnPProvisioningContext.Current != null)
             {
-                // Get Office 365 Groups
-
-                var officeGroups = HttpHelper.MakeGetRequestForString("https://graph.microsoft.com/v1.0/groups?$filter=groupTypes/any(c:c+eq+'Unified')&$select=id,displayName", accessToken);
-                var returnObject = JObject.Parse(officeGroups);
-                var groupsArray = returnObject["value"].Value<JArray>();
-                foreach (var group in groupsArray)
+                var accessToken = PnPProvisioningContext.Current.AcquireToken("https://graph.microsoft.com/", "Group.Read.All");
+                if (accessToken != null)
                 {
-                    _tokens.Add(new GroupIdToken(web, group["displayName"].Value<string>(), group["id"].Value<string>()));
+                    // Get Office 365 Groups
+
+                    var officeGroups = HttpHelper.MakeGetRequestForString("https://graph.microsoft.com/v1.0/groups?$filter=groupTypes/any(c:c+eq+'Unified')&$select=id,displayName,mailNickname", accessToken);
+                    var returnObject = JObject.Parse(officeGroups);
+                    var groupsArray = returnObject["value"].Value<JArray>();
+                    foreach (var group in groupsArray)
+                    {
+                        _tokens.Add(new O365GroupIdToken(web, group["displayName"].Value<string>(), group["id"].Value<string>()));
+                        if (!group["displayName"].Value<string>().Equals(group["mailNickname"].Value<string>()))
+                        {
+                            _tokens.Add(new O365GroupIdToken(web, group["mailNickname"].Value<string>(), group["id"].Value<string>()));
+                        }
+                    }
                 }
             }
         }
@@ -435,7 +442,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                     }
-                }                
+                }
 
                 if (tokenIds.Contains("sitecollectiontermgroupid"))
                     _tokens.Add(new SiteCollectionTermGroupIdToken(web));
@@ -1007,6 +1014,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private List<string> ParseTemplate(ProvisioningTemplate template)
         {
             List<string> tokenIds = new List<string>();
+
+            // Add parameter tokenid if parameters are specified
+            if (template.Parameters != null && template.Parameters.Any())
+            {
+                tokenIds.Add("parameter");
+            }
+
             var xml = template.ToXML();
 
             if (xml.IndexOfAny(TokenChars) == -1) return tokenIds;

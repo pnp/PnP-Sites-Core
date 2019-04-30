@@ -51,6 +51,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// True to clear members of the group
+        /// </summary>
+        public Boolean ClearExistingMembers { get; set; }
+
+        /// <summary>
         /// The Title of the Site Group
         /// </summary>
         public String Title { get; set; }

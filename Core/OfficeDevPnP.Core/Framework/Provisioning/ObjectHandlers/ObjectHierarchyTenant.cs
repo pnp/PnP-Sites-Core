@@ -1,5 +1,6 @@
 ﻿#if !ONPREMISES
 using Microsoft.Online.SharePoint.TenantAdministration;
+using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
@@ -26,7 +27,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     TenantHelper.ProcessCdns(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
                     parser = TenantHelper.ProcessApps(tenant, hierarchy.Tenant, hierarchy.Connector, parser, scope, applyingInformation, MessagesDelegate);
-                    parser = TenantHelper.ProcessWebApiPermissions(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
+
+                    try
+                    {
+                        parser = TenantHelper.ProcessWebApiPermissions(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
+                    }
+                    catch (ServerUnauthorizedAccessException ex)
+                    {
+                        scope.LogError(ex.Message);
+                    }
+
                     parser = TenantHelper.ProcessSiteScripts(tenant, hierarchy.Tenant, hierarchy.Connector, parser, scope, MessagesDelegate);
                     parser = TenantHelper.ProcessSiteDesigns(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
                     parser = TenantHelper.ProcessStorageEntities(tenant, hierarchy.Tenant, parser, scope, applyingInformation, MessagesDelegate);

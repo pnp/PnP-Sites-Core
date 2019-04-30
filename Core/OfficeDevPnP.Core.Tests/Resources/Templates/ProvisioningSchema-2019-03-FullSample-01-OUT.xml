@@ -1,6 +1,14 @@
 <?xml version="1.0"?>
 <pnp:Provisioning Author="John White" Generator="Human being" ImagePreviewUrl="https://sharepointpnp.com/ImagePreview.png" DisplayName="Sample Provisioning" Description="A sample Provisioning document" xmlns:pnp="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.9.1905.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.9.1905.0, Culture=neutral, PublicKeyToken=null">
+    <pnp:Parameters>
+      <pnp:Parameter Key="O365TenantName">contoso</pnp:Parameter>
+      <pnp:Parameter Key="CodeProvidedParam" />
+      <pnp:Parameter Key="YammerNetwork">contoso.com</pnp:Parameter>
+      <pnp:Parameter Key="lcid">1033</pnp:Parameter>
+      <pnp:Parameter Key="CompanyName">Contoso Inc.</pnp:Parameter>
+    </pnp:Parameters>
+  </pnp:Preferences>
   <pnp:Localizations>
     <pnp:Localization LCID="1033" Name="core" ResourceFile="resources-core.en-us.resx" />
     <pnp:Localization LCID="1040" Name="core" ResourceFile="resources-core.it-it.resx" />
@@ -28,6 +36,7 @@
         </pnp:Origins>
         <pnp:IncludeFileExtensions>PDF,XML,JPG,JS,PNG</pnp:IncludeFileExtensions>
         <pnp:ExcludeRestrictedSiteClassifications>HBI,GDPR</pnp:ExcludeRestrictedSiteClassifications>
+        <pnp:ExcludeIfNoScriptDisabled>JS,CSS</pnp:ExcludeIfNoScriptDisabled>
       </pnp:Public>
       <pnp:Private Enabled="true">
         <pnp:Origins>
@@ -115,7 +124,7 @@
         }</pnp:Theme>
     </pnp:Themes>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-DUMMY-2565fcc3-8d27-4bb6-bbf5-9f1565112deb">
+  <pnp:Templates ID="CONTAINER-DUMMY-de47a427-3c63-4557-a938-bc8e23576299">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
@@ -137,7 +146,7 @@
       </pnp:AuditSettings>
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="true" />
-        <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" Indexed="true" />
       </pnp:PropertyBagEntries>
       <pnp:Security BreakRoleInheritance="true" ResetRoleInheritance="true" RemoveExistingUniqueRoleAssignments="true" ClearSubscopes="true" AssociatedGroups="Test Value" AssociatedOwnerGroup="{parameter:AssociatedOwnerGroup}" AssociatedMemberGroup="{parameter:AssociatedMemberGroup}" AssociatedVisitorGroup="{parameter:AssociatedVisitorGroup}">
         <pnp:AdditionalAdministrators>
@@ -157,7 +166,19 @@
           <pnp:User Name="U_SHAREPOINT_ADMINS" />
         </pnp:AdditionalVisitors>
         <pnp:SiteGroups>
-          <pnp:SiteGroup Title="Power Users" Description="Group of Power Users" Owner="admin@contoso.com" AllowMembersEditMembership="false" AllowRequestToJoinLeave="false" AutoAcceptRequestToJoinLeave="false" OnlyAllowMembersViewMembership="false" />
+          <pnp:SiteGroup Title="Power Users" Description="Group of Power Users" Owner="admin@contoso.com" AllowMembersEditMembership="false" AllowRequestToJoinLeave="false" AutoAcceptRequestToJoinLeave="false" OnlyAllowMembersViewMembership="false">
+            <pnp:Members ClearExistingItems="true">
+              <pnp:User Name="user1@contoso.com" />
+              <pnp:User Name="user2@contoso.com" />
+              <pnp:User Name="user3@contoso.com" />
+            </pnp:Members>
+          </pnp:SiteGroup>
+          <pnp:SiteGroup Title="TestGroup1" Description="Test Group 1" Owner="user1@contoso.com" AllowMembersEditMembership="true" AllowRequestToJoinLeave="true" AutoAcceptRequestToJoinLeave="true" OnlyAllowMembersViewMembership="true" RequestToJoinLeaveEmailSetting="group1@contoso.com">
+            <pnp:Members>
+              <pnp:User Name="user1@contoso.com" />
+              <pnp:User Name="user2@contoso.com" />
+            </pnp:Members>
+          </pnp:SiteGroup>
         </pnp:SiteGroups>
         <pnp:Permissions>
           <pnp:RoleDefinitions>
@@ -194,7 +215,7 @@
         </pnp:CurrentNavigation>
         <pnp:SearchNavigation RemoveExistingNodes="false">
           <pnp:NavigationNode Title="Sample Search Node 01" Url="{sitecollection}/pages/search01.aspx" IsExternal="true" />
-          <pnp:NavigationNode Title="Sample Search Node 02" Url="{sitecollection}/pages/search02.aspx" IsVisible="false" />
+          <pnp:NavigationNode Title="Sample Search Node 02" Url="{sitecollection}/pages/search02.aspx" />
         </pnp:SearchNavigation>
       </pnp:Navigation>
       <pnp:SiteFields>
@@ -589,7 +610,7 @@
       </pnp:Publishing>
       <pnp:ApplicationLifecycleManagement>
         <pnp:AppCatalog>
-          <pnp:Package Src="solution\spfx-discuss-now.sppkg" Action="UploadAndPublish" SkipFeatureDeployment="true" />
+          <pnp:Package Src="solution\spfx-discuss-now.sppkg" Action="UploadAndPublish" SkipFeatureDeployment="true" Overwrite="true" />
           <pnp:Package PackageId="d0816f0a-fda4-4a98-8e61-1bbe1f2b5b27" Action="Publish" />
           <pnp:Package PackageId="9672a07b-c111-4a12-bb5b-8d43c2ddd256" Action="Remove" />
         </pnp:AppCatalog>
@@ -628,6 +649,11 @@
               <pnp:RoleAssignment Principal="user3@contoso.com" RoleDefinition="View Only" />
             </pnp:BreakRoleInheritance>
           </pnp:Security>
+          <pnp:Properties>
+            <pnp:Property Key="Key01" Value="Value 01" />
+            <pnp:Property Key="Key02" Value="Value 02" />
+            <pnp:Property Key="Key03" Value="Value 03" />
+          </pnp:Properties>
         </pnp:ClientSidePage>
       </pnp:ClientSidePages>
       <pnp:Header Layout="Standard" MenuStyle="MegaMenu" BackgroundEmphasis="Soft" />
@@ -677,7 +703,7 @@
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security RemoveExistingUniqueRoleAssignments="false">
+      <pnp:Security>
         <pnp:AdditionalAdministrators>
           <pnp:User Name="user@contoso.com" />
           <pnp:User Name="U_SHAREPOINT_ADMINS" />
@@ -807,7 +833,7 @@ function showAlert(){alert("Hello!")};
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security RemoveExistingUniqueRoleAssignments="false">
+      <pnp:Security>
         <pnp:AdditionalAdministrators>
           <pnp:User Name="user@contoso.com" />
           <pnp:User Name="U_SHAREPOINT_ADMINS" />
@@ -939,7 +965,7 @@ function showAlert(){alert("Hello!")};
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security RemoveExistingUniqueRoleAssignments="false">
+      <pnp:Security>
         <pnp:AdditionalAdministrators>
           <pnp:User Name="user@contoso.com" />
           <pnp:User Name="U_SHAREPOINT_ADMINS" />
@@ -1164,7 +1190,7 @@ function showAlert(){alert("Hello!")};
     <pnp:TeamTemplate DisplayName="Team from Template 01" Description="Sample Team from Template" Classification="Custom" Visibility="Public">
         { here goes the team template JSON }
       </pnp:TeamTemplate>
-    <pnp:Team DisplayName="Sample Team 01" Description="This is just a sample Team 01" Visibility="Private" Specialization="None" CloneFrom="{TeamId:GroupMailNickname}">
+    <pnp:Team DisplayName="Sample Team 01" Description="This is just a sample Team 01" Visibility="Public" Specialization="None" CloneFrom="{TeamId:GroupMailNickname}">
       <pnp:Security>
         <pnp:Owners ClearExistingItems="true">
           <pnp:User UserPrincipalName="owner01@domain.onmicrosoft.com" />
@@ -1177,7 +1203,7 @@ function showAlert(){alert("Hello!")};
         </pnp:Members>
       </pnp:Security>
     </pnp:Team>
-    <pnp:Team DisplayName="Sample Team 02" Description="This is just a sample Team 02" Classification="Private" Visibility="Public" GroupId="{groupid:DisplayName}" Specialization="EducationStandard">
+    <pnp:Team DisplayName="Sample Team 02" Description="This is just a sample Team 02" Classification="Private" Visibility="Public" GroupId="{groupid:DisplayName}" Specialization="EducationStandard" MailNickname="sample.group">
       <pnp:FunSettings GiphyContentRating="Strict" />
       <pnp:GuestSettings />
       <pnp:MembersSettings AllowDeleteChannels="false" AllowCreateUpdateRemoveTabs="false" />
@@ -1250,7 +1276,7 @@ function showAlert(){alert("Hello!")};
   </pnp:Teams>
   <pnp:AzureActiveDirectory>
     <pnp:Users>
-      <pnp:User AccountEnabled="true" DisplayName="John White" MailNickname="john.white" UserPrincipalName="john.white@{parameter:domain}.onmicrosoft.com">
+      <pnp:User AccountEnabled="true" DisplayName="John White" MailNickname="john.white" PasswordPolicies="Policy1" UserPrincipalName="john.white@{parameter:domain}.onmicrosoft.com" ProfilePhoto="photo.jpg">
         <pnp:PasswordProfile ForceChangePasswordNextSignIn="true" Password="Pass@w0rd" />
         <pnp:Licenses>
           <pnp:License SkuId="26d45bd9-adf1-46cd-a9e1-51e9a5524128">

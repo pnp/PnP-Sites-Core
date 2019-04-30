@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.ALM;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
@@ -77,6 +79,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                             ExceptionMessage = null, // Here we don't have any specific exception
                             ExceptionStackTrace = null, // Here we don't have any specific exception
                         });
+                    }
+                    else
+                    {
+                        // Try to access the AppCatalog with the current user
+                        try
+                        {
+                            using (var appCatalogContext = web.Context.Clone(appCatalogUri))
+                            {
+                                // Get a reference to the "Apps for SharePoint" library
+                                var appCatalogLibrary = appCatalogContext.Web.GetListByUrl("AppCatalog");
+
+                                // Check its permissions
+                                appCatalogContext.Web.CurrentUser.EnsureProperty(u => u.LoginName);
+                                var userEffectivePermissions = appCatalogLibrary.GetUserEffectivePermissions(
+                                    appCatalogContext.Web.CurrentUser.LoginName);
+                                appCatalogContext.ExecuteQueryRetry();
+
+                                if (!userEffectivePermissions.Value.Has(PermissionKind.EditListItems))
+                                {
+                                    throw new SecurityException("Invalid user's permissions for the AppCatalog");
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // And if we fail, raise a CanProvisionIssue
+                            result.CanProvision = false;
+                            result.Issues.Add(new CanProvisionIssue()
+                            {
+                                Source = this.Name,
+                                Tag = CanProvisionIssueTags.MISSING_APP_CATALOG_PERMISSIONS,
+                                Message = CanProvisionIssuesMessages.Missing_Permissions_for_App_Catalog,
+                                ExceptionMessage = ex.Message, 
+                                ExceptionStackTrace = ex.StackTrace, 
+                            });
+                        }
                     }
                 }
             }

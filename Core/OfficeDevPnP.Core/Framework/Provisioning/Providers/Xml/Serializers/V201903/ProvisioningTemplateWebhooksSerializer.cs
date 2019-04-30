@@ -46,7 +46,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            if (template.SiteWebhooks != null && template.SiteWebhooks.Count > 0)
+            if (template.ProvisioningTemplateWebhooks != null && template.ProvisioningTemplateWebhooks.Count > 0)
             {
                 var provisioningTemplateWebhookTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ProvisioningTemplateWebhooksProvisioningTemplateWebhook, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var provisioningTemplateWebhookType = Type.GetType(provisioningTemplateWebhookTypeName, true);

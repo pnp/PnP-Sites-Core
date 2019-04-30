@@ -920,8 +920,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private BaseTeamVisibility visibilityField;
         
-        private bool visibilityFieldSpecified;
-        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string DisplayName {
@@ -963,17 +961,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.visibilityField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool VisibilitySpecified {
-            get {
-                return this.visibilityFieldSpecified;
-            }
-            set {
-                this.visibilityFieldSpecified = value;
             }
         }
     }

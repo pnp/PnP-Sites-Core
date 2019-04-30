@@ -58,6 +58,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public ApplicationLifecycleManagement()
         {
             this._apps = new AppCollection(this.ParentTemplate);
+			this._appCatalog = new AppCatalog();
         }
         #endregion
 

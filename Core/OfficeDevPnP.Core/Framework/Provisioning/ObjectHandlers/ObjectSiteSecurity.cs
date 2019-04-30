@@ -876,15 +876,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!web.AssociatedOwnerGroup.ServerObjectIsNull.Value)
             {
-                loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedownergroup}");
+                loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedowneridgroup}");
             }
             if (!web.AssociatedMemberGroup.ServerObjectIsNull.Value)
             {
-                loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmembergroup}");
+                loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmemberidgroup}");
             }
             if (!web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
             {
-                loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroup}");
+                loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitoridgroup}");
             }
             if (!string.IsNullOrEmpty(web.Title))
             {
