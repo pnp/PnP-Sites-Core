@@ -212,9 +212,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 template_odata_bind = "https://graph.microsoft.com/beta/teamsTemplates('standard')",
                 team.DisplayName,
                 team.Description,
-                //team.Classification,
-                //team.Specialization,
-                //team.Visibility,
+                team.Classification,
+                team.Specialization,
+                team.Visibility,
                 funSettings = new
                 {
                     team.FunSettings.AllowGiphy,
@@ -633,8 +633,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (teamTemplate.DisplayName != null) team["displayName"] = teamTemplate.DisplayName;
             if (teamTemplate.Description != null) team["description"] = teamTemplate.Description;
-            // if (teamTemplate.Classification != null) team["classification"] = teamTemplate.Classification;
-            // team["visibility"] = teamTemplate.Visibility.ToString();
+            if (teamTemplate.Classification != null) team["classification"] = teamTemplate.Classification;
+            team["visibility"] = teamTemplate.Visibility.ToString();
 
             return team.ToString();
         }
