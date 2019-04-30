@@ -96,13 +96,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-                // Call Archive or Unarchive for the current Team
-                ArchiveTeam(scope, teamId, team.Archived, accessToken);
-
                 // And now we configure security, channels, and apps
                 if (!SetGroupSecurity(scope, team, teamId, accessToken)) return null;
                 if (!SetTeamChannels(scope, parser, team, teamId, accessToken)) return null;
                 if (!SetTeamApps(scope, team, teamId, accessToken)) return null;
+
+                // Call Archive or Unarchive for the current Team
+                ArchiveTeam(scope, teamId, team.Archived, accessToken);
 
                 try
                 {
