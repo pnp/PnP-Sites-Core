@@ -99,6 +99,9 @@ namespace OfficeDevPnP.Core
 
             var ctx = new ClientContext(siteUrl);
             ctx.Credentials = sharepointOnlineCredentials;
+#if !ONPREMISES || SP2016 || SP2019
+            ctx.DisableReturnValueCache = true;
+#endif
 
             return ctx;
         }
@@ -142,6 +145,9 @@ namespace OfficeDevPnP.Core
         {
             EnsureToken(siteUrl, realm, appId, appSecret, acsHostUrl, globalEndPointPrefix);
             ClientContext clientContext = Utilities.TokenHelper.GetClientContextWithAccessToken(siteUrl, appOnlyAccessToken);
+#if !ONPREMISES || SP2016 || SP2019
+            clientContext.DisableReturnValueCache = true;
+#endif
 
             ClientContextSettings clientContextSettings = new ClientContextSettings()
             {
@@ -376,6 +382,9 @@ namespace OfficeDevPnP.Core
             if (authCookiesContainer.Count > 0)
             {
                 var ctx = new ClientContext(siteUrl);
+#if !ONPREMISES || SP2016 || SP2019
+                ctx.DisableReturnValueCache = true;
+#endif
                 ctx.ExecutingWebRequest += (sender, e) => e.WebRequestExecutor.WebRequest.CookieContainer = authCookiesContainer;
                 return ctx;
             }
@@ -396,8 +405,13 @@ namespace OfficeDevPnP.Core
         /// <returns>ClientContext to be used by CSOM code</returns>
         public ClientContext GetNetworkCredentialAuthenticatedContext(string siteUrl, string user, string password, string domain)
         {
-            ClientContext clientContext = new ClientContext(siteUrl);
-            clientContext.Credentials = new NetworkCredential(user, password, domain);
+            ClientContext clientContext = new ClientContext(siteUrl)
+            {
+#if !ONPREMISES || SP2016 || SP2019
+                DisableReturnValueCache = true,
+#endif
+                Credentials = new NetworkCredential(user, password, domain)
+            };
             return clientContext;
         }
 
@@ -411,8 +425,13 @@ namespace OfficeDevPnP.Core
         /// <returns>ClientContext to be used by CSOM code</returns>
         public ClientContext GetNetworkCredentialAuthenticatedContext(string siteUrl, string user, SecureString password, string domain)
         {
-            ClientContext clientContext = new ClientContext(siteUrl);
-            clientContext.Credentials = new NetworkCredential(user, password, domain);
+            ClientContext clientContext = new ClientContext(siteUrl)
+            {
+#if !ONPREMISES || SP2016 || SP2019
+                DisableReturnValueCache = true,
+#endif
+                Credentials = new NetworkCredential(user, password, domain)
+            };
             return clientContext;
         }
 
@@ -482,6 +501,9 @@ namespace OfficeDevPnP.Core
         {
             var siteUri = new Uri(siteUrl);
             var clientContext = new ClientContext(siteUri);
+#if !ONPREMISES || SP2016 || SP2019
+            clientContext.DisableReturnValueCache = true;
+#endif
 
             // Feed the TokenHelper the SharePoint information so it doesn't try to fetch it from the config file
             TokenHelper.Realm = TokenHelper.GetRealmFromTargetUrl(siteUri);
@@ -534,6 +556,9 @@ namespace OfficeDevPnP.Core
             string resourceUri = spUri.Scheme + "://" + spUri.Authority;
 
             var clientContext = new ClientContext(siteUrl);
+#if !ONPREMISES || SP2016 || SP2019
+            clientContext.DisableReturnValueCache = true;
+#endif
             clientContext.ExecutingWebRequest += (sender, args) =>
             {
                 EnsureAzureADCredentialsToken(resourceUri, userPrincipalName, userPassword);
@@ -660,6 +685,9 @@ namespace OfficeDevPnP.Core
         public ClientContext GetAzureADWebApplicationAuthenticatedContext(String siteUrl, Func<String, String> accessTokenGetter)
         {
             var clientContext = new ClientContext(siteUrl);
+#if !ONPREMISES || SP2016 || SP2019
+            clientContext.DisableReturnValueCache = true;
+#endif
             clientContext.ExecutingWebRequest += (sender, args) =>
             {
                 Uri resourceUri = new Uri(siteUrl);
@@ -681,6 +709,9 @@ namespace OfficeDevPnP.Core
         public ClientContext GetAzureADAccessTokenAuthenticatedContext(String siteUrl, String accessToken)
         {
             var clientContext = new ClientContext(siteUrl);
+#if !ONPREMISES || SP2016 || SP2019
+            clientContext.DisableReturnValueCache = true;
+#endif
 
             clientContext.ExecutingWebRequest += (sender, args) =>
             {
@@ -841,6 +872,9 @@ namespace OfficeDevPnP.Core
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, X509Certificate2 certificate, AzureEnvironment environment = AzureEnvironment.Production)
         {
             var clientContext = new ClientContext(siteUrl);
+#if !ONPREMISES || SP2016 || SP2019
+            clientContext.DisableReturnValueCache = true;
+#endif
 
             string authority = string.Format(CultureInfo.InvariantCulture, "{0}/{1}/", GetAzureADLoginEndPoint(environment), tenant);
 
@@ -929,6 +963,9 @@ namespace OfficeDevPnP.Core
         {
 
             ClientContext clientContext = new ClientContext(siteUrl);
+#if !ONPREMISES || SP2016 || SP2019
+            clientContext.DisableReturnValueCache = true;
+#endif
             clientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
             {
                 if (fedAuth != null)
@@ -983,6 +1020,9 @@ namespace OfficeDevPnP.Core
         public ClientContext GetADFSCertificateMixedAuthenticationContext(string siteUrl, string serialNumber, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
         {
             ClientContext clientContext = new ClientContext(siteUrl);
+#if !ONPREMISES || SP2016 || SP2019
+            clientContext.DisableReturnValueCache = true;
+#endif
             clientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
             {
                 if (fedAuth != null)
@@ -1035,6 +1075,9 @@ namespace OfficeDevPnP.Core
         public ClientContext GetADFSKerberosMixedAuthenticationContext(string siteUrl, string sts, string idpId, int logonTokenCacheExpirationWindow = 10)
         {
             ClientContext clientContext = new ClientContext(siteUrl);
+#if !ONPREMISES || SP2016 || SP2019
+            clientContext.DisableReturnValueCache = true;
+#endif
             clientContext.ExecutingWebRequest += delegate (object oSender, WebRequestEventArgs webRequestEventArgs)
             {
                 if (fedAuth != null)
