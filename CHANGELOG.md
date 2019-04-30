@@ -9,9 +9,24 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [3.9.1905.0 - unreleased]
 
 ### Added
+
 - Support to export terms with a specific lcid in TaxonomyExtensions.ExportTermSet
+- Support for new page header and section backgrounds in the modern client side page provisioning [NicolajHedeager]
+- Support for provisioning client side page templates
+- Support for Provisioning Schema 201903
+- Support for provisioning Microsoft Teams
+- New PnPProvisioningContext object for security scope management
+- New tenant extension method (tenant.EnableCommSite) to to convert the root site collection of a tenant into a communication site
 
 ### Changed
+
+- Added support for setting owners and hubsite id in GroupifySite [gautamdsheth]
+- Allow fileuniqueid in NavigationNodes for Group OneNote Url #2150 [czullu]
+- fixing client side page existence check sometimes flags page as existing although it isn't #2185 [heinrich-ulbricht]
+- Fix loading of ClientSidePage contents if CanvasContent1 property is empty #2199 [heinrich-ulbricht]
+- Adding test for saving and loading of ClientSidePage header #2198 [heinrich-ulbricht]
+- Fix: conflict when provisioning client side pages with headers #2208 [heinrich-ulbricht]
+- Fix: fix for GlobalNavigation serialization in Provisioning Schema #2210 [patrikhellgren]
 
 ## [3.8.1904.0 - April 2019 release]
 

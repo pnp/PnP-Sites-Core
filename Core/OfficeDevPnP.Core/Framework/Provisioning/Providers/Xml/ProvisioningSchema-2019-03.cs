@@ -1023,6 +1023,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private bool archivedField;
         
+        private string mailNicknameField;
+        
         public TeamWithSettings() {
             this.archivedField = false;
         }
@@ -1152,6 +1154,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.archivedField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MailNickname {
+            get {
+                return this.mailNicknameField;
+            }
+            set {
+                this.mailNicknameField = value;
             }
         }
     }
@@ -3734,8 +3747,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private ClientSidePageHeaderTextAlignment textAlignmentField;
         
-        private bool textAlignmentFieldSpecified;
-        
         private bool showTopicHeaderField;
         
         private bool showTopicHeaderFieldSpecified;
@@ -3755,6 +3766,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         private int authorByLineIdField;
         
         private bool authorByLineIdFieldSpecified;
+        
+        public ClientSidePageHeader() {
+            this.textAlignmentField = ClientSidePageHeaderTextAlignment.Left;
+        }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -3846,23 +3861,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(ClientSidePageHeaderTextAlignment.Left)]
         public ClientSidePageHeaderTextAlignment TextAlignment {
             get {
                 return this.textAlignmentField;
             }
             set {
                 this.textAlignmentField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool TextAlignmentSpecified {
-            get {
-                return this.textAlignmentFieldSpecified;
-            }
-            set {
-                this.textAlignmentFieldSpecified = value;
             }
         }
         
@@ -4019,10 +4024,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
     public enum ClientSidePageHeaderTextAlignment {
         
         /// <remarks/>
-        Center,
+        Left,
         
         /// <remarks/>
-        Left,
+        Center,
     }
     
     /// <remarks/>
@@ -9168,8 +9173,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private bool removeExistingUniqueRoleAssignmentsField;
         
-        private bool removeExistingUniqueRoleAssignmentsFieldSpecified;
-        
         private bool clearSubscopesField;
         
         private string associatedGroupsField;
@@ -9184,6 +9187,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             this.breakRoleInheritanceField = false;
             this.resetRoleInheritanceField = false;
             this.copyRoleAssignmentsField = false;
+            this.removeExistingUniqueRoleAssignmentsField = false;
             this.clearSubscopesField = false;
         }
         
@@ -9286,23 +9290,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
         public bool RemoveExistingUniqueRoleAssignments {
             get {
                 return this.removeExistingUniqueRoleAssignmentsField;
             }
             set {
                 this.removeExistingUniqueRoleAssignmentsField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool RemoveExistingUniqueRoleAssignmentsSpecified {
-            get {
-                return this.removeExistingUniqueRoleAssignmentsFieldSpecified;
-            }
-            set {
-                this.removeExistingUniqueRoleAssignmentsFieldSpecified = value;
             }
         }
         

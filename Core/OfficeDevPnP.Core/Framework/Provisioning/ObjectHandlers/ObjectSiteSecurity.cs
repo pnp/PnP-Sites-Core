@@ -667,7 +667,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (!ownerGroup.ServerObjectIsNull.Value)
                 {
-                    siteSecurity.AssociatedOwnerGroup = ownerGroup.Title;
+                    siteSecurity.AssociatedOwnerGroup = ownerGroup.Title.Replace(web.Title, "{sitetitle}");
                     associatedGroupIds.Add(ownerGroup.Id);
                     foreach (var member in ownerGroup.Users)
                     {
@@ -676,7 +676,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (!memberGroup.ServerObjectIsNull.Value)
                 {
-                    siteSecurity.AssociatedMemberGroup = memberGroup.Title;
+                    siteSecurity.AssociatedMemberGroup = memberGroup.Title.Replace(web.Title, "{sitetitle}");
                     associatedGroupIds.Add(memberGroup.Id);
                     foreach (var member in memberGroup.Users)
                     {
@@ -685,7 +685,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (!visitorGroup.ServerObjectIsNull.Value)
                 {
-                    siteSecurity.AssociatedVisitorGroup = visitorGroup.Title;
+                    siteSecurity.AssociatedVisitorGroup = visitorGroup.Title.Replace(web.Title, "{sitetitle}");
                     associatedGroupIds.Add(visitorGroup.Id);
                     foreach (var member in visitorGroup.Users)
                     {

@@ -4,7 +4,6 @@ using Microsoft.SharePoint.Client.Taxonomy;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.ALM;
-using OfficeDevPnP.Core.Framework.Graph;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
@@ -16,6 +15,7 @@ using System.Globalization;
 using System.Linq;
 using System.Resources;
 using System.Text.RegularExpressions;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -435,41 +435,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                     }
-                }
-                // SiteCollection TermSets, only when we're not working in app-only
-                if (!web.Context.IsAppOnly())
-                {
-                    if (tokenIds.Contains("sitecollectiontermgroupid"))
-                        _tokens.Add(new SiteCollectionTermGroupIdToken(web));
-                    if (tokenIds.Contains("sitecollectiontermgroupname"))
-                        _tokens.Add(new SiteCollectionTermGroupNameToken(web));
+                }                
 
-                    if (tokenIds.Contains("sitecollectiontermsetid"))
+                if (tokenIds.Contains("sitecollectiontermgroupid"))
+                    _tokens.Add(new SiteCollectionTermGroupIdToken(web));
+                if (tokenIds.Contains("sitecollectiontermgroupname"))
+                    _tokens.Add(new SiteCollectionTermGroupNameToken(web));
+
+                if (tokenIds.Contains("sitecollectiontermsetid"))
+                {
+                    var site = (web.Context as ClientContext).Site;
+                    var siteCollectionTermGroup = termStore.GetSiteCollectionGroup(site, true);
+                    web.Context.Load(siteCollectionTermGroup);
+                    try
                     {
-                        var site = (web.Context as ClientContext).Site;
-                        var siteCollectionTermGroup = termStore.GetSiteCollectionGroup(site, true);
-                        web.Context.Load(siteCollectionTermGroup);
-                        try
+                        web.Context.ExecuteQueryRetry();
+                        if (null != siteCollectionTermGroup && !siteCollectionTermGroup.ServerObjectIsNull.Value)
                         {
+                            web.Context.Load(siteCollectionTermGroup, group => group.TermSets.Include(ts => ts.Name, ts => ts.Id));
                             web.Context.ExecuteQueryRetry();
-                            if (null != siteCollectionTermGroup && !siteCollectionTermGroup.ServerObjectIsNull.Value)
+                            foreach (var termSet in siteCollectionTermGroup.TermSets)
                             {
-                                web.Context.Load(siteCollectionTermGroup, group => group.TermSets.Include(ts => ts.Name, ts => ts.Id));
-                                web.Context.ExecuteQueryRetry();
-                                foreach (var termSet in siteCollectionTermGroup.TermSets)
-                                {
-                                    _tokens.Add(new SiteCollectionTermSetIdToken(web, termSet.Name, termSet.Id));
-                                }
+                                _tokens.Add(new SiteCollectionTermSetIdToken(web, termSet.Name, termSet.Id));
                             }
                         }
-                        catch (ServerUnauthorizedAccessException)
-                        {
-                            // If we don't have permission to access the TermGroup, just skip it
-                        }
-                        catch (NullReferenceException)
-                        {
-                            // If there isn't a default TermGroup for the Site Collection, we skip the terms in token handler
-                        }
+                    }
+                    catch (ServerUnauthorizedAccessException)
+                    {
+                        // If we don't have permission to access the TermGroup, just skip it
+                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.TermGroup_No_Access);
+                    }
+                    catch (NullReferenceException)
+                    {
+                        // If there isn't a default TermGroup for the Site Collection, we skip the terms in token handler
                     }
                 }
             }

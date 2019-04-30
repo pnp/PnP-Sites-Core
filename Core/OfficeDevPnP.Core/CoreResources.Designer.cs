@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class CoreResources {
@@ -2526,6 +2526,15 @@ namespace OfficeDevPnP.Core {
         internal static string TenantExtensions_UnknownExceptionAccessingSite {
             get {
                 return ResourceManager.GetString("TenantExtensions_UnknownExceptionAccessingSite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login context does not have access to the TermGroup. If using app context, add app@sharepoint to the term group access list..
+        /// </summary>
+        internal static string TermGroup_No_Access {
+            get {
+                return ResourceManager.GetString("TermGroup_No_Access", resourceCulture);
             }
         }
         
