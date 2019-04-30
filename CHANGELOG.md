@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Support for provisioning Site Footer links 
 - New PnPProvisioningContext object for security scope management
 - New tenant extension method (tenant.EnableCommSite) to to convert the root site collection of a tenant into a communication site
+- Added support to extract and provision list propertybag entries #2201 [patrikhellgren]
 
 ### Changed
 

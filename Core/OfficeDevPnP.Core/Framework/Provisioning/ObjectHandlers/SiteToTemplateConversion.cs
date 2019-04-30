@@ -179,7 +179,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     new ObjectHierarchyTenant(),
                     new ObjectHierarchySequenceTermGroups(),
-                    new ObjectHierarchySequenceSites()
+                    new ObjectHierarchySequenceSites(),
+                    new ObjectTeams()
                 };
 
                 var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(tenant, hierarchy, sequenceId, provisioningInfo)) + 1;
