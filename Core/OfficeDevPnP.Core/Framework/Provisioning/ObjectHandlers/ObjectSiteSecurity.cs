@@ -162,11 +162,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var memberGroup = web.AssociatedMemberGroup;
                 var visitorGroup = web.AssociatedVisitorGroup;
 
+#if !ONPREMISES
                 // need to load the groups for the ServerObjectIsNull()-check to get correct results
                 web.Context.Load(ownerGroup);
                 web.Context.Load(memberGroup);
                 web.Context.Load(visitorGroup);
                 web.Context.ExecuteQueryRetry();
+#endif
 
                 if (!ownerGroup.ServerObjectIsNull())
                 {
