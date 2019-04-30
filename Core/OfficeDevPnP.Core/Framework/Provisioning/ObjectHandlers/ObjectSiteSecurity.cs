@@ -50,108 +50,97 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     string parsedAssociatedMemberGroupName = parser.ParseString(template.Security.AssociatedMemberGroup);
                     string parsedAssociatedVisitorGroupName = parser.ParseString(template.Security.AssociatedVisitorGroup);
 
+                    bool createNewAssociatedOwnerGroup = parsedAssociatedOwnerGroupName != null && template.Security.SiteGroups.FirstOrDefault(g => g.Title == parsedAssociatedOwnerGroupName) != null;
+                    bool createNewAssociatedMemberGroup = parsedAssociatedMemberGroupName != null && template.Security.SiteGroups.FirstOrDefault(g => g.Title == parsedAssociatedMemberGroupName) != null;
+                    bool createNewAssociatedVisitorGroup = parsedAssociatedVisitorGroupName != null && template.Security.SiteGroups.FirstOrDefault(g => g.Title == parsedAssociatedVisitorGroupName) != null;
+
                     bool webNeedsUpdate = false;
 
-                    if (parsedAssociatedOwnerGroupName != null)
+                    if (createNewAssociatedOwnerGroup)
                     {
-                        if (string.IsNullOrEmpty(parsedAssociatedOwnerGroupName))
+                        if (!web.GroupExists(parsedAssociatedOwnerGroupName))
                         {
-                            web.AssociatedOwnerGroup = null;
+                            // group does not exist? create!
+                            web.AssociatedOwnerGroup = EnsureGroup(web, parsedAssociatedOwnerGroupName);
                             webNeedsUpdate = true;
                         }
                         else
                         {
-                            if (!web.GroupExists(parsedAssociatedOwnerGroupName))
+                            var ownerGroupCandidate = web.SiteGroups.GetByName(parsedAssociatedOwnerGroupName);
+                            web.Context.Load(ownerGroupCandidate, 
+                                g => g.Id);
+                            web.Context.ExecuteQueryRetry();
+                            // there is no associated group OR
+                            // there is a group with the desired associated group title that is currently not the associated group? make it the associated group
+                            if (web.AssociatedOwnerGroup.ServerObjectIsNull() || web.AssociatedOwnerGroup.Id != ownerGroupCandidate.Id)
                             {
-                                web.AssociatedOwnerGroup = EnsureGroup(web, parsedAssociatedOwnerGroupName);
+                                web.AssociatedOwnerGroup = ownerGroupCandidate;
                                 webNeedsUpdate = true;
-                            }
-                            else if (!web.AssociatedOwnerGroup.ServerObjectIsNull.Value)
-                            {
-                                if (web.AssociatedOwnerGroup.Title != parsedAssociatedOwnerGroupName)
-                                {
-                                    var updatedOwnerGroup = web.SiteGroups.GetByName(parsedAssociatedOwnerGroupName);
-                                    web.Context.Load(updatedOwnerGroup);
-                                    web.Context.ExecuteQueryRetry();
-
-                                    web.AssociatedOwnerGroup = updatedOwnerGroup;
-                                    webNeedsUpdate = true;
-                                }
                             }
                         }
                         if (webNeedsUpdate)
                         {
-                            // Trigger the creation and setting of the associated owner group
+                            // trigger the creation and setting of the associated owner group
                             web.Update();
                             web.Context.ExecuteQueryRetry();
                         }
                     }
 
-                    if (parsedAssociatedMemberGroupName != null)
+                    if (createNewAssociatedMemberGroup)
                     {
-                        if (string.IsNullOrEmpty(parsedAssociatedMemberGroupName))
+                        if (!web.GroupExists(parsedAssociatedMemberGroupName))
                         {
-                            web.AssociatedMemberGroup = null;
+                            // group does not exist? create!
+                            web.AssociatedMemberGroup = EnsureGroup(web, parsedAssociatedMemberGroupName);
                             webNeedsUpdate = true;
                         }
                         else
                         {
-                            if (!web.GroupExists(parsedAssociatedMemberGroupName))
+                            var memberGroupCandidate = web.SiteGroups.GetByName(parsedAssociatedMemberGroupName);
+                            web.Context.Load(memberGroupCandidate,
+                                g => g.Id);
+                            web.Context.ExecuteQueryRetry();
+                            // there is no associated group OR
+                            // there is a group with the desired associated group title that is currently not the associated group? make it the associated group
+                            if (web.AssociatedMemberGroup.ServerObjectIsNull() || web.AssociatedMemberGroup.Id != memberGroupCandidate.Id)
                             {
-                                web.AssociatedMemberGroup = EnsureGroup(web, parsedAssociatedMemberGroupName);
+                                web.AssociatedMemberGroup = memberGroupCandidate;
                                 webNeedsUpdate = true;
-                            }
-                            else if (!web.AssociatedMemberGroup.ServerObjectIsNull.Value)
-                            {
-                                if (web.AssociatedMemberGroup.Title != parsedAssociatedMemberGroupName)
-                                {
-                                    var updatedMemberGroup = web.SiteGroups.GetByName(parsedAssociatedMemberGroupName);
-                                    web.Context.Load(updatedMemberGroup);
-                                    web.Context.ExecuteQueryRetry();
-
-                                    web.AssociatedMemberGroup = updatedMemberGroup;
-                                    webNeedsUpdate = true;
-                                }
                             }
                         }
                         if (webNeedsUpdate)
                         {
-                            // Trigger the creation and setting of the associated member group
+                            // trigger the creation and setting of the associated member group
                             web.Update();
                             web.Context.ExecuteQueryRetry();
                         }
                     }
 
-                    if (parsedAssociatedVisitorGroupName != null)
+                    if (createNewAssociatedVisitorGroup)
                     {
-                        if (string.IsNullOrEmpty(parsedAssociatedVisitorGroupName))
+                        if (!web.GroupExists(parsedAssociatedVisitorGroupName))
                         {
-                            web.AssociatedVisitorGroup = null;
+                            // group does not exist? create!
+                            web.AssociatedVisitorGroup = EnsureGroup(web, parsedAssociatedVisitorGroupName);
                             webNeedsUpdate = true;
                         }
                         else
                         {
-                            if (!web.GroupExists(parsedAssociatedVisitorGroupName))
+                            var visitorGroupCandidate = web.SiteGroups.GetByName(parsedAssociatedVisitorGroupName);
+                            web.Context.Load(visitorGroupCandidate,
+                                g => g.Id);
+                            web.Context.ExecuteQueryRetry();
+                            // there is no associated group OR
+                            // there is a group with the desired associated group title that is currently not the associated group? make it the associated group
+                            if (web.AssociatedVisitorGroup.ServerObjectIsNull() || web.AssociatedVisitorGroup.Id != visitorGroupCandidate.Id)
                             {
-                                web.AssociatedVisitorGroup = EnsureGroup(web, parsedAssociatedVisitorGroupName);
+                                web.AssociatedVisitorGroup = visitorGroupCandidate;
                                 webNeedsUpdate = true;
-                            }
-                            else if (!web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
-                            {
-                                if (web.AssociatedVisitorGroup.Title != parsedAssociatedVisitorGroupName)
-                                {
-                                    var updatedVisitorGroup = web.SiteGroups.GetByName(parsedAssociatedVisitorGroupName);
-                                    web.Context.Load(updatedVisitorGroup);
-                                    web.Context.ExecuteQueryRetry();
-
-                                    web.AssociatedVisitorGroup = updatedVisitorGroup;
-                                    webNeedsUpdate = true;
-                                }
                             }
                         }
                         if (webNeedsUpdate)
                         {
-                            // Trigger the creation and setting of the associated visitor group
+                            // trigger the creation and setting of the associated visitor group
                             web.Update();
                             web.Context.ExecuteQueryRetry();
                         }
