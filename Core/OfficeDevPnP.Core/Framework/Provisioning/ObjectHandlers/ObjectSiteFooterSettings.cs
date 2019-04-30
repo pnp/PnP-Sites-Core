@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !ONPREMISES
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,7 +28,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-#if !ONPREMISES
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 web.EnsureProperties(w => w.FooterEnabled, w => w.ServerRelativeUrl);
@@ -58,10 +58,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                     // find the logo node
-                    if(string.IsNullOrEmpty(footer.Logo))
+                    if (string.IsNullOrEmpty(footer.Logo))
                     {
                         var logoNode = menuState.Nodes.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_LOGONODEKEY);
-                        if(logoNode != null)
+                        if (logoNode != null)
                         {
                             footer.Logo = Tokenize(logoNode.SimpleUrl, web.ServerRelativeUrl);
                         }
@@ -78,7 +78,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 template.Footer = footer;
             }
-#endif
             return template;
         }
 
@@ -101,7 +100,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-#if !ONPREMISES
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 if (template.Footer != null)
@@ -211,16 +209,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
-#endif
             return parser;
         }
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-#if !ONPREMISES
-            web.EnsureProperties(w => w.Configuration, w => w.WebTemplate);
-            var webTemplate = $"{web.WebTemplate}#{web.Configuration}";
-            if (webTemplate.Equals("SITEPAGEPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase))
+            if ((web.Context as ClientContext).Site.IsCommunicationSite())
             {
                 return true;
             }
@@ -228,17 +222,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 return false;
             }
-#else
-            return false;
-#endif
         }
 
         public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-#if !ONPREMISES
-            web.EnsureProperties(w => w.Configuration, w => w.WebTemplate);
-            var webTemplate = $"{web.WebTemplate}#{web.Configuration}";
-            if (webTemplate.Equals("SITEPAGEPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase))
+            if ((web.Context as ClientContext).Site.IsCommunicationSite())
             {
                 return template.Footer != null;
             }
@@ -246,9 +234,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 return false;
             }
-#else
-            return false;
-#endif
         }
 
         private class MenuState
@@ -293,3 +278,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
     }
 }
+#endif
