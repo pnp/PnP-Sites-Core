@@ -16,6 +16,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules
         /// </summary>
         MISSING_APP_CATALOG,
         /// <summary>
+        /// The App Catalog is there, but the user doesn't have proper permissions
+        /// </summary>
+        MISSING_APP_CATALOG_PERMISSIONS,
+        /// <summary>
         /// Lack of Permissions to access the TermStore
         /// </summary>
         MISSING_TERMSTORE_PERMISSIONS,

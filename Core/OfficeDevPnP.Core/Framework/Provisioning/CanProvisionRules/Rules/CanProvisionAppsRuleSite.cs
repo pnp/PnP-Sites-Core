@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Online.SharePoint.TenantAdministration;
@@ -84,8 +85,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                         // Try to access the AppCatalog with the current user
                         try
                         {
-                            var manager = new AppManager(web.Context as ClientContext);
-                            var siteApps = manager.GetAvailable();
+                            using (var appCatalogContext = web.Context.Clone(appCatalogUri))
+                            {
+                                // Get a reference to the "Apps for SharePoint" library
+                                var appCatalogLibrary = appCatalogContext.Web.GetListByUrl("AppCatalog");
+
+                                // Check its permissions
+                                appCatalogContext.Web.CurrentUser.EnsureProperty(u => u.LoginName);
+                                var userEffectivePermissions = appCatalogLibrary.GetUserEffectivePermissions(
+                                    appCatalogContext.Web.CurrentUser.LoginName);
+                                appCatalogContext.ExecuteQueryRetry();
+
+                                if (!userEffectivePermissions.Value.Has(PermissionKind.EditListItems))
+                                {
+                                    throw new SecurityException("Invalid user's permissions for the AppCatalog");
+                                }
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -94,7 +109,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                             result.Issues.Add(new CanProvisionIssue()
                             {
                                 Source = this.Name,
-                                Tag = CanProvisionIssueTags.MISSING_APP_CATALOG,
+                                Tag = CanProvisionIssueTags.MISSING_APP_CATALOG_PERMISSIONS,
                                 Message = CanProvisionIssuesMessages.Missing_Permissions_for_App_Catalog,
                                 ExceptionMessage = ex.Message, 
                                 ExceptionStackTrace = ex.StackTrace, 
