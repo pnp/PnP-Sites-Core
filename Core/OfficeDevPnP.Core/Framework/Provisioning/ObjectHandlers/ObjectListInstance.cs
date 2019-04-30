@@ -206,7 +206,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Configure Property Bag Entries
                         foreach (var list in processedLists)
                         {
-                            ProcessPropertyBagEntries(parser, scope, list, isNoScriptSite);
+                            ProcessPropertyBagEntries(parser, scope, list);
                         }
 
                         #endregion Property Bag Entries
