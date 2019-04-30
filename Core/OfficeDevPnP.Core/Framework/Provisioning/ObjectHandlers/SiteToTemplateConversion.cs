@@ -26,6 +26,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Extraction))
             {
 
+#if !ONPREMISES || SP2016 || SP2019
+                web.Context.DisableReturnValueCache = true;
+#endif
+
                 ProvisioningProgressDelegate progressDelegate = null;
                 ProvisioningMessagesDelegate messagesDelegate = null;
                 if (creationInfo != null)
@@ -216,6 +220,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Provisioning))
             {
+
+#if !ONPREMISES || SP2016 || SP2019
+                web.Context.DisableReturnValueCache = true;
+#endif
+
                 ProvisioningProgressDelegate progressDelegate = null;
                 ProvisioningMessagesDelegate messagesDelegate = null;
                 ProvisioningSiteProvisionedDelegate siteProvisionedDelegate = null;
