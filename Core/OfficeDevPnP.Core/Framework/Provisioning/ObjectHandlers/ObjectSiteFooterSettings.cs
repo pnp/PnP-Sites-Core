@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !ONPREMISES
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,6 @@ using Newtonsoft.Json;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-#if !ONPREMISES
     internal class ObjectSiteFooterSettings : ObjectHandlerBase
     {
         //const string footerNodeKey = "13b7c916-4fea-4bb2-8994-5cf274aeb530";
@@ -28,7 +28,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-#if !ONPREMISES
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 web.EnsureProperties(w => w.FooterEnabled, w => w.ServerRelativeUrl);
@@ -59,10 +58,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                     // find the logo node
-                    if(string.IsNullOrEmpty(footer.Logo))
+                    if (string.IsNullOrEmpty(footer.Logo))
                     {
                         var logoNode = menuState.Nodes.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_LOGONODEKEY);
-                        if(logoNode != null)
+                        if (logoNode != null)
                         {
                             footer.Logo = Tokenize(logoNode.SimpleUrl, web.ServerRelativeUrl);
                         }
@@ -79,7 +78,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 template.Footer = footer;
             }
-#endif
             return template;
         }
 
@@ -102,7 +100,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-#if !ONPREMISES
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 if (template.Footer != null)
@@ -212,14 +209,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
-#endif
             return parser;
         }
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            var baseTemplateValue = web.GetBaseTemplateId();
-            if (baseTemplateValue.Equals("SITEPAGEPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase))
+            if ((web.Context as ClientContext).Site.IsCommunicationSite())
             {
                 return true;
             }
@@ -231,8 +226,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            var baseTemplateValue = web.GetBaseTemplateId();
-            if (baseTemplateValue.Equals("SITEPAGEPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase))
+            if ((web.Context as ClientContext).Site.IsCommunicationSite())
             {
                 return template.Footer != null;
             }
@@ -283,5 +277,5 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             public MenuState MenuState { get; set; }
         }
     }
-#endif
 }
+#endif

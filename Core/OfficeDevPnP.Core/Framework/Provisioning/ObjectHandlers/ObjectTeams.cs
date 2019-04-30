@@ -1,4 +1,5 @@
-﻿using Microsoft.SharePoint.Client;
+﻿#if !ONPREMISES
+using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
@@ -841,3 +842,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         POST_WITH_RESPONSE_HEADERS
     }
 }
+#endif
