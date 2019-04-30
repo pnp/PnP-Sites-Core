@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1135,61 +1135,10 @@
   <data name="Provisioning_ObjectHandlers_Teams_TeamTemplate_FetchingError" xml:space="preserve">
     <value>Failed to get team information after provisioning.</value>
   </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_AddingMemberError" xml:space="preserve">
-    <value>Failed to add member to team.</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_AddingOwnerError" xml:space="preserve">
-    <value>Failed to add owner to team.</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_FetchingError" xml:space="preserve">
-    <value>Failed to get team information after provisioning.</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_FetchingUserError" xml:space="preserve">
-    <value>Failed to get user by upn information.</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_ListingMembersError" xml:space="preserve">
-    <value>Failed to list team members.</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_ListingOwnersError" xml:space="preserve">
-    <value>Failed to list team owners.</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_ProvisioningError" xml:space="preserve">
-    <value>Provisioning a team failed.</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError" xml:space="preserve">
-    <value>Failed to remove member from team.</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_RemovingOwnerError" xml:space="preserve">
-    <value>Failed to remove owner from team.</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_CreatingGroupError" xml:space="preserve">
-    <value>Failed to create group for team</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_AlreadyExists" xml:space="preserve">
-    <value>Team already exists</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_GroupAlreadyExists" xml:space="preserve">
-    <value>Group already exists</value>
-  </data>
   <data name="TermGroup_No_Access" xml:space="preserve">
     <value>Login context does not have access to the TermGroup. If using app context, add app@sharepoint to the term group access list.</value>
   </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_GroupDoesNotExists" xml:space="preserve">
-    <value>Group with ID {0} does not exist.</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_AppProvisioningError" xml:space="preserve">
-    <value>Cannot register App for Team.</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_CannotSendMessage" xml:space="preserve">
-    <value>Cannot send a message to the target Channel.</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_ChannelAlreadyExists" xml:space="preserve">
-    <value>Channel already exists.</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_FailedArchiveUnarchive" xml:space="preserve">
-    <value>Exception while archiving/unarchiving Team with ID {0}. Details: {1}.</value>
-  </data>
-  <data name="Provisioning_ObjectHandlers_Teams_Team_TabAlreadyExists" xml:space="preserve">
-    <value>Tab already exists.</value>
+  <data name="Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1" xml:space="preserve">
+    <value>Added property bag entry {0} to list {1}</value>
   </data>
 </root>

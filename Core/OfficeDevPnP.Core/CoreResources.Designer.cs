@@ -1524,6 +1524,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Added property bag entry {0} to list {1}.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1 {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adding list: {0} - {1}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_ {
