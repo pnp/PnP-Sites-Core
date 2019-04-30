@@ -206,7 +206,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Configure Property Bag Entries
                         foreach (var list in processedLists)
                         {
-                            ProcessPropertyBagEntries(parser, scope, list);
+                            ProcessPropertyBagEntries(parser, scope, list, isNoScriptSite);
                         }
 
                         #endregion Property Bag Entries
@@ -374,8 +374,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     currentFieldIndex++;
                     WriteMessage($"List Columns for list {listInfo.TemplateList.Title}|{internalName ?? id}|{currentFieldIndex}|{fieldsToProcess.Length}", ProvisioningMessageType.Progress);
-                    Guid fieldGuid;
-                    if (!Guid.TryParse(id, out fieldGuid))
+                    if (!Guid.TryParse(id, out var fieldGuid))
                     {
                         scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_, field.SchemaXml);
                         throw new Exception(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_, id));
@@ -515,54 +514,61 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private void ProcessPropertyBagEntries(TokenParser parser, PnPMonitoredScope scope, ListInfo list)
+        private void ProcessPropertyBagEntries(TokenParser parser, PnPMonitoredScope scope, ListInfo list,
+            bool isNoScriptSite)
         {
-            if (list.TemplateList.PropertyBagEntries != null && list.TemplateList.PropertyBagEntries.Count > 0)
+            if (!isNoScriptSite)
             {
-                // Handle root folder property bag
-                var rootFolder = list.SiteList.RootFolder;
-                list.SiteList.Context.Load(rootFolder, f => f.Properties);
-                list.SiteList.Context.ExecuteQueryRetry();
-
-                foreach (var p in list.TemplateList.PropertyBagEntries)
+                if (list.TemplateList.PropertyBagEntries != null && list.TemplateList.PropertyBagEntries.Count > 0)
                 {
-                    var parsedKey = parser.ParseString(p.Key);
-                    if (!rootFolder.Properties.FieldValues.ContainsKey(parsedKey) || p.Overwrite)
+                    // Handle root folder property bag
+                    var rootFolder = list.SiteList.RootFolder;
+                    list.SiteList.Context.Load(rootFolder, f => f.Properties);
+                    list.SiteList.Context.ExecuteQueryRetry();
+
+                    foreach (var p in list.TemplateList.PropertyBagEntries)
                     {
-                        list.SiteList.SetPropertyBagValue(parsedKey, parser.ParseString(p.Value));
-                        if (p.Indexed)
+                        var parsedKey = parser.ParseString(p.Key);
+                        if (!rootFolder.Properties.FieldValues.ContainsKey(parsedKey) || p.Overwrite)
                         {
-                            list.SiteList.AddIndexedPropertyBagKey(parsedKey);
+                            list.SiteList.SetPropertyBagValue(parsedKey, parser.ParseString(p.Value));
+                            if (p.Indexed)
+                            {
+                                list.SiteList.AddIndexedPropertyBagKey(parsedKey);
+                            }
+                            else
+                            {
+                                list.SiteList.RemoveIndexedPropertyBagKey(parsedKey);
+                            }
                         }
-                        else
-                        {
-                            list.SiteList.RemoveIndexedPropertyBagKey(parsedKey);
-                        }
+                        scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1, parsedKey, list.SiteList.Title);
                     }
-                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1, parsedKey, list.SiteList.Title);
                 }
+            }
+            else
+            {
+                scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingPropertyBag);
             }
         }
 
         private static void CheckContentTypes(Web web, ProvisioningTemplate template, PnPMonitoredScope scope, ListInstance templateList)
         {
             // Check for the presence of the references content types and throw an exception if not present or in template
-            if (templateList.ContentTypesEnabled)
+            if (!templateList.ContentTypesEnabled) return;
+
+            var existingCts = web.Context.LoadQuery(web.AvailableContentTypes);
+            web.Context.ExecuteQueryRetry();
+            foreach (var ct in templateList.ContentTypeBindings)
             {
-                var existingCts = web.Context.LoadQuery(web.AvailableContentTypes);
-                web.Context.ExecuteQueryRetry();
-                foreach (var ct in templateList.ContentTypeBindings)
+                var found = template.ContentTypes.Any(t => string.Equals(t.Id, ct.ContentTypeId, StringComparison.InvariantCultureIgnoreCase));
+                if (!found)
                 {
-                    var found = template.ContentTypes.Any(t => string.Equals(t.Id, ct.ContentTypeId, StringComparison.InvariantCultureIgnoreCase));
-                    if (!found)
-                    {
-                        found = existingCts.Any(t => string.Equals(t.StringId, ct.ContentTypeId, StringComparison.InvariantCultureIgnoreCase));
-                    }
-                    if (!found)
-                    {
-                        scope.LogError("Referenced content type {0} not available in site or in template", ct.ContentTypeId);
-                        throw new Exception($"Referenced content type {ct.ContentTypeId} not available in site or in template");
-                    }
+                    found = existingCts.Any(t => string.Equals(t.StringId, ct.ContentTypeId, StringComparison.InvariantCultureIgnoreCase));
+                }
+                if (!found)
+                {
+                    scope.LogError("Referenced content type {0} not available in site or in template", ct.ContentTypeId);
+                    throw new Exception($"Referenced content type {ct.ContentTypeId} not available in site or in template");
                 }
             }
         }
@@ -2600,7 +2606,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 list.IRMSettings.PolicyTitle = siteList.InformationRightsManagementSettings.PolicyTitle;
             }
 
-            return (list);
+            return list;
         }
 
         private static ListInstance ExtractUserCustomActions(Web web, List siteList, ListInstance list, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
@@ -2687,7 +2693,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
-            return (list);
+            return list;
         }
 
         private string ParseFieldSchema(string schemaXml, Web web, List<List> lists)
