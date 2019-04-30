@@ -1161,7 +1161,7 @@
     </pnp:TeamTemplate>
 
     <pnp:Team DisplayName="Sample Team 01" Description="This is just a sample Team 01"
-              CloneFrom="{TeamId:GroupMailNickname}">
+              Visibility="Public" CloneFrom="{TeamId:GroupMailNickname}">
       <pnp:Security>
         <pnp:Owners ClearExistingItems="true">
           <pnp:User UserPrincipalName="owner01@domain.onmicrosoft.com" />

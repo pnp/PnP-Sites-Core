@@ -485,7 +485,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Desc", teamTempaltes[0].Description);
             Assert.AreEqual("MyTemplate", teamTempaltes[0].DisplayName);
             Assert.AreEqual(BaseTeamVisibility.Private, teamTempaltes[0].Visibility);
-            Assert.AreEqual(true, teamTempaltes[0].VisibilitySpecified);
             Assert.IsTrue(teamTempaltes[0].Text[0].Contains("JSON template here"));
         }
 
