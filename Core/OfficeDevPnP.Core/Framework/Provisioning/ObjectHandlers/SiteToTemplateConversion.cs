@@ -90,13 +90,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.PageContents)) objectHandlers.Add(new ObjectPageContents());
 #if !ONPREMISES
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.PageContents)) objectHandlers.Add(new ObjectClientSidePageContents());
+                if (creationInfo.HandlersToProcess.HasFlag(Handlers.SiteHeader)) objectHandlers.Add(new ObjectSiteHeaderSettings());
+                if (creationInfo.HandlersToProcess.HasFlag(Handlers.SiteFooter)) objectHandlers.Add(new ObjectSiteFooterSettings());
 #endif
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.PropertyBagEntries)) objectHandlers.Add(new ObjectPropertyBagEntry());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Publishing)) objectHandlers.Add(new ObjectPublishing());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Workflows)) objectHandlers.Add(new ObjectWorkflows());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
-                if (creationInfo.HandlersToProcess.HasFlag(Handlers.SiteHeader)) objectHandlers.Add(new ObjectSiteHeaderSettings());
-                if (creationInfo.HandlersToProcess.HasFlag(Handlers.SiteFooter)) objectHandlers.Add(new ObjectSiteFooterSettings());
+
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Navigation)) objectHandlers.Add(new ObjectNavigation());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.ImageRenditions)) objectHandlers.Add(new ObjectImageRenditions());
                 objectHandlers.Add(new ObjectLocalization()); // Always add this one, check is done in the handler
@@ -320,6 +321,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (!calledFromHierarchy && provisioningInfo.HandlersToProcess.HasFlag(Handlers.Tenant)) objectHandlers.Add(new ObjectTenant());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ApplicationLifecycleManagement)) objectHandlers.Add(new ObjectApplicationLifecycleManagement());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Pages)) objectHandlers.Add(new ObjectClientSidePages());
+                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SiteHeader)) objectHandlers.Add(new ObjectSiteHeaderSettings());
+                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SiteFooter)) objectHandlers.Add(new ObjectSiteFooterSettings());
 #endif
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.CustomActions)) objectHandlers.Add(new ObjectCustomActions());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Publishing)) objectHandlers.Add(new ObjectPublishing());
@@ -327,8 +330,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SearchSettings)) objectHandlers.Add(new ObjectSearchSettings());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.PropertyBagEntries)) objectHandlers.Add(new ObjectPropertyBagEntry());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
-                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SiteHeader)) objectHandlers.Add(new ObjectSiteHeaderSettings());
-                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SiteFooter)) objectHandlers.Add(new ObjectSiteFooterSettings());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Navigation)) objectHandlers.Add(new ObjectNavigation());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ImageRenditions)) objectHandlers.Add(new ObjectImageRenditions());
                 objectHandlers.Add(new ObjectLocalization()); // Always add this one, check is done in the handler
@@ -399,9 +400,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private void CallWebHooks(ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateWebhookKind kind, ObjectHandlerBase objectHandler = null)
         {
             using (var scope = new PnPMonitoredScope("ProvisioningTemplate WebHook Call"))
-            { 
-                if (template.ProvisioningTemplateWebhooks != null && template.ProvisioningTemplateWebhooks.Any())
             {
+                if (template.ProvisioningTemplateWebhooks != null && template.ProvisioningTemplateWebhooks.Any())
+                {
                     foreach (var webhook in template.ProvisioningTemplateWebhooks.Where(w => w.Kind == kind))
                     {
                         SimpleTokenParser internalParser = new SimpleTokenParser();
@@ -437,7 +438,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     }
                                     catch (HttpRequestException ex)
                                     {
-                                        scope.LogError(ex,"Error calling provisioning template webhook");
+                                        scope.LogError(ex, "Error calling provisioning template webhook");
                                     }
                                     break;
                                 }
@@ -484,7 +485,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 }
                                             }
                                         }
-                                    } catch (HttpRequestException ex)
+                                    }
+                                    catch (HttpRequestException ex)
                                     {
                                         scope.LogError(ex, "Error calling provisioning template webhook");
                                     }
