@@ -206,7 +206,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Configure Property Bag Entries
                         foreach (var list in processedLists)
                         {
-                            ProcessPropertyBagEntries(parser, scope, list, isNoScriptSite);
+                            ProcessPropertyBagEntries(parser, scope, list);
                         }
 
                         #endregion Property Bag Entries
@@ -514,40 +514,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private void ProcessPropertyBagEntries(TokenParser parser, PnPMonitoredScope scope, ListInfo list,
-            bool isNoScriptSite)
+        private void ProcessPropertyBagEntries(TokenParser parser, PnPMonitoredScope scope, ListInfo list)
         {
-            if (!isNoScriptSite)
+            if (list.TemplateList.PropertyBagEntries != null && list.TemplateList.PropertyBagEntries.Count > 0)
             {
-                if (list.TemplateList.PropertyBagEntries != null && list.TemplateList.PropertyBagEntries.Count > 0)
-                {
-                    // Handle root folder property bag
-                    var rootFolder = list.SiteList.RootFolder;
-                    list.SiteList.Context.Load(rootFolder, f => f.Properties);
-                    list.SiteList.Context.ExecuteQueryRetry();
+                // Handle root folder property bag
+                var rootFolder = list.SiteList.RootFolder;
+                list.SiteList.Context.Load(rootFolder, f => f.Properties);
+                list.SiteList.Context.ExecuteQueryRetry();
 
-                    foreach (var p in list.TemplateList.PropertyBagEntries)
+                foreach (var p in list.TemplateList.PropertyBagEntries)
+                {
+                    var parsedKey = parser.ParseString(p.Key);
+                    if (!rootFolder.Properties.FieldValues.ContainsKey(parsedKey) || p.Overwrite)
                     {
-                        var parsedKey = parser.ParseString(p.Key);
-                        if (!rootFolder.Properties.FieldValues.ContainsKey(parsedKey) || p.Overwrite)
+                        list.SiteList.SetPropertyBagValue(parsedKey, parser.ParseString(p.Value));
+                        if (p.Indexed)
                         {
-                            list.SiteList.SetPropertyBagValue(parsedKey, parser.ParseString(p.Value));
-                            if (p.Indexed)
-                            {
-                                list.SiteList.AddIndexedPropertyBagKey(parsedKey);
-                            }
-                            else
-                            {
-                                list.SiteList.RemoveIndexedPropertyBagKey(parsedKey);
-                            }
+                            list.SiteList.AddIndexedPropertyBagKey(parsedKey);
                         }
-                        scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1, parsedKey, list.SiteList.Title);
+                        else
+                        {
+                            list.SiteList.RemoveIndexedPropertyBagKey(parsedKey);
+                        }
                     }
+                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1, parsedKey, list.SiteList.Title);
                 }
-            }
-            else
-            {
-                scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingPropertyBag);
             }
         }
 
