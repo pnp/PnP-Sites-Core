@@ -35,7 +35,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var tenant = new Tenant(tenantContext);
                         TenantHelper.ProcessCdns(tenant, template.Tenant, parser, scope, MessagesDelegate);
                         parser = TenantHelper.ProcessApps(tenant, template.Tenant, template.Connector, parser, scope, applyingInformation, MessagesDelegate);
-                        parser = TenantHelper.ProcessWebApiPermissions(tenant, template.Tenant, parser, scope, MessagesDelegate);
+
+                        try
+                        {
+                            parser = TenantHelper.ProcessWebApiPermissions(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                        }
+                        catch (System.Exception ex)
+                        {
+                            scope.LogError(ex.Message);
+                        }
+
                         parser = TenantHelper.ProcessSiteScripts(tenant, template.Tenant, template.Connector, parser, scope, MessagesDelegate);
                         parser = TenantHelper.ProcessSiteDesigns(tenant, template.Tenant, parser, scope, MessagesDelegate);
                         parser = TenantHelper.ProcessStorageEntities(tenant, template.Tenant, parser, scope, applyingInformation, MessagesDelegate);
