@@ -177,14 +177,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         modelTerm.Id = returnTuple.Item1;
                                         parser = returnTuple.Item2;
                                     }
+                                    reusedTerms.AddRange(returnTuple.Item3);
                                 }
                                 else
                                 {
+                                    // todo: add handling for reused term?
                                     modelTerm.Id = term.Id;
                                 }
                             }
                             else
                             {
+                                // todo: add handling for reused term?
                                 modelTerm.Id = term.Id;
                             }
 
@@ -201,6 +204,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 modelTerm.Id = returnTuple.Item1;
                                 parser = returnTuple.Item2;
                             }
+                            reusedTerms.AddRange(returnTuple.Item3);
                         }
                     }
                     else
@@ -211,6 +215,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             modelTerm.Id = returnTuple.Item1;
                             parser = returnTuple.Item2;
                         }
+                        reusedTerms.AddRange(returnTuple.Item3);
                     }
                 }
 
@@ -273,7 +278,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     Parent = parent,
                     TermStore = termStore
                 });
-                return Tuple.Create(Guid.Empty, parser, reusedTerms); ;
+                return Tuple.Create(modelTerm.Id, parser, reusedTerms); ;
             }
 
             // Create new term

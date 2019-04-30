@@ -216,7 +216,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             using (var ctx = TestCommon.CreateClientContext())
             {
-
                 var parser = new TokenParser(ctx.Web, template);
 
                 new ObjectTermGroups().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
@@ -249,7 +248,27 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(createdReusedTerm.IsReused);
             }
 
-
+            // check result by reading the template again
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                var result = ctx.Web.GetProvisioningTemplate(new ProvisioningTemplateCreationInformation(ctx.Web)
+                {
+                    HandlersToProcess = Handlers.TermGroups,
+                    IncludeAllTermGroups = true // without this being true no term groups will be returned
+                });
+                // note: cannot use TermGroupValidator class to validate the result as XML since the read template contains additional information like Description="", Owner="[...]", differing TermGroup ID etc. which makes the validation fail; so manually compare what's interesting
+                var newTermGroups = result.TermGroups.Where(tg => tg.Name == termGroup.Name);
+                Assert.AreEqual(1, newTermGroups.Count());
+                var newTermGroup = newTermGroups.First();
+                Assert.AreEqual(2, newTermGroup.TermSets.Count);
+                Assert.AreEqual(1, newTermGroup.TermSets[0].Terms.Count);
+                Assert.AreEqual(1, newTermGroup.TermSets[1].Terms.Count);
+                // note: this check that the IDs of the source and reused term are the same to document this behavior
+                Assert.AreEqual(sourceTerm.Id, newTermGroup.TermSets[0].Terms[0].Id);
+                Assert.AreEqual(sourceTerm.Id, newTermGroup.TermSets[1].Terms[0].Id);
+                Assert.IsTrue(newTermGroup.TermSets[0].Terms[0].IsReused);
+                Assert.IsTrue(newTermGroup.TermSets[1].Terms[0].IsReused);
+            }
         }
 
     }
