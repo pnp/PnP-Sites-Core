@@ -1,5 +1,6 @@
 ﻿#if !ONPREMISES
 using Microsoft.Online.SharePoint.TenantAdministration;
+using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
@@ -31,7 +32,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         parser = TenantHelper.ProcessWebApiPermissions(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
                     }
-                    catch (System.Exception ex)
+                    catch (ServerUnauthorizedAccessException ex)
                     {
                         scope.LogError(ex.Message);
                     }

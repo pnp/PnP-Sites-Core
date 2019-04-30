@@ -40,7 +40,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             parser = TenantHelper.ProcessWebApiPermissions(tenant, template.Tenant, parser, scope, MessagesDelegate);
                         }
-                        catch (System.Exception ex)
+                        catch (ServerUnauthorizedAccessException ex)
                         {
                             scope.LogError(ex.Message);
                         }
