@@ -30,9 +30,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
         {
             Object result = null;
 
-            var security = (source as Model.SiteSecurity);
-            var userCollection = security?.GetPublicInstancePropertyValue(this.collectionName);
-            var clearItems = security?.GetPublicInstancePropertyValue(this.clearItemsPropertyName);
+            //source is either Security instance or SiteGroup instance
+            var userCollection = source?.GetPublicInstancePropertyValue(this.collectionName);
+            var clearItems = source?.GetPublicInstancePropertyValue(this.clearItemsPropertyName);
 
             if (null != userCollection && (((ICollection)userCollection).Count > 0 || (Boolean)clearItems))
             {
