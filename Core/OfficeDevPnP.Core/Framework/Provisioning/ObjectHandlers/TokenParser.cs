@@ -1007,6 +1007,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private List<string> ParseTemplate(ProvisioningTemplate template)
         {
             List<string> tokenIds = new List<string>();
+
+            // Add parameter tokenid if parameters are specified
+            if (template.Parameters != null && template.Parameters.Any())
+            {
+                tokenIds.Add("parameter");
+            }
+
             var xml = template.ToXML();
 
             if (xml.IndexOfAny(TokenChars) == -1) return tokenIds;

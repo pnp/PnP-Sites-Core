@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -306,7 +307,8 @@ namespace OfficeDevPnP.Core.Utilities
                     : JsonConvert.SerializeObject(content, Formatting.None, new JsonSerializerSettings
                     {
                         NullValueHandling = NullValueHandling.Ignore,
-                        ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                        ContractResolver = new ODataBindJsonResolver(),
+                        
                     });
                 requestContent = new StringContent(jsonString, Encoding.UTF8, contentType);
             }
