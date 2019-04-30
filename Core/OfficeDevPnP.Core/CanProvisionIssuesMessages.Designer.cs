@@ -70,6 +70,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to In order to provision the template you need to have proper permission to access the App Catalog in your tenant. Please, configure the App Catalog security settings, and try again..
+        /// </summary>
+        internal static string Missing_Permissions_for_App_Catalog {
+            get {
+                return ResourceManager.GetString("Missing_Permissions_for_App_Catalog", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to In order to provision the template you need to be Term Store Administrator. Please, change the Term Store settings (for instructions you can read this document: https://go.microsoft.com/fwlink/?linkid=2087340) and try again..
         /// </summary>
         internal static string Term_Store_Not_Admin {

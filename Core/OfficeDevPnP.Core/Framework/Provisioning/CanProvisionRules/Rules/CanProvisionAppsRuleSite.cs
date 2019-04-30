@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.ALM;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
@@ -77,6 +78,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                             ExceptionMessage = null, // Here we don't have any specific exception
                             ExceptionStackTrace = null, // Here we don't have any specific exception
                         });
+                    }
+                    else
+                    {
+                        // Try to access the AppCatalog with the current user
+                        try
+                        {
+                            var manager = new AppManager(web.Context as ClientContext);
+                            var siteApps = manager.GetAvailable();
+                        }
+                        catch (Exception ex)
+                        {
+                            // And if we fail, raise a CanProvisionIssue
+                            result.CanProvision = false;
+                            result.Issues.Add(new CanProvisionIssue()
+                            {
+                                Source = this.Name,
+                                Tag = CanProvisionIssueTags.MISSING_APP_CATALOG,
+                                Message = CanProvisionIssuesMessages.Missing_Permissions_for_App_Catalog,
+                                ExceptionMessage = ex.Message, 
+                                ExceptionStackTrace = ex.StackTrace, 
+                            });
+                        }
                     }
                 }
             }
