@@ -1295,7 +1295,7 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             // ensure we do have the page list item loaded
-            EnsurePageListItem();
+            EnsurePageListItem(true);
 
             // Set promoted state
             this.pageListItem[ClientSidePage.PromotedStateField] = (Int32)PromotedState.Promoted;
@@ -1394,9 +1394,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
-        private void EnsurePageListItem()
+        private void EnsurePageListItem(Boolean force = false)
         {
-            if (this.pageListItem == null)
+            if (this.pageListItem == null || force)
             {
                 string serverRelativePageName;
                 File pageFile;
