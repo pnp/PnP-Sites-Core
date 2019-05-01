@@ -582,6 +582,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
+            principal?.EnsureProperty(p => p.Id);
+
             return principal;
         }
 
