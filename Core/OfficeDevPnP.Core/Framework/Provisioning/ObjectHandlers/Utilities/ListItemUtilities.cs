@@ -1,10 +1,8 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
-using Newtonsoft.Json;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
