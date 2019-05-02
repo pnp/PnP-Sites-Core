@@ -440,7 +440,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 itemValues.Add(new FieldUpdateValue(key as string, newVals));
                                 break;
                             }
-                        //case "MultiChoice": // note: we don't need this, it is covered by the default handler
+                        case "MultiChoice":
+                            {
+                                var value = parser.ParseString(valuesToSet[key]);
+                                if (value == null) goto default;
+                                string[] multiValue = new string[] { value };
+                                // assume that multiple values can be given encoded like this: a;#b;#c
+                                multiValue = value.Split(new string[] { ";#" }, StringSplitOptions.RemoveEmptyEntries);
+                                itemValues.Add(new FieldUpdateValue(key as string, multiValue, null));
+                                break;
+                            }
                         default:
                             {
                                 itemValues.Add(new FieldUpdateValue(key as string, valuesToSet[key]));

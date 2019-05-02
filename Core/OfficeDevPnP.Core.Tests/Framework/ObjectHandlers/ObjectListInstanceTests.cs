@@ -719,17 +719,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     Url = $"lists/{multivaluechoicefieldListName}",
                     TemplateType = 100,
                 };
-                listinstance.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = $@"<Field DisplayName=""Key"" FillInChoice=""FALSE"" Format=""Dropdown"" Name=""Key"" Title=""Key"" Type=""MultiChoice"" ID=""{(Guid.NewGuid().ToString("B"))}"" StaticName=""Key"" ColName=""ntext2"" RowOrdinal=""0""> <CHOICES> <CHOICE>1</CHOICE> <CHOICE>2</CHOICE> <CHOICE>c#;3</CHOICE> <CHOICE>c#4</CHOICE> <CHOICE>c;5</CHOICE> <CHOICE>c,6</CHOICE> <CHOICE>c.7</CHOICE> <CHOICE>c-8</CHOICE> <CHOICE>cö9</CHOICE> <CHOICE>a</CHOICE> <CHOICE>b</CHOICE> </CHOICES> </Field>" });
+                listinstance.Fields.Add(new Core.Framework.Provisioning.Model.Field() { SchemaXml = $@"<Field DisplayName=""Key"" FillInChoice=""FALSE"" Format=""Dropdown"" Name=""Key"" Title=""Key"" Type=""MultiChoice"" ID=""{(Guid.NewGuid().ToString("B"))}"" StaticName=""Key"" ColName=""ntext2"" RowOrdinal=""0""> <CHOICES> <CHOICE>1</CHOICE> <CHOICE>2</CHOICE> <CHOICE>c#;3</CHOICE> <CHOICE>c#4</CHOICE> <CHOICE>c;5</CHOICE> <CHOICE>c,6</CHOICE> <CHOICE>c.7</CHOICE> <CHOICE>c-8</CHOICE> <CHOICE>cö9</CHOICE> <CHOICE>a</CHOICE> <CHOICE>b</CHOICE> <CHOICE>c</CHOICE> <CHOICE>d</CHOICE> <CHOICE>e</CHOICE> <CHOICE>f</CHOICE> </CHOICES> </Field>" });
 
                 var datarows = new List<DataRow>()
                 {
                     // set using a single plain value
                     new DataRow(new Dictionary<string, string>{ { "Title", "Test -1-"}, { "Key", "1" } }),
-                    // set using JSON array syntax
+                    // set using "classic" array syntax
                     new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -2-"}, { "Key", ";#2;#" } }),
                     new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -3-"}, { "Key", @";#a;#b;#" } }),
                     new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -3-"}, { "Key", @"c;#d" } }),
-                    new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -4-"}, { "Key", @"e;#;#f" } }) // note: such a value cannot be set in the browser UI
+                    new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -4-"}, { "Key", @"e;#;#f" } })
                 };
                 listinstance.DataRows.AddRange(datarows);
                 template.Lists.Add(listinstance);
