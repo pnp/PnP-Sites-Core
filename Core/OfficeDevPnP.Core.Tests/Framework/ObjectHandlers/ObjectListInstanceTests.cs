@@ -726,9 +726,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     // set using a single plain value
                     new DataRow(new Dictionary<string, string>{ { "Title", "Test -1-"}, { "Key", "1" } }),
                     // set using JSON array syntax
-                    new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -2-"}, { "Key", "[2]" } }),
-                    new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -3-"}, { "Key", @"[""a""]" } }),
-                    new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -3-"}, { "Key", @"[""a"", ""b""]" } })
+                    new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -2-"}, { "Key", ";#2;#" } }),
+                    new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -3-"}, { "Key", @";#a;#b;#" } }),
+                    new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -3-"}, { "Key", @"c;#d" } }),
+                    new DataRow(new Dictionary<string,string>{{ "Title" ,"Test -4-"}, { "Key", @"e;#;#f" } }) // note: such a value cannot be set in the browser UI
                 };
                 listinstance.DataRows.AddRange(datarows);
                 template.Lists.Add(listinstance);
@@ -736,7 +737,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 var list = ctx.Web.GetListByTitle(multivaluechoicefieldListName);
                 var rowCount = list.ItemCount;
-                Assert.IsTrue(rowCount == 4, "Row count not equals 4");
+                Assert.IsTrue(rowCount == 5, "Row count not equals 5");
 
                 var items = list.GetItems(CamlQuery.CreateAllItemsQuery());
                 ctx.Load(items);
@@ -744,8 +745,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 CollectionAssert.AreEqual(items[0].FieldValues["Key"] as string[], new string[] { "1" });
                 CollectionAssert.AreEqual(items[1].FieldValues["Key"] as string[], new string[] { "2" });
-                CollectionAssert.AreEqual(items[2].FieldValues["Key"] as string[], new string[] { "a" });
-                CollectionAssert.AreEqual(items[3].FieldValues["Key"] as string[], new string[] { "a", "b" });
+                CollectionAssert.AreEqual(items[2].FieldValues["Key"] as string[], new string[] { "a", "b" });
+                CollectionAssert.AreEqual(items[3].FieldValues["Key"] as string[], new string[] { "c", "d" });
+                CollectionAssert.AreEqual(items[4].FieldValues["Key"] as string[], new string[] { "e", "f" });
             }
         }
 

@@ -442,23 +442,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 itemValues.Add(new FieldUpdateValue(key as string, newVals));
                                 break;
                             }
-                        case "MultiChoice":
-                            {
-                                var value = parser.ParseString(valuesToSet[key]);
-                                if (value == null) goto default;
-                                string[] multiValue = new string[] { value };
-                                try
-                                {
-                                    // assume that multiple values are given encoded as JSON like this: ["c1","c 2","c#;3","c#4","c;5","c,6","c.7","c-8","cö9"]
-                                    multiValue = JsonConvert.DeserializeObject<string[]>(value, new JsonSerializerSettings());
-                                } catch
-                                {
-                                    // data does not seem to be a JSON-encoded string array - do nothing and leave it as single string
-                                }
-
-                                itemValues.Add(new FieldUpdateValue(key as string, multiValue, null));
-                                break;
-                            }
+                        //case "MultiChoice": // note: we don't need this, it is covered by the default handler
                         default:
                             {
                                 itemValues.Add(new FieldUpdateValue(key as string, valuesToSet[key]));
