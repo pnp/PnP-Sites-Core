@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
@@ -78,10 +79,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             using (new PnPProvisioningContext((resource, scope) => Task.FromResult(TestCommon.AcquireTokenAsync(resource, scope))))
             {
-                using (var ctx = TestCommon.CreateClientContext())
+                using (var ctx = TestCommon.CreateTenantClientContext())
                 {
+                    var tenant = new Tenant(ctx);
                     var parser = new TokenParser(ctx.Web, template);
-                    new ObjectTeams().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                    new ObjectTeams().ProvisionObjects(tenant, template.ParentHierarchy, null, parser, new ProvisioningTemplateApplyingInformation());
                 }
 
                 Assert.IsTrue(TeamsHaveBeenProvisioned());

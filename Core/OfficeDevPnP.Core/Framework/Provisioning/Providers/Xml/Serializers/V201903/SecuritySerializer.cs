@@ -60,6 +60,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                         var clearValues = s?.GetPublicInstancePropertyValue("AdditionalVisitors")?.GetPublicInstancePropertyValue("ClearExistingItems");
                         return (clearValues != null ? (Boolean)clearValues : false);
                     }));
+                expressions.Add(s => s.SiteGroups[0].Members,
+                    new TemplateSecurityUsersFromSchemaToModelTypeResolver("Members"));
+                expressions.Add(s => s.SiteGroups[0].ClearExistingMembers,
+                    new ExpressionValueResolver((s, p) =>
+                    {
+                        var clearValues = s?.GetPublicInstancePropertyValue("Members")?.GetPublicInstancePropertyValue("ClearExistingItems");
+                        return (clearValues != null ? (Boolean)clearValues : false);
+                    }));
 
                 PnPObjectsMapper.MapProperties(security, template.Security, expressions, true);
             }
@@ -103,6 +111,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                     new TemplateSecurityUsersFromModelToSchemaTypeResolver("AdditionalMembers", "ClearExistingMembers"));
                 expressions.Add($"{securityType}.AdditionalVisitors",
                     new TemplateSecurityUsersFromModelToSchemaTypeResolver("AdditionalVisitors", "ClearExistingVisitors"));
+                expressions.Add($"{siteGroupType}.Members",
+                    new TemplateSecurityUsersFromModelToSchemaTypeResolver("Members", "ClearExistingMembers"));
 
                 PnPObjectsMapper.MapProperties(template.Security, target, expressions, recursive: true);
 
