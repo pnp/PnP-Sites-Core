@@ -28,6 +28,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override string InternalName => "ClientSidePages";
 
+
+
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -36,6 +38,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // determine pages library
                 string pagesLibrary = "SitePages";
+
+                var pagesLibraryList = web.GetListByUrl(pagesLibrary, p => p.RootFolder);
 
                 List<string> preCreatedPages = new List<string>();
 
@@ -48,9 +52,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
                     {
-                        url = $"{pagesLibrary}/{Pages.ClientSidePage.TemplatesFolder}/{pageName}";
+                        url = $"{pagesLibrary}/{Pages.ClientSidePage.GetTemplatesFolder(pagesLibraryList)}/{pageName}";
                     }
-                
+
                     // Write page level status messages, needed in case many pages are provisioned
                     currentPageIndex++;
                     WriteMessage($"ClientSidePage|Create {pageName}|{currentPageIndex}|{template.ClientSidePages.Count}", ProvisioningMessageType.Progress);
@@ -120,7 +124,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
                     {
-                        url = $"{pagesLibrary}/{Pages.ClientSidePage.TemplatesFolder}/{pageName}";
+                        url = $"{pagesLibrary}/{Pages.ClientSidePage.GetTemplatesFolder(pagesLibraryList)}/{pageName}";
                     }
 
                     // Write page level status messages, needed in case many pages are provisioned
@@ -152,7 +156,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
                             {
                                 // Get the existing template page
-                                page = web.LoadClientSidePage($"{Pages.ClientSidePage.TemplatesFolder}/{pageName}");
+                                page = web.LoadClientSidePage($"{Pages.ClientSidePage.GetTemplatesFolder(pagesLibraryList)}/{pageName}");
                             }
                             else
                             {
