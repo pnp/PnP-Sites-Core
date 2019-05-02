@@ -313,7 +313,10 @@
         <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E"
                      Name="General Project Document"
                      Group="Base Foundation Content Types"
-                     Description="General Project Document Content Type">
+                     Description="General Project Document Content Type"
+                     NewFormUrl="/Forms/NewForm.aspx" 
+                     EditFormUrl="/Forms/EditForm.aspx" 
+                     DisplayFormUrl="/Forms/DisplayForm.aspx">
           <pnp:FieldRefs>
             <!-- Project ID -->
             <pnp:FieldRef ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" />
@@ -324,6 +327,7 @@
             <!-- Project Description -->
             <pnp:FieldRef ID="{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}" UpdateChildren="true" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="DocumentTemplate.dotx" />
         </pnp:ContentType>
 
         <pnp:ContentType ID="0x0120D5200039D83CD2C9BA4A4499AEE6BE3562E023"
@@ -340,7 +344,7 @@
             <pnp:FieldRef ID="{A5DE9600-B7A6-42DD-A05E-10D4F1500208}" />
           </pnp:FieldRefs>
           <pnp:DocumentSetTemplate WelcomePage="{sitecollection}/_cts/ProjectDocumentSet/ProjectHomePage.aspx">
-            <pnp:AllowedContentTypes>
+            <pnp:AllowedContentTypes RemoveExistingContentTypes="true">
               <pnp:AllowedContentType ContentTypeID="0x0101" />
               <pnp:AllowedContentType ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" />
             </pnp:AllowedContentTypes>
