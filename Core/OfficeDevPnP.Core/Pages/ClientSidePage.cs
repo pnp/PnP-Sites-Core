@@ -684,20 +684,37 @@ namespace OfficeDevPnP.Core.Pages
             return page;
         }
 
-        public void SaveAsTemplate(string pageName)
+        private string EnsureTemplatesFolder()
         {
-            string pageUrl = $"{TemplatesFolder}/{pageName}";
-
-            // Ensure the Templates folder does exist
-            var templateFolder = this.Context.Web.EnsureFolderPath($"SitePages/{TemplatesFolder}");
-            var uniqueId = templateFolder.EnsureProperty(p => p.UniqueId);
-
-            // Ensure that the property is set that marks the folder as a templates folder
             if (this.spPagesLibrary == null)
             {
                 this.spPagesLibrary = this.Context.Web.GetListByUrl(this.PagesLibrary, p => p.RootFolder);
             }
-            this.spPagesLibrary.SetPropertyBagValue(TemplatesFolderGuid, uniqueId.ToString());
+
+            var folderGuid = this.spPagesLibrary.GetPropertyBagValueString(TemplatesFolderGuid,null);
+            if(folderGuid == null)
+            {
+                // No templates Folder
+                var templateFolder = this.context.Web.EnsureFolderPath($"SitePages/{TemplatesFolder}");
+                var uniqueId = templateFolder.EnsureProperty(f => f.UniqueId);
+                this.spPagesLibrary.SetPropertyBagValue(TemplatesFolderGuid, uniqueId.ToString());
+                return templateFolder.Name;
+            } else
+            {
+                var templateFolder = this.context.Web.GetFolderById(Guid.Parse(folderGuid));
+                templateFolder.EnsureProperty(f => f.Name);
+                return templateFolder.Name;
+            }
+        }
+
+        public void SaveAsTemplate(string pageName)
+        {
+            string pageUrl = $"{EnsureTemplatesFolder()}/{pageName}";
+
+            if (this.spPagesLibrary == null)
+            {
+                this.spPagesLibrary = this.Context.Web.GetListByUrl(this.PagesLibrary, p => p.RootFolder);
+            }
 
             // Save the page as template
             Save(pageUrl);
