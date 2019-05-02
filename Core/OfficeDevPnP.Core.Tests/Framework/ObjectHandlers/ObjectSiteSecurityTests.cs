@@ -498,9 +498,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     w => w.AssociatedVisitorGroup);
                 clientContext.ExecuteQuery();
 
-                Assert.AreEqual(ownersGroupTitle, web.AssociatedOwnerGroup.Title, "Associated owner group ID mismatch.");
+                Assert.AreNotEqual(ownersGroupTitle, web.AssociatedOwnerGroup.Title, "Associated owner group ID mismatch.");
                 Assert.AreEqual(membersGroup.Title, web.AssociatedMemberGroup.Title, "Associated member group ID mismatch.");
-                Assert.IsTrue(web.AssociatedVisitorGroup.ServerObjectIsNull.Value);
+                Assert.IsTrue(web.AssociatedVisitorGroup.ServerObjectIsNull());
             }
         }
 
@@ -812,6 +812,72 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             }
         }
 
+        // map owner groups to existing groups in the site
+        // for details see here: https://github.com/SharePoint/PnP-Sites-Core/pull/2174#issuecomment-487538551
+        [TestMethod()]
+        public async Task CanMapToExistingGroupsInNewScriptSite()
+        {
+            var newCommSiteUrl = string.Empty;
+
+            ProvisioningTemplate template = new ProvisioningTemplate();
+            // check setting of owner group with a configuration that would also create the group
+            var ownerGroupTitle = string.Format("Test_New OWNER Group_{0}", DateTime.Now.Ticks);
+            SiteGroup ownerGroup = new SiteGroup()
+            {
+                Title = ownerGroupTitle
+            };
+            template.Security.AssociatedOwnerGroup = ownerGroup.Title;
+            template.Security.SiteGroups.Add(ownerGroup);
+
+            // check setting of member group with a configuration that only works if the group already exists in the web
+            var memberGroupTitle = string.Format("Test_New MEMBER Group_{0}", DateTime.Now.Ticks);
+            template.Security.AssociatedMemberGroup = memberGroupTitle;
+
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                newCommSiteUrl = await CreateCommunicationSite(clientContext, "Dummy", true);
+            }
+
+            try
+            {
+                using (var ctx = TestCommon.CreateClientContext(newCommSiteUrl))
+                {
+                    // pre-create owner and member group to test mapping
+                    ctx.Web.SiteGroups.Add(new GroupCreationInformation() { Title = ownerGroupTitle });
+                    ctx.Web.SiteGroups.Add(new GroupCreationInformation() { Title = memberGroupTitle });
+                    ctx.ExecuteQueryRetry();
+                    ctx.Load(ctx.Web, w => w.SiteGroups.Include(
+                        g => g.Id,
+                        g => g.Title),
+                        w => w.AssociatedVisitorGroup);
+                    ctx.ExecuteQueryRetry();
+                    var newOwnerGroup = ctx.Web.SiteGroups.First(g => g.Title == ownerGroupTitle);
+                    var newMemberGroup = ctx.Web.SiteGroups.First(g => g.Title == memberGroupTitle);
+                    var oldAssociatedVisitorGroupId = ctx.Web.AssociatedVisitorGroup.Id;
+
+                    var parser = new TokenParser(ctx.Web, template);
+                    new ObjectSiteSecurity().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                    LoadAssociatedOwnerGroupsData(ctx, true);
+                    var associatedOwnerGroupId = ctx.Web.AssociatedOwnerGroup.Id;
+                    var associatedMemberGroupId = ctx.Web.AssociatedMemberGroup.Id;
+                    var associatedVisitorGroupId = ctx.Web.AssociatedVisitorGroup.Id;
+
+                    Assert.AreEqual(newOwnerGroup.Id, associatedOwnerGroupId, "Expected owners group to change");
+                    Assert.AreEqual(newMemberGroup.Id, associatedMemberGroupId, "Expected members group to change");
+                    Assert.AreEqual(oldAssociatedVisitorGroupId, associatedVisitorGroupId, "Expected visitors group to stay the same");
+                }
+            }
+            finally
+            {
+                using (var clientContext = TestCommon.CreateTenantClientContext())
+                {
+                    var tenant = new Tenant(clientContext);
+                    tenant.DeleteSiteCollection(newCommSiteUrl, false);
+                }
+            }
+        }
+
         private async Task<string> CreateCommunicationSite(ClientContext clientContext, string newSiteTitle, bool allowScripts = false)
         {
             var communicationSiteGuid = Guid.NewGuid().ToString("N");
@@ -848,7 +914,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
         private async Task WaitForAsyncGroupTitleChangeWithTimeout(ClientContext ctx)
         {
-            const int maxWaitMs = 3 /*minutes*/ * 60 * 1000;
+            const int maxWaitMs = 4 /*minutes*/ * 60 * 1000;
             const int checkIntervalMs = 5000;
             const string tempTitleToCheckFor = "Site Owners";
             var waitMs = 0;
