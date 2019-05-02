@@ -314,11 +314,30 @@ namespace OfficeDevPnP.Core.Pages
         /// <summary>
         /// Return the name of the templates folder
         /// </summary>
-        public static string TemplatesFolder
+        public string TemplatesFolder
         {
             get
             {
-                return DefaultTemplatesFolder;
+                if (this.spPagesLibrary == null)
+                {
+                    this.spPagesLibrary = this.Context.Web.GetListByUrl(this.PagesLibrary, p => p.RootFolder);
+                }
+
+                var folderGuid = this.spPagesLibrary.GetPropertyBagValueString(TemplatesFolderGuid, null);
+                if (folderGuid == null)
+                {
+                    // No templates Folder
+                    var templateFolder = this.context.Web.EnsureFolderPath($"SitePages/{DefaultTemplatesFolder}");
+                    var uniqueId = templateFolder.EnsureProperty(f => f.UniqueId);
+                    this.spPagesLibrary.SetPropertyBagValue(TemplatesFolderGuid, uniqueId.ToString());
+                    return templateFolder.Name;
+                }
+                else
+                {
+                    var templateFolder = this.context.Web.GetFolderById(Guid.Parse(folderGuid));
+                    templateFolder.EnsureProperty(f => f.Name);
+                    return templateFolder.Name;
+                }
             }
         }
 
@@ -684,32 +703,9 @@ namespace OfficeDevPnP.Core.Pages
             return page;
         }
 
-        private string EnsureTemplatesFolder()
-        {
-            if (this.spPagesLibrary == null)
-            {
-                this.spPagesLibrary = this.Context.Web.GetListByUrl(this.PagesLibrary, p => p.RootFolder);
-            }
-
-            var folderGuid = this.spPagesLibrary.GetPropertyBagValueString(TemplatesFolderGuid,null);
-            if(folderGuid == null)
-            {
-                // No templates Folder
-                var templateFolder = this.context.Web.EnsureFolderPath($"SitePages/{TemplatesFolder}");
-                var uniqueId = templateFolder.EnsureProperty(f => f.UniqueId);
-                this.spPagesLibrary.SetPropertyBagValue(TemplatesFolderGuid, uniqueId.ToString());
-                return templateFolder.Name;
-            } else
-            {
-                var templateFolder = this.context.Web.GetFolderById(Guid.Parse(folderGuid));
-                templateFolder.EnsureProperty(f => f.Name);
-                return templateFolder.Name;
-            }
-        }
-
         public void SaveAsTemplate(string pageName)
         {
-            string pageUrl = $"{EnsureTemplatesFolder()}/{pageName}";
+            string pageUrl = $"{this.TemplatesFolder}/{pageName}";
 
             if (this.spPagesLibrary == null)
             {
