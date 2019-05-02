@@ -312,7 +312,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
-        /// Return the name of the templates folder
+        /// Returns the name of the templates folder, and creates if it doesn't exist.
         /// </summary>
         public string TemplatesFolder
         {
