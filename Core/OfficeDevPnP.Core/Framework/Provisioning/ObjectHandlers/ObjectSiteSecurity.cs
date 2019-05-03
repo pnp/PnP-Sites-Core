@@ -66,8 +66,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 web.AssociatedOwnerGroup = EnsureGroup(web, parsedAssociatedOwnerGroupName);
                                 webNeedsUpdate = true;
                             }
-                            else if (!web.AssociatedOwnerGroup.ServerObjectIsNull.Value)
+                            else if (!web.AssociatedOwnerGroup.ServerObjectIsNull())
                             {
+                                web.AssociatedOwnerGroup.EnsureProperty(g => g.Title);
                                 if (web.AssociatedOwnerGroup.Title != parsedAssociatedOwnerGroupName)
                                 {
                                     var updatedOwnerGroup = web.SiteGroups.GetByName(parsedAssociatedOwnerGroupName);
@@ -101,8 +102,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 web.AssociatedMemberGroup = EnsureGroup(web, parsedAssociatedMemberGroupName);
                                 webNeedsUpdate = true;
                             }
-                            else if (!web.AssociatedMemberGroup.ServerObjectIsNull.Value)
+                            else if (!web.AssociatedMemberGroup.ServerObjectIsNull())
                             {
+                                web.AssociatedMemberGroup.EnsureProperty(g => g.Title);
                                 if (web.AssociatedMemberGroup.Title != parsedAssociatedMemberGroupName)
                                 {
                                     var updatedMemberGroup = web.SiteGroups.GetByName(parsedAssociatedMemberGroupName);
@@ -136,8 +138,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 web.AssociatedVisitorGroup = EnsureGroup(web, parsedAssociatedVisitorGroupName);
                                 webNeedsUpdate = true;
                             }
-                            else if (!web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
+                            else if (!web.AssociatedVisitorGroup.ServerObjectIsNull())
                             {
+                                web.AssociatedVisitorGroup.EnsureProperty(g => g.Title);
                                 if (web.AssociatedVisitorGroup.Title != parsedAssociatedVisitorGroupName)
                                 {
                                     var updatedVisitorGroup = web.SiteGroups.GetByName(parsedAssociatedVisitorGroupName);
@@ -559,8 +562,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.SiteGroups.Add(groupCreationInfo);
                 }
             }
-
-            return web.SiteGroups.GetByName(groupName);
+            var group = web.SiteGroups.GetByName(groupName);
+            group.EnsureProperty(g => g.Title);
+            return group;
         }
 
         private static Principal GetPrincipal(Web web, TokenParser parser, PnPMonitoredScope scope, IEnumerable<Group> groups, Model.RoleAssignment roleAssignment)

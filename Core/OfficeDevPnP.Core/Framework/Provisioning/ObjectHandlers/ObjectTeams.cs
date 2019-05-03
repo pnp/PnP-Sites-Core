@@ -1,4 +1,5 @@
-﻿using Microsoft.SharePoint.Client;
+﻿#if !ONPREMISES
+using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
@@ -212,9 +213,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 template_odata_bind = "https://graph.microsoft.com/beta/teamsTemplates('standard')",
                 team.DisplayName,
                 team.Description,
-                //team.Classification,
-                //team.Specialization,
-                //team.Visibility,
+                team.Classification,
+                team.Specialization,
+                team.Visibility,
                 funSettings = new
                 {
                     team.FunSettings.AllowGiphy,
@@ -633,8 +634,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (teamTemplate.DisplayName != null) team["displayName"] = teamTemplate.DisplayName;
             if (teamTemplate.Description != null) team["description"] = teamTemplate.Description;
-            // if (teamTemplate.Classification != null) team["classification"] = teamTemplate.Classification;
-            // team["visibility"] = teamTemplate.Visibility.ToString();
+            if (teamTemplate.Classification != null) team["classification"] = teamTemplate.Classification;
+            team["visibility"] = teamTemplate.Visibility.ToString();
 
             return team.ToString();
         }
@@ -748,7 +749,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        #region PnP Provisioning Engine infrastructural code
+#region PnP Provisioning Engine infrastructural code
 
         public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation)
         {
@@ -763,7 +764,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 _willProvision = false;
             }
-#endif            
+#endif
             return _willProvision.Value;
         }
 
@@ -829,7 +830,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return hierarchy;
         }
 
-        #endregion
+#endregion
     }
 
     enum HttpMethodVerb
@@ -841,3 +842,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         POST_WITH_RESPONSE_HEADERS
     }
 }
+#endif

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !ONPREMISES
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,7 +28,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-#if !ONPREMISES
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 web.EnsureProperties(w => w.FooterEnabled, w => w.ServerRelativeUrl);
@@ -58,10 +58,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
                     // find the logo node
-                    if(string.IsNullOrEmpty(footer.Logo))
+                    if (string.IsNullOrEmpty(footer.Logo))
                     {
                         var logoNode = menuState.Nodes.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_LOGONODEKEY);
-                        if(logoNode != null)
+                        if (logoNode != null)
                         {
                             footer.Logo = Tokenize(logoNode.SimpleUrl, web.ServerRelativeUrl);
                         }
@@ -78,7 +78,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 template.Footer = footer;
             }
-#endif
             return template;
         }
 
@@ -101,7 +100,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-#if !ONPREMISES
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 if (template.Footer != null)
@@ -109,118 +107,127 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.EnsureProperty(w => w.ServerRelativeUrl);
                     web.FooterEnabled = template.Footer.Enabled;
                     web.Update();
-
-
-                    var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
-                    var menuState = JsonConvert.DeserializeObject<MenuState>(structureString);
-
-                    var n1 = web.Navigation.GetNodeById(Convert.ToInt32(menuState.StartingNodeKey));
-
-                    web.Context.Load(n1, n => n.Children.IncludeWithDefaultProperties());
                     web.Context.ExecuteQueryRetry();
 
-                    var menuNode = n1.Children.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_MENUNODEKEY);
-                    if (menuNode != null)
+                    if (web.FooterEnabled)
                     {
-                        if (template.Footer.RemoveExistingNodes == true)
+                        var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
+                        var menuState = JsonConvert.DeserializeObject<MenuState>(structureString);
+                        if(menuState.StartingNodeKey == null)
                         {
-                            menuNode.DeleteObject();
-                            web.Context.ExecuteQueryRetry();
 
+                            var now = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss:Z");
+                            web.ExecutePost($"/_api/navigation/SaveMenuState", $@"{{ ""menuState"":{{ ""Version"":""{now}"",""StartingNodeTitle"":""3a94b35f-030b-468e-80e3-b75ee84ae0ad"",""SPSitePrefix"":""/"",""SPWebPrefix"":""{web.ServerRelativeUrl}"",""FriendlyUrlPrefix"":"""",""SimpleUrl"":"""",""Nodes"":[]}}}}").GetAwaiter().GetResult();
+                            structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
+                            menuState = JsonConvert.DeserializeObject<MenuState>(structureString);
+                        }
+                        var n1 = web.Navigation.GetNodeById(Convert.ToInt32(menuState.StartingNodeKey));
+
+                        web.Context.Load(n1);
+                        web.Context.ExecuteQueryRetry();
+
+                        web.Context.Load(n1, n => n.Children.IncludeWithDefaultProperties());
+                        web.Context.ExecuteQueryRetry();
+
+                        var menuNode = n1.Children.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_MENUNODEKEY);
+                        if (menuNode != null)
+                        {
+                            if (template.Footer.RemoveExistingNodes == true)
+                            {
+                                menuNode.DeleteObject();
+                                web.Context.ExecuteQueryRetry();
+
+                                menuNode = n1.Children.Add(new NavigationNodeCreationInformation()
+                                {
+                                    Title = Constants.SITEFOOTER_MENUNODEKEY
+                                });
+                            }
+                        }
+                        else
+                        {
                             menuNode = n1.Children.Add(new NavigationNodeCreationInformation()
                             {
                                 Title = Constants.SITEFOOTER_MENUNODEKEY
                             });
                         }
-                    }
-                    else
-                    {
-                        menuNode = n1.Children.Add(new NavigationNodeCreationInformation()
+                        foreach (var footerLink in template.Footer.FooterLinks)
                         {
-                            Title = Constants.SITEFOOTER_MENUNODEKEY
-                        });
-                    }
-                    foreach (var footerLink in template.Footer.FooterLinks)
-                    {
-                        menuNode.Children.Add(new NavigationNodeCreationInformation()
-                        {
-                            Url = parser.ParseString(footerLink.Url),
-                            Title = parser.ParseString(footerLink.DisplayName)
-                        });
-                    }
-                    if (web.Context.PendingRequestCount() > 0)
-                    {
-                        web.Context.ExecuteQueryRetry();
-                    }
-
-                    var logoNode = n1.Children.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_LOGONODEKEY);
-                    if (logoNode != null)
-                    {
-                        if (string.IsNullOrEmpty(template.Footer.Logo))
-                        {
-                            // remove the logo
-                            logoNode.DeleteObject();
-                        }
-                        else
-                        {
-                            logoNode.Url = parser.ParseString(template.Footer.Logo);
-                        }
-                    }
-                    else
-                    {
-                        if (!string.IsNullOrEmpty(template.Footer.Logo))
-                        {
-                            logoNode = n1.Children.Add(new NavigationNodeCreationInformation()
+                            menuNode.Children.Add(new NavigationNodeCreationInformation()
                             {
-                                Title = Constants.SITEFOOTER_LOGONODEKEY,
-                                Url = parser.ParseString(template.Footer.Logo)
+                                Url = parser.ParseString(footerLink.Url),
+                                Title = parser.ParseString(footerLink.DisplayName)
                             });
                         }
-                    }
-                    if (web.Context.PendingRequestCount() > 0)
-                    {
-                        web.Context.ExecuteQueryRetry();
-                    }
-
-                    var titleNode = n1.Children.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_TITLENODEKEY);
-                    if (titleNode != null)
-                    {
-                        titleNode.EnsureProperty(n => n.Children);
-                        if (string.IsNullOrEmpty(template.Footer.Name))
+                        if (web.Context.PendingRequestCount() > 0)
                         {
-                            // remove the title
-                            titleNode.DeleteObject();
+                            web.Context.ExecuteQueryRetry();
+                        }
+
+                        var logoNode = n1.Children.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_LOGONODEKEY);
+                        if (logoNode != null)
+                        {
+                            if (string.IsNullOrEmpty(template.Footer.Logo))
+                            {
+                                // remove the logo
+                                logoNode.DeleteObject();
+                            }
+                            else
+                            {
+                                logoNode.Url = parser.ParseString(template.Footer.Logo);
+                            }
                         }
                         else
                         {
-                            titleNode.Children[0].Title = template.Footer.Name;
-                            titleNode.Update();
+                            if (!string.IsNullOrEmpty(template.Footer.Logo))
+                            {
+                                logoNode = n1.Children.Add(new NavigationNodeCreationInformation()
+                                {
+                                    Title = Constants.SITEFOOTER_LOGONODEKEY,
+                                    Url = parser.ParseString(template.Footer.Logo)
+                                });
+                            }
                         }
-                    }
-                    else
-                    {
-                        if (!string.IsNullOrEmpty(template.Footer.Name))
+                        if (web.Context.PendingRequestCount() > 0)
                         {
-                            titleNode = n1.Children.Add(new NavigationNodeCreationInformation() { Title = Constants.SITEFOOTER_TITLENODEKEY });
-                            titleNode.Children.Add(new NavigationNodeCreationInformation() { Title = template.Footer.Name });
+                            web.Context.ExecuteQueryRetry();
                         }
-                    }
-                    if (web.Context.PendingRequestCount() > 0)
-                    {
-                        web.Context.ExecuteQueryRetry();
+
+                        var titleNode = n1.Children.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_TITLENODEKEY);
+                        if (titleNode != null)
+                        {
+                            titleNode.EnsureProperty(n => n.Children);
+                            if (string.IsNullOrEmpty(template.Footer.Name))
+                            {
+                                // remove the title
+                                titleNode.DeleteObject();
+                            }
+                            else
+                            {
+                                titleNode.Children[0].Title = template.Footer.Name;
+                                titleNode.Update();
+                            }
+                        }
+                        else
+                        {
+                            if (!string.IsNullOrEmpty(template.Footer.Name))
+                            {
+                                titleNode = n1.Children.Add(new NavigationNodeCreationInformation() { Title = Constants.SITEFOOTER_TITLENODEKEY });
+                                titleNode.Children.Add(new NavigationNodeCreationInformation() { Title = template.Footer.Name });
+                            }
+                        }
+                        if (web.Context.PendingRequestCount() > 0)
+                        {
+                            web.Context.ExecuteQueryRetry();
+                        }
                     }
                 }
             }
-#endif
             return parser;
         }
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-#if !ONPREMISES
-            web.EnsureProperties(w => w.Configuration, w => w.WebTemplate);
-            var webTemplate = $"{web.WebTemplate}#{web.Configuration}";
-            if (webTemplate.Equals("SITEPAGEPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase))
+            if ((web.Context as ClientContext).Site.IsCommunicationSite())
             {
                 return true;
             }
@@ -228,17 +235,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 return false;
             }
-#else
-            return false;
-#endif
         }
 
         public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-#if !ONPREMISES
-            web.EnsureProperties(w => w.Configuration, w => w.WebTemplate);
-            var webTemplate = $"{web.WebTemplate}#{web.Configuration}";
-            if (webTemplate.Equals("SITEPAGEPUBLISHING#0", StringComparison.InvariantCultureIgnoreCase))
+            if ((web.Context as ClientContext).Site.IsCommunicationSite())
             {
                 return template.Footer != null;
             }
@@ -246,9 +247,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 return false;
             }
-#else
-            return false;
-#endif
         }
 
         private class MenuState
@@ -293,3 +291,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
     }
 }
+#endif

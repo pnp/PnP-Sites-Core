@@ -66,6 +66,7 @@
         </pnp:Origins>
         <pnp:IncludeFileExtensions>PDF,XML,JPG,JS,PNG</pnp:IncludeFileExtensions>
         <pnp:ExcludeRestrictedSiteClassifications>HBI,GDPR</pnp:ExcludeRestrictedSiteClassifications>
+        <pnp:ExcludeIfNoScriptDisabled>JS,CSS</pnp:ExcludeIfNoScriptDisabled>
       </pnp:Public>
       <pnp:Private Enabled="true" NoDefaultOrigins="false">
         <pnp:Origins>
@@ -204,8 +205,8 @@
       </pnp:AuditSettings>
 
       <pnp:PropertyBagEntries>
-        <pnp:PropertyBagEntry Key="KEY1" Value ="value1" Overwrite="true" />
-        <pnp:PropertyBagEntry Key="KEY2" Value ="value2" />
+        <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="true" />
+        <pnp:PropertyBagEntry Key="KEY2" Value="value2" Indexed="true" />
       </pnp:PropertyBagEntries>
 
       <pnp:Security BreakRoleInheritance="true"
@@ -242,6 +243,20 @@
               <pnp:User Name="user1@contoso.com" />
               <pnp:User Name="user2@contoso.com" />
               <pnp:User Name="user3@contoso.com" />
+            </pnp:Members>
+          </pnp:SiteGroup>
+          <pnp:SiteGroup
+            AllowMembersEditMembership="true"
+            AllowRequestToJoinLeave="true"
+            AutoAcceptRequestToJoinLeave="true"
+            Description="Test Group 1"
+            OnlyAllowMembersViewMembership="true"
+            Owner="user1@contoso.com"
+            RequestToJoinLeaveEmailSetting="group1@contoso.com"
+            Title="TestGroup1">
+            <pnp:Members>
+              <pnp:User Name="user1@contoso.com"/>
+              <pnp:User Name="user2@contoso.com"/>
             </pnp:Members>
           </pnp:SiteGroup>
         </pnp:SiteGroups>
@@ -841,7 +856,7 @@
 
       <pnp:ApplicationLifecycleManagement>
         <pnp:AppCatalog>
-          <pnp:Package Src="solution\spfx-discuss-now.sppkg" Action="UploadAndPublish" SkipFeatureDeployment="true" />
+          <pnp:Package Overwrite="true" Src="solution\spfx-discuss-now.sppkg" Action="UploadAndPublish" SkipFeatureDeployment="true" />
           <pnp:Package PackageId="d0816f0a-fda4-4a98-8e61-1bbe1f2b5b27" Action="Publish" />
           <pnp:Package PackageId="9672a07b-c111-4a12-bb5b-8d43c2ddd256" Action="Remove" />
         </pnp:AppCatalog>
@@ -1146,7 +1161,7 @@
     </pnp:TeamTemplate>
 
     <pnp:Team DisplayName="Sample Team 01" Description="This is just a sample Team 01"
-              CloneFrom="{TeamId:GroupMailNickname}">
+              Visibility="Public" CloneFrom="{TeamId:GroupMailNickname}">
       <pnp:Security>
         <pnp:Owners ClearExistingItems="true">
           <pnp:User UserPrincipalName="owner01@domain.onmicrosoft.com" />
@@ -1159,7 +1174,7 @@
         </pnp:Members>
       </pnp:Security>
     </pnp:Team>
-    <pnp:Team GroupId="{groupid:DisplayName}" DisplayName="Sample Team 02" Description="This is just a sample Team 02" Classification="Private"
+    <pnp:Team MailNickname="sample.group" GroupId="{groupid:DisplayName}" DisplayName="Sample Team 02" Description="This is just a sample Team 02" Classification="Private"
               Specialization="EducationStandard" Visibility="Public" Archived="false">
       <pnp:FunSettings AllowGiphy="true" GiphyContentRating="Strict"
                        AllowStickersAndMemes="true" AllowCustomMemes="true"/>
@@ -1262,7 +1277,9 @@
       <pnp:User AccountEnabled="true"
                 DisplayName="John White"
                 MailNickname="john.white"
-                UserPrincipalName="john.white@{parameter:domain}.onmicrosoft.com">
+                UserPrincipalName="john.white@{parameter:domain}.onmicrosoft.com"
+                PasswordPolicies="Policy1"
+                ProfilePhoto="photo.jpg" >
         <pnp:PasswordProfile ForceChangePasswordNextSignIn="true"
                              Password="Pass@w0rd"/>
         <pnp:Licenses>
@@ -1286,7 +1303,7 @@
                 DisplayName="Jim Black"
                 MailNickname="jim.black"
                 UserPrincipalName="jim.black@contoso.onmicrosoft.com">
-        <pnp:PasswordProfile ForceChangePasswordNextSignIn="true"
+        <pnp:PasswordProfile ForceChangePasswordNextSignIn="true" ForceChangePasswordNextSignInWithMfa="false"
                              Password="Pass@w0rd"/>
       </pnp:User>
     </pnp:Users>
