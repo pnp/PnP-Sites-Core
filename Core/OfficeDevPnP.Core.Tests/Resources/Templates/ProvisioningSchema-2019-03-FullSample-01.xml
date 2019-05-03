@@ -933,7 +933,7 @@
               TopicHeader="Topic header value"
           />
           <pnp:Sections>
-            <pnp:Section Order="1" Type="OneColumn" ZoneEmphasis="2">
+            <pnp:Section Order="1" Type="OneColumn" BackgroundEmphasis="Neutral">
               <pnp:Controls>
                 <pnp:CanvasControl
                   WebPartType="Image"

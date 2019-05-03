@@ -150,7 +150,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             Assert.AreEqual(SiteHeaderLayout.Standard, template.Header.Layout);
             Assert.AreEqual(SiteHeaderMenuStyle.MegaMenu, template.Header.MenuStyle);
-            Assert.AreEqual(SiteHeaderBackgroundEmphasis.Soft, template.Header.BackgroundEmphasis);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.BackgroundEmphasis.Soft, template.Header.BackgroundEmphasis);
         }
 
         [TestMethod]
@@ -165,7 +165,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 {
                     MenuStyle = SiteHeaderMenuStyle.Cascading,
                     Layout = SiteHeaderLayout.Compact,
-                    BackgroundEmphasis = SiteHeaderBackgroundEmphasis.Strong
+                    BackgroundEmphasis = Core.Framework.Provisioning.Model.BackgroundEmphasis.Strong
                 }
             };
 
@@ -182,7 +182,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             Assert.AreEqual(HeaderLayout.Compact, template.Header.Layout);
             Assert.AreEqual(HeaderMenuStyle.Cascading, template.Header.MenuStyle);
-            Assert.AreEqual(HeaderBackgroundEmphasis.Strong, template.Header.BackgroundEmphasis);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.BackgroundEmphasis.Strong, template.Header.BackgroundEmphasis);
         }
 
         [TestMethod]

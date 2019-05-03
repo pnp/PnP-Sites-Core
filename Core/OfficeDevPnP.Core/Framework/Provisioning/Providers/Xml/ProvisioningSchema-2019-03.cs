@@ -3024,11 +3024,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private HeaderMenuStyle menuStyleField;
         
-        private HeaderBackgroundEmphasis backgroundEmphasisField;
+        private BackgroundEmphasis backgroundEmphasisField;
         
         public Header() {
             this.menuStyleField = HeaderMenuStyle.Cascading;
-            this.backgroundEmphasisField = HeaderBackgroundEmphasis.None;
+            this.backgroundEmphasisField = BackgroundEmphasis.None;
         }
         
         /// <remarks/>
@@ -3056,8 +3056,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(HeaderBackgroundEmphasis.None)]
-        public HeaderBackgroundEmphasis BackgroundEmphasis {
+        [System.ComponentModel.DefaultValueAttribute(BackgroundEmphasis.None)]
+        public BackgroundEmphasis BackgroundEmphasis {
             get {
                 return this.backgroundEmphasisField;
             }
@@ -3096,8 +3096,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
     [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
-    public enum HeaderBackgroundEmphasis {
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
+    public enum BackgroundEmphasis {
         
         /// <remarks/>
         Neutral,
@@ -3364,9 +3364,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private bool typeFieldSpecified;
         
-        private int zoneEmphasisField;
+        private BackgroundEmphasis backgroundEmphasisField;
         
-        private bool zoneEmphasisFieldSpecified;
+        public CanvasSection() {
+            this.backgroundEmphasisField = BackgroundEmphasis.None;
+        }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
@@ -3425,23 +3427,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public int ZoneEmphasis {
+        [System.ComponentModel.DefaultValueAttribute(BackgroundEmphasis.None)]
+        public BackgroundEmphasis BackgroundEmphasis {
             get {
-                return this.zoneEmphasisField;
+                return this.backgroundEmphasisField;
             }
             set {
-                this.zoneEmphasisField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool ZoneEmphasisSpecified {
-            get {
-                return this.zoneEmphasisFieldSpecified;
-            }
-            set {
-                this.zoneEmphasisFieldSpecified = value;
+                this.backgroundEmphasisField = value;
             }
         }
     }

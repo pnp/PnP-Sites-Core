@@ -42,7 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// The emphasis color of the Canvas Section for a Client-side Page
         /// </summary>
-        public Int32 ZoneEmphasis { get; set; }
+        public BackgroundEmphasis BackgroundEmphasis { get; set; }
 
         #endregion
 
@@ -70,7 +70,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Controls.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 Order.GetHashCode(),
                 Type.GetHashCode(),
-                ZoneEmphasis.GetHashCode()
+                BackgroundEmphasis.GetHashCode()
             ).GetHashCode());
         }
 
@@ -89,7 +89,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares CanvasSection object based on Controls, Order, Type, and ZoneEmphasis
+        /// Compares CanvasSection object based on Controls, Order, Type, and BackgroundEmphasis
         /// </summary>
         /// <param name="other">CanvasSection Class object</param>
         /// <returns>true if the CanvasSection object is equal to the current object; otherwise, false.</returns>
@@ -103,7 +103,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (this.Controls.DeepEquals(other.Controls) &&
                 this.Order == other.Order &&
                 this.Type == other.Type &&
-                this.ZoneEmphasis == other.ZoneEmphasis
+                this.BackgroundEmphasis == other.BackgroundEmphasis
                 );
         }
 

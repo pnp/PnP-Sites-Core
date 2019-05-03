@@ -124,7 +124,7 @@
         }</pnp:Theme>
     </pnp:Themes>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-DUMMY-de47a427-3c63-4557-a938-bc8e23576299">
+  <pnp:Templates ID="CONTAINER-DUMMY-4ad77faf-2699-470c-97b0-9eb7013616ed">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
@@ -627,7 +627,7 @@
       <pnp:ClientSidePages>
         <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" PromoteAsTemplate="true" Overwrite="true" Title="Client Side Page Title" ContentTypeID="0x01010012345">
           <pnp:Sections>
-            <pnp:Section Order="1" Type="OneColumn" ZoneEmphasis="2">
+            <pnp:Section Order="1" Type="OneColumn" BackgroundEmphasis="Neutral">
               <pnp:Controls>
                 <pnp:CanvasControl WebPartType="Image" CustomWebPartName="..." JsonControlData="{}" ControlId="0eaba53f-55d8-44b5-9f7c-61301c7f1e0e" Order="1">
                   <pnp:CanvasControlProperties>
@@ -695,6 +695,32 @@
           </pnp:Parameters>
         </pnp:ProvisioningTemplateWebhook>
       </pnp:ProvisioningTemplateWebhooks>
+      <pnp:Theme Name="CustomOrange">{
+        "themePrimary": "#ecb534",
+        "themeLighterAlt": "#fefcf6",
+        "themeLighter": "#fcf3dd",
+        "themeLight": "#fae8bf",
+        "themeTertiary": "#f4d282",
+        "themeSecondary": "#efbe4b",
+        "themeDarkAlt": "#d5a32f",
+        "themeDark": "#b48a28",
+        "themeDarker": "#85661d",
+        "neutralLighterAlt": "#f8f8f8",
+        "neutralLighter": "#f4f4f4",
+        "neutralLight": "#eaeaea",
+        "neutralQuaternaryAlt": "#dadada",
+        "neutralQuaternary": "#d0d0d0",
+        "neutralTertiaryAlt": "#c8c8c8",
+        "neutralTertiary": "#a9a9a9",
+        "neutralSecondary": "#8d8d8d",
+        "neutralPrimaryAlt": "#727272",
+        "neutralPrimary": "#020202",
+        "neutralDark": "#3a3a3a",
+        "black": "#1e1e1e",
+        "white": "#ffffff",
+        "bodyBackground": "#ffffff",
+        "bodyText": "#020202"
+        }</pnp:Theme>
     </pnp:ProvisioningTemplate>
     <pnp:ProvisioningTemplate ID="WORKFLOWSITE" Version="0" Scope="Undefined">
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
