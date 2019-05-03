@@ -110,7 +110,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         termSet.EnsureProperties(ts => ts.Name, ts => ts.Group);
 
-                        termSetIdElement.Value = String.Format("{{termsetid:{0}:{1}}}", termSet.Group.IsSiteCollectionGroup ? "{sitecollectiontermgroupname}" : termSet.Group.Name, termSet.Name);
+                        if (termSet.Group.IsSiteCollectionGroup)
+                        {
+                            termSetIdElement.Value = String.Format("{{sitecollectiontermsetid:{0}}}", termSet.Name);
+                        }
+                        else
+                        {
+                            termSetIdElement.Value = String.Format("{{termsetid:{0}:{1}}}", termSet.Group.Name, termSet.Name);
+                        }
                     }
                 }
             }
