@@ -14,6 +14,10 @@ using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903;
 using OfficeDevPnP.Core.Utilities;
 using App = OfficeDevPnP.Core.Framework.Provisioning.Model.App;
 using CalendarType = Microsoft.SharePoint.Client.CalendarType;
+using CanvasSectionType = OfficeDevPnP.Core.Framework.Provisioning.Model.CanvasSectionType;
+using ClientSidePageHeaderLayoutType = OfficeDevPnP.Core.Framework.Provisioning.Model.ClientSidePageHeaderLayoutType;
+using ClientSidePageHeaderTextAlignment = OfficeDevPnP.Core.Framework.Provisioning.Model.ClientSidePageHeaderTextAlignment;
+using ClientSidePageHeaderType = OfficeDevPnP.Core.Framework.Provisioning.Model.ClientSidePageHeaderType;
 using DayOfWeek = System.DayOfWeek;
 using DocumentSetTemplate = OfficeDevPnP.Core.Framework.Provisioning.Model.DocumentSetTemplate;
 using File = System.IO.File;
@@ -44,6 +48,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     ///     Files
     ///     Pages
     ///     TermGroups
+    ///     ComposedLook
+    ///     SearchSettings
+    ///     Publishing
+    ///     SiteWebhooks
+    ///     ClientSidePages
     ///     ALM
     ///     Header
     ///     Footer
@@ -3875,7 +3884,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("IT Projects", term.Name);
 
             Assert.AreEqual("3D212FC2-F176-4621-AED1-128219666D95".ToLower(), term.ID);
-            
+
             Assert.IsTrue(term.CustomProperties.SingleOrDefault(p => p.Key == "Property1") != null);
             Assert.AreEqual("Value1", term.CustomProperties.SingleOrDefault(p => p.Key == "Property1").Value);
             Assert.IsTrue(term.LocalCustomProperties.SingleOrDefault(p => p.Key == "LocalProperty1") != null);
@@ -3885,7 +3894,469 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("87C55100-8316-4DA0-97FD-FEB5731880F6".ToLower(), term.Terms.Items[0].ID);
             Assert.AreEqual("Nuvola", term.Terms.Items[0].Labels[0].Value);
             Assert.AreEqual(1040, term.Terms.Items[0].Labels[0].Language);
-            Assert.AreEqual(true, term.Terms.Items[1].IsDeprecated); 
+            Assert.AreEqual(true, term.Terms.Items[1].IsDeprecated);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_ComposedLook()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+
+            Assert.IsNotNull(template);
+            Assert.IsNotNull(template.ComposedLook);
+            Assert.AreEqual("{sitecollection}/Resources/Themes/Contoso/contosobg.jpg", template.ComposedLook.BackgroundFile);
+            Assert.AreEqual("{sitecollection}/_catalogs/Theme/15/Custom.spcolor", template.ComposedLook.ColorFile);
+            Assert.AreEqual("{sitecollection}/_catalogs/Theme/15/Custom.spfont", template.ComposedLook.FontFile);
+            Assert.AreEqual("Custom Look", template.ComposedLook.Name);
+            Assert.AreEqual(1, template.ComposedLook.Version);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_ComposedLook()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            var composedLook = new Core.Framework.Provisioning.Model.ComposedLook()
+            {
+                BackgroundFile = "{sitecollection}/Resources/Themes/Contoso/contosobg.jpg",
+                ColorFile = "{sitecollection}/_catalogs/Theme/15/Custom.spcolor",
+                FontFile = "{sitecollection}/_catalogs/Theme/15/Custom.spfont",
+                Name = "Custom Look",
+                Version = 1
+            };
+            result.ComposedLook = composedLook;
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            Assert.IsNotNull(template);
+            Assert.IsNotNull(template.ComposedLook);
+            Assert.AreEqual("{sitecollection}/Resources/Themes/Contoso/contosobg.jpg", template.ComposedLook.BackgroundFile);
+            Assert.AreEqual("{sitecollection}/_catalogs/Theme/15/Custom.spcolor", template.ComposedLook.ColorFile);
+            Assert.AreEqual("{sitecollection}/_catalogs/Theme/15/Custom.spfont", template.ComposedLook.FontFile);
+            Assert.AreEqual("Custom Look", template.ComposedLook.Name);
+            Assert.AreEqual(1, template.ComposedLook.Version);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_SearchSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+
+            Assert.IsNotNull(template.SiteSearchSettings);
+            Assert.IsTrue(template.SiteSearchSettings.Contains("SearchQueryConfigurationSettings"));
+            Assert.IsTrue(template.SiteSearchSettings.Contains("BestBets"));
+            Assert.IsTrue(template.SiteSearchSettings.Contains("SearchRankingModelConfigurationSettings"));
+            Assert.IsTrue(template.SiteSearchSettings.Contains("ManagedProperties"));
+            Assert.IsTrue(template.SiteSearchSettings.Contains("CrawledProperties"));
+            Assert.IsTrue(template.SiteSearchSettings.Contains("Mappings"));
+            Assert.IsTrue(template.SiteSearchSettings.Contains("Overrides"));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_SearchSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.SiteSearchSettings = "<SearchConfigurationSettings></SearchConfigurationSettings>";
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            Assert.AreEqual("SearchConfigurationSettings", template.SearchSettings.SiteSearchSettings.Name);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Publishing()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+
+            var publishing = template.Publishing;
+
+            Assert.AreEqual(AutoCheckRequirementsOptions.MakeCompliant, publishing.AutoCheckRequirements);
+            Assert.AreEqual("CustomDesign.wsp", publishing.DesignPackage.DesignPackagePath);
+            Assert.AreEqual(1, publishing.DesignPackage.MajorVersion);
+            Assert.AreEqual(0, publishing.DesignPackage.MinorVersion);
+            Assert.AreEqual(new Guid("A3349210-5283-44A5-A23F-00F489EB690B"), publishing.DesignPackage.PackageGuid);
+            Assert.AreEqual("Custom Design", publishing.DesignPackage.PackageName);
+
+            Assert.AreEqual(1033, publishing.AvailableWebTemplates[0].LanguageCode);
+            Assert.AreEqual("STS#0", publishing.AvailableWebTemplates[0].TemplateName);
+            Assert.AreEqual("News.aspx", publishing.PageLayouts[0].Path);
+            Assert.AreEqual(true, publishing.PageLayouts[1].IsDefault);
+
+            Assert.AreEqual(100, publishing.ImageRenditions[0].Width);
+            Assert.AreEqual(100, publishing.ImageRenditions[0].Height);
+            Assert.AreEqual("SmallSquare", publishing.ImageRenditions[0].Name);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Publishing()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.Publishing = new Core.Framework.Provisioning.Model.Publishing
+            {
+                AutoCheckRequirements = AutoCheckRequirementsOptions.MakeCompliant,
+                DesignPackage = new Core.Framework.Provisioning.Model.DesignPackage
+                {
+                    DesignPackagePath = "CustomDesign.wsp",
+                    MajorVersion = 1,
+                    MinorVersion = 0,
+                    PackageGuid = new Guid("A3349210-5283-44A5-A23F-00F489EB690B"),
+                    PackageName = "Custom Design"
+                },
+                AvailableWebTemplates =
+                {
+                    new Core.Framework.Provisioning.Model.AvailableWebTemplate
+                    {
+                        LanguageCode = 1033,
+                        TemplateName = "STS#0"
+                    }
+                },
+                PageLayouts =
+                {
+                    new Core.Framework.Provisioning.Model.PageLayout
+                    {
+                        Path = "News.aspx"
+                    },
+                    new Core.Framework.Provisioning.Model.PageLayout
+                    {
+                        Path = "SimplePage.aspx",
+                        IsDefault = true
+                    }
+                },
+                ImageRenditions =
+                {
+                    new Core.Framework.Provisioning.Model.ImageRendition
+                    {
+                        Name = "SmallSquare",
+                        Height = 100,
+                        Width = 100
+                    }
+                }
+            };
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            var publishing = template.Publishing;
+
+            Assert.AreEqual(PublishingAutoCheckRequirements.MakeCompliant, publishing.AutoCheckRequirements);
+            Assert.AreEqual("CustomDesign.wsp", publishing.DesignPackage.DesignPackagePath);
+            Assert.AreEqual(1, publishing.DesignPackage.MajorVersion);
+            Assert.AreEqual(0, publishing.DesignPackage.MinorVersion);
+            Assert.AreEqual("a3349210-5283-44a5-a23f-00f489eb690b", publishing.DesignPackage.PackageGuid);
+            Assert.AreEqual("Custom Design", publishing.DesignPackage.PackageName);
+
+            Assert.AreEqual(1033, publishing.AvailableWebTemplates[0].LanguageCode);
+            Assert.AreEqual("STS#0", publishing.AvailableWebTemplates[0].TemplateName);
+            Assert.AreEqual("News.aspx", publishing.PageLayouts.PageLayout[0].Path);
+            Assert.AreEqual("SimplePage.aspx", publishing.PageLayouts.Default);
+
+            Assert.AreEqual("100", publishing.ImageRenditions[0].Width);
+            Assert.AreEqual("100", publishing.ImageRenditions[0].Height);
+            Assert.AreEqual("SmallSquare", publishing.ImageRenditions[0].Name);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_SiteWebhooks()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+
+            var webhooks = template.SiteWebhooks;
+
+            Assert.AreEqual(120, webhooks[0].ExpiresInDays);
+            Assert.AreEqual(SiteWebhookType.WebCreated, webhooks[0].SiteWebhookType);
+            Assert.AreEqual("http://myapp.azurewebsites.net/WebHookListener", webhooks[0].ServerNotificationUrl);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_SiteWebhooks()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.SiteWebhooks.Add(new Core.Framework.Provisioning.Model.SiteWebhook
+            {
+                SiteWebhookType = SiteWebhookType.WebCreated,
+                ServerNotificationUrl = "http://myapp.azurewebsites.net/WebHookListener",
+                ExpiresInDays = 120
+            });
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            var publishing = template.Publishing;
+
+            var webhooks = template.SiteWebhooks;
+
+            Assert.AreEqual("120", webhooks[0].ExpiresInDays);
+            Assert.AreEqual(SiteWebhookSiteWebhookType.WebCreated, webhooks[0].SiteWebhookType);
+            Assert.AreEqual("http://myapp.azurewebsites.net/WebHookListener", webhooks[0].ServerNotificationUrl);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_ClientSidePages()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+
+            var clientSidePages = template.ClientSidePages;
+
+            Assert.AreEqual("SamplePage", clientSidePages[0].PageName);
+            Assert.AreEqual(true, clientSidePages[0].PromoteAsTemplate);
+            Assert.AreEqual(true, clientSidePages[0].PromoteAsNewsArticle);
+            Assert.AreEqual(true, clientSidePages[0].Overwrite);
+            Assert.AreEqual(true, clientSidePages[0].Publish);
+            Assert.AreEqual("Article", clientSidePages[0].Layout);
+            Assert.AreEqual(true, clientSidePages[0].EnableComments);
+            Assert.AreEqual("Client Side Page Title", clientSidePages[0].Title);
+            Assert.AreEqual("0x01010012345", clientSidePages[0].ContentTypeID);
+
+            var page = clientSidePages[0];
+            // header
+            Assert.AreEqual(Core.Framework.Provisioning.Model.ClientSidePageHeaderType.Custom, page.Header.Type);
+            Assert.AreEqual("./site%20assets/picture.png", page.Header.ServerRelativeImageUrl);
+            Assert.AreEqual(10.56, page.Header.TranslateX);
+            Assert.AreEqual(15.12345, page.Header.TranslateY);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.ClientSidePageHeaderLayoutType.FullWidthImage, page.Header.LayoutType);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.ClientSidePageHeaderTextAlignment.Center, page.Header.TextAlignment);
+            Assert.AreEqual("Alternate text", page.Header.AlternativeText);
+            Assert.AreEqual("John Black, Mike White", page.Header.Authors);
+            Assert.AreEqual("Bill Green", page.Header.AuthorByLine);
+            Assert.AreEqual(5, page.Header.AuthorByLineId);
+            Assert.AreEqual(true, page.Header.ShowPublishDate);
+            Assert.AreEqual(true, page.Header.ShowTopicHeader);
+            Assert.AreEqual("Topic header value", page.Header.TopicHeader);
+
+            var section = page.Sections[0];
+
+            // sections
+            Assert.AreEqual(1, section.Order);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.CanvasSectionType.OneColumn, section.Type);
+            Assert.AreEqual(2, section.ZoneEmphasis);
+
+            Assert.AreEqual("...", section.Controls[0].CustomWebPartName);
+            Assert.AreEqual(WebPartType.Image, section.Controls[0].Type);
+            Assert.AreEqual("{}", section.Controls[0].JsonControlData);
+            Assert.AreEqual(new Guid("0eaba53f-55d8-44b5-9f7c-61301c7f1e0e"), section.Controls[0].ControlId);
+            Assert.AreEqual(1, section.Controls[0].Order);
+            Assert.IsTrue(section.Controls[0].ControlProperties.ContainsKey("Key1"));
+            Assert.AreEqual("{token}", section.Controls[0].ControlProperties["Key1"]);
+
+            // field values
+            Assert.IsTrue(page.FieldValues.ContainsKey("Category"));
+            Assert.AreEqual("Marketing", page.FieldValues["Category"]);
+
+            // properties
+            Assert.IsTrue(page.Properties.ContainsKey("Key01"));
+            Assert.AreEqual("Value 01", page.Properties["Key01"]);
+
+            // security
+            Assert.AreEqual(true, page.Security.ClearSubscopes);
+            Assert.AreEqual(false, page.Security.CopyRoleAssignments);
+            Assert.AreEqual("user1@contoso.com", page.Security.RoleAssignments[0].Principal);
+            Assert.AreEqual("Full Control", page.Security.RoleAssignments[0].RoleDefinition);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_ClientSidePages()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate();
+
+            result.ClientSidePages.Add(new Core.Framework.Provisioning.Model.ClientSidePage
+            {
+                PageName = "SamplePage",
+                PromoteAsTemplate = true,
+                PromoteAsNewsArticle = true,
+                Overwrite = true,
+                Publish = true,
+                Layout = "Article",
+                EnableComments = true,
+                Title = "Client Side Page Title",
+                ContentTypeID = "0x01010012345",
+                Header = new Core.Framework.Provisioning.Model.ClientSidePageHeader
+                {
+                    Type = ClientSidePageHeaderType.Custom,
+                    ServerRelativeImageUrl = "./site%20assets/picture.png",
+                    TranslateX = 10.56,
+                    TranslateY = 15.12345,
+                    LayoutType = ClientSidePageHeaderLayoutType.FullWidthImage,
+                    TextAlignment = ClientSidePageHeaderTextAlignment.Center,
+                    AlternativeText = "Alternate text",
+                    Authors = "John Black, Mike White",
+                    AuthorByLine = "Bill Green",
+                    AuthorByLineId = 5,
+                    ShowPublishDate = true,
+                    ShowTopicHeader = true,
+                    TopicHeader = "Topic header value"
+                },
+                Sections =
+                {
+                    new Core.Framework.Provisioning.Model.CanvasSection
+                    {
+                        Order = 1,
+                        Type = CanvasSectionType.OneColumn,
+                        ZoneEmphasis = 2,
+                        Controls =
+                        {
+                            new Core.Framework.Provisioning.Model.CanvasControl
+                            {
+                                CustomWebPartName = "...",
+                                Type = WebPartType.Image,
+                                JsonControlData = "{}",
+                                ControlId = new Guid("0eaba53f-55d8-44b5-9f7c-61301c7f1e0e"),
+                                Order = 1,
+                                ControlProperties =
+                                {
+                                    {"Key1", "{token}" }
+                                }
+                            }
+                        }
+                    }
+                },
+                FieldValues =
+                {
+                    { "Category","Marketing" }
+                },
+                Properties =
+                {
+                    { "Key01", "Value 01" }
+                }
+            });
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            Provisioning wrappedResult =
+                XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+            var publishing = template.Publishing;
+
+            var clientSidePages = template.ClientSidePages;
+
+            Assert.AreEqual("SamplePage", clientSidePages[0].PageName);
+            Assert.AreEqual(true, clientSidePages[0].PromoteAsTemplate);
+            Assert.AreEqual(true, clientSidePages[0].PromoteAsNewsArticle);
+            Assert.AreEqual(true, clientSidePages[0].Overwrite);
+            Assert.AreEqual(true, clientSidePages[0].Publish);
+            Assert.AreEqual("Article", clientSidePages[0].Layout);
+            Assert.AreEqual(true, clientSidePages[0].EnableComments);
+            Assert.AreEqual("Client Side Page Title", clientSidePages[0].Title);
+            Assert.AreEqual("0x01010012345", clientSidePages[0].ContentTypeID);
+
+            var page = clientSidePages[0];
+            // header
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.ClientSidePageHeaderType.Custom, page.Header.Type);
+            Assert.AreEqual("./site%20assets/picture.png", page.Header.ServerRelativeImageUrl);
+            Assert.AreEqual(10.56, page.Header.TranslateX);
+            Assert.AreEqual(15.12345, page.Header.TranslateY);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.ClientSidePageHeaderLayoutType.FullWidthImage, page.Header.LayoutType);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.ClientSidePageHeaderTextAlignment.Center, page.Header.TextAlignment);
+            Assert.AreEqual("Alternate text", page.Header.AlternativeText);
+            Assert.AreEqual("John Black, Mike White", page.Header.Authors);
+            Assert.AreEqual("Bill Green", page.Header.AuthorByLine);
+            Assert.AreEqual(5, page.Header.AuthorByLineId);
+            Assert.AreEqual(true, page.Header.ShowPublishDate);
+            Assert.AreEqual(true, page.Header.ShowTopicHeader);
+            Assert.AreEqual("Topic header value", page.Header.TopicHeader);
+
+            var section = page.Sections[0];
+
+            // sections
+            Assert.AreEqual(1, section.Order);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.CanvasSectionType.OneColumn, section.Type);
+            Assert.AreEqual(2, section.ZoneEmphasis);
+
+            Assert.AreEqual("...", section.Controls[0].CustomWebPartName);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.CanvasControlWebPartType.Image, section.Controls[0].WebPartType);
+            Assert.AreEqual("{}", section.Controls[0].JsonControlData);
+            Assert.AreEqual("0eaba53f-55d8-44b5-9f7c-61301c7f1e0e", section.Controls[0].ControlId);
+            Assert.AreEqual(1, section.Controls[0].Order);
+            Assert.IsTrue(section.Controls[0].CanvasControlProperties.SingleOrDefault(p => p.Key == "Key1") != null);
+            Assert.AreEqual("{token}", section.Controls[0].CanvasControlProperties.SingleOrDefault(p => p.Key == "Key1").Value);
+
+            // field values
+            Assert.IsTrue(page.FieldValues.SingleOrDefault(p => p.Key == "Category") != null);
+            Assert.AreEqual("Marketing", page.FieldValues.SingleOrDefault(p => p.Key == "Category").Value);
+
+            // properties
+            Assert.IsTrue(page.Properties.SingleOrDefault(p => p.Key == "Key01") != null);
+            Assert.AreEqual("Value 01", page.Properties.SingleOrDefault(p => p.Key == "Key01").Value);
+
+            // security
+            Assert.AreEqual(true, page.Security.BreakRoleInheritance.ClearSubscopes);
+            Assert.AreEqual(false, page.Security.BreakRoleInheritance.CopyRoleAssignments);
+            Assert.AreEqual("user1@contoso.com", page.Security.BreakRoleInheritance.RoleAssignment[0].Principal);
+            Assert.AreEqual("Full Control", page.Security.BreakRoleInheritance.RoleAssignment[0].RoleDefinition);
         }
     }
 }

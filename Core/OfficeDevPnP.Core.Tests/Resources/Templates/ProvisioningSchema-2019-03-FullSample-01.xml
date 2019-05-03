@@ -917,7 +917,7 @@
                   ControlId="0eaba53f-55d8-44b5-9f7c-61301c7f1e0e"
                   Order="1">
                   <pnp:CanvasControlProperties>
-                    <pnp:CanvasControlProperty Key="" Value="{token}" />
+                    <pnp:CanvasControlProperty Key="Key1" Value="{token}" />
                   </pnp:CanvasControlProperties>
                 </pnp:CanvasControl>
               </pnp:Controls>
