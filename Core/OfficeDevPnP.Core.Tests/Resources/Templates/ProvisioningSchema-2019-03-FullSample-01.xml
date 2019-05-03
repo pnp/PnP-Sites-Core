@@ -175,6 +175,35 @@
         QuickLaunchEnabled="true"
         />
 
+      <pnp:Theme Name="CustomOrange" IsInverted="false">
+        {
+        "themePrimary": "#ecb534",
+        "themeLighterAlt": "#fefcf6",
+        "themeLighter": "#fcf3dd",
+        "themeLight": "#fae8bf",
+        "themeTertiary": "#f4d282",
+        "themeSecondary": "#efbe4b",
+        "themeDarkAlt": "#d5a32f",
+        "themeDark": "#b48a28",
+        "themeDarker": "#85661d",
+        "neutralLighterAlt": "#f8f8f8",
+        "neutralLighter": "#f4f4f4",
+        "neutralLight": "#eaeaea",
+        "neutralQuaternaryAlt": "#dadada",
+        "neutralQuaternary": "#d0d0d0",
+        "neutralTertiaryAlt": "#c8c8c8",
+        "neutralTertiary": "#a9a9a9",
+        "neutralSecondary": "#8d8d8d",
+        "neutralPrimaryAlt": "#727272",
+        "neutralPrimary": "#020202",
+        "neutralDark": "#3a3a3a",
+        "black": "#1e1e1e",
+        "white": "#ffffff",
+        "bodyBackground": "#ffffff",
+        "bodyText": "#020202"
+        }
+      </pnp:Theme>
+
       <pnp:RegionalSettings
         AdjustHijriDays="1"
         AlternateCalendarType="Chinese Lunar"

@@ -781,11 +781,13 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\SequenceSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\NavigationSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SecuritySerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\ThemeSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SiteFooterSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SiteHeaderSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\ProvisioningTemplateWebhooksSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\AzureActiveDirectorySerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\TeamsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\TenantSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WorkflowsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AuditSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SiteColumnsSerializer.cs" />

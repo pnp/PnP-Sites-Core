@@ -670,35 +670,43 @@
     </xsd:annotation>
 
     <xsd:sequence>
-      <xsd:element name="Theme" minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="Theme" minOccurs="0" maxOccurs="unbounded" type="pnp:Theme">
         <xsd:annotation>
-          <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+          <xsd:appinfo>Updated with schema version 201903</xsd:appinfo>
           <xsd:documentation xml:lang="en">
             Defines a single tenant-wide Theme
           </xsd:documentation>
         </xsd:annotation>
-        <xsd:complexType mixed="true">
-          <xsd:attribute name="Name" type="xsd:string" use="required">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines the name of the tenant-wide Theme
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:attribute>
-          <xsd:attribute name="IsInverted" type="xsd:boolean" use="optional" default="false">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines the name of the tenant-wide Theme
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:attribute>
-        </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
 
   </xsd:complexType>
+
+  <xsd:complexType name="Theme" mixed="true">
+    <xsd:annotation>
+      <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+      <xsd:documentation xml:lang="en">
+        Defines a single Theme
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="Name" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:appinfo>Updated with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines the name of the tenant-wide Theme
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="IsInverted" type="xsd:boolean" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:appinfo>Updated with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines the name of the tenant-wide Theme
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+
 
   <xsd:complexType name="Templates">
     <xsd:annotation>
@@ -1043,6 +1051,15 @@
           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
           <xsd:documentation xml:lang="en">
             The Webhooks for the Provisioning Template, optional element.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="Theme" type="pnp:Theme" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            The Theme for the Provisioning Template, optional element.
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>

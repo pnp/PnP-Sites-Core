@@ -48,23 +48,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // If we start from an already existing Group
             else if (!String.IsNullOrEmpty(team.GroupId))
             {
+                // We need to parse the GroupId, if it is a token
+                var parsedGroupId = parser.ParseString(team.GroupId);
+
                 // Check if the Group exists
-                if (GroupExists(scope, team.GroupId, accessToken))
+                if (GroupExists(scope, parsedGroupId, accessToken))
                 {
                     // Then promote the Group into a Team or update it, if it already exists
-                    teamId = CreateOrUpdateTeamFromGroup(scope, team, accessToken);
+                    teamId = CreateOrUpdateTeamFromGroup(scope, team, parser, parsedGroupId, accessToken);
                 }
                 else
                 {
                     // Log the exception and return NULL (i.e. cancel)
-                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_GroupDoesNotExists, team.GroupId);
+                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_GroupDoesNotExists, parsedGroupId);
                     return null;
                 }
             }
             // Otherwise create a Team from scratch
             else
             {
-                teamId = CreateOrUpdateTeam(scope, team, accessToken);
+                teamId = CreateOrUpdateTeam(scope, team, parser, accessToken);
             }
 
             if (!String.IsNullOrEmpty(teamId))
@@ -152,11 +155,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// </summary>
         /// <param name="scope">The PnP Provisioning Scope</param>
         /// <param name="team">The Team to create</param>
+        /// <param name="parser">The PnP Token Parser</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token</param>
         /// <returns>The ID of the created or update Team</returns>
-        private static string CreateOrUpdateTeam(PnPMonitoredScope scope, Team team, string accessToken)
+        private static string CreateOrUpdateTeam(PnPMonitoredScope scope, Team team, TokenParser parser, string accessToken)
         {
-            var content = PrepareTeamRequestContent(team);
+            var content = PrepareTeamRequestContent(team, parser);
 
             var teamId = CreateOrUpdateGraphObject(scope,
                 HttpMethodVerb.POST_WITH_RESPONSE_HEADERS,
@@ -179,15 +183,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// </summary>
         /// <param name="scope">The PnP Provisioning Scope</param>
         /// <param name="team">The Team to create</param>
+        /// <param name="parser">The PnP Token Parser</param>
+        /// <param name="groupId">The ID of the Group to promote into a Team</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token</param>
         /// <returns>The ID of the created or updated Team</returns>
-        private static string CreateOrUpdateTeamFromGroup(PnPMonitoredScope scope, Team team, string accessToken)
+        private static string CreateOrUpdateTeamFromGroup(PnPMonitoredScope scope, Team team, TokenParser parser, String groupId, string accessToken)
         {
-            var content = PrepareTeamRequestContent(team);
+            var content = PrepareTeamRequestContent(team, parser);
 
             var teamId = CreateOrUpdateGraphObject(scope,
                 HttpMethodVerb.POST,
-                $"https://graph.microsoft.com/beta/groups/{team.GroupId}/team",
+                $"https://graph.microsoft.com/beta/groups/{groupId}/team",
                 content,
                 jsonContentType,
                 accessToken,
@@ -205,15 +211,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// Prepares the JSON object for the request to create/update a Team
         /// </summary>
         /// <param name="team">The Domain Model Team object</param>
+        /// <param name="parser">The PnP Token Parser</param>
         /// <returns>The JSON object ready to be serialized into the JSON request</returns>
-        private static Object PrepareTeamRequestContent(Team team)
+        private static Object PrepareTeamRequestContent(Team team, TokenParser parser)
         {
             var content = new
             {
                 template_odata_bind = "https://graph.microsoft.com/beta/teamsTemplates('standard')",
-                team.DisplayName,
-                team.Description,
-                team.Classification,
+                DisplayName = parser.ParseString(team.DisplayName),
+                Description = parser.ParseString(team.Description),
+                Classification = parser.ParseString(team.Classification),
                 team.Specialization,
                 team.Visibility,
                 funSettings = new

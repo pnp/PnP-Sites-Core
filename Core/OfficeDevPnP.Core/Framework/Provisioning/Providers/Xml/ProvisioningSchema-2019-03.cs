@@ -10423,6 +10423,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private ProvisioningTemplateWebhooksProvisioningTemplateWebhook[] provisioningTemplateWebhooksField;
         
+        private Theme themeField;
+        
         private string idField;
         
         private decimal versionField;
@@ -10731,6 +10733,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.provisioningTemplateWebhooksField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public Theme Theme {
+            get {
+                return this.themeField;
+            }
+            set {
+                this.themeField = value;
             }
         }
         
@@ -11105,6 +11117,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
     [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
+    public partial class Theme {
+        
+        private string nameField;
+        
+        private bool isInvertedField;
+        
+        private string[] textField;
+        
+        public Theme() {
+            this.isInvertedField = false;
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Name {
+            get {
+                return this.nameField;
+            }
+            set {
+                this.nameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool IsInverted {
+            get {
+                return this.isInvertedField;
+            }
+            set {
+                this.isInvertedField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlTextAttribute()]
+        public string[] Text {
+            get {
+                return this.textField;
+            }
+            set {
+                this.textField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
     public enum ProvisioningTemplateScope {
         
@@ -11308,7 +11373,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private StorageEntitiesStorageEntity[] storageEntitiesField;
         
-        private ThemesTheme[] themesField;
+        private Theme[] themesField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute("Package", IsNullable=false)]
@@ -11376,8 +11441,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Theme", IsNullable=false)]
-        public ThemesTheme[] Themes {
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
+        public Theme[] Themes {
             get {
                 return this.themesField;
             }
@@ -11735,59 +11800,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.descriptionField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
-    public partial class ThemesTheme {
-        
-        private string nameField;
-        
-        private bool isInvertedField;
-        
-        private string[] textField;
-        
-        public ThemesTheme() {
-            this.isInvertedField = false;
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Name {
-            get {
-                return this.nameField;
-            }
-            set {
-                this.nameField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(false)]
-        public bool IsInverted {
-            get {
-                return this.isInvertedField;
-            }
-            set {
-                this.isInvertedField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlTextAttribute()]
-        public string[] Text {
-            get {
-                return this.textField;
-            }
-            set {
-                this.textField = value;
             }
         }
     }

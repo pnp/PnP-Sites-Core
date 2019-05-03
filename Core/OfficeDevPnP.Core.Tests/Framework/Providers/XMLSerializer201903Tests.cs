@@ -187,6 +187,52 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_TemplateTheme()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+
+            Assert.AreEqual(false, template.Theme.IsInverted);
+            Assert.AreEqual("CustomOrange", template.Theme.Name);
+            Assert.IsTrue(template.Theme.Palette.Contains("\"neutralQuaternaryAlt\": \"#dadada\""));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_TemplateTheme()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate
+            {
+                Theme = new Core.Framework.Provisioning.Model.Theme
+                {
+                    Name = "CustomOrange",
+                    IsInverted = false,
+                    Palette = "{\"neutralQuaternaryAlt\": \"#dadada\"}"
+                }
+            };
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult =
+                XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            Assert.AreEqual(false, template.Theme.IsInverted);
+            Assert.AreEqual("CustomOrange", template.Theme.Name);
+            Assert.IsTrue(template.Theme.Text[0].Contains("\"neutralQuaternaryAlt\": \"#dadada\""));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_SiteFooter()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
@@ -1314,7 +1360,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             result.ParentHierarchy.Tenant = new ProvisioningTenant(result.ApplicationLifecycleManagement.AppCatalog,
                 new Core.Framework.Provisioning.Model.ContentDeliveryNetwork());
 
-            result.Tenant.Themes.Add(new Theme
+            result.Tenant.Themes.Add(new Core.Framework.Provisioning.Model.Theme
             {
                 Name = "CustomOrange",
                 IsInverted = false,
