@@ -48,6 +48,12 @@ namespace OfficeDevPnP.Core.Pages
         // feature
         public const string SitePagesFeatureId = "b6917cb1-93a0-4b97-a84d-7cf49975d4ec";
 
+        // folders
+        public const string DefaultTemplatesFolder = "Templates";
+
+        // Properties
+        public const string TemplatesFolderGuid = "vti_TemplatesFolderGuid";
+
         private ClientContext context;
         private string pageName;
         private string pagesLibrary;
@@ -304,6 +310,43 @@ namespace OfficeDevPnP.Core.Pages
                 return this.pageHeader;
             }
         }
+
+
+        /// <summary>
+        /// Returns the name of the templates folder, and creates if it doesn't exist.
+        /// </summary>
+        public static string GetTemplatesFolder(List spPagesLibrary)
+        {
+            var folderGuid = spPagesLibrary.GetPropertyBagValueString(TemplatesFolderGuid, null);
+            if (folderGuid == null)
+            {
+                // No templates Folder
+                var templateFolder = ((ClientContext)spPagesLibrary.Context).Web.EnsureFolderPath($"SitePages/{DefaultTemplatesFolder}");
+                var uniqueId = templateFolder.EnsureProperty(f => f.UniqueId);
+                spPagesLibrary.SetPropertyBagValue(TemplatesFolderGuid, uniqueId.ToString());
+                return templateFolder.Name;
+            }
+            else
+            {
+                var templateFolderName = string.Empty;
+                try
+                {
+                    var templateFolder = ((ClientContext)spPagesLibrary.Context).Web.GetFolderById(Guid.Parse(folderGuid));
+                    templateFolderName = templateFolder.EnsureProperty(f => f.Name);
+                }
+                catch
+                {
+                    var templateFolder = ((ClientContext)spPagesLibrary.Context).Web.EnsureFolderPath($"SitePages/{DefaultTemplatesFolder}");
+                    var uniqueId = templateFolder.EnsureProperty(f => f.UniqueId);
+                    spPagesLibrary.SetPropertyBagValue(TemplatesFolderGuid, uniqueId.ToString());
+                    templateFolderName = templateFolder.Name;
+                }
+                return templateFolderName;
+            }
+        }
+
+
+
         #endregion
 
         #region public methods
@@ -664,6 +707,19 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             return page;
+        }
+
+        public void SaveAsTemplate(string pageName)
+        {
+            if (this.spPagesLibrary == null)
+            {
+                this.spPagesLibrary = this.Context.Web.GetListByUrl(this.PagesLibrary, p => p.RootFolder);
+            }
+
+            string pageUrl = $"{GetTemplatesFolder(this.spPagesLibrary)}/{pageName}";
+
+            // Save the page as template
+            Save(pageUrl);
         }
 
         /// <summary>
