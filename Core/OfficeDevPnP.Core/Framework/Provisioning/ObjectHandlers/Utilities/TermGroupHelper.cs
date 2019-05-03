@@ -128,15 +128,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                     if (group.EnsureProperty(g => g.IsSiteCollectionGroup))
                     {
-                        parser.AddToken(new TermSetIdToken(context.Web, "{sitecollectiontermgroupname}", normalizedTermSetName.Value, modelTermSet.Id));
-                    }
-
-                    if (siteCollectionTermGroup != null && !siteCollectionTermGroup.ServerObjectIsNull.Value)
-                    {
-                        if (group.Name == siteCollectionTermGroup.Name)
-                        {
-                            parser.AddToken((new SiteCollectionTermSetIdToken(context.Web, normalizedTermSetName.Value, modelTermSet.Id)));
-                        }
+                        parser.AddToken((new SiteCollectionTermSetIdToken(context.Web, normalizedTermSetName.Value, modelTermSet.Id)));
                     }
                     newTermSet = true;
                     if (!string.IsNullOrEmpty(modelTermSet.Description))
