@@ -139,6 +139,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public ClientSidePage()
         {
             this._sections = new CanvasSectionCollection(this.ParentTemplate);
+            Security = new ObjectSecurity();
         }
 
         #endregion

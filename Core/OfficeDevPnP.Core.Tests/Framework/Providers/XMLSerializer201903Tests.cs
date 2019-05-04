@@ -4289,6 +4289,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 }
             });
 
+            result.ClientSidePages[0].Security.ClearSubscopes = true;
+            result.ClientSidePages[0].Security.CopyRoleAssignments = false;
+            result.ClientSidePages[0].Security.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment
+            {
+                Principal = "user1@contoso.com",
+                RoleDefinition = "Full Control"
+            });
+
             var serializer = new XMLPnPSchemaV201903Serializer();
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
 
