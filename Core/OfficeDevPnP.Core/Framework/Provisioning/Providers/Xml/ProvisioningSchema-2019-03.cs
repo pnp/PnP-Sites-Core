@@ -363,6 +363,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private string profilePhotoField;
         
+        private string givenNameField;
+        
+        private string surnameField;
+        
+        private string jobTitleField;
+        
+        private string officeLocationField;
+        
+        private string preferredLanguageField;
+        
+        private string mobilePhoneField;
+        
         /// <remarks/>
         public AADUsersUserPasswordProfile PasswordProfile {
             get {
@@ -447,6 +459,72 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.profilePhotoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string GivenName {
+            get {
+                return this.givenNameField;
+            }
+            set {
+                this.givenNameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Surname {
+            get {
+                return this.surnameField;
+            }
+            set {
+                this.surnameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string JobTitle {
+            get {
+                return this.jobTitleField;
+            }
+            set {
+                this.jobTitleField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string OfficeLocation {
+            get {
+                return this.officeLocationField;
+            }
+            set {
+                this.officeLocationField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string PreferredLanguage {
+            get {
+                return this.preferredLanguageField;
+            }
+            set {
+                this.preferredLanguageField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MobilePhone {
+            get {
+                return this.mobilePhoneField;
+            }
+            set {
+                this.mobilePhoneField = value;
             }
         }
     }

@@ -8150,7 +8150,7 @@
                     <xsd:complexType>
 
                       <xsd:sequence>
-                        <xsd:element name="DisabledPlans" minOccurs="1" maxOccurs="1">
+                        <xsd:element name="DisabledPlans" minOccurs="0" maxOccurs="1">
                           <xsd:annotation>
                             <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
                             <xsd:documentation xml:lang="en">
@@ -8197,7 +8197,7 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
-          <xsd:attribute name="DisplayName" type="xsd:string" use="required">
+          <xsd:attribute name="DisplayName" type="pnp:ReplaceableString" use="required">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
               <xsd:documentation xml:lang="en">
@@ -8205,7 +8205,7 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
-          <xsd:attribute name="MailNickname" type="xsd:string" use="required">
+          <xsd:attribute name="MailNickname" type="pnp:ReplaceableString" use="required">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
               <xsd:documentation xml:lang="en">
@@ -8213,7 +8213,7 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
-          <xsd:attribute name="PasswordPolicies" type="xsd:string" use="optional">
+          <xsd:attribute name="PasswordPolicies" type="pnp:ReplaceableString" use="optional">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
               <xsd:documentation xml:lang="en">
@@ -8229,11 +8229,59 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
-          <xsd:attribute name="ProfilePhoto" type="xsd:string" use="optional">
+          <xsd:attribute name="ProfilePhoto" type="pnp:ReplaceableString" use="optional">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
               <xsd:documentation xml:lang="en">
                 The URL of the Photo for the user, optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="GivenName" type="pnp:ReplaceableString" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Declares the GivenName of the user, optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="Surname" type="pnp:ReplaceableString" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Declares the Surname of the user, optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="JobTitle" type="pnp:ReplaceableString" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Declares the Job Title of the user, optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="OfficeLocation" type="pnp:ReplaceableString" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Declares the Office Location of the user, optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="PreferredLanguage" type="pnp:ReplaceableString" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Declares the Preferred Language of the user, optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="MobilePhone" type="pnp:ReplaceableString" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Declares the Mobile Phone of the user, optional attribute.
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>

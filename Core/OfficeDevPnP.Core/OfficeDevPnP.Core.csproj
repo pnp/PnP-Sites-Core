@@ -645,6 +645,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchyTenant.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSiteFooterSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSiteHeaderSettings.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectAzureActiveDirectory.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTeams.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTenant.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePageContents.cs" />
@@ -681,6 +682,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUpdateValue.cs" />
+    <Compile Include="Utilities\Graph\GraphHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ListItemUtilities.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ConnectorFileHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUtilities.cs" />
@@ -1467,7 +1469,6 @@
   <ItemGroup>
     <Folder Include="Framework\Provisioning\Deprecated\Connectors\OpenXML\" />
     <Folder Include="Framework\Provisioning\Providers\Xml\Serializers\V201805\" />
-    <Folder Include="Utilities\Graph\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

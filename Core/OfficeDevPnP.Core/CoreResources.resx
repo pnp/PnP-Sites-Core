@@ -1198,4 +1198,10 @@
   <data name="Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingPropertyBag" xml:space="preserve">
     <value>Skip adding/updating list property bag because the site has "noscript" enabled.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_AAD_User_AlreadyExists" xml:space="preserve">
+    <value>User already exists.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_AAD_User_ProvisioningError" xml:space="preserve">
+    <value>Provisioning a user failed.</value>
+  </data>
 </root>

@@ -50,6 +50,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
         public String ProfilePhoto { get; set; }
 
         /// <summary>
+        /// The Given Name for the user
+        /// </summary>
+        public String GivenName { get; set; }
+
+        /// <summary>
+        /// The Surname for the user
+        /// </summary>
+        public String Surname { get; set; }
+
+        /// <summary>
+        /// The Job Title for the user
+        /// </summary>
+        public String JobTitle { get; set; }
+
+        /// <summary>
+        /// The Office Location for the user
+        /// </summary>
+        public String OfficeLocation { get; set; }
+
+        /// <summary>
+        /// The Preferred Language for the user
+        /// </summary>
+        public String PreferredLanguage { get; set; }
+
+        /// <summary>
+        /// The Mobile Phone for the user
+        /// </summary>
+        public String MobilePhone { get; set; }
+
+        /// <summary>
         /// Collection of user's licenses
         /// </summary>
         public UserLicenseCollection Licenses { get; private set; }

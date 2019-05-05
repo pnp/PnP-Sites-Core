@@ -872,8 +872,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, users[0].AccountEnabled);
             Assert.AreEqual("john.white", users[0].MailNickname);
             Assert.AreEqual("john.white@{parameter:domain}.onmicrosoft.com", users[0].UserPrincipalName);
-            Assert.AreEqual("Policy1", users[0].PasswordPolicies);
+            Assert.AreEqual("DisablePasswordExpiration,DisableStrongPassword", users[0].PasswordPolicies);
             Assert.AreEqual("photo.jpg", users[0].ProfilePhoto);
+            Assert.AreEqual("John", users[0].GivenName);
+            Assert.AreEqual("White", users[0].Surname);
+            Assert.AreEqual("Senior Partner", users[0].JobTitle);
+            Assert.AreEqual("+1-601-123456", users[0].MobilePhone);
+            Assert.AreEqual("Seattle, WA", users[0].OfficeLocation);
+            Assert.AreEqual("en-US", users[0].PreferredLanguage);
 
             var passWord = new SecureString();
 
@@ -905,6 +911,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 UserPrincipalName = "john.white@{parameter:domain}.onmicrosoft.com",
                 PasswordPolicies = "Policy1",
                 ProfilePhoto = "photo.jpg",
+                GivenName = "John",
+                Surname = "White",
+                JobTitle = "Senior Partner",
+                MobilePhone = "+1-601-123456",
+                OfficeLocation = "Seattle, WA",
+                PreferredLanguage = "en-US",
                 PasswordProfile = new PasswordProfile
                 {
                     ForceChangePasswordNextSignIn = true,
@@ -942,6 +954,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("john.white@{parameter:domain}.onmicrosoft.com", users[0].UserPrincipalName);
             Assert.AreEqual("Policy1", users[0].PasswordPolicies);
             Assert.AreEqual("photo.jpg", users[0].ProfilePhoto);
+            Assert.AreEqual("John", users[0].GivenName);
+            Assert.AreEqual("White", users[0].Surname);
+            Assert.AreEqual("Senior Partner", users[0].JobTitle);
+            Assert.AreEqual("+1-601-123456", users[0].MobilePhone);
+            Assert.AreEqual("Seattle, WA", users[0].OfficeLocation);
+            Assert.AreEqual("en-US", users[0].PreferredLanguage);
 
             Assert.AreEqual(true, users[0].PasswordProfile.ForceChangePasswordNextSignIn);
             Assert.AreEqual(true, users[0].PasswordProfile.ForceChangePasswordNextSignInWithMfa);

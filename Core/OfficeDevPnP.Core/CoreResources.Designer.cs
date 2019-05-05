@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class CoreResources {
@@ -1043,6 +1043,24 @@ namespace OfficeDevPnP.Core {
         internal static string Provisioning_Formatter_Invalid_Template_URI {
             get {
                 return ResourceManager.GetString("Provisioning_Formatter_Invalid_Template_URI", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User already exists..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_AAD_User_AlreadyExists {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_AAD_User_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provisioning a user failed..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_AAD_User_ProvisioningError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_AAD_User_ProvisioningError", resourceCulture);
             }
         }
         
