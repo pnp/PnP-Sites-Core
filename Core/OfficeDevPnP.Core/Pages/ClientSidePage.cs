@@ -373,6 +373,17 @@ namespace OfficeDevPnP.Core.Pages
         /// <param name="template">The <see cref="CanvasSectionTemplate"/> type of the section</param>
         /// <param name="order">Controls the order of the new section</param>
         /// <param name="zoneEmphasis">Zone emphasis (section background)</param>
+        public void AddSection(CanvasSectionTemplate template, float order, SPVariantThemeType zoneEmphasis)
+        {            
+            AddSection(template, order, (int)zoneEmphasis);
+        }
+
+        /// <summary>
+        /// Adds a new section to your client side page
+        /// </summary>
+        /// <param name="template">The <see cref="CanvasSectionTemplate"/> type of the section</param>
+        /// <param name="order">Controls the order of the new section</param>
+        /// <param name="zoneEmphasis">Zone emphasis (section background)</param>
         public void AddSection(CanvasSectionTemplate template, float order, int zoneEmphasis)
         {
             var section = new CanvasSection(this, template, order)
