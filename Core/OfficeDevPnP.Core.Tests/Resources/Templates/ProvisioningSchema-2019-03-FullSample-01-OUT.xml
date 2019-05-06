@@ -124,7 +124,7 @@
         }</pnp:Theme>
     </pnp:Themes>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-DUMMY-4ad77faf-2699-470c-97b0-9eb7013616ed">
+  <pnp:Templates ID="CONTAINER-DUMMY-a37581d7-0d76-4aee-9ac8-1bd194767da3">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
@@ -1302,7 +1302,7 @@ function showAlert(){alert("Hello!")};
   </pnp:Teams>
   <pnp:AzureActiveDirectory>
     <pnp:Users>
-      <pnp:User AccountEnabled="true" DisplayName="John White" MailNickname="john.white" PasswordPolicies="Policy1" UserPrincipalName="john.white@{parameter:domain}.onmicrosoft.com" ProfilePhoto="photo.jpg">
+      <pnp:User AccountEnabled="true" DisplayName="John White" MailNickname="john.white" PasswordPolicies="DisablePasswordExpiration,DisableStrongPassword" UserPrincipalName="john.white@{parameter:domain}.onmicrosoft.com" ProfilePhoto="photo.jpg" GivenName="John" Surname="White" JobTitle="Senior Partner" OfficeLocation="Seattle, WA" PreferredLanguage="en-US" MobilePhone="+1-601-123456">
         <pnp:PasswordProfile ForceChangePasswordNextSignIn="true" Password="Pass@w0rd" />
         <pnp:Licenses>
           <pnp:License SkuId="26d45bd9-adf1-46cd-a9e1-51e9a5524128">
@@ -1312,13 +1312,7 @@ function showAlert(){alert("Hello!")};
               <pnp:DisabledPlan>b1188c4c-1b36-4018-b48b-ee07604f6feb</pnp:DisabledPlan>
             </pnp:DisabledPlans>
           </pnp:License>
-          <pnp:License SkuId="26d45bd9-adf1-46cd-a9e1-51e9a5524128">
-            <pnp:DisabledPlans>
-              <pnp:DisabledPlan>e212cbc7-0961-4c40-9825-01117710dcb1</pnp:DisabledPlan>
-              <pnp:DisabledPlan>3fb82609-8c27-4f7b-bd51-30634711ee67</pnp:DisabledPlan>
-              <pnp:DisabledPlan>b1188c4c-1b36-4018-b48b-ee07604f6feb</pnp:DisabledPlan>
-            </pnp:DisabledPlans>
-          </pnp:License>
+          <pnp:License SkuId="7d6994de-2943-4ddc-a948-b12676f4bfb6" />
         </pnp:Licenses>
       </pnp:User>
       <pnp:User AccountEnabled="true" DisplayName="Jim Black" MailNickname="jim.black" UserPrincipalName="jim.black@contoso.onmicrosoft.com">

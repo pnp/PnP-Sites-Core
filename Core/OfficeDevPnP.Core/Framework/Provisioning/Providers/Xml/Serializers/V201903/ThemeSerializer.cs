@@ -39,7 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                         }
                     }
 
-                    return (result.Trim());
+                    return (result?.Trim());
                 }));
 
                 template.Theme = new Theme();
