@@ -491,7 +491,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         }
 
         [DataContract]
-        private class TenantTheme
+        internal class TenantTheme
         {
             [DataMember(Name = "name")]
             public string Name { get; set; }
