@@ -381,6 +381,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// </summary>
         private static Stream GetFileStream(ProvisioningTemplate template, Model.File file)
         {
+            // TODO: See if we can use ConnectorFileHelper instead
+
             var fileName = file.Src;
             var container = String.Empty;
             if (fileName.Contains(@"\") || fileName.Contains(@"/"))

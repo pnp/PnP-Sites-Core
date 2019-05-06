@@ -7245,6 +7245,15 @@
 
     </xsd:attribute>
 
+    <xsd:attribute name="Photo" type="pnp:ReplaceableString" use="optional">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Declares the Photo for the Team, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
   </xsd:complexType>
 
   <xsd:complexType name="TeamTemplate">
@@ -8282,6 +8291,14 @@
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
               <xsd:documentation xml:lang="en">
                 Declares the Mobile Phone of the user, optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="UsageLocation" type="pnp:ReplaceableString" use="required">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Declares the Usage Location for licenses assigned to the user, required attribute.
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
