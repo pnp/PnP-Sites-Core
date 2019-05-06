@@ -8397,19 +8397,19 @@
 
   <xsd:simpleType name="BackgroundEmphasis">
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="Neutral">
-        <xsd:annotation>
-          <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-          <xsd:documentation xml:lang="en">
-            Defines the Neutral emphasis for the Site Header.
-          </xsd:documentation>
-        </xsd:annotation>
-      </xsd:enumeration>
       <xsd:enumeration value="None">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
           <xsd:documentation xml:lang="en">
             Defines No emphasis for the Site Header.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="Neutral">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Defines the Neutral emphasis for the Site Header.
           </xsd:documentation>
         </xsd:annotation>
       </xsd:enumeration>

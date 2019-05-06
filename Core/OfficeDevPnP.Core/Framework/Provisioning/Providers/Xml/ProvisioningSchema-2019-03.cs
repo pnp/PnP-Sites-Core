@@ -3176,13 +3176,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
     public enum BackgroundEmphasis {
-        
-        /// <remarks/>
-        Neutral,
-        
+
         /// <remarks/>
         None,
-        
+
+        /// <remarks/>
+        Neutral,
+               
         /// <remarks/>
         Soft,
         
