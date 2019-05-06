@@ -17,6 +17,8 @@ namespace OfficeDevPnP.Core.Utilities
     /// </summary>
     public static class HttpHelper
     {
+        public const String JsonContentType = "application/json";
+
         /// <summary>
         /// Static readonly instance of HttpClient to improve performances
         /// </summary>

@@ -363,6 +363,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private string profilePhotoField;
         
+        private string givenNameField;
+        
+        private string surnameField;
+        
+        private string jobTitleField;
+        
+        private string officeLocationField;
+        
+        private string preferredLanguageField;
+        
+        private string mobilePhoneField;
+        
         /// <remarks/>
         public AADUsersUserPasswordProfile PasswordProfile {
             get {
@@ -447,6 +459,72 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.profilePhotoField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string GivenName {
+            get {
+                return this.givenNameField;
+            }
+            set {
+                this.givenNameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Surname {
+            get {
+                return this.surnameField;
+            }
+            set {
+                this.surnameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string JobTitle {
+            get {
+                return this.jobTitleField;
+            }
+            set {
+                this.jobTitleField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string OfficeLocation {
+            get {
+                return this.officeLocationField;
+            }
+            set {
+                this.officeLocationField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string PreferredLanguage {
+            get {
+                return this.preferredLanguageField;
+            }
+            set {
+                this.preferredLanguageField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string MobilePhone {
+            get {
+                return this.mobilePhoneField;
+            }
+            set {
+                this.mobilePhoneField = value;
             }
         }
     }
@@ -3024,11 +3102,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private HeaderMenuStyle menuStyleField;
         
-        private HeaderBackgroundEmphasis backgroundEmphasisField;
+        private BackgroundEmphasis backgroundEmphasisField;
         
         public Header() {
             this.menuStyleField = HeaderMenuStyle.Cascading;
-            this.backgroundEmphasisField = HeaderBackgroundEmphasis.None;
+            this.backgroundEmphasisField = BackgroundEmphasis.None;
         }
         
         /// <remarks/>
@@ -3056,8 +3134,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(HeaderBackgroundEmphasis.None)]
-        public HeaderBackgroundEmphasis BackgroundEmphasis {
+        [System.ComponentModel.DefaultValueAttribute(BackgroundEmphasis.None)]
+        public BackgroundEmphasis BackgroundEmphasis {
             get {
                 return this.backgroundEmphasisField;
             }
@@ -3096,15 +3174,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
     [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
-    public enum HeaderBackgroundEmphasis {
-        
-        /// <remarks/>
-        Neutral,
-        
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
+    public enum BackgroundEmphasis {
+
         /// <remarks/>
         None,
-        
+
+        /// <remarks/>
+        Neutral,
+               
         /// <remarks/>
         Soft,
         
@@ -3364,9 +3442,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private bool typeFieldSpecified;
         
-        private int zoneEmphasisField;
+        private BackgroundEmphasis backgroundEmphasisField;
         
-        private bool zoneEmphasisFieldSpecified;
+        public CanvasSection() {
+            this.backgroundEmphasisField = BackgroundEmphasis.None;
+        }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
@@ -3425,23 +3505,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public int ZoneEmphasis {
+        [System.ComponentModel.DefaultValueAttribute(BackgroundEmphasis.None)]
+        public BackgroundEmphasis BackgroundEmphasis {
             get {
-                return this.zoneEmphasisField;
+                return this.backgroundEmphasisField;
             }
             set {
-                this.zoneEmphasisField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlIgnoreAttribute()]
-        public bool ZoneEmphasisSpecified {
-            get {
-                return this.zoneEmphasisFieldSpecified;
-            }
-            set {
-                this.zoneEmphasisFieldSpecified = value;
+                this.backgroundEmphasisField = value;
             }
         }
     }
@@ -10423,6 +10493,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private ProvisioningTemplateWebhooksProvisioningTemplateWebhook[] provisioningTemplateWebhooksField;
         
+        private Theme themeField;
+        
         private string idField;
         
         private decimal versionField;
@@ -10731,6 +10803,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.provisioningTemplateWebhooksField = value;
+            }
+        }
+        
+        /// <remarks/>
+        public Theme Theme {
+            get {
+                return this.themeField;
+            }
+            set {
+                this.themeField = value;
             }
         }
         
@@ -11105,6 +11187,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
     /// <remarks/>
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
     [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
+    public partial class Theme {
+        
+        private string nameField;
+        
+        private bool isInvertedField;
+        
+        private string[] textField;
+        
+        public Theme() {
+            this.isInvertedField = false;
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Name {
+            get {
+                return this.nameField;
+            }
+            set {
+                this.nameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool IsInverted {
+            get {
+                return this.isInvertedField;
+            }
+            set {
+                this.isInvertedField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlTextAttribute()]
+        public string[] Text {
+            get {
+                return this.textField;
+            }
+            set {
+                this.textField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
     public enum ProvisioningTemplateScope {
         
@@ -11308,7 +11443,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private StorageEntitiesStorageEntity[] storageEntitiesField;
         
-        private ThemesTheme[] themesField;
+        private Theme[] themesField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute("Package", IsNullable=false)]
@@ -11376,8 +11511,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Theme", IsNullable=false)]
-        public ThemesTheme[] Themes {
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
+        public Theme[] Themes {
             get {
                 return this.themesField;
             }
@@ -11735,59 +11870,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.descriptionField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
-    public partial class ThemesTheme {
-        
-        private string nameField;
-        
-        private bool isInvertedField;
-        
-        private string[] textField;
-        
-        public ThemesTheme() {
-            this.isInvertedField = false;
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Name {
-            get {
-                return this.nameField;
-            }
-            set {
-                this.nameField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(false)]
-        public bool IsInverted {
-            get {
-                return this.isInvertedField;
-            }
-            set {
-                this.isInvertedField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlTextAttribute()]
-        public string[] Text {
-            get {
-                return this.textField;
-            }
-            set {
-                this.textField = value;
             }
         }
     }

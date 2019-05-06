@@ -166,7 +166,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             return (this.GlobalNavigation.Equals(other.GlobalNavigation) &&
                     this.CurrentNavigation.Equals(other.CurrentNavigation) &&
-                    this.SearchNavigation.Equals(other.SearchNavigation) &&
+                    (this.SearchNavigation != null && other.SearchNavigation != null ? this.SearchNavigation.Equals(other.SearchNavigation) : this.SearchNavigation == null && other.SearchNavigation == null ? true : false) &&
                     this.EnableTreeView == other.EnableTreeView &&
                     this.AddNewPagesToNavigation == other.AddNewPagesToNavigation &&
                     this.CreateFriendlyUrlsForNewPages == other.CreateFriendlyUrlsForNewPages

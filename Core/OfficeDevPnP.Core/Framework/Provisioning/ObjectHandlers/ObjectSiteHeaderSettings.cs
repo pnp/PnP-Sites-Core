@@ -41,7 +41,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                 }
 
-                if (Enum.TryParse<SiteHeaderBackgroundEmphasis>(web.HeaderEmphasis.ToString(), out SiteHeaderBackgroundEmphasis backgroundEmphasis))
+                if (Enum.TryParse<BackgroundEmphasis>(web.HeaderEmphasis.ToString(), out BackgroundEmphasis backgroundEmphasis))
                 {
                     header.BackgroundEmphasis = backgroundEmphasis;
                 }

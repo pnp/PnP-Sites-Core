@@ -670,35 +670,43 @@
     </xsd:annotation>
 
     <xsd:sequence>
-      <xsd:element name="Theme" minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="Theme" minOccurs="0" maxOccurs="unbounded" type="pnp:Theme">
         <xsd:annotation>
-          <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+          <xsd:appinfo>Updated with schema version 201903</xsd:appinfo>
           <xsd:documentation xml:lang="en">
             Defines a single tenant-wide Theme
           </xsd:documentation>
         </xsd:annotation>
-        <xsd:complexType mixed="true">
-          <xsd:attribute name="Name" type="xsd:string" use="required">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines the name of the tenant-wide Theme
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:attribute>
-          <xsd:attribute name="IsInverted" type="xsd:boolean" use="optional" default="false">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines the name of the tenant-wide Theme
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:attribute>
-        </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
 
   </xsd:complexType>
+
+  <xsd:complexType name="Theme" mixed="true">
+    <xsd:annotation>
+      <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+      <xsd:documentation xml:lang="en">
+        Defines a single Theme
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:attribute name="Name" type="xsd:string" use="required">
+      <xsd:annotation>
+        <xsd:appinfo>Updated with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines the name of the tenant-wide Theme
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="IsInverted" type="xsd:boolean" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:appinfo>Updated with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines the name of the tenant-wide Theme
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+  </xsd:complexType>
+
 
   <xsd:complexType name="Templates">
     <xsd:annotation>
@@ -1043,6 +1051,15 @@
           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
           <xsd:documentation xml:lang="en">
             The Webhooks for the Provisioning Template, optional element.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+
+      <xsd:element name="Theme" type="pnp:Theme" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            The Theme for the Provisioning Template, optional element.
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -4363,50 +4380,13 @@
       </xsd:simpleType>
     </xsd:attribute>
 
-    <xsd:attribute name="BackgroundEmphasis" use="optional" default="None">
+    <xsd:attribute name="BackgroundEmphasis" type="pnp:BackgroundEmphasis" use="optional" default="None">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
         <xsd:documentation xml:lang="en">
           Defines the Background Emphasis of the Header, optional attribute.
         </xsd:documentation>
       </xsd:annotation>
-
-      <xsd:simpleType>
-        <xsd:restriction base="xsd:string">
-          <xsd:enumeration value="Neutral">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines the Neutral emphasis for the Site Header.
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:enumeration>
-          <xsd:enumeration value="None">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines No emphasis for the Site Header.
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:enumeration>
-          <xsd:enumeration value="Soft">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines the Soft emphasis for the Site Header.
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:enumeration>
-          <xsd:enumeration value="Strong">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines the Strong emphasis for the Site Header.
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:enumeration>
-        </xsd:restriction>
-      </xsd:simpleType>
     </xsd:attribute>
 
   </xsd:complexType>
@@ -4802,7 +4782,7 @@
       </xsd:simpleType>
     </xsd:attribute>
 
-    <xsd:attribute name="ZoneEmphasis" type="xsd:int" use="optional">
+    <xsd:attribute name="BackgroundEmphasis" type="pnp:BackgroundEmphasis" use="optional" default="None">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
         <xsd:documentation xml:lang="en">
@@ -8170,7 +8150,7 @@
                     <xsd:complexType>
 
                       <xsd:sequence>
-                        <xsd:element name="DisabledPlans" minOccurs="1" maxOccurs="1">
+                        <xsd:element name="DisabledPlans" minOccurs="0" maxOccurs="1">
                           <xsd:annotation>
                             <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
                             <xsd:documentation xml:lang="en">
@@ -8217,7 +8197,7 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
-          <xsd:attribute name="DisplayName" type="xsd:string" use="required">
+          <xsd:attribute name="DisplayName" type="pnp:ReplaceableString" use="required">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
               <xsd:documentation xml:lang="en">
@@ -8225,7 +8205,7 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
-          <xsd:attribute name="MailNickname" type="xsd:string" use="required">
+          <xsd:attribute name="MailNickname" type="pnp:ReplaceableString" use="required">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
               <xsd:documentation xml:lang="en">
@@ -8233,7 +8213,7 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
-          <xsd:attribute name="PasswordPolicies" type="xsd:string" use="optional">
+          <xsd:attribute name="PasswordPolicies" type="pnp:ReplaceableString" use="optional">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
               <xsd:documentation xml:lang="en">
@@ -8249,11 +8229,59 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
-          <xsd:attribute name="ProfilePhoto" type="xsd:string" use="optional">
+          <xsd:attribute name="ProfilePhoto" type="pnp:ReplaceableString" use="optional">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
               <xsd:documentation xml:lang="en">
                 The URL of the Photo for the user, optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="GivenName" type="pnp:ReplaceableString" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Declares the GivenName of the user, optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="Surname" type="pnp:ReplaceableString" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Declares the Surname of the user, optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="JobTitle" type="pnp:ReplaceableString" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Declares the Job Title of the user, optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="OfficeLocation" type="pnp:ReplaceableString" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Declares the Office Location of the user, optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="PreferredLanguage" type="pnp:ReplaceableString" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Declares the Preferred Language of the user, optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+          <xsd:attribute name="MobilePhone" type="pnp:ReplaceableString" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Declares the Mobile Phone of the user, optional attribute.
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
@@ -8364,6 +8392,43 @@
       <xsd:enumeration value="Published" />
       <xsd:enumeration value="Draft" />
       <xsd:enumeration value="Checkout" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="BackgroundEmphasis">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="None">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Defines No emphasis for the Site Header.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="Neutral">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Defines the Neutral emphasis for the Site Header.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="Soft">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Defines the Soft emphasis for the Site Header.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
+      <xsd:enumeration value="Strong">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Defines the Strong emphasis for the Site Header.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:enumeration>
     </xsd:restriction>
   </xsd:simpleType>
 

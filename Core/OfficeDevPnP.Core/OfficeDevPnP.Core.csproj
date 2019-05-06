@@ -645,6 +645,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchyTenant.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSiteFooterSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSiteHeaderSettings.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectAzureActiveDirectory.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTeams.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTenant.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePageContents.cs" />
@@ -681,6 +682,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUpdateValue.cs" />
+    <Compile Include="Utilities\Graph\GraphHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ListItemUtilities.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ConnectorFileHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUtilities.cs" />
@@ -781,11 +783,13 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\SequenceSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\NavigationSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SecuritySerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\ThemeSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SiteFooterSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SiteHeaderSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\ProvisioningTemplateWebhooksSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\AzureActiveDirectorySerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\TeamsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\TenantSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WorkflowsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AuditSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SiteColumnsSerializer.cs" />
@@ -1465,7 +1469,6 @@
   <ItemGroup>
     <Folder Include="Framework\Provisioning\Deprecated\Connectors\OpenXML\" />
     <Folder Include="Framework\Provisioning\Providers\Xml\Serializers\V201805\" />
-    <Folder Include="Utilities\Graph\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

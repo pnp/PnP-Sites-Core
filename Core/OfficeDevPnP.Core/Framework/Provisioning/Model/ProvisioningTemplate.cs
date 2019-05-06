@@ -54,6 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         private SiteHeader _header = null;
         private SiteFooter _footer = null;
+        private Theme _theme = null;
         private ProvisioningTemplateWebhookCollection _provisioningTemplateWebhooks;
 
         #endregion
@@ -661,6 +662,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 if (this._provisioningTemplateWebhooks != null)
                 {
                     this._provisioningTemplateWebhooks.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The Theme of the Site
+        /// </summary>
+        public Theme Theme
+        {
+            get { return this._theme; }
+            set
+            {
+                if (this._theme != null)
+                {
+                    this._theme.ParentTemplate = null;
+                }
+                this._theme = value;
+                if (this._theme != null)
+                {
+                    this._theme.ParentTemplate = this;
                 }
             }
         }

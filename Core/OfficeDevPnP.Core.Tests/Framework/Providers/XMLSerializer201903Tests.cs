@@ -150,7 +150,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             Assert.AreEqual(SiteHeaderLayout.Standard, template.Header.Layout);
             Assert.AreEqual(SiteHeaderMenuStyle.MegaMenu, template.Header.MenuStyle);
-            Assert.AreEqual(SiteHeaderBackgroundEmphasis.Soft, template.Header.BackgroundEmphasis);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.BackgroundEmphasis.Soft, template.Header.BackgroundEmphasis);
         }
 
         [TestMethod]
@@ -165,7 +165,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 {
                     MenuStyle = SiteHeaderMenuStyle.Cascading,
                     Layout = SiteHeaderLayout.Compact,
-                    BackgroundEmphasis = SiteHeaderBackgroundEmphasis.Strong
+                    BackgroundEmphasis = Core.Framework.Provisioning.Model.BackgroundEmphasis.Strong
                 }
             };
 
@@ -182,7 +182,53 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             Assert.AreEqual(HeaderLayout.Compact, template.Header.Layout);
             Assert.AreEqual(HeaderMenuStyle.Cascading, template.Header.MenuStyle);
-            Assert.AreEqual(HeaderBackgroundEmphasis.Strong, template.Header.BackgroundEmphasis);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.BackgroundEmphasis.Strong, template.Header.BackgroundEmphasis);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_TemplateTheme()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+
+            Assert.AreEqual(false, template.Theme.IsInverted);
+            Assert.AreEqual("CustomOrange", template.Theme.Name);
+            Assert.IsTrue(template.Theme.Palette.Contains("\"neutralQuaternaryAlt\": \"#dadada\""));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_TemplateTheme()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate
+            {
+                Theme = new Core.Framework.Provisioning.Model.Theme
+                {
+                    Name = "CustomOrange",
+                    IsInverted = false,
+                    Palette = "{\"neutralQuaternaryAlt\": \"#dadada\"}"
+                }
+            };
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult =
+                XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            Assert.AreEqual(false, template.Theme.IsInverted);
+            Assert.AreEqual("CustomOrange", template.Theme.Name);
+            Assert.IsTrue(template.Theme.Text[0].Contains("\"neutralQuaternaryAlt\": \"#dadada\""));
         }
 
         [TestMethod]
@@ -826,8 +872,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, users[0].AccountEnabled);
             Assert.AreEqual("john.white", users[0].MailNickname);
             Assert.AreEqual("john.white@{parameter:domain}.onmicrosoft.com", users[0].UserPrincipalName);
-            Assert.AreEqual("Policy1", users[0].PasswordPolicies);
+            Assert.AreEqual("DisablePasswordExpiration,DisableStrongPassword", users[0].PasswordPolicies);
             Assert.AreEqual("photo.jpg", users[0].ProfilePhoto);
+            Assert.AreEqual("John", users[0].GivenName);
+            Assert.AreEqual("White", users[0].Surname);
+            Assert.AreEqual("Senior Partner", users[0].JobTitle);
+            Assert.AreEqual("+1-601-123456", users[0].MobilePhone);
+            Assert.AreEqual("Seattle, WA", users[0].OfficeLocation);
+            Assert.AreEqual("en-US", users[0].PreferredLanguage);
 
             var passWord = new SecureString();
 
@@ -859,6 +911,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 UserPrincipalName = "john.white@{parameter:domain}.onmicrosoft.com",
                 PasswordPolicies = "Policy1",
                 ProfilePhoto = "photo.jpg",
+                GivenName = "John",
+                Surname = "White",
+                JobTitle = "Senior Partner",
+                MobilePhone = "+1-601-123456",
+                OfficeLocation = "Seattle, WA",
+                PreferredLanguage = "en-US",
                 PasswordProfile = new PasswordProfile
                 {
                     ForceChangePasswordNextSignIn = true,
@@ -896,6 +954,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("john.white@{parameter:domain}.onmicrosoft.com", users[0].UserPrincipalName);
             Assert.AreEqual("Policy1", users[0].PasswordPolicies);
             Assert.AreEqual("photo.jpg", users[0].ProfilePhoto);
+            Assert.AreEqual("John", users[0].GivenName);
+            Assert.AreEqual("White", users[0].Surname);
+            Assert.AreEqual("Senior Partner", users[0].JobTitle);
+            Assert.AreEqual("+1-601-123456", users[0].MobilePhone);
+            Assert.AreEqual("Seattle, WA", users[0].OfficeLocation);
+            Assert.AreEqual("en-US", users[0].PreferredLanguage);
 
             Assert.AreEqual(true, users[0].PasswordProfile.ForceChangePasswordNextSignIn);
             Assert.AreEqual(true, users[0].PasswordProfile.ForceChangePasswordNextSignInWithMfa);
@@ -1314,7 +1378,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             result.ParentHierarchy.Tenant = new ProvisioningTenant(result.ApplicationLifecycleManagement.AppCatalog,
                 new Core.Framework.Provisioning.Model.ContentDeliveryNetwork());
 
-            result.Tenant.Themes.Add(new Theme
+            result.Tenant.Themes.Add(new Core.Framework.Provisioning.Model.Theme
             {
                 Name = "CustomOrange",
                 IsInverted = false,

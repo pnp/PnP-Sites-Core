@@ -152,6 +152,11 @@ namespace OfficeDevPnP.Core.Pages
             }
             set
             {
+                if (value < 0 || value > 3)
+                {
+                    throw new ArgumentException($"The zoneEmphasis value needs to be between 0 and 3. See the Microsoft.SharePoint.Client.SPVariantThemeType values for the why.");
+                }
+
                 this.zoneEmphasis = value;
             }
         }

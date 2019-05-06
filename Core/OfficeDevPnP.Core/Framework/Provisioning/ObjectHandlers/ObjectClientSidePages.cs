@@ -28,6 +28,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override string InternalName => "ClientSidePages";
 
+
+
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -37,6 +39,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // determine pages library
                 string pagesLibrary = "SitePages";
 
+                var pagesLibraryList = web.GetListByUrl(pagesLibrary, p => p.RootFolder);
+
                 List<string> preCreatedPages = new List<string>();
 
                 var currentPageIndex = 0;
@@ -44,13 +48,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(parser.ParseString(clientSidePage.PageName))}.aspx";
+                    string url = $"{pagesLibrary}/{pageName}";
 
                     if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
                     {
-                        pageName = $"Templates/{pageName}";
+                        url = $"{pagesLibrary}/{Pages.ClientSidePage.GetTemplatesFolder(pagesLibraryList)}/{pageName}";
                     }
-
-                    string url = $"{pagesLibrary}/{pageName}";
 
                     // Write page level status messages, needed in case many pages are provisioned
                     currentPageIndex++;
@@ -90,7 +93,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             page.LayoutType = (Pages.ClientSidePageLayoutType)Enum.Parse(typeof(Pages.ClientSidePageLayoutType), clientSidePage.Layout);
                         }
 
-                        page.Save(pageName);
+                        if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
+                        {
+                            page.SaveAsTemplate(pageName);
+                        }
+                        else
+                        {
+                            page.Save(pageName);
+                        }
 
                         var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(url));
                         web.Context.Load(file, f => f.UniqueId, f => f.ServerRelativePath);
@@ -110,13 +120,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var clientSidePage in template.ClientSidePages)
                 {
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(parser.ParseString(clientSidePage.PageName))}.aspx";
+                    string url = $"{pagesLibrary}/{pageName}";
 
                     if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
                     {
-                        pageName = $"Templates/{pageName}";
+                        url = $"{pagesLibrary}/{Pages.ClientSidePage.GetTemplatesFolder(pagesLibraryList)}/{pageName}";
                     }
-
-                    string url = $"{pagesLibrary}/{pageName}";
 
                     // Write page level status messages, needed in case many pages are provisioned
                     currentPageIndex++;
@@ -144,8 +153,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (clientSidePage.Overwrite || preCreatedPages.Contains(url))
                         {
-                            // Get the existing page
-                            page = web.LoadClientSidePage(pageName);
+                            if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
+                            {
+                                // Get the existing template page
+                                page = web.LoadClientSidePage($"{Pages.ClientSidePage.GetTemplatesFolder(pagesLibraryList)}/{pageName}");
+                            }
+                            else
+                            {
+                                // Get the existing page
+                                page = web.LoadClientSidePage(pageName);
+                            }
+
                             // Clear the page
                             page.ClearPage();
                         }
@@ -235,25 +253,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             switch (section.Type)
                             {
                                 case CanvasSectionType.OneColumn:
-                                    page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order, section.ZoneEmphasis);
+                                    page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order, (Int32)section.BackgroundEmphasis);
                                     break;
                                 case CanvasSectionType.OneColumnFullWidth:
-                                    page.AddSection(Pages.CanvasSectionTemplate.OneColumnFullWidth, section.Order, section.ZoneEmphasis);
+                                    page.AddSection(Pages.CanvasSectionTemplate.OneColumnFullWidth, section.Order, (Int32)section.BackgroundEmphasis);
                                     break;
                                 case CanvasSectionType.TwoColumn:
-                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumn, section.Order, section.ZoneEmphasis);
+                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumn, section.Order, (Int32)section.BackgroundEmphasis);
                                     break;
                                 case CanvasSectionType.ThreeColumn:
-                                    page.AddSection(Pages.CanvasSectionTemplate.ThreeColumn, section.Order, section.ZoneEmphasis);
+                                    page.AddSection(Pages.CanvasSectionTemplate.ThreeColumn, section.Order, (Int32)section.BackgroundEmphasis);
                                     break;
                                 case CanvasSectionType.TwoColumnLeft:
-                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnLeft, section.Order, section.ZoneEmphasis);
+                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnLeft, section.Order, (Int32)section.BackgroundEmphasis);
                                     break;
                                 case CanvasSectionType.TwoColumnRight:
-                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnRight, section.Order, section.ZoneEmphasis);
+                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnRight, section.Order, (Int32)section.BackgroundEmphasis);
                                     break;
                                 default:
-                                    page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order, section.ZoneEmphasis);
+                                    page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order, (Int32)section.BackgroundEmphasis);
                                     break;
                             }
 
@@ -486,7 +504,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     // Persist the page
-                    page.Save(pageName);
+                    if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
+                    {
+                        page.SaveAsTemplate(pageName);
+                    }
+                    else
+                    {
+                        page.Save(pageName);
+                    }
 
                     // Update page content type
                     bool isDirty = false;

@@ -780,7 +780,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_ProvisioningHierarchy_Save_201903()
         {
-            XMLTemplateProvider provider =
+           XMLTemplateProvider provider =
                 new XMLFileSystemTemplateProvider(
                     String.Format(@"{0}\..\..\Resources",
                     AppDomain.CurrentDomain.BaseDirectory),
