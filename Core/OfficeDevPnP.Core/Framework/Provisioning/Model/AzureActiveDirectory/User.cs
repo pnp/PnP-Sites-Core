@@ -80,6 +80,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
         public String MobilePhone { get; set; }
 
         /// <summary>
+        /// The Mobile Phone for the user
+        /// </summary>
+        public String UsageLocation { get; set; }
+
+        /// <summary>
         /// Collection of user's licenses
         /// </summary>
         public UserLicenseCollection Licenses { get; private set; }

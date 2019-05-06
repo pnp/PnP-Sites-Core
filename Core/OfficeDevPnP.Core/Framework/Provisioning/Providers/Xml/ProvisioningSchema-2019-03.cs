@@ -375,6 +375,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private string mobilePhoneField;
         
+        private string usageLocationField;
+        
         /// <remarks/>
         public AADUsersUserPasswordProfile PasswordProfile {
             get {
@@ -525,6 +527,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.mobilePhoneField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string UsageLocation {
+            get {
+                return this.usageLocationField;
+            }
+            set {
+                this.usageLocationField = value;
             }
         }
     }
@@ -3176,13 +3189,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema")]
     public enum BackgroundEmphasis {
-
+        
         /// <remarks/>
         None,
-
+        
         /// <remarks/>
         Neutral,
-               
+        
         /// <remarks/>
         Soft,
         

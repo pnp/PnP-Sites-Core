@@ -871,7 +871,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("John White", users[0].DisplayName);
             Assert.AreEqual(true, users[0].AccountEnabled);
             Assert.AreEqual("john.white", users[0].MailNickname);
-            Assert.AreEqual("john.white@{parameter:domain}.onmicrosoft.com", users[0].UserPrincipalName);
+            Assert.AreEqual("john.white@{parameter:O365TenantName}.onmicrosoft.com", users[0].UserPrincipalName);
             Assert.AreEqual("DisablePasswordExpiration,DisableStrongPassword", users[0].PasswordPolicies);
             Assert.AreEqual("photo.jpg", users[0].ProfilePhoto);
             Assert.AreEqual("John", users[0].GivenName);
@@ -879,6 +879,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Senior Partner", users[0].JobTitle);
             Assert.AreEqual("+1-601-123456", users[0].MobilePhone);
             Assert.AreEqual("Seattle, WA", users[0].OfficeLocation);
+            Assert.AreEqual("US", users[0].UsageLocation);
             Assert.AreEqual("en-US", users[0].PreferredLanguage);
 
             var passWord = new SecureString();
@@ -889,8 +890,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(false, users[0].PasswordProfile.ForceChangePasswordNextSignInWithMfa);
             Assert.IsFalse(users[0].PasswordProfile.Password == null);
             Assert.AreEqual(2, users[0].Licenses.Count);
-            Assert.AreEqual("26d45bd9-adf1-46cd-a9e1-51e9a5524128", users[0].Licenses[0].SkuId);
-            Assert.AreEqual("e212cbc7-0961-4c40-9825-01117710dcb1", users[0].Licenses[0].DisabledPlans[0]);
+            Assert.AreEqual("6fd2c87f-b296-42f0-b197-1e91e994b900", users[0].Licenses[0].SkuId);
+            Assert.AreEqual("5136a095-5cf0-4aff-bec3-e84448b38ea5", users[0].Licenses[0].DisabledPlans[0]);
         }
 
         [TestMethod]

@@ -8285,6 +8285,14 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:attribute>
+          <xsd:attribute name="UsageLocation" type="pnp:ReplaceableString" use="required">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Declares the Usage Location for licenses assigned to the user, required attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
