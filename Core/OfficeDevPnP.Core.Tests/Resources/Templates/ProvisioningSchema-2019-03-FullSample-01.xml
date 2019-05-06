@@ -1204,7 +1204,7 @@
       </pnp:Security>
     </pnp:Team>
     <pnp:Team MailNickname="sample.group" GroupId="{groupid:DisplayName}" DisplayName="Sample Team 02" Description="This is just a sample Team 02" Classification="Private"
-              Specialization="EducationStandard" Visibility="Public" Archived="false">
+              Specialization="EducationStandard" Visibility="Public" Archived="false" Photo="photo.jpg">
       <pnp:FunSettings AllowGiphy="true" GiphyContentRating="Strict"
                        AllowStickersAndMemes="true" AllowCustomMemes="true"/>
       <pnp:GuestSettings AllowCreateUpdateChannels="true" AllowDeleteChannels="false"/>

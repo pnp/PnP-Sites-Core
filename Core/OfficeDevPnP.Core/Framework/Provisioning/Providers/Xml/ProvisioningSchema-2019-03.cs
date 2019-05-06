@@ -1011,6 +1011,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
         
         private BaseTeamVisibility visibilityField;
         
+        private string photoField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string DisplayName {
@@ -1052,6 +1054,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903 {
             }
             set {
                 this.visibilityField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Photo {
+            get {
+                return this.photoField;
+            }
+            set {
+                this.photoField = value;
             }
         }
     }

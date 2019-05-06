@@ -555,6 +555,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(TeamVisibility.Public, teams[1].Visibility);
             Assert.AreEqual(false, teams[1].Archived);
             Assert.AreEqual("sample.group", teams[1].MailNickname);
+            Assert.AreEqual("photo.jpg", teams[1].Photo);
 
             // team security
             var security = teams[0].Security;
