@@ -33,7 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="parser">The PnP Token Parser</param>
         /// <param name="user">The User to create</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token</param>
-        /// <returns></returns>
+        /// <returns>The ID of the User</returns>
         private object CreateOrUpdateUser(PnPMonitoredScope scope, TokenParser parser, Model.AzureActiveDirectory.User user, string accessToken)
         {
             var content = PrepareUserRequestContent(user, parser);
@@ -47,13 +47,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 "ObjectConflict",
                 CoreResources.Provisioning_ObjectHandlers_AAD_User_AlreadyExists,
                 "userPrincipalName",
-                user.UserPrincipalName,
+                parser.ParseString(user.UserPrincipalName),
                 CoreResources.Provisioning_ObjectHandlers_AAD_User_ProvisioningError,
                 canPatch: true);
 
             return (userId);
         }
 
+        /// <summary>
+        /// Prepares the object to serialize as JSON for adding/updating a User object
+        /// </summary>
+        /// <param name="user">The source User object</param>
+        /// <param name="parser">The PnP Token Parser</param>
+        /// <returns>The User object to serialize as JSON</returns>
         private object PrepareUserRequestContent(Model.AzureActiveDirectory.User user, TokenParser parser)
         {
             var content = new
@@ -74,11 +80,68 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     forceChangePasswordNextSignIn = user.PasswordProfile.ForceChangePasswordNextSignIn,
                     forceChangePasswordNextSignInWithMfa = user.PasswordProfile.ForceChangePasswordNextSignInWithMfa,
-                    password = user.PasswordProfile.Password,
+                    password = EncryptionUtility.ToInsecureString(user.PasswordProfile.Password),
                 }
             };
 
             return (content);
+        }
+
+        /// <summary>
+        /// Manages User licenses with delta handling
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="userId">The ID of the target user</param>
+        /// <param name="licenses">The Licenses to manage</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        private void ManageUserLicenses(PnPMonitoredScope scope, object userId, UserLicenseCollection licenses, string accessToken)
+        {
+            // Get the currently assigned licenses
+            var jsoncurrentLicenses = HttpHelper.MakeGetRequestForString(
+                $"https://graph.microsoft.com/beta/users/{userId}", accessToken);
+            var currentLicenses = JsonConvert.DeserializeAnonymousType(jsoncurrentLicenses, new
+            {
+                assignedLicenses = new[]
+                {
+                    new {
+                        disabledPlans = new[]
+                        {
+                            Guid.Empty
+                        },
+                        skuId = Guid.Empty
+                    }
+                }
+            });
+
+            // Manage the license to remove
+            var removeLicenses = new List<Guid>();
+            foreach (var l in currentLicenses.assignedLicenses)
+            {
+                // If the already assigned license is not in the list of new licenses
+                if (!licenses.Any(lic => Guid.Parse(lic.SkuId) == l.skuId))
+                {
+                    // We need to remove it
+                    removeLicenses.Add(l.skuId);
+                }
+            }
+
+            // Prepare the new request to update assigned licenses
+            var assigneLicenseBody = new
+            {
+                addLicenses = from l in licenses
+                              select new
+                              {
+                                  skuId = Guid.Parse(l.SkuId),
+                                  disabledPlans = l.DisabledPlans != null ?
+                                    (from d in l.DisabledPlans
+                                     select Guid.Parse(d)).ToArray() : new Guid[] { }
+                              },
+                removeLicenses = (from r in removeLicenses
+                                  select r).ToArray()
+            };
+            HttpHelper.MakePostRequest(
+                $"https://graph.microsoft.com/v1.0/users/{userId}/assignLicense",
+                assigneLicenseBody, HttpHelper.JsonContentType, accessToken);
         }
 
         #region PnP Provisioning Engine infrastructural code
@@ -129,10 +192,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var userId = CreateOrUpdateUser(scope, parser, u, accessToken);
 
                         // If the user got created
-                        if (userId != null)
+                        if (userId != null &&
+                            u.Licenses != null && u.Licenses.Count > 0)
                         {
                             // Manage the licensing settings
-
+                            ManageUserLicenses(scope, userId, u.Licenses, accessToken);
                         }
                     }
                 }

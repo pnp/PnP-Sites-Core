@@ -15,6 +15,9 @@ using System.Web;
 using System.Net.Http;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using OfficeDevPnP.Core.Utilities.Graph;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
+using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
+using System.IO;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -30,10 +33,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// </summary>
         /// <param name="scope">The PnP Provisioning Scope</param>
         /// <param name="parser">The PnP Token Parser</param>
+        /// <param name="connector">The PnP File connector</param>
         /// <param name="team">The Team to provision</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token</param>
         /// <returns>The provisioned Team as a JSON object</returns>
-        private static JToken CreateTeamFromProvisioningSchema(PnPMonitoredScope scope, TokenParser parser, Team team, string accessToken)
+        private static JToken CreateTeamFromProvisioningSchema(PnPMonitoredScope scope, TokenParser parser, FileConnectorBase connector, Team team, string accessToken)
         {
             String teamId = null;
 
@@ -103,6 +107,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (!SetGroupSecurity(scope, team, teamId, accessToken)) return null;
                 if (!SetTeamChannels(scope, parser, team, teamId, accessToken)) return null;
                 if (!SetTeamApps(scope, team, teamId, accessToken)) return null;
+                // if (!SetTeamPhoto(scope, parser, connector, team, teamId, accessToken)) return null;
 
                 // Call Archive or Unarchive for the current Team
                 ArchiveTeam(scope, teamId, team.Archived, accessToken);
@@ -220,6 +225,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 DisplayName = parser.ParseString(team.DisplayName),
                 Description = parser.ParseString(team.Description),
                 Classification = parser.ParseString(team.Classification),
+                Mailnickname = parser.ParseString(team.MailNickname),
                 team.Specialization,
                 team.Visibility,
                 funSettings = new
@@ -450,8 +456,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>Whether the Channels have been provisioned or not</returns>
         private static bool SetTeamChannels(PnPMonitoredScope scope, TokenParser parser, Team team, string teamId, string accessToken)
         {
-            // TODO: create resource strings for exceptions
-
             if (team.Channels != null)
             {
                 foreach (var channel in team.Channels)
@@ -582,6 +586,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         /// <summary>
+        /// Synchronizes Team's Photo
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="parser">The PnP Token Parser</param>
+        /// <param name="team">The Team settings, including security settings</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        /// <returns>Whether the Apps have been provisioned or not</returns>
+        private static bool SetTeamPhoto(PnPMonitoredScope scope, TokenParser parser, FileConnectorBase connector, Team team, string teamId, string accessToken)
+        {
+            if (!String.IsNullOrEmpty(team.Photo) && connector != null)
+            {
+                var photoPath = parser.ParseString(team.Photo);
+                var photoBytes = ConnectorFileHelper.GetFileBytes(connector, team.Photo);
+
+                using (var mem = new MemoryStream())
+                {
+                    mem.Write(photoBytes, 0, photoBytes.Length);
+                    mem.Position = 0;
+
+                    HttpHelper.MakePostRequest(
+                        $"https://graph.microsoft.com/v1.0/groups/{teamId}/photo/$value",
+                        mem, "image/jpeg", accessToken);
+                }
+            }
+
+            return true;
+        }
+
+        /// <summary>
         /// Creates a Team starting from a JSON template
         /// </summary>
         /// <param name="scope">The PnP Provisioning Scope</param>
@@ -698,7 +732,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         accessToken = PnPProvisioningContext.Current.AcquireToken("https://graph.microsoft.com/", "Group.ReadWrite.All");
 
                         // Create the Team starting from the XML PnP Provisioning Schema definition
-                        CreateTeamFromProvisioningSchema(scope, parser, team, accessToken);
+                        CreateTeamFromProvisioningSchema(scope, parser, hierarchy.Connector, team, accessToken);
 
                         // TODO: possible further processing...
                     }

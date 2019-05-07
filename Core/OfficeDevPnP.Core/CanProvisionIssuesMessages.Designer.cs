@@ -70,7 +70,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In order to provision the template you need to have proper permissions to access the App Catalog in your tenant. Please, configure the App Catalog security settings, and try again..
+        ///   Looks up a localized string similar to In order to provision the template you need to have Full Control permissions on the App Catalog in your tenant. Please, configure the App Catalog security settings, and try again..
         /// </summary>
         internal static string Missing_Permissions_for_App_Catalog {
             get {

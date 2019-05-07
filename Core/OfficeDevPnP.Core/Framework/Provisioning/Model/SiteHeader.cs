@@ -116,13 +116,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     public enum BackgroundEmphasis
     {
         /// <summary>
-        /// Defines the Neutral emphasis for the Site Header
-        /// </summary>
-        Neutral,
-        /// <summary>
         /// Defines No emphasis for the Site Header.
         /// </summary>
         None,
+        /// <summary>
+        /// Defines the Neutral emphasis for the Site Header
+        /// </summary>
+        Neutral,
         /// <summary>
         /// Defines the Soft emphasis for the Site Header.
         /// </summary>
@@ -130,6 +130,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the Strong emphasis for the Site Header.
         /// </summary>
-        Strong,
+        Strong
     }
 }

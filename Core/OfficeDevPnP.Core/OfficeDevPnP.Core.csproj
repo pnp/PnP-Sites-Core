@@ -640,6 +640,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\FieldAndListProvisioningStepHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\NoScriptTemplateCleaner.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectApplicationLifecycleManagement.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTheme.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchyHandlerBase.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchySequenceSites.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchyTenant.cs" />

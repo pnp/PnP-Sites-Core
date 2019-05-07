@@ -42,7 +42,7 @@ namespace OfficeDevPnP.Core.Utilities.Themes
         {
             string themeJsonString = GetThemeJsonAsString(sharePointTheme);
             themeName = themeName ?? sharePointTheme.ToString();
-            return Task.Run(() => ApplySharePointThemeAsync(web, themeJsonString, themeName)).GetAwaiter().GetResult();
+            return Task.Run(() => ApplySiteThemeAsync(web, themeJsonString, themeName)).GetAwaiter().GetResult();
         }
 
         public static async Task<Boolean> ApplyThemeAsync(Web web, String jsonTheme, String themeName = null)
@@ -69,7 +69,7 @@ namespace OfficeDevPnP.Core.Utilities.Themes
                 });
         }
 
-        private static async Task<Boolean> ApplySharePointThemeAsync(Web web, String jsonTheme, String themeName = null)
+        internal static async Task<Boolean> ApplySiteThemeAsync(Web web, String jsonTheme, String themeName = null)
         {
             if (web == null)
             {

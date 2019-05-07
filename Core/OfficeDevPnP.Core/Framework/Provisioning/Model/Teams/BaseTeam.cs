@@ -33,6 +33,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// </summary>
         public TeamVisibility Visibility { get; set; }
 
+        /// <summary>
+        /// The Photo for the Team
+        /// </summary>
+        public String Photo { get; set; }
+
         #endregion
 
         #region Comparison code
