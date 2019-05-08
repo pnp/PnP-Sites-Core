@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - New PnPProvisioningContext object for security scope management
 - New tenant extension method (tenant.EnableCommSite) to to convert the root site collection of a tenant into a communication site
 - Added support to extract and provision list propertybag entries #2201 [patrikhellgren]
+- A lot of schema 201903 unit tests [s-KaiNet]
 
 ### Changed
 
