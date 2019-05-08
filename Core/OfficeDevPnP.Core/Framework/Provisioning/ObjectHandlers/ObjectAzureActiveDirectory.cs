@@ -75,6 +75,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 officeLocation = parser.ParseString(user.OfficeLocation),
                 preferredLanguage = parser.ParseString(user.PreferredLanguage),
                 userType = "Member",
+                usageLocation = parser.ParseString(user.UsageLocation),
                 passwordPolicies = parser.ParseString(user.PasswordPolicies),
                 passwordProfile = new
                 {
