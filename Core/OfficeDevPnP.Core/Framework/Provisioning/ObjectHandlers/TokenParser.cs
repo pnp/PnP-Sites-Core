@@ -778,7 +778,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private void BuildTokenCache()
         {
-            foreach (TokenDefinition tokenDefinition in _tokens)
+            foreach (TokenDefinition tokenDefinition in _tokens.Where(t => t.IsCacheable))
             {
                 foreach (string token in tokenDefinition.GetTokens())
                 {
