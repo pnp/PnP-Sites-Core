@@ -18,6 +18,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             {
                 property.PropertyName = "template@odata.bind";
             }
+            else if (property.PropertyName.Equals("owners_odata_bind", StringComparison.OrdinalIgnoreCase))
+            {
+                property.PropertyName = "owners@odata.bind";
+            }
+            else if (property.PropertyName.Equals("members_odata_bind", StringComparison.OrdinalIgnoreCase))
+            {
+                property.PropertyName = "members@odata.bind";
+            }
             return property;
         }
     }

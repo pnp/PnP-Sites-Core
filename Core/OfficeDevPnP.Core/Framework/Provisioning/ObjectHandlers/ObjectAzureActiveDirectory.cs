@@ -43,7 +43,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var userId = GraphHelper.CreateOrUpdateGraphObject(scope,
                 HttpMethodVerb.POST,
-                $"https://graph.microsoft.com/v1.0/users",
+                $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users",
                 content,
                 HttpHelper.JsonContentType,
                 accessToken,
@@ -102,7 +102,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             // Get the currently assigned licenses
             var jsoncurrentLicenses = HttpHelper.MakeGetRequestForString(
-                $"https://graph.microsoft.com/beta/users/{userId}", accessToken);
+                $"{GraphHelper.MicrosoftGraphBaseURI}beta/users/{userId}", accessToken);
             var currentLicenses = JsonConvert.DeserializeAnonymousType(jsoncurrentLicenses, new
             {
                 assignedLicenses = new[]
@@ -144,7 +144,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                   select r).ToArray()
             };
             HttpHelper.MakePostRequest(
-                $"https://graph.microsoft.com/v1.0/users/{userId}/assignLicense",
+                $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{userId}/assignLicense",
                 assigneLicenseBody, HttpHelper.JsonContentType, accessToken);
         }
 
@@ -173,7 +173,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     mem.Position = 0;
 
                     HttpHelper.MakePostRequest(
-                        $"https://graph.microsoft.com/v1.0/users/{userId}/photo/$value",
+                        $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{userId}/photo/$value",
                         mem, "image/jpeg", accessToken);
                 }
             }
@@ -223,7 +223,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     foreach (var u in users)
                     {
                         // Get a fresh Access Token for every request
-                        accessToken = PnPProvisioningContext.Current.AcquireToken("https://graph.microsoft.com/", "User.ReadWrite.All");
+                        accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "User.ReadWrite.All");
 
                         // Creates or updates the User starting from the provisioning template definition
                         var userId = CreateOrUpdateUser(scope, parser, u, accessToken);

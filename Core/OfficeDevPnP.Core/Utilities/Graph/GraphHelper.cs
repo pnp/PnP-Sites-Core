@@ -14,6 +14,8 @@ namespace OfficeDevPnP.Core.Utilities.Graph
 {
     internal static class GraphHelper
     {
+        public const String MicrosoftGraphBaseURI = "https://graph.microsoft.com/";
+
         /// <summary>
         /// Helper method to create or update an object through the Microsoft Graph
         /// </summary>
@@ -93,9 +95,7 @@ namespace OfficeDevPnP.Core.Utilities.Graph
                         if (method == HttpMethodVerb.POST)
                         {
                             // Filter by field and value specified
-                            String json = HttpHelper.MakeGetRequestForString($"{uri}?$select=id&$filter={matchingFieldName}%20eq%20'{WebUtility.UrlEncode(matchingFieldValue)}'");
-                            // Get the id of existing item
-                            id = GetIdsFromList(json)[0];
+                            id = ItemAlreadyExists(uri, matchingFieldName, matchingFieldValue, accessToken);
                             uri = $"{uri}/{id}";
                         }
 
@@ -121,6 +121,16 @@ namespace OfficeDevPnP.Core.Utilities.Graph
                     return (null);
                 }
             }
+        }
+
+        public static string ItemAlreadyExists(string uri, string matchingFieldName, string matchingFieldValue, string accessToken)
+        {
+            string id;
+            String json = HttpHelper.MakeGetRequestForString($"{uri}?$select=id&$filter={matchingFieldName}%20eq%20'{WebUtility.UrlEncode(matchingFieldValue)}'", accessToken);
+            // Get the id of existing item
+            var ids = GetIdsFromList(json);
+            id = ids.Length > 0 ? ids[0] : null;
+            return id;
         }
 
         /// <summary>
