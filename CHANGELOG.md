@@ -35,6 +35,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Handling of re-used terms #2176 [heinrich-ulbricht ]
 - Fix: fixes to the serialization engine #2214 [s-KaiNet]
 - Fix: Removing SP groups from role assignments in PnP templates
+- Fix: Improved exporting and importing of associated groups #2192 / #2174 [heinrich-ulbricht]
 
 ## [3.8.1904.0 - April 2019 release]
 
