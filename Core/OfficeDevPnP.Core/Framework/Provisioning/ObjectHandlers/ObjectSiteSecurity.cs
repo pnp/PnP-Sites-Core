@@ -44,119 +44,155 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var siteSecurity = template.Security;
 
-                if (web.EnsureProperty(w => w.HasUniqueRoleAssignments) && !web.IsNoScriptSite())
+                if (web.EnsureProperty(w => w.HasUniqueRoleAssignments))
                 {
                     string parsedAssociatedOwnerGroupName = parser.ParseString(template.Security.AssociatedOwnerGroup);
                     string parsedAssociatedMemberGroupName = parser.ParseString(template.Security.AssociatedMemberGroup);
                     string parsedAssociatedVisitorGroupName = parser.ParseString(template.Security.AssociatedVisitorGroup);
 
-                    bool webNeedsUpdate = false;
+                    bool setAssociatedOwnerGroup = parsedAssociatedOwnerGroupName != null;
+                    bool setAssociatedMemberGroup = parsedAssociatedMemberGroupName != null;
+                    bool setAssociatedVisitorGroup = parsedAssociatedVisitorGroupName != null;
+                    bool createNewAssociatedOwnerGroup = setAssociatedOwnerGroup && template.Security.SiteGroups.FirstOrDefault(g => g.Title == parsedAssociatedOwnerGroupName) != null;
+                    bool createNewAssociatedMemberGroup = setAssociatedMemberGroup && template.Security.SiteGroups.FirstOrDefault(g => g.Title == parsedAssociatedMemberGroupName) != null;
+                    bool createNewAssociatedVisitorGroup = setAssociatedVisitorGroup && template.Security.SiteGroups.FirstOrDefault(g => g.Title == parsedAssociatedVisitorGroupName) != null;
 
-                    if (parsedAssociatedOwnerGroupName != null)
+                    if (!web.IsNoScriptSite())
                     {
-                        if (string.IsNullOrEmpty(parsedAssociatedOwnerGroupName))
-                        {
-                            web.AssociatedOwnerGroup = null;
-                            webNeedsUpdate = true;
-                        }
-                        else
+                        if (createNewAssociatedOwnerGroup)
                         {
                             if (!web.GroupExists(parsedAssociatedOwnerGroupName))
                             {
+                                // group does not exist? create!
                                 web.AssociatedOwnerGroup = EnsureGroup(web, parsedAssociatedOwnerGroupName);
-                                webNeedsUpdate = true;
-                            }
-                            else if (!web.AssociatedOwnerGroup.ServerObjectIsNull())
-                            {
-                                web.AssociatedOwnerGroup.EnsureProperty(g => g.Title);
-                                if (web.AssociatedOwnerGroup.Title != parsedAssociatedOwnerGroupName)
-                                {
-                                    var updatedOwnerGroup = web.SiteGroups.GetByName(parsedAssociatedOwnerGroupName);
-                                    web.Context.Load(updatedOwnerGroup);
-                                    web.Context.ExecuteQueryRetry();
-
-                                    web.AssociatedOwnerGroup = updatedOwnerGroup;
-                                    webNeedsUpdate = true;
-                                }
+                                web.Update();
                             }
                         }
-                        if (webNeedsUpdate)
+
+                        if (setAssociatedOwnerGroup)
                         {
-                            // Trigger the creation and setting of the associated owner group
-                            web.Update();
+                            if (parsedAssociatedOwnerGroupName == string.Empty)
+                            {
+                                // does throw exception "Value cannot be null" - todo: how to clear the group?
+                                //web.AssociatedOwnerGroup = null;
+                                //web.Update();
+                            }
+                            else if (web.GroupExists(parsedAssociatedOwnerGroupName))
+                            {
+                                var ownerGroupCandidate = web.SiteGroups.GetByName(parsedAssociatedOwnerGroupName);
+                                web.Context.Load(ownerGroupCandidate,
+                                    g => g.Id);
+                                web.Context.Load(web.AssociatedOwnerGroup, 
+                                    g => g.Id);
+                                web.Context.ExecuteQueryRetry();
+                                // there is no associated group yet OR
+                                // there is a group with the desired associated group title that is currently not the associated group? make it the associated group
+                                if (web.AssociatedOwnerGroup.ServerObjectIsNull() || web.AssociatedOwnerGroup.Id != ownerGroupCandidate.Id)
+                                {
+                                    web.AssociatedOwnerGroup = ownerGroupCandidate;
+                                    web.Update();
+                                }
+                            } else
+                            {
+                                scope.LogWarning("Failed to assign '{0}' as associated owner group. Group does not exist.", parsedAssociatedOwnerGroupName);
+                            }
+                        }
+                        if (web.Context.HasPendingRequest)
+                        {
                             web.Context.ExecuteQueryRetry();
                         }
-                    }
 
-                    if (parsedAssociatedMemberGroupName != null)
-                    {
-                        if (string.IsNullOrEmpty(parsedAssociatedMemberGroupName))
-                        {
-                            web.AssociatedMemberGroup = null;
-                            webNeedsUpdate = true;
-                        }
-                        else
+                        if (createNewAssociatedMemberGroup)
                         {
                             if (!web.GroupExists(parsedAssociatedMemberGroupName))
                             {
+                                // group does not exist? create!
                                 web.AssociatedMemberGroup = EnsureGroup(web, parsedAssociatedMemberGroupName);
-                                webNeedsUpdate = true;
+                                web.Update();
                             }
-                            else if (!web.AssociatedMemberGroup.ServerObjectIsNull())
-                            {
-                                web.AssociatedMemberGroup.EnsureProperty(g => g.Title);
-                                if (web.AssociatedMemberGroup.Title != parsedAssociatedMemberGroupName)
-                                {
-                                    var updatedMemberGroup = web.SiteGroups.GetByName(parsedAssociatedMemberGroupName);
-                                    web.Context.Load(updatedMemberGroup);
-                                    web.Context.ExecuteQueryRetry();
+                        }
 
-                                    web.AssociatedMemberGroup = updatedMemberGroup;
-                                    webNeedsUpdate = true;
+                        if (setAssociatedMemberGroup)
+                        {
+                            if (parsedAssociatedMemberGroupName == string.Empty)
+                            {
+                                // does throw exception "Value cannot be null" - todo: how to clear the group?
+                                //web.AssociatedMemberGroup = null;
+                                //web.Update();
+                            } else if (web.GroupExists(parsedAssociatedMemberGroupName))
+                            {
+                                var memberGroupCandidate = web.SiteGroups.GetByName(parsedAssociatedMemberGroupName);
+                                web.Context.Load(memberGroupCandidate,
+                                    g => g.Id);
+                                web.Context.Load(web.AssociatedMemberGroup,
+                                    g => g.Id);
+                                web.Context.ExecuteQueryRetry();
+                                // there is no associated group yet OR
+                                // there is a group with the desired associated group title that is currently not the associated group? make it the associated group
+                                if (web.AssociatedMemberGroup.ServerObjectIsNull() || web.AssociatedMemberGroup.Id != memberGroupCandidate.Id)
+                                {
+                                    web.AssociatedMemberGroup = memberGroupCandidate;
+                                    web.Update();
                                 }
                             }
+                            else
+                            {
+                                scope.LogWarning("Failed to assign '{0}' as associated member group. Group does not exist.", parsedAssociatedMemberGroupName);
+                            }
                         }
-                        if (webNeedsUpdate)
+                        if (web.Context.HasPendingRequest)
                         {
-                            // Trigger the creation and setting of the associated member group
-                            web.Update();
                             web.Context.ExecuteQueryRetry();
                         }
-                    }
 
-                    if (parsedAssociatedVisitorGroupName != null)
-                    {
-                        if (string.IsNullOrEmpty(parsedAssociatedVisitorGroupName))
-                        {
-                            web.AssociatedVisitorGroup = null;
-                            webNeedsUpdate = true;
-                        }
-                        else
+                        if (createNewAssociatedVisitorGroup)
                         {
                             if (!web.GroupExists(parsedAssociatedVisitorGroupName))
                             {
+                                // group does not exist? create!
                                 web.AssociatedVisitorGroup = EnsureGroup(web, parsedAssociatedVisitorGroupName);
-                                webNeedsUpdate = true;
-                            }
-                            else if (!web.AssociatedVisitorGroup.ServerObjectIsNull())
-                            {
-                                web.AssociatedVisitorGroup.EnsureProperty(g => g.Title);
-                                if (web.AssociatedVisitorGroup.Title != parsedAssociatedVisitorGroupName)
-                                {
-                                    var updatedVisitorGroup = web.SiteGroups.GetByName(parsedAssociatedVisitorGroupName);
-                                    web.Context.Load(updatedVisitorGroup);
-                                    web.Context.ExecuteQueryRetry();
-
-                                    web.AssociatedVisitorGroup = updatedVisitorGroup;
-                                    webNeedsUpdate = true;
-                                }
+                                web.Update();
                             }
                         }
-                        if (webNeedsUpdate)
+
+                        if (setAssociatedVisitorGroup)
                         {
-                            // Trigger the creation and setting of the associated visitor group
-                            web.Update();
+                            if (parsedAssociatedVisitorGroupName == string.Empty)
+                            {
+                                // does throw exception "Value cannot be null" - todo: how to clear the group?
+                                //web.AssociatedVisitorGroup = null;
+                                //web.Update();
+                            }
+                            else if (web.GroupExists(parsedAssociatedVisitorGroupName))
+                            {
+                                var visitorGroupCandidate = web.SiteGroups.GetByName(parsedAssociatedVisitorGroupName);
+                                web.Context.Load(visitorGroupCandidate,
+                                    g => g.Id);
+                                web.Context.Load(web.AssociatedVisitorGroup,
+                                    g => g.Id);
+                                web.Context.ExecuteQueryRetry();
+                                // there is no associated group yet OR
+                                // there is a group with the desired associated group title that is currently not the associated group? make it the associated group
+                                if (web.AssociatedVisitorGroup.ServerObjectIsNull() || web.AssociatedVisitorGroup.Id != visitorGroupCandidate.Id)
+                                {
+                                    web.AssociatedVisitorGroup = visitorGroupCandidate;
+                                    web.Update();
+                                }
+                            }
+                            else
+                            {
+                                scope.LogWarning("Failed to assign '{0}' as associated visitor group. Group does not exist.", parsedAssociatedVisitorGroupName);
+                            }
+                        }
+                        if (web.Context.HasPendingRequest)
+                        {
                             web.Context.ExecuteQueryRetry();
+                        }
+                    } else
+                    {
+                        if (createNewAssociatedOwnerGroup || createNewAssociatedMemberGroup || createNewAssociatedVisitorGroup || setAssociatedOwnerGroup || setAssociatedMemberGroup|| setAssociatedVisitorGroup)
+                        {
+                            scope.LogWarning("Won't modify associated group configuration since the template is applied to a NoScript site.");
                         }
                     }
                 }
@@ -164,6 +200,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var ownerGroup = web.AssociatedOwnerGroup;
                 var memberGroup = web.AssociatedMemberGroup;
                 var visitorGroup = web.AssociatedVisitorGroup;
+
+#if !ONPREMISES
+                // need to load the groups for the ServerObjectIsNull()-check to get correct results
+                web.Context.Load(ownerGroup);
+                web.Context.Load(memberGroup);
+                web.Context.Load(visitorGroup);
+                web.Context.ExecuteQueryRetry();
+#endif
 
                 if (!ownerGroup.ServerObjectIsNull())
                 {
