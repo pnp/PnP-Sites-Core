@@ -92,7 +92,7 @@ namespace OfficeDevPnP.Core.Utilities.Graph
                         String id = null;
 
                         // In case of PUT we already have the id
-                        if (method == HttpMethodVerb.POST)
+                        if (method == HttpMethodVerb.POST || method == HttpMethodVerb.POST_WITH_RESPONSE_HEADERS)
                         {
                             // Filter by field and value specified
                             id = ItemAlreadyExists(uri, matchingFieldName, matchingFieldValue, accessToken);
