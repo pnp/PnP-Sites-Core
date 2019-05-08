@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !ONPREMISES
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -55,14 +56,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     [TestClass]
     public class XMLSerializer201903Tests
     {
-        #region Test variables
+#region Test variables
         private const string TEST_CATEGORY = "Framework Provisioning XML Serialization\\Deserialization 201903";
         private const string TEST_OUT_FILE = "ProvisioningTemplate-2019-03-Sample-01-test.xml";
         private const string TEST_TEMPLATE = "ProvisioningSchema-2019-03-FullSample-01.xml";
 
-        #endregion
+#endregion
 
-        #region Test initialize
+#region Test initialize
         [ClassCleanup]
         public static void Clean()
         {
@@ -72,7 +73,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 File.Delete(testFilePath);
             }
         }
-        #endregion
+#endregion
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
@@ -2084,3 +2085,4 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         }
     }
 }
+#endif
