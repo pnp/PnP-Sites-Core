@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using OfficeDevPnP.Core.Utilities.Async;
 using System.IdentityModel.Tokens.Jwt;
 using System.Collections.Generic;
+using OfficeDevPnP.Core.Extensions;
 using OfficeDevPnP.Core.Utilities.Context;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 
@@ -472,14 +473,15 @@ namespace Microsoft.SharePoint.Client
         /// Checks if the used ClientContext is app-only
         /// </summary>
         /// <param name="clientContext">The ClientContext to inspect</param>
+        /// <param name="additionalHeaders">Additional headers that should be included in the web request that retrieves the access token</param>
         /// <returns>True if app-only, false otherwise</returns>
-        public static bool IsAppOnly(this ClientRuntimeContext clientContext)
+        public static bool IsAppOnly(this ClientRuntimeContext clientContext, Dictionary<string, string> additionalHeaders = null)
         {
             // Set initial result to false
             var result = false;
 
             // Try to get an access token from the current context
-            var accessToken = clientContext.GetAccessToken();
+            var accessToken = clientContext.GetAccessToken(additionalHeaders);
 
             // If any
             if (!String.IsNullOrEmpty(accessToken))
@@ -510,8 +512,9 @@ namespace Microsoft.SharePoint.Client
         /// Gets an access token from a <see cref="ClientContext"/> instance. Only works when using an add-in or app-only authentication flow.
         /// </summary>
         /// <param name="clientContext"><see cref="ClientContext"/> instance to obtain an access token for</param>
+        /// <param name="additionalHeaders">Additional headers that should be included in the web request that retrieves the access token</param>
         /// <returns>Access token for the given <see cref="ClientContext"/> instance</returns>
-        public static string GetAccessToken(this ClientRuntimeContext clientContext)
+        public static string GetAccessToken(this ClientRuntimeContext clientContext, Dictionary<string, string> additionalHeaders = null)
         {
             string accessToken = null;
             EventHandler<WebRequestEventArgs> handler = (s, e) =>
@@ -520,6 +523,15 @@ namespace Microsoft.SharePoint.Client
                 if (!string.IsNullOrEmpty(authorization))
                 {
                     accessToken = authorization.Replace("Bearer ", string.Empty);
+                }
+
+                if (additionalHeaders != null)
+                {
+                    foreach (var additionalHeader in additionalHeaders)
+                    {
+                        e.WebRequestExecutor.RequestHeaders.Remove(additionalHeader.Key);
+                        e.WebRequestExecutor.RequestHeaders.Add(additionalHeader.Key, additionalHeader.Value);
+                    }
                 }
             };
             // Issue a dummy request to get it from the Authorization header
@@ -691,8 +703,9 @@ namespace Microsoft.SharePoint.Client
         /// Returns the request digest from the current session/site
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="additionalHeaders">Additional headers that should be included in the web request that retrieves the digest</param>
         /// <returns></returns>
-        public static async Task<string> GetRequestDigest(this ClientContext context)
+        public static async Task<string> GetRequestDigest(this ClientContext context, Dictionary<string, string> additionalHeaders = null)
         {
             await new SynchronizationContextRemover();
 
@@ -701,7 +714,7 @@ namespace Microsoft.SharePoint.Client
             using (var handler = new HttpClientHandler())
             {
                 string responseString = string.Empty;
-                var accessToken = context.GetAccessToken();
+                var accessToken = context.GetAccessToken(additionalHeaders);
 
                 context.Web.EnsureProperty(w => w.Url);
 
@@ -726,6 +739,8 @@ namespace Microsoft.SharePoint.Client
                             handler.Credentials = networkCredential;
                         }
                     }
+
+                    request.Headers.AddDictionary(additionalHeaders);
 
                     HttpResponseMessage response = await httpClient.SendAsync(request);
 

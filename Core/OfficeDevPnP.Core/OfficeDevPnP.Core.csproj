@@ -509,6 +509,7 @@
     <Compile Include="Extensions\ExternalSharingExtensions.cs" />
     <Compile Include="Extensions\FieldAndContentTypeExtensions.cs" />
     <Compile Include="Extensions\FileFolderExtensions.cs" />
+    <Compile Include="Extensions\HttpRequestHeadersExtensions.cs" />
     <Compile Include="Extensions\InformationManagementExtensions.cs" />
     <Compile Include="Extensions\InternalClientContextExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />

@@ -53,11 +53,12 @@ namespace OfficeDevPnP.Core.Utilities
         /// </summary>
         /// <param name="web">The current web to execute the request against</param>
         /// <param name="endpoint">The full endpoint url, exluding the URL of the web, e.g. /_api/web/lists</param>
+        /// <param name="additionalHeaders">Additional headers that should be included in the web request</param>
         /// <returns></returns>
-        internal static async Task<string> ExecuteGet(this Web web, string endpoint)
+        internal static async Task<string> ExecuteGet(this Web web, string endpoint, Dictionary<string, string> additionalHeaders = null)
         {
             string returnObject = null;
-            var accessToken = web.Context.GetAccessToken();
+            var accessToken = web.Context.GetAccessToken(additionalHeaders);
 
             using (var handler = new HttpClientHandler())
             {
@@ -87,7 +88,7 @@ namespace OfficeDevPnP.Core.Utilities
                             handler.Credentials = networkCredential;
                         }
                     }
-                    request.Headers.Add("X-RequestDigest", await (web.Context as ClientContext).GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await (web.Context as ClientContext).GetRequestDigest(additionalHeaders));
 
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -117,10 +118,10 @@ namespace OfficeDevPnP.Core.Utilities
             return await Task.Run(() => returnObject);
         }
 
-        internal static async Task<string> ExecutePost(this Web web, string endpoint, string payload)
+        internal static async Task<string> ExecutePost(this Web web, string endpoint, string payload, Dictionary<string, string> additionalHeaders = null)
         {
             string returnObject = null;
-            var accessToken = web.Context.GetAccessToken();
+            var accessToken = web.Context.GetAccessToken(additionalHeaders);
 
             using (var handler = new HttpClientHandler())
             {
@@ -150,7 +151,7 @@ namespace OfficeDevPnP.Core.Utilities
                             handler.Credentials = networkCredential;
                         }
                     }
-                    request.Headers.Add("X-RequestDigest", await (web.Context as ClientContext).GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await (web.Context as ClientContext).GetRequestDigest(additionalHeaders));
 
                     if (!string.IsNullOrEmpty(payload))
                     {

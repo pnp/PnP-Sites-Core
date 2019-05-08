@@ -12,6 +12,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.ALM
 {
@@ -21,6 +22,11 @@ namespace OfficeDevPnP.Core.ALM
     /// </summary>
     public class AppManager
     {
+        /// <summary>
+        /// Contains additional headers for the HTTP requests to SharePoint
+        /// </summary>
+        private Dictionary<string, string> AdditionalHeaders { get; }
+
         private ClientContext _context;
         private enum AppManagerAction
         {
@@ -43,6 +49,11 @@ namespace OfficeDevPnP.Core.ALM
             {
                 _context = context;
             }
+        }
+
+        public AppManager(ClientContext context, Dictionary<string, string> additionalHeaders) : this(context)
+        {
+            AdditionalHeaders = additionalHeaders;
         }
 
         /// <summary>
@@ -646,7 +657,7 @@ namespace OfficeDevPnP.Core.ALM
         {
             dynamic addins = null;
 
-            var accessToken = _context.GetAccessToken();
+            var accessToken = _context.GetAccessToken(AdditionalHeaders);
 
             using (var handler = new HttpClientHandler())
             {
@@ -679,7 +690,8 @@ namespace OfficeDevPnP.Core.ALM
                             handler.Credentials = networkCredential;
                         }
                     }
-                    request.Headers.Add("X-RequestDigest", await _context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await _context.GetRequestDigest(AdditionalHeaders));
+                    request.Headers.AddDictionary(AdditionalHeaders);
 
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -739,7 +751,7 @@ namespace OfficeDevPnP.Core.ALM
                 context = context.Clone(appcatalogUri);
             }
             var returnValue = false;
-            var accessToken = context.GetAccessToken();
+            var accessToken = context.GetAccessToken(AdditionalHeaders);
 
             using (var handler = new HttpClientHandler())
             {
@@ -770,7 +782,8 @@ namespace OfficeDevPnP.Core.ALM
                             handler.Credentials = networkCredential;
                         }
                     }
-                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest(AdditionalHeaders));
+                    request.Headers.AddDictionary(AdditionalHeaders);
 
                     if (postObject != null)
                     {
@@ -818,7 +831,7 @@ namespace OfficeDevPnP.Core.ALM
             context = context.Clone(appcatalogUri);
 
             var returnValue = false;
-            var accessToken = context.GetAccessToken();
+            var accessToken = context.GetAccessToken(AdditionalHeaders);
 
             using (var handler = new HttpClientHandler())
             {
@@ -857,7 +870,8 @@ namespace OfficeDevPnP.Core.ALM
                                 handler.Credentials = networkCredential;
                             }
                         }
-                        request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+                        request.Headers.Add("X-RequestDigest", await context.GetRequestDigest(AdditionalHeaders));
+                        request.Headers.AddDictionary(AdditionalHeaders);
 
                         // Perform actual post operation
                         HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -899,7 +913,7 @@ namespace OfficeDevPnP.Core.ALM
                 context = context.Clone(appcatalogUri);
             }
 
-            var accessToken = context.GetAccessToken();
+            var accessToken = context.GetAccessToken(AdditionalHeaders);
 
             using (var handler = new HttpClientHandler())
             {
@@ -916,7 +930,7 @@ namespace OfficeDevPnP.Core.ALM
 
                     string requestUrl = $"{context.Web.Url}/_api/web/{(scope == AppCatalogScope.Tenant ? "tenant" : "sitecollection")}appcatalog/Add(overwrite={(overwrite.ToString().ToLower())}, url='{filename}')";
 
-                    var requestDigest = await context.GetRequestDigest();
+                    var requestDigest = await context.GetRequestDigest(AdditionalHeaders);
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata=verbose");
                     if (!string.IsNullOrEmpty(accessToken))
@@ -932,6 +946,7 @@ namespace OfficeDevPnP.Core.ALM
                     }
                     request.Headers.Add("X-RequestDigest", requestDigest);
                     request.Headers.Add("binaryStringRequestBody", "true");
+                    request.Headers.AddDictionary(AdditionalHeaders);
                     request.Content = new ByteArrayContent(file);
                     httpClient.Timeout = new TimeSpan(0, 0, timeoutSeconds);
                     // Perform actual post operation
@@ -955,6 +970,7 @@ namespace OfficeDevPnP.Core.ALM
                                 metadataRequest.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
                             }
                             metadataRequest.Headers.Add("X-RequestDigest", requestDigest);
+                            metadataRequest.Headers.AddDictionary(AdditionalHeaders);
 
                             // Perform actual post operation
                             HttpResponseMessage metadataResponse = await httpClient.SendAsync(metadataRequest, new System.Threading.CancellationToken());
