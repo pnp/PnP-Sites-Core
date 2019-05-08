@@ -107,6 +107,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (!SetGroupSecurity(scope, team, teamId, accessToken)) return null;
                 if (!SetTeamChannels(scope, parser, team, teamId, accessToken)) return null;
                 if (!SetTeamApps(scope, team, teamId, accessToken)) return null;
+
+                // So far the Team's photo cannot be set if we don't have an already existing mailbox
                 // if (!SetTeamPhoto(scope, parser, connector, team, teamId, accessToken)) return null;
 
                 // Call Archive or Unarchive for the current Team
@@ -303,6 +305,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             String[] desideredOwnerIds;
             String[] desideredMemberIds;
+            String[] finalOwnerIds;
             try
             {
                 var userIdsByUPN = team.Security.Owners
@@ -344,6 +347,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     ownerIdsToRemove = new string[0];
                 }
+
+                // Define the complete set of owners
+                finalOwnerIds = currentOwnerIds.Union(ownerIdsToAdd).Except(ownerIdsToRemove).ToArray();
             }
             catch (Exception ex)
             {
@@ -388,16 +394,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             try
             {
                 // Get current group members
-                var jsonOwners = HttpHelper.MakeGetRequestForString($"https://graph.microsoft.com/v1.0/groups/{teamId}/members?$select=id", accessToken);
+                var jsonMembers = HttpHelper.MakeGetRequestForString($"https://graph.microsoft.com/v1.0/groups/{teamId}/members?$select=id", accessToken);
 
-                string[] currentMemberIds = GraphHelper.GetIdsFromList(jsonOwners);
+                string[] currentMemberIds = GraphHelper.GetIdsFromList(jsonMembers);
 
                 // Exclude members already into the group
                 memberIdsToAdd = desideredMemberIds.Except(currentMemberIds).ToArray();
 
                 if (team.Security.ClearExistingMembers)
                 {
-                    memberIdsToRemove = currentMemberIds.Except(desideredMemberIds).ToArray();
+                    memberIdsToRemove = currentMemberIds.Except(desideredMemberIds.Union(finalOwnerIds)).ToArray();
                 }
                 else
                 {
