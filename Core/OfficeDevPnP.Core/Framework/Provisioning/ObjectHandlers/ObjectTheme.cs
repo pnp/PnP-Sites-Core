@@ -9,7 +9,9 @@ using OfficeDevPnP.Core.Utilities.Themes;
 using OfficeDevPnP.Core.Enums;
 using Newtonsoft.Json;
 using Microsoft.Online.SharePoint.TenantAdministration;
+#if !ONPREMISES
 using static OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities.TenantHelper;
+#endif
 using System.Runtime.Serialization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers

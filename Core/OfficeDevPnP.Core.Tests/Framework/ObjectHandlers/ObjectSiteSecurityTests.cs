@@ -61,10 +61,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 originalAssociatedMemberGroupId = web.AssociatedMemberGroup.ServerObjectIsNull == true ? -1 : web.AssociatedMemberGroup.Id;
                 originalAssociatedVisitorGroupId = web.AssociatedVisitorGroup.ServerObjectIsNull == true ? -1 : web.AssociatedVisitorGroup.Id;
                 originalIsNoScriptSite = web.IsNoScriptSite();
+#if !ONPREMISES
                 if (originalIsNoScriptSite)
                 {
                     AllowScripting(web.Url, true);
                 }
+#endif
             }
         }
 
@@ -106,7 +108,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 ctx.Load(memberGroup);
                 ctx.Load(ctx.Web, w => w.Url);
                 ctx.ExecuteQueryRetry();
+#if !ONPREMISES
                 AllowScripting(ctx.Web.Url, !originalIsNoScriptSite);
+#endif
                 if (memberGroup.ServerObjectIsNull == false)
                 {
                     foreach (var user in admins)
@@ -504,6 +508,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             }
         }
 
+#if !ONPREMISES
         // ensure #2127 does not occur again; specifically check that not too many groups are created
         [TestMethod()]
         public async Task CanExportAndImportAssociatedGroupsProperlyInNewNoScriptSite()
@@ -938,7 +943,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.Fail("Waiting for async group title change timed out. Try increasing the maxWaitMs.");
             }
         }
-
+#endif
         private void LoadAssociatedOwnerGroupsData(ClientContext ctx, bool loadAllGroupsTitles = false)
         {
             if (!loadAllGroupsTitles)
