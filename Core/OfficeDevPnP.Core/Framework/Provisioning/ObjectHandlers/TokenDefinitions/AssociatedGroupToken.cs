@@ -1,5 +1,6 @@
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Attributes;
+using System;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
@@ -25,6 +26,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         public AssociatedGroupToken(Web web, AssociatedGroupType groupType)
             : base(web, $"{{associated{groupType.ToString().TrimEnd('s')}group}}")
         {
+            if (groupType == AssociatedGroupType.None)
+            {
+                throw new ArgumentOutOfRangeException(nameof(groupType));
+            }
             _groupType = groupType;
         }
 
@@ -72,11 +77,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             return CacheValue;
         }
 
+        public static AssociatedGroupType GetGroupType(string token)
+        {
+            if (string.Equals(token, "{associatedownergroup}", StringComparison.OrdinalIgnoreCase))
+            {
+                return AssociatedGroupType.owners;
+            }
+
+            if (string.Equals(token, "{associatedmembergroup}", StringComparison.OrdinalIgnoreCase))
+            {
+                return AssociatedGroupType.members;
+            }
+
+            if (string.Equals(token, "{associatedvisitorgroup}", StringComparison.OrdinalIgnoreCase))
+            {
+                return AssociatedGroupType.visitors;
+            }
+
+            return AssociatedGroupType.None;
+        }
+
         public enum AssociatedGroupType
         {
             owners,
             members,
-            visitors
+            visitors,
+            None = 0
         }
     }
 }

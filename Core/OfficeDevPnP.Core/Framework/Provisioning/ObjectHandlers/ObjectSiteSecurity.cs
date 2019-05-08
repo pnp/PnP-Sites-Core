@@ -53,7 +53,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     bool webNeedsUpdate = false;
 
-                    if (parsedAssociatedOwnerGroupName != null)
+                    if (parsedAssociatedOwnerGroupName != null &&
+                        AssociatedGroupToken.GetGroupType(template.Security.AssociatedOwnerGroup) != AssociatedGroupToken.AssociatedGroupType.owners)
                     {
                         if (string.IsNullOrEmpty(parsedAssociatedOwnerGroupName))
                         {
@@ -67,7 +68,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         webNeedsUpdate = true;
                     }
 
-                    if (parsedAssociatedMemberGroupName != null)
+                    if (parsedAssociatedMemberGroupName != null &&
+                        AssociatedGroupToken.GetGroupType(template.Security.AssociatedMemberGroup) != AssociatedGroupToken.AssociatedGroupType.members)
                     {
                         if (string.IsNullOrEmpty(parsedAssociatedMemberGroupName))
                         {
@@ -81,7 +83,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         webNeedsUpdate = true;
                     }
 
-                    if (parsedAssociatedVisitorGroupName != null)
+                    if (parsedAssociatedVisitorGroupName != null &&
+                        AssociatedGroupToken.GetGroupType(template.Security.AssociatedVisitorGroup) != AssociatedGroupToken.AssociatedGroupType.visitors)
                     {
                         if (string.IsNullOrEmpty(parsedAssociatedVisitorGroupName))
                         {
@@ -605,6 +608,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var ownerGroup = web.AssociatedOwnerGroup;
                 var memberGroup = web.AssociatedMemberGroup;
                 var visitorGroup = web.AssociatedVisitorGroup;
+
+                web.Context.Load(web.AllProperties);
+
                 web.Context.ExecuteQueryRetry();
 
                 if (!ownerGroup.ServerObjectIsNull.Value)
@@ -629,9 +635,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (!ownerGroup.ServerObjectIsNull.Value)
                 {
-                    if (creationInfo.IncludeDefaultAssociatedGroups)
-                    {
-                        siteSecurity.AssociatedOwnerGroup = SiteTitleToken.GetReplaceToken(ownerGroup.Title, web);
+                    if (creationInfo.IncludeSiteGroups || creationInfo.IncludeDefaultAssociatedGroups)
+                    {                        
+                        siteSecurity.AssociatedOwnerGroup = GetTokenizedAssociatedGroup(web, ownerGroup, AssociatedGroupToken.AssociatedGroupType.owners);
                     }
                     associatedGroupIds.Add(ownerGroup.Id);
                     foreach (var member in ownerGroup.Users)
@@ -641,9 +647,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (!memberGroup.ServerObjectIsNull.Value)
                 {
-                    if (creationInfo.IncludeDefaultAssociatedGroups)
+                    if (creationInfo.IncludeSiteGroups || creationInfo.IncludeDefaultAssociatedGroups)
                     {
-                        siteSecurity.AssociatedMemberGroup = SiteTitleToken.GetReplaceToken(memberGroup.Title, web);
+                        siteSecurity.AssociatedMemberGroup = GetTokenizedAssociatedGroup(web, ownerGroup, AssociatedGroupToken.AssociatedGroupType.members);
                     }
                     associatedGroupIds.Add(memberGroup.Id);
                     foreach (var member in memberGroup.Users)
@@ -653,9 +659,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (!visitorGroup.ServerObjectIsNull.Value)
                 {
-                    if (creationInfo.IncludeDefaultAssociatedGroups)
+                    if (creationInfo.IncludeSiteGroups || creationInfo.IncludeDefaultAssociatedGroups)
                     {
-                        siteSecurity.AssociatedVisitorGroup = SiteTitleToken.GetReplaceToken(visitorGroup.Title, web);
+                        siteSecurity.AssociatedVisitorGroup = GetTokenizedAssociatedGroup(web, ownerGroup, AssociatedGroupToken.AssociatedGroupType.visitors);
                     }
                     associatedGroupIds.Add(visitorGroup.Id);
                     foreach (var member in visitorGroup.Users)
@@ -841,6 +847,44 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
             return template;
+        }
+
+        private static string GetTokenizedAssociatedGroup(Web web, Group group, AssociatedGroupToken.AssociatedGroupType groupType)
+        {
+            string groupTypeText;
+            switch (groupType)
+            {
+                case AssociatedGroupToken.AssociatedGroupType.owners:
+                    groupTypeText = "owner";
+                    break;
+
+                case AssociatedGroupToken.AssociatedGroupType.members:
+                    groupTypeText = "member";
+                    break;
+
+                case AssociatedGroupToken.AssociatedGroupType.visitors:
+                    groupTypeText = "visitor";
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(groupType));
+            }
+
+            string createdAssociateGroupsKey = "vti_createdassociategroups";
+            string associatedGroupKey = $"vti_associate{groupTypeText}group";
+
+            if (web.AllProperties.FieldValues.ContainsKey(createdAssociateGroupsKey) &&
+                web.AllProperties.FieldValues.ContainsKey(associatedGroupKey))
+            {
+                string associatedOwnerGroupId = (string)web.AllProperties.FieldValues[associatedGroupKey];
+                string[] createdAssociatedGroups = ((string)web.AllProperties.FieldValues[createdAssociateGroupsKey]).Split(';');
+                if (createdAssociatedGroups.Contains(associatedOwnerGroupId))
+                {
+                    return $"{{associated{groupTypeText}group}}";
+                }
+            }
+
+            return SiteTitleToken.GetReplaceToken(group.Title, web);
         }
 
         private string ReplaceGroupTokens(Web web, string loginName)
