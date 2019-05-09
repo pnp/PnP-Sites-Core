@@ -44,7 +44,7 @@
       <xsd:element name="Preferences" type="pnp:Preferences" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation>
-            The mandatory section of preferences for the current provisioning definition.
+            Section of preferences for the current provisioning definition.
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
