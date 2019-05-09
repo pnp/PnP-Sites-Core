@@ -502,7 +502,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.DataSource.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 this.WriteSecurity.GetHashCode(),
                 this.PropertyBagEntries.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this?.TemplateInternalName.GetHashCode() ?? 0
+                this.TemplateInternalName?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 
