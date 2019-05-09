@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private bool includeAllTermGroups = false;
         private bool includeSiteCollectionTermGroup = false;
         private bool includeSiteGroups = false;
-        private bool includeDefaultAssociatedGroups = false;
+        private bool includeAssociatedRoleGroups = false;
         private bool includeTermGroupsSecurity = false;
         private bool includeSearchConfiguration = false;
         private List<String> propertyBagPropertiesToPreserve;
@@ -239,10 +239,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// but rather the configuration of what group should be the
         /// associated owner, member, and visitor groups.
         /// </summary>
-        public bool IncludeDefaultAssociatedGroups
+        public bool IncludeAssociatedRoleGroups
         {
-            get { return includeDefaultAssociatedGroups; }
-            set { includeDefaultAssociatedGroups = value; }
+            get { return includeAssociatedRoleGroups; }
+            set { includeAssociatedRoleGroups = value; }
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Attributes;
+using System;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
@@ -23,7 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         private AssociatedGroupType _groupType;
 
         public AssociatedGroupIdToken(Web web, AssociatedGroupType groupType)
-            : base(web, $"{{associated{groupType.ToString().TrimEnd('s')}groupid}}")
+            : base(web, GetGroupIdToken(groupType))
         {
             _groupType = groupType;
         }
@@ -35,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             {
                 switch (_groupType)
                 {
-                    case AssociatedGroupType.owners:
+                    case AssociatedGroupType.Owners:
                         {
                             TokenContext.Load(TokenContext.Web, w => w.AssociatedOwnerGroup.Id);
                             TokenContext.ExecuteQueryRetry();
@@ -45,7 +46,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
                             }
                             break;
                         }
-                    case AssociatedGroupType.members:
+                    case AssociatedGroupType.Members:
                         {
                             TokenContext.Load(TokenContext.Web, w => w.AssociatedMemberGroup.Id);
                             TokenContext.ExecuteQueryRetry();
@@ -55,7 +56,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
                             }
                             break;
                         }
-                    case AssociatedGroupType.visitors:
+                    case AssociatedGroupType.Visitors:
                         {
                             TokenContext.Load(TokenContext.Web, w => w.AssociatedVisitorGroup.Id);
                             TokenContext.ExecuteQueryRetry();
@@ -70,11 +71,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             return CacheValue;
         }
 
-        public enum AssociatedGroupType
+        public static string GetGroupIdToken(AssociatedGroupType groupType)
         {
-            owners,
-            members,
-            visitors
+            return $"{{associated{AssociatedGroupToken.GetGroupTypeName(groupType)}groupid}}";
         }
     }
 }

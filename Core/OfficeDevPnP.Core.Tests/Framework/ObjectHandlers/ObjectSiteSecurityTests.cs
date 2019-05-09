@@ -29,6 +29,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         private int originalAssociatedMemberGroupId;
         private int originalAssociatedVisitorGroupId;
 
+        private string originalAssociatedOwnerGroupTitle;
+        private string originalAssociatedMemberGroupTitle;
+        private string originalAssociatedVisitorGroupTitle;
+
         public ObjectSiteSecurityTests()
         {
             ownerGroupName = string.Format("Test_Owner Group_{0}", DateTime.Now.Ticks);
@@ -50,12 +54,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 ctx.Load(web,
                     w => w.AssociatedOwnerGroup.Id,
                     w => w.AssociatedMemberGroup.Id,
-                    w => w.AssociatedVisitorGroup.Id);
+                    w => w.AssociatedVisitorGroup.Id,
+                    w => w.AssociatedOwnerGroup.Title,
+                    w => w.AssociatedMemberGroup.Title,
+                    w => w.AssociatedVisitorGroup.Title);
                 ctx.ExecuteQuery();
 
                 originalAssociatedOwnerGroupId = web.AssociatedOwnerGroup.ServerObjectIsNull == true ? -1 : web.AssociatedOwnerGroup.Id;
                 originalAssociatedMemberGroupId = web.AssociatedMemberGroup.ServerObjectIsNull == true ? -1 : web.AssociatedMemberGroup.Id;
                 originalAssociatedVisitorGroupId = web.AssociatedVisitorGroup.ServerObjectIsNull == true ? -1 : web.AssociatedVisitorGroup.Id;
+
+                originalAssociatedOwnerGroupTitle = web.AssociatedOwnerGroup.ServerObjectIsNull == true ? null : web.AssociatedOwnerGroup.Title;
+                originalAssociatedMemberGroupTitle = web.AssociatedMemberGroup.ServerObjectIsNull == true ? null : web.AssociatedMemberGroup.Title;
+                originalAssociatedVisitorGroupTitle = web.AssociatedVisitorGroup.ServerObjectIsNull == true ? null : web.AssociatedVisitorGroup.Title;
             }
         }
 
@@ -133,43 +144,32 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 }
                 Web web = ctx.Web;
 
-                //ConditionalScope associatedOwnerScope = new ConditionalScope(ctx, () => web.AssociatedOwnerGroup.ServerObjectIsNull == false);
-                //using (associatedOwnerScope.StartScope())
-                //{
-                //    ctx.Load(web, w => w.AssociatedOwnerGroup.Id);
-                //}
-
-                //ConditionalScope associatedMemberScope = new ConditionalScope(ctx, () => web.AssociatedMemberGroup.ServerObjectIsNull == false);
-                //using (associatedMemberScope.StartScope())
-                //{
-                //    ctx.Load(web, w => w.AssociatedMemberGroup.Id);
-                //}
-
-                //ConditionalScope associatedVisitorScope = new ConditionalScope(ctx, () => web.AssociatedVisitorGroup.ServerObjectIsNull == false);
-                //using (associatedVisitorScope.StartScope())
-                //{
-                //    ctx.Load(web, w => w.AssociatedVisitorGroup.Id);
-                //}
-
-                //ctx.ExecuteQuery();
-
                 bool webIsDirty = false;
 
                 if (originalAssociatedOwnerGroupId > 0)
                 {
-                    web.AssociatedOwnerGroup = web.SiteGroups.GetById(originalAssociatedOwnerGroupId);
+                    Group associatedOwnerGroup = web.SiteGroups.GetById(originalAssociatedOwnerGroupId);
+                    associatedOwnerGroup.Title = originalAssociatedOwnerGroupTitle;
+                    associatedOwnerGroup.Update();
+                    web.AssociatedOwnerGroup = associatedOwnerGroup;
                     webIsDirty = true;
                 }
 
                 if (originalAssociatedMemberGroupId > 0)
                 {
-                    web.AssociatedMemberGroup = web.SiteGroups.GetById(originalAssociatedMemberGroupId);
+                    Group associatedMemberGroup = web.SiteGroups.GetById(originalAssociatedMemberGroupId);
+                    associatedMemberGroup.Title = originalAssociatedMemberGroupTitle;
+                    associatedMemberGroup.Update();
+                    web.AssociatedMemberGroup = associatedMemberGroup;
                     webIsDirty = true;
                 }
 
                 if (originalAssociatedVisitorGroupId > 0)
                 {
-                    web.AssociatedVisitorGroup = web.SiteGroups.GetById(originalAssociatedVisitorGroupId);
+                    Group associatedVisitorGroup = web.SiteGroups.GetById(originalAssociatedVisitorGroupId);
+                    associatedVisitorGroup.Title = originalAssociatedVisitorGroupTitle;
+                    associatedVisitorGroup.Update();
+                    web.AssociatedVisitorGroup = associatedVisitorGroup;
                     webIsDirty = true;
                 }
 
@@ -269,26 +269,41 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 // Load the base template which will be used for the comparison work
                 var creationInfo = new ProvisioningTemplateCreationInformation(web) { BaseTemplate = web.GetBaseTemplate() };
                 creationInfo.IncludeSiteGroups = true;
-                creationInfo.IncludeDefaultAssociatedGroups = true;
+                creationInfo.IncludeAssociatedRoleGroups = true;
                 var template = new ProvisioningTemplate();
                 template = new ObjectSiteSecurity().ExtractObjects(web, template, creationInfo);
 
                 ctx.Load(web,
                     w => w.AssociatedOwnerGroup.Title,
                     w => w.AssociatedMemberGroup.Title,
-                    w => w.AssociatedVisitorGroup.Title);
+                    w => w.AssociatedVisitorGroup.Title,
+                    w => w.AllProperties);
                 ctx.ExecuteQuery();
 
                 Assert.IsTrue(template.Security.AdditionalAdministrators.Any());
                 Assert.IsTrue(template.Security.SiteGroups.Any());
 
-                // These three assertions will fail if the site collection does not have the
-                // default groups created during site creation assigned as associated owner group,
-                // associated member group, and associated visitor group.
-                // This is a prerequisite for the site collection used for unit testing purposes.                
-                Assert.AreEqual("{associatedownergroup}", template.Security.AssociatedOwnerGroup, "Associated owner group title is not the Associated Owner Group token.");
-                Assert.AreEqual("{associatedmembergroup}", template.Security.AssociatedMemberGroup, "Associated member group title is not the Associated Owner Group token.");
-                Assert.AreEqual("{associatedvisitorgroup}", template.Security.AssociatedVisitorGroup, "Associated visitor group title is not the Associated Owner Group token.");
+#if SP2013
+                if (web.AllProperties.FieldValues.ContainsKey("vti_createdassociategroups"))
+                {
+#else
+                    // These three assertions will fail if the site collection does not have the
+                    // default groups created during site creation assigned as associated owner group,
+                    // associated member group, and associated visitor group.
+                    // This is a prerequisite for the site collection used for unit testing purposes.                
+                    Assert.IsNull(template.Security.AssociatedOwnerGroup, "Associated owner group is not the default created associated owner group.");
+                    Assert.IsNull(template.Security.AssociatedMemberGroup, "Associated owner group is not the default created associated member group.");
+                    Assert.IsNull(template.Security.AssociatedVisitorGroup, "Associated owner group is not the default created associated visitor group.");
+#endif
+#if SP2013
+                }
+                else
+                {
+                    Assert.AreEqual(SiteTitleToken.GetReplaceToken(web.AssociatedOwnerGroup.Title, web), template.Security.AssociatedOwnerGroup, "Associated owner group title mismatch.");
+                    Assert.AreEqual(SiteTitleToken.GetReplaceToken(web.AssociatedMemberGroup.Title, web), template.Security.AssociatedMemberGroup, "Associated member group title mismatch.");
+                    Assert.AreEqual(SiteTitleToken.GetReplaceToken(web.AssociatedVisitorGroup.Title, web), template.Security.AssociatedVisitorGroup, "Associated visitor group title mismatch.");
+                }
+#endif
             }
         }
 
@@ -297,12 +312,21 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         {
             using (var ctx = TestCommon.CreateClientContext())
             {
+                InitializeAssociatedGroups(ctx);
+
                 Web web = ctx.Web;
+
+                web.AssociatedOwnerGroup = web.SiteGroups.GetById(ownerGroupId);
+                web.AssociatedMemberGroup = web.SiteGroups.GetById(memberGroupId);
+                web.AssociatedVisitorGroup = web.SiteGroups.GetById(visitorGroupId);
+                web.Update();
+
+                ctx.ExecuteQueryRetry();
 
                 // Load the base template which will be used for the comparison work
                 var creationInfo = new ProvisioningTemplateCreationInformation(web) { BaseTemplate = web.GetBaseTemplate() };
                 creationInfo.IncludeSiteGroups = true;
-                creationInfo.IncludeDefaultAssociatedGroups = true;
+                creationInfo.IncludeAssociatedRoleGroups = true;
                 var template = new ProvisioningTemplate();
                 template = new ObjectSiteSecurity().ExtractObjects(web, template, creationInfo);
 
@@ -318,14 +342,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.AreEqual(SiteTitleToken.GetReplaceToken(web.AssociatedOwnerGroup.Title, web), template.Security.AssociatedOwnerGroup, "Associated owner group title mismatch.");
                 Assert.AreEqual(SiteTitleToken.GetReplaceToken(web.AssociatedMemberGroup.Title, web), template.Security.AssociatedMemberGroup, "Associated member group title mismatch.");
                 Assert.AreEqual(SiteTitleToken.GetReplaceToken(web.AssociatedVisitorGroup.Title, web), template.Security.AssociatedVisitorGroup, "Associated visitor group title mismatch.");
-
-                // These three assertions will fail if the site collection does not have the
-                // default groups created during site creation assigned as associated owner group,
-                // associated member group, and associated visitor group.
-                // This is a prerequisite for the site collection used for unit testing purposes.                
-                Assert.IsTrue(template.Security.AssociatedOwnerGroup.Contains("{sitetitle}"), "Associated owner group title does not contain the Site Title token.");
-                Assert.IsTrue(template.Security.AssociatedMemberGroup.Contains("{sitetitle}"), "Associated member group title does not contain the Site Title token.");
-                Assert.IsTrue(template.Security.AssociatedVisitorGroup.Contains("{sitetitle}"), "Associated visitor group title does not contain the Site Title token.");
             }
         }
 
@@ -350,7 +366,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             {
                 Web web = clientContext.Web;
                 var creationInfo = new ProvisioningTemplateCreationInformation(web) { BaseTemplate = web.GetBaseTemplate() };
-                creationInfo.IncludeDefaultAssociatedGroups = false;
+                creationInfo.IncludeAssociatedRoleGroups = false;
                 var template = new ProvisioningTemplate();
                 template = new ObjectSiteSecurity().ExtractObjects(web, template, creationInfo);
 
@@ -444,9 +460,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.AreEqual(visitorGroupId, web.AssociatedVisitorGroup.Id, "Associated visitor group ID mismatch.");
                 IEnumerable<AssociatedGroupToken> associatedGroupTokens = parser.Tokens.Where(t => t.GetType() == typeof(AssociatedGroupToken)).Cast<AssociatedGroupToken>();
 
-                AssociatedGroupToken associatedOwnerGroupToken = associatedGroupTokens.FirstOrDefault(t => t.GroupType == AssociatedGroupToken.AssociatedGroupType.owners);
-                AssociatedGroupToken associatedMemberGroupToken = associatedGroupTokens.FirstOrDefault(t => t.GroupType == AssociatedGroupToken.AssociatedGroupType.members);
-                AssociatedGroupToken associatedVisitorGroupToken = associatedGroupTokens.FirstOrDefault(t => t.GroupType == AssociatedGroupToken.AssociatedGroupType.visitors);
+                AssociatedGroupToken associatedOwnerGroupToken = associatedGroupTokens.FirstOrDefault(t => t.GroupType == AssociatedGroupType.Owners);
+                AssociatedGroupToken associatedMemberGroupToken = associatedGroupTokens.FirstOrDefault(t => t.GroupType == AssociatedGroupType.Members);
+                AssociatedGroupToken associatedVisitorGroupToken = associatedGroupTokens.FirstOrDefault(t => t.GroupType == AssociatedGroupType.Visitors);
 
                 Assert.IsNotNull(associatedOwnerGroupToken);
                 Assert.IsNotNull(associatedMemberGroupToken);
@@ -464,6 +480,45 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     Assert.IsNotNull(existingUser);
                 }
 
+            }
+        }
+
+        [TestMethod()]
+        public void CanSkipAssigningAssociatedGroups()
+        {
+            ProvisioningTemplate template = new ProvisioningTemplate();
+            template.Security.AssociatedOwnerGroup = "{associatedownergroup}";
+            template.Security.AssociatedMemberGroup = "{associatedmembergroup}";
+            template.Security.AssociatedVisitorGroup = "{associatedvisitorgroup}";
+            foreach (var user in admins)
+            {
+                template.Security.AdditionalMembers.Add(new User() { Name = user.LoginName });
+            }
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                InitializeAssociatedGroups(ctx);
+                Web web = ctx.Web;
+
+                var parser = new TokenParser(ctx.Web, template);
+                new ObjectSiteSecurity().ProvisionObjects(web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                ctx.Load(web,
+                    w => w.AssociatedOwnerGroup.Id,
+                    w => w.AssociatedMemberGroup.Id,
+                    w => w.AssociatedVisitorGroup.Id,
+                    w => w.AssociatedOwnerGroup.Title,
+                    w => w.AssociatedMemberGroup.Title,
+                    w => w.AssociatedVisitorGroup.Title);
+                ctx.ExecuteQuery();
+
+                Assert.AreEqual(originalAssociatedOwnerGroupId, web.AssociatedOwnerGroup.Id, "Associated owner group ID mismatch.");
+                Assert.AreEqual(originalAssociatedMemberGroupId, web.AssociatedMemberGroup.Id, "Associated member group ID mismatch.");
+                Assert.AreEqual(originalAssociatedVisitorGroupId, web.AssociatedVisitorGroup.Id, "Associated visitor group ID mismatch.");
+
+                Assert.AreEqual(originalAssociatedOwnerGroupTitle, web.AssociatedOwnerGroup.Title, "Associated owner group Title mismatch.");
+                Assert.AreEqual(originalAssociatedMemberGroupTitle, web.AssociatedMemberGroup.Title, "Associated member group Title mismatch.");
+                Assert.AreEqual(originalAssociatedVisitorGroupTitle, web.AssociatedVisitorGroup.Title, "Associated visitor group Title mismatch.");
             }
         }
 

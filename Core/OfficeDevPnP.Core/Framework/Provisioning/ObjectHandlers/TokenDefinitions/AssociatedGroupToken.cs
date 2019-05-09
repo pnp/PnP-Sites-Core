@@ -24,7 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         private AssociatedGroupType _groupType;
 
         public AssociatedGroupToken(Web web, AssociatedGroupType groupType)
-            : base(web, $"{{associated{groupType.ToString().TrimEnd('s')}group}}")
+            : base(web, GetGroupToken(groupType))
         {
             if (groupType == AssociatedGroupType.None)
             {
@@ -42,7 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             {
                 switch (_groupType)
                 {
-                    case AssociatedGroupType.owners:
+                    case AssociatedGroupType.Owners:
                         {
                             TokenContext.Load(TokenContext.Web, w => w.AssociatedOwnerGroup.Title);
                             TokenContext.ExecuteQueryRetry();
@@ -52,7 +52,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
                             }
                             break;
                         }
-                    case AssociatedGroupType.members:
+                    case AssociatedGroupType.Members:
                         {
                             TokenContext.Load(TokenContext.Web, w => w.AssociatedMemberGroup.Title);
                             TokenContext.ExecuteQueryRetry();
@@ -62,7 +62,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
                             }
                             break;
                         }
-                    case AssociatedGroupType.visitors:
+                    case AssociatedGroupType.Visitors:
                         {
                             TokenContext.Load(TokenContext.Web, w => w.AssociatedVisitorGroup.Title);
                             TokenContext.ExecuteQueryRetry();
@@ -81,28 +81,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (string.Equals(token, "{associatedownergroup}", StringComparison.OrdinalIgnoreCase))
             {
-                return AssociatedGroupType.owners;
+                return AssociatedGroupType.Owners;
             }
 
             if (string.Equals(token, "{associatedmembergroup}", StringComparison.OrdinalIgnoreCase))
             {
-                return AssociatedGroupType.members;
+                return AssociatedGroupType.Members;
             }
 
             if (string.Equals(token, "{associatedvisitorgroup}", StringComparison.OrdinalIgnoreCase))
             {
-                return AssociatedGroupType.visitors;
+                return AssociatedGroupType.Visitors;
             }
 
             return AssociatedGroupType.None;
         }
 
-        public enum AssociatedGroupType
+        public static string GetGroupToken(AssociatedGroupType groupType)
         {
-            owners,
-            members,
-            visitors,
-            None = 0
+            return $"{{associated{GetGroupTypeName(groupType)}group}}";
+        }
+
+        public static string GetGroupTypeName(AssociatedGroupType groupType)
+        {
+            switch (groupType)
+            {
+                case AssociatedGroupType.Owners:
+                    return "owner";
+
+                case AssociatedGroupType.Members:
+                    return "member";
+
+                case AssociatedGroupType.Visitors:
+                    return "visitor";
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(groupType));
+            }
         }
     }
 }
