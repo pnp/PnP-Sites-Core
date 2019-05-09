@@ -4262,7 +4262,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             // sections
             Assert.AreEqual(1, section.Order);
             Assert.AreEqual(Core.Framework.Provisioning.Model.CanvasSectionType.OneColumn, section.Type);
-            Assert.AreEqual(2, section.BackgroundEmphasis);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.BackgroundEmphasis.Neutral, section.BackgroundEmphasis);
 
             Assert.AreEqual("...", section.Controls[0].CustomWebPartName);
             Assert.AreEqual(WebPartType.Image, section.Controls[0].Type);
@@ -4409,7 +4409,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             // sections
             Assert.AreEqual(1, section.Order);
             Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.CanvasSectionType.OneColumn, section.Type);
-            Assert.AreEqual(2, section.BackgroundEmphasis);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.BackgroundEmphasis.Soft, section.BackgroundEmphasis);
 
             Assert.AreEqual("...", section.Controls[0].CustomWebPartName);
             Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.CanvasControlWebPartType.Image, section.Controls[0].WebPartType);

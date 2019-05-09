@@ -41,7 +41,7 @@
 
   <xsd:complexType name="Provisioning">
     <xsd:sequence>
-      <xsd:element name="Preferences" type="pnp:Preferences" minOccurs="1" maxOccurs="1">
+      <xsd:element name="Preferences" type="pnp:Preferences" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:documentation>
             The mandatory section of preferences for the current provisioning definition.
@@ -7654,7 +7654,7 @@
           </xsd:annotation>
         </xsd:attribute>
 
-        <xsd:attribute name="MailNickname" type="xsd:string" use="optional">
+        <xsd:attribute name="MailNickname" type="pnp:ReplaceableString" use="optional">
           <xsd:annotation>
             <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
             <xsd:documentation xml:lang="en">
