@@ -67,7 +67,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                 var expressions = new Dictionary<string, IResolver>();
                 expressions.Add($"{providerType}.HandlerType", new ExpressionValueResolver<ExtensibilityHandler>((s, v) => $"{s.Type}, {s.Assembly}"));
-                expressions.Add($"{providerType}.Configuration", new ExpressionValueResolver<string>((v) => v?.ToXmlElement()));
+                expressions.Add($"{providerType}.Configuration", new ExpressionValueResolver<string>((v) => v?.ToXmlNode()));
 
                 persistence.GetPublicInstanceProperty("Providers").SetValue(
                     persistence,
