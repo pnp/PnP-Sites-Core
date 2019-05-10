@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Removing SP groups from role assignments in PnP templates
 - Fix: Improved exporting and importing of associated groups #2192 / #2174 [heinrich-ulbricht]
 - Fix: NullReferenceException caused by missing cookie #2232 [lafe]
+- Fix: tokenization for calculated field formula where one field is present multiple times in the formula #2236 [NicolajHedeager]
 
 ## [3.8.1904.0 - April 2019 release]
 
