@@ -44,9 +44,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // If we have to Clone an existing Team
             if (!String.IsNullOrWhiteSpace(team.CloneFrom))
             {
-                // TODO: handle cloning
-                scope.LogError("Cloning not supported yet");
-                return null;
+                teamId = CloneTeam(scope, team, parser, accessToken);
             }
             // If we start from an already existing Group
             else if (!String.IsNullOrEmpty(team.GroupId))
@@ -267,6 +265,55 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var teamId = CreateOrUpdateTeamFromGroup(scope, team, parser, team.GroupId, accessToken);
 
             return (teamId);
+        }
+
+        /// <summary>
+        /// Creates a Team object via Graph cloning an already existing one
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="team">The Team to create</param>
+        /// <param name="parser">The PnP Token Parser</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        /// <returns>The ID of the created Team</returns>
+        private static string CloneTeam(PnPMonitoredScope scope, Team team, TokenParser parser, string accessToken)
+        {
+            var content = PrepareTeamCloneRequestContent(team, parser);
+
+            var teamId = GraphHelper.CreateOrUpdateGraphObject(scope,
+                HttpMethodVerb.POST_WITH_RESPONSE_HEADERS,
+                $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{parser.ParseString(team.CloneFrom)}/clone",
+                content,
+                HttpHelper.JsonContentType,
+                accessToken,
+                "Conflict",
+                CoreResources.Provisioning_ObjectHandlers_Teams_Team_AlreadyExists,
+                "id",
+                team.GroupId,
+                CoreResources.Provisioning_ObjectHandlers_Teams_Team_ProvisioningError,
+                canPatch: true);
+
+            return (teamId);
+        }
+
+        /// <summary>
+        /// Prepares the JSON object for the request to clone a Team
+        /// </summary>
+        /// <param name="team">The Domain Model Team object</param>
+        /// <param name="parser">The PnP Token Parser</param>
+        /// <returns>The JSON object ready to be serialized into the JSON request</returns>
+        private static Object PrepareTeamCloneRequestContent(Team team, TokenParser parser)
+        {
+            var content = new
+            {
+                DisplayName = parser.ParseString(team.DisplayName),
+                Description = parser.ParseString(team.Description),
+                Classification = parser.ParseString(team.Classification),
+                Mailnickname = parser.ParseString(team.MailNickname),
+                team.Visibility,
+                partsToClone = "apps,tabs,settings,channels,members", // Clone everything
+            };
+
+            return (content);
         }
 
         /// <summary>
