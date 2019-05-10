@@ -48,7 +48,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="tokenDefinition">A TokenDefinition object</param>
         public void AddToken(TokenDefinition tokenDefinition)
         {
-
             _tokens.Add(tokenDefinition);
             // ORDER IS IMPORTANT!
             var sortedTokens = from t in _tokens
@@ -1005,7 +1004,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 #if !SP2013
-        private static Dictionary<String, String> listsTitles = new Dictionary<string, string>();
+        private static Dictionary<String, String> listsTitles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// This method retrieves the title of a list in the main language of the site
@@ -1036,7 +1035,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         var titleResource = list.TitleResource.GetValueForUICulture(ci.Name);
                         web.Context.ExecuteQueryRetry();
-                        TokenParser.listsTitles.Add(list.Title, titleResource.Value);
+                        if (!TokenParser.listsTitles.ContainsKey(list.Title))
+                        {
+                            TokenParser.listsTitles.Add(list.Title, titleResource.Value);
+                        }
                     }
                 }
 
