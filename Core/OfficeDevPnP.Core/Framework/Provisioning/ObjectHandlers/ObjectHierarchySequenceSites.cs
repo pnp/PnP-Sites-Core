@@ -204,12 +204,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         var web = siteContext.Web;
 
+                        if (siteTokenParser == null)
+                        {
+                            siteTokenParser = new TokenParser(tenant, hierarchy, applyingInformation);
+                            foreach (var token in _additionalTokens)
+                            {
+                                siteTokenParser.AddToken(token);
+                            }
+                        }
+
                         foreach (var subsite in sitecollection.Sites)
                         {
                             var subSiteObject = (TeamNoGroupSubSite)subsite;
                             web.EnsureProperties(w => w.Webs.IncludeWithDefaultProperties(), w => w.ServerRelativeUrl);
                             siteTokenParser = CreateSubSites(hierarchy, siteTokenParser, sitecollection, siteContext, web, subSiteObject);
                         }
+
+                        siteTokenParser = null;
                     }
 
                     // System.Threading.Thread.Sleep(TimeSpan.FromMinutes(10));
