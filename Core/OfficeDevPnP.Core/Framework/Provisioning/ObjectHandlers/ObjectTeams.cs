@@ -150,7 +150,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>The ID of an already existing Group with the provided MailNickname, if any</returns>
         private static String GetGroupIdByMailNickname(PnPMonitoredScope scope, string mailNickname, string accessToken)
         {
-            var alreadyExistingGroupId = GraphHelper.ItemAlreadyExists($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups", "mailNickname", mailNickname, accessToken);
+            var alreadyExistingGroupId = !String.IsNullOrEmpty(mailNickname) ?
+                GraphHelper.ItemAlreadyExists($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups", "mailNickname", mailNickname, accessToken) :
+                null;
+
             return (alreadyExistingGroupId);
         }
 
@@ -164,7 +167,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>The ID of the created or update Team</returns>
         private static string CreateOrUpdateTeam(PnPMonitoredScope scope, Team team, TokenParser parser, string accessToken)
         {
-            var parsedMailNickname = parser.ParseString(team.MailNickname).ToLower();
+            var parsedMailNickname = !String.IsNullOrEmpty(team.MailNickname) ? parser.ParseString(team.MailNickname).ToLower() : null;
+
+            if (String.IsNullOrEmpty(parsedMailNickname))
+            {
+                parsedMailNickname = team.DisplayName.Replace(' ', '-').ToLower();
+            }
 
             // Check if the Group/Team already exists
             var alreadyExistingGroupId = GetGroupIdByMailNickname(scope, parsedMailNickname, accessToken);
