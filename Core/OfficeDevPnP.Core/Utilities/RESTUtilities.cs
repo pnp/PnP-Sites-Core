@@ -27,7 +27,11 @@ namespace OfficeDevPnP.Core.Utilities
             }
             else if (context.Credentials == null)
             {
-                var cookieString = CookieReader.GetCookie(context.Web.Url).Replace("; ", ",").Replace(";", ",");
+                var cookieString = CookieReader.GetCookie(context.Web.Url)?.Replace("; ", ",")?.Replace(";", ",");
+                if(cookieString == null)
+                {
+                    return;
+                }
                 var authCookiesContainer = new System.Net.CookieContainer();
                 // Get FedAuth and rtFa cookies issued by ADFS when accessing claims aware applications.
                 // - or get the EdgeAccessCookie issued by the Web Application Proxy (WAP) when accessing non-claims aware applications (Kerberos).

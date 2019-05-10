@@ -143,6 +143,14 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             {
                 var web = clientContext.Web;
 
+                // First clear all search nav nodes
+                var nodeCollection = web.LoadSearchNavigation();
+                foreach(var node in nodeCollection.ToList())
+                {
+                    node.DeleteObject();
+                }
+                clientContext.ExecuteQueryRetry();
+
                 web.AddNavigationNode("Test Node", new Uri("https://www.microsoft.com"), string.Empty, NavigationType.SearchNav);
 
                 NavigationNodeCollection searchNavigation = web.LoadSearchNavigation();
@@ -211,6 +219,14 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             using (var clientContext = TestCommon.CreateClientContext())
             {
                 var web = clientContext.Web;
+
+                // First clear all search nav nodes
+                var nodeCollection = web.LoadSearchNavigation();
+                foreach (var node in nodeCollection.ToList())
+                {
+                    node.DeleteObject();
+                }
+                clientContext.ExecuteQueryRetry();
 
                 web.AddNavigationNode("Test Node", new Uri("https://www.microsoft.com"), string.Empty, NavigationType.SearchNav);
 
