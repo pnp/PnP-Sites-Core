@@ -755,12 +755,19 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Collection of NavigationNode instances</returns>
         public static NavigationNodeCollection LoadSearchNavigation(this Web web)
         {
-            var searchNav = web.Navigation.GetNodeById(1040); // 1040 is the id of the search navigation            
-            var nodeCollection = searchNav.Children;
-            web.Context.Load(searchNav);
-            web.Context.Load(nodeCollection);
-            web.Context.ExecuteQueryRetry();
-            return nodeCollection;
+            try
+            {
+                var searchNav = web.Navigation.GetNodeById(1040); // 1040 is the id of the search navigation            
+                var nodeCollection = searchNav.Children;
+                web.Context.Load(searchNav);
+                web.Context.Load(nodeCollection);
+                web.Context.ExecuteQueryRetry();
+                return nodeCollection;
+            }
+            catch
+            {
+                 return null;
+            }
         }
 
 #if !ONPREMISES
