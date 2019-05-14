@@ -221,7 +221,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 };
 
                 // Make the Graph request to create the Office 365 Group
-                var createdGroupJson = HttpHelper.MakePostRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups", 
+                var createdGroupJson = HttpHelper.MakePostRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups",
                     groupCreationRequest, HttpHelper.JsonContentType, accessToken);
                 var createdGroupId = JToken.Parse(createdGroupJson).Value<string>("id");
 
@@ -234,7 +234,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     try
                     {
-                        var jsonGroup= HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{createdGroupId}", accessToken);
+                        var jsonGroup = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{createdGroupId}", accessToken);
                         if (!String.IsNullOrEmpty(jsonGroup))
                         {
                             wait = false;
@@ -364,31 +364,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 //team.Visibility,
                 funSettings = new
                 {
-                    team.FunSettings.AllowGiphy,
-                    team.FunSettings.GiphyContentRating,
-                    team.FunSettings.AllowStickersAndMemes,
-                    team.FunSettings.AllowCustomMemes,
+                    team.FunSettings?.AllowGiphy,
+                    team.FunSettings?.GiphyContentRating,
+                    team.FunSettings?.AllowStickersAndMemes,
+                    team.FunSettings?.AllowCustomMemes,
                 },
                 guestSettings = new
                 {
-                    team.GuestSettings.AllowCreateUpdateChannels,
-                    team.GuestSettings.AllowDeleteChannels,
+                    team.GuestSettings?.AllowCreateUpdateChannels,
+                    team.GuestSettings?.AllowDeleteChannels,
                 },
                 memberSettings = new
                 {
-                    team.MemberSettings.AllowCreateUpdateChannels,
-                    team.MemberSettings.AllowAddRemoveApps,
-                    team.MemberSettings.AllowDeleteChannels,
-                    team.MemberSettings.AllowCreateUpdateRemoveTabs,
-                    team.MemberSettings.AllowCreateUpdateRemoveConnectors
+                    team.MemberSettings?.AllowCreateUpdateChannels,
+                    team.MemberSettings?.AllowAddRemoveApps,
+                    team.MemberSettings?.AllowDeleteChannels,
+                    team.MemberSettings?.AllowCreateUpdateRemoveTabs,
+                    team.MemberSettings?.AllowCreateUpdateRemoveConnectors
                 },
                 messagingSettings = new
                 {
-                    team.MessagingSettings.AllowUserEditMessages,
-                    team.MessagingSettings.AllowUserDeleteMessages,
-                    team.MessagingSettings.AllowOwnerDeleteMessages,
-                    team.MessagingSettings.AllowTeamMentions,
-                    team.MessagingSettings.AllowChannelMentions
+                    team.MessagingSettings?.AllowUserEditMessages,
+                    team.MessagingSettings?.AllowUserDeleteMessages,
+                    team.MessagingSettings?.AllowOwnerDeleteMessages,
+                    team.MessagingSettings?.AllowTeamMentions,
+                    team.MessagingSettings?.AllowChannelMentions
                 }
             };
 
@@ -808,22 +808,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return team.ToString();
         }
 
-#region PnP Provisioning Engine infrastructural code
+        #region PnP Provisioning Engine infrastructural code
 
         public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-#if !ONPREMISES
+
             if (!_willProvision.HasValue)
             {
                 _willProvision = hierarchy.Teams?.TeamTemplates?.Any() |
                     hierarchy.Teams?.Teams?.Any();
             }
-#else
-            if (!_willProvision.HasValue)
-            {
-                _willProvision = false;
-            }
-#endif
             return _willProvision.Value;
         }
 
@@ -838,7 +832,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-#if !ONPREMISES
             using (var scope = new PnPMonitoredScope(Name))
             {
                 // Prepare a method global variable to store the Access Token
@@ -878,8 +871,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // - Apps
             }
-#endif
-
             return parser;
         }
 
@@ -889,7 +880,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return hierarchy;
         }
 
-#endregion
+        #endregion
     }
 }
 #endif
