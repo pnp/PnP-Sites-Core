@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.9.1905.1 - May 2019 Intermediate Release]
+
+### Changed
+
+- Temporarily removed the functionality to reorder fieldlinks in content types created through the provisioning engine due to server side code issue.
+
 ## [3.9.1905.0 - May 2019 release]
 
 ### Added

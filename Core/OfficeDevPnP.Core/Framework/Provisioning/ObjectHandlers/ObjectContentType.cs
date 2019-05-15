@@ -269,7 +269,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Reorder fields
             if (reOrderFields)
             {
-                existingContentType.FieldLinks.Reorder(ctFieldNames);
+            //    existingContentType.FieldLinks.Reorder(ctFieldNames);
                 isDirty = true;
             }
 
@@ -386,10 +386,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             //In this case the new Content Type has all field of the original Content Type and missing fields
             //will be added at the end. To fix this issue we ordering the fields once more.
 
+            //TODO: Reintroduce this functionality
+
             var ctFields = templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray();
             if (ctFields.Length > 0)
             {
-                createdCT.FieldLinks.Reorder(ctFields);
+               // createdCT.FieldLinks.Reorder(ctFields);
             }
             if (createdCT.ReadOnly != templateContentType.ReadOnly)
             {
