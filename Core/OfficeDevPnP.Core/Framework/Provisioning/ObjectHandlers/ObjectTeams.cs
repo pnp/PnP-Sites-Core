@@ -216,8 +216,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     mailNickname = parsedMailNickname,
                     securityEnabled = false,
                     visibility = team.Visibility.ToString(),
-                    owners_odata_bind = (from o in desideredOwnerIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{o}").ToArray(),
-                    members_odata_bind = (from m in desideredMemberIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{m}").ToArray()
+                    owners_odata_bind = (from o in desideredOwnerIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(o.Replace("'", "''"))}").ToArray(),
+                    members_odata_bind = (from m in desideredMemberIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(m.Replace("'", "''"))}").ToArray()
                 };
 
                 // Make the Graph request to create the Office 365 Group
@@ -594,7 +594,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>Whether the Channels have been provisioned or not</returns>
         private static bool SetTeamChannels(PnPMonitoredScope scope, TokenParser parser, Team team, string teamId, string accessToken)
         {
-            if (team.Channels != null)
+            if (team.Channels.Count > 0)
             {
                 foreach (var channel in team.Channels)
                 {
@@ -622,66 +622,68 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (channelId == null) return false;
 
                     // If there are any Tabs for the current channel
-                    if (channel.Tabs == null || !channel.Tabs.Any()) continue;
-
-                    foreach (var tab in channel.Tabs)
+                    if (channel.Tabs.Count > 0)
                     {
-                        // Create the object for the API call
-                        var tabToCreate = new
+                        foreach (var tab in channel.Tabs)
                         {
-                            tab.DisplayName,
-                            tab.TeamsAppId,
-                            configuration = tab.Configuration != null ? new
+                            // Create the object for the API call
+                            var tabToCreate = new
                             {
-                                tab.Configuration.EntityId,
-                                tab.Configuration.ContentUrl,
-                                tab.Configuration.RemoveUrl,
-                                tab.Configuration.WebsiteUrl
-                            } : null
-                        };
+                                tab.DisplayName,
+                                tab.TeamsAppId,
+                                configuration = tab.Configuration != null ? new
+                                {
+                                    tab.Configuration.EntityId,
+                                    tab.Configuration.ContentUrl,
+                                    tab.Configuration.RemoveUrl,
+                                    tab.Configuration.WebsiteUrl
+                                } : null
+                            };
 
-                        var tabId = GraphHelper.CreateOrUpdateGraphObject(scope,
-                            HttpMethodVerb.POST,
-                            $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs",
-                            tabToCreate,
-                            HttpHelper.JsonContentType,
-                            accessToken,
-                            "NameAlreadyExists",
-                            CoreResources.Provisioning_ObjectHandlers_Teams_Team_TabAlreadyExists,
-                            "displayName",
-                            tab.DisplayName,
-                            CoreResources.Provisioning_ObjectHandlers_Teams_Team_ProvisioningError,
-                            canPatch: false);
+                            var tabId = GraphHelper.CreateOrUpdateGraphObject(scope,
+                                HttpMethodVerb.POST,
+                                $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs",
+                                tabToCreate,
+                                HttpHelper.JsonContentType,
+                                accessToken,
+                                "NameAlreadyExists",
+                                CoreResources.Provisioning_ObjectHandlers_Teams_Team_TabAlreadyExists,
+                                "displayName",
+                                tab.DisplayName,
+                                CoreResources.Provisioning_ObjectHandlers_Teams_Team_ProvisioningError,
+                                canPatch: false);
 
-                        if (tabId == null) return false;
+                            if (tabId == null) return false;
+                        }
                     }
 
                     // TODO: Handle TabResources
                     // We need to define a "schema" for their settings
 
                     // If there are any messages for the current channel
-                    if (channel.Messages == null || !channel.Messages.Any()) continue;
-
-                    foreach (var message in channel.Messages)
+                    if (channel.Messages.Count > 0)
                     {
-                        // Get and parse the CData
-                        var messageString = parser.ParseString(message.Message);
-                        var messageJson = JToken.Parse(messageString);
+                        foreach (var message in channel.Messages)
+                        {
+                            // Get and parse the CData
+                            var messageString = parser.ParseString(message.Message);
+                            var messageJson = JToken.Parse(messageString);
 
-                        var messageId = GraphHelper.CreateOrUpdateGraphObject(scope,
-                            HttpMethodVerb.POST,
-                            $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/messages",
-                            messageJson,
-                            HttpHelper.JsonContentType,
-                            accessToken,
-                            null,
-                            null,
-                            null,
-                            null,
-                            CoreResources.Provisioning_ObjectHandlers_Teams_Team_CannotSendMessage,
-                            canPatch: false);
+                            var messageId = GraphHelper.CreateOrUpdateGraphObject(scope,
+                                HttpMethodVerb.POST,
+                                $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/messages",
+                                messageJson,
+                                HttpHelper.JsonContentType,
+                                accessToken,
+                                null,
+                                null,
+                                null,
+                                null,
+                                CoreResources.Provisioning_ObjectHandlers_Teams_Team_CannotSendMessage,
+                                canPatch: false);
 
-                        if (messageId == null) return false;
+                            if (messageId == null) return false;
+                        }
                     }
                 }
             }
