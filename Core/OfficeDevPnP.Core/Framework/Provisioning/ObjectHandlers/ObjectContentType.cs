@@ -224,7 +224,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Set flag to reorder fields CT fields are not equal to template fields
             var existingFieldNames = existingContentType.FieldLinks.AsEnumerable().Select(fld => fld.Name).ToArray();
             var ctFieldNames = templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray();
-            reOrderFields = !existingFieldNames.SequenceEqual(ctFieldNames);
+            reOrderFields = ctFieldNames.Length > 0 && !existingFieldNames.SequenceEqual(ctFieldNames);
 
             // Delta handling
             existingContentType.EnsureProperty(c => c.FieldLinks);
@@ -386,7 +386,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             //In this case the new Content Type has all field of the original Content Type and missing fields
             //will be added at the end. To fix this issue we ordering the fields once more.
 
-            createdCT.FieldLinks.Reorder(templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray());
+            var ctFields = templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray();
+            if (ctFields.Length > 0)
+            {
+                createdCT.FieldLinks.Reorder(ctFields);
+            }
             if (createdCT.ReadOnly != templateContentType.ReadOnly)
             {
                 createdCT.ReadOnly = templateContentType.ReadOnly;
