@@ -920,15 +920,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!web.AssociatedOwnerGroup.ServerObjectIsNull.Value)
             {
-                loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedowneridgroup}");
+                loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedownergroupid}");
             }
             if (!web.AssociatedMemberGroup.ServerObjectIsNull.Value)
             {
-                loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmemberidgroup}");
+                loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmembergroupid}");
             }
             if (!web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
             {
-                loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitoridgroup}");
+                loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroupid}");
             }
             if (!string.IsNullOrEmpty(web.Title))
             {
