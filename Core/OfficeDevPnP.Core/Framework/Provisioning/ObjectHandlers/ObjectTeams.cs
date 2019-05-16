@@ -846,12 +846,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     foreach (var teamTemplate in teamTemplates)
                     {
                         // Get a fresh Access Token for every request
-                        accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All");
+                        if (PnPProvisioningContext.Current != null)
+                        {
+                            accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All");
 
-                        // Create the Team starting from the JSON template
-                        var team = CreateTeamFromJsonTemplate(scope, parser, teamTemplate, accessToken);
+                            if (accessToken != null)
+                            {
+                                // Create the Team starting from the JSON template
+                                var team = CreateTeamFromJsonTemplate(scope, parser, teamTemplate, accessToken);
 
-                        // TODO: possible further processing...
+                                // TODO: possible further processing...
+                            }
+                        }
                     }
                 }
 
@@ -861,13 +867,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var team in teams)
                     {
-                        // Get a fresh Access Token for every request
-                        accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All");
+                        if (PnPProvisioningContext.Current != null)
+                        {
+                            // Get a fresh Access Token for every request
+                            accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All");
 
-                        // Create the Team starting from the XML PnP Provisioning Schema definition
-                        CreateTeamFromProvisioningSchema(scope, parser, hierarchy.Connector, team, accessToken);
+                            if (accessToken != null)
+                            {
+                                // Create the Team starting from the XML PnP Provisioning Schema definition
+                                CreateTeamFromProvisioningSchema(scope, parser, hierarchy.Connector, team, accessToken);
 
-                        // TODO: possible further processing...
+                                // TODO: possible further processing...
+                            }
+                        }
+
                     }
                 }
 
