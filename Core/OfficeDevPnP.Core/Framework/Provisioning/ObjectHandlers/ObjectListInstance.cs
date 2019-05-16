@@ -35,6 +35,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
         }
 
+        public override string InternalName => "ListInstances";
+
         public ObjectListInstance(FieldAndListProvisioningStepHelper.Step stage)
         {
             this.step = stage;
@@ -199,6 +201,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         web.Context.ExecuteQueryRetry();
 
+                        #region Property Bag Entries
+
+                        // Configure Property Bag Entries
+                        foreach (var list in processedLists)
+                        {
+                            ProcessPropertyBagEntries(parser, scope, list);
+                        }
+
+                        #endregion Property Bag Entries
+
                         #region Column default values
                         foreach (var listInfo in processedLists)
                         {
@@ -362,9 +374,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     currentFieldIndex++;
                     WriteMessage($"List Columns for list {listInfo.TemplateList.Title}|{internalName ?? id}|{currentFieldIndex}|{fieldsToProcess.Length}", ProvisioningMessageType.Progress);
-
-                    Guid fieldGuid;
-                    if (!Guid.TryParse(id, out fieldGuid))
+                    if (!Guid.TryParse(id, out var fieldGuid))
                     {
                         scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_, field.SchemaXml);
                         throw new Exception(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_, id));
@@ -509,25 +519,53 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        private void ProcessPropertyBagEntries(TokenParser parser, PnPMonitoredScope scope, ListInfo list)
+        {
+            if (list.TemplateList.PropertyBagEntries != null && list.TemplateList.PropertyBagEntries.Count > 0)
+            {
+                // Handle root folder property bag
+                var rootFolder = list.SiteList.RootFolder;
+                list.SiteList.Context.Load(rootFolder, f => f.Properties);
+                list.SiteList.Context.ExecuteQueryRetry();
+
+                foreach (var p in list.TemplateList.PropertyBagEntries)
+                {
+                    var parsedKey = parser.ParseString(p.Key);
+                    if (!rootFolder.Properties.FieldValues.ContainsKey(parsedKey) || p.Overwrite)
+                    {
+                        list.SiteList.SetPropertyBagValue(parsedKey, parser.ParseString(p.Value));
+                        if (p.Indexed)
+                        {
+                            list.SiteList.AddIndexedPropertyBagKey(parsedKey);
+                        }
+                        else
+                        {
+                            list.SiteList.RemoveIndexedPropertyBagKey(parsedKey);
+                        }
+                    }
+                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1, parsedKey, list.SiteList.Title);
+                }
+            }
+        }
+
         private static void CheckContentTypes(Web web, ProvisioningTemplate template, PnPMonitoredScope scope, ListInstance templateList)
         {
             // Check for the presence of the references content types and throw an exception if not present or in template
-            if (templateList.ContentTypesEnabled)
+            if (!templateList.ContentTypesEnabled) return;
+
+            var existingCts = web.Context.LoadQuery(web.AvailableContentTypes);
+            web.Context.ExecuteQueryRetry();
+            foreach (var ct in templateList.ContentTypeBindings)
             {
-                var existingCts = web.Context.LoadQuery(web.AvailableContentTypes);
-                web.Context.ExecuteQueryRetry();
-                foreach (var ct in templateList.ContentTypeBindings)
+                var found = template.ContentTypes.Any(t => string.Equals(t.Id, ct.ContentTypeId, StringComparison.InvariantCultureIgnoreCase));
+                if (!found)
                 {
-                    var found = template.ContentTypes.Any(t => string.Equals(t.Id, ct.ContentTypeId, StringComparison.InvariantCultureIgnoreCase));
-                    if (!found)
-                    {
-                        found = existingCts.Any(t => string.Equals(t.StringId, ct.ContentTypeId, StringComparison.InvariantCultureIgnoreCase));
-                    }
-                    if (!found)
-                    {
-                        scope.LogError("Referenced content type {0} not available in site or in template", ct.ContentTypeId);
-                        throw new Exception($"Referenced content type {ct.ContentTypeId} not available in site or in template");
-                    }
+                    found = existingCts.Any(t => string.Equals(t.StringId, ct.ContentTypeId, StringComparison.InvariantCultureIgnoreCase));
+                }
+                if (!found)
+                {
+                    scope.LogError("Referenced content type {0} not available in site or in template", ct.ContentTypeId);
+                    throw new Exception($"Referenced content type {ct.ContentTypeId} not available in site or in template");
                 }
             }
         }
@@ -742,7 +780,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES || SP2019
                 // CustomFormatter
                 var customFormatterElement = viewElement.Descendants("CustomFormatter").FirstOrDefault();
-                if(customFormatterElement != null)
+                if (customFormatterElement != null)
                 {
                     var customFormatter = customFormatterElement.Value;
                     customFormatter = customFormatter.Replace("&", "&amp;");
@@ -770,7 +808,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-                
+
                 createdList.Update();
                 web.Context.ExecuteQueryRetry();
 
@@ -1355,11 +1393,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 #endif
 
-#region UserCustomActions
+                #region UserCustomActions
 
                 isDirty |= UpdateCustomActions(web, existingList, templateList, parser, scope, isNoScriptSite);
 
-#endregion UserCustomActions
+                #endregion UserCustomActions
 
                 if (isDirty)
                 {
@@ -1647,8 +1685,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var listTemplates = site.GetCustomListTemplates(web);
                     web.Context.Load(listTemplates);
                     web.Context.ExecuteQueryRetry();
-                    var matchingTemplates = listTemplates.Where(t => t.FeatureId == templateList.TemplateFeatureID &&
-                            t.ListTemplateTypeKind == templateList.TemplateType).ToList();
+
+                    var matchingTemplatesFilter = listTemplates.Where(t => t.FeatureId == templateList.TemplateFeatureID &&
+                            t.ListTemplateTypeKind == templateList.TemplateType);
+
+                    // Support for named stp's from schema 2019/03
+                    if (!string.IsNullOrWhiteSpace(templateList.TemplateInternalName))
+                    {
+                        matchingTemplatesFilter = matchingTemplatesFilter.Where(t => t.InternalName.Equals(templateList.TemplateInternalName,
+                            StringComparison.InvariantCultureIgnoreCase));
+                    }
+
+                    var matchingTemplates = matchingTemplatesFilter.ToList();
                     if (matchingTemplates.Count == 1)
                     {
                         listCreate.ListTemplate = matchingTemplates[0];
@@ -2166,6 +2214,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     list = ExtractInformationRightsManagement(web, siteList, list, creationInfo, template);
 
+                    list = ExtractPropertyBagEntries(siteList, list);
+
                     if (baseTemplateList != null)
                     {
                         if (!baseTemplateList.Equals(list))
@@ -2193,22 +2243,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (var webhook in addedWebhooks.Where(x => !string.IsNullOrEmpty(x.NotificationUrl)))
             {
-                list.Webhooks.Add(new Webhook
+                var expireInDays = webhook.ExpirationDateTime.Subtract(DateTime.Now).Days + 1;
+                if (expireInDays > 0)
                 {
-                    ExpiresInDays = webhook.ExpirationDateTime.Subtract(DateTime.Now).Days + 1,
-                    ServerNotificationUrl = webhook.NotificationUrl,
-                });
+                    list.Webhooks.Add(new Webhook
+                    {
+                        ExpiresInDays = webhook.ExpirationDateTime.Subtract(DateTime.Now).Days + 1,
+                        ServerNotificationUrl = webhook.NotificationUrl,
+                    });
+                }
             }
-
             return list;
         }
 
 #endif
 
-        private static ListInstance ExtractViews(Web web, List siteList, ListInstance list, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
+        private ListInstance ExtractViews(Web web, List siteList, ListInstance list, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             foreach (var view in siteList.Views.AsEnumerable().Where(view => !view.Hidden && view.ListViewXml != null))
             {
+
                 var schemaElement = XElement.Parse(view.ListViewXml);
 
                 // exclude survey and events list as they dont support jsLink customizations
@@ -2271,8 +2325,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 #endif
-
-                list.Views.Add(new View { SchemaXml = schemaElement.ToString() });
+                list.Views.Add(new View { SchemaXml = Tokenize(schemaElement.ToString(), web.Url) });
             }
 
             return list;
@@ -2399,6 +2452,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             || field.InternalName == "Modified_x0020_By"
                             || field.InternalName == "Created_x0020_By"
                             || field.InternalName == "_DisplayName"
+                            || field.InternalName == "ComplianceAssetId"
+                            || field.InternalName == "_ComplianceFlags"
+                            || field.InternalName == "_ComplianceTag"
+                            || field.InternalName == "_ComplianceTagWrittenTime"
+                            || field.InternalName == "_ComplianceTagUserId"
+                            || field.InternalName == "_IsRecord"
                             )
                         {
                             addField = false;
@@ -2544,7 +2603,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 list.IRMSettings.PolicyTitle = siteList.InformationRightsManagementSettings.PolicyTitle;
             }
 
-            return (list);
+            return list;
         }
 
         private static ListInstance ExtractUserCustomActions(Web web, List siteList, ListInstance list, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
@@ -2597,6 +2656,38 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
 
                 list.UserCustomActions.Add(customAction);
+            }
+
+            return list;
+        }
+
+        private static ListInstance ExtractPropertyBagEntries(List siteList, ListInstance list)
+        {
+            var systemPropertyBagEntriesExclusions = new List<string>(new[]
+            {
+                "vti_"
+            });
+
+            var indexedPropertyBagKeys = siteList.GetIndexedPropertyBagKeys().ToList();
+
+            var propertyBagEntries = siteList.RootFolder.Properties;
+            siteList.Context.Load(propertyBagEntries);
+            siteList.Context.ExecuteQueryRetry();
+
+            foreach (var fieldValue in propertyBagEntries.FieldValues)
+            {
+                var systemProp = systemPropertyBagEntriesExclusions.Any(k => fieldValue.Key.StartsWith(k, StringComparison.OrdinalIgnoreCase));
+                if (!systemProp)
+                {
+                    var propertyBagEntry = new PropertyBagEntry()
+                    {
+                        Key = fieldValue.Key,
+                        Value = fieldValue.Value.ToString(),
+                        Indexed = indexedPropertyBagKeys.Contains(fieldValue.Key),
+                        Overwrite = false
+                    };
+                    list.PropertyBagEntries.Add(propertyBagEntry);
+                }
             }
 
             return list;

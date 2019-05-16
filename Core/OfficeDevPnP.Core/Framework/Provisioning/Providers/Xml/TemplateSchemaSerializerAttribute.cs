@@ -33,8 +33,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         public Int32 DeserializationSequence { get; set; } = 0;
 
         /// <summary>
-        /// Defines whether to automatically include the serializer in the serialization process or not
+        /// Defines the scope of the serializer
         /// </summary>
-        public Boolean Default { get; set; } = true;
+        /// <remarks>
+        /// By default the serializers target a single Provisioning Template
+        /// </remarks>
+        public SerializerScope Scope { get; set; } = SerializerScope.ProvisioningTemplate;
+    }
+
+    /// <summary>
+    /// Defines the scope of a serializer
+    /// </summary>
+    public enum SerializerScope
+    {
+        /// <summary>
+        /// The serializer targets a single Provisioning Template
+        /// </summary>
+        ProvisioningTemplate,
+        /// <summary>
+        /// The serializer targets a full Provisioning file but not a tenant Template
+        /// </summary>
+        Provisioning,
+        /// <summary>
+        /// The serializer targets a Provisioning Hierarchy
+        /// </summary>
+        ProvisioningHierarchy,
+        /// <summary>
+        /// The serializer targets the whole Tenant
+        /// </summary>
+        Tenant,
     }
 }

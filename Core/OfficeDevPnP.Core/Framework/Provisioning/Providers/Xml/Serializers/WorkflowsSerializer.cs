@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Xml;
 using System.Xml.Linq;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -15,7 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 1800, DeserializationSequence = 1800,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
-        Default = true)]
+        Scope = SerializerScope.ProvisioningTemplate)]
     internal class WorkflowsSerializer : PnPBaseSchemaSerializer<Workflows>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)

@@ -91,6 +91,7 @@ namespace OfficeDevPnP.Core.Sites
                     payload.Add("WebTemplate", "SITEPAGEPUBLISHING#0");
                     payload.Add("WebTemplateExtensionId", Guid.Empty);
                     payload.Add("HubSiteId", siteCollectionCreationInformation.HubSiteId);
+                    payload.Add("Owner", siteCollectionCreationInformation.Owner);
 
                     var body = new { request = payload };
 

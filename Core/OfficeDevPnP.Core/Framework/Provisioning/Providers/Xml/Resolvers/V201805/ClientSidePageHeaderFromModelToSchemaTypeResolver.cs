@@ -6,14 +6,14 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201805
 {
-    internal class ClientSidePageHeaderFromModelToSchema : ITypeResolver
+    internal class ClientSidePageHeaderFromModelToSchemaTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
 
         public bool CustomCollectionResolver => false;
 
 
-        public ClientSidePageHeaderFromModelToSchema()
+        public ClientSidePageHeaderFromModelToSchemaTypeResolver()
         {
         }
 

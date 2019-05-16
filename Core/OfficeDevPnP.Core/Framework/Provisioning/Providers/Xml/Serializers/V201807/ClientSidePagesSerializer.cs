@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V201807
 {
@@ -16,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201807,
         SerializationSequence = 2300, DeserializationSequence = 2300,
-        Default = true)]
+        Scope = SerializerScope.ProvisioningTemplate)]
     internal class ClientSidePagesSerializer : PnPBaseSchemaSerializer<ClientSidePage>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
@@ -42,6 +43,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                     new FromArrayToDictionaryValueResolver<String, String>(
                         stringDictionaryType, stringDictionaryKeySelector, stringDictionaryValueSelector));
 
+                // Properties
+                expressions.Add(cp => cp.Properties,
+                    new FromArrayToDictionaryValueResolver<String, String>(
+                        stringDictionaryType, stringDictionaryKeySelector, stringDictionaryValueSelector));
+
                 // Manage WebPartType for CanvasControl
                 expressions.Add(cp => cp.Sections[0].Controls[0].Type,
                     new ExpressionValueResolver(
@@ -53,7 +59,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                     new FromStringToGuidValueResolver());
 
                 // Manage Header for client side page
-                expressions.Add(cp => cp.Header, new ClientSidePageHeaderFromSchemaToModel());
+                expressions.Add(cp => cp.Header, new ClientSidePageHeaderFromSchemaToModelTypeResolver());
 
                 // Manage Security for client side page
                 expressions.Add(cp => cp.Security, new PropertyObjectTypeResolver<File>(fl => fl.Security,
@@ -116,12 +122,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
 
                 expressions.Add($"{clientSidePageType}.FieldValues", new FromDictionaryToArrayValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
 
+                expressions.Add($"{clientSidePageType}.Properties", new FromDictionaryToArrayValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
+
                 // Manage Header for client side page
                 var clientSidePageHeaderType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ClientSidePageHeader, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", false);
 
                 if (null != clientSidePageHeaderType)
                 {
-                    expressions.Add($"{clientSidePageType}.Header", new ClientSidePageHeaderFromModelToSchema());
+                    expressions.Add($"{clientSidePageType}.Header", new ClientSidePageHeaderFromModelToSchemaTypeResolver());
                     expressions.Add($"{clientSidePageHeaderType}.TranslateX", new FromNullableToSpecifiedValueResolver<double>("TranslateXSpecified"));
                     expressions.Add($"{clientSidePageHeaderType}.TranslateY", new FromNullableToSpecifiedValueResolver<double>("TranslateYSpecified"));
                 }

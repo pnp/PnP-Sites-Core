@@ -48,6 +48,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public bool Remove { get; set; }
 
+        /// <summary>
+        /// Declares whether the current field reference has to be udpated on inherited content types
+        /// </summary>
+        public bool UpdateChildren { get; set; }
+
         #endregion
 
         #region Constructors
@@ -76,11 +81,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
                 (this.Id != null ? this.Id.GetHashCode() : 0),
                 this.Required.GetHashCode(),
                 this.Hidden.GetHashCode(),
-                this.Remove.GetHashCode()
+                this.Remove.GetHashCode(),
+                this.UpdateChildren.GetHashCode()
             ).GetHashCode());
         }
 
@@ -99,7 +105,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares FieldRef object based on Id, Required, Hidden, and Remove properties.
+        /// Compares FieldRef object based on Id, Required, Hidden, Remove, and UpdateChildren properties.
         /// </summary>
         /// <param name="other">FieldRef object</param>
         /// <returns>true if the FieldRef object is equal to the current object; otherwise, false.</returns>
@@ -113,7 +119,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (this.Id == other.Id &&
                 this.Required == other.Required &&
                 this.Hidden == other.Hidden &&
-                this.Remove == other.Remove);
+                this.Remove == other.Remove &&
+                this.UpdateChildren == other.UpdateChildren
+                );
         }
 
         #endregion

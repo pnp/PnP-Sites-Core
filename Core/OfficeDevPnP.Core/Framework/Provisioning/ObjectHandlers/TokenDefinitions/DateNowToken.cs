@@ -21,6 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         public DateNowToken(Web web)
             : base(web, "{now}")
         {
+            IsCacheable = false;
         }
 
         /// <summary>

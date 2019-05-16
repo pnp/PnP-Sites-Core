@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -15,7 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
         SerializationSequence = 900, DeserializationSequence = 900,
-        Default = false)]
+        Scope = SerializerScope.ProvisioningTemplate)]
     internal class SiteColumnsSerializer : PnPBaseSchemaSerializer<Field>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)

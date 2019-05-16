@@ -9,6 +9,8 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Threading;
 using System.Security.Cryptography.X509Certificates;
+using OfficeDevPnP.Core.Utilities;
+using Newtonsoft.Json.Linq;
 
 namespace OfficeDevPnP.Core.Tests
 {
@@ -71,6 +73,9 @@ namespace OfficeDevPnP.Core.Tests
             {
                 var tempCred = Core.Utilities.CredentialManager.GetCredential(AppSetting("SPOCredentialManagerLabel"));
 
+                UserName = tempCred.UserName;
+                Password = tempCred.SecurePassword;
+
                 // username in format domain\user means we're testing in on-premises
                 if (tempCred.UserName.IndexOf("\\") > 0)
                 {
@@ -90,14 +95,14 @@ namespace OfficeDevPnP.Core.Tests
                     UserName = AppSetting("SPOUserName");
                     var password = AppSetting("SPOPassword");
 
-                    Password = GetSecureString(password);
+                    Password = EncryptionUtility.ToSecureString(password);
                     Credentials = new SharePointOnlineCredentials(UserName, Password);
                 }
                 else if (!String.IsNullOrEmpty(AppSetting("OnPremUserName")) &&
                          !String.IsNullOrEmpty(AppSetting("OnPremDomain")) &&
                          !String.IsNullOrEmpty(AppSetting("OnPremPassword")))
                 {
-                    Password = GetSecureString(AppSetting("OnPremPassword"));
+                    Password = EncryptionUtility.ToSecureString(AppSetting("OnPremPassword"));
                     Credentials = new NetworkCredential(AppSetting("OnPremUserName"), Password, AppSetting("OnPremDomain"));
                 }
                 else if (!String.IsNullOrEmpty(AppSetting("AppId")) &&
@@ -353,17 +358,48 @@ namespace OfficeDevPnP.Core.Tests
             return context;
         }
 
-        private static SecureString GetSecureString(string input)
+        #endregion
+
+
+#if !ONPREMISES
+        public static string AcquireTokenAsync(string resource, string scope = null)
         {
-            if (string.IsNullOrEmpty(input))
-                throw new ArgumentException("Input string is empty and cannot be made into a SecureString", "input");
+            var tenantId = TenantExtensions.GetTenantIdByUrl(TestCommon.AppSetting("SPOTenantUrl"));
+            //var tenantId = GetTenantIdByUrl(TestCommon.AppSetting("SPOTenantUrl"));
+            if (tenantId == null) return null;
 
-            var secureString = new SecureString();
-            foreach (char c in input.ToCharArray())
-                secureString.AppendChar(c);
+            var clientId = TestCommon.AppSetting("AppId");
+            var username = UserName;
+            var password = EncryptionUtility.ToInsecureString(Password);
 
-            return secureString;
+            string body;
+            string response;
+            if (scope == null) // use v1 endpoint
+            {
+                body = $"grant_type=password&client_id={clientId}&username={username}&password={password}&resource={resource}";
+                response = HttpHelper.MakePostRequestForString($"https://login.microsoftonline.com/{tenantId}/oauth2/token", body, "application/x-www-form-urlencoded");
+            }
+            else // use v2 endpoint
+            {
+                body = $"grant_type=password&client_id={clientId}&username={username}&password={password}&scope={scope}";
+                response = HttpHelper.MakePostRequestForString($"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token", body, "application/x-www-form-urlencoded");
+            }
+
+            var json = JToken.Parse(response);
+            return json["access_token"].ToString();
         }
-#endregion
+#endif
+        public static void DeleteFile(ClientContext ctx, string serverRelativeFileUrl)
+        {
+            var file = ctx.Web.GetFileByServerRelativeUrl(serverRelativeFileUrl);
+            ctx.Load(file, f => f.Exists);
+            ctx.ExecuteQueryRetry();
+
+            if (file.Exists)
+            {
+                file.DeleteObject();
+                ctx.ExecuteQueryRetry();
+            }
+        }
     }
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.9.1905.0, Culture=neutral, PublicKeyToken=c742ba29399ff639" />
+  <pnp:Templates ID="CONTAINER-TEMPLATE-ABD4907793D749E0B09AB520C3F1048E">
+    <pnp:ProvisioningTemplate ID="TEMPLATE-ABD4907793D749E0B09AB520C3F1048E" Version="1" BaseSiteTemplate="SITEPAGEPUBLISHING#0" Scope="RootSite">
+      <pnp:ClientSidePages>
+        <pnp:ClientSidePage PageName="csp-test-1.aspx" PromoteAsNewsArticle="false" PromoteAsTemplate="false" Overwrite="true" EnableComments="false" Title="Mein Haus">
+          <pnp:Header Type="Custom" ServerRelativeImageUrl="{site}/SiteAssets/SitePages/Dummy/i-do-not-exist-but-this-is-ok.jpg" TranslateX="24.142568930733" TranslateY="15.3508771929825" LayoutType="FullWidthImage" TextAlignment="Center" ShowTopicHeader="false" ShowPublishDate="false" AuthorByLineId="0" />
+        </pnp:ClientSidePage>
+        <pnp:ClientSidePage PageName="csp-test-2.aspx" PromoteAsNewsArticle="false" PromoteAsTemplate="false" Overwrite="true" Title="Aktuelles">
+          <pnp:Header Type="Default" LayoutType="FullWidthImage" TextAlignment="Center" ShowTopicHeader="false" ShowPublishDate="false" AuthorByLineId="0" />
+        </pnp:ClientSidePage>
+        <pnp:ClientSidePage PageName="csp-test-3.aspx" PromoteAsNewsArticle="false" PromoteAsTemplate="false" Overwrite="true" EnableComments="false" Title="Kunden News">
+          <pnp:Sections>
+            <pnp:Section Order="1" Type="OneColumn" BackgroundEmphasis="Neutral">
+              <pnp:Controls>
+                <pnp:CanvasControl WebPartType="NewsReel" JsonControlData="{&quot;id&quot;: &quot;8c88f208-6c77-4bdb-86a0-0c47b4316588&quot;, &quot;instanceId&quot;: &quot;340d8726-4854-492d-bdce-17f9c54bf073&quot;, &quot;title&quot;: &quot;Nachrichten&quot;, &quot;description&quot;: &quot;Jüngste Neuigkeiten anzeigen.&quot;, &quot;dataVersion&quot;: &quot;1.8&quot;, &quot;properties&quot;: {&quot;carouselSettings&quot;:{&quot;autoplay&quot;:false,&quot;autoplaySpeed&quot;:5,&quot;dots&quot;:true,&quot;lazyLoad&quot;:true,&quot;metadata&quot;:true,&quot;swipe&quot;:true,&quot;useStockItems&quot;:false},&quot;showChrome&quot;:true,&quot;layoutId&quot;:&quot;GridNews&quot;,&quot;prefetchCount&quot;:4,&quot;filters&quot;:[{&quot;filterType&quot;:6,&quot;values&quot;:[&quot;Kunden News&quot;],&quot;fieldname&quot;:&quot;News_x0020_Kategorie&quot;,&quot;op&quot;:1}],&quot;newsDataSourceProp&quot;:1,&quot;dataProviderId&quot;:&quot;viewCounts&quot;,&quot;newsSiteList&quot;:[],&quot;renderItemsSliderValue&quot;:4,&quot;webId&quot;:&quot;{siteid}&quot;,&quot;siteId&quot;:&quot;{sitecollectionid}&quot;,&quot;pinnedItems&quot;:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null],&quot;serializedFilterQuery&quot;:&quot;&lt;Where&gt;&lt;And&gt;&lt;Eq&gt;&lt;FieldRef Name=\&quot;News_x0020_Kategorie\&quot;/&gt;&lt;Value Type=\&quot;Choice\&quot;&gt;Kunden News&lt;/Value&gt;&lt;/Eq&gt;&lt;Eq&gt;&lt;FieldRef Name=\&quot;FSObjType\&quot; /&gt;&lt;Value Type=\&quot;Integer\&quot;&gt;0&lt;/Value&gt;&lt;/Eq&gt;&lt;/And&gt;&lt;/Where&gt;&quot;,&quot;propsLastEdited&quot;:&quot;2019-04-25T08:51:30.504Z&quot;,&quot;templateId&quot;:&quot;GridNews&quot;,&quot;compactMode&quot;:false}, &quot;serverProcessedContent&quot;: {&quot;htmlStrings&quot;:{},&quot;searchablePlainTexts&quot;:{&quot;title&quot;:&quot;&quot;},&quot;imageSources&quot;:{},&quot;links&quot;:{&quot;baseUrl&quot;:&quot;{hosturl}{site}&quot;},&quot;componentDependencies&quot;:{&quot;layoutComponentId&quot;:&quot;ef1147f9-e3f4-4844-b4fe-ab7e6c1f3a10&quot;}}, &quot;dynamicDataPaths&quot;: {}, &quot;dynamicDataValues&quot;: {}}" ControlId="8c88f208-6c77-4bdb-86a0-0c47b4316588" Order="1" Column="1" />
+              </pnp:Controls>
+            </pnp:Section>
+          </pnp:Sections>
+          <pnp:Header Type="Custom" ServerRelativeImageUrl="{site}/SiteAssets/SitePages/Dummy2/i-do-not-exist-but-this-is-ok.jpeg" LayoutType="FullWidthImage" TextAlignment="Center" ShowTopicHeader="false" ShowPublishDate="false" AuthorByLineId="0" />
+        </pnp:ClientSidePage>
+      </pnp:ClientSidePages>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

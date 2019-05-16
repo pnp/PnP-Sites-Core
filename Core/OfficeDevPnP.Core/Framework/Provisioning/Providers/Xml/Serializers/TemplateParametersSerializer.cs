@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -13,15 +14,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
-        Default = false)]
-    internal class TemplateParametersSerializer : IPnPSchemaSerializer
+        SerializationSequence = 100, DeserializationSequence = 100,
+        Scope = SerializerScope.Provisioning)]
+    internal class TemplateParametersSerializer : PnPBaseSchemaSerializer<ProvisioningTemplate>
     {
-        public string Name
-        {
-            get { return (this.GetType().Name); }
-        }
-
-        public void Deserialize(object persistence, ProvisioningTemplate template)
+        public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
             var preferences = persistence.GetPublicInstancePropertyValue("Preferences");
 
@@ -39,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             }
         }
 
-        public void Serialize(ProvisioningTemplate template, object persistence)
+        public override void Serialize(ProvisioningTemplate template, object persistence)
         {
             if (template.Parameters != null && template.Parameters.Count > 0)
             {

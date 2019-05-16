@@ -13,6 +13,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return "Persist Template Info"; }
         }
 
+        public override string InternalName => "PersistTemplateInfo";
+
         public ObjectPersistTemplateInfo()
         {
             this.ReportProgress = false;

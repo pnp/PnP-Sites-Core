@@ -1287,12 +1287,13 @@ namespace Microsoft.SharePoint.Client
         /// <param name="termSetId">The ID of the termset to export</param>
         /// <param name="includeId">if true, Ids of the the taxonomy items will be included</param>
         /// <param name="delimiter">if specified, this delimiter will be used. Notice that IDs will be delimited with ;# from the label</param>
+        /// <param name="lcid">if specified, retrieve terms in the specificed language</param>
         /// <returns>Returns list of Termset strings</returns>
-        public static List<string> ExportTermSet(this Site site, Guid termSetId, bool includeId, string delimiter = "|")
+        public static List<string> ExportTermSet(this Site site, Guid termSetId, bool includeId, string delimiter = "|", int lcid = 0)
         {
             var termStore = site.GetDefaultSiteCollectionTermStore();
 
-            return ExportTermSet(site, termSetId, includeId, termStore, delimiter);
+            return ExportTermSet(site, termSetId, includeId, termStore, delimiter, lcid);
         }
 
         /// <summary>
@@ -1303,18 +1304,28 @@ namespace Microsoft.SharePoint.Client
         /// <param name="includeId">if true, Ids of the the taxonomy items will be included</param>
         /// <param name="termStore">The term store to export the termset from</param>
         /// <param name="delimiter">if specified, this delimiter will be used. Notice that IDs will be delimited with ;# from the label</param>
+        /// <param name="lcid">if specified, retrieve terms in the specificed language</param>
         /// <returns>Returns list of Termset strings</returns>
-        public static List<string> ExportTermSet(this Site site, Guid termSetId, bool includeId, TermStore termStore, string delimiter = "|")
+        public static List<string> ExportTermSet(this Site site, Guid termSetId, bool includeId, TermStore termStore, string delimiter = "|", int lcid = 0)
         {
             var clientContext = site.Context;
             var termsString = new List<string>();
             TermCollection terms = null;
+            TermSet termSet = null;
 
             if (termSetId != Guid.Empty)
             {
-                var termSet = termStore.GetTermSet(termSetId);
+                termSet = termStore.GetTermSet(termSetId);
                 terms = termSet.Terms;
-                clientContext.Load(terms, t => t.IncludeWithDefaultProperties(s => s.TermSet), t => t.IncludeWithDefaultProperties(s => s.TermSet.Group));
+                if (lcid != 0)
+                {
+                    clientContext.Load(terms, t => t.IncludeWithDefaultProperties(s => s.TermSet), t => t.IncludeWithDefaultProperties(s => s.TermSet.Group), t => t.IncludeWithDefaultProperties(s => s.Labels));
+                    clientContext.Load(termSet, ts => ts.Names);
+                }
+                else
+                {
+                    clientContext.Load(terms, t => t.IncludeWithDefaultProperties(s => s.TermSet), t => t.IncludeWithDefaultProperties(s => s.TermSet.Group));
+                }
             }
 
             clientContext.ExecuteQueryRetry();
@@ -1326,7 +1337,21 @@ namespace Microsoft.SharePoint.Client
                     var groupName = DenormalizeName(term.TermSet.Group.Name);
                     var termsetName = DenormalizeName(term.TermSet.Name);
                     var termName = DenormalizeName(term.Name);
-                    clientContext.ExecuteQueryRetry();
+                    if (lcid != 0)
+                    {
+                        var termSetLabel = termSet.Names.SingleOrDefault(n => n.Key == lcid + "");
+                        if (!string.IsNullOrWhiteSpace(termSetLabel.Value))
+                        {
+                            termsetName = DenormalizeName(termSetLabel.Value);
+                        }
+
+                        var label = term.Labels.SingleOrDefault(l => l.Language == lcid);
+                        if (label != null && !string.IsNullOrWhiteSpace(label.Value))
+                        {
+                            termName = DenormalizeName(label.Value);
+                        }
+                    }
+
                     var groupPath = string.Format("{0}{1}", groupName, (includeId) ? string.Format(";#{0}", term.TermSet.Group.Id.ToString()) : "");
                     var termsetPath = string.Format("{0}{1}", termsetName, (includeId) ? string.Format(";#{0}", term.TermSet.Id.ToString()) : "");
                     var termPath = string.Format("{0}{1}", termName, (includeId) ? string.Format(";#{0}", term.Id.ToString()) : "");
@@ -1468,38 +1493,53 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Returns TaxonomyItem object</returns>
         public static TaxonomyItem GetTaxonomyItemByPath(this Site site, string path, string delimiter = "|")
         {
+            
             var context = site.Context;
 
             if (string.IsNullOrEmpty(path)) throw new ArgumentNullException("path");
 
+            
+
             var pathSplit = path.Split(new string[] { delimiter }, StringSplitOptions.RemoveEmptyEntries);
+
 
             TaxonomySession tSession = TaxonomySession.GetTaxonomySession(context);
             TermStore ts = tSession.GetDefaultKeywordsTermStore();
 
-            var groups = context.LoadQuery(ts.Groups);
-            context.ExecuteQueryRetry();
-
-            var group = groups.FirstOrDefault(l => l.Name.Equals(pathSplit[0], StringComparison.CurrentCultureIgnoreCase));
-            if (group == null) return null;
-            if (pathSplit.Length == 1) return group;
-
-            var termSets = context.LoadQuery(group.TermSets);
-            context.ExecuteQueryRetry();
-
-            var termSet = termSets.FirstOrDefault(l => l.Name.Equals(pathSplit[1], StringComparison.CurrentCultureIgnoreCase));
-            if (termSet == null) return null;
-            if (pathSplit.Length == 2) return termSet;
-
             Term term = null;
-            for (int i = 2; i < pathSplit.Length; i++)
+
+            if (pathSplit.Length == 2 && Guid.TryParse(pathSplit[1], out Guid termid))
             {
-                IEnumerable<Term> termColl = context.LoadQuery(i == 2 ? termSet.Terms : term.Terms);
+                term = ts.GetTerm(termid);
+                context.Load(term);
+                context.ExecuteQueryRetry();
+            }
+            else
+            {
+                var groups = context.LoadQuery(ts.Groups);
                 context.ExecuteQueryRetry();
 
-                term = termColl.FirstOrDefault(l => l.Name.Equals(pathSplit[i], StringComparison.OrdinalIgnoreCase));
+                var group = groups.FirstOrDefault(l => l.Name.Equals(pathSplit[0], StringComparison.CurrentCultureIgnoreCase));
+                if (group == null) return null;
+                if (pathSplit.Length == 1) return group;
 
-                if (term == null) return null;
+                var termSets = context.LoadQuery(group.TermSets);
+                context.ExecuteQueryRetry();
+
+                var termSet = termSets.FirstOrDefault(l => l.Name.Equals(pathSplit[1], StringComparison.CurrentCultureIgnoreCase));
+                if (termSet == null) return null;
+                if (pathSplit.Length == 2) return termSet;
+
+
+                for (int i = 2; i < pathSplit.Length; i++)
+                {
+                    IEnumerable<Term> termColl = context.LoadQuery(i == 2 ? termSet.Terms : term.Terms);
+                    context.ExecuteQueryRetry();
+
+                    term = termColl.FirstOrDefault(l => l.Name.Equals(pathSplit[i], StringComparison.OrdinalIgnoreCase));
+
+                    if (term == null) return null;
+                }
             }
 
             return term;
@@ -2169,6 +2209,6 @@ namespace Microsoft.SharePoint.Client
                 clientContext.ExecuteQueryRetry();
             }
         }
-#endregion
+        #endregion
     }
 }

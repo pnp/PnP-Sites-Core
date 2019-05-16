@@ -39,6 +39,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public CanvasSectionType Type { get; set; }
 
+        /// <summary>
+        /// The emphasis color of the Canvas Section for a Client-side Page
+        /// </summary>
+        public BackgroundEmphasis BackgroundEmphasis { get; set; }
+
         #endregion
 
         #region Constructors
@@ -61,10 +66,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|",
+            return (String.Format("{0}|{1}|{2}|{3}|",
                 this.Controls.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 Order.GetHashCode(),
-                Type.GetHashCode()
+                Type.GetHashCode(),
+                BackgroundEmphasis.GetHashCode()
             ).GetHashCode());
         }
 
@@ -83,7 +89,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares CanvasSection object based on Controls, Order, and Type
+        /// Compares CanvasSection object based on Controls, Order, Type, and BackgroundEmphasis
         /// </summary>
         /// <param name="other">CanvasSection Class object</param>
         /// <returns>true if the CanvasSection object is equal to the current object; otherwise, false.</returns>
@@ -96,7 +102,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             return (this.Controls.DeepEquals(other.Controls) &&
                 this.Order == other.Order &&
-                this.Type == other.Type
+                this.Type == other.Type &&
+                this.BackgroundEmphasis == other.BackgroundEmphasis
                 );
         }
 

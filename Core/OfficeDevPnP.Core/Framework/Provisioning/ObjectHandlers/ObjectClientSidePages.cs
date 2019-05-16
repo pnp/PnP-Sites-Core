@@ -17,10 +17,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
     internal class ObjectClientSidePages : ObjectHandlerBase
     {
+        private const string ContentTypeIdField = "ContentTypeId";
+        private const string FileRefField = "FileRef";
+        private const string SPSitePageFlagsField = "_SPSitePageFlags";
+
         public override string Name
         {
             get { return "ClientSidePages"; }
         }
+
+        public override string InternalName => "ClientSidePages";
+
+
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
@@ -31,6 +39,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // determine pages library
                 string pagesLibrary = "SitePages";
 
+                var pagesLibraryList = web.GetListByUrl(pagesLibrary, p => p.RootFolder);
+
                 List<string> preCreatedPages = new List<string>();
 
                 var currentPageIndex = 0;
@@ -39,6 +49,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(parser.ParseString(clientSidePage.PageName))}.aspx";
                     string url = $"{pagesLibrary}/{pageName}";
+
+                    if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
+                    {
+                        url = $"{pagesLibrary}/{Pages.ClientSidePage.GetTemplatesFolder(pagesLibraryList)}/{pageName}";
+                    }
 
                     // Write page level status messages, needed in case many pages are provisioned
                     currentPageIndex++;
@@ -50,12 +65,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     try
                     {
                         var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(url));
-                        web.Context.Load(file, f => f.UniqueId, f => f.ServerRelativePath);
+                        web.Context.Load(file, f => f.UniqueId, f => f.ServerRelativePath, f => f.Exists);
                         web.Context.ExecuteQueryRetry();
 
                         // Fill token
                         parser.AddToken(new PageUniqueIdToken(web, file.ServerRelativePath.DecodedUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
                         parser.AddToken(new PageUniqueIdEncodedToken(web, file.ServerRelativePath.DecodedUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), file.UniqueId));
+
+                        exists = file.Exists;
                     }
                     catch (ServerException ex)
                     {
@@ -73,21 +90,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // Set page layout now, because once it's set, it can't be changed.
                         if (!string.IsNullOrEmpty(clientSidePage.Layout))
                         {
-                            if (clientSidePage.Layout.Equals("Article", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                page.LayoutType = Pages.ClientSidePageLayoutType.Article;
-                            }
-                            else if (clientSidePage.Layout.Equals("Home", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                page.LayoutType = Pages.ClientSidePageLayoutType.Home;
-                            }
-                            else if (clientSidePage.Layout.Equals("SingleWebPartAppPage", StringComparison.InvariantCultureIgnoreCase))
-                            {
-                                page.LayoutType = Pages.ClientSidePageLayoutType.SingleWebPartAppPage;
-                            }
+                            page.LayoutType = (Pages.ClientSidePageLayoutType)Enum.Parse(typeof(Pages.ClientSidePageLayoutType), clientSidePage.Layout);
                         }
 
-                        page.Save(pageName);
+                        if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
+                        {
+                            page.SaveAsTemplate(pageName);
+                        }
+                        else
+                        {
+                            page.Save(pageName);
+                        }
 
                         var file = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(url));
                         web.Context.Load(file, f => f.UniqueId, f => f.ServerRelativePath);
@@ -108,6 +121,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     string pageName = $"{System.IO.Path.GetFileNameWithoutExtension(parser.ParseString(clientSidePage.PageName))}.aspx";
                     string url = $"{pagesLibrary}/{pageName}";
+
+                    if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
+                    {
+                        url = $"{pagesLibrary}/{Pages.ClientSidePage.GetTemplatesFolder(pagesLibraryList)}/{pageName}";
+                    }
+
                     // Write page level status messages, needed in case many pages are provisioned
                     currentPageIndex++;
                     WriteMessage($"ClientSidePage|{pageName}|{currentPageIndex}|{template.ClientSidePages.Count}", ProvisioningMessageType.Progress);
@@ -134,8 +153,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (clientSidePage.Overwrite || preCreatedPages.Contains(url))
                         {
-                            // Get the existing page
-                            page = web.LoadClientSidePage(pageName);
+                            if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
+                            {
+                                // Get the existing template page
+                                page = web.LoadClientSidePage($"{Pages.ClientSidePage.GetTemplatesFolder(pagesLibraryList)}/{pageName}");
+                            }
+                            else
+                            {
+                                // Get the existing page
+                                page = web.LoadClientSidePage(pageName);
+                            }
+
                             // Clear the page
                             page.ClearPage();
                         }
@@ -184,6 +212,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         page.SetCustomPageHeader(serverRelativeImageUrl);
                                     }
+
+                                    page.PageHeader.TextAlignment = (Pages.ClientSidePageHeaderTitleAlignment)Enum.Parse(typeof(ClientSidePageHeaderTextAlignment), clientSidePage.Header.TextAlignment.ToString());
+                                    page.PageHeader.LayoutType = (Pages.ClientSidePageHeaderLayoutType)Enum.Parse(typeof(ClientSidePageHeaderLayoutType), clientSidePage.Header.LayoutType.ToString());
+                                    page.PageHeader.ShowTopicHeader = clientSidePage.Header.ShowTopicHeader;
+                                    page.PageHeader.ShowPublishDate = clientSidePage.Header.ShowPublishDate;
+                                    page.PageHeader.TopicHeader = clientSidePage.Header.TopicHeader;
+                                    page.PageHeader.AlternativeText = clientSidePage.Header.AlternativeText;
+                                    page.PageHeader.Authors = clientSidePage.Header.Authors;
+                                    page.PageHeader.AuthorByLine = clientSidePage.Header.AuthorByLine;
+                                    page.PageHeader.AuthorByLineId = clientSidePage.Header.AuthorByLineId;
                                     break;
                                 }
                         }
@@ -192,280 +230,273 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Set page layout
                     if (!string.IsNullOrEmpty(clientSidePage.Layout))
                     {
-                        if (clientSidePage.Layout.Equals("Article", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            page.LayoutType = Pages.ClientSidePageLayoutType.Article;
-                        }
-                        else if (clientSidePage.Layout.Equals("Home", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            page.LayoutType = Pages.ClientSidePageLayoutType.Home;
-                        }
-                        else if (clientSidePage.Layout.Equals("SingleWebPartAppPage", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            page.LayoutType = Pages.ClientSidePageLayoutType.SingleWebPartAppPage;
-                        }
+                        page.LayoutType = (Pages.ClientSidePageLayoutType)Enum.Parse(typeof(Pages.ClientSidePageLayoutType), clientSidePage.Layout);
                     }
 
-                    // Load existing available controls
-                    var componentsToAdd = page.AvailableClientSideComponents().ToList();
-
-                    // if no section specified then add a default single column section
-                    if (!clientSidePage.Sections.Any())
+                    // Add content on the page, not needed for repost pages
+                    if (page.LayoutType != Pages.ClientSidePageLayoutType.RepostPage)
                     {
-                        clientSidePage.Sections.Add(new CanvasSection() { Type = CanvasSectionType.OneColumn, Order = 10 });
-                    }
+                        // Load existing available controls
+                        var componentsToAdd = page.AvailableClientSideComponents().ToList();
 
-                    int sectionCount = -1;
-                    // Apply the "layout" and content
-                    foreach (var section in clientSidePage.Sections)
-                    {
-                        sectionCount++;
-                        switch (section.Type)
+                        // if no section specified then add a default single column section
+                        if (!clientSidePage.Sections.Any())
                         {
-                            case CanvasSectionType.OneColumn:
-                                page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order);
-                                break;
-                            case CanvasSectionType.OneColumnFullWidth:
-                                page.AddSection(Pages.CanvasSectionTemplate.OneColumnFullWidth, section.Order);
-                                break;
-                            case CanvasSectionType.TwoColumn:
-                                page.AddSection(Pages.CanvasSectionTemplate.TwoColumn, section.Order);
-                                break;
-                            case CanvasSectionType.ThreeColumn:
-                                page.AddSection(Pages.CanvasSectionTemplate.ThreeColumn, section.Order);
-                                break;
-                            case CanvasSectionType.TwoColumnLeft:
-                                page.AddSection(Pages.CanvasSectionTemplate.TwoColumnLeft, section.Order);
-                                break;
-                            case CanvasSectionType.TwoColumnRight:
-                                page.AddSection(Pages.CanvasSectionTemplate.TwoColumnRight, section.Order);
-                                break;
-                            default:
-                                page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order);
-                                break;
+                            clientSidePage.Sections.Add(new CanvasSection() { Type = CanvasSectionType.OneColumn, Order = 10 });
                         }
 
-                        // Add controls to the section
-                        if (section.Controls.Any())
+                        int sectionCount = -1;
+                        // Apply the "layout" and content
+                        foreach (var section in clientSidePage.Sections)
                         {
-                            // Safety measure: reset column order to 1 for columns marked with 0 or lower
-                            foreach (var control in section.Controls.Where(p => p.Column <= 0).ToList())
+                            sectionCount++;
+                            switch (section.Type)
                             {
-                                control.Column = 1;
+                                case CanvasSectionType.OneColumn:
+                                    page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order, (Int32)section.BackgroundEmphasis);
+                                    break;
+                                case CanvasSectionType.OneColumnFullWidth:
+                                    page.AddSection(Pages.CanvasSectionTemplate.OneColumnFullWidth, section.Order, (Int32)section.BackgroundEmphasis);
+                                    break;
+                                case CanvasSectionType.TwoColumn:
+                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumn, section.Order, (Int32)section.BackgroundEmphasis);
+                                    break;
+                                case CanvasSectionType.ThreeColumn:
+                                    page.AddSection(Pages.CanvasSectionTemplate.ThreeColumn, section.Order, (Int32)section.BackgroundEmphasis);
+                                    break;
+                                case CanvasSectionType.TwoColumnLeft:
+                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnLeft, section.Order, (Int32)section.BackgroundEmphasis);
+                                    break;
+                                case CanvasSectionType.TwoColumnRight:
+                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnRight, section.Order, (Int32)section.BackgroundEmphasis);
+                                    break;
+                                default:
+                                    page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order, (Int32)section.BackgroundEmphasis);
+                                    break;
                             }
 
-                            foreach (CanvasControl control in section.Controls)
+                            // Add controls to the section
+                            if (section.Controls.Any())
                             {
-                                Pages.ClientSideComponent baseControl = null;
-
-                                // Is it a text control?
-                                if (control.Type == WebPartType.Text)
+                                // Safety measure: reset column order to 1 for columns marked with 0 or lower
+                                foreach (var control in section.Controls.Where(p => p.Column <= 0).ToList())
                                 {
-                                    Pages.ClientSideText textControl = new Pages.ClientSideText();
-                                    if (control.ControlProperties.Any())
-                                    {
-                                        var textProperty = control.ControlProperties.First();
-                                        textControl.Text = parser.ParseString(textProperty.Value);
-                                    }
-                                    else
-                                    {
-                                        if (!string.IsNullOrEmpty(control.JsonControlData))
-                                        {
-                                            var json = JsonConvert.DeserializeObject<Dictionary<string, string>>(control.JsonControlData);
-
-                                            if (json.Count > 0)
-                                            {
-                                                textControl.Text = parser.ParseString(json.First().Value);
-                                            }
-                                        }
-                                    }
-                                    // Reduce column number by 1 due 0 start indexing
-                                    page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
-
+                                    control.Column = 1;
                                 }
-                                // It is a web part
-                                else
+
+                                foreach (CanvasControl control in section.Controls)
                                 {
-                                    // apply token parsing on the web part properties
-                                    control.JsonControlData = parser.ParseString(control.JsonControlData);
+                                    Pages.ClientSideComponent baseControl = null;
 
-                                    // perform processing of web part properties (e.g. include listid property based list title property)
-                                    var webPartPostProcessor = CanvasControlPostProcessorFactory.Resolve(control);
-                                    webPartPostProcessor.Process(control, page);
-
-                                    // Is a custom developed client side web part (3rd party)
-                                    if (control.Type == WebPartType.Custom)
+                                    // Is it a text control?
+                                    if (control.Type == WebPartType.Text)
                                     {
-                                        if (!string.IsNullOrEmpty(control.CustomWebPartName))
+                                        Pages.ClientSideText textControl = new Pages.ClientSideText();
+                                        if (control.ControlProperties.Any())
                                         {
-                                            baseControl = componentsToAdd.FirstOrDefault(p => p.Name.Equals(control.CustomWebPartName, StringComparison.InvariantCultureIgnoreCase));
+                                            var textProperty = control.ControlProperties.First();
+                                            textControl.Text = parser.ParseString(textProperty.Value);
                                         }
-                                        else if (control.ControlId != Guid.Empty)
+                                        else
                                         {
-                                            baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals($"{{{control.ControlId.ToString()}}}", StringComparison.CurrentCultureIgnoreCase));
-
-                                            if (baseControl == null)
+                                            if (!string.IsNullOrEmpty(control.JsonControlData))
                                             {
-                                                baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals(control.ControlId.ToString(), StringComparison.InvariantCultureIgnoreCase));
-                                            }
-                                        }
-                                    }
-                                    // Is an OOB client side web part (1st party)
-                                    else
-                                    {
-                                        string webPartName = "";
-                                        switch (control.Type)
-                                        {
-                                            case WebPartType.Image:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Image);
-                                                break;
-                                            case WebPartType.BingMap:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.BingMap);
-                                                break;
-                                            case WebPartType.ContentEmbed:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.ContentEmbed);
-                                                break;
-                                            case WebPartType.ContentRollup:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.ContentRollup);
-                                                break;
-                                            case WebPartType.DocumentEmbed:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.DocumentEmbed);
-                                                break;
-                                            case WebPartType.Events:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Events);
-                                                break;
-                                            case WebPartType.GroupCalendar:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.GroupCalendar);
-                                                break;
-                                            case WebPartType.Hero:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Hero);
-                                                break;
-                                            case WebPartType.ImageGallery:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.ImageGallery);
-                                                break;
-                                            case WebPartType.LinkPreview:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.LinkPreview);
-                                                break;
-                                            case WebPartType.List:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.List);
-                                                break;
-                                            case WebPartType.NewsFeed:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.NewsFeed);
-                                                break;
-                                            case WebPartType.NewsReel:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.NewsReel);
-                                                break;
-                                            case WebPartType.PageTitle:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.PageTitle);
-                                                break;
-                                            case WebPartType.People:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.People);
-                                                break;
-                                            case WebPartType.PowerBIReportEmbed:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.PowerBIReportEmbed);
-                                                break;
-                                            case WebPartType.QuickChart:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.QuickChart);
-                                                break;
-                                            case WebPartType.QuickLinks:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.QuickLinks);
-                                                break;
-                                            case WebPartType.SiteActivity:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.SiteActivity);
-                                                break;
-                                            case WebPartType.VideoEmbed:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.VideoEmbed);
-                                                break;
-                                            case WebPartType.YammerEmbed:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.YammerEmbed);
-                                                break;
-                                            case WebPartType.CustomMessageRegion:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.CustomMessageRegion);
-                                                break;
-                                            case WebPartType.Divider:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Divider);
-                                                break;
-                                            case WebPartType.MicrosoftForms:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.MicrosoftForms);
-                                                break;
-                                            case WebPartType.Spacer:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Spacer);
-                                                break;
-                                            case WebPartType.ClientWebPart:
-                                                webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.ClientWebPart);
-                                                break;
-                                        }
+                                                var json = JsonConvert.DeserializeObject<Dictionary<string, string>>(control.JsonControlData);
 
-                                        baseControl = componentsToAdd.FirstOrDefault(p => p.Name.Equals(webPartName, StringComparison.InvariantCultureIgnoreCase));
-                                    }
-
-                                    if (baseControl != null)
-                                    {
-                                        Pages.ClientSideWebPart myWebPart = new Pages.ClientSideWebPart(baseControl)
-                                        {
-                                            Order = control.Order
-                                        };
-
-                                        if (!String.IsNullOrEmpty(control.JsonControlData))
-                                        {
-                                            var json = JsonConvert.DeserializeObject<JObject>(control.JsonControlData);
-                                            if (json["instanceId"] != null && json["instanceId"].Type != JTokenType.Null)
-                                            {
-                                                if (Guid.TryParse(json["instanceId"].Value<string>(), out Guid instanceId))
+                                                if (json.Count > 0)
                                                 {
-                                                    myWebPart.instanceId = instanceId;
+                                                    textControl.Text = parser.ParseString(json.First().Value);
                                                 }
                                             }
                                         }
-
                                         // Reduce column number by 1 due 0 start indexing
-                                        page.AddControl(myWebPart, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
+                                        page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
 
-                                        // set properties using json string
-                                        if (!String.IsNullOrEmpty(control.JsonControlData))
-                                        {
-                                            myWebPart.PropertiesJson = control.JsonControlData;
-                                        }
+                                    }
+                                    // It is a web part
+                                    else
+                                    {
+                                        // apply token parsing on the web part properties
+                                        control.JsonControlData = parser.ParseString(control.JsonControlData);
 
-                                        // set using property collection
-                                        if (control.ControlProperties.Any())
+                                        // perform processing of web part properties (e.g. include listid property based list title property)
+                                        var webPartPostProcessor = CanvasControlPostProcessorFactory.Resolve(control);
+                                        webPartPostProcessor.Process(control, page);
+
+                                        // Is a custom developed client side web part (3rd party)
+                                        if (control.Type == WebPartType.Custom)
                                         {
-                                            // grab the "default" properties so we can deduct their types, needed to correctly apply the set properties
-                                            var controlManifest = JObject.Parse(baseControl.Manifest);
-                                            JToken controlProperties = null;
-                                            if (controlManifest != null)
+                                            if (!string.IsNullOrEmpty(control.CustomWebPartName))
                                             {
-                                                controlProperties = controlManifest.SelectToken("preconfiguredEntries[0].properties");
+                                                baseControl = componentsToAdd.FirstOrDefault(p => p.Name.Equals(control.CustomWebPartName, StringComparison.InvariantCultureIgnoreCase));
+                                            }
+                                            else if (control.ControlId != Guid.Empty)
+                                            {
+                                                baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals($"{{{control.ControlId.ToString()}}}", StringComparison.CurrentCultureIgnoreCase));
+
+                                                if (baseControl == null)
+                                                {
+                                                    baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals(control.ControlId.ToString(), StringComparison.InvariantCultureIgnoreCase));
+                                                }
+                                            }
+                                        }
+                                        // Is an OOB client side web part (1st party)
+                                        else
+                                        {
+                                            string webPartName = "";
+                                            switch (control.Type)
+                                            {
+                                                case WebPartType.Image:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Image);
+                                                    break;
+                                                case WebPartType.BingMap:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.BingMap);
+                                                    break;
+                                                case WebPartType.ContentEmbed:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.ContentEmbed);
+                                                    break;
+                                                case WebPartType.ContentRollup:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.ContentRollup);
+                                                    break;
+                                                case WebPartType.DocumentEmbed:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.DocumentEmbed);
+                                                    break;
+                                                case WebPartType.Events:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Events);
+                                                    break;
+                                                case WebPartType.GroupCalendar:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.GroupCalendar);
+                                                    break;
+                                                case WebPartType.Hero:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Hero);
+                                                    break;
+                                                case WebPartType.ImageGallery:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.ImageGallery);
+                                                    break;
+                                                case WebPartType.LinkPreview:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.LinkPreview);
+                                                    break;
+                                                case WebPartType.List:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.List);
+                                                    break;
+                                                case WebPartType.NewsFeed:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.NewsFeed);
+                                                    break;
+                                                case WebPartType.NewsReel:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.NewsReel);
+                                                    break;
+                                                case WebPartType.PageTitle:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.PageTitle);
+                                                    break;
+                                                case WebPartType.People:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.People);
+                                                    break;
+                                                case WebPartType.PowerBIReportEmbed:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.PowerBIReportEmbed);
+                                                    break;
+                                                case WebPartType.QuickChart:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.QuickChart);
+                                                    break;
+                                                case WebPartType.QuickLinks:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.QuickLinks);
+                                                    break;
+                                                case WebPartType.SiteActivity:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.SiteActivity);
+                                                    break;
+                                                case WebPartType.VideoEmbed:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.VideoEmbed);
+                                                    break;
+                                                case WebPartType.YammerEmbed:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.YammerEmbed);
+                                                    break;
+                                                case WebPartType.CustomMessageRegion:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.CustomMessageRegion);
+                                                    break;
+                                                case WebPartType.Divider:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Divider);
+                                                    break;
+                                                case WebPartType.MicrosoftForms:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.MicrosoftForms);
+                                                    break;
+                                                case WebPartType.Spacer:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Spacer);
+                                                    break;
+                                                case WebPartType.ClientWebPart:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.ClientWebPart);
+                                                    break;
                                             }
 
-                                            foreach (var property in control.ControlProperties)
+                                            baseControl = componentsToAdd.FirstOrDefault(p => p.Name.Equals(webPartName, StringComparison.InvariantCultureIgnoreCase));
+                                        }
+
+                                        if (baseControl != null)
+                                        {
+                                            Pages.ClientSideWebPart myWebPart = new Pages.ClientSideWebPart(baseControl)
                                             {
-                                                Type propertyType = typeof(string);
+                                                Order = control.Order
+                                            };
 
-                                                if (controlProperties != null)
+                                            if (!String.IsNullOrEmpty(control.JsonControlData))
+                                            {
+                                                var json = JsonConvert.DeserializeObject<JObject>(control.JsonControlData);
+                                                if (json["instanceId"] != null && json["instanceId"].Type != JTokenType.Null)
                                                 {
-                                                    var defaultProperty = controlProperties.SelectToken(property.Key, false);
-                                                    if (defaultProperty != null)
+                                                    if (Guid.TryParse(json["instanceId"].Value<string>(), out Guid instanceId))
                                                     {
-                                                        propertyType = Type.GetType($"System.{defaultProperty.Type.ToString()}");
+                                                        myWebPart.instanceId = instanceId;
+                                                    }
+                                                }
+                                            }
 
-                                                        if (propertyType == null)
+                                            // Reduce column number by 1 due 0 start indexing
+                                            page.AddControl(myWebPart, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
+
+                                            // set properties using json string
+                                            if (!String.IsNullOrEmpty(control.JsonControlData))
+                                            {
+                                                myWebPart.PropertiesJson = control.JsonControlData;
+                                            }
+
+                                            // set using property collection
+                                            if (control.ControlProperties.Any())
+                                            {
+                                                // grab the "default" properties so we can deduct their types, needed to correctly apply the set properties
+                                                var controlManifest = JObject.Parse(baseControl.Manifest);
+                                                JToken controlProperties = null;
+                                                if (controlManifest != null)
+                                                {
+                                                    controlProperties = controlManifest.SelectToken("preconfiguredEntries[0].properties");
+                                                }
+
+                                                foreach (var property in control.ControlProperties)
+                                                {
+                                                    Type propertyType = typeof(string);
+
+                                                    if (controlProperties != null)
+                                                    {
+                                                        var defaultProperty = controlProperties.SelectToken(property.Key, false);
+                                                        if (defaultProperty != null)
                                                         {
-                                                            if (defaultProperty.Type.ToString().Equals("integer", StringComparison.InvariantCultureIgnoreCase))
+                                                            propertyType = Type.GetType($"System.{defaultProperty.Type.ToString()}");
+
+                                                            if (propertyType == null)
                                                             {
-                                                                propertyType = typeof(int);
+                                                                if (defaultProperty.Type.ToString().Equals("integer", StringComparison.InvariantCultureIgnoreCase))
+                                                                {
+                                                                    propertyType = typeof(int);
+                                                                }
                                                             }
                                                         }
                                                     }
-                                                }
 
-                                                myWebPart.Properties[property.Key] = JToken.FromObject(Convert.ChangeType(parser.ParseString(property.Value), propertyType));
+                                                    myWebPart.Properties[property.Key] = JToken.FromObject(Convert.ChangeType(parser.ParseString(property.Value), propertyType));
+                                                }
                                             }
                                         }
-                                    }
-                                    else
-                                    {
-                                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ClientSidePages_BaseControlNotFound, control.ControlId, control.CustomWebPartName);
+                                        else
+                                        {
+                                            scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ClientSidePages_BaseControlNotFound, control.ControlId, control.CustomWebPartName);
+                                        }
                                     }
                                 }
                             }
@@ -473,21 +504,67 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     // Persist the page
-                    page.Save(pageName);
-
-                    if(clientSidePage.FieldValues != null && clientSidePage.FieldValues.Any())
+                    if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
                     {
-                        List<FieldUpdateValue> fieldValues = clientSidePage.FieldValues.Select(s => new FieldUpdateValue(parser.ParseString(s.Key), parser.ParseString(s.Value))).ToList();
-                        Microsoft.SharePoint.Client.FieldCollection fields = page.PageListItem.ParentList.Fields;
-                        web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind, f => f.TypeAsString, f => f.ReadOnlyField, f => f.Title));
+                        page.SaveAsTemplate(pageName);
+                    }
+                    else
+                    {
+                        page.Save(pageName);
+                    }
+
+                    // Update page content type
+                    bool isDirty = false;
+                    if (!string.IsNullOrEmpty(clientSidePage.ContentTypeID))
+                    {
+                        page.PageListItem[ContentTypeIdField] = clientSidePage.ContentTypeID;
+                        page.PageListItem.Update();
+                        web.Context.Load(page.PageListItem);
+                        isDirty = true;
+                    }
+
+                    // Set page property bag values
+                    if (clientSidePage.Properties != null && clientSidePage.Properties.Any())
+                    {
+                        string pageFilePath = page.PageListItem[FileRefField].ToString();
+                        var pageFile = web.GetFileByServerRelativeUrl(pageFilePath);
+                        web.Context.Load(pageFile, p => p.Properties);
+
+                        foreach (var pageProperty in clientSidePage.Properties)
+                        {
+                            if (!string.IsNullOrEmpty(pageProperty.Key))
+                            {
+                                pageFile.Properties[pageProperty.Key] = pageProperty.Value;
+                            }
+                        }
+
+                        pageFile.Update();
+                        isDirty = true;
+                    }
+
+                    if (clientSidePage.PromoteAsTemplate && page.LayoutType == Pages.ClientSidePageLayoutType.Article)
+                    {
+                        // Choice field, currently there's only one value possible and that's Template
+                        page.PageListItem[SPSitePageFlagsField] = ";#Template;#";
+                        page.PageListItem.Update();
+                        web.Context.Load(page.PageListItem);
+                        isDirty = true;
+                    }
+
+                    if (isDirty)
+                    {
                         web.Context.ExecuteQueryRetry();
-                        ListItemUtilities.UpdateListItem(web, page.PageListItem, fields, fieldValues);
+                    }
+
+                    if (clientSidePage.FieldValues != null && clientSidePage.FieldValues.Any())
+                    {
+                        ListItemUtilities.UpdateListItem(page.PageListItem, parser, clientSidePage.FieldValues, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion);
                     }
 
                     if (page.LayoutType != Pages.ClientSidePageLayoutType.SingleWebPartAppPage)
                     {
-                        // Set commenting, ignore on pages of the type Home
-                        if (page.LayoutType != Pages.ClientSidePageLayoutType.Home)
+                        // Set commenting, ignore on pages of the type Home or page templates
+                        if (page.LayoutType != Pages.ClientSidePageLayoutType.Home && !clientSidePage.PromoteAsTemplate)
                         {
                             // Make it a news page if requested
                             if (clientSidePage.PromoteAsNewsArticle)
@@ -496,18 +573,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
 
-                        if (clientSidePage.EnableComments)
+                        if (page.LayoutType != Pages.ClientSidePageLayoutType.RepostPage)
                         {
-                            page.EnableComments();
-                        }
-                        else
-                        {
-                            page.DisableComments();
+                            if (clientSidePage.EnableComments)
+                            {
+                                page.EnableComments();
+                            }
+                            else
+                            {
+                                page.DisableComments();
+                            }
                         }
                     }
 
-                    // Publish page 
-                    if (clientSidePage.Publish)
+                    // Publish page, page templates cannot be published
+                    if (clientSidePage.Publish && !clientSidePage.PromoteAsTemplate)
                     {
                         page.Publish();
                     }

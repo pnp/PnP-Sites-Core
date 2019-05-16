@@ -29,7 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             get
             {
-                return (new XMLPnPSchemaV201807Serializer());
+                return (new XMLPnPSchemaV201903Serializer());
             }
         }
 
@@ -77,25 +77,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
 #pragma warning disable CS0618 // Type or member is obsolete
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_03:
-                    return (new XMLPnPSchemaV201503Formatter());
+                    return new XMLPnPSchemaV201503Formatter();
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_05:
-                    return (new XMLPnPSchemaV201505Formatter());
+                    return new XMLPnPSchemaV201505Formatter();
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_08:
-                    return (new XMLPnPSchemaV201508Formatter());
+                    return new XMLPnPSchemaV201508Formatter();
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12:
-                    return (new XMLPnPSchemaV201512Formatter());
+                    return new XMLPnPSchemaV201512Formatter();
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2016_05:
-                    return (new XMLPnPSchemaV201605Formatter());
-#pragma warning restore CS0618 // Type or member is obsolete
+                    return new XMLPnPSchemaV201605Formatter();
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2017_05:
-                    return (new XMLPnPSchemaV201705Serializer());
+                    return new XMLPnPSchemaV201705Serializer();
+#pragma warning restore CS0618 // Type or member is obsolete
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2018_01:
-                    return (new XMLPnPSchemaV201801Serializer());
+                    return new XMLPnPSchemaV201801Serializer();
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2018_05:
-                    return (new XMLPnPSchemaV201805Serializer());
+                    return new XMLPnPSchemaV201805Serializer();
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2018_07:
+                    return new XMLPnPSchemaV201807Serializer();
+                case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2019_03:
+                    return new XMLPnPSchemaV201903Serializer();
                 default:
-                    return (new XMLPnPSchemaV201807Serializer());
+                    return new XMLPnPSchemaV201807Serializer();
             }
         }
 

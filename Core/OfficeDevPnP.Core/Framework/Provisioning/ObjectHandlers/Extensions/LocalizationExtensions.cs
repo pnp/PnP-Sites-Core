@@ -12,7 +12,7 @@ using System.Globalization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 {
-#if !SP2013
+
     internal static class LocalizationExtensions
     {
         internal static void LocalizeWebParts(this Page page, Web web, TokenParser parser, PnPMonitoredScope scope)
@@ -152,5 +152,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
             }
         }
     }
-#endif
 }

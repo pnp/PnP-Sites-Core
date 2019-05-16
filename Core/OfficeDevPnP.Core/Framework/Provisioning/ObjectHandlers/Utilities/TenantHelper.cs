@@ -74,7 +74,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                         foreach (var app in provisioningTenant.AppCatalog.Packages)
                         {
-                            
+
                             AppMetadata appMetadata = null;
 
                             if (app.Action == PackageAction.Upload || app.Action == PackageAction.UploadAndPublish)
@@ -136,7 +136,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         .FirstOrDefault(a => a.Id == Guid.Parse(parser.ParseString(app.PackageId)));
                                 }
                                 if (appMetadata != null)
-                                {                                    
+                                {
                                     manager.Deploy(appMetadata, app.SkipFeatureDeployment);
                                 }
                                 else
@@ -219,8 +219,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             throw ex;
                         }
                     }
-                    
-                    if(appCatalogUri != null)
+
+                    if (appCatalogUri != null)
                     {
                         using (var appCatalogContext = context.Clone(appCatalogUri, applyingInformation.AccessTokens))
                         {
@@ -240,7 +240,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     {
                         messagesDelegate?.Invoke($"Tenant app catalog doesn't exist. Provisioning of storage entities will be skipped!", ProvisioningMessageType.Warning);
                     }
-                    
+
                 }
             }
             return parser;
@@ -433,7 +433,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             {
                 foreach (var theme in provisioningTenant.Themes)
                 {
-
                     var parsedName = parser.ParseString(theme.Name);
                     var parsedPalette = parser.ParseString(theme.Palette);
 
@@ -492,7 +491,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         }
 
         [DataContract]
-        private class TenantTheme
+        internal class TenantTheme
         {
             [DataMember(Name = "name")]
             public string Name { get; set; }
@@ -526,6 +525,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                     if (publicCdn.Enabled)
                     {
+                        if (!publicCdn.NoDefaultOrigins)
+                        {
+                            tenant.CreateTenantCdnDefaultOrigins(SPOTenantCdnType.Public);
+                            tenant.Context.ExecuteQueryRetry();
+                        }
                         ProcessOrigins(tenant, publicCdn, SPOTenantCdnType.Public, parser, scope);
                         ProcessPolicies(tenant, publicCdn, SPOTenantCdnType.Public, parser, scope);
                     }
@@ -541,6 +545,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                     if (privateCdn.Enabled)
                     {
+                        if (!privateCdn.NoDefaultOrigins)
+                        {
+                            tenant.CreateTenantCdnDefaultOrigins(SPOTenantCdnType.Private);
+                            tenant.Context.ExecuteQueryRetry();
+                        }
                         ProcessOrigins(tenant, privateCdn, SPOTenantCdnType.Private, parser, scope);
                         ProcessPolicies(tenant, privateCdn, SPOTenantCdnType.Private, parser, scope);
                     }

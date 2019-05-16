@@ -1047,6 +1047,24 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to User already exists..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_AAD_User_AlreadyExists {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_AAD_User_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provisioning a user failed..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_AAD_User_ProvisioningError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_AAD_User_ProvisioningError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Audit log trimming retention is not set because the site is configured for noscript..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_Audit_SkipAuditLogTrimmingRetention {
@@ -1524,6 +1542,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Added property bag entry {0} to list {1}.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1 {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_Added_PropertyBagEntry__0__To_List__1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Adding list: {0} - {1}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_ {
@@ -1677,6 +1704,15 @@ namespace OfficeDevPnP.Core {
         internal static string Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingCustomActions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skip adding/updating list property bag because the site has &quot;noscript&quot; enabled..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingPropertyBag {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstances_SkipAddingOrUpdatingPropertyBag", resourceCulture);
             }
         }
         
@@ -2008,6 +2044,186 @@ namespace OfficeDevPnP.Core {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_SiteSecurity_Context_web_is_subweb__skipping_site_sec" +
                         "urity_provisioning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to add member to team..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_AddingMemberError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_AddingMemberError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to add owner to team..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_AddingOwnerError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_AddingOwnerError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Team already exists.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_AlreadyExists {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_AlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot register App for Team..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_AppProvisioningError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_AppProvisioningError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot send a message to the target Channel..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_CannotSendMessage {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_CannotSendMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Channel already exists..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_ChannelAlreadyExists {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_ChannelAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to create group for team.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_CreatingGroupError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_CreatingGroupError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exception while archiving/unarchiving Team with ID {0}. Details: {1}..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_FailedArchiveUnarchive {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_FailedArchiveUnarchive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to get team information after provisioning..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_FetchingError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_FetchingError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to get user by upn information..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_FetchingUserError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_FetchingUserError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Group already exists.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_GroupAlreadyExists {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_GroupAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Group with ID {0} does not exist..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_GroupDoesNotExists {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_GroupDoesNotExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to list team members..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_ListingMembersError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_ListingMembersError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to list team owners..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_ListingOwnersError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_ListingOwnersError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provisioning a team failed..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_ProvisioningError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_ProvisioningError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to remove member from team..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to remove owner from team..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_RemovingOwnerError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_RemovingOwnerError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Tab already exists..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_Team_TabAlreadyExists {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_Team_TabAlreadyExists", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to get team information after provisioning..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_TeamTemplate_FetchingError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_TeamTemplate_FetchingError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Provisioning a team based on a team template failed. Ensure that the JSON template markup is valid and contains all the required properties. {0}.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_Teams_TeamTemplate_ProvisioningError {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_Teams_TeamTemplate_ProvisioningError", resourceCulture);
             }
         }
         
@@ -2508,6 +2724,15 @@ namespace OfficeDevPnP.Core {
         internal static string TenantExtensions_UnknownExceptionAccessingSite {
             get {
                 return ResourceManager.GetString("TenantExtensions_UnknownExceptionAccessingSite", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Login context does not have access to the TermGroup. If using app context, add app@sharepoint to the term group access list..
+        /// </summary>
+        internal static string TermGroup_No_Access {
+            get {
+                return ResourceManager.GetString("TermGroup_No_Access", resourceCulture);
             }
         }
         

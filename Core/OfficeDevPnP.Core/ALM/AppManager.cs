@@ -621,7 +621,7 @@ namespace OfficeDevPnP.Core.ALM
         }
 
         /// <summary>
-        /// REturns an avialable app
+        /// Returns an avialable app
         /// </summary>
         /// <param name="title">The title of the app.</param>
         /// <param name="scope">Specifies the app catalog to work with. Defaults to Tenant</param>

@@ -30,6 +30,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
         }
 
+        public override string InternalName => "ContentTypes";
+
         public ObjectContentType(FieldAndListProvisioningStepHelper.Step step)
         {
             this._step = step;
@@ -229,8 +231,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 .Where(fld => fld.Id.ToString().IndexOf("746bb255-b0f7-47d5-9a3e-1c8e52468420") < 0 && fld.Id.ToString().IndexOf("8a8804d8-ad51-48ef-9acf-0df7b3cc7ef6") < 0)
                 .Select(fld => parser.ParseString(fld.Name)).ToArray();
 
-            reOrderFields = !existingFieldNames.SequenceEqual(ctFieldNames);
-
+            reOrderFields = ctFieldNames.Length > 0 && !existingFieldNames.SequenceEqual(ctFieldNames);
             // Delta handling
             existingContentType.EnsureProperty(c => c.FieldLinks);
             var targetIds = existingContentType.FieldLinks.AsEnumerable().Select(c1 => c1.Id).ToList();
@@ -276,7 +277,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Reorder fields
             if (reOrderFields)
             {
-                existingContentType.FieldLinks.Reorder(ctFieldNames);
+            //    existingContentType.FieldLinks.Reorder(ctFieldNames);
                 isDirty = true;
             }
 
@@ -393,7 +394,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             //In this case the new Content Type has all field of the original Content Type and missing fields
             //will be added at the end. To fix this issue we ordering the fields once more.
 
-            createdCT.FieldLinks.Reorder(templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray());
+            //TODO: Reintroduce this functionality
+
+            var ctFields = templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray();
+            if (ctFields.Length > 0)
+            {
+               // createdCT.FieldLinks.Reorder(ctFields);
+            }
             if (createdCT.ReadOnly != templateContentType.ReadOnly)
             {
                 createdCT.ReadOnly = templateContentType.ReadOnly;
