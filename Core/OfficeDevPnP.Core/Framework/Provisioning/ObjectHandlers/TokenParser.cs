@@ -836,8 +836,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return nonCachedTokenDictionary;
         }
 
-
-        private static readonly Regex ReToken = new Regex(@"(?:(\{(?:\1??[^{]*?\})))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        // First group supports tokens in form '{param:value}' , second group supports nested parameters in form '{param:{xxx..'
+        private static readonly Regex ReToken = new Regex(@"(?:(\{(?:\1??[^{]*?\})))|(?:(\{(?:\1??[^{]*?:)))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex ReTokenFallback = new Regex(@"\{.*?\}", RegexOptions.Compiled);
 
         private static readonly char[] TokenChars = { '{', '~' };
@@ -1076,20 +1076,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 hasMatch = false;
                 tempXml = ReToken.Replace(xml, match =>
                 {
-                    if (!ReGuid.IsMatch(match.Groups[0].Value))
+                    for (int i = 0; i < match.Groups.Count; i++)
                     {
-                        string tokenString = match.Groups[0].Value.Replace("{", "").Replace("}", "").ToLower();
+                        if (!ReGuid.IsMatch(match.Groups[i].Value))
+                        {
+                            string tokenString = match.Groups[i].Value.Replace("{", "").Replace("}", "").ToLower();
 
-                        var colonIndex = tokenString.IndexOf(":");
-                        if (colonIndex > -1)
-                        {
-                            tokenString = tokenString.Substring(0, colonIndex);
-                        }
-                        if (!tokenIds.Contains(tokenString))
-                        {
-                            tokenIds.Add(tokenString);
+                            var colonIndex = tokenString.IndexOf(":");
+                            if (colonIndex > -1)
+                            {
+                                tokenString = tokenString.Substring(0, colonIndex);
+                            }
+                            if (!tokenIds.Contains(tokenString) && !string.IsNullOrEmpty(tokenString))
+                            {
+                                tokenIds.Add(tokenString);
+                            }
                         }
                     }
+
                     return "-";
 
                 });

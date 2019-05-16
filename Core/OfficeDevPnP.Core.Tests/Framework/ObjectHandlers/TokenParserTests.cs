@@ -48,7 +48,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 ProvisioningTemplate template = new ProvisioningTemplate();
                 template.Parameters.Add("test", "test");
-
+                template.Parameters.Add("test2", "test2");
                 // Due to the refactoring of the parser only tokens specified in the template are loaded
                 template.Parameters.Add("sitename", "{sitename}");
                 template.Parameters.Add("siteid", "{siteid}");
@@ -67,10 +67,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 template.Parameters.Add("siteowner", "{siteowner}");
                 template.Parameters.Add("everyonebutexternalusers", "{everyonebutexternalusers}");
                 template.Parameters.Add("roledefinitionid", "{roledefinitionid}");
+                template.Parameters.Add("termid", "{termsetid:{parameter:test}:{parameter:test}}");
 
                 var parser = new TokenParser(ctx.Web, template);
                 parser.AddToken(new FieldIdToken(ctx.Web, "DemoField", new Guid("7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0")));
-
+              
                 var siteName = parser.ParseString("{sitename}");
                 var siteId = parser.ParseString("{siteid}");
                 var site = parser.ParseString("{site}/test");
@@ -96,6 +97,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 const string fieldRef = @"<FieldRefs><FieldRef Name=""DemoField"" ID=""{7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0}"" /></FieldRefs></Field>";
                 var parsedFieldRef = parser.ParseString(@"<FieldRefs><FieldRef Name=""DemoField"" ID=""{{fieldid:DemoField}}"" /></FieldRefs></Field>");
                 var everyoneExceptExternals = parser.ParseString("{everyonebutexternalusers}");
+                
                 
 
                 Assert.IsTrue(site == $"{ctx.Web.ServerRelativeUrl}/test");
