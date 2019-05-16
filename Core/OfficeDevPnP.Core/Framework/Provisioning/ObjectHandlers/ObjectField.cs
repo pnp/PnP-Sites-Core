@@ -272,11 +272,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (formulastring != null)
                 {
-                    var fieldRefs = schemaElement.Descendants("FieldRef");
-                    foreach (var fieldRef in fieldRefs)
+                    var fieldInternalNames = schemaElement.Descendants("FieldRef").Select(fr => fr.Attribute("Name").Value).Distinct();
+                    foreach (var fieldInternalName in fieldInternalNames)
                     {
-                        var fieldInternalName = fieldRef.Attribute("Name").Value;
-
                         formulastring = formulastring.Replace($"{fieldInternalName}", $"[{{fieldtitle:{fieldInternalName}}}]");
                     }
                     var fieldRefParent = schemaElement.Descendants("FieldRefs");

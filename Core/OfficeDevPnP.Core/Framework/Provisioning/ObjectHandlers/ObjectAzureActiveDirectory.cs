@@ -16,6 +16,9 @@ using System.Net.Http;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory;
 using OfficeDevPnP.Core.Utilities.Graph;
+using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
+using System.IO;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -40,7 +43,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var userId = GraphHelper.CreateOrUpdateGraphObject(scope,
                 HttpMethodVerb.POST,
-                $"https://graph.microsoft.com/v1.0/users",
+                $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users",
                 content,
                 HttpHelper.JsonContentType,
                 accessToken,
@@ -75,6 +78,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 officeLocation = parser.ParseString(user.OfficeLocation),
                 preferredLanguage = parser.ParseString(user.PreferredLanguage),
                 userType = "Member",
+                usageLocation = parser.ParseString(user.UsageLocation),
                 passwordPolicies = parser.ParseString(user.PasswordPolicies),
                 passwordProfile = new
                 {
@@ -98,7 +102,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             // Get the currently assigned licenses
             var jsoncurrentLicenses = HttpHelper.MakeGetRequestForString(
-                $"https://graph.microsoft.com/beta/users/{userId}", accessToken);
+                $"{GraphHelper.MicrosoftGraphBaseURI}beta/users/{userId}", accessToken);
             var currentLicenses = JsonConvert.DeserializeAnonymousType(jsoncurrentLicenses, new
             {
                 assignedLicenses = new[]
@@ -140,8 +144,41 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                   select r).ToArray()
             };
             HttpHelper.MakePostRequest(
-                $"https://graph.microsoft.com/v1.0/users/{userId}/assignLicense",
+                $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{userId}/assignLicense",
                 assigneLicenseBody, HttpHelper.JsonContentType, accessToken);
+        }
+
+        /// <summary>
+        /// Synchronizes User's Photo
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="parser">The PnP Token Parser</param>
+        /// <param name="connector">The PnP file connector</param>
+        /// <param name="user">The target User</param>
+        /// <param name="userId">The ID of the target User</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        /// <returns>Whether the Photo has been updated or not</returns>
+        private static bool SetUserPhoto(PnPMonitoredScope scope, TokenParser parser, FileConnectorBase connector, Model.AzureActiveDirectory.User user, string userId, string accessToken)
+        {
+            Boolean result = false;
+
+            if (!String.IsNullOrEmpty(user.ProfilePhoto) && connector != null)
+            {
+                var photoPath = parser.ParseString(user.ProfilePhoto);
+                var photoBytes = ConnectorFileHelper.GetFileBytes(connector, user.ProfilePhoto);
+
+                using (var mem = new MemoryStream())
+                {
+                    mem.Write(photoBytes, 0, photoBytes.Length);
+                    mem.Position = 0;
+
+                    HttpHelper.MakePostRequest(
+                        $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{userId}/photo/$value",
+                        mem, "image/jpeg", accessToken);
+                }
+            }
+
+            return (result);
         }
 
         #region PnP Provisioning Engine infrastructural code
@@ -186,17 +223,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     foreach (var u in users)
                     {
                         // Get a fresh Access Token for every request
-                        accessToken = PnPProvisioningContext.Current.AcquireToken("https://graph.microsoft.com/", "User.ReadWrite.All");
+                        accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "User.ReadWrite.All");
 
                         // Creates or updates the User starting from the provisioning template definition
                         var userId = CreateOrUpdateUser(scope, parser, u, accessToken);
 
                         // If the user got created
-                        if (userId != null &&
-                            u.Licenses != null && u.Licenses.Count > 0)
+                        if (userId != null)
                         {
-                            // Manage the licensing settings
-                            ManageUserLicenses(scope, userId, u.Licenses, accessToken);
+                            if (u.Licenses != null && u.Licenses.Count > 0)
+                            {
+                                // Manage the licensing settings
+                                ManageUserLicenses(scope, userId, u.Licenses, accessToken);
+                            }
+
+                            // So far the User's photo cannot be set if we don't have an already existing mailbox
+                            // SetUserPhoto(scope, parser, hierarchy.Connector, u, (String)userId, accessToken);
                         }
                     }
                 }

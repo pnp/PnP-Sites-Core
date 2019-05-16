@@ -1493,38 +1493,53 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Returns TaxonomyItem object</returns>
         public static TaxonomyItem GetTaxonomyItemByPath(this Site site, string path, string delimiter = "|")
         {
+            
             var context = site.Context;
 
             if (string.IsNullOrEmpty(path)) throw new ArgumentNullException("path");
 
+            
+
             var pathSplit = path.Split(new string[] { delimiter }, StringSplitOptions.RemoveEmptyEntries);
+
 
             TaxonomySession tSession = TaxonomySession.GetTaxonomySession(context);
             TermStore ts = tSession.GetDefaultKeywordsTermStore();
 
-            var groups = context.LoadQuery(ts.Groups);
-            context.ExecuteQueryRetry();
-
-            var group = groups.FirstOrDefault(l => l.Name.Equals(pathSplit[0], StringComparison.CurrentCultureIgnoreCase));
-            if (group == null) return null;
-            if (pathSplit.Length == 1) return group;
-
-            var termSets = context.LoadQuery(group.TermSets);
-            context.ExecuteQueryRetry();
-
-            var termSet = termSets.FirstOrDefault(l => l.Name.Equals(pathSplit[1], StringComparison.CurrentCultureIgnoreCase));
-            if (termSet == null) return null;
-            if (pathSplit.Length == 2) return termSet;
-
             Term term = null;
-            for (int i = 2; i < pathSplit.Length; i++)
+
+            if (pathSplit.Length == 2 && Guid.TryParse(pathSplit[1], out Guid termid))
             {
-                IEnumerable<Term> termColl = context.LoadQuery(i == 2 ? termSet.Terms : term.Terms);
+                term = ts.GetTerm(termid);
+                context.Load(term);
+                context.ExecuteQueryRetry();
+            }
+            else
+            {
+                var groups = context.LoadQuery(ts.Groups);
                 context.ExecuteQueryRetry();
 
-                term = termColl.FirstOrDefault(l => l.Name.Equals(pathSplit[i], StringComparison.OrdinalIgnoreCase));
+                var group = groups.FirstOrDefault(l => l.Name.Equals(pathSplit[0], StringComparison.CurrentCultureIgnoreCase));
+                if (group == null) return null;
+                if (pathSplit.Length == 1) return group;
 
-                if (term == null) return null;
+                var termSets = context.LoadQuery(group.TermSets);
+                context.ExecuteQueryRetry();
+
+                var termSet = termSets.FirstOrDefault(l => l.Name.Equals(pathSplit[1], StringComparison.CurrentCultureIgnoreCase));
+                if (termSet == null) return null;
+                if (pathSplit.Length == 2) return termSet;
+
+
+                for (int i = 2; i < pathSplit.Length; i++)
+                {
+                    IEnumerable<Term> termColl = context.LoadQuery(i == 2 ? termSet.Terms : term.Terms);
+                    context.ExecuteQueryRetry();
+
+                    term = termColl.FirstOrDefault(l => l.Name.Equals(pathSplit[i], StringComparison.OrdinalIgnoreCase));
+
+                    if (term == null) return null;
+                }
             }
 
             return term;

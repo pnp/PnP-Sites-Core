@@ -48,7 +48,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="tokenDefinition">A TokenDefinition object</param>
         public void AddToken(TokenDefinition tokenDefinition)
         {
-
             _tokens.Add(tokenDefinition);
             // ORDER IS IMPORTANT!
             var sortedTokens = from t in _tokens
@@ -182,7 +181,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new SiteIdEncodedToken(web));
             if (tokenIds.Contains("siteowner"))
                 _tokens.Add(new SiteOwnerToken(web));
-            if (tokenIds.Contains("sitetitle"))
+            if (tokenIds.Contains("sitetitle") || tokenIds.Contains("sitename"))
                 _tokens.Add(new SiteTitleToken(web));
             if (tokenIds.Contains("associatedownergroupid"))
                 _tokens.Add(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.owners));
@@ -254,7 +253,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 AddResourceTokens(web, template.Localizations, template.Connector);
 
             // OOTB Roledefs
-            if (tokenIds.Contains("roledefinition"))
+            if (tokenIds.Contains("roledefinition") || tokenIds.Contains("roledefinitionid"))
                 AddRoleDefinitionTokens(web);
 
             // Groups
@@ -748,6 +747,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 return directMatch;
             }
 
+            // Support for non cached tokens
+            var nonCachedTokens = BuildNonCachedTokenCache();
+            if (nonCachedTokens.TryGetValue(input, out string directMatchNonCached))
+            {
+                return directMatchNonCached;
+            }
+
             string output = input;
             bool hasMatch = false;
             do
@@ -778,7 +784,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private void BuildTokenCache()
         {
-            foreach (TokenDefinition tokenDefinition in _tokens)
+            foreach (TokenDefinition tokenDefinition in _tokens.Where(t => t.IsCacheable))
             {
                 foreach (string token in tokenDefinition.GetTokens())
                 {
@@ -803,7 +809,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static readonly Regex ReToken = new Regex(@"(?:(\{(?:\1??[^{]*?\})))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+        private Dictionary<string, string> BuildNonCachedTokenCache()
+        {
+            Dictionary<string, string> nonCachedTokenDictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (TokenDefinition tokenDefinition in _tokens.Where(t => !t.IsCacheable))
+            {
+                foreach (string token in tokenDefinition.GetTokens())
+                {
+                    var tokenKey = Regex.Unescape(token);
+                    if (nonCachedTokenDictionary.ContainsKey(tokenKey)) continue;
+
+                    int before = _web.Context.PendingRequestCount();
+                    string value = tokenDefinition.GetReplaceValue();
+                    int after = _web.Context.PendingRequestCount();
+
+                    if (before != after)
+                    {
+                        throw new Exception($"Token {token} triggered an ExecuteQuery on the 'current' context. Please refactor this token to use the TokenContext class.");
+                    }
+
+                    nonCachedTokenDictionary[tokenKey] = value;
+                }
+            }
+
+            return nonCachedTokenDictionary;
+        }
+
+        // First group supports tokens in form '{param:value}' , second group supports nested parameters in form '{param:{xxx..'
+        private static readonly Regex ReToken = new Regex(@"(?:(\{(?:\1??[^{]*?\})))|(?:(\{(?:\1??[^{]*?:)))", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex ReTokenFallback = new Regex(@"\{.*?\}", RegexOptions.Compiled);
 
         private static readonly char[] TokenChars = { '{', '~' };
@@ -828,6 +862,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (TokenDictionary.TryGetValue(input, out string directMatch))
             {
                 return directMatch;
+            }
+
+            // Support for non cached tokens
+            var nonCachedTokens = BuildNonCachedTokenCache();
+            if (nonCachedTokens.TryGetValue(input, out string directMatchNonCached))
+            {
+                return directMatchNonCached;
             }
 
             string output = input;
@@ -963,7 +1004,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 #if !SP2013
-        private static Dictionary<String, String> listsTitles = new Dictionary<string, string>();
+        private static Dictionary<String, String> listsTitles = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         /// <summary>
         /// This method retrieves the title of a list in the main language of the site
@@ -994,7 +1035,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         var titleResource = list.TitleResource.GetValueForUICulture(ci.Name);
                         web.Context.ExecuteQueryRetry();
-                        TokenParser.listsTitles.Add(list.Title, titleResource.Value);
+                        if (!TokenParser.listsTitles.ContainsKey(list.Title))
+                        {
+                            TokenParser.listsTitles.Add(list.Title, titleResource.Value);
+                        }
                     }
                 }
 
@@ -1032,20 +1076,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 hasMatch = false;
                 tempXml = ReToken.Replace(xml, match =>
                 {
-                    if (!ReGuid.IsMatch(match.Groups[0].Value))
+                    for (int i = 0; i < match.Groups.Count; i++)
                     {
-                        string tokenString = match.Groups[0].Value.Replace("{", "").Replace("}", "").ToLower();
+                        if (!ReGuid.IsMatch(match.Groups[i].Value))
+                        {
+                            string tokenString = match.Groups[i].Value.Replace("{", "").Replace("}", "").ToLower();
 
-                        var colonIndex = tokenString.IndexOf(":");
-                        if (colonIndex > -1)
-                        {
-                            tokenString = tokenString.Substring(0, colonIndex);
-                        }
-                        if (!tokenIds.Contains(tokenString))
-                        {
-                            tokenIds.Add(tokenString);
+                            var colonIndex = tokenString.IndexOf(":");
+                            if (colonIndex > -1)
+                            {
+                                tokenString = tokenString.Substring(0, colonIndex);
+                            }
+                            if (!tokenIds.Contains(tokenString) && !string.IsNullOrEmpty(tokenString))
+                            {
+                                tokenIds.Add(tokenString);
+                            }
                         }
                     }
+
                     return "-";
 
                 });

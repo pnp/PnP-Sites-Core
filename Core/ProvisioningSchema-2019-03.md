@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 4/16/2019*
+* Topic automatically generated on 5/13/2019*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -42,7 +42,7 @@ Here follow the available child elements for the Provisioning element.
 
 Element|Type|Description
 -------|----|-----------
-Preferences|[Preferences](#preferences)|The mandatory section of preferences for the current provisioning definition.
+Preferences|[Preferences](#preferences)|Section of preferences for the current provisioning definition.
 Localizations|[Localizations](#localizations)|An optional list of localizations files to include.
 Tenant|[Tenant](#tenant)|Entry point to manage tenant-wide settings.
 Templates|[Templates](#templates)|An optional section made of provisioning templates.
@@ -104,6 +104,7 @@ Represents the root element of the SharePoint Provisioning Template.
    <pnp:Header />
    <pnp:Footer />
    <pnp:ProvisioningTemplateWebhooks />
+   <pnp:Theme />
 </pnp:ProvisioningTemplate>
 ```
 
@@ -141,6 +142,7 @@ ClientSidePages|[ClientSidePages](#clientsidepages)|The Client-side Pages to pro
 Header|[Header](#header)|The Header of the Site provisioned through the Provisioning Template, optional element.
 Footer|[Footer](#footer)|The Footer of the Site provisioned through the Provisioning Template, optional element.
 ProvisioningTemplateWebhooks|[ProvisioningTemplateWebhooks](#provisioningtemplatewebhooks)|The Webhooks for the Provisioning Template, optional element.
+Theme|[Theme](#theme)|The Theme for the Provisioning Template, optional element.
 
 Here follow the available attributes for the ProvisioningTemplate element.
 
@@ -469,7 +471,7 @@ Element|Type|Description
 Theme|[Theme](#theme)|Defines a single tenant-wide Theme
 <a name="theme"></a>
 ### Theme
-Defines a single tenant-wide Theme
+Defines a single Theme
 
 ```xml
 <pnp:Theme
@@ -479,7 +481,7 @@ Defines a single tenant-wide Theme
 ```
 
 
-Here follow the available attributes for the  element.
+Here follow the available attributes for the Theme element.
 
 
 Attibute|Type|Description
@@ -2407,7 +2409,7 @@ Defines the Header settings for the target site.
 <pnp:Header
       Layout=""
       MenuStyle=""
-      BackgroundEmphasis="">
+      BackgroundEmphasis="pnp:BackgroundEmphasis">
 </pnp:Header>
 ```
 
@@ -2419,7 +2421,7 @@ Attibute|Type|Description
 --------|----|-----------
 Layout||Defines the Layout of the Header, required attribute.
 MenuStyle||Defines the Menu Style, required attribute.
-BackgroundEmphasis||Defines the Background Emphasis of the Header, optional attribute.
+BackgroundEmphasis|BackgroundEmphasis|Defines the Background Emphasis of the Header, optional attribute.
 <a name="footer"></a>
 ### Footer
 Defines the Footer settings for the target site.
@@ -2553,7 +2555,7 @@ A Canvas Section for a Client-side Page.
 <pnp:CanvasSection
       Order="xsd:int"
       Type=""
-      ZoneEmphasis="xsd:int">
+      BackgroundEmphasis="pnp:BackgroundEmphasis">
    <pnp:Controls />
 </pnp:CanvasSection>
 ```
@@ -2573,7 +2575,7 @@ Attibute|Type|Description
 --------|----|-----------
 Order|xsd:int|The order of the Canvas Section for a Client-side Page.
 Type||The type of the Canvas Section for a Client-side Page.
-ZoneEmphasis|xsd:int|The emphasis color of the Canvas Section for a Client-side Page.
+BackgroundEmphasis|BackgroundEmphasis|The emphasis color of the Canvas Section for a Client-side Page.
 <a name="controls"></a>
 ### Controls
 A collection of Canvas Controls for a Client-side Page.
@@ -3816,7 +3818,8 @@ Defines the base information for a Team of Microsoft Teams.
       DisplayName="pnp:ReplaceableString"
       Description="pnp:ReplaceableString"
       Classification="pnp:ReplaceableString"
-      Visibility="">
+      Visibility=""
+      Photo="pnp:ReplaceableString">
 </pnp:BaseTeam>
 ```
 
@@ -3830,6 +3833,7 @@ DisplayName|ReplaceableString|The Display Name of the Team, required attribute.
 Description|ReplaceableString|The Description of the Team, required attribute.
 Classification|ReplaceableString|The Classification for the Team, optional attribute.
 Visibility||The Visibility for the Team, optional attribute.
+Photo|ReplaceableString|Declares the Photo for the Team, optional attribute.
 <a name="teamtemplate"></a>
 ### TeamTemplate
 
@@ -3848,7 +3852,8 @@ Defines a new Team to create or update
       GroupId="pnp:ReplaceableString"
       Specialization=""
       CloneFrom="pnp:ReplaceableString"
-      Archived="xsd:boolean">
+      Archived="xsd:boolean"
+      MailNickname="pnp:ReplaceableString">
 </pnp:TeamWithSettings>
 ```
 
@@ -3862,6 +3867,7 @@ GroupId|ReplaceableString|Declares the ID of the targt Group/Team to update, opt
 Specialization||The Specialization for the Team, optional attribute.
 CloneFrom|ReplaceableString|Declares the ID of another Team to Clone the current Team from, optional attribute.
 Archived|xsd:boolean|Declares whether the Team is archived or not, optional attribute.
+MailNickname|ReplaceableString|Declares the nickname for the Team, optional attribute. Required for new Teams.
 <a name="teamsecurity"></a>
 ### TeamSecurity
 Defines the Security settings for the Team, optional element.
@@ -4138,11 +4144,18 @@ User|[User](#user)|
 ```xml
 <pnp:User
       AccountEnabled="xsd:boolean"
-      DisplayName="xsd:string"
-      MailNickname="xsd:string"
-      PasswordPolicies="xsd:string"
+      DisplayName="pnp:ReplaceableString"
+      MailNickname="pnp:ReplaceableString"
+      PasswordPolicies="pnp:ReplaceableString"
       UserPrincipalName="pnp:ReplaceableString"
-      ProfilePhoto="xsd:string">
+      ProfilePhoto="pnp:ReplaceableString"
+      GivenName="pnp:ReplaceableString"
+      Surname="pnp:ReplaceableString"
+      JobTitle="pnp:ReplaceableString"
+      OfficeLocation="pnp:ReplaceableString"
+      PreferredLanguage="pnp:ReplaceableString"
+      MobilePhone="pnp:ReplaceableString"
+      UsageLocation="pnp:ReplaceableString">
    <pnp:PasswordProfile />
    <pnp:Licenses />
 </pnp:User>
@@ -4163,8 +4176,15 @@ Here follow the available attributes for the  element.
 Attibute|Type|Description
 --------|----|-----------
 AccountEnabled|xsd:boolean|Declares whether the user's account is enabled or not, required attribute.
-DisplayName|xsd:string|The Display Name of the user, required attribute.
-MailNickname|xsd:string|The Mail Nickname of the user, required attribute.
-PasswordPolicies|xsd:string|The Password Policies for the user, optional attribute.
+DisplayName|ReplaceableString|The Display Name of the user, required attribute.
+MailNickname|ReplaceableString|The Mail Nickname of the user, required attribute.
+PasswordPolicies|ReplaceableString|The Password Policies for the user, optional attribute.
 UserPrincipalName|ReplaceableString|The UPN for the user, required attribute.
-ProfilePhoto|xsd:string|The URL of the Photo for the user, optional attribute.
+ProfilePhoto|ReplaceableString|The URL of the Photo for the user, optional attribute.
+GivenName|ReplaceableString|Declares the GivenName of the user, optional attribute.
+Surname|ReplaceableString|Declares the Surname of the user, optional attribute.
+JobTitle|ReplaceableString|Declares the Job Title of the user, optional attribute.
+OfficeLocation|ReplaceableString|Declares the Office Location of the user, optional attribute.
+PreferredLanguage|ReplaceableString|Declares the Preferred Language of the user, optional attribute.
+MobilePhone|ReplaceableString|Declares the Mobile Phone of the user, optional attribute.
+UsageLocation|ReplaceableString|Declares the Usage Location for licenses assigned to the user, required attribute.

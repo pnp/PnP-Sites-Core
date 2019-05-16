@@ -336,7 +336,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         case "TaxonomyFieldTypeMulti":
                             {
                                 var value = parser.ParseString(valuesToSet[key]);
-                                if (value != null && value.Contains(","))
+
+                                if (value != null && (value.Contains(",") || value.Contains(";")))
                                 {
                                     var taxSession = clonedContext.Site.GetTaxonomySession();
                                     var terms = new List<KeyValuePair<Guid, string>>();
@@ -481,7 +482,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             {
                                 var field = fields.FirstOrDefault(f => f.InternalName == itemValue.Key as string || f.Title == itemValue.Key as string);
                                 var taxField = context.CastTo<TaxonomyField>(field);
-                                taxField.SetFieldValueByValueCollection(item, itemValue.Value as TaxonomyFieldValueCollection);
+                                if (itemValue.Value is TaxonomyFieldValueCollection)
+                                {
+                                    taxField.SetFieldValueByValueCollection(item, itemValue.Value as TaxonomyFieldValueCollection);
+                                } else
+                                {
+                                    taxField.SetFieldValueByValue(item, itemValue.Value as TaxonomyFieldValue);
+                                }
+                                 
                                 break;
                             }
                         case "TaxonomyFieldType":

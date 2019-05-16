@@ -50,9 +50,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         parser = TenantHelper.ProcessStorageEntities(tenant, template.Tenant, parser, scope, applyingInformation, MessagesDelegate);
                         parser = TenantHelper.ProcessThemes(tenant, template.Tenant, parser, scope, MessagesDelegate);
                     }
-                    // So far we do not provision CDN settings
-                    // It will come in the near future
-                    // NOOP on CDN
                 }
             }
 

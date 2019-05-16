@@ -9,7 +9,9 @@ using OfficeDevPnP.Core.Utilities.Themes;
 using OfficeDevPnP.Core.Enums;
 using Newtonsoft.Json;
 using Microsoft.Online.SharePoint.TenantAdministration;
+#if !ONPREMISES
 using static OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities.TenantHelper;
+#endif
 using System.Runtime.Serialization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
@@ -25,6 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
+#if !ONPREMISES
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 var context = web.Context as ClientContext;
@@ -35,7 +38,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     ThemeManager.ApplyTheme(web, builtInTheme);
                 }
-#if !ONPREMISES
                 else
                 {
                     web.EnsureProperty(w => w.Url);
@@ -46,8 +48,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         ThemeManager.ApplyTheme(web, parsedPalette, template.Theme.Name ?? parsedPalette);
                     }
                 }
-#endif
             }
+#endif
             return parser;
         }
 

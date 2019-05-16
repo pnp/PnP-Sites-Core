@@ -88,8 +88,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                             new CurrentNavigation(currentNavigationType,
                                                                 currentNavigationType == CurrentNavigationType.Structural | currentNavigationType == CurrentNavigationType.StructuralLocal ? GetCurrentStructuralNavigation(web, navigationSettings, template, creationInfo) : null,
                                                                 currentNavigationType == CurrentNavigationType.Managed ? GetCurrentManagedNavigation(web, navigationSettings, template, creationInfo) : null),
-                                                           searchNavigation.NavigationNodes.Any() ? searchNavigation : null
-                                                            );
+                                                           (searchNavigation != null && searchNavigation.NavigationNodes.Any()) ? searchNavigation : null);
 
                 navigationEntity.AddNewPagesToNavigation = navigationSettings.AddNewPagesToNavigation;
                 navigationEntity.CreateFriendlyUrlsForNewPages = navigationSettings.CreateFriendlyUrlsForNewPages;
@@ -538,6 +537,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             Microsoft.SharePoint.Client.NavigationNodeCollection sourceNodes = navigationType == Enums.NavigationType.QuickLaunch ?
                 web.Navigation.QuickLaunch : navigationType == Enums.NavigationType.TopNavigationBar ? web.Navigation.TopNavigationBar : web.LoadSearchNavigation();
+
+            if (sourceNodes == null)
+            {
+                return result;
+            }
 
             var clientContext = web.Context;
             clientContext.Load(web, w => w.ServerRelativeUrl, w => w.Language);

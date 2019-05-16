@@ -11,10 +11,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     /// </summary>
     public abstract class TokenDefinition
     {
+        private bool _isCacheable = true;
         private ClientContext _context;
         protected string CacheValue;
         private readonly string[] _tokens;
 
+        /// <summary>
+        /// Defines if a token is cacheable and should be added to the token cache during initialization of the token parser. This means that the value for a token will be returned from the cache instead from the GetReplaceValue during the provisioning run. Defaults to true.
+        /// </summary>
+        public bool IsCacheable
+        {
+            get
+            {
+                return _isCacheable;
+            }
+            set
+            {
+                _isCacheable = value;
+            }
+
+        }
         /// <summary>
         /// Constructor
         /// </summary>
@@ -41,6 +57,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
                 return _context;
             }
         }
+
         /// <summary>
         /// Gets tokens
         /// </summary>

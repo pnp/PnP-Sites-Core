@@ -14,6 +14,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         public GuidToken(Web web)
             : base(web, "{guid}")
         {
+            IsCacheable = false;
         }
 
         public override string GetReplaceValue()

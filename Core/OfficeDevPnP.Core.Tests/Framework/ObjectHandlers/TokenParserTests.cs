@@ -47,10 +47,31 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
 
                 ProvisioningTemplate template = new ProvisioningTemplate();
-                template.Parameters.Add("test", "test");                                
+                template.Parameters.Add("test", "test");
+                template.Parameters.Add("test2", "test2");
+                // Due to the refactoring of the parser only tokens specified in the template are loaded
+                template.Parameters.Add("sitename", "{sitename}");
+                template.Parameters.Add("siteid", "{siteid}");
+                template.Parameters.Add("site", "{site}");
+                template.Parameters.Add("sitecollection", "{sitecollection}");
+                template.Parameters.Add("masterpagecatalog", "{masterpagecatalog}");
+                template.Parameters.Add("themecatalog", "{themecatalog}");
+                template.Parameters.Add("associatedownergroup", "{associatedownergroup}");
+                template.Parameters.Add("associatedmembergroup", "{associatedmembergroup}");
+                template.Parameters.Add("associatedvisitorgroup", "{associatedvisitorgroup}");
+                template.Parameters.Add("currentuserid", "{currentuserid}");
+                template.Parameters.Add("currentuserloginname", "{currentuserloginname}");
+                template.Parameters.Add("currentuserfullname", "{currentuserfullname}");
+                template.Parameters.Add("guid", "{guid}");
+                template.Parameters.Add("groupid:associatedownergroup", "{groupid:associatedownergroup}");
+                template.Parameters.Add("siteowner", "{siteowner}");
+                template.Parameters.Add("everyonebutexternalusers", "{everyonebutexternalusers}");
+                template.Parameters.Add("roledefinitionid", "{roledefinitionid}");
+                template.Parameters.Add("termid", "{termsetid:{parameter:test}:{parameter:test}}");
+
                 var parser = new TokenParser(ctx.Web, template);
                 parser.AddToken(new FieldIdToken(ctx.Web, "DemoField", new Guid("7E5E53E4-86C2-4A64-9F2E-FDFECE6219E0")));
-
+              
                 var siteName = parser.ParseString("{sitename}");
                 var siteId = parser.ParseString("{siteid}");
                 var site = parser.ParseString("{site}/test");
@@ -77,6 +98,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var parsedFieldRef = parser.ParseString(@"<FieldRefs><FieldRef Name=""DemoField"" ID=""{{fieldid:DemoField}}"" /></FieldRefs></Field>");
                 var everyoneExceptExternals = parser.ParseString("{everyonebutexternalusers}");
                 
+                
 
                 Assert.IsTrue(site == $"{ctx.Web.ServerRelativeUrl}/test");
                 Assert.IsTrue(sitecol == $"{ctx.Site.ServerRelativeUrl}/test");
@@ -91,6 +113,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(currentUserId == currentUser.Id.ToString());
                 Assert.IsTrue(currentUserFullName == currentUser.Title);
                 Assert.IsTrue(currentUserLoginName.Equals(currentUser.LoginName, StringComparison.OrdinalIgnoreCase));
+                // Guid token is 
                 Guid outGuid;
                 Assert.IsTrue(Guid.TryParse(guid, out outGuid));
                 Assert.IsTrue(int.Parse(associatedOwnerGroupId) == ctx.Web.AssociatedOwnerGroup.Id);

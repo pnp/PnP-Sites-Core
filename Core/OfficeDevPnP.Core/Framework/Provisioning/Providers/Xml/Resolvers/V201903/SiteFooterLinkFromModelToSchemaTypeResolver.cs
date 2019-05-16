@@ -30,7 +30,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
             if (modelSource != null)
             {
                 Model.SiteFooterLinkCollection sourceLinks = modelSource.GetPublicInstancePropertyValue("FooterLinks") as Model.SiteFooterLinkCollection;
-                if (sourceLinks != null)
+                if (sourceLinks != null && sourceLinks.Count > 0)
                 {
                     var siteFooterLinkTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.FooterLink, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                     var siteFooterLinkType = Type.GetType(siteFooterLinkTypeName, true);
