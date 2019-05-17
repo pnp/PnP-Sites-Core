@@ -64,6 +64,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 template.Parameters.Add("currentuserfullname", "{currentuserfullname}");
                 template.Parameters.Add("guid", "{guid}");
                 template.Parameters.Add("groupid:associatedownergroup", "{groupid:associatedownergroup}");
+                template.Parameters.Add("associatedownergroupid", "{associatedownergroupid}");
                 template.Parameters.Add("siteowner", "{siteowner}");
                 template.Parameters.Add("everyonebutexternalusers", "{everyonebutexternalusers}");
                 template.Parameters.Add("roledefinitionid", "{roledefinitionid}");
