@@ -2320,7 +2320,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 #endif
-                list.Views.Add(new View { SchemaXml = Tokenize(schemaElement.ToString(), web.Url) });
+                list.Views.Add(new View { SchemaXml = TokenizeXml(schemaElement.ToString(), web) });
             }
 
             return list;
