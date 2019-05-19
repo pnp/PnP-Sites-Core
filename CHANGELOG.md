@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.9. - Unreleased]
+
+### Changed 
+
+- Allow for retrieval of principals via their ID in objectsitesecurity.cs
+- Improved 'delta' detection for lists factoring out version changes in the list image url
+
+
 ## [3.9.1905.2 - May 2019 Intermediate Release 2]
 
 ### Changed 
