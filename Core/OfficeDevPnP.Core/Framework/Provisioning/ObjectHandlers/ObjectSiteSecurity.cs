@@ -620,7 +620,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 try
                 {
-                    principal = web.EnsureUser(parsedRoleDefinition);
+                    // Principal can be resolved via it's ID if an associatedgroupid token was used
+                    if (Int32.TryParse(parsedRoleDefinition, out int roleAssignmentPrincipalId))
+                    {
+                        principal = groups.FirstOrDefault(g => g.Id.Equals(roleAssignmentPrincipalId));
+                    }
+                    else
+                    {
+                        principal = web.EnsureUser(parsedRoleDefinition);
+                    }
+
                     web.Context.Load(principal, p => p.Id);
                     web.Context.ExecuteQueryRetry();
                 }
