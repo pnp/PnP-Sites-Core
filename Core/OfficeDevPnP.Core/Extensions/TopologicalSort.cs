@@ -1,4 +1,4 @@
-﻿/**
+﻿ /*
  * Author: Tomas Takac
  * Article: https://www.codeproject.com/Articles/869059/Topological-sorting-in-Csharp
  * License: https://www.codeproject.com/info/cpol10.aspx

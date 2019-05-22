@@ -119,14 +119,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
         public abstract List<ProvisioningTemplate> GetTemplates(ITemplateFormatter formatter);
 
         /// <summary>
-        /// <summary>
         /// Gets ProvisioningHierarchy
         /// </summary>
         /// <param name="uri">The source uri</param>
         /// <returns>Returns a ProvisioningHierarchy</returns>
         public abstract ProvisioningHierarchy GetHierarchy(string uri);
 
-        /// <summary>
         /// <summary>
         /// Gets ProvisioningTemplate
         /// </summary>
@@ -178,17 +176,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
         public abstract ProvisioningTemplate GetTemplate(string uri, string identifier, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions);
 
         /// <summary>
-        /// <summary>
         /// Gets ProvisioningTemplate
         /// </summary>
-        /// <param name="uri">The source uri</param>
+        /// <param name="stream">The source stream</param>
         /// <returns>Returns a ProvisioningTemplate</returns>
         public abstract ProvisioningTemplate GetTemplate(Stream stream);
 
         /// <summary>
         /// Gets ProvisioningTemplate
         /// </summary>
-        /// <param name="uri">The source uri</param>
+        /// <param name="stream">The source stream</param>
         /// <param name="extensions">Collection of provisioning template extensions</param>
         /// <returns>Returns a ProvisioningTemplate</returns>
         public abstract ProvisioningTemplate GetTemplate(Stream stream, ITemplateProviderExtension[] extensions);
@@ -196,7 +193,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
         /// <summary>
         /// Gets ProvisioningTemplate
         /// </summary>
-        /// <param name="uri">The source uri</param>
+        /// <param name="stream">The source stream</param>
         /// <param name="identifier">ProvisioningTemplate identifier</param>
         /// <returns>Returns a ProvisioningTemplate</returns>
         public abstract ProvisioningTemplate GetTemplate(Stream stream, string identifier);
@@ -204,7 +201,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
         /// <summary>
         /// Gets ProvisioningTemplate
         /// </summary>
-        /// <param name="uri">The source uri</param>
+        /// <param name="stream">The source stream</param>
         /// <param name="formatter">Provisioning Template formatter</param>
         /// <returns>Returns a ProvisioningTemplate</returns>
         public abstract ProvisioningTemplate GetTemplate(Stream stream, ITemplateFormatter formatter);
@@ -212,7 +209,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
         /// <summary>
         /// Gets ProvisioningTemplate
         /// </summary>
-        /// <param name="uri">The source uri</param>
+        /// <param name="stream">The source stream</param>
         /// <param name="identifier">ProvisioningTemplate identifier</param>
         /// <param name="formatter">Provisioning Template formatter</param>
         /// <returns>Returns a ProvisioningTemplate</returns>
@@ -222,7 +219,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
         /// <summary>
         /// Gets ProvisioningTemplate
         /// </summary>
-        /// <param name="uri">The source uri</param>
+        /// <param name="stream">The source stream</param>
         /// <param name="identifier">ProvisioningTemplate identifier</param>
         /// <param name="formatter">Provisioning Template formatter</param>
         /// <param name="extensions">Collection of provisioning template extensions</param>

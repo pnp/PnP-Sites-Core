@@ -728,6 +728,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// </summary>
         /// <param name="scope">The PnP Provisioning Scope</param>
         /// <param name="parser">The PnP Token Parser</param>
+        /// <param name="connector">The PnP File Connector</param>
         /// <param name="team">The Team settings, including security settings</param>
         /// <param name="teamId">The ID of the target Team</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token</param>

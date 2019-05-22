@@ -203,16 +203,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         //    }
         //}
 
-        /// <summary>
-        /// Creates child terms for the current model term if any exist
-        /// </summary>
-        /// <param name="web"></param>
-        /// <param name="modelTerm"></param>
-        /// <param name="term"></param>
-        /// <param name="termStore"></param>
-        /// <param name="parser"></param>
-        /// <param name="scope"></param>
-        /// <returns>Updated parser object</returns>
+        // /// <summary>
+        // /// Creates child terms for the current model term if any exist
+        // /// </summary>
+        // /// <param name="web"></param>
+        // /// <param name="modelTerm"></param>
+        // /// <param name="term"></param>
+        // /// <param name="termStore"></param>
+        // /// <param name="parser"></param>
+        // /// <param name="scope"></param>
+        // /// <returns>Updated parser object</returns>
         //private TokenParser CreateChildTerms(Web web, Model.Term modelTerm, Term term, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
         //{
         //    if (modelTerm.Terms.Any())
@@ -272,18 +272,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         //    return parser;
         //}
 
-        /// <summary>
-        /// Attempts to reuse the model term. If the term does not yet exists it will return
-        /// false for the first part of the the return tuple. this will notify the system
-        /// that the term should be created instead of re-used.
-        /// </summary>
-        /// <param name="web"></param>
-        /// <param name="modelTerm"></param>
-        /// <param name="parent"></param>
-        /// <param name="termStore"></param>
-        /// <param name="parser"></param>
-        /// <param name="scope"></param>
-        /// <returns></returns>
+        // /// <summary>
+        // /// Attempts to reuse the model term. If the term does not yet exists it will return
+        // /// false for the first part of the the return tuple. this will notify the system
+        // /// that the term should be created instead of re-used.
+        // /// </summary>
+        // /// <param name="web"></param>
+        // /// <param name="modelTerm"></param>
+        // /// <param name="parent"></param>
+        // /// <param name="termStore"></param>
+        // /// <param name="parser"></param>
+        // /// <param name="scope"></param>
+        // /// <returns></returns>
 
 
         //private TokenParser CheckChildTerms(Web web, Model.Term modelTerm, Term parentTerm, TermStore termStore, TokenParser parser, PnPMonitoredScope scope)
