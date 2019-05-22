@@ -14,6 +14,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Improved 'delta' detection for lists factoring out version changes in the list image url
 
 
+## [unreleased]
+
+### Changed 
+
+- Fixed xml comments to reduce compiler warnings [gszdev]
+
 ## [3.9.1905.2 - May 2019 Intermediate Release 2]
 
 ### Changed 
