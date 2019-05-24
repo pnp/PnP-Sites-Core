@@ -262,7 +262,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldId);
-                    web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden);
+                    web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden, fieldRef.UpdateChildren);
                 }
             }
 
@@ -364,7 +364,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 // Add it to the target content type
                 // Notice that this code will fail if the field does not exist
-                web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden);
+                web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden, fieldRef.UpdateChildren);
             }
 
             // Add new CTs
