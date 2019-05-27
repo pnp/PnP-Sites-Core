@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.9.1905.2, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.9.1905.3, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-GROUP0template">
     <pnp:ProvisioningTemplate ID="GROUP0template" Version="1" BaseSiteTemplate="GROUP#0" Scope="RootSite">
       <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="SitePages/Home.aspx" SiteLogo="{site}/_api/GroupService/GetGroupImage?id='2495d9a1-5d20-4621-9eab-30e99a53d6f3'&amp;hash=636941427121257317" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
@@ -60,30 +60,34 @@
       </pnp:SupportedUILanguages>
       <pnp:AuditSettings AuditLogTrimmingRetention="90" TrimAuditLog="true" />
       <pnp:PropertyBagEntries>
-        <pnp:PropertyBagEntry Key="vti_associategroups" Value="5;4;3" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="3;4;5" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="3" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_indexedpropertykeys" Value="" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="GroupAlias" Value="templateGROUP0" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="1c0297aa-5e61-41d9-9e4b-5c1da732d30a" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_sitemasterid" Value="a762e65c-452b-414d-8eee-80fc6a85fb05" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="ProvCorrelationId" Value="ff2bdf9e-a05d-0000-b281-855b47fc6f55" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="5" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="GroupDocumentsUrl" Value="Shared Documents" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="4" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="HomepageProvisioned" Value="1" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.8908" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="GroupType" Value="Private" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="LastGroupSitePrivacyUpdated" Value="636941427024857709" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="GroupDocumentsListId" Value="6b41044d-ec51-4792-892d-54afcb603ba4" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="GroupId" Value="073975c1-c20f-44f3-ba6e-487ca29b2bba" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="GroupDocumentsListId" Value="6b41044d-ec51-4792-892d-54afcb603ba4" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="GroupDocumentsUrl" Value="Shared Documents" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="1c0297aa-5e61-41d9-9e4b-5c1da732d30a" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associategroups" Value="5;4;3" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="GroupType" Value="Private" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_sitemasterid" Value="a762e65c-452b-414d-8eee-80fc6a85fb05" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="profileschemaversion" Value="5" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="GroupId" Value="073975c1-c20f-44f3-ba6e-487ca29b2bba" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="ProvCorrelationId" Value="ff2bdf9e-a05d-0000-b281-855b47fc6f55" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="LastGroupSitePrivacyUpdated" Value="636941427024857709" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="3;4;5" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="GroupAlias" Value="templateGROUP0" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.8908" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_expirationlastrun" Value="5/22/2019 11:08:14 PM" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_policyupdatelastrun" Value="5/22/2019 10:23:24 PM" Overwrite="false" />
         <pnp:PropertyBagEntry Key="RelatedGroupId" Value="073975c1-c20f-44f3-ba6e-487ca29b2bba" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="4" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="3" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="metadatatimestamp" Value="437b86fc125845a985ea87a29156ce3c|2015-03-27T08:10:01.077Z" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="HomepageProvisioned" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="5" Overwrite="false" />
       </pnp:PropertyBagEntries>
       <pnp:Security AssociatedOwnerGroup="{sitetitle} Owners" AssociatedMemberGroup="{sitetitle} Members" AssociatedVisitorGroup="{sitetitle} Visitors">
         <pnp:AdditionalOwners>
