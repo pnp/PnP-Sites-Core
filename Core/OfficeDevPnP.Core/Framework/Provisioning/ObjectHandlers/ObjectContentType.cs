@@ -216,10 +216,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 isDirty = true;
             }
 #endif
-            
+			if (isDirty)
+			{
+				// Default to false as there is no reason to update children on CT property changes.
+				existingContentType.Update(false);
+				web.Context.ExecuteQueryRetry();
+			}
 
-            // Set flag to reorder fields CT fields are not equal to template fields
-            var existingFieldNames = existingContentType.FieldLinks.AsEnumerable().Select(fld => fld.Name).ToArray();
+			// Set flag to reorder fields CT fields are not equal to template fields
+			var existingFieldNames = existingContentType.FieldLinks.AsEnumerable().Select(fld => fld.Name).ToArray();
             var ctFieldNames = templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray();
             reOrderFields = ctFieldNames.Length > 0 && !existingFieldNames.SequenceEqual(ctFieldNames);
 
@@ -240,15 +245,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
 				return true;
 			}
-			scope.LogDebug("Update child Content Types: {0}", UpdateChildren());
-
-			if (isDirty)
-			{
-				// Update for changes to content type properties.
-				existingContentType.Update(UpdateChildren());
-				web.Context.ExecuteQueryRetry();
-			}
-
+			
 			if (fieldsNotPresentInTarget.Any())
             {
                 // Set flag to reorder fields when new fields are added.
@@ -330,7 +327,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (isDirty)
             {
-                existingContentType.Update(UpdateChildren());
+				scope.LogDebug("Update child Content Types: {0}", UpdateChildren());
+				existingContentType.Update(UpdateChildren());
                 web.Context.ExecuteQueryRetry();
             }
         }
