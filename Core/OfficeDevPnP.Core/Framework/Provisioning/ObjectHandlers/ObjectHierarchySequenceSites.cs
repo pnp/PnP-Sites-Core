@@ -360,7 +360,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var subweb = web.Webs.FirstOrDefault(t => t.ServerRelativeUrl.Equals(UrlUtility.Combine(web.ServerRelativeUrl, "/", url.Trim(new char[] { '/' }))));
 
-            foreach (var templateRef in sitecollection.Templates)
+            foreach (var templateRef in subSiteObject.Templates)
             {
                 var provisioningTemplate = hierarchy.Templates.FirstOrDefault(t => t.Id == templateRef);
                 if (provisioningTemplate != null)
