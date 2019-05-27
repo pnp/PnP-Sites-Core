@@ -16,8 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
 
         /// <summary>
         /// Constructor
-        /// </summary>
-        /// <param name="web">Current site/subsite</param>
+        /// </summary>        
         /// <param name="token">token</param>
         public SimpleTokenDefinition(params string[] token)
         {

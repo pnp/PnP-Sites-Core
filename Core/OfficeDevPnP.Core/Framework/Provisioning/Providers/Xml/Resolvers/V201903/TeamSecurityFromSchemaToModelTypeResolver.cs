@@ -28,8 +28,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                 result = new TeamSecurity();
 
                 // Process settings
-                result.ClearExistingOwners = (Boolean)(security?.GetPublicInstancePropertyValue("Owners")?.GetPublicInstancePropertyValue("ClearExistingItems"));
-                result.ClearExistingMembers = (Boolean)(security?.GetPublicInstancePropertyValue("Members")?.GetPublicInstancePropertyValue("ClearExistingItems"));
+                var clearExistingOwnersValue = (security?.GetPublicInstancePropertyValue("Owners")?.GetPublicInstancePropertyValue("ClearExistingItems"));
+                result.ClearExistingOwners = clearExistingOwnersValue != null ? (Boolean)clearExistingOwnersValue : false;
+                var clearExistingMembersValue = (security?.GetPublicInstancePropertyValue("Members")?.GetPublicInstancePropertyValue("ClearExistingItems"));
+                result.ClearExistingMembers = clearExistingMembersValue != null ? (Boolean)clearExistingMembersValue : false;
 
                 // Process users (owners and members)
                 var usersResolver = new CollectionFromSchemaToModelTypeResolver(typeof(TeamSecurityUser));

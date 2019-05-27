@@ -4,9 +4,9 @@ using OfficeDevPnP.Core.Attributes;
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
     [TokenDefinitionDescription(
-        Token = "{sitecollectionidencoded}",
+        Token = "{sitecollectionid}",
         Description = "Returns the id of the site collection",
-        Example = "{sitecollectionidencoded}",
+        Example = "{sitecollectionid}",
         Returns = "767bc144-e605-4d8c-885a-3a980feb39c6")]
     internal class SiteCollectionIdToken : VolatileTokenDefinition
     {

@@ -2497,7 +2497,7 @@ namespace OfficeDevPnP.Core {
         /// * @see {@link http://usejsdoc.org/|JSDoc}
         /// */
         ///
-        ////*
+        /// /*
         /// * PnPResponsiveApp
         /// * @namespace
         /// */
@@ -2507,11 +2507,11 @@ namespace OfficeDevPnP.Core {
         ///    window.PnPResponsiveApp = window.PnPResponsiveApp || {};
         ///}
         ///
-        ////**
+        /// /**
         /// * PnP Responsive
         /// * @class
         /// */
-        ///PnPResponsiveApp.Main = (function ()  [rest of string was truncated]&quot;;.
+        /// PnPResponsiveApp.Main = (function ()  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI {
             get {
@@ -2536,7 +2536,7 @@ namespace OfficeDevPnP.Core {
         ///    min-width: auto;
         ///}
         ///
-        ////* Make sure dialog windows don&apos;t break */
+        /// /* Make sure dialog windows don&apos;t break */
         ///.ms-dialog #contentRow {
         ///    margin-left: 0;
         ///}

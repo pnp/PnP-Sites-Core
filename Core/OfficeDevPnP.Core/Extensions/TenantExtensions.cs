@@ -834,7 +834,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="tenant">The target tenant</param>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
-        /// <param name="siteClassificationsSettings">The site classifications settings to apply./param>
+        /// <param name="siteClassificationsSettings">The site classifications settings to apply.</param>
         public static void EnableSiteClassifications(this Tenant tenant, string accessToken, SiteClassificationsSettings siteClassificationsSettings)
         {
             SiteClassificationsUtility.EnableSiteClassifications(accessToken, siteClassificationsSettings);

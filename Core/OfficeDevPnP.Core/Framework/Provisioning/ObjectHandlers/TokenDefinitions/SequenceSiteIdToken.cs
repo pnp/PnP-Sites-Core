@@ -7,7 +7,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
 {
     [TokenDefinitionDescription(
     Token = "{sequencesiteid:[provisioningid]}",
-    Description = "Returns a full url of the site given its provisioning ID from the sequence",
+    Description = "Returns a id of the site given its provisioning ID from the sequence",
     Example = "{sequencesiteid:MYID}",
     Returns = "https://contoso.sharepoint.com/sites/mynewsite")]
     internal class SequenceSiteIdToken : TokenDefinition

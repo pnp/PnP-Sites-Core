@@ -383,7 +383,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         /// <summary>
         /// Creates child terms for the current model term if any exist
         /// </summary>
-        /// <param name="web"></param>
+        /// <param name="context"></param>
         /// <param name="modelTerm"></param>
         /// <param name="term"></param>
         /// <param name="termStore"></param>
@@ -454,7 +454,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         /// false for the first part of the the return tuple. this will notify the system
         /// that the term should be created instead of re-used.
         /// </summary>
-        /// <param name="web"></param>
+        /// <param name="context"></param>
         /// <param name="modelTerm"></param>
         /// <param name="parent"></param>
         /// <param name="termStore"></param>

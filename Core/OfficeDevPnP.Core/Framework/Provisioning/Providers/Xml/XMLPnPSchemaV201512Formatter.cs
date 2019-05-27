@@ -27,7 +27,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         string IXMLSchemaFormatter.NamespaceUri
         {
-            get { return (XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12); }
+            get { return (
+#pragma warning disable 0618
+                    XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12
+#pragma warning restore 0618
+                    ); }
         }
 
         string IXMLSchemaFormatter.NamespacePrefix
@@ -52,7 +56,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             // Prepare the XML Schema Set
             XmlSchemaSet schemas = new XmlSchemaSet();
-            schemas.Add(XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12,
+            schemas.Add(
+#pragma warning disable 0618
+                XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12
+#pragma warning restore 0618
+                ,
                 new XmlTextReader(stream));
 
             Boolean result = true;
@@ -1086,7 +1094,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             sourceStream.Position = 0;
             XDocument xml = XDocument.Load(sourceStream);
-            XNamespace pnp = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
+            XNamespace pnp =
+#pragma warning disable 0618
+                XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12
+#pragma warning disable 0618
+                ;
 
             // Prepare a variable to hold the single source formatted template
             V201512.ProvisioningTemplate source = null;
