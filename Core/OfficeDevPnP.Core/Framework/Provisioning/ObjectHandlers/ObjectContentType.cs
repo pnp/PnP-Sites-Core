@@ -124,9 +124,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var isDirty = false;
             var reOrderFields = false;
 
-			bool updateChildren = !templateContentType.FieldRefs.All(f => f.UpdateChildren == false);
-			scope.LogInfo("Update child Content Types: {0}", updateChildren);
-
+			
             if (existingContentType.Hidden != templateContentType.Hidden)
             {
                 scope.LogPropertyUpdate("Hidden");
@@ -218,11 +216,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 isDirty = true;
             }
 #endif
-            if (isDirty)
-            {
-                existingContentType.Update(updateChildren);
-                web.Context.ExecuteQueryRetry();
-            }
+            
 
             // Set flag to reorder fields CT fields are not equal to template fields
             var existingFieldNames = existingContentType.FieldLinks.AsEnumerable().Select(fld => fld.Name).ToArray();
@@ -236,7 +230,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var fieldsNotPresentInTarget = sourceIds.Except(targetIds).ToArray();
 
-            if (fieldsNotPresentInTarget.Any())
+			// Should child content types be updated.
+			bool UpdateChildren()
+			{
+				if(fieldsNotPresentInTarget.Any())
+				{
+					return !templateContentType.FieldRefs.All(f => f.UpdateChildren == false);
+				}
+
+				return true;
+			}
+			scope.LogDebug("Update child Content Types: {0}", UpdateChildren());
+
+			if (isDirty)
+			{
+				// Update for changes to content type properties.
+				existingContentType.Update(UpdateChildren());
+				web.Context.ExecuteQueryRetry();
+			}
+
+			if (fieldsNotPresentInTarget.Any())
             {
                 // Set flag to reorder fields when new fields are added.
                 reOrderFields = true;
@@ -317,7 +330,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (isDirty)
             {
-                existingContentType.Update(updateChildren);
+                existingContentType.Update(UpdateChildren());
                 web.Context.ExecuteQueryRetry();
             }
         }
