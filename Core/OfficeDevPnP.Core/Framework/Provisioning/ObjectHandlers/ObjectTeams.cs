@@ -196,7 +196,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         });
 
                     desideredOwnerIds = team.Security.Owners.Select(o => userIdsByUPN[o.UserPrincipalName]).ToArray();
-                    desideredMemberIds = team.Security.Members.Select(o => userIdsByUPN[o.UserPrincipalName]).ToArray();
+                    desideredMemberIds = team.Security.Members.Select(o => userIdsByUPN[o.UserPrincipalName]).Union(desideredOwnerIds).ToArray();
                 }
                 catch (Exception ex)
                 {
@@ -451,7 +451,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     });
 
                 desideredOwnerIds = team.Security.Owners.Select(o => userIdsByUPN[o.UserPrincipalName]).ToArray();
-                desideredMemberIds = team.Security.Members.Select(o => userIdsByUPN[o.UserPrincipalName]).ToArray();
+                desideredMemberIds = team.Security.Members.Select(o => userIdsByUPN[o.UserPrincipalName]).Union(desideredOwnerIds).ToArray();
             }
             catch (Exception ex)
             {
