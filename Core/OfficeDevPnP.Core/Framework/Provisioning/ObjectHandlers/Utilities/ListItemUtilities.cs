@@ -65,7 +65,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                 case FieldType.URL:
                     // FieldUrlValue - Expected format: URL,Description
-                    var urlArray = fieldValue.Split(',');
+                    var urlArray = fieldValue.Split(new Char[] { ',' }, 2);
                     var linkValue = new FieldUrlValue();
                     if (urlArray.Length == 2)
                     {
