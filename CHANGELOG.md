@@ -6,9 +6,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [3.9.  - Unreleased ]
+## [3.10.1906.0 - Unreleased ]
 
-### Changed
+### Changed 
+
+- Client side page serialization fix: if web part serverProcessedContent properties contains htmlStrings then these are now correctly serialized in the resulting html
 
 ## [3.9.1905.3 - May 2019 Intermediate Release 3]
 
