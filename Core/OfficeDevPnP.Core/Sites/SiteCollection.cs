@@ -633,9 +633,7 @@ namespace OfficeDevPnP.Core.Sites
         {
             string responseString = null;
 
-            context.Site.EnsureProperties(s => s.RelatedGroupId);
-
-            var webTemplateId = context.Web.GetBaseTemplateId();
+            context.Site.EnsureProperties(s => s.GroupId);
 
             if (context.Web.IsSubSite())
             {
@@ -645,40 +643,20 @@ namespace OfficeDevPnP.Core.Sites
             {
                 throw new Exception("App-Only is currently not supported.");
             }
-            //check if the template is GROUP#0
-            //also check the Related Group Id property, if it is GUID.empty it means it doesnt have associated group otherwise it has been groupified
-            else if (webTemplateId != "GROUP#0")
+            else if (context.Site.GroupId == Guid.Empty)
             {
-                if (context.Site.RelatedGroupId == Guid.Empty)
-                {
-                    throw new Exception($"You cannot associate Teams on this site collection having web TemplateId {webTemplateId}. It is only supported for O365 Group connected sites.");
-                }
-                else
-                {
-                    responseString = await TeamifySiteAsyncInternal(context);
-                }
-
+                throw new Exception($"You cannot associate Teams on this site collection. It is only supported for O365 Group connected sites.");
             }
-            //if it is a Group site, teamify it
             else
             {
-                responseString = await TeamifySiteAsyncInternal(context);
+                var result = await context.Web.ExecutePost("/_api/groupsitemanager/EnsureTeamForGroup", string.Empty);
+
+                var teamId = JObject.Parse(result);
+
+                responseString = Convert.ToString(teamId["value"]);
+
+                return await Task.Run(() => responseString);
             }
-
-            return responseString;
-        }
-
-        private static async Task<string> TeamifySiteAsyncInternal(ClientContext context)
-        {
-            string responseString = null;
-
-            var result = await context.Web.ExecutePost("/_api/groupsitemanager/EnsureTeamForGroup", string.Empty);
-
-            var teamId = JObject.Parse(result);
-
-            responseString = Convert.ToString(teamId["value"]);
-
-            return await Task.Run(() => responseString);
         }
     }
 }
