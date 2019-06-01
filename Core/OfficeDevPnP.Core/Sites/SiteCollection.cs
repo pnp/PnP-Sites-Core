@@ -622,6 +622,38 @@ namespace OfficeDevPnP.Core.Sites
                 return await Task.Run(() => responseString);
             }
         }
+
+        /// <summary>
+        /// Enable Microsoft Teams team in an O365 group connected team site
+        /// Will also enable it on a newly Groupified classic site
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static async Task<string> TeamifySiteAsync(ClientContext context)
+        {
+            string responseString = null;
+
+            context.Site.EnsureProperties(s => s.GroupId);
+
+            if (context.Web.IsSubSite())
+            {
+                throw new Exception("You cannot Teamify a subsite");
+            }            
+            else if (context.Site.GroupId == Guid.Empty)
+            {
+                throw new Exception($"You cannot associate Teams on this site collection. It is only supported for O365 Group connected sites.");
+            }
+            else
+            {
+                var result = await context.Web.ExecutePost("/_api/groupsitemanager/EnsureTeamForGroup", string.Empty);
+
+                var teamId = JObject.Parse(result);
+
+                responseString = Convert.ToString(teamId["value"]);
+
+                return await Task.Run(() => responseString);
+            }
+        }
     }
 }
 #endif
