@@ -638,11 +638,7 @@ namespace OfficeDevPnP.Core.Sites
             if (context.Web.IsSubSite())
             {
                 throw new Exception("You cannot Teamify a subsite");
-            }
-            else if (context.IsAppOnly())
-            {
-                throw new Exception("App-Only is currently not supported.");
-            }
+            }            
             else if (context.Site.GroupId == Guid.Empty)
             {
                 throw new Exception($"You cannot associate Teams on this site collection. It is only supported for O365 Group connected sites.");
