@@ -2098,6 +2098,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     allLists.Add(list);
                 }
+
                 // Let's see if there are workflow subscriptions
                 Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription[] workflowSubscriptions = null;
                 try
@@ -2115,6 +2116,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var listCount = 0;
                 foreach (var siteList in listsToProcess)
                 {
+                    if (creationInfo.ListsToExtract != null && creationInfo.ListsToExtract.Count > 0 &&
+                        (!creationInfo.ListsToExtract.Contains(siteList.Id.ToString()) &&
+                         !creationInfo.ListsToExtract.Contains(siteList.Title)))
+                    {
+                        // If we have a collection of lists to export and the current list
+                        // is not in that collection, just skip it
+                        continue;
+                    }
+
                     listCount++;
                     WriteMessage($"List|{siteList.Title}|{listCount}|{listsToProcess.Length}", ProvisioningMessageType.Progress);
                     ListInstance baseTemplateList = null;
