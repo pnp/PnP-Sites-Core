@@ -2117,7 +2117,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var siteList in listsToProcess)
                 {
                     if (creationInfo.ListsToExtract != null && creationInfo.ListsToExtract.Count > 0 &&
-                        (!creationInfo.ListsToExtract.Contains(siteList.Id.ToString()) &&
+                        (!creationInfo.ListsToExtract.Any(i => Guid.Parse(i) == siteList.Id) &&
                          !creationInfo.ListsToExtract.Contains(siteList.Title)))
                     {
                         // If we have a collection of lists to export and the current list
