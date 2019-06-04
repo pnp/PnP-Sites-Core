@@ -28,7 +28,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
             var openXmlConnection = this.Connector as OpenXMLConnector;
             var fileName = openXmlConnection.Info.Properties.TemplateFileName;
-            if (fileName != null)
+            if (!String.IsNullOrEmpty(fileName))
             {
 
 
