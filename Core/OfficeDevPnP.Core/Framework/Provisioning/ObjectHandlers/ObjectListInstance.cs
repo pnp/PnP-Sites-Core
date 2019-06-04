@@ -2117,8 +2117,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var siteList in listsToProcess)
                 {
                     if (creationInfo.ListsToExtract != null && creationInfo.ListsToExtract.Count > 0 &&
-                        (!creationInfo.ListsToExtract.Any(i => Guid.Parse(i) == siteList.Id) &&
-                         !creationInfo.ListsToExtract.Contains(siteList.Title)))
+                        (!creationInfo.ListsToExtract.Any(i =>
+                        {
+                            Guid listId;
+                            if (Guid.TryParse(i, out listId))
+                            {
+                                return (listId == siteList.Id);
+                            }
+                            else
+                            {
+                                return (false);
+                            }
+                        }) && !creationInfo.ListsToExtract.Contains(siteList.Title)))
                     {
                         // If we have a collection of lists to export and the current list
                         // is not in that collection, just skip it
