@@ -417,12 +417,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var webhook in template.ProvisioningTemplateWebhooks.Where(w => w.Kind == kind))
                     {
-                        var requestParameters = new Dictionary<String, String>(webhook.Parameters);
+                        var requestParameters = new Dictionary<String, String>();
 
                         SimpleTokenParser internalParser = new SimpleTokenParser();
-                        foreach (var webhookparam in requestParameters)
+                        foreach (var webhookparam in webhook.Parameters)
                         {
-                            internalParser.AddToken(new WebhookParameter(parser.ParseString(webhookparam.Key), parser.ParseString(webhookparam.Value)));
+                            requestParameters.Add(webhookparam.Key, parser.ParseString(webhookparam.Value));
+                            internalParser.AddToken(new WebhookParameter(webhookparam.Key, requestParameters[webhookparam.Key]));
                         }
                         var url = parser.ParseString(webhook.Url); // parse for template scoped parameters
                         url = internalParser.ParseString(url); // parse for webhook scoped parameters
