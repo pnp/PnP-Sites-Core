@@ -392,9 +392,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             progressDelegate(handler.Name, step, count);
                             step++;
                         }
-                        CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted);
+                        CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted, handler);
                         tokenParser = handler.ProvisionObjects(web, template, tokenParser, provisioningInfo);
-                        CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted);
+                        CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted, handler);
                     }
                 }
 
@@ -417,14 +417,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var webhook in template.ProvisioningTemplateWebhooks.Where(w => w.Kind == kind))
                     {
+                        var requestParameters = new Dictionary<String, String>(webhook.Parameters);
+
                         SimpleTokenParser internalParser = new SimpleTokenParser();
-                        foreach (var webhookparam in webhook.Parameters)
+                        foreach (var webhookparam in requestParameters)
                         {
                             internalParser.AddToken(new WebhookParameter(parser.ParseString(webhookparam.Key), parser.ParseString(webhookparam.Value)));
                         }
                         var url = parser.ParseString(webhook.Url); // parse for template scoped parameters
                         url = internalParser.ParseString(url); // parse for webhook scoped parameters
-
 
                         switch (webhook.Method)
                         {
@@ -432,7 +433,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted)
                                     {
-                                        url += $"&__handler={objectHandler.InternalName}";
+                                        url += $"&__handler={objectHandler.InternalName}"; // add the handler name to the REST request URL
+                                        url += $"&__webhookKind={kind.ToString()}"; // add the webhook kind to the REST request URL
                                     }
                                     try
                                     {
@@ -456,9 +458,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                             case ProvisioningTemplateWebhookMethod.POST:
                                 {
+                                    requestParameters.Add("__webhookKind", kind.ToString()); // add the webhook kind to the parameters of the request body
                                     if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted)
                                     {
-                                        webhook.Parameters.Add("__handler", objectHandler.InternalName);
+                                        requestParameters.Add("__handler", objectHandler.InternalName); // add the handler name to the parameters of the request body
                                     }
                                     try
                                     {
@@ -469,13 +472,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 switch (webhook.BodyFormat)
                                                 {
                                                     case ProvisioningTemplateWebhookBodyFormat.Json:
-                                                        client.PostAsJsonAsync(url, webhook.Parameters);
+                                                        client.PostAsJsonAsync(url, requestParameters);
                                                         break;
                                                     case ProvisioningTemplateWebhookBodyFormat.Xml:
-                                                        client.PostAsXmlAsync(url, webhook.Parameters);
+                                                        client.PostAsXmlAsync(url, requestParameters);
                                                         break;
                                                     case ProvisioningTemplateWebhookBodyFormat.FormUrlEncoded:
-                                                        var content = new FormUrlEncodedContent(webhook.Parameters);
+                                                        var content = new FormUrlEncodedContent(requestParameters);
                                                         client.PostAsync(url, content);
                                                         break;
                                                 }
@@ -485,13 +488,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 switch (webhook.BodyFormat)
                                                 {
                                                     case ProvisioningTemplateWebhookBodyFormat.Json:
-                                                        client.PostAsJsonAsync(url, webhook.Parameters).GetAwaiter().GetResult();
+                                                        client.PostAsJsonAsync(url, requestParameters).GetAwaiter().GetResult();
                                                         break;
                                                     case ProvisioningTemplateWebhookBodyFormat.Xml:
-                                                        client.PostAsXmlAsync(url, webhook.Parameters).GetAwaiter().GetResult();
+                                                        client.PostAsXmlAsync(url, requestParameters).GetAwaiter().GetResult();
                                                         break;
                                                     case ProvisioningTemplateWebhookBodyFormat.FormUrlEncoded:
-                                                        var content = new FormUrlEncodedContent(webhook.Parameters);
+                                                        var content = new FormUrlEncodedContent(requestParameters);
                                                         client.PostAsync(url, content).GetAwaiter().GetResult();
                                                         break;
                                                 }
