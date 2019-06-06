@@ -1,7 +1,8 @@
 ﻿namespace OfficeDevPnP.Core {
     public enum SiteLockState {
         Unlock,
-        NoAccess
+        NoAccess,
+        ReadOnly
     }
 
     public enum TenantOperationMessage
