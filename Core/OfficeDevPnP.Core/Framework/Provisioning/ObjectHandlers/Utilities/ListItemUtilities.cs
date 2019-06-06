@@ -418,7 +418,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 int[] multiValue;
                                 if (value.Contains(",") || value.Contains(";"))
                                 {
-                                    var arr = valuesToSet[key].Split(new char[] { ',', ';' });
+                                    var arr = value.Split(new char[] { ',', ';' });
                                     multiValue = new int[arr.Length];
                                     for (int i = 0; i < arr.Length; i++)
                                     {
@@ -427,7 +427,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 }
                                 else
                                 {
-                                    string valStr = valuesToSet[key].ToString().Trim();
+                                    string valStr = value.ToString().Trim();
                                     multiValue = valStr.Split(',', ';').Select(int.Parse).ToArray();
                                 }
 
@@ -444,7 +444,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             }
                         default:
                             {
-                                itemValues.Add(new FieldUpdateValue(key as string, valuesToSet[key]));
+                                itemValues.Add(new FieldUpdateValue(key as string, parser.ParseString(valuesToSet[key])));
                                 break;
                             }
                     }
