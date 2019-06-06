@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added ability to include all client side pages in an extracted template
 - Client side page serialization fix: if web part serverProcessedContent properties contains htmlStrings then these are now correctly serialized in the resulting html
 - Update SiteLockState enum to support ReadOnly status #2275 [TomekPi]
+- Fix DataRow parameters replacement. #2248 [siata13]
 
 ## [3.9.1905.3 - May 2019 Intermediate Release 3]
 
