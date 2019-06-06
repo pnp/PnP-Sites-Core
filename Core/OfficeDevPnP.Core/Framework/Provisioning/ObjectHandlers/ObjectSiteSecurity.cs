@@ -301,6 +301,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName.Equals(parsedGroupOwner, StringComparison.OrdinalIgnoreCase));
                             if (ownerPrincipal == null)
                             {
+                                if (Int32.TryParse(parsedGroupOwner, out int roleAssignmentPrincipalId))
+                                {
+                                    ownerPrincipal = allGroups.FirstOrDefault(g => g.Id.Equals(roleAssignmentPrincipalId));
+                                }
+                            }
+                            if (ownerPrincipal == null)
+                            {
                                 ownerPrincipal = web.EnsureUser(parsedGroupOwner);
                             }
                             group.Owner = ownerPrincipal;
