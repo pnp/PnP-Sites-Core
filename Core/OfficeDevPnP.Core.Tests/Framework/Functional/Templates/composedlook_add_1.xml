@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<pnp:ProvisioningTemplate ID="composedlook_add_1" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <!-- Set OOB composed look -->
+  <pnp:ComposedLook Name="Characters"  ColorFile="" FontFile ="" BackgroundFile =""/>
+</pnp:ProvisioningTemplate>

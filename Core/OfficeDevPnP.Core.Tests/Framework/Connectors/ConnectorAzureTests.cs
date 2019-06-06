@@ -9,17 +9,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#if !NETSTANDARD2_0
 namespace OfficeDevPnP.Core.Tests.Framework.Connectors
 {
     [TestClass]
     public class ConnectorAzureTests
     {
-        #region Test variables
+#region Test variables
         static string testContainer = "pnptest";
         static string testContainerSecure = "pnptestsecure";
-        #endregion
+#endregion
 
-        #region Test initialize and cleanup
+#region Test initialize and cleanup
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
@@ -89,9 +90,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
                 containerSecure.DeleteIfExists();
             }
         }
-        #endregion
+#endregion
 
-        #region Azure connector tests
+#region Azure connector tests
 
         /// <summary>
         /// Pass the connection information as parameters
@@ -460,6 +461,50 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
 
             // file will be deleted at end of test since the used storage containers are deleted
         }
-        #endregion
+
+        /// <summary>
+        /// Containers using backslash (\) as path separator should be supported
+        /// </summary>
+        [TestMethod]
+        public void AzureConnectorBackslashSupportTest()
+        {
+            if (String.IsNullOrEmpty(TestCommon.AzureStorageKey))
+            {
+                Assert.Inconclusive("No Azure Storage Key defined in App.Config, so can't test");
+            }
+
+            // Path with backslash-separator
+            var filename = "separator.png";
+            var containerWithBackslash = string.Format(@"{0}\{1}", testContainerSecure, "sub2");
+
+            // Constructor replaces folder delimiter
+            AzureStorageConnector  azureConnector = new AzureStorageConnector(TestCommon.AzureStorageKey, containerWithBackslash);
+            Assert.AreEqual($"{testContainerSecure}/sub2", azureConnector.GetContainer());
+
+            // Save a file
+            long byteCount = 0;
+            using (var fileStream = System.IO.File.OpenRead(@".\resources\office365.png"))
+            {
+                byteCount = fileStream.Length;
+                azureConnector.SaveFileStream(filename, containerWithBackslash, fileStream);
+            }
+            
+            // List files
+            var files = azureConnector.GetFiles(containerWithBackslash);
+            Assert.IsTrue(files.Contains($"sub2/{filename}"));
+
+            // Read the file
+            using (var fileStream = azureConnector.GetFileStream(filename, containerWithBackslash))
+            {
+                Assert.AreEqual(byteCount, fileStream.Length);
+            }
+
+            // Delete the file 
+            azureConnector.DeleteFile(filename, containerWithBackslash);
+
+            // Folder will be deleted in cleanup
+        }
+#endregion
     }
 }
+#endif

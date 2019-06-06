@@ -34,5 +34,6 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.SQL
         public virtual DbSet<FileTracking> FileTrackingSet { get; set; }
         public virtual DbSet<FileTrackingBaseline> FileTrackingBaselineSet { get; set; }
         public virtual DbSet<Users> UsersSet { get; set; }
+        public virtual DbSet<TestCategory> TestCategorySet { get; set; }
     }
 }

@@ -4,7 +4,7 @@ using Microsoft.SharePoint.Client.Taxonomy;
 namespace OfficeDevPnP.Core.Entities
 {
     /// <summary>
-    /// IDefaultColumnValue
+    /// Holds default column value properties
     /// </summary>
     public interface IDefaultColumnValue
     {
@@ -30,6 +30,9 @@ namespace OfficeDevPnP.Core.Entities
         /// </summary>
         public IList<Term> Terms { get; private set; }
 
+        /// <summary>
+        /// Default Constructor
+        /// </summary>
         public DefaultColumnTermValue()
         {
             Terms = new List<Term>();
@@ -37,15 +40,18 @@ namespace OfficeDevPnP.Core.Entities
     }
 
     /// <summary>
-    /// DefaultColumnTextValue
+    /// Holds DefaultColumnTextValue Properties
     /// </summary>
     public class DefaultColumnTextValue : DefaultColumnValue
     {
+        /// <summary>
+        /// Default column text value
+        /// </summary>
         public string Text { get; set; }
     }
 
     /// <summary>
-    /// DefaultColumnValue
+    /// Holds DefalutColumnValue Properties
     /// </summary>
     public class DefaultColumnValue : IDefaultColumnValue
     {

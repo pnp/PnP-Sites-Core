@@ -20,8 +20,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
         private string _provisioningTemplatePath1NamespaceURI = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_03;
 #pragma warning restore CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath2 = string.Empty;
-#pragma warning disable CS0618 // Type or member is obsolete
-        private string _provisioningTemplatePath2NamespaceURI = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_03;
 #pragma warning restore CS0618 // Type or member is obsolete
         private string _provisioningTemplatePath5 = string.Empty;
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -398,36 +396,36 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
             }
         }
 
-        [TestMethod]
-        [TestCategory(TEST_CATEGORY)]
-        public void CanSerializeDomainObjectWithJsonFormatter()
-        {
-            using (Stream _formattedTemplate = new FileStream(this._provisioningTemplatePath8, FileMode.Open, FileAccess.Read, FileShare.Read))
-            {
-                ITemplateFormatter formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(this._provisioningTemplatePath8NamespaceURI);
+        //[TestMethod]
+        //[TestCategory(TEST_CATEGORY)]
+        //public void CanSerializeDomainObjectWithJsonFormatter()
+        //{
+        //    using (Stream _formattedTemplate = new FileStream(this._provisioningTemplatePath8, FileMode.Open, FileAccess.Read, FileShare.Read))
+        //    {
+        //        ITemplateFormatter formatter = XMLPnPSchemaFormatter.GetSpecificFormatter(this._provisioningTemplatePath8NamespaceURI);
 
-                XMLTemplateProvider xmlProvider =
-                    new XMLFileSystemTemplateProvider(
-                        String.Format(@"{0}\..\..\Resources",
-                        AppDomain.CurrentDomain.BaseDirectory),
-                        "Templates");
+        //        XMLTemplateProvider xmlProvider =
+        //            new XMLFileSystemTemplateProvider(
+        //                String.Format(@"{0}\..\..\Resources",
+        //                AppDomain.CurrentDomain.BaseDirectory),
+        //                "Templates");
 
-                formatter.Initialize(xmlProvider);
-                var _pt = formatter.ToProvisioningTemplate(_formattedTemplate, "WORKFLOWSITE");
+        //        formatter.Initialize(xmlProvider);
+        //        var _pt = formatter.ToProvisioningTemplate(_formattedTemplate, "WORKFLOWSITE");
 
-                JsonTemplateProvider jsonProvider =
-                    new JsonFileSystemTemplateProvider(
-                        String.Format(@"{0}\..\..\Resources",
-                        AppDomain.CurrentDomain.BaseDirectory),
-                        "Templates");
+        //        JsonTemplateProvider jsonProvider =
+        //            new JsonFileSystemTemplateProvider(
+        //                String.Format(@"{0}\..\..\Resources",
+        //                AppDomain.CurrentDomain.BaseDirectory),
+        //                "Templates");
 
-                jsonProvider.SaveAs(_pt, @"c:\temp\ProvisioningSchema-2015-12-FullSample-02.json");
+        //        jsonProvider.SaveAs(_pt, @"c:\temp\ProvisioningSchema-2015-12-FullSample-02.json");
 
-                var _ptBack = jsonProvider.GetTemplate(@"c:\temp\ProvisioningSchema-2015-12-FullSample-02.json");
+        //        var _ptBack = jsonProvider.GetTemplate(@"c:\temp\ProvisioningSchema-2015-12-FullSample-02.json");
 
-                Assert.IsTrue(_pt.Equals(_ptBack));
-            }
-        }
+        //        Assert.IsTrue(_pt.Equals(_ptBack));
+        //    }
+        //}
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]

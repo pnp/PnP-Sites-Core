@@ -40,6 +40,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
+            container = container.Replace('/', '\\');
 
             this.AddParameterAsString(CONNECTIONSTRING, connectionString);
             this.AddParameterAsString(CONTAINER, container);
@@ -68,6 +69,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
+            container = container.Replace('/', '\\');
 
             List<string> result = new List<string>();
 
@@ -101,6 +103,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
+            container = container.Replace('/', '\\');
 
             List<string> result = new List<string>();
 
@@ -124,17 +127,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             return GetFile(fileName, GetContainer());
         }
 
+        /// <summary>
+        /// Returns a filename without a path
+        /// </summary>
+        /// <param name="fileName">Name of the file</param>
+        /// <returns>Returns filename without path</returns>
         public override string GetFilenamePart(string fileName)
         {
-            if (fileName.IndexOf(@"\") != -1)
-            {
-                var parts = fileName.Split(new []{@"\"}, StringSplitOptions.RemoveEmptyEntries);
-                return parts.LastOrDefault();
-            }
-            else
-            {
-                return fileName;
-            }
+            return Path.GetFileName(fileName);
         }
 
         /// <summary>
@@ -154,6 +154,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
+            container = container.Replace('/', '\\');
 
             string result = null;
             MemoryStream stream = null;
@@ -206,6 +207,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
+            container = container.Replace('/', '\\');
 
             return GetFileFromStorage(fileName, container);
         }
@@ -230,17 +232,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         {
             if (String.IsNullOrEmpty(fileName))
             {
-                throw new ArgumentException("fileName");
+                throw new ArgumentException(nameof(fileName));
             }
 
             if (String.IsNullOrEmpty(container))
             {
                 container = "";
             }
+            container = container.Replace('/', '\\');
 
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             try
@@ -290,6 +293,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
+            container = container.Replace('/', '\\');
 
             try
             {

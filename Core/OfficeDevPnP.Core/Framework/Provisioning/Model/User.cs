@@ -17,7 +17,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}",
@@ -25,6 +28,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with User
+        /// </summary>
+        /// <param name="obj">Object that represents User</param>
+        /// <returns>true if the current object is equal to the User</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is User))
@@ -34,6 +42,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((User)obj));
         }
 
+        /// <summary>
+        /// Compares User object based on Name
+        /// </summary>
+        /// <param name="other">User object</param>
+        /// <returns>true if the User object is equal to the current object; otherwise, false.</returns>
         public bool Equals(User other)
         {
             if (other == null)

@@ -1,5 +1,5 @@
 ﻿/* Based on reflectored code coming from Microsoft.IdentityModel.Protocols.WSTrust.Bindings.WSTrustBindingBase class */
-
+#if !NETSTANDARD2_0
 using System;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
@@ -8,6 +8,9 @@ using System.ServiceModel.Security.Tokens;
 
 namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
 {
+    /// <summary>
+    /// Class holds methos to enable applications to construct trusted message exchanges
+    /// </summary>
     public abstract class WSTrustBinding : Binding
     {
         private bool _enableRsaProofKeys;
@@ -28,7 +31,7 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
           
             if (trustVersion == null)
             {
-                throw new ArgumentNullException("trustVersion");
+                throw new ArgumentNullException(nameof(trustVersion));
             }
             
             ValidateTrustVersion(trustVersion);
@@ -41,7 +44,7 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
         {
             if (securityBindingElement == null)
             {
-                throw new ArgumentNullException("securityBindingElement");
+                throw new ArgumentNullException(nameof(securityBindingElement));
             }
             
             if (TrustVersion.WSTrustFeb2005 == _trustVersion)
@@ -66,6 +69,10 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
             return securityBindingElement;
         }
 
+        /// <summary>
+        /// Creates binding elements required for trust message exchange
+        /// </summary>
+        /// <returns>Returns Binding elements created</returns>
         public override BindingElementCollection CreateBindingElements()
         {
             BindingElementCollection elements = new BindingElementCollection();
@@ -111,7 +118,7 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
         {
             if (((securityMode != SecurityMode.None) && (securityMode != SecurityMode.Message)) && ((securityMode != SecurityMode.Transport) && (securityMode != SecurityMode.TransportWithMessageCredential)))
             {
-                throw new ArgumentOutOfRangeException("securityMode");
+                throw new ArgumentOutOfRangeException(nameof(securityMode));
             }
             
             if (securityMode == SecurityMode.None)
@@ -124,10 +131,13 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
         {
             if ((trustVersion != TrustVersion.WSTrust13) && (trustVersion != TrustVersion.WSTrustFeb2005))
             {
-                throw new ArgumentOutOfRangeException("trustVersion");
+                throw new ArgumentOutOfRangeException(nameof(trustVersion));
             }
         }
 
+        /// <summary>
+        /// Based on this values enables RSA key to encrypt the message
+        /// </summary>
         public bool EnableRsaProofKeys
         {
             get
@@ -140,6 +150,9 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
             }
         }
 
+        /// <summary>
+        /// Gets the encryption scheme
+        /// </summary>
         public override string Scheme
         {
             get
@@ -155,6 +168,9 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
             }
         }
 
+        /// <summary>
+        /// Gets or sets Security mode
+        /// </summary>
         public SecurityMode SecurityMode
         {
             get
@@ -168,6 +184,9 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
             }
         }
 
+        /// <summary>
+        /// Gets or sets the version
+        /// </summary>
         public TrustVersion TrustVersion
         {
             get
@@ -178,7 +197,7 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentNullException(nameof(value));
                 }
                 
                 ValidateTrustVersion(value);
@@ -187,3 +206,4 @@ namespace OfficeDevPnP.Core.IdentityModel.WSTrustBindings
         }
     }
 }
+#endif

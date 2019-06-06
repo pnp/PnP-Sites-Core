@@ -36,5 +36,6 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.SQL
         public virtual TestAuthentication TestAuthentication { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TestConfigurationProperty> TestConfigurationProperties { get; set; }
+        public virtual TestCategory TestCategory { get; set; }
     }
 }

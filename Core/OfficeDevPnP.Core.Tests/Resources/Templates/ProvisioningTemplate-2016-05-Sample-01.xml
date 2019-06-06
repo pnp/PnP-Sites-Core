@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.6.1608.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.12.1702.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-SPECIALTEAM">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="1">
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
@@ -9,7 +9,7 @@
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
       </pnp:PropertyBagEntries>
-      <pnp:Security ClearSubscopes="false">
+      <pnp:Security>
         <pnp:AdditionalAdministrators>
           <pnp:User Name="user@contoso.com" />
           <pnp:User Name="U_SHAREPOINT_ADMINS" />

@@ -64,11 +64,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Constructors
 
+        /// <summary>
+        /// Constructor for BaseNavigationKind class
+        /// </summary>
         public BaseNavigationKind()
         {
 
         }
 
+        /// <summary>
+        /// Constructor for BaseNavigationKind class
+        /// </summary>
+        /// <param name="structuralNavigation">Structural Navigation object</param>
+        /// <param name="managedNavigation">Managed Navigation object</param>
         public BaseNavigationKind(StructuralNavigation structuralNavigation = null, ManagedNavigation managedNavigation = null)
         {
             this.StructuralNavigation = structuralNavigation;
@@ -79,6 +87,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Comparison code
 
+        /// <summary>
+        /// Gets the hash code.
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}",
@@ -87,6 +99,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with BaseNavigationKind
+        /// </summary>
+        /// <param name="obj">Object that represents BaseNavigationKind</param>
+        /// <returns>true if the current object is equal to the BaseNavigationKind</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is BaseNavigationKind))
@@ -96,6 +113,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((BaseNavigationKind)obj));
         }
 
+        /// <summary>
+        /// Compares BaseNavigationKind object based on StructuralNavigation and ManagedNavigation
+        /// </summary>
+        /// <param name="other">BaseNavigationKind object</param>
+        /// <returns>true if the BaseNavigationKind object is equal to the current object; otherwise, false.</returns>
         public bool Equals(BaseNavigationKind other)
         {
             if (other == null)
@@ -103,8 +125,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return (false);
             }
 
-            return (this.StructuralNavigation == other.StructuralNavigation &&
-                this.ManagedNavigation == other.ManagedNavigation
+            return (((this.StructuralNavigation != null && other.StructuralNavigation != null) ? this.StructuralNavigation.Equals(other.StructuralNavigation) : (this.StructuralNavigation == null && other.StructuralNavigation == null)) &&
+                    ((this.ManagedNavigation != null && other.ManagedNavigation != null) ? this.ManagedNavigation == other.ManagedNavigation : (this.ManagedNavigation == null && other.ManagedNavigation == null))
                 );
         }
 

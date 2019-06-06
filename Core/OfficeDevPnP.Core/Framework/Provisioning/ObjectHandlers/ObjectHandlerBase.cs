@@ -2,15 +2,15 @@
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-    internal delegate bool ShouldProvisionTest(Web web, ProvisioningTemplate template);
-
     internal abstract class ObjectHandlerBase
     {
         internal bool? _willExtract;
@@ -18,6 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private bool _reportProgress = true;
         public abstract string Name { get; }
+        public abstract string InternalName { get; }
 
         public bool ReportProgress
         {
@@ -27,7 +28,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public ProvisioningMessagesDelegate MessagesDelegate { get; set; }
 
-        public abstract bool WillProvision(Web web, ProvisioningTemplate template);
+        public abstract bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation);
 
         public abstract bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo);
 
@@ -35,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public abstract ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo);
 
-        internal void WriteWarning(string message, ProvisioningMessageType messageType)
+        internal void WriteMessage(string message, ProvisioningMessageType messageType)
         {
             if (MessagesDelegate != null)
             {
@@ -48,11 +49,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// </summary>
         /// <param name="fieldXml">the xml to tokenize</param>
         /// <returns></returns>
+        [Obsolete("Use ObjectField.TokenizeFieldFormula instead. This method produces incorrect tokenization results.")]
         protected string TokenizeFieldFormula(string fieldXml)
         {
             var schemaElement = XElement.Parse(fieldXml);
             var formula = schemaElement.Descendants("Formula").FirstOrDefault();
-
+            var processedFields = new List<string>();
             if (formula != null)
             {
                 var formulaString = formula.Value;
@@ -62,7 +64,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     foreach (var fieldRef in fieldRefs)
                     {
                         var fieldInternalName = fieldRef.Attribute("Name").Value;
-                        formulaString = formulaString.Replace(fieldInternalName, string.Format("[{{fieldtitle:{0}}}]", fieldInternalName));
+                        if (!processedFields.Contains(fieldInternalName))
+                        {
+                            formulaString = formulaString.Replace(fieldInternalName, $"[{{fieldtitle:{fieldInternalName}}}]");
+                            processedFields.Add(fieldInternalName);
+                        }
                     }
                     var fieldRefParent = schemaElement.Descendants("FieldRefs");
                     fieldRefParent.Remove();
@@ -179,10 +185,48 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         /// <summary>
+        /// Tokenize a XML snippet based attribute with {themecatalog} or {masterpagecatalog}
+        /// </summary>
+        /// <param name="xml">the XML snippet to tokenize as String</param>
+        /// <param name="web">Web being used</param>
+        /// <returns>tokenized xml as String</returns>
+        protected string TokenizeXml(string xml, Web web = null)
+        {
+            if (string.IsNullOrEmpty(xml))
+            {
+                // nothing to tokenize...
+                return string.Empty;
+            }
+            else
+            {
+                var subsite = false;
+                if (web != null)
+                {
+                    subsite = web.IsSubSite();
+                }
+                web.EnsureProperty(w => w.ServerRelativeUrl);
+                // Theme Catalog
+                var themeRegex = new Regex(@"(?<theme>\/_catalogs\/theme)");
+                xml = themeRegex.Replace(xml, subsite ? "{sitecollection}/_catalogs/theme" : "{themecatalog}");
+
+                // Master Page Catalog
+                var masterPageRegex = new Regex(@"(?<masterpage>\/_catalogs\/masterpage)");
+                xml = masterPageRegex.Replace(xml, subsite ? "{sitecollection}/_catalogs/masterpage" : "{masterpagecatalog}");
+
+                // Site
+                var siteRegex = new Regex(web.ServerRelativeUrl.Replace("/", @"\/"));
+                xml = siteRegex.Replace(xml, "{site}");
+
+                return xml;
+            }
+        }
+
+        /// <summary>
         /// Tokenize a template item url based attribute with {themecatalog} or {masterpagecatalog} or {site}+
         /// </summary>
         /// <param name="url">the url to tokenize as String</param>
         /// <param name="webUrl">web url of the actual web as String</param>
+        /// <param name="web">Web being used</param>
         /// <returns>tokenized url as String</returns>
         protected string Tokenize(string url, string webUrl, Web web = null)
         {
@@ -194,14 +238,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 result = String.Empty;
             }
             else
-            { 
+            {
                 // Decode URL
                 url = Uri.UnescapeDataString(url);
                 // Try with theme catalog
                 if (url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase) > -1)
                 {
                     var subsite = false;
-                    if(web != null)
+                    if (web != null)
                     {
                         subsite = web.IsSubSite();
                     }
@@ -209,7 +253,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         result = url.Substring(url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/theme", "{sitecollection}/_catalogs/theme");
                     }
-                    else {
+                    else
+                    {
                         result = url.Substring(url.IndexOf("/_catalogs/theme", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/theme", "{themecatalog}");
                     }
                 }
@@ -218,7 +263,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase) > -1)
                 {
                     var subsite = false;
-                    if(web != null)
+                    if (web != null)
                     {
                         subsite = web.IsSubSite();
                     }
@@ -226,13 +271,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         result = url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{sitecollection}/_catalogs/masterpage");
                     }
-                    else {
+                    else
+                    {
                         result = url.Substring(url.IndexOf("/_catalogs/masterpage", StringComparison.InvariantCultureIgnoreCase)).Replace("/_catalogs/masterpage", "{masterpagecatalog}");
                     }
                 }
 
                 // Try with site URL
-                if(result != null)
+                if (result != null)
                 {
                     url = result;
                 }
@@ -240,7 +286,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
                 {
                     string webUrlPathAndQuery = System.Web.HttpUtility.UrlDecode(uri.PathAndQuery);
-                    if (url.IndexOf(webUrlPathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1)
+                    // Don't do additional replacement when masterpagecatalog and themecatalog (see #675)
+                    if (url.IndexOf(webUrlPathAndQuery, StringComparison.InvariantCultureIgnoreCase) > -1 && (url.IndexOf("{masterpagecatalog}") == -1) && (url.IndexOf("{themecatalog}") == -1))
                     {
                         result = (uri.PathAndQuery.Equals("/") && url.StartsWith(uri.PathAndQuery))
                             ? "{site}" + url // we need this for DocumentTemplate attribute of pnp:ListInstance also on a root site ("/") without managed path
@@ -256,6 +303,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             return (result);
-        }        
+        }
     }
 }

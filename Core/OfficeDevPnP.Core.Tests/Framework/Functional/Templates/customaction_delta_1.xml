@@ -5,7 +5,7 @@ Delta template: goal is to verify if the custom action delta handling is working
 please keep this XML up to date if additional properties are added to the delta handling
 -->
 
-<pnp:ProvisioningTemplate ID="customaction_delta" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+<pnp:ProvisioningTemplate ID="customaction_delta_1" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
   <pnp:CustomActions>
     
     <!-- Custom action properties that can be updated via delta handling:

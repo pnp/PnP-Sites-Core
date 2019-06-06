@@ -7,7 +7,9 @@ using System.Threading;
 
 namespace OfficeDevPnP.Core.Diagnostics
 {
-
+    /// <summary>
+    /// Class holds the methods for logging on PnP Monitoring
+    /// </summary>
     public sealed class PnPMonitoredScope : TreeNode<PnPMonitoredScope>, IDisposable
     {
         [ThreadStatic]
@@ -18,10 +20,13 @@ namespace OfficeDevPnP.Core.Diagnostics
         private Guid _correlationId;
         private int _threadId;
 
+        /// <summary>
+        /// Constructor for PnPMonitoredScope class
+        /// </summary>
         public PnPMonitoredScope()
         {
             Guid g = Guid.NewGuid();
-            StartScope(string.Format("Unnamed Scope {0}", g));
+            StartScope($"Unnamed Scope {g}");
         }
 
         internal int ThreadId
@@ -31,7 +36,9 @@ namespace OfficeDevPnP.Core.Diagnostics
                 return this._threadId;
             }
         }
-
+        /// <summary>
+        /// Gets or sets the source name
+        /// </summary>
         public string Name
         {
             get
@@ -44,7 +51,10 @@ namespace OfficeDevPnP.Core.Diagnostics
             }
         }
 
-
+        /// <summary>
+        /// Constructor for PnPMonitoredScope class
+        /// </summary>
+        /// <param name="name">Source name</param>
         public PnPMonitoredScope(string name)
         {
             StartScope(name);
@@ -87,11 +97,19 @@ namespace OfficeDevPnP.Core.Diagnostics
             Parent = null;
         }
 
+        /// <summary>
+        /// Gets Correlation Guid
+        /// </summary>
         public Guid CorrelationId
         {
             get { return _correlationId; }
         }
 
+        /// <summary>
+        /// Logs Error
+        /// </summary>
+        /// <param name="message">Message string</param>
+        /// <param name="args">Arguments object</param>
         public void LogError(string message, params object[] args)
         {
             Log.Error(new LogEntry()
@@ -104,6 +122,12 @@ namespace OfficeDevPnP.Core.Diagnostics
             });
         }
 
+        /// <summary>
+        /// Logs Error
+        /// </summary>
+        /// <param name="ex">Exception object</param>
+        /// <param name="message">Message string</param>
+        /// <param name="args">Arguments object</param>
         public void LogError(Exception ex, string message, params object[] args)
         {
             Log.Error(new LogEntry()
@@ -117,6 +141,11 @@ namespace OfficeDevPnP.Core.Diagnostics
             });
         }
 
+        /// <summary>
+        /// Logs Information
+        /// </summary>
+        /// <param name="message">Message string</param>
+        /// <param name="args">Arguments object</param>
         public void LogInfo(string message, params object[] args)
         {
             Log.Info(new LogEntry()
@@ -128,6 +157,12 @@ namespace OfficeDevPnP.Core.Diagnostics
                 ThreadId = _threadId
             });
         }
+        /// <summary>
+        /// Logs Information 
+        /// </summary>
+        /// <param name="ex">Exception object</param>
+        /// <param name="message">Message string</param>
+        /// <param name="args">Arguments object</param>
         public void LogInfo(Exception ex, string message, params object[] args)
         {
             Log.Info(new LogEntry()
@@ -142,7 +177,11 @@ namespace OfficeDevPnP.Core.Diagnostics
         }
 
 
-
+        /// <summary>
+        /// Logs Warning
+        /// </summary>
+        /// <param name="message">Message string</param>
+        /// <param name="args">Arguments object</param>
         public void LogWarning(string message, params object[] args)
         {
             Log.Warning(new LogEntry()
@@ -156,7 +195,12 @@ namespace OfficeDevPnP.Core.Diagnostics
         }
 
 
-
+        /// <summary>
+        /// Logs Warning
+        /// </summary>
+        /// <param name="ex">Exception object</param>
+        /// <param name="message">Message string</param>
+        /// <param name="args">Arguments object</param>
         public void LogWarning(Exception ex, string message, params object[] args)
         {
             Log.Warning(new LogEntry()
@@ -171,7 +215,11 @@ namespace OfficeDevPnP.Core.Diagnostics
 
         }
 
-
+        /// <summary>
+        /// Debug Log
+        /// </summary>
+        /// <param name="message">Message string</param>
+        /// <param name="args">Arguments object</param>
         public void LogDebug(string message, params object[] args)
         {
             Log.Debug(new LogEntry()
@@ -184,6 +232,12 @@ namespace OfficeDevPnP.Core.Diagnostics
             });
         }
 
+        /// <summary>
+        /// Debug Log
+        /// </summary>
+        /// <param name="ex">Exception object</param>
+        /// <param name="message">Message string</param>
+        /// <param name="args">Arguments object</param>
         public void LogDebug(Exception ex, string message, params object[] args)
         {
             Log.Debug(new LogEntry()
@@ -200,6 +254,10 @@ namespace OfficeDevPnP.Core.Diagnostics
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
 
+        /// <summary>
+        /// Implements Disposable pattern
+        /// </summary>
+        /// <param name="disposing">Boolean flag for disposing</param>
         void Dispose(bool disposing)
         {
             if (!disposedValue)

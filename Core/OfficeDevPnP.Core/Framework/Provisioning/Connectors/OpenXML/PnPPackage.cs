@@ -5,7 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO.Packaging;
 using System.IO;
+#if !NETSTANDARD2_0
 using System.Xaml;
+#else 
+using Portable.Xaml;
+#endif
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML.Model;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
@@ -15,7 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
     /// </summary>
     public partial class PnPPackage : IDisposable
     {
-        #region Constant strings
+#region Constant strings
 
         // site template xaml
         public const string R_PROVISIONINGTEMPLATE_MANIFEST = "http://schemas.dev.office.com/pnp/provisioningtemplate/v1/manifest";
@@ -35,7 +39,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         public const string CT_ORIGIN = "application/pnpprovisioningtemplate.origin";
         public const string CT_FILE = "application/unknown";
 
-        // urls
+        // URLs
         public static string U_PROVISIONINGTEMPLATE_MANIFEST = "/manifest.xml";
 
         public static string U_DIR_PROVISIONINGTEMPLATE = "/ProvisioningTemplate/";
@@ -47,12 +51,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         // file extensions
         public const string EXT_PROVISIONINGTEMPLATE = ".pnp";
 
-        #endregion
+#endregion
 
         public const CompressionOption PACKAGE_COMPRESSION_LEVEL = CompressionOption.Maximum;
 
-        #region Public Properties
+#region Public Properties
 
+        /// <summary>
+        /// The complete package object
+        /// </summary>
         public Package Package { get; private set; }
 
         /// <summary>
@@ -141,19 +148,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
         /// <summary>
         /// The Files of the package
         /// </summary>
-        public IDictionary<String, PnPPackageFileItem> Files
+        public IDictionary<String, PnPPackageFileItem> Files 
         {
             get
             {
                 Dictionary<String, PnPPackageFileItem> result = new Dictionary<String, PnPPackageFileItem>();
+				var map = FilesMap?.Map;
                 List<PackagePart> fileParts = GetAllPackagePartsWithRelationshipType(R_PROVISIONINGTEMPLATE_FILE, FilesOriginPart);
                 foreach (PackagePart p in fileParts)
                 {
-                    String fileName = p.Uri.ToString().Remove(0, U_DIR_FILES.Length);
-                    String folder = fileName.LastIndexOf('/') >= 0 ?
-                        fileName.Substring(0, fileName.LastIndexOf('/')) : String.Empty;
-                    fileName = fileName.Substring(fileName.LastIndexOf('/') + 1);
-                    Byte[] content = ReadPackagePartBytes(p);
+					String fileName = p.Uri.ToString().Remove(0, U_DIR_FILES.Length);
+					String folder = fileName.LastIndexOf('/') >= 0 ?
+						fileName.Substring(0, fileName.LastIndexOf('/')) : String.Empty;
+
+					fileName = fileName.Substring(fileName.LastIndexOf('/') + 1);
+
+					if (string.IsNullOrEmpty(folder) && map != null && map.ContainsKey(fileName))
+					{
+						//try get folder from original name
+						var originalName = map[fileName].Replace(@"\", "/");
+						folder = originalName.LastIndexOf('/') >= 0 ?
+							originalName.Substring(0, originalName.LastIndexOf('/')) : String.Empty;
+					}
+
+					Byte[] content = ReadPackagePartBytes(p);
 
                     result[fileName] = new PnPPackageFileItem
                     {
@@ -166,10 +184,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             }
         }
 
-        #endregion
+#endregion
 
-        #region Package Handling methods
+#region Package Handling methods
 
+        /// <summary>
+        /// Opens the package and returns it based on the path
+        /// </summary>
+        /// <param name="path">Path of the package</param>
+        /// <param name="mode">File Mode of the package</param>
+        /// <param name="access">File Access</param>
+        /// <returns>Package</returns>
         public static PnPPackage Open(string path, FileMode mode, FileAccess access)
         {
             PnPPackage package = new PnPPackage();
@@ -178,6 +203,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             return package;
         }
 
+        /// <summary>
+        /// Opens the package and returns it based on the stream
+        /// </summary>
+        /// <param name="stream">The stream</param>
+        /// <param name="mode">File Mode of the package</param>
+        /// <param name="access">File Access</param>
+        /// <returns>Package</returns>
         public static PnPPackage Open(Stream stream, FileMode mode, FileAccess access)
         {
             PnPPackage package = new PnPPackage();
@@ -186,7 +218,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             return package;
         }
 
-
+        /// <summary>
+        /// Adds file to the package
+        /// </summary>
+        /// <param name="fileName">Name of the file</param>
+        /// <param name="value">Value of the file</param>
         public void AddFile(string fileName, Byte[] value)
         {
             fileName = fileName.TrimStart('/');
@@ -195,14 +231,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
             SetPackagePartValue(value, part);
         }
 
+        /// <summary>
+        /// Clear the files having package parts with specific relationship type
+        /// </summary>
         public void ClearFiles()
         {
             ClearPackagePartsWithRelationshipType(R_PROVISIONINGTEMPLATE_FILE, FilesOriginPart);
         }
 
-        #endregion
+#endregion
 
-        #region Package Helper Methods
+#region Package Helper Methods
 
         private void EnsureMandatoryPackageComponents()
         {
@@ -316,12 +355,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
                 value = new byte[] { };
             }
 
-            using (Stream stream = part.GetStream(FileMode.Create))
+            using (Stream stream = part.GetStream(FileMode.OpenOrCreate))
             {
-                using (stream)
-                {
+                //using (stream)
+                //{
                     stream.Write(value, 0, value.Length);
-                }
+                //}
             }
         }
 
@@ -400,7 +439,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
 
                 //TODO: fix method to support long streams
                 if (size > Int32.MaxValue)
-                    throw new ArgumentOutOfRangeException("Long streams are not supported.");
+                    throw new ArgumentOutOfRangeException(nameof(part),"Long streams are not supported.");
 
                 bytes = new byte[size];
                 stream.Read(bytes, 0, (int)size);
@@ -409,16 +448,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML
 
         }
 
-        #endregion
+#endregion
 
-        #region Generic Helper methods
+#region Generic Helper methods
 
         private Uri GetUri(string uriStr)
         {
             return new Uri(uriStr, UriKind.Relative);
         }
 
-        #endregion
+#endregion
 
         void IDisposable.Dispose()
         {

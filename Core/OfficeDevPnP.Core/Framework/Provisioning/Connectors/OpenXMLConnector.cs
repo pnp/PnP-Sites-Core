@@ -1,4 +1,5 @@
 ﻿using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors.OpenXML.Model;
 using OfficeDevPnP.Core.Utilities;
@@ -8,7 +9,6 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 {
@@ -24,16 +24,38 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         #region Constructors
 
         /// <summary>
+        /// OpenXMLConnector constructor. Allows to manage a .PNP OpenXML package through an in memory stream.
+        /// </summary>
+        /// <param name="packageStream">The package stream</param>
+        public OpenXMLConnector(Stream packageStream) : base()
+        {
+            if (packageStream == null)
+            {
+                throw new ArgumentNullException(nameof(packageStream));
+            }
+
+            if (!packageStream.CanRead)
+            {
+                throw new ArgumentException("package");
+            }
+
+            // If the .PNP package exists unpack it into PnP OpenXML package info object
+            MemoryStream ms = packageStream.ToMemoryStream();
+            this.pnpInfo = ms.UnpackTemplate();
+        }
+
+        /// <summary>
         /// OpenXMLConnector constructor. Allows to manage a .PNP OpenXML package file through a supporting persistence connector.
         /// </summary>
         /// <param name="packageFileName">The name of the .PNP package file. If the .PNP extension is missing, it will be added</param>
         /// <param name="persistenceConnector">The FileConnector object that will be used for physical persistence of the file</param>
         /// <param name="author">The Author of the .PNP package file, if any. Optional</param>
         /// <param name="signingCertificate">The X.509 certificate to use for digital signature of the template, optional</param>
+        /// <param name="templateFileName">The name of the tempalte file, optional</param>
         public OpenXMLConnector(string packageFileName,
             FileConnectorBase persistenceConnector,
             String author = null,
-            X509Certificate2 signingCertificate = null)
+            X509Certificate2 signingCertificate = null, String templateFileName = null)
             : base()
         {
             if (String.IsNullOrEmpty(packageFileName))
@@ -75,6 +97,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                     {
                         Generator = PnPCoreUtilities.PnPCoreVersionTag,
                         Author = !String.IsNullOrEmpty(author) ? author : String.Empty,
+                        TemplateFileName = templateFileName ?? ""
                     },
                 };
             }
@@ -104,9 +127,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 container = "";
             }
-
+            container = container.Replace(@"\", @"/").Trim('/');
             var result = (from file in this.pnpInfo.Files
-                          where file.Folder == container
+                          where string.Equals(file.Folder, container, StringComparison.OrdinalIgnoreCase)
                           select file.OriginalName).ToList();
 
             return result;
@@ -134,7 +157,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             }
 
             var result = (from file in this.pnpInfo.Files
-                          where file.Folder.StartsWith(container, StringComparison.InvariantCultureIgnoreCase) 
+                          where file.Folder.StartsWith(container, StringComparison.InvariantCultureIgnoreCase)
                             && !file.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase)
                           select file.Folder).ToList();
 
@@ -151,16 +174,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             return GetFile(fileName, GetContainer());
         }
 
+        /// <summary>
+        /// Returns a filename without a path
+        /// </summary>
+        /// <param name="fileName">Name of the file to get</param>
+        /// <returns>Returns a filename without a path</returns>
         public override string GetFilenamePart(string fileName)
         {
-            fileName = fileName.Replace(@"/", @"\");
-
-            if (fileName.Contains(@"\"))
-            {
-                var parts = fileName.Split(new[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
-                return parts.LastOrDefault();
-            }
-            return fileName;
+            return Path.GetFileName(fileName);
         }
 
         /// <summary>
@@ -256,7 +277,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         {
             if (String.IsNullOrEmpty(fileName))
             {
-                throw new ArgumentException("fileName");
+                throw new ArgumentException(nameof(fileName));
             }
 
             if (String.IsNullOrEmpty(container))
@@ -264,9 +285,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 container = "";
             }
 
+            container = container.Replace(@"\", "/").Trim('/');
+
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             try
@@ -384,9 +407,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         private PnPFileInfo GetFileFromInsidePackage(string fileName, string container)
         {
             string mappedPath = Path.Combine(container, fileName).Replace('\\', '/');
-            var file = (from item in pnpInfo.FilesMap.Map
+            PnPFileInfo file = null;
+            if (pnpInfo.FilesMap != null)
+            {
+                file = (from item in pnpInfo.FilesMap.Map
                         where item.Value.Equals(mappedPath, StringComparison.InvariantCultureIgnoreCase)
                         select pnpInfo.Files.FirstOrDefault(f => f.InternalName == item.Key)).FirstOrDefault();
+            }
             if (file != null) return file;
             return pnpInfo.Files.FirstOrDefault(f => f.OriginalName.Equals(fileName, StringComparison.InvariantCultureIgnoreCase) && f.Folder.Equals(container, StringComparison.InvariantCultureIgnoreCase));
         }
@@ -398,8 +425,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         }
         #endregion
 
+        #region Public Members
+        public PnPInfo Info => this.pnpInfo;
+        #endregion
+
         #region Commit capability
 
+        /// <summary>
+        /// Commits the file
+        /// </summary>
         public void Commit()
         {
             MemoryStream stream = pnpInfo.PackTemplateAsStream();

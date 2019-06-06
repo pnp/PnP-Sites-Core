@@ -1,4 +1,4 @@
-﻿using Microsoft.IdentityModel.S2S.Protocols.OAuth2;
+﻿using SharePointPnP.IdentityModel.Extensions.S2S.Protocols.OAuth2;
 
 namespace OfficeDevPnP.Core.WebAPI
 {

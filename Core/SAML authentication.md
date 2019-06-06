@@ -117,4 +117,5 @@ private void clientContext_ExecutingWebRequest(object sender, WebRequestEventArg
 }
 ```
 
+<img src="https://telemetry.sharepointpnp.com/pnp-sites-core/core/saml-authentication" /> 
 

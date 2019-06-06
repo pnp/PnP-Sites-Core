@@ -20,9 +20,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Default Constructor
+        /// </summary>
         public WorkflowDefinition() { }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="properties">Dictionary of WorkflowDefinition properties</param>
         public WorkflowDefinition(Dictionary<String, String> properties)
         {
             if (properties != null)
@@ -112,7 +118,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Get hash code of WorkflowDefinition
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|",
@@ -131,6 +140,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares WorkflowDefinition with other WorkflowDefinition
+        /// </summary>
+        /// <param name="obj">WorkflowDefinition object</param>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is WorkflowDefinition))
@@ -140,6 +154,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((WorkflowDefinition)obj));
         }
 
+        /// <summary>
+        /// Compares WorkflowDefinition with other WorkflowDefinition
+        /// </summary>
+        /// <param name="other">WorkflowDefinition object</param>
+        /// <returns>true if the WorkflowDefinition object is equal to the current object; otherwise, false.</returns>
         public bool Equals(WorkflowDefinition other)
         {
             if (other == null)

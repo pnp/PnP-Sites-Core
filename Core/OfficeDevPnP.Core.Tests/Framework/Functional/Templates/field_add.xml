@@ -17,15 +17,23 @@ Base template: goal is to verify that all field properties work as expected. Fie
     <!-- Regular fields -->
     <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="FLD_1" DisplayName="Fld 1" Group="PnP Demo" MaxLength="255" AllowDeletion="TRUE" />
     <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="FLD_2" DisplayName="Fld 2" Group="PnP Demo" Title="Fld 2 title" MaxLength="20" AllowDeletion="TRUE" />
+    <!-- Field with a validation formula, please use [displayname] in the formula! -->
+    <Field ID="{D200265D-AF80-4A8E-8595-C7B62316BEFC}" Type="Text" Name="FLD_4" DisplayName="Fld 4" Group="PnP Demo" Title="Fld 4 title" MaxLength="20" AllowDeletion="TRUE">
+      <Validation>=(LEN(LEFT([Fld 4],FIND("@",[Fld 4])-1))&gt;0)+(LEN(RIGHT([Fld 4],LEN([Fld 4])-FIND(".",[Fld 4],FIND("@",[Fld 4]))))&gt;0)+(LEN(MID([Fld 4],FIND("@",[Fld 4])+1,FIND(".",[Fld 4],FIND("@",[Fld 4]))-FIND("@",[Fld 4])-1))&gt;0)+(ISERROR(FIND(" ",[Fld 4]))=TRUE)=4</Validation>
+    </Field>
+    <!-- Note field -->
     <Field ID="{a0d442b9-1c9c-4ef5-8841-ffa2713b9a08}" Type="Note" Name="FLD_6" DisplayName="Fld 6" Group="PnP Demo" Required="TRUE" EnforceUniqueValues="FALSE" Indexed="FALSE" NumLines="6" RichText="TRUE" RichTextMode="FullHtml" IsolateStyles="TRUE" AppendOnly="TRUE" Sortable="FALSE" />
+    <!-- Boolean fields -->
     <Field ID="{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}" Type="Boolean" Name="FLD_10" DisplayName="Fld 10" Group="PnP Demo" Title="Fld 10 title" AllowDeletion="TRUE" />
     <Field ID="{91E4AC38-4AB8-4CC8-9BA9-6BC4C128603A}" Type="Boolean" Name="FLD_11" DisplayName="Fld 11" Group="PnP Demo" ShowInDisplayForm="FALSE" ShowInEditForm="FALSE" ShowInNewForm="FALSE" AllowDeletion="TRUE" />
     <Field ID="{54cb62c0-044e-4faf-ba4c-aa1b8d5053b9}" Type="Boolean" Name="FLD_12" DisplayName="Fld 12" Group="PnP Demo" EnforceUniqueValues="FALSE" Indexed="FALSE">
       <Default>1</Default>
     </Field>
+    <!-- User fields -->
     <Field ID="{A5DE9600-B7A6-42DD-A05E-10D4F1500208}" Type="User" Name="FLD_20" DisplayName="Fld 20" Group="PnP Demo" UserSelectionMode="PeopleOnly" />
     <Field ID="{201D924D-FA15-4E6E-86E8-1324F9FA2868}" Type="User" Name="FLD_21" DisplayName="Fld 21" Group="PnP Demo" UserSelectionScope="3" UserSelectionMode="PeopleAndGroups" />
     <Field ID="{D0EB025B-0334-438A-8880-F0CC654062E3}" Type="UserMulti" Name="FLD_22" DisplayName="Fld 22" Group="PnP Demo" UserSelectionMode="PeopleOnly" />
+    <!-- Choice fields -->
     <Field ID="{117a0ff0-c113-442c-b1a1-313085c5203b}" Type="Choice" Name="FLD_30" DisplayName="Fld 30" Group="PnP Demo" Required="TRUE" EnforceUniqueValues="TRUE" Indexed="TRUE" Format="RadioButtons" FillInChoice="TRUE">
       <Default>Val1</Default>
       <CHOICES>
@@ -34,22 +42,30 @@ Base template: goal is to verify that all field properties work as expected. Fie
         <CHOICE>Val3</CHOICE>
       </CHOICES>
     </Field>
+    <!-- Number fields -->
     <Field ID="{ebd16147-9087-4b80-b100-028193ee3d23}" Type="Number" Name="FLD_35" DisplayName="Fld 35" Group="PnP Demo" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" Min="1" Max="10" Decimals="2" />
+    <!-- Currency fields -->
     <Field ID="{f8c799e3-7b90-44e4-bdd3-d27f98878c69}" Type="Currency" Name="FLD_36" DisplayName="Fld 36" Group="PnP Demo" Description="Fld 36 description" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" LCID="2067">
       <Validation Message="Only 100 is allowed!">=[FLD_36]=100</Validation>
     </Field>
+    <!-- URL fields -->
     <Field ID="{53d1e0bf-6c4d-4ae6-bbaf-56844fabf21c}" Type="URL" Name="FLD_37" DisplayName="Fld 37" Group="PnP Demo" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="Hyperlink" />
+    <!-- HTML fields -->
     <Field ID="{8c7c395b-fef7-4a74-88a5-9154853a7be2}" Type="HTML" Name="FLD_38" DisplayName="Fld 38" Group="PnP Demo" RichText="TRUE" RichTextMode="ThemeHtml" Required="TRUE" />
+    <!-- DateTime fields -->
     <Field ID="{eead3cf0-7575-4961-b354-e7d7663ccc68}" Type="DateTime" Name="FLD_40" DisplayName="Fld 40" Group="PnP Demo" Required="FALSE" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="DateTime" FriendlyDisplayFormat="Relative">
       <Default>[today]</Default>
     </Field>
     <!-- Calculated -->
     <Field ID="{00ecca45-2dc2-447a-b722-633fe69a4c6f}" Type="Calculated" Name="FLD_41" DisplayName="Fld 41" Group="PnP Demo" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="DateOnly" LCID="1033" ResultType="Text" ReadOnly="TRUE">
-      <Formula>=FLD_1+FLD_2</Formula>
+      <Formula>=FLD_1&amp;FLD_2</Formula>
       <FieldRefs>
         <FieldRef Name="FLD_1" ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" />
         <FieldRef Name="FLD_2" ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" />
       </FieldRefs>
+    </Field>
+    <Field ID="{b98e43a4-7038-43a3-8471-d986011a8570}" Type="Calculated" Name="FLD_42" DisplayName="Fld 42" Group="PnP Demo" EnforceUniqueValues="FALSE" Indexed="FALSE" Format="DateOnly" LCID="1033" ResultType="Text" ReadOnly="TRUE">
+      <Formula>=[{fieldtitle:FLD_1}]&amp;[{fieldtitle:FLD_2}]</Formula>
     </Field>
     <!-- Taxonomy fields -->
     <!-- Taxonomy field with default value set, note that this implies that one provisions the terms with a known ID -->

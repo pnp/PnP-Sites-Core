@@ -6,7 +6,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     internal class CDATAEndToken : TokenDefinition
     {
         public CDATAEndToken(Web web)
-            : base(web, "~cdataend", "{cdataend}")
+            : base(web, "{cdataend}")
         {
         }
 

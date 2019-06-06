@@ -27,6 +27,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Comparison code
 
+        /// <summary>
+        /// Gets the hash code.
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|",
@@ -35,6 +39,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with AvailableWebTemplate
+        /// </summary>
+        /// <param name="obj">Object that represents AvailableWebTemplate</param>
+        /// <returns>true if the current object is equal to the AvailableWebTemplate</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is AvailableWebTemplate))
@@ -44,6 +53,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((AvailableWebTemplate)obj));
         }
 
+        /// <summary>
+        /// Compares AvailableWebTemplate object based on LanguageCode and TemplateName
+        /// </summary>
+        /// <param name="other">AvailableWebTemplate object</param>
+        /// <returns>true if the AvailableWebTemplate object is equal to the current object; otherwise, false.</returns>
         public bool Equals(AvailableWebTemplate other)
         {
             if (other == null)

@@ -39,9 +39,9 @@ Core component solution structure follows the generic structure like all PnP pro
 ## Additional documentation ##
 Additional PnP Core component documentation.  
 - [Class and method documentation](Documentation.md)
-- [SAML support](SAML authentication.md)
+- [SAML support](SAML%20authentication.md)
 - [PnP Core nuget package](nuget.md)
-- [Timer job framework](TimerJob Framework.md)
+- [Timer job framework](TimerJob%20Framework.md)
 
 ## AppModelExtensions ##
 [Extension methods](http://msdn.microsoft.com/en-us/library/bb383977.aspx) are a .Net construct that allow to extend an existing type with additional methods. This approach is extensively used in the core library. Below you'll see a method that extends the SharePoint.Client.Web type with a method named CreateContentType:
@@ -107,7 +107,7 @@ public ClientContext GetNetworkCredentialAuthenticatedContext(string siteUrl, st
 public ClientContext GetADFSUserNameMixedAuthenticatedContext(string siteUrl, string user, string password, string domain, string sts, string idpId)
 ```
 
-Go here to learn more about the [ADFS usernamemixed authentication](https://github.com/OfficeDev/PnP/blob/dev/OfficeDevPnP.Core/SAML%20authentication.md).
+Go here to learn more about the [ADFS usernamemixed authentication](https://github.com/OfficeDev/PnP-Sites-Core/blob/master/Core/SAML%20authentication.md).
 
 # Compiling for SharePoint 2013 #
 SharePoint 2013 depends on version 15 client assemblies, SharePoint 2016 depends on 16 client assemblies whereas Office 365 (SharePoint Online) uses version 16.1 client assemblies. The PnP core solution foresees support for this. The solution contains 6 configurations:
@@ -155,7 +155,7 @@ If the operation requires a specific type of context, consider extending from so
 caller).
 
 ## Clarify the type of URL ##
-Clarify if a URL is a FullUrl, ServerRelativeUrl, SiteCollectionRelativeUrl, or LeafUrl.  This avoids ambiguity where users of the API have a different default understanding of what 'url' means.
+Clarify if a URL is a FullUrl, ServerRelativeUrl, SiteCollectionRelativeUrl, or LeafUrl.  This avoids ambiguity where users of the API have a different default understanding of what 'URL' means.
 
 Prefer using the Uri class for clarity, but generally provide overloads that use string.
 
@@ -267,3 +267,4 @@ All code should be version independent, meaning that code should not assume that
 # Multilingual support #
 The Core component code cannot assume that the code is executed against the English language. Hardcoded references to library names are not acceptable for the Core component implementation, like assuming that publishing site has a "Pages" library.
 
+<img src="https://telemetry.sharepointpnp.com/pnp-sites-core/core/readme" /> 

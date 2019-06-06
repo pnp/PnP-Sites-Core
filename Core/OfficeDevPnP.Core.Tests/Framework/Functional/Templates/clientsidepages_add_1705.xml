@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<pnp:ProvisioningTemplate ID="clientsidepages_add_1705" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema">
+  <pnp:ClientSidePages>
+    <!-- Basic page, showing how to add a text control in a single column section with page overwrite -->
+    <pnp:ClientSidePage PageName="simple.aspx" Overwrite="true">
+      <pnp:Sections>
+        <pnp:Section Type="OneColumn">
+          <pnp:Controls>
+            <!-- Text control is setup as web part type Text and then the first property value is taken -->
+            <pnp:CanvasControl WebPartType="Text">
+              <pnp:CanvasControlProperties>
+                <pnp:CanvasControlProperty Key="Text" Value="Hello world"/>
+              </pnp:CanvasControlProperties>
+            </pnp:CanvasControl>
+          </pnp:Controls>
+        </pnp:Section>
+      </pnp:Sections>
+    </pnp:ClientSidePage>
+    <!-- Complex page, showing page name robustness, promotion as news article -->
+    <pnp:ClientSidePage PageName="sitepages/demo.asdpx" PromoteAsNewsArticle="false" Overwrite="true">
+      <pnp:Sections>
+        <!-- Add two column section-->
+        <pnp:Section Type="TwoColumn" Order="10">
+          <!-- Add 2 custom third party web parts, note webpartype = custom -->
+          <pnp:Controls>
+            <!-- Web part is retrieved via the webpartname -->
+            <pnp:CanvasControl Order="10" Column="0" WebPartType="Custom" CustomWebPartName="HelloWorld">
+              <pnp:CanvasControlProperties>
+                <pnp:CanvasControlProperty Key="description" Value="Hello world from control 1!!"/>
+                <pnp:CanvasControlProperty Key="test3" Value="false"/>
+                <pnp:CanvasControlProperty Key="test2" Value="1"/>
+              </pnp:CanvasControlProperties>
+            </pnp:CanvasControl>
+            <pnp:CanvasControl Order="10" Column="1" WebPartType="Custom" CustomWebPartName="HelloWorld">
+              <pnp:CanvasControlProperties>
+                <pnp:CanvasControlProperty Key="description" Value="Hello world from control 2!!"/>
+                <pnp:CanvasControlProperty Key="test3" Value="true"/>
+                <pnp:CanvasControlProperty Key="test2" Value="2"/>
+              </pnp:CanvasControlProperties>
+            </pnp:CanvasControl>
+          </pnp:Controls>
+        </pnp:Section>
+        <!-- Add three column section -->
+        <pnp:Section Type="ThreeColumn" Order="20">
+          <pnp:Controls>
+            <!-- Add custom third party web part by retrieving it via the controlId. Properties are set via a JSON string -->
+            <pnp:CanvasControl WebPartType="Custom"
+                               ControlId="157b22d0-8006-4ec7-bf4b-ed62383fea76"
+                               Order="10"
+                               Column="1"
+                               JsonControlData="{&quot;description&quot;:&quot;HelloWorld from JSON props&quot;,&quot;test&quot;:&quot;Multi-line text field&quot;,&quot;test1&quot;:false,&quot;test2&quot;:&quot;3&quot;,&quot;test3&quot;:false}" />
+          </pnp:Controls>
+        </pnp:Section>
+        <!-- Add a two column section -->
+        <pnp:Section Type="TwoColumn">
+          <pnp:Controls>
+            <!-- Add a slightly more complex text message, not the embedded formatting -->
+            <pnp:CanvasControl WebPartType="Text" Column="1">
+              <pnp:CanvasControlProperties>
+                <pnp:CanvasControlProperty Key="Text" Value="&lt;strong&gt;bold&lt;/strong&gt; and &lt;em&gt;italic&lt;/em&gt;"/>
+              </pnp:CanvasControlProperties>
+            </pnp:CanvasControl>
+            <!-- Add a first party web part of the type image. Properties are set via JSON, but then 'updated' using individual property setting -->
+            <pnp:CanvasControl WebPartType="Image" JsonControlData="{&quot;imageSourceType&quot;:2,&quot;altText&quot;:&quot;&quot;,&quot;fileName&quot;:&quot;PnP Sites Core MSDN API documentation.png&quot;,&quot;siteId&quot;:&quot;c953eccf-3dad-4dda-93ee-83d877dfa7b5&quot;,&quot;webId&quot;:&quot;8987acf9-cfee-4ddc-a4c2-125347ef8cd3&quot;,&quot;listId&quot;:&quot;48fe3228-7483-494c-b464-a3d2b4266605&quot;,&quot;uniqueId&quot;:&quot;5c71fba8-8c28-4207-a5cb-ed6c3f7cac95&quot;,&quot;imgWidth&quot;:1306,&quot;imgHeight&quot;:734}">
+              <pnp:CanvasControlProperties>
+                <pnp:CanvasControlProperty Key="imgWidth" Value="300"/>
+                <pnp:CanvasControlProperty Key="imgHeight" Value="200"/>
+              </pnp:CanvasControlProperties>
+            </pnp:CanvasControl>
+          </pnp:Controls>
+        </pnp:Section>
+      </pnp:Sections> 
+    </pnp:ClientSidePage>
+  </pnp:ClientSidePages>
+</pnp:ProvisioningTemplate>
+
+

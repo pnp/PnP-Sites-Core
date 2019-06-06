@@ -58,17 +58,48 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public String CustomMasterPageUrl { get; set; }
 
+        /// <summary>
+        /// The Hub Site Url of the Site, optional attribute.
+        /// </summary>
+        public String HubSiteUrl { get; set; }
+
+        /// <summary>
+        /// Defines whether the comments on site pages are disabled or not
+        /// </summary>
+        public Boolean CommentsOnSitePagesDisabled { get; set; }
+
+        /// <summary>
+        /// Enables or disables the QuickLaunch for the site
+        /// </summary>
+        public Boolean QuickLaunchEnabled { get; set; }
+        
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Default Constructor
+        /// </summary>
         public WebSettings() { }
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="noCrawl">Based on boolean values sets crawl to the site or subsite</param>
+        /// <param name="requestAccessEmail">E-mail address for request access</param>
+        /// <param name="welcomePage">Welcome page for site or subsite</param>
         public WebSettings(Boolean noCrawl, String requestAccessEmail, String welcomePage):
             this(noCrawl, requestAccessEmail, welcomePage, null, null, null, null)
         {
         }
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="noCrawl">Based on boolean values sets crawl to the site or subsite</param>
+        /// <param name="requestAccessEmail">E-mail address for request access</param>
+        /// <param name="welcomePage">Welcome page for site or subsite</param>
+        /// <param name="title">Title of site or subsite</param>
+        /// <param name="description">Description of site or subsite</param>
+        /// <param name="siteLogo">Logo of site or subsite</param>
+        /// <param name="alternateCSS">Alternate css file location of site or subsite</param>
         public WebSettings(Boolean noCrawl, String requestAccessEmail, String welcomePage, 
             String title, String description, String siteLogo, String alternateCSS)
         {
@@ -84,20 +115,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets hash code
+        /// </summary>
+        /// <returns>Returns hash code in integer</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|",
                 (this.NoCrawl.GetHashCode()),
                 (this.RequestAccessEmail != null ? this.RequestAccessEmail.GetHashCode() : 0),
                 (this.WelcomePage != null ? this.WelcomePage.GetHashCode() : 0),
                 (this.Title != null ? this.Title.GetHashCode() : 0),
                 (this.Description != null ? this.Description.GetHashCode() : 0),
                 (this.SiteLogo != null ? this.SiteLogo.GetHashCode() : 0),
-                (this.AlternateCSS != null ? this.AlternateCSS.GetHashCode() : 0)
+                (this.AlternateCSS != null ? this.AlternateCSS.GetHashCode() : 0),
+                (this.HubSiteUrl != null ? this.HubSiteUrl.GetHashCode() : 0),
+                this.CommentsOnSitePagesDisabled.GetHashCode(),
+                this.QuickLaunchEnabled.GetHashCode()
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares web settings with other web settings
+        /// </summary>
+        /// <param name="obj">WebSettings object</param>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is WebSettings))
@@ -107,6 +149,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((WebSettings)obj));
         }
 
+        /// <summary>
+        /// Compares web settings with other web settings
+        /// </summary>
+        /// <param name="other">WebSettings object</param>
+        /// <returns>true if the WebSettings object is equal to the current object; otherwise, false.</returns>
         public bool Equals(WebSettings other)
         {
             if (other == null)
@@ -120,7 +167,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this.Title == other.Title &&
                     this.Description == other.Description &&
                     this.SiteLogo == other.SiteLogo &&
-                    this.AlternateCSS == other.AlternateCSS
+                    this.AlternateCSS == other.AlternateCSS &&
+                    this.HubSiteUrl == other.HubSiteUrl &&
+                    this.CommentsOnSitePagesDisabled == other.CommentsOnSitePagesDisabled &&
+                    this.QuickLaunchEnabled == other.QuickLaunchEnabled
                 );
         }
 

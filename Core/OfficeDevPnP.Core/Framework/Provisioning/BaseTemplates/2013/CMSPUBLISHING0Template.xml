@@ -1,0 +1,527 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.9.1905.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Templates ID="CONTAINER-CMSPUBLISHING0template">
+    <pnp:ProvisioningTemplate ID="CMSPUBLISHING0template" Version="1" BaseSiteTemplate="CMSPUBLISHING#0" Scope="Web">
+      <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="Pages/default.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
+      <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="Gregorian" Collation="25" FirstDayOfWeek="Sunday" FirstWeekOfYear="0" LocaleId="1033" ShowWeeks="false" Time24="false" TimeZone="31" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
+      <pnp:SupportedUILanguages>
+        <pnp:SupportedUILanguage LCID="1033" />
+      </pnp:SupportedUILanguages>
+      <pnp:PropertyBagEntries>
+        <pnp:PropertyBagEntry Key="__InheritCurrentNavigation" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__InheritsMasterUrl" Value="False" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__PageLayouts" Value="__inherit" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__InheritWebTemplates" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="SaveSiteAsTemplateEnabled" Value="false" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__DefaultPageLayout" Value="&lt;layout guid=&quot;023b50f3-71b9-48b9-b0e5-be44512bbf32&quot; url=&quot;_catalogs/masterpage/PageFromDocLayout.aspx&quot; /&gt;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__DocumentsListId" Value="81f1cb1b-cffd-4e94-a8b2-8c74c37c8272" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associategroups" Value="6;5;4;7;8;9;10;11;12" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__PagesListId" Value="529c1c6e-7fbc-4033-a8dc-10023f8f6a0d" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__InheritsThemedCssFolderUrl" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__NavigationShowSiblings" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__ImagesListId" Value="fd0776a3-b59d-470c-add9-f056c5d172a9" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__InheritsCustomMasterUrl" Value="False" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__NewPageUrlToken" Value="__inherit" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__GlobalNavigationIncludeTypes" Value="3" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="15.0.0.4849" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__pageslistname" Value="Pages" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__WebTemplates" Value="" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__InheritsAlternateCssUrl" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="5" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="4" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_customuploadpage" Value="/_layouts/15/UploadEx.aspx" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__CurrentNavigationIncludeTypes" Value="3" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="NavigationPropertiesSet" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_webnavigationsettings" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot; standalone=&quot;yes&quot;?&gt;&#xD;&#xA;&lt;WebNavigationSettings Version=&quot;1.1&quot;&gt;&#xD;&#xA;  &lt;SiteMapProviderSettings&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;CurrentNavigationSwitchableProvider&quot; UseParentSiteMap=&quot;True&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;CurrentNavigationTaxonomyProvider&quot; UseParentSiteMap=&quot;True&quot; /&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;GlobalNavigationSwitchableProvider&quot; UseParentSiteMap=&quot;True&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;GlobalNavigationTaxonomyProvider&quot; UseParentSiteMap=&quot;True&quot; /&gt;&#xD;&#xA;  &lt;/SiteMapProviderSettings&gt;&#xD;&#xA;  &lt;NewPageSettings AddNewPagesToNavigation=&quot;True&quot; CreateFriendlyUrlsForNewPages=&quot;True&quot; /&gt;&#xD;&#xA;&lt;/WebNavigationSettings&gt;&#xD;&#xA;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__PublishingFeatureActivated" Value="True" Overwrite="false" />
+      </pnp:PropertyBagEntries>
+      <pnp:Navigation AddNewPagesToNavigation="true" CreateFriendlyUrlsForNewPages="true">
+        <pnp:GlobalNavigation NavigationType="Structural">
+          <pnp:StructuralNavigation RemoveExistingNodes="false">
+            <pnp:NavigationNode Title="Home" Url="{site}" />
+          </pnp:StructuralNavigation>
+        </pnp:GlobalNavigation>
+        <pnp:CurrentNavigation />
+      </pnp:Navigation>
+      <pnp:Lists>
+        <pnp:ListInstance Title="Documents" Description="This system library was created by the Publishing feature to store documents that are used on pages in this site." DocumentTemplate="{site}/Documents/Forms/template.dotx" TemplateType="101" Url="Documents" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-e717-4e80-aa17-d0c71b360101" EnableAttachments="false" DefaultDisplayFormUrl="{site}/Documents/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/Documents/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/Documents/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=23" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x0101" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{396EE792-516B-4B7A-92CC-4E77ED2BC117}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="{site}/Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=23">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="FileLeafRef" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="DocIcon" />
+                <FieldRef Name="LinkFilename" />
+                <FieldRef Name="Modified" />
+                <FieldRef Name="Editor" />
+                <FieldRef Name="CheckoutUser" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="Images" Description="This system library was created by the Publishing feature to store images that are used on pages in this site." DocumentTemplate="" TemplateType="851" Url="PublishingImages" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="4bcccd62-dcaf-46dc-a7d4-e38277ef33f4" ContentTypesEnabled="true" EnableAttachments="false" DefaultDisplayFormUrl="{site}/PublishingImages/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/PublishingImages/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/PublishingImages/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/ital.png?rev=23" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0" ValidationFormula="" ValidationMessage="">
+          <pnp:PropertyBagEntries>
+            <pnp:PropertyBagEntry Key="IsAttachmentLibrary" Value="1" Overwrite="false" />
+          </pnp:PropertyBagEntries>
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x0101009148F5A04DDD49CBA7127AADA5FB792B00AADE34325A8B49CDA8BB4DB53328F214" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0101009148F5A04DDD49CBA7127AADA5FB792B006973ACD696DC4858A76371B2FB2F439A" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0101009148F5A04DDD49CBA7127AADA5FB792B00291D173ECE694D56B19D111489C4369D" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120D520A808" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{D348D23F-FEA7-49DD-A474-C1C98A766137}" Type="HTML" DisplayName="All Assets" Url="{site}/PublishingImages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=23">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="LinkFilename" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="ContentType" />
+                <FieldRef Name="DocIcon" />
+                <FieldRef Name="LinkFilename" />
+                <FieldRef Name="ThumbnailOnForm" />
+                <FieldRef Name="Modified" />
+                <FieldRef Name="Editor" />
+                <FieldRef Name="MediaLengthInSeconds" />
+                <FieldRef Name="_ModerationStatus" />
+                <FieldRef Name="PublishingStartDate" />
+                <FieldRef Name="PublishingExpirationDate" />
+                <FieldRef Name="ImageWidth" Explicit="TRUE" />
+                <FieldRef Name="ImageHeight" Explicit="TRUE" />
+                <FieldRef Name="PreviewOnForm" Explicit="TRUE" />
+                <FieldRef Name="_Comments" Explicit="TRUE" />
+                <FieldRef Name="PeopleInMedia" Explicit="TRUE" />
+                <FieldRef Name="VideoSetDescription" Explicit="TRUE" />
+                <FieldRef Name="VideoSetUserOverrideEncoding" Explicit="TRUE" />
+                <FieldRef Name="VideoSetDefaultEncoding" Explicit="TRUE" />
+                <FieldRef Name="VideoSetExternalLink" Explicit="TRUE" />
+                <FieldRef Name="VideoSetShowDownloadLink" Explicit="TRUE" />
+                <FieldRef Name="VideoSetShowEmbedLink" Explicit="TRUE" />
+                <FieldRef Name="VideoSetRenditionsInfo" Explicit="TRUE" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">20</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+            <View Name="{A69093F7-4788-4E54-9C98-8B57D2837916}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="Thumbnails" Url="{site}/PublishingImages/Forms/Thumbnails.aspx" Level="1" BaseViewID="40" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=23">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="LinkFilename" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="ContentType" />
+                <FieldRef Name="DocIcon" />
+                <FieldRef Name="LinkFilenameNoMenu" />
+                <FieldRef Name="Modified" />
+                <FieldRef Name="Editor" />
+                <FieldRef Name="MediaLengthInSeconds" />
+                <FieldRef Name="NameOrTitle" Explicit="TRUE" CalloutMenu="TRUE" />
+                <FieldRef Name="FileSizeDisplay" Explicit="TRUE" />
+                <FieldRef Name="ImageWidth" Explicit="TRUE" />
+                <FieldRef Name="ImageHeight" Explicit="TRUE" />
+                <FieldRef Name="VideoWidthInPixels" Explicit="TRUE" />
+                <FieldRef Name="VideoHeightInPixels" Explicit="TRUE" />
+                <FieldRef Name="PreviewOnForm" Explicit="TRUE" />
+                <FieldRef Name="Created_x0020_Date" Explicit="TRUE" />
+                <FieldRef Name="Author" Explicit="TRUE" />
+                <FieldRef Name="_Comments" Explicit="TRUE" />
+                <FieldRef Name="PeopleInMedia" Explicit="TRUE" />
+                <FieldRef Name="VideoSetDescription" Explicit="TRUE" />
+                <FieldRef Name="VideoSetOwner" Explicit="TRUE" />
+                <FieldRef Name="VideoSetUserOverrideEncoding" Explicit="TRUE" />
+                <FieldRef Name="VideoSetDefaultEncoding" Explicit="TRUE" />
+                <FieldRef Name="VideoSetExternalLink" Explicit="TRUE" />
+                <FieldRef Name="VideoSetShowDownloadLink" Explicit="TRUE" />
+                <FieldRef Name="VideoSetShowEmbedLink" Explicit="TRUE" />
+                <FieldRef Name="VideoSetRenditionsInfo" Explicit="TRUE" />
+                <FieldRef Name="CheckoutUser" Explicit="TRUE" />
+                <FieldRef Name="ThumbnailOnForm" Explicit="TRUE" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js|SP.UI.TileView.js|SP.UI.AssetLibrary.js|callout.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="8c0d0aac-9b76-4951-927a-2490abe13c0b" Name="PreviewOnForm" DisplayName="Preview" />
+            <pnp:FieldRef ID="9941082a-4160-46a1-a5b2-03394bfdf7ee" Name="ThumbnailOnForm" DisplayName="Thumbnail Preview" />
+            <pnp:FieldRef ID="246d0907-637c-46b7-9aa0-0bb914daa832" Name="_Author" DisplayName="Author" />
+            <pnp:FieldRef ID="922551b8-c7e0-46a6-b7e3-3cf02917f68a" Name="ImageSize" DisplayName="Picture Size" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" DisplayName="Title" />
+            <pnp:FieldRef ID="7e68a0f9-af76-404c-9613-6f82bc6dc28c" Name="ImageWidth" DisplayName="Width" />
+            <pnp:FieldRef ID="1944c034-d61b-42af-aa84-647f2e74ca70" Name="ImageHeight" DisplayName="Height" />
+            <pnp:FieldRef ID="a5d2f824-bc53-422e-87fd-765939d863a5" Name="ImageCreateDate" DisplayName="Date Picture Taken" />
+            <pnp:FieldRef ID="52578fc3-1f01-4f4d-b016-94ccbcf428cf" Name="_Comments" DisplayName="Comments" />
+            <pnp:FieldRef ID="b66e9b50-a28e-469b-b1a0-af0e45486874" Name="Keywords" DisplayName="Keywords" />
+            <pnp:FieldRef ID="f08ab41d-9a03-49ae-9413-6cd284a15625" Name="wic_System_Copyright" DisplayName="Copyright" />
+            <pnp:FieldRef ID="f39d44af-d3f3-4ae6-b43f-ac7330b5e9bd" Name="AlternateThumbnailUrl" DisplayName="Preview Image URL" />
+            <pnp:FieldRef ID="de38f937-8578-435e-8cd3-50be3ea59253" Name="MediaLengthInSeconds" DisplayName="Length (seconds)" />
+            <pnp:FieldRef ID="59cd571e-e2d9-485d-bb5d-e70d12f8d0b7" Name="VideoWidthInPixels" DisplayName="Frame Width" />
+            <pnp:FieldRef ID="84cd09bd-85a9-461f-86e3-4c3c1738ad6b" Name="VideoHeightInPixels" DisplayName="Frame Height" />
+            <pnp:FieldRef ID="fd7ef3c2-486e-40cd-b651-6be6d1abbe25" Name="VideoRenditionLabel" DisplayName="Label" />
+            <pnp:FieldRef ID="cf42542f-df94-4136-a0ac-29326fccd565" Name="VideoRenditionBitRate" DisplayName="Bit Rate" />
+            <pnp:FieldRef ID="b76b58ec-0549-4f00-9575-2fd28bd55010" Name="VideoSetDescription" DisplayName="Description" />
+            <pnp:FieldRef ID="2de1df7b-48e1-4c8e-be0f-f00e504b9948" Name="VideoSetOwner" DisplayName="Owner" />
+            <pnp:FieldRef ID="9cb4d391-367f-4342-8f17-ac808799784a" Name="VideoSetShowDownloadLink" DisplayName="Show Download Link" />
+            <pnp:FieldRef ID="6e4ee0c4-4d06-4c04-8d02-58d10fdf912d" Name="VideoSetShowEmbedLink" DisplayName="Show Embed Link" />
+            <pnp:FieldRef ID="bcd999a7-9dca-4824-a515-878bee641ed3" Name="PeopleInMedia" DisplayName="People In Video" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="Pages" Description="This system library was created by the Publishing feature to store pages that are created in this site." DocumentTemplate="" TemplateType="850" Url="Pages" ForceCheckout="true" EnableVersioning="true" EnableMinorVersions="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="1" TemplateFeatureID="22a9ef51-737b-4ff2-9346-694633fe4416" ContentTypesEnabled="true" EnableAttachments="false" DefaultDisplayFormUrl="{site}/Pages/Forms/DispForm.aspx" DefaultEditFormUrl="{site}/Pages/Forms/EditForm.aspx" DefaultNewFormUrl="{site}/Pages/Forms/Upload.aspx" ImageUrl="/_layouts/15/images/itdl.png?rev=23" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0" ValidationFormula="" ValidationMessage="">
+          <pnp:PropertyBagEntries>
+            <pnp:PropertyBagEntry Key="DocumentAsLink" Value="1" Overwrite="false" />
+          </pnp:PropertyBagEntries>
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF39" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF3900242457EFB8B24247815D688C526CD44D" />
+            <pnp:ContentTypeBinding ContentTypeID="0x010100C568DB52D9D0A14D9B2FDCC96666E9F2007948130EC3DB064584E219954237AF390064DEA0F50FC8C147B0B6EA0636C4A7D4" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{6A8F6D29-BA42-4CCC-A32C-600673AB5146}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="{site}/Pages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=23">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="FileLeafRef" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="DocIcon" />
+                <FieldRef Name="LinkFilename" />
+                <FieldRef Name="Modified" />
+                <FieldRef Name="Editor" />
+                <FieldRef Name="CheckoutUser" />
+                <FieldRef Name="PublishingContact" />
+                <FieldRef Name="PublishingPageLayout" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="9da97a8a-1da5-4a77-98d3-4bc10456e700" Name="Comments" DisplayName="Comments" />
+            <pnp:FieldRef ID="aea1a4dd-0f19-417d-8721-95a1d28762ab" Name="PublishingContact" DisplayName="Contact" />
+            <pnp:FieldRef ID="c79dba91-e60b-400e-973d-c6d06f192720" Name="PublishingContactEmail" DisplayName="Contact E-Mail Address" />
+            <pnp:FieldRef ID="7546ad0d-6c33-4501-b470-fb3003ca14ba" Name="PublishingContactName" DisplayName="Contact Name" />
+            <pnp:FieldRef ID="dc47d55f-9bf9-494a-8d5b-e619214dd19a" Name="PublishingContactPicture" DisplayName="Contact Picture" />
+            <pnp:FieldRef ID="0f800910-b30d-4c8f-b011-8189b2297094" Name="PublishingPageLayout" DisplayName="Page Layout" />
+            <pnp:FieldRef ID="543bc2cf-1f30-488e-8f25-6fe3b689d9ac" Name="PublishingRollupImage" DisplayName="Rollup Image" />
+            <pnp:FieldRef ID="61cbb965-1e04-4273-b658-eedaa662f48d" Name="Audience" DisplayName="Target Audiences" />
+            <pnp:FieldRef ID="50631c24-1371-4ecf-a5ae-ed41b03f4499" Name="PublishingIsFurlPage" DisplayName="Hide physical URLs from search" />
+            <pnp:FieldRef ID="ff92f929-d18b-46d4-9879-521378c689ef" Name="SeoBrowserTitle" DisplayName="Browser Title" />
+            <pnp:FieldRef ID="d83897e5-2430-4df7-8e5a-9bc06c664992" Name="SeoMetaDescription" DisplayName="Meta Description" />
+            <pnp:FieldRef ID="45ae2169-585c-440b-aa4c-1d5e981fbbe5" Name="SeoKeywords" DisplayName="Meta Keywords" />
+            <pnp:FieldRef ID="325c00dd-fd91-468b-81cf-5bb9951abba1" Name="RobotsNoIndex" DisplayName="Hide from Internet Search Engines" />
+            <pnp:FieldRef ID="3de94b06-4120-41a5-b907-88773e493458" Name="PublishingPageImage" DisplayName="Page Image" />
+            <pnp:FieldRef ID="f55c4d88-1f2e-4ad9-aaa8-819af4ee7ee8" Name="PublishingPageContent" DisplayName="Page Content" />
+            <pnp:FieldRef ID="b3525efe-59b5-4f0f-b1e4-6e26cb6ef6aa" Name="SummaryLinks" DisplayName="Summary Links" />
+            <pnp:FieldRef ID="d3429cc9-adc4-439b-84a8-5679070f84cb" Name="ArticleByLine" DisplayName="Byline" />
+            <pnp:FieldRef ID="71316cea-40a0-49f3-8659-f0cefdbdbd4f" Name="ArticleStartDate" DisplayName="Article Date" />
+            <pnp:FieldRef ID="66f500e9-7955-49ab-abb1-663621727d10" Name="PublishingImageCaption" DisplayName="Image Caption" />
+            <pnp:FieldRef ID="27761311-936a-40ba-80cd-ca5e7a540a36" Name="SummaryLinks2" DisplayName="Summary Links 2" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="Workflow Tasks" Description="This system library was created by the Publishing feature to store workflow tasks that are created in this site." DocumentTemplate="" TemplateType="107" Url="WorkflowTasks" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="00bfea71-a83e-497e-9ba0-7a5c597d0107" ContentTypesEnabled="true" EnableFolderCreation="false" NoCrawl="true" DefaultDisplayFormUrl="{site}/WorkflowTasks/DispForm.aspx" DefaultEditFormUrl="{site}/WorkflowTasks/EditForm.aspx" DefaultNewFormUrl="{site}/WorkflowTasks/NewForm.aspx" ImageUrl="/_layouts/15/images/ittask.png?rev=23" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0" ValidationFormula="" ValidationMessage="">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x0108" Default="true" />
+            <pnp:ContentTypeBinding ContentTypeID="0x0120" />
+            <pnp:ContentTypeBinding ContentTypeID="0x012004" />
+          </pnp:ContentTypeBindings>
+          <pnp:Views>
+            <View Name="{C901346E-3E75-4DE4-AD1D-67AD9F4E2D56}" DefaultView="TRUE" MobileView="TRUE" Type="HTML" DisplayName="All Tasks" Url="{site}/WorkflowTasks/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=23">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="DocIcon" />
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="AssignedTo" />
+                <FieldRef Name="Status" />
+                <FieldRef Name="Priority" />
+                <FieldRef Name="DueDate" />
+                <FieldRef Name="PercentComplete" />
+                <FieldRef Name="Predecessors" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+            <View Name="{AE1131CC-F1B8-4A9C-8D0C-55994249AAAD}" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="My Tasks" Url="{site}/WorkflowTasks/MyItems.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=23">
+              <Query>
+                <Where>
+                  <Eq>
+                    <FieldRef Name="AssignedTo" />
+                    <Value Type="Integer">
+                      <UserID />
+                    </Value>
+                  </Eq>
+                </Where>
+                <OrderBy>
+                  <FieldRef Name="Status" />
+                  <FieldRef Name="Priority" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="Status" />
+                <FieldRef Name="Priority" />
+                <FieldRef Name="DueDate" />
+                <FieldRef Name="PercentComplete" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+            <View Name="{BDBFD482-D9D0-4787-A673-339BDC8B28D6}" Type="HTML" DisplayName="Due Today" Url="{site}/WorkflowTasks/duetoday.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=23">
+              <Query>
+                <Where>
+                  <Eq>
+                    <FieldRef Name="DueDate" />
+                    <Value Type="DateTime">
+                      <Today />
+                    </Value>
+                  </Eq>
+                </Where>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="AssignedTo" />
+                <FieldRef Name="Status" />
+                <FieldRef Name="Priority" />
+                <FieldRef Name="PercentComplete" />
+                <FieldRef Name="Predecessors" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+            <View Name="{7406E7B8-C0DD-4530-98CA-29E0E60F08D1}" Type="HTML" DisplayName="Active Tasks" Url="{site}/WorkflowTasks/active.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=23">
+              <Query>
+                <Where>
+                  <Neq>
+                    <FieldRef Name="Status" />
+                    <Value Type="Text">Completed</Value>
+                  </Neq>
+                </Where>
+                <OrderBy>
+                  <FieldRef Name="ID" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="AssignedTo" />
+                <FieldRef Name="Status" />
+                <FieldRef Name="Priority" />
+                <FieldRef Name="DueDate" />
+                <FieldRef Name="PercentComplete" />
+                <FieldRef Name="Predecessors" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+            <View Name="{7867D0AA-400A-45C1-8B13-C01FD8A7FE35}" Type="HTML" DisplayName="By Assigned To" Url="{site}/WorkflowTasks/byowner.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=23">
+              <Query>
+                <OrderBy>
+                  <FieldRef Name="AssignedTo" />
+                  <FieldRef Name="Status" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="AssignedTo" />
+                <FieldRef Name="Status" />
+                <FieldRef Name="Priority" />
+                <FieldRef Name="DueDate" />
+                <FieldRef Name="PercentComplete" />
+                <FieldRef Name="Predecessors" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+            <View Name="{D991F7F0-B706-4D00-99BC-C819909F14B6}" Type="HTML" DisplayName="By My Groups" Url="{site}/WorkflowTasks/MyGrTsks.aspx" Level="1" BaseViewID="8" ContentTypeID="0x" ImageUrl="/_layouts/15/images/issues.png?rev=23">
+              <Query>
+                <Where>
+                  <Membership Type="CurrentUserGroups">
+                    <FieldRef Name="AssignedTo" />
+                  </Membership>
+                </Where>
+                <GroupBy Collapse="FALSE">
+                  <FieldRef Name="AssignedTo" />
+                </GroupBy>
+                <OrderBy>
+                  <FieldRef Name="AssignedTo" />
+                  <FieldRef Name="Status" />
+                  <FieldRef Name="Priority" />
+                </OrderBy>
+              </Query>
+              <ViewFields>
+                <FieldRef Name="LinkTitle" />
+                <FieldRef Name="Status" />
+                <FieldRef Name="Priority" />
+                <FieldRef Name="DueDate" />
+                <FieldRef Name="PercentComplete" />
+                <FieldRef Name="Predecessors" />
+              </ViewFields>
+              <RowLimit Paged="TRUE">30</RowLimit>
+              <JSLink>clienttemplates.js</JSLink>
+            </View>
+          </pnp:Views>
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="c3a92d97-2b77-4a25-9698-3ab54874bc6f" Name="Predecessors" DisplayName="Predecessors" />
+            <pnp:FieldRef ID="a8eb573e-9e11-481a-a8c9-1104a54b2fbd" Name="Priority" DisplayName="Priority" />
+            <pnp:FieldRef ID="c15b34c3-ce7d-490a-b133-3f4de8801b76" Name="Status" DisplayName="Status" />
+            <pnp:FieldRef ID="d2311440-1ed6-46ea-b46d-daa643dc3886" Name="PercentComplete" DisplayName="% Complete" />
+            <pnp:FieldRef ID="53101f38-dd2e-458c-b245-0c236cc13d1a" Name="AssignedTo" DisplayName="Assigned To" />
+            <pnp:FieldRef ID="7662cd2c-f069-4dba-9e35-082cf976e170" Name="Body" DisplayName="Description" />
+            <pnp:FieldRef ID="64cd368d-2f95-4bfc-a1f9-8d4324ecb007" Name="StartDate" DisplayName="Start Date" />
+            <pnp:FieldRef ID="cd21b4c2-6841-4f9e-a23a-738a65f99889" Name="DueDate" DisplayName="Due Date" />
+            <pnp:FieldRef ID="d2a04afc-9a05-48c8-a7fa-fa98f9496141" Name="RelatedItems" DisplayName="Related Items" />
+          </pnp:FieldRefs>
+        </pnp:ListInstance>
+      </pnp:Lists>
+      <pnp:Features>
+        <pnp:WebFeatures>
+          <pnp:Feature ID="00bfea71-c796-4402-9f2f-0eb9a6e71b18" />
+          <pnp:Feature ID="065c78be-5231-477e-a972-14177cc5b3c7" />
+          <pnp:Feature ID="00bfea71-5932-4f9c-ad71-1557e5751100" />
+          <pnp:Feature ID="dffaae84-60ee-413a-9600-1cf431cf0560" />
+          <pnp:Feature ID="94c94ca6-b32f-4da9-a9e3-1f3d343d7ecb" />
+          <pnp:Feature ID="0806d127-06e6-447a-980e-2e90b03101b8" />
+          <pnp:Feature ID="00bfea71-4ea5-48d4-a4ad-305cf7030140" />
+          <pnp:Feature ID="2510d73f-7109-4ccc-8a1c-314894deeb3a" />
+          <pnp:Feature ID="192efa95-e50c-475e-87ab-361cede5dd7f" />
+          <pnp:Feature ID="00bfea71-f600-43f6-a895-40c0de7b0117" />
+          <pnp:Feature ID="a7a2793e-67cd-4dc1-9fd0-43f61581207a" />
+          <pnp:Feature ID="00bfea71-eb8a-40b1-80c7-506be7590102" />
+          <pnp:Feature ID="00bfea71-3a1d-41d3-a0ee-651d11570120" />
+          <pnp:Feature ID="22a9ef51-737b-4ff2-9346-694633fe4416" />
+          <pnp:Feature ID="00bfea71-513d-4ca0-96c2-6a47775c0119" />
+          <pnp:Feature ID="00bfea71-2062-426c-90bf-714c59600103" />
+          <pnp:Feature ID="00bfea71-2d77-4a75-9fca-76516689e21a" />
+          <pnp:Feature ID="00bfea71-a83e-497e-9ba0-7a5c597d0107" />
+          <pnp:Feature ID="00bfea71-4ea5-48d4-a4ad-7ea5c011abe5" />
+          <pnp:Feature ID="d2b9ec23-526b-42c5-87b6-852bd83e0364" />
+          <pnp:Feature ID="99fe402e-89a0-45aa-9163-85342e865dc8" />
+          <pnp:Feature ID="57311b7a-9afd-4ff0-866e-9393ad6647b1" />
+          <pnp:Feature ID="f9ce21f8-f437-4f7e-8bc6-946378c850f0" />
+          <pnp:Feature ID="ff13819a-a9ac-46fb-8163-9d53357ef98d" />
+          <pnp:Feature ID="00bfea71-d1ce-42de-9c63-a44004ce0104" />
+          <pnp:Feature ID="00bfea71-52d4-45b3-b544-b1c71b620109" />
+          <pnp:Feature ID="541f5f57-c847-4e16-b59a-b31e90e6f9ea" />
+          <pnp:Feature ID="2c63df2b-ceab-42c6-aeff-b3968162d4b1" />
+          <pnp:Feature ID="00bfea71-7e6d-4186-9ba8-c047ac750105" />
+          <pnp:Feature ID="00bfea71-de22-43b2-a848-c05709900100" />
+          <pnp:Feature ID="00bfea71-e717-4e80-aa17-d0c71b360101" />
+          <pnp:Feature ID="00bfea71-6a49-43fa-b535-d15c05500108" />
+          <pnp:Feature ID="00bfea71-f381-423d-b9d1-da7a54c50110" />
+          <pnp:Feature ID="00bfea71-dbd7-4f72-b8cb-da7ac0440130" />
+          <pnp:Feature ID="00bfea71-9549-43f8-b978-e47e54a10600" />
+          <pnp:Feature ID="00bfea71-ec85-4903-972d-ebe475780106" />
+          <pnp:Feature ID="00bfea71-1e1d-4562-b56a-f05371bb0115" />
+        </pnp:WebFeatures>
+      </pnp:Features>
+      <pnp:Files>
+        <pnp:File Src="_catalogs\masterpage\seattle.master" Folder="{masterpagecatalog}" Overwrite="true" Level="Published">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="DefaultCssFile" Value="corev15app.css" />
+          </pnp:Properties>
+        </pnp:File>
+        <pnp:File Src="_catalogs\masterpage\oslo.master" Folder="{masterpagecatalog}" Overwrite="true" Level="Published">
+          <pnp:Properties>
+            <pnp:Property Key="ContentTypeId" Value="{contenttypeid:Master Page}" />
+            <pnp:Property Key="DefaultCssFile" Value="osloapp.css" />
+          </pnp:Properties>
+        </pnp:File>
+      </pnp:Files>
+      <pnp:ComposedLook Name="Office" ColorFile="" FontFile="" BackgroundFile="" Version="0" />
+      <pnp:Publishing AutoCheckRequirements="MakeCompliant">
+        <pnp:AvailableWebTemplates>
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="GLOBAL#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="STS#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="STS#1" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="STS#2" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="MPS#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="MPS#1" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="MPS#2" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="MPS#3" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="MPS#4" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="CENTRALADMIN#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="WIKI#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="BLOG#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SGS#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="TENANTADMIN#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="APP#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="APPCATALOG#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="ACCSRV#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="ACCSVC#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="ACCSVC#1" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="BDR#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="DEV#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="DOCMARKETPLACESITE#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="EDISC#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="EDISC#1" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="OFFILE#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="OFFILE#1" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="OSRV#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="PPSMASite#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="BICenterSite#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPS#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPERS#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPERS#2" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPERS#3" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPERS#4" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPERS#5" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSMSITE#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSTOC#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSTOPIC#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSNEWS#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="CMSPUBLISHING#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="BLANKINTERNET#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="BLANKINTERNET#1" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="BLANKINTERNET#2" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSNHOME#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSSITES#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSCOMMU#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSREPORTCENTER#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSPORTAL#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SRCHCEN#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="PROFILES#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="BLANKINTERNETCONTAINER#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SPSMSITEHOST#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="ENTERWIKI#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="PROJECTSITE#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="PRODUCTCATALOG#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="COMMUNITY#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="COMMUNITYPORTAL#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SRCHCENTERLITE#0" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="SRCHCENTERLITE#1" />
+          <pnp:WebTemplate LanguageCode="1033" TemplateName="visprus#0" />
+        </pnp:AvailableWebTemplates>
+        <pnp:ImageRenditions>
+          <pnp:ImageRendition Name="Display Template Picture 3 Lines" Width="100" Height="100" />
+          <pnp:ImageRendition Name="Display Template Picture On Top" Width="304" Height="100" />
+          <pnp:ImageRendition Name="Display Template Large Picture" Width="468" Height="220" />
+          <pnp:ImageRendition Name="Display Template Video" Width="120" Height="68" />
+        </pnp:ImageRenditions>
+      </pnp:Publishing>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

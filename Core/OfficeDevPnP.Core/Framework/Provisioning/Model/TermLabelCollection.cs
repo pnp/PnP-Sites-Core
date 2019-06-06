@@ -9,8 +9,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of TermLabel objects
     /// </summary>
-    public partial class TermLabelCollection : ProvisioningTemplateCollection<TermLabel>
+    public partial class TermLabelCollection : BaseProvisioningTemplateObjectCollection<TermLabel>
     {
+        /// <summary>
+        /// Constructor for TermLabelCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public TermLabelCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 

@@ -43,14 +43,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public bool Hidden { get; set; }
 
+        /// <summary>
+        /// Declares if the FieldRef should be Removed from the list or library, optional attribute.
+        /// </summary>
+        public bool Remove { get; set; }
+
+        /// <summary>
+        /// Declares whether the current field reference has to be udpated on inherited content types
+        /// </summary>
+        public bool UpdateChildren { get; set; }
+
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for FieldRef class
+        /// </summary>
         public FieldRef()
         {
         }
 
+        /// <summary>
+        /// Constructor for FieldRef class
+        /// </summary>
+        /// <param name="fieldRefName">Name of the Field Reference</param>
         public FieldRef(string fieldRefName)
         {
             this.Name = fieldRefName;
@@ -59,16 +75,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
                 (this.Id != null ? this.Id.GetHashCode() : 0),
                 this.Required.GetHashCode(),
-                this.Hidden.GetHashCode()
+                this.Hidden.GetHashCode(),
+                this.Remove.GetHashCode(),
+                this.UpdateChildren.GetHashCode()
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with FieldRef
+        /// </summary>
+        /// <param name="obj">Object that represents FieldRef</param>
+        /// <returns>true if the current object is equal to the FieldRef</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is FieldRef))
@@ -78,6 +104,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((FieldRef)obj));
         }
 
+        /// <summary>
+        /// Compares FieldRef object based on Id, Required, Hidden, Remove, and UpdateChildren properties.
+        /// </summary>
+        /// <param name="other">FieldRef object</param>
+        /// <returns>true if the FieldRef object is equal to the current object; otherwise, false.</returns>
         public bool Equals(FieldRef other)
         {
             if (other == null)
@@ -87,7 +118,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             return (this.Id == other.Id &&
                 this.Required == other.Required &&
-                this.Hidden == other.Hidden);
+                this.Hidden == other.Hidden &&
+                this.Remove == other.Remove &&
+                this.UpdateChildren == other.UpdateChildren
+                );
         }
 
         #endregion

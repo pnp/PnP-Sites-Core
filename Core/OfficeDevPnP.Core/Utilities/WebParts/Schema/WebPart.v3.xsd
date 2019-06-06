@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<s:schema xmlns:s="http://www.w3.org/2001/XMLSchema"
+    targetNamespace="http://schemas.microsoft.com/WebPart/v3"
+    xmlns:wpv3="http://schemas.microsoft.com/WebPart/v3">
+  <s:complexType name="propertyContainerType">
+    <s:sequence>
+      <s:choice>
+        <s:element name="property" type="wpv3:propertyType" minOccurs="0" maxOccurs="unbounded" />
+        <s:element name="ipersonalizable" minOccurs="0" maxOccurs="1">
+          <s:complexType>
+            <s:sequence>
+              <s:element name="property" type="wpv3:propertyType" minOccurs="0" maxOccurs="unbounded" />
+            </s:sequence>
+          </s:complexType>
+        </s:element>
+      </s:choice>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="webPart">
+    <s:sequence>
+      <s:element name="metaData" minOccurs="1" maxOccurs="1">
+        <s:complexType>
+          <s:sequence>
+            <s:element name="type" minOccurs="1" maxOccurs="1">
+              <s:complexType>
+                <s:sequence>
+                </s:sequence>
+                <s:attribute name="name" type="s:string">
+                </s:attribute>
+                <s:attribute name="src" type="s:string">
+                </s:attribute>
+              </s:complexType>
+            </s:element>
+            <s:element name="importErrorMessage" type="s:string" minOccurs="1" maxOccurs="1">
+            </s:element>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="data" minOccurs="1" maxOccurs="1">
+        <s:complexType>
+          <s:sequence>
+            <s:element name="properties" type="wpv3:propertyContainerType" minOccurs="1" maxOccurs="1"/>
+            <s:element name="genericWebPartProperties" type="wpv3:propertyContainerType" minOccurs="0" maxOccurs="1"/>
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="propertyType">
+    <s:simpleContent>
+      <s:extension base="s:string">
+        <s:attribute name="name" type="s:string" use="required" />
+        <s:attribute name="type" type="s:string" use="required" />
+        <s:attribute name="null" type="s:boolean" />
+      </s:extension>
+    </s:simpleContent>
+  </s:complexType>
+  <s:element name="webParts">
+    <s:complexType>
+      <s:sequence>
+        <s:element name="webPart" type="wpv3:webPart" minOccurs="1" maxOccurs="1" />
+      </s:sequence>
+    </s:complexType>
+  </s:element>
+</s:schema>

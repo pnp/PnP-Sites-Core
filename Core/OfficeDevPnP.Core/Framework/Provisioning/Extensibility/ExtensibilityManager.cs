@@ -25,31 +25,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
         /// <exception cref="ExtensiblityPipelineException"></exception>
         /// <exception cref="ArgumentException">Provider.Assembly or Provider.Type is NullOrWhiteSpace></exception>
         /// <exception cref="ArgumentNullException">ClientContext is Null></exception>
-        public IEnumerable<TokenDefinition> ExecuteTokenProviderCallOut(ClientContext ctx, Provider provider, ProvisioningTemplate template)
+        public IEnumerable<TokenDefinition> ExecuteTokenProviderCallOut(ClientContext ctx, ExtensibilityHandler provider, ProvisioningTemplate template)
         {
             var _loggingSource = "OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensibilityManager.ExecuteTokenProviderCallOut";
 
             if (ctx == null)
-                throw new ArgumentNullException(CoreResources.Provisioning_Extensibility_Pipeline_ClientCtxNull);
+                throw new ArgumentNullException(nameof(ctx), CoreResources.Provisioning_Extensibility_Pipeline_ClientCtxNull);
 
             if (string.IsNullOrWhiteSpace(provider.Assembly))
-                throw new ArgumentException(CoreResources.Provisioning_Extensibility_Pipeline_Missing_AssemblyName);
+                throw new ArgumentException(String.Format("{0}.{1}", nameof(provider), nameof(provider.Assembly)), CoreResources.Provisioning_Extensibility_Pipeline_Missing_AssemblyName);
 
             if (string.IsNullOrWhiteSpace(provider.Type))
-                throw new ArgumentException(CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
+                throw new ArgumentException(String.Format("{0}.{1}", nameof(provider), nameof(provider.Type)), CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
 
             try
             {
-
-                var _instance = GetProviderInstance(provider) as IProvisioningExtensibilityTokenProvider;
-                if (_instance != null)
+                var providerInstance = GetProviderInstance(provider);
+                var extensibilityTokenProviderInstance = providerInstance as IProvisioningExtensibilityTokenProvider;
+                if (extensibilityTokenProviderInstance != null)
                 {
                     Log.Info(_loggingSource,
                         CoreResources.Provisioning_Extensibility_Pipeline_BeforeInvocation,
                         provider.Assembly,
                         provider.Type);
 
-                    var tokens = _instance.GetTokens(ctx, template, provider.Configuration);
+                    var tokens = extensibilityTokenProviderInstance.GetTokens(ctx, template, provider.Configuration);
 
                     Log.Info(_loggingSource,
                         CoreResources.Provisioning_Extensibility_Pipeline_Success,
@@ -57,6 +57,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
                         provider.Type);
 
                     return tokens;
+                }
+                else if (providerInstance != null)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(provider), string.Format(CoreResources.Provisioning_Extensibility_Invalid_Handler_Implementation, this.GetType().Assembly.GetName().Version.ToString(), provider.Assembly, provider.Type));
                 }
                 return new List<TokenDefinition>();
             }
@@ -94,26 +98,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
             var _loggingSource = "OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensibilityManager.ExecuteCallout";
 
             if (ctx == null)
-                throw new ArgumentNullException(CoreResources.Provisioning_Extensibility_Pipeline_ClientCtxNull);
+                throw new ArgumentNullException(nameof(ctx), CoreResources.Provisioning_Extensibility_Pipeline_ClientCtxNull);
 
             if (string.IsNullOrWhiteSpace(handler.Assembly))
-                throw new ArgumentException(CoreResources.Provisioning_Extensibility_Pipeline_Missing_AssemblyName);
+                throw new ArgumentException(String.Format("{0}.{1}", nameof(handler), nameof(handler.Type)), CoreResources.Provisioning_Extensibility_Pipeline_Missing_AssemblyName);
 
             if (string.IsNullOrWhiteSpace(handler.Type))
-                throw new ArgumentException(CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
+                throw new ArgumentException(String.Format("{0}.{1}", nameof(handler), nameof(handler.Type)), CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
 
             try
             {
 
                 var _instance = GetProviderInstance(handler);
+#pragma warning disable 618
                 if (_instance is IProvisioningExtensibilityProvider)
+#pragma warning restore 618
                 {
                     Log.Info(_loggingSource,
                         CoreResources.Provisioning_Extensibility_Pipeline_BeforeInvocation,
                         handler.Assembly,
                         handler.Type);
 
+#pragma warning disable 618
                     (_instance as IProvisioningExtensibilityProvider).ProcessRequest(ctx, template, handler.Configuration);
+#pragma warning restore 618
 
                     Log.Info(_loggingSource,
                         CoreResources.Provisioning_Extensibility_Pipeline_Success,
@@ -133,6 +141,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
                         CoreResources.Provisioning_Extensibility_Pipeline_Success,
                         handler.Assembly,
                         handler.Type);
+                }
+                else if (_instance != null && !(_instance is IProvisioningExtensibilityTokenProvider))
+                {
+                    throw new ArgumentOutOfRangeException(nameof(handler), string.Format(CoreResources.Provisioning_Extensibility_Invalid_Handler_Implementation, this.GetType().Assembly.GetName().Version.ToString(), handler.Assembly, handler.Type));
                 }
             }
             catch (Exception ex)
@@ -167,19 +179,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
             var _loggingSource = "OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensibilityManager.ExecuteCallout";
 
             if (ctx == null)
-                throw new ArgumentNullException(CoreResources.Provisioning_Extensibility_Pipeline_ClientCtxNull);
+                throw new ArgumentNullException(nameof(ctx), CoreResources.Provisioning_Extensibility_Pipeline_ClientCtxNull);
 
             if (string.IsNullOrWhiteSpace(handler.Assembly))
-                throw new ArgumentException(CoreResources.Provisioning_Extensibility_Pipeline_Missing_AssemblyName);
+                throw new ArgumentException(String.Format("{0}.{1}", nameof(handler), nameof(handler.Assembly)), CoreResources.Provisioning_Extensibility_Pipeline_Missing_AssemblyName);
 
             if (string.IsNullOrWhiteSpace(handler.Type))
-                throw new ArgumentException(CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
+                throw new ArgumentException(String.Format("{0}.{1}", nameof(handler), nameof(handler.Type)), CoreResources.Provisioning_Extensibility_Pipeline_Missing_TypeName);
 
             ProvisioningTemplate parsedTemplate = null;
 
             try
             {
-
                 var _instance = GetProviderInstance(handler);
                 if (_instance is IProvisioningExtensibilityHandler)
                 {
@@ -195,6 +206,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
                         handler.Assembly,
                         handler.Type);
                 }
+                else if (_instance != null && !(_instance is IProvisioningExtensibilityTokenProvider))
+                {
+                    throw new ArgumentOutOfRangeException(nameof(handler), string.Format(CoreResources.Provisioning_Extensibility_Invalid_Handler_Implementation, this.GetType().Assembly.GetName().Version.ToString(), handler.Assembly, handler.Type));
+                }
                 else
                 {
                     parsedTemplate = template;
@@ -209,7 +224,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
                     ex);
                 Log.Error(_loggingSource, _message);
                 throw new ExtensiblityPipelineException(_message, ex);
-
             }
 
             return parsedTemplate;
@@ -224,7 +238,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
 
             if (!handlerCache.ContainsKey(handler))
             {
+#if NETSTANDARD2_0
+                var _instance = Activator.CreateInstance(handler.GetType());
+#else
                 var _instance = Activator.CreateInstance(handler.Assembly, handler.Type).Unwrap();
+#endif
                 handlerCache.Add(handler, _instance);
             }
             return handlerCache[handler];

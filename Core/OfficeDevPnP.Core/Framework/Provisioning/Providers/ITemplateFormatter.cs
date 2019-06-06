@@ -20,7 +20,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
         void Initialize(TemplateProviderBase provider);
 
         /// <summary>
-        /// Method to validate the content of a formatted template instace
+        /// Method to validate the content of a formatted template instance
         /// </summary>
         /// <param name="template">The formatted template instance as a Stream</param>
         /// <returns>Boolean result of the validation</returns>

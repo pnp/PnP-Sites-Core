@@ -1,6 +1,7 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Tests.Framework.Functional.Implementation;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
@@ -13,8 +14,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
         public CustomActionTests()
         {
             //debugMode = true;
-            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59";
-            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_c3a9328a-21dd-4d3e-8919-ee73b0d5db59/sub";
+            //centralSiteCollectionUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_ab5f2990-6015-48c5-a09b-685153dcebc9";
+            //centralSubSiteUrl = "https://bertonline.sharepoint.com/sites/TestPnPSC_12345_ab5f2990-6015-48c5-a09b-685153dcebc9/sub";
         }
         #endregion
 
@@ -34,69 +35,21 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional
 
         #region Site collection test cases
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void SiteCollectionCustomActionAddingTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSiteCollectionUrl))
-            {
-                // Ensure we can test clean
-                DeleteCustomActions(cc);
-
-                // Add custom actions
-                var result = TestProvisioningTemplate(cc, "customaction_add.xml", Handlers.CustomActions);
-                Assert.IsTrue(CustomActionValidator.Validate(result.SourceTemplate.CustomActions, result.TargetTemplate.CustomActions, result.TargetTokenParser));
-
-#if !SP2013
-                // Update custom actions
-                var result2 = TestProvisioningTemplate(cc, "customaction_delta_1.xml", Handlers.CustomActions);
-                Assert.IsTrue(CustomActionValidator.Validate(result2.SourceTemplate.CustomActions, result2.TargetTemplate.CustomActions, result2.TargetTokenParser));
-#endif
-            }
+            new CustomActionImplementation().SiteCollectionCustomActionAdding(centralSiteCollectionUrl);
         }
         #endregion
 
         #region Web test cases
         [TestMethod]
+        [Timeout(15 * 60 * 1000)]
         public void WebCustomActionAddingTest()
         {
-            using (var cc = TestCommon.CreateClientContext(centralSubSiteUrl))
-            {
-                // Ensure we can test clean
-                DeleteCustomActions(cc);
-
-                // Add custom actions
-                var result = TestProvisioningTemplate(cc, "customaction_add.xml", Handlers.CustomActions);
-                Assert.IsTrue(CustomActionValidator.ValidateCustomActions(result.SourceTemplate.CustomActions.WebCustomActions, result.TargetTemplate.CustomActions.WebCustomActions, result.TargetTokenParser));
-
-#if !SP2013
-                // Update custom actions
-                var result2 = TestProvisioningTemplate(cc, "customaction_delta_1.xml", Handlers.CustomActions);
-                Assert.IsTrue(CustomActionValidator.ValidateCustomActions(result2.SourceTemplate.CustomActions.WebCustomActions, result2.TargetTemplate.CustomActions.WebCustomActions, result2.TargetTokenParser));
-#endif
-            }
+            new CustomActionImplementation().WebCustomActionAdding(centralSubSiteUrl);
         }
-#endregion
+        #endregion
 
-#region Helper methods
-        private void DeleteCustomActions(ClientContext cc)
-        {
-            var siteActions = cc.Site.GetCustomActions();
-            foreach (var action in siteActions)
-            {
-                if (action.Name.StartsWith("CA_"))
-                {
-                    cc.Site.DeleteCustomAction(action.Id);
-                }
-            }
-
-            var webActions = cc.Web.GetCustomActions();
-            foreach (var action in webActions)
-            {
-                if (action.Name.StartsWith("CA_"))
-                {
-                    cc.Web.DeleteCustomAction(action.Id);
-                }
-            }
-        }
-#endregion
     }
 }

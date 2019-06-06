@@ -103,13 +103,26 @@ alert(""Hello!"");
 
 
                 ctx.Web.EnsureProperties(w => w.ServerRelativeUrl);
+                var serverRelativeUrl = UrlUtility.Combine(ctx.Web.ServerRelativeUrl, UrlUtility.Combine(folder, fileName));
+                var file = ctx.Web.GetFileByServerRelativeUrl(serverRelativeUrl);
+                
+                // This call will fail as we're creating a file not bound to a list
+                ctx.Load(file);
+                try
+                {
+                    ctx.ExecuteQueryRetry();
+                    Assert.IsTrue(file.ServerRelativeUrl.Equals(serverRelativeUrl, StringComparison.InvariantCultureIgnoreCase));
+                }
+                catch (ServerException ex)
+                {
+                    // If this throws ServerException (does not belong to list), then shouldn't be trying to set properties)
+                    // Handling the exception stating the "The object specified does not belong to a list."
+                    if (ex.ServerErrorCode != -2146232832)
+                    {
+                        throw;
+                    }
+                }
 
-                var file = ctx.Web.GetFileByServerRelativeUrl(
-                    UrlUtility.Combine(ctx.Web.ServerRelativeUrl,
-                        UrlUtility.Combine(folder, fileName)));
-                ctx.Load(file, f => f.Exists);
-                ctx.ExecuteQueryRetry();
-                Assert.IsTrue(file.Exists);
             }
         }
 
@@ -193,11 +206,13 @@ alert(""Hello!"");
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var parser = new TokenParser(ctx.Web, template);
-                new ObjectField().ProvisionObjects(ctx.Web, template, parser,
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser,
                     new ProvisioningTemplateApplyingInformation());
-                new ObjectContentType().ProvisionObjects(ctx.Web, template, parser,
+                new ObjectContentType(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser,
                     new ProvisioningTemplateApplyingInformation());
-                new ObjectListInstance().ProvisionObjects(ctx.Web, template, parser,
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser,
+                    new ProvisioningTemplateApplyingInformation());
+                new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(ctx.Web, template, parser,
                     new ProvisioningTemplateApplyingInformation());
 
                 new ObjectFiles().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());

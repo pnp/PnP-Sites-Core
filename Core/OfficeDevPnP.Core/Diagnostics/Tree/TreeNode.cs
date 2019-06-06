@@ -5,15 +5,26 @@ using System.Linq;
 
 namespace OfficeDevPnP.Core.Diagnostics.Tree
 {
+    /// <summary>
+    /// Defnines methods for TreeNode
+    /// </summary>
+    /// <typeparam name="T">Generic type</typeparam>
     public class TreeNode<T> : ITreeNode<T>
         where T : new()
     {
+        /// <summary>
+        /// Defalt Constructor
+        /// </summary>
         public TreeNode()
         {
             _Parent = null;
             _ChildNodes = new TreeNodeList<T>(this);
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="Value">Generic type value</param>
         public TreeNode(T Value)
         {
             this.Value = Value;
@@ -21,6 +32,11 @@ namespace OfficeDevPnP.Core.Diagnostics.Tree
             _ChildNodes = new TreeNodeList<T>(this);
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="Value">Generic type value</param>
+        /// <param name="Parent">TreeNode</param>
         public TreeNode(T Value, TreeNode<T> Parent)
         {
             this.Value = Value;
@@ -28,18 +44,30 @@ namespace OfficeDevPnP.Core.Diagnostics.Tree
             _ChildNodes = new TreeNodeList<T>(this);
         }
 
+        /// <summary>
+        /// Gets parent node
+        /// </summary>
         public ITreeNode ParentNode
         {
             get { return _Parent; }
         }
 
         private ITreeNode<T> _Parent;
+
+        /// <summary>
+        /// Gets or sets parent of a node
+        /// </summary>
         public ITreeNode<T> Parent
         {
             get { return _Parent; }
             set { SetParent(value, true); }
         }
 
+        /// <summary>
+        /// Sets parent node
+        /// </summary>
+        /// <param name="node">Tree node to set as parent</param>
+        /// <param name="updateChildNodes">Based on boolean value updates child nodes</param>
         public void SetParent(ITreeNode<T> node, bool updateChildNodes = true)
         {
             if (node == Parent)
@@ -68,18 +96,27 @@ namespace OfficeDevPnP.Core.Diagnostics.Tree
             }
         }
 
+        /// <summary>
+        /// Gets root node
+        /// </summary>
         public ITreeNode<T> Root
         {
             get { return (Parent == null) ? this : Parent.Root; }
         }
 
         private TreeNodeList<T> _ChildNodes;
+
+        /// <summary>
+        /// Gets children node
+        /// </summary>
         public TreeNodeList<T> Children
         {
             get { return _ChildNodes; }
         }
 
-        // non-generic iterator for interface-based support (From TreeNodeView, for example)
+        /// <summary>
+        /// Gets list of Child nodes
+        /// </summary>
         public IEnumerable<ITreeNode> ChildNodes
         {
             get
@@ -91,6 +128,9 @@ namespace OfficeDevPnP.Core.Diagnostics.Tree
             }
         }
 
+        /// <summary>
+        /// Gets list of descendants
+        /// </summary>
         public IEnumerable<ITreeNode> Descendants
         {
             get
@@ -107,6 +147,9 @@ namespace OfficeDevPnP.Core.Diagnostics.Tree
             }
         }
 
+        /// <summary>
+        /// Gets sub tree nodes
+        /// </summary>
         public IEnumerable<ITreeNode> Subtree
         {
             get
@@ -120,6 +163,9 @@ namespace OfficeDevPnP.Core.Diagnostics.Tree
             }
         }
 
+        /// <summary>
+        /// Gets list of ancestors
+        /// </summary>
         public IEnumerable<ITreeNode> Ancestors
         {
             get
@@ -136,13 +182,19 @@ namespace OfficeDevPnP.Core.Diagnostics.Tree
             }
         }
 
-        // [recurse up] descending aggregate property
+        /// <summary>
+        /// Gets height of a tree
+        /// </summary>
         public int Height
         {
             get { return Children.Count == 0 ? 0 : Children.Max(n => n.Height) + 1; }
         }
 
         private T _Value;
+
+        /// <summary>
+        /// Gets or sets node value
+        /// </summary>
         public T Value
         {
             get { return _Value; }
@@ -162,7 +214,9 @@ namespace OfficeDevPnP.Core.Diagnostics.Tree
             }
         }
 
-        // [recurse up] bubble up aggregate property
+        /// <summary>
+        /// Gets depth of a tree
+        /// </summary>
         public int Depth
         {
             get { return (Parent == null ? 0 : Parent.Depth + 1); }
@@ -224,6 +278,10 @@ namespace OfficeDevPnP.Core.Diagnostics.Tree
         //        throw new ObjectDisposedException(GetType().Name);
         //}
 
+        /// <summary>
+        /// Returns comma seperated Depth, height and number of children of a tree as a string
+        /// </summary>
+        /// <returns>Returns comma seperated Depth, height and number of children of a tree as a string</returns>
         public override string ToString()
         {
             return "Depth=" + Depth + ", Height=" + Height + ", Children=" + Children.Count;

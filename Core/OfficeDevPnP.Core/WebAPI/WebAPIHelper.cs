@@ -9,11 +9,12 @@ using System.Text;
 using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.UI;
-using Microsoft.IdentityModel.S2S.Protocols.OAuth2;
-using Microsoft.IdentityModel.S2S.Tokens;
+using SharePointPnP.IdentityModel.Extensions.S2S.Protocols.OAuth2;
+using SharePointPnP.IdentityModel.Extensions.S2S.Tokens;
 using Microsoft.SharePoint.Client;
 using Log = OfficeDevPnP.Core.Diagnostics.Log;
 using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Async;
 
 namespace OfficeDevPnP.Core.WebAPI
 {
@@ -85,7 +86,7 @@ namespace OfficeDevPnP.Core.WebAPI
                 WebAPIContexCacheItem cacheItem = WebAPIContextCache.Instance.Get(cacheKey);
 
                 //request a new access token from ACS whenever our current access token will expire in less than 1 hour
-                if (cacheItem.AccessToken.ExpiresOn < (DateTime.Now.AddHours(-1)))
+                if (cacheItem.AccessToken.ExpiresOn.ToUniversalTime() < (DateTime.UtcNow.AddHours(1)))
                 {
                     Uri targetUri = new Uri(cacheItem.SharePointServiceContext.HostWebUrl);
                     OAuth2AccessTokenResponse accessToken = TokenHelper.GetAccessToken(cacheItem.RefreshToken, TokenHelper.SharePointPrincipal, targetUri.Authority, TokenHelper.GetRealmFromTargetUrl(targetUri));
@@ -142,9 +143,11 @@ namespace OfficeDevPnP.Core.WebAPI
         {
             if (page == null)
                 throw new ArgumentNullException("page");
-
+            
             if (string.IsNullOrEmpty(apiRequest))
                 throw new ArgumentNullException("apiRequest");
+
+            await new SynchronizationContextRemover();
 
             if (!page.IsPostBack)
             {
@@ -221,6 +224,93 @@ namespace OfficeDevPnP.Core.WebAPI
 
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// This method needs to be called from a code behind of the SharePoint app startup page (default.aspx). It registers the calling
+        /// SharePoint app by calling a specific "Register" api in your WebAPI service.
+        /// 
+        /// Note:
+        /// Given that method is async you'll need to add the  Async="true" page directive to the page that uses this method.
+        /// </summary>
+        /// <param name="context">The HttpContextBase object, needed to insert the services token cookie and read the querystring</param>
+        /// <param name="apiRequest">Route to the "Register" API</param>
+        /// <param name="serviceEndPoint">Optional Uri to the WebAPI service endpoint. If null then the assumption is taken that the WebAPI is hosted together with the page making this call</param>
+        public static void RegisterWebAPIService(HttpContextBase context, string apiRequest, Uri serviceEndPoint = null)
+        {
+            if (context == null)
+                throw new ArgumentNullException("context");
+
+            if (string.IsNullOrEmpty(apiRequest))
+                throw new ArgumentNullException("apiRequest");
+
+            HttpRequestBase request = context.Request;
+
+            try
+            {
+                if (request.QueryString.AsString(SERVICES_TOKEN, string.Empty).Equals(string.Empty))
+                {
+                    // Construct a JsonWebSecurityToken so we can fetch the cachekey...implementation is copied from tokenhelper approach
+                    string cacheKey = string.Empty;
+                    string contextToken = TokenHelper.GetContextTokenFromRequest(request);
+                    JsonWebSecurityTokenHandler tokenHandler = TokenHelper.CreateJsonWebSecurityTokenHandler();
+                    SecurityToken securityToken = tokenHandler.ReadToken(contextToken);
+                    JsonWebSecurityToken jsonToken = securityToken as JsonWebSecurityToken;
+
+                    string appctx = GetClaimValue(jsonToken, "appctx");
+                    if (appctx != null)
+                    {
+                        ClientContext ctx = new ClientContext("http://tempuri.org");
+                        Dictionary<string, object> dict = (Dictionary<string, object>)ctx.ParseObjectFromJsonString(appctx);
+                        cacheKey = (string)dict["CacheKey"];
+                    }
+
+                    // Remove special chars (=, +, /, {}) from cachekey as there's a flaw in CookieHeaderValue when the 
+                    // cookie is read. This flaw replaces special chars with a space.
+                    cacheKey = RemoveSpecialCharacters(cacheKey);
+
+                    bool httpOnly = true;
+                    if (serviceEndPoint != null)
+                    {
+                        if (!serviceEndPoint.Host.Equals(context.Request.Url.Host, StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            httpOnly = false;
+                        }
+                    }
+                    else
+                    {
+                        serviceEndPoint = new Uri(String.Format("{0}://{1}:{2}", context.Request.Url.Scheme, context.Request.Url.Host, context.Request.Url.Port));
+                    }
+
+                    // Write the cachekey in a cookie
+                    HttpCookie cookie = new HttpCookie(SERVICES_TOKEN)
+                    {
+                        Value = cacheKey,
+                        Secure = true,
+                        HttpOnly = httpOnly,
+                    };
+
+                    context.Response.AppendCookie(cookie);
+
+                    //Register the ClientContext
+                    WebAPIContext sharePointServiceContext = new WebAPIContext()
+                    {
+                        CacheKey = cacheKey,
+                        ClientId = TokenHelper.ClientId,
+                        ClientSecret = TokenHelper.ClientSecret,
+                        Token = contextToken,
+                        HostWebUrl = context.Request.QueryString.AsString("SPHostUrl", null),
+                        AppWebUrl = context.Request.QueryString.AsString("SPAppWebUrl", null),
+                        HostedAppHostName = String.Format("{0}:{1}", context.Request.Url.Host, context.Request.Url.Port),
+                    };
+
+                    WebAPIHelper.AddToCache(sharePointServiceContext);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new UnauthorizedAccessException("The context token cannot be validated.", ex);
             }
         }
 

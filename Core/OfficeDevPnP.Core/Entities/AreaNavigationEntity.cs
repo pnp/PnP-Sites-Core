@@ -14,7 +14,7 @@ namespace OfficeDevPnP.Core.Entities
     {
 
         /// <summary>
-        /// ctor
+        /// Default Constructor
         /// </summary>
         public AreaNavigationEntity()
         {
@@ -47,5 +47,14 @@ namespace OfficeDevPnP.Core.Entities
         /// </summary>
         public StructuralNavigationSortBy SortBy { get; set; }
 
+        /// <summary>
+        /// Defines if new pages should be added to navigation when using managed metadata navigation
+        /// </summary>
+        public Boolean AddNewPagesToNavigation { get; set; }
+
+        /// <summary>
+        /// Defines if friendly URLs should be created for new pages when using managed metadata navigation
+        /// </summary>
+        public Boolean CreateFriendlyUrlsForNewPages { get; set; }
     }
 }

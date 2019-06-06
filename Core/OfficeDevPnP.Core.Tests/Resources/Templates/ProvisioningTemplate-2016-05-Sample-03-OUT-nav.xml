@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.18.1709.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Templates ID="CONTAINER-ProvisioningTemplate-2016-05-Sample-03-OUT-nav">
+    <pnp:ProvisioningTemplate ID="ProvisioningTemplate-2016-05-Sample-03-OUT-nav" Version="0">
+      <pnp:Navigation>
+        <pnp:GlobalNavigation NavigationType="Managed">
+          <pnp:ManagedNavigation TermStoreId="c1175ad1-c710-4131-a6c9-aa854a5cc4c4" TermSetId="415185a1-ee1c-4ce9-9e38-cea3f854e802" />
+        </pnp:GlobalNavigation>
+        <pnp:CurrentNavigation NavigationType="Structural">
+          <pnp:StructuralNavigation RemoveExistingNodes="true">
+            <pnp:NavigationNode Title="Node 1" Url="/Node1.aspx">
+              <pnp:NavigationNode Title="Node 1.1" Url="http://aka.ms/SharePointPnP" IsExternal="true">
+                <pnp:NavigationNode Title="Node 1.1.1" Url="http://aka.ms/OfficeDevPnP" IsExternal="true" />
+              </pnp:NavigationNode>
+              <pnp:NavigationNode Title="Node 1.2" Url="/Node1-2.aspx" IsExternal="true" />
+            </pnp:NavigationNode>
+            <pnp:NavigationNode Title="Node 2" Url="/Node1.aspx" />
+          </pnp:StructuralNavigation>
+        </pnp:CurrentNavigation>
+      </pnp:Navigation>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

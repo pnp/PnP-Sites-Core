@@ -29,19 +29,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public bool Remove { get; set; } = false;
 
+        /// <summary>
+        /// Declares if the Content Type should be Hidden from New button of the list or library, optional attribute.
+        /// </summary>
+        public bool Hidden { get; set; }
+
         #endregion
 
         #region Comparison code
 
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}",
+            return (String.Format("{0}|{1}|{2}|{3}|",
                 (this.ContentTypeId != null ? this.ContentTypeId.GetHashCode() : 0),
                 this.Default.GetHashCode(),
-                this.Remove.GetHashCode()
+                this.Remove.GetHashCode(),
+                this.Hidden.GetHashCode()
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with ContentTypeBinding
+        /// </summary>
+        /// <param name="obj">Object that represents ContentTypeBinding</param>
+        /// <returns>true if the current object is equal to the ContentTypeBinding</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ContentTypeBinding))
@@ -51,6 +66,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((ContentTypeBinding)obj));
         }
 
+        /// <summary>
+        /// Compares ContentTypeBinding object based on ContentTypeId, Default and Remove properties.
+        /// </summary>
+        /// <param name="other">ContentTypeBinding object</param>
+        /// <returns>true if the ContentTypeBinding object is equal to the current object; otherwise, false.</returns>
         public bool Equals(ContentTypeBinding other)
         {
             if (other == null)
@@ -60,7 +80,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             return (this.ContentTypeId == other.ContentTypeId &&
                 this.Default == other.Default &&
-                this.Remove == other.Remove
+                this.Remove == other.Remove &&
+                this.Hidden == other.Hidden
                 );
         }
 

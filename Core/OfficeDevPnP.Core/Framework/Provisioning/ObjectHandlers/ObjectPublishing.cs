@@ -20,23 +20,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     {
         private const string AVAILABLEPAGELAYOUTS = "__PageLayouts";
         private const string DEFAULTPAGELAYOUT = "__DefaultPageLayout";
-        private readonly Guid PUBLISHING_FEATURE_WEB = new Guid("94c94ca6-b32f-4da9-a9e3-1f3d343d7ecb");
-        private readonly Guid PUBLISHING_FEATURE_SITE = new Guid("f6924d36-2fa8-4f0b-b16d-06b7250180fa");
         private const string PAGE_LAYOUT_CONTENT_TYPE_ID = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811";
         private const string HTML_PAGE_LAYOUT_CONTENT_TYPE_ID = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE8110003D357F861E29844953D5CAA1D4D8A3B";
         private const string MASTER_PAGE_CONTENT_TYPE_ID = "0x010105";
-        private const string HTML_MASTER_PAGE_CONTENT_TYPE_ID =    "0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD10003D357F861E29844953D5CAA1D4D8A3A";
+        private const string HTML_MASTER_PAGE_CONTENT_TYPE_ID = "0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD10003D357F861E29844953D5CAA1D4D8A3A";
         private const string ASP_NET_MASTER_PAGE_CONTENT_TYPE_ID = "0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD1";
         public override string Name
         {
             get { return "Publishing"; }
         }
 
+        public override string InternalName => "Publishing";
+
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                if (web.IsFeatureActive(PUBLISHING_FEATURE_WEB))
+                if (web.IsFeatureActive(Constants.FeatureId_Web_Publishing))
                 {
                     web.EnsureProperty(w => w.Language);
                     var webTemplates = web.GetAvailableWebTemplates(web.Language, false);
@@ -123,11 +123,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
                                 var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
 
+                                web.EnsureProperty(w => web.ServerRelativeUrl);
+                                file.EnsureProperty(f => f.Level);
+
+                                var containerPath = folderPath.StartsWith(web.ServerRelativeUrl) && web.ServerRelativeUrl != "/"  ? folderPath.Substring(web.ServerRelativeUrl.Length) : folderPath;
+                                var container = HttpUtility.UrlDecode(containerPath).Trim('/').Replace("/", "\\");
+
                                 var publishingFile = new Model.File()
                                 {
                                     Folder = Tokenize(folderPath, web.Url),
-                                    Src = HttpUtility.UrlDecode(fileName),
+                                    Src = !string.IsNullOrEmpty(container) ? $"{container}\\{HttpUtility.UrlDecode(fileName)}" : HttpUtility.UrlDecode(fileName),
                                     Overwrite = true,
+                                    Level = (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), file.Level.ToString())
                                 };
 
                                 // Add field values to file
@@ -144,12 +151,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 if (listItem.ContentType.StringId.StartsWith(MASTER_PAGE_CONTENT_TYPE_ID))
                                 {
-                                    scope.LogWarning(String.Format("The file \"{0}\" is a custom MasterPage. Accordingly to the PnP Guidance (http://aka.ms/o365pnpguidancemasterpages) you should try to avoid using custom MasterPages.", file.Name));
+                                    scope.LogWarning($@"The file ""{file.Name}"" is a custom MasterPage. Accordingly to the PnP Guidance (http://aka.ms/o365pnpguidancemasterpages) you should try to avoid using custom MasterPages.");
                                 }
                             }
                             else
                             {
-                                scope.LogWarning(String.Format("Skipping file \"{0}\" because it is native in the publishing feature.", file.Name));
+                                scope.LogWarning($@"Skipping file ""{file.Name}"" because it is native in the publishing feature.");
                             }
                         }
                     }
@@ -240,7 +247,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             String result = null;
             if (Uri.TryCreate(webUrl, UriKind.Absolute, out uri))
             {
-                result = string.Format("{0}://{1}/", uri.Scheme, uri.Authority);
+                result = $"{uri.Scheme}://{uri.Authority}/";
             }
 
             return (result);
@@ -251,7 +258,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var defaultLayoutXml = web.GetPropertyBagValueString(DEFAULTPAGELAYOUT, null);
 
             var defaultPageLayoutUrl = string.Empty;
-            if (defaultLayoutXml != null && defaultLayoutXml != "__inherit")
+            if (defaultLayoutXml != null && defaultLayoutXml.ToLower() != "__inherit")
             {
                 defaultPageLayoutUrl = XElement.Parse(defaultLayoutXml).Attribute("url").Value.Replace("_catalogs/masterpage/", String.Empty);
             }
@@ -260,7 +267,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var layoutsXml = web.GetPropertyBagValueString(AVAILABLEPAGELAYOUTS, null);
 
-            if (!string.IsNullOrEmpty(layoutsXml) && layoutsXml != "__inherit")
+            if (!string.IsNullOrEmpty(layoutsXml) && layoutsXml.ToLower() != "__inherit")
             {
                 var layoutsElement = XElement.Parse(layoutsXml);
 
@@ -289,8 +296,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var site = (web.Context as ClientContext).Site;
 
-                var webFeatureActive = web.IsFeatureActive(PUBLISHING_FEATURE_WEB);
-                var siteFeatureActive = site.IsFeatureActive(PUBLISHING_FEATURE_SITE);
+                // Check if this is not a noscript site as publishing features are not supported
+                if (web.IsNoScriptSite())
+                {
+                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_Publishing_SkipProvisioning);
+                    return parser;
+                }
+
+                var webFeatureActive = web.IsFeatureActive(Constants.FeatureId_Web_Publishing);
+                var siteFeatureActive = site.IsFeatureActive(Constants.FeatureId_Site_Publishing);
                 if (template.Publishing.AutoCheckRequirements == AutoCheckRequirementsOptions.SkipIfNotCompliant && !webFeatureActive)
                 {
                     scope.LogDebug("Publishing Feature (Web Scoped) not active. Skipping provisioning of Publishing settings");
@@ -301,19 +315,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (!siteFeatureActive)
                     {
                         scope.LogDebug("Making site compliant for publishing");
-                        site.ActivateFeature(PUBLISHING_FEATURE_SITE);
-                        web.ActivateFeature(PUBLISHING_FEATURE_WEB);
+                        site.ActivateFeature(Constants.FeatureId_Site_Publishing);
+                        web.ActivateFeature(Constants.FeatureId_Web_Publishing);
                     }
                     else
                     {
-                        if (!web.IsFeatureActive(PUBLISHING_FEATURE_WEB))
+                        if (!web.IsFeatureActive(Constants.FeatureId_Web_Publishing))
                         {
                             scope.LogDebug("Making site compliant for publishing");
-                            web.ActivateFeature(PUBLISHING_FEATURE_WEB);
+                            web.ActivateFeature(Constants.FeatureId_Web_Publishing);
                         }
                     }
                 }
-                else
+                else if (!webFeatureActive)
                 {
                     throw new Exception("Publishing Feature not active. Provisioning failed");
                 }
@@ -323,20 +337,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (availableWebTemplates.Any())
                 {
                     web.SetAvailableWebTemplates(availableWebTemplates);
-                }
-
-                // Set allowed page layouts
-                var availablePageLayouts = template.Publishing.PageLayouts.Select(p => p.Path);
-                if (availablePageLayouts.Any())
-                {
-                    web.SetAvailablePageLayouts(site.RootWeb, availablePageLayouts);
-                }
-
-                // Set default page layout, if any
-                var defaultPageLayout = template.Publishing.PageLayouts.FirstOrDefault(p => p.IsDefault);
-                if (defaultPageLayout != null)
-                {
-                    web.SetDefaultPageLayoutForSite(site.RootWeb, defaultPageLayout.Path);
                 }
 
                 if (template.Publishing.DesignPackage != null)
@@ -356,16 +356,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     site.InstallSolution(package.PackageGuid, tempFileName, package.MajorVersion, package.MinorVersion);
                     System.IO.File.Delete(tempFileName);
                 }
+                // Set allowed page layouts
+                var availablePageLayouts = template.Publishing.PageLayouts.Select(p => p.Path);
+                if (availablePageLayouts.Any())
+                {
+                    web.SetAvailablePageLayouts(site.RootWeb, availablePageLayouts);
+                }
+
+                // Set default page layout, if any
+                var defaultPageLayout = template.Publishing.PageLayouts.FirstOrDefault(p => p.IsDefault);
+                if (defaultPageLayout != null)
+                {
+                    web.SetDefaultPageLayoutForSite(site.RootWeb, defaultPageLayout.Path);
+                }
+
+
                 return parser;
             }
         }
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return web.IsFeatureActive(PUBLISHING_FEATURE_WEB);
+            return web.IsFeatureActive(Constants.FeatureId_Web_Publishing);
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             return template.Publishing != null;
         }

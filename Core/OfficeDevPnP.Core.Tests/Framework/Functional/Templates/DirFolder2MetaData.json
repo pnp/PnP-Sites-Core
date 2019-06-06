@@ -1,0 +1,10 @@
+﻿{
+    ".\\DirFolder2\\Doc4.docx": {
+        "Title": "Sample Document 4",
+        "CustomNotes": "Sample Notes for Document 4"
+    },
+    ".\\DirFolder2\\Doc5.docx": {
+        "Title": "Sample Document 5",
+        "CustomNotes": "Sample Notes for Document 5"
+    }
+}

@@ -14,7 +14,7 @@ Base template: goal is to verify that all feature properties work as expected. p
     <pnp:WebFeatures>
       <!--<pnp:Feature ID="7201d6a4-a5d3-49a1-8c19-19c4bac6e668" Deactivate="false" Description="Metadata Navigation and Filtering (MetaDataNav) site feature" />-->
       
-      <pnp:Feature ID="961d6a9c-4388-4cf2-9733-38ee8c89afd4" Description="Community Site Feature (CommunitySite) site feature" />
+      <!--<pnp:Feature ID="961d6a9c-4388-4cf2-9733-38ee8c89afd4" Description="Community Site Feature (CommunitySite) site feature" />-->
       <pnp:Feature ID="e2f2bb18-891d-4812-97df-c265afdba297" Description="Project Functionality (ProjectFunctionality) site feature" />
       <pnp:Feature ID="4aec7207-0d02-4f4f-aa07-b370199cd0c7" Deactivate="true" Description="Getting Started (GettingStarted) site feature" />
     </pnp:WebFeatures>

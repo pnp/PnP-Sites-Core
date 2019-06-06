@@ -26,7 +26,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}",
@@ -35,6 +38,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with ManagedNavigation
+        /// </summary>
+        /// <param name="obj">Object the represents ManagedNavigation</param>
+        /// <returns>true if the current object is equal to the ManagedNavigation</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ManagedNavigation))
@@ -44,6 +52,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((ManagedNavigation)obj));
         }
 
+        /// <summary>
+        /// Compares ManagedNavigation object based on TermStoreId and TermSetId
+        /// </summary>
+        /// <param name="other">ManagedNavigation object</param>
+        /// <returns>Returns true if it matches with id of termstore and termset</returns>
         public bool Equals(ManagedNavigation other)
         {
             if (other == null)

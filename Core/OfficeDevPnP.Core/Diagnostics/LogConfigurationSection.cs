@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Diagnostics
 {
+    /// <summary>
+    /// Class dealing with LogConfigurationTracing section
+    /// </summary>
     public class LogConfigurationTracingSection : ConfigurationSection
     {
+        /// <summary>
+        /// Gets or sets "loglevel" config property
+        /// </summary>
         [ConfigurationProperty("logLevel", DefaultValue = LogLevel.Information, IsRequired = false)]
         public LogLevel LogLevel
         {
@@ -20,6 +26,9 @@ namespace OfficeDevPnP.Core.Diagnostics
             { this["logLevel"] = value; }
         }
 
+        /// <summary>
+        /// Gets or sets "logger" config property
+        /// </summary>
         [ConfigurationProperty("logger")]
         public LogConfigurationTracingLoggerElement Logger
         {
@@ -33,9 +42,14 @@ namespace OfficeDevPnP.Core.Diagnostics
             }
         }
     }
-
+    /// <summary>
+    /// Class dealing with LogConfigurationTracing element
+    /// </summary>
     public class LogConfigurationTracingLoggerElement : ConfigurationElement
     {
+        /// <summary>
+        /// Gets or sets "type" config property
+        /// </summary>
         [ConfigurationProperty("type", DefaultValue = "false", IsRequired = true)]
         public string Type
         {

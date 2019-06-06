@@ -9,6 +9,7 @@ using System.IO;
 using System.Security.Cryptography.X509Certificates;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 
+#if !NETSTANDARD2_0
 namespace OfficeDevPnP.Core.Tests.Framework.Providers.Extensibility
 {
     public class XMLEncryptionTemplateProviderExtension : ITemplateProviderExtension
@@ -86,3 +87,4 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers.Extensibility
         }
     }
 }
+#endif

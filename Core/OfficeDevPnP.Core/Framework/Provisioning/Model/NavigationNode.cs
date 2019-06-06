@@ -37,7 +37,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for NavigationNode class
+        /// </summary>
         public NavigationNode()
         {
             this.NavigationNodes = new NavigationNodeCollection(this.ParentTemplate);
@@ -46,7 +48,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}",
@@ -57,6 +62,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with NavigationNode
+        /// </summary>
+        /// <param name="obj">Object that represents NavigationNode</param>
+        /// <returns>true if the current object is equal to the NavigationNode</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is NavigationNode))
@@ -66,6 +76,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((NavigationNode)obj));
         }
 
+        /// <summary>
+        /// Compares NavigationNode object based on isExternal, NavigationNodes, Title and Url properties.
+        /// </summary>
+        /// <param name="other">NavigationNode object</param>
+        /// <returns>true if the NavigationNode object is equal to the current object; otherwise, false.</returns>
         public bool Equals(NavigationNode other)
         {
             if (other == null)

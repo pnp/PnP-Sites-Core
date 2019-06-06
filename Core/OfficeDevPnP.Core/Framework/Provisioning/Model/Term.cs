@@ -19,36 +19,77 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Public Members
+        /// <summary>
+        /// Gets or sets the term id
+        /// </summary>
         public Guid Id { get { return _id; } set { _id = value; } }
+        /// <summary>
+        /// Gets or sets the term name
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// Gets or sets the term description
+        /// </summary>
         public String Description { get; set; }
+        /// <summary>
+        /// Gets or sets the term owner
+        /// </summary>
         public String Owner { get; set; }
+        /// <summary>
+        /// Gets or sets the IsAvailableForTagging flag for the term
+        /// </summary>
         public Boolean IsAvailableForTagging { get; set; }
+        /// <summary>
+        /// Gets or sets the IsReused flag for the term
+        /// </summary>
         public Boolean IsReused { get; set; }
+        /// <summary>
+        /// Gets or sets the IsSourceTerm flag for the term
+        /// </summary>
         public Boolean IsSourceTerm { get; set; }
+        /// <summary>
+        /// Gets or sets the term source id
+        /// </summary>
         public Guid SourceTermId { get; set; }
+        /// <summary>
+        /// Gets or sets the IsDeprecated flag for the term
+        /// </summary>
         public Boolean IsDeprecated { get; set; }
+        /// <summary>
+        /// Gets or sets Language of the term
+        /// </summary>
         public int? Language { get; set; }
+        /// <summary>
+        /// Gets or sets the order of the term
+        /// </summary>
         public int CustomSortOrder { get; set; }
-
+        /// <summary>
+        /// Gets or sets terms
+        /// </summary>
         public TermCollection Terms
         {
             get { return _terms; }
             private set { _terms = value; }
         }
-
+        /// <summary>
+        /// Gets or sets term labels
+        /// </summary>
         public TermLabelCollection Labels
         {
             get { return _labels; }
             private set { _labels = value; }
         }
-
+        /// <summary>
+        /// Gets or sets the properties of the term
+        /// </summary>
         public Dictionary<string, string> Properties
         {
             get { return _properties; }
             private set { _properties = value; }
         }
-
+        /// <summary>
+        /// Gets or sets local properties for the term
+        /// </summary>
         public Dictionary<string, string> LocalProperties
         {
             get { return _localProperties; }
@@ -57,13 +98,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for Term class
+        /// </summary>
         public Term()
         {
             this._terms = new TermCollection(this.ParentTemplate);
             this._labels = new TermLabelCollection(this.ParentTemplate);
         }
 
+        /// <summary>
+        /// Constructor for Term class
+        /// </summary>
+        /// <param name="id">Id of the term</param>
+        /// <param name="name">Name of the term</param>
+        /// <param name="language">Language of the term</param>
+        /// <param name="terms">Terms</param>
+        /// <param name="labels">Labels of the term</param>
+        /// <param name="properties">Properties of the term</param>
+        /// <param name="localProperties">LocalProperties of the term</param>
         public Term(Guid id, string name, int? language, List<Term> terms, List<TermLabel> labels, Dictionary<string, string> properties, Dictionary<string, string> localProperties):
             this()
         {
@@ -96,7 +149,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}",
@@ -118,6 +174,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with Term
+        /// </summary>
+        /// <param name="obj">Object that represents Term</param>
+        /// <returns>true if the current object is equal to the Term</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is Term))
@@ -127,6 +188,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((Term)obj));
         }
 
+        /// <summary>
+        /// Compares Term object based on Id, Name, Description, Language, Owner, IsAvailableForTagging, IsReused, IsSourceTerm, SourceTermId, 
+        /// IsDeprecated, CustomSortOrder, Labels, Terms, Properties and LocalProperties.
+        /// </summary>
+        /// <param name="other">Term object</param>
+        /// <returns>true if the Term object is equal to the current object; otherwise, false.</returns>
         public bool Equals(Term other)
         {
             if (other == null)

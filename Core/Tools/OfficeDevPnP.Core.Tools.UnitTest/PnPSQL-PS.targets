@@ -1,0 +1,142 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="BuildAndUnitTestPnP">
+
+  <!-- Input passing via command line...if nothing is supplied let's use default value specified below-->
+  <PropertyGroup Label="CommandLine">
+    <PnPConfigurationToTest></PnPConfigurationToTest>
+    <PnPSQLConnectionString></PnPSQLConnectionString>
+  </PropertyGroup>
+
+  <!-- PnP Repo information -->
+  <PropertyGroup Label="PnP">
+    <PnPRepo>c:\pnpbuildps</PnPRepo>
+    <PnPRepoUrl>https://github.com/OfficeDev/PnP-Sites-Core.git</PnPRepoUrl>
+    <PnPPSRepoUrl>https://github.com/OfficeDev/PnP-PowerShell.git</PnPPSRepoUrl>
+  </PropertyGroup>
+
+  <!-- Unit test information-->
+  <PropertyGroup Label="Test information">
+    <ConfigurationPath>\\dc1\Admin\pnptestrunner</ConfigurationPath>
+    <PnPExtensionsAssembly>$(ConfigurationPath)\OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.dll</PnPExtensionsAssembly>
+    <ConfigurationFile>mastertestconfiguration.xml</ConfigurationFile>
+    <TestResultsPath>$(PnPRepo)temp</TestResultsPath>
+    <VSTestExe>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\vstest.console.exe</VSTestExe>
+    <VSTestExtensionPath>C:\Program Files (x86)\Microsoft Visual Studio 14.0\Common7\IDE\CommonExtensions\Microsoft\TestWindow\Extensions</VSTestExtensionPath>
+  </PropertyGroup>
+
+  <!-- Git information -->
+  <PropertyGroup Label="Git">
+    <GitPath>C:\Program Files\Git\cmd\</GitPath>
+    <GitExe>&quot;$(GitPath)git.exe&quot;</GitExe>
+    <GitCore>$(GitExe) --work-tree=&quot;$(PnPRepo)\pnp-sites-core&quot; --git-dir=&quot;$(PnPRepo)\pnp-sites-core\.git&quot;</GitCore>
+    <GitPS>$(GitExe) --work-tree=&quot;$(PnPRepo)\pnp-powershell&quot; --git-dir=&quot;$(PnPRepo)\pnp-powershell\.git&quot;</GitPS>
+  </PropertyGroup>
+
+  <!-- Custom tasks registration -->
+  <!-- Reads configuration data from SQL...-->
+  <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPSQLAppConfigReaderTask" />
+  <!-- Reads configuration data from SQL and generates the app.config file...-->
+  <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPSQLAppConfigGeneratorTask" />
+  <!-- Creates the TestSet record in the database to start the testing...-->
+  <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPSQLStartTestTask" />
+  <!-- Base64 encodes a string...-->
+  <UsingTask AssemblyFile="$(PnPExtensionsAssembly)" TaskName="PnPBase64EncoderTask" />
+
+  <Target Name="BuildAndUnitTestPnP">
+
+    <!-- Initialize the test run by creating the TestRunSet record-->
+    <Message Text="=================================================================================" />
+    <PnPSQLStartTestTask SQLConnectionString="$(PnPSQLConnectionString)" Configuration="$(PnPConfigurationToTest)">
+      <Output PropertyName="PnPTestRunId" TaskParameter="PnPTestRunId" />
+    </PnPSQLStartTestTask>
+    <!-- Output the test record id as this will be picked up by the PnP runner to associate the log file with the run -->
+    <Message Text="[PnPTestRunID:$(PnPTestRunId)]" />
+    <Message Text="=================================================================================" />
+    
+    <!-- Read the needed variables from the master configuration file-->
+    <Message Text="=================================================================================" />
+    <!--<Message Text="PnPSQLConnectionString: $(PnPSQLConnectionString)" />-->
+    <Message Text="PnPConfigurationToTest: $(PnPConfigurationToTest)" />
+    <!--Grab the PnP github branch and Visual Studio configuration from the SQL test automation database-->
+    <PnPSQLAppConfigReaderTask SQLConnectionString="$(PnPSQLConnectionString)" Configuration="$(PnPConfigurationToTest)">
+      <Output PropertyName="PnPBuildConfiguration" TaskParameter="PnPBuildConfiguration" />
+      <Output PropertyName="PnPBranch" TaskParameter="PnPBranch" />
+    </PnPSQLAppConfigReaderTask>
+    <Message Text="PnP Solution Build Configuration that will be used: $(PnPBuildConfiguration)" />
+    <Message Text="PnP Git branch that will be used: $(PnPBranch)" />
+    <Message Text="=================================================================================" />
+
+    <!-- Drop the previously cloned directory-->
+    <Message Text="=================================================================================" />
+    <Message Text="Deleting the $(PnPRepo) folder to allow for a fresh copy" />
+    <Message Text="=================================================================================" />
+    <RemoveDir Directories="$(PnPRepo)" />
+
+    <!-- Clone the PnP repo again-->
+    <Message Text="=================================================================================" />
+    <Message Text="Working with the $(PnPRepoUrl) repository in folder $(PnPRepo)\pnp-sites-core" />
+    <Message Text="Cloning the $(PnPRepoUrl) repository to $(PnPRepo)\pnp-sites-core" />
+    <Message Text="=================================================================================" />
+    <Exec Command="$(GitExe) clone $(PnPRepoUrl) $(PnPRepo)\pnp-sites-core" />
+    <Exec Command="$(GitCore) checkout $(PnPBranch)" />
+    <Exec Command="$(GitCore) pull" />
+    
+    <!-- Clone the PnP PowerShell repo again-->
+    <Message Text="=================================================================================" />
+    <Message Text="Working with the $(PnPPSRepoUrl) repository in folder $(PnPRepo)\pnp-powershell" />
+    <Message Text="Cloning the $(PnPPSRepoUrl) repository to $(PnPRepo)\pnp-powershell" />
+    <Message Text="=================================================================================" />
+    <Exec Command="$(GitExe) clone $(PnPPSRepoUrl) $(PnPRepo)\pnp-powershell" />
+    <Exec Command="$(GitPS) checkout $(PnPBranch)" />
+    <Exec Command="$(GitPS) pull" />
+
+    <!-- Create app.config with the specific test information -->
+    <Message Text="=================================================================================" />
+    <Message Text="Creating the app.config file needed to run unittests against PnP" />
+    <Message Text="=================================================================================" />
+    <PnPSQLAppConfigGeneratorTask SQLConnectionString="$(PnPSQLConnectionString)" Configuration="$(PnPConfigurationToTest)" AppConfigFolder="$(PnPRepo)\pnp-sites-core\Core\OfficeDevPnP.Core.Tests" />
+    <PnPSQLAppConfigGeneratorTask SQLConnectionString="$(PnPSQLConnectionString)" Configuration="$(PnPConfigurationToTest)" AppConfigFolder="$(PnPRepo)\pnp-powershell\Tests" />
+
+    <!-- Compile the OfficeDevPnP.Core solution -->
+    <Message Text="=================================================================================" />
+    <Message Text="Build the PnP Sites Core solution using configuration $(PnPBuildConfiguration)" />
+    <Message Text="=================================================================================" />
+    <!-- Trigger the download of the needed nuget packages -->
+    <Exec Command="$(ConfigurationPath)\nuget.exe restore $(PnPRepo)\pnp-sites-core\Core\OfficeDevPnP.Core.sln -DisableParallelProcessing" />
+    <!-- Build the project -->
+    <MSBuild Projects="$(PnPRepo)\pnp-sites-core\Core\OfficeDevPnP.Core.sln" Properties="Configuration=$(PnPBuildConfiguration)"/>
+
+	<!-- Drop the C:\Users\pnpadmin.PNP\Documents\WindowsPowerShell\Modules folders if present...otherwise they intervene in test execution -->
+	<RemoveDir Directories="C:\Users\pnpadmin.PNP\Documents\WindowsPowerShell\Modules\SharePointPnPPowerShellOnline" />
+	<RemoveDir Directories="C:\Users\pnpadmin.PNP\Documents\WindowsPowerShell\Modules\SharePointPnPPowerShell2013" />
+	<RemoveDir Directories="C:\Users\pnpadmin.PNP\Documents\WindowsPowerShell\Modules\SharePointPnPPowerShell2016" />
+	
+    <!-- Compile the SharePointPnP.PowerShell solution -->
+    <Message Text="=================================================================================" />
+    <Message Text="Build the PnP PowerShell solution using configuration $(PnPBuildConfiguration)" />
+    <Message Text="=================================================================================" />
+    <!-- Trigger the download of the needed nuget packages -->
+    <Exec Command="$(ConfigurationPath)\nuget.exe restore $(PnPRepo)\pnp-powershell\SharePointPnP.PowerShell.sln -DisableParallelProcessing" />
+    <!-- Build the project -->
+    <MSBuild Projects="$(PnPRepo)\pnp-powershell\SharePointPnP.PowerShell.sln" Properties="Configuration=$(PnPBuildConfiguration)"/>
+
+    <!-- Run unit tests -->
+    <Message Text="=================================================================================" />
+    <Message Text="Run the PnP unit tests" />
+    <Message Text="=================================================================================" />
+    <!-- Convert the connection string into a base64 encoded string to make it easier to pass along as parameter to the custom VSTestLogger-->
+    <PnPBase64EncoderTask Input="$(PnPSQLConnectionString)">
+      <Output PropertyName="PnPSQLConnectionStringBase64" TaskParameter="Output" />
+    </PnPBase64EncoderTask>
+    <!-- Run the unit tests. Optionally scope the tests via /Tests:GetTenantSiteTest (add after the second &quot; and before /Logger)-->
+	
+    <Exec Command="&quot;$(VSTestExe)&quot; &quot;$(PnPRepo)\pnp-powershell\Tests\bin\$(PnPBuildConfiguration)\SharePointPnP.PowerShell.Tests.dll&quot; /Logger:SQLLogger;PnPTestRunId=$(PnPTestRunId);PnPConfigurationToTest=$(PnPConfigurationToTest);PnPSQLConnectionString=&quot;$(PnPSQLConnectionStringBase64)&quot;" IgnoreExitCode="true" />
+
+    <!-- Drop the cloned directory-->
+    <Message Text="=================================================================================" />
+    <Message Text="Deleting the $(PnPRepo) folder to remove traces from test run" />
+    <Message Text="=================================================================================" />
+    <RemoveDir Directories="$(PnPRepo)" />
+
+  </Target>
+
+</Project>

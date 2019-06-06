@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Base template: goal is to verify that all list properties and elements work as expected. 
+               
+               Possible specific 201705 Lists attributes are:
+               WebHooks (e)
+               IrmSettings (e)
+               
+               Possible Webhook attributes are:
+               ExpiresInDays         (*)
+               ServerNotificationUrl (*)
+               
+-->
+
+<pnp:ProvisioningTemplate ID="list_add_2017_05" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2017/05/ProvisioningSchema">
+  <pnp:Lists>
+    <!-- Document Libraries-->
+    <!-- Element Webhook -->
+    <pnp:ListInstance Title="LI_201707_10" TemplateType="101" Url="LI_201707_10" ReadSecurity="1">
+      <pnp:Webhooks>
+        <pnp:Webhook ExpiresInDays="5" ServerNotificationUrl="https://pnp-functions.azurewebsites.net/api/PnPWebHookTest?code=Em33KG1g/NiOkAY0Ei727xZbQDKeZSaEGz//RxXz0pShGsHAJ9JLhA=="/>
+      </pnp:Webhooks>
+    </pnp:ListInstance>
+  </pnp:Lists>
+</pnp:ProvisioningTemplate>
