@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Update SiteLockState enum to support ReadOnly status #2275 [TomekPi]
 - Fix DataRow parameters replacement. #2248 [siata13]
 - The specified user {associatedownergroupid} could not be found. #2281 [StaffanNelemans]
+- Fix DataRow URL field name: data value URL,Description. #2273 [cgenero]
 
 ## [3.9.1905.3 - May 2019 Intermediate Release 3]
 
