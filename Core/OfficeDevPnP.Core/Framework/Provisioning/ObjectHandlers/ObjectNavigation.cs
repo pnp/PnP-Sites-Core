@@ -282,7 +282,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         catch (Exception ex)
                         {
+                            //Test if fileuniqueid belongs to a folder
+                            try
+                            {
+                                web.EnsureProperties(w => w.ServerRelativeUrl);
+                                string folderUrl = $"{web.ServerRelativeUrl}/{ match.Groups["fileurl"].Value}";
+                                var spFolder = web.GetFolderByServerRelativeUrl(folderUrl);
+                                web.Context.Load(spFolder, f => f.UniqueId);
+                                web.Context.ExecuteQuery();
+                                string folderId = spFolder.UniqueId.ToString();
+                                if (match.Groups["tokenname"].Value.Equals("fileuniqueidencoded", StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    folderId = folderId.Replace("-", "%2D");
+                                }
+                                UrlValue = Regex.Replace(UrlValue, $"{{{match.Groups["tokenname"].Value}:{match.Groups["fileurl"].Value}}}", folderId, RegexOptions.IgnoreCase);
+                            }
+                            catch (Exception ex1)
+                            {
 
+                            }
                         }
                     }
                 }
