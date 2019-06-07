@@ -6,16 +6,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [3.10.1906.0 - Unreleased ]
+## [3.10.1906.0 - June 2019 release ]
+
+### Added
+
+- Added ability to include all client side pages in an extracted template
+- Feature: Adds capability to connect existing team site to MS Teams team (teamify) #2265 [gautamdsheth]
 
 ### Changed 
 
-- Added ability to include all client side pages in an extracted template
 - Client side page serialization fix: if web part serverProcessedContent properties contains htmlStrings then these are now correctly serialized in the resulting html
 - Update SiteLockState enum to support ReadOnly status #2275 [TomekPi]
 - Fix DataRow parameters replacement. #2248 [siata13]
 - The specified user {associatedownergroupid} could not be found. #2281 [StaffanNelemans]
 - Fix DataRow URL field name: data value URL,Description. #2273 [cgenero]
+- Provisioning webhook fixes
 
 ## [3.9.1905.3 - May 2019 Intermediate Release 3]
 
