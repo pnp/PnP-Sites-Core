@@ -542,17 +542,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         isDirty = true;
                     }
 
+                    if (isDirty)
+                    {
+                        web.Context.Load(page.PageListItem);
+                        web.Context.ExecuteQueryRetry();
+                    }
+
                     if (clientSidePage.PromoteAsTemplate && page.LayoutType == Pages.ClientSidePageLayoutType.Article)
                     {
                         // Choice field, currently there's only one value possible and that's Template
                         page.PageListItem[SPSitePageFlagsField] = ";#Template;#";
                         page.PageListItem.Update();
-                        web.Context.Load(page.PageListItem);
-                        isDirty = true;
-                    }
-
-                    if (isDirty)
-                    {
                         web.Context.ExecuteQueryRetry();
                     }
 
