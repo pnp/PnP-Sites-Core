@@ -12,6 +12,7 @@ using OfficeDevPnP.Core.Utilities.Graph;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -895,18 +896,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static string RemoveUnallowedCharacters(string str)
         {
-            char[] unallowedCharacters = { '&', '_', ',', '.', ';', ':', '/', '\'', '"', '!', '@', '$', '%', '^', '+', '=', '\\', '|', '<', '>', '{', '}', ' ', '-', '(', ')', '?', '#', '¤', '`', '´', '~', '¨' };
-
-            return new string(str.Where(x => !unallowedCharacters.Contains(x)).ToArray());
+            const string unallowedCharacters = "[&_,!@;:#¤`´~¨='%<>/\\\\\"\\.\\$\\*\\^\\+\\|\\{\\}\\[\\]\\-\\(\\)\\?\\s]";
+            var regex = new Regex(unallowedCharacters);
+            return regex.Replace(str, "");
         }
 
         private static string ReplaceAccentedCharactersWithLatin(string str)
         {
-            char[] a = { 'ä', 'å' };
-            str = new string(str.Select(x => a.Contains(x) ? 'a' : x).ToArray());
+            const string a = "[äåàá]";
+            var regex = new Regex(a);
+            str = regex.Replace(str, "a");
 
-            char[] o = { 'ö' };
-            str = new string(str.Select(x => o.Contains(x) ? 'o' : x).ToArray());
+            const string o = "[öòó]";
+            regex = new Regex(o);
+            str = regex.Replace(str, "o");
 
             return str;
         }
