@@ -1,5 +1,4 @@
 ﻿#if !ONPREMISES
-using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
@@ -8,11 +7,6 @@ using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Framework.Provisioning.Model.Teams;
 using OfficeDevPnP.Core.Utilities;
-using System.Net;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Web;
-using System.Net.Http;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using OfficeDevPnP.Core.Utilities.Graph;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
@@ -165,11 +159,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>The ID of the created or update Team</returns>
         private static string CreateOrUpdateTeam(PnPMonitoredScope scope, Team team, TokenParser parser, string accessToken)
         {
-            var parsedMailNickname = !String.IsNullOrEmpty(team.MailNickname) ? parser.ParseString(team.MailNickname).ToLower() : null;
+            var parsedMailNickname = !string.IsNullOrEmpty(team.MailNickname) ? parser.ParseString(team.MailNickname).ToLower() : null;
 
-            if (String.IsNullOrEmpty(parsedMailNickname))
+            if (string.IsNullOrEmpty(parsedMailNickname))
             {
-                parsedMailNickname = team.DisplayName.Replace(' ', '-').ToLower();
+                parsedMailNickname = CreateMailNicknameFromDisplayName(team.DisplayName);
             }
 
             // Check if the Group/Team already exists
@@ -889,8 +883,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // So far, no extraction
             return hierarchy;
         }
+        #endregion
 
-#endregion
+        private static string CreateMailNicknameFromDisplayName(string displayName)
+        {
+            var mailNickname = displayName.ToLower();
+            mailNickname = RemoveUnallowedCharacters(mailNickname);
+            mailNickname = ReplaceAccentedCharactersWithLatin(mailNickname);
+            return mailNickname;
+        }
+
+        private static string RemoveUnallowedCharacters(string str)
+        {
+            char[] unallowedCharacters = { '&', '_', ',', '.', ';', ':', '/', '\'', '"', '!', '@', '$', '%', '^', '+', '=', '\\', '|', '<', '>', '{', '}', ' ', '-', '(', ')', '?', '#', '¤', '`', '´', '~', '¨' };
+
+            return new string(str.Where(x => !unallowedCharacters.Contains(x)).ToArray());
+        }
+
+        private static string ReplaceAccentedCharactersWithLatin(string str)
+        {
+            char[] a = { 'ä', 'å' };
+            str = new string(str.Select(x => a.Contains(x) ? 'a' : x).ToArray());
+
+            char[] o = { 'ö' };
+            str = new string(str.Select(x => o.Contains(x) ? 'o' : x).ToArray());
+
+            return str;
+        }
     }
 }
 #endif
