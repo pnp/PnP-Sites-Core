@@ -569,7 +569,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="synchronizeDeletions">Remove tags that are not present in the import</param>
         public static void ImportTerms(this Site site, string[] termLines, int lcid, TermStore termStore, string delimiter = "|", bool synchronizeDeletions = false)
         {
-            var groupDict = new Dictionary<TermGroup, List<string>>();
+            var groupDict = new Dictionary<TermGroup, Dictionary<string, List<string>>>();
 
             var clientContext = site.Context;
             if (termStore.ServerObjectIsNull == true)
@@ -586,7 +586,7 @@ namespace Microsoft.SharePoint.Client
                 var items = line.Split(new[] { delimiter }, StringSplitOptions.None);
                 if (items.Any())
                 {
-                    List<string> terms = null;
+                    Dictionary<string, List<string>> termsets = null;
 
                     var groupItem = items[0];
                     var groupName = groupItem;
@@ -600,21 +600,20 @@ namespace Microsoft.SharePoint.Client
                     // Cached?
                     if (groupDict.Any())
                     {
-                        KeyValuePair<TermGroup, List<string>> groupDictItem;
+                        KeyValuePair<TermGroup, Dictionary<string, List<string>>> groupDictItem;
                         if (groupId != Guid.Empty)
                         {
                             groupDictItem = groupDict.FirstOrDefault(tg => tg.Key.Id == groupId);
 
                             termGroup = groupDictItem.Key;
-                            terms = groupDictItem.Value;
-
+                            termsets = groupDictItem.Value;
                         }
                         else
                         {
                             groupDictItem = groupDict.FirstOrDefault(tg => tg.Key.Name == groupName);
 
                             termGroup = groupDictItem.Key;
-                            terms = groupDictItem.Value;
+                            termsets = groupDictItem.Value;
                         }
                     }
                     if (termGroup == null)
@@ -632,8 +631,8 @@ namespace Microsoft.SharePoint.Client
                         {
                             clientContext.Load(termGroup);
                             clientContext.ExecuteQueryRetry();
-                            groupDict.Add(termGroup, new List<string>());
-                            terms = new List<string>();
+                            groupDict.Add(termGroup, new Dictionary<string, List<string>>());
+                            termsets = new Dictionary<string, List<string>>();
                         }
                         catch
                         {
@@ -647,11 +646,11 @@ namespace Microsoft.SharePoint.Client
                             groupId = Guid.NewGuid();
                         }
                         termGroup = termStore.CreateGroup(NormalizeName(groupName), groupId);
-                        terms = new List<string>();
+                        termsets = new Dictionary<string, List<string>>();
                         clientContext.Load(termGroup);
                         clientContext.ExecuteQueryRetry();
 
-                        groupDict.Add(termGroup, new List<string>());
+                        groupDict.Add(termGroup, new Dictionary<string, List<string>>());
 
                     }
                     var sb = new StringBuilder();
@@ -672,35 +671,42 @@ namespace Microsoft.SharePoint.Client
                             }
                             sb.AppendFormat("{0},", NormalizeName(item));
                         }
-                        if (terms != null)
+                        if (termsets != null)
                         {
-                            terms.Add(sb.ToString());
+                            if (termsets.ContainsKey(termSetName)) {
+                                termsets[termSetName].Add(sb.ToString());
+                            }
+                            else
+                            {
+                                termsets.Add(termSetName, new List<string>() { sb.ToString() });
+                            }
 
-                            groupDict[termGroup] = terms;
+                            groupDict[termGroup] = termsets;
                         }
                     }
                 }
             }
             foreach (var groupDictItem in groupDict)
             {
-                var memoryStream = new MemoryStream();
-
                 var termGroup = groupDictItem.Key as TermGroup;
-                using (var streamWriter = new StreamWriter(memoryStream))
+                foreach (var termset in groupDictItem.Value)
                 {
-                    // Header
-                    streamWriter.WriteLine(@"""Term Set Name"",""Term Set Description"",""LCID"",""Available for Tagging"",""Term Description"",""Level 1 Term"",""Level 2 Term"",""Level 3 Term"",""Level 4 Term"",""Level 5 Term"",""Level 6 Term"",""Level 7 Term""");
-
-                    // Items
-                    foreach (var termLine in groupDictItem.Value)
+                    using (var memoryStream = new MemoryStream())
+                    using (var streamWriter = new StreamWriter(memoryStream))
                     {
-                        streamWriter.WriteLine(termLine);
-                    }
-                    streamWriter.Flush();
-                    memoryStream.Position = 0;
-                    termGroup.ImportTermSet(memoryStream, synchroniseDeletions: synchronizeDeletions);
-                }
+                        // Header
+                        streamWriter.WriteLine(@"""Term Set Name"",""Term Set Description"",""LCID"",""Available for Tagging"",""Term Description"",""Level 1 Term"",""Level 2 Term"",""Level 3 Term"",""Level 4 Term"",""Level 5 Term"",""Level 6 Term"",""Level 7 Term""");
 
+                        // Items
+                        foreach (var termLine in termset.Value)
+                        {
+                            streamWriter.WriteLine(termLine);
+                        }
+                        streamWriter.Flush();
+                        memoryStream.Position = 0;
+                        termGroup.ImportTermSet(memoryStream, synchroniseDeletions: synchronizeDeletions);
+                    }
+                }
             }
         }
 
