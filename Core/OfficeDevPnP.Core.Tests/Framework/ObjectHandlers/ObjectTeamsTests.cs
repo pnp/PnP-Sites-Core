@@ -20,6 +20,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         private readonly List<string> _teamNames = new List<string>();
         private readonly List<string> _teamTemplates = new List<string>();
         private readonly List<Team> _teams = new List<Team>();
+        private string _existingTeamId;
 
         [TestInitialize]
         public void Initialize()
@@ -63,8 +64,27 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 AllowUserDeleteMessages = true,
                 AllowUserEditMessages = true
             };
+            var channel = new TeamChannel
+            {
+                DisplayName = "Another channel",
+                Description = "Another channel description!",
+                IsFavoriteByDefault = true
+            };
+            var tab = new TeamTab
+            {
+                DisplayName = "OneNote Tab",
+                TeamsAppId = "0d820ecd-def2-4297-adad-78056cde7c78"
+            };
+            channel.Tabs.Add(tab);
+            var message = new TeamChannelMessage
+            {
+                Message = "Welcome to this awesome new channel!"
+            };
+            channel.Messages.Add(message);
 
-            _teams.Add(new Team { DisplayName = _teamNames[2], Description = "Testing creating mailNickname from a display name that has unallowed and accented characters", Visibility = TeamVisibility.Public, Security = security, FunSettings = funSettings, GuestSettings = guestSettings, MemberSettings = memberSettings, MessagingSettings = messagingSettings});
+            _teams.Add(new Team { DisplayName = _teamNames[2], Description = "Testing creating mailNickname from a display name that has unallowed and accented characters", Visibility = TeamVisibility.Public, Security = security, FunSettings = funSettings, GuestSettings = guestSettings, MemberSettings = memberSettings, MessagingSettings = messagingSettings, Channels = { channel } });
+
+            _existingTeamId = "a48e4d2d-4e68-47e5-b0a1-503dee0b34f3";
         }
 
         [TestCleanup]
@@ -123,6 +143,33 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 template.ParentHierarchy.Teams.Teams.Add(team);
             }
 
+            Provision(template);
+
+            Assert.IsTrue(TeamsHaveBeenProvisioned());
+#else
+            Assert.Inconclusive();
+#endif
+        }
+
+        [TestMethod]
+        public void CanUpdateObjects()
+        {
+            var template = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
+
+            foreach (var team in _teams)
+            {
+                template.ParentHierarchy.Teams.Teams.Add(team);
+            }
+
+            template.ParentHierarchy.Teams.Teams[0].GroupId = _existingTeamId;
+
+            Provision(template);
+
+            Assert.IsTrue(TeamsHaveBeenUpdated());
+        }
+
+        private static void Provision(ProvisioningTemplate template)
+        {
             using (new PnPProvisioningContext((resource, scope) => Task.FromResult(TestCommon.AcquireTokenAsync(resource, scope))))
             {
                 using (var ctx = TestCommon.CreateTenantClientContext())
@@ -131,12 +178,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     var parser = new TokenParser(ctx.Web, template);
                     new ObjectTeams().ProvisionObjects(tenant, template.ParentHierarchy, null, parser, new ProvisioningTemplateApplyingInformation());
                 }
-
-                Assert.IsTrue(TeamsHaveBeenProvisioned());
             }
-#else
-            Assert.Inconclusive();
-#endif
         }
 
         private bool TeamsHaveBeenProvisioned()
@@ -144,12 +186,20 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             // Wait for groups to be provisioned
             Thread.Sleep(5000);
 
-            foreach (var teamName in _teamNames)
+            using (new PnPProvisioningContext((resource, scope) => Task.FromResult(TestCommon.AcquireTokenAsync(resource, scope))))
             {
-                var teams = GetTeamsByDisplayName(teamName);
-                if (!teams.HasValues) return false;
+                foreach (var teamName in _teamNames)
+                {
+                    var teams = GetTeamsByDisplayName(teamName);
+                    if (!teams.HasValues) return false;
+                }
             }
 
+            return true;
+        }
+
+        private bool TeamsHaveBeenUpdated()
+        {
             return true;
         }
     }
