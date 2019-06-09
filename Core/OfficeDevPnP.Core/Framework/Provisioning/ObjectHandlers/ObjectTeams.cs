@@ -903,13 +903,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static string ReplaceAccentedCharactersWithLatin(string str)
         {
-            const string a = "[äåàá]";
-            var regex = new Regex(a);
+            const string a = "[äåàáâã]";
+            var regex = new Regex(a, RegexOptions.IgnoreCase);
             str = regex.Replace(str, "a");
 
-            const string o = "[öòó]";
-            regex = new Regex(o);
+            const string e = "[èéêë]";
+            regex = new Regex(e, RegexOptions.IgnoreCase);
+            str = regex.Replace(str, "e");
+
+            const string i = "[ìíîï]";
+            regex = new Regex(i, RegexOptions.IgnoreCase);
+            str = regex.Replace(str, "i");
+
+            const string o = "[öòóôõ]";
+            regex = new Regex(o, RegexOptions.IgnoreCase);
             str = regex.Replace(str, "o");
+
+            const string u = "[üùúû]";
+            regex = new Regex(u, RegexOptions.IgnoreCase);
+            str = regex.Replace(str, "u");
 
             return str;
         }
