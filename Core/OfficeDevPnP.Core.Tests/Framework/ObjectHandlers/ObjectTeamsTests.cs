@@ -1,6 +1,7 @@
 ﻿#if !ONPREMISES
 using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -18,20 +19,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
     public class ObjectTeamsTests
     {
         private readonly List<string> _teamNames = new List<string>();
-        private readonly List<string> _teamTemplates = new List<string>();
-        private readonly List<Team> _teams = new List<Team>();
+        private string _jsonTemplate;
+        private Team _team;
         private string _existingTeamId;
 
         [TestInitialize]
         public void Initialize()
         {
-            _teamNames.Add("Unit Test");
-            _teamTemplates.Add("{ \"template@odata.bind\": \"https://graph.microsoft.com/beta/teamsTemplates(\'standard\')\", \"displayName\": \"" + _teamNames[0] + "\", \"description\": \"Unit test\" }");
+            const string teamTemplateName = "Sample Engineering Team";
+            _teamNames.Add(teamTemplateName);
+            _jsonTemplate = "{ \"template@odata.bind\": \"https://graph.microsoft.com/beta/teamsTemplates(\'standard\')\", \"visibility\": \"Private\", \"displayName\": \"" + teamTemplateName + "\", \"description\": \"This is a sample engineering team, used to showcase the range of properties supported by this API\", \"channels\": [ { \"displayName\": \"Announcements 📢\", \"isFavoriteByDefault\": true, \"description\": \"This is a sample announcements channel that is favorited by default. Use this channel to make important team, product, and service announcements.\" }, { \"displayName\": \"Training 🏋️\", \"isFavoriteByDefault\": true, \"description\": \"This is a sample training channel, that is favorited by default, and contains an example of pinned website and YouTube tabs.\", \"tabs\": [ { \"teamsApp@odata.bind\": \"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps(\'com.microsoft.teamspace.tab.web\')\", \"name\": \"A Pinned Website\", \"configuration\": { \"contentUrl\": \"https://docs.microsoft.com/en-us/microsoftteams/microsoft-teams\" } }, { \"teamsApp@odata.bind\": \"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps(\'com.microsoft.teamspace.tab.youtube\')\", \"name\": \"A Pinned YouTube Video\", \"configuration\": { \"contentUrl\": \"https://tabs.teams.microsoft.com/Youtube/Home/YoutubeTab?videoId=X8krAMdGvCQ\", \"websiteUrl\": \"https://www.youtube.com/watch?v=X8krAMdGvCQ\" } } ] }, { \"displayName\": \"Planning 📅 \", \"description\": \"This is a sample of a channel that is not favorited by default, these channels will appear in the more channels overflow menu.\", \"isFavoriteByDefault\": false }, { \"displayName\": \"Issues and Feedback 🐞\", \"description\": \"This is a sample of a channel that is not favorited by default, these channels will appear in the more channels overflow menu.\" } ], \"memberSettings\": { \"allowCreateUpdateChannels\": true, \"allowDeleteChannels\": true, \"allowAddRemoveApps\": true, \"allowCreateUpdateRemoveTabs\": true, \"allowCreateUpdateRemoveConnectors\": true }, \"guestSettings\": { \"allowCreateUpdateChannels\": false, \"allowDeleteChannels\": false }, \"funSettings\": { \"allowGiphy\": true, \"giphyContentRating\": \"Moderate\", \"allowStickersAndMemes\": true, \"allowCustomMemes\": true }, \"messagingSettings\": { \"allowUserEditMessages\": true, \"allowUserDeleteMessages\": true, \"allowOwnerDeleteMessages\": true, \"allowTeamMentions\": true, \"allowChannelMentions\": true }, \"installedApps\": [ { \"teamsApp@odata.bind\": \"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps(\'com.microsoft.teamspace.tab.vsts\')\" }, { \"teamsApp@odata.bind\": \"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps(\'1542629c-01b3-4a6d-8f76-1938b779e48d\')\" } ] }";
 
-            _teamNames.Add("Sample Engineering Team");
-            _teamTemplates.Add("{ \"template@odata.bind\": \"https://graph.microsoft.com/beta/teamsTemplates(\'standard\')\", \"visibility\": \"Private\", \"displayName\": \"" + _teamNames[1] + "\", \"description\": \"This is a sample engineering team, used to showcase the range of properties supported by this API\", \"channels\": [ { \"displayName\": \"Announcements 📢\", \"isFavoriteByDefault\": true, \"description\": \"This is a sample announcements channel that is favorited by default. Use this channel to make important team, product, and service announcements.\" }, { \"displayName\": \"Training 🏋️\", \"isFavoriteByDefault\": true, \"description\": \"This is a sample training channel, that is favorited by default, and contains an example of pinned website and YouTube tabs.\", \"tabs\": [ { \"teamsApp@odata.bind\": \"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps(\'com.microsoft.teamspace.tab.web\')\", \"name\": \"A Pinned Website\", \"configuration\": { \"contentUrl\": \"https://docs.microsoft.com/en-us/microsoftteams/microsoft-teams\" } }, { \"teamsApp@odata.bind\": \"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps(\'com.microsoft.teamspace.tab.youtube\')\", \"name\": \"A Pinned YouTube Video\", \"configuration\": { \"contentUrl\": \"https://tabs.teams.microsoft.com/Youtube/Home/YoutubeTab?videoId=X8krAMdGvCQ\", \"websiteUrl\": \"https://www.youtube.com/watch?v=X8krAMdGvCQ\" } } ] }, { \"displayName\": \"Planning 📅 \", \"description\": \"This is a sample of a channel that is not favorited by default, these channels will appear in the more channels overflow menu.\", \"isFavoriteByDefault\": false }, { \"displayName\": \"Issues and Feedback 🐞\", \"description\": \"This is a sample of a channel that is not favorited by default, these channels will appear in the more channels overflow menu.\" } ], \"memberSettings\": { \"allowCreateUpdateChannels\": true, \"allowDeleteChannels\": true, \"allowAddRemoveApps\": true, \"allowCreateUpdateRemoveTabs\": true, \"allowCreateUpdateRemoveConnectors\": true }, \"guestSettings\": { \"allowCreateUpdateChannels\": false, \"allowDeleteChannels\": false }, \"funSettings\": { \"allowGiphy\": true, \"giphyContentRating\": \"Moderate\", \"allowStickersAndMemes\": true, \"allowCustomMemes\": true }, \"messagingSettings\": { \"allowUserEditMessages\": true, \"allowUserDeleteMessages\": true, \"allowOwnerDeleteMessages\": true, \"allowTeamMentions\": true, \"allowChannelMentions\": true }, \"installedApps\": [ { \"teamsApp@odata.bind\": \"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps(\'com.microsoft.teamspace.tab.vsts\')\" }, { \"teamsApp@odata.bind\": \"https://graph.microsoft.com/v1.0/appCatalogs/teamsApps(\'1542629c-01b3-4a6d-8f76-1938b779e48d\')\" } ] }");
-
-            _teamNames.Add(@"Unallowed &_,.;:/\""!@$%^*[]+=&'|<>{}-()?#¤`´~¨ Ääkköset");
+            const string teamName = @"Unallowed &_,.;:/\""!@$%^*[]+=&'|<>{}-()?#¤`´~¨ Ääkköset";
+            _teamNames.Add(teamName);
             var security = new TeamSecurity
             {
                 Owners = { new TeamSecurityUser { UserPrincipalName = ConfigurationManager.AppSettings["SPOUserName"] } }
@@ -73,7 +73,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             var tab = new TeamTab
             {
                 DisplayName = "OneNote Tab",
-                TeamsAppId = "0d820ecd-def2-4297-adad-78056cde7c78"
+                TeamsAppId = "0d820ecd-def2-4297-adad-78056cde7c78"/*,
+                Configuration = new TeamTabConfiguration
+                {
+                    ContentUrl = "https://todo-improve-this-test-when-tab-resource-provisioning-has-been-implemented"
+                }*/
             };
             channel.Tabs.Add(tab);
             var message = new TeamChannelMessage
@@ -82,9 +86,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             };
             channel.Messages.Add(message);
 
-            _teams.Add(new Team { DisplayName = _teamNames[2], Description = "Testing creating mailNickname from a display name that has unallowed and accented characters", Visibility = TeamVisibility.Public, Security = security, FunSettings = funSettings, GuestSettings = guestSettings, MemberSettings = memberSettings, MessagingSettings = messagingSettings, Channels = { channel } });
-
-            _existingTeamId = "a48e4d2d-4e68-47e5-b0a1-503dee0b34f3";
+            _team = new Team { DisplayName = teamName, Description = "Testing creating mailNickname from a display name that has unallowed and accented characters", Visibility = TeamVisibility.Public, Security = security, FunSettings = funSettings, GuestSettings = guestSettings, MemberSettings = memberSettings, MessagingSettings = messagingSettings, Channels = { channel } };
+            
+            // For testing updating
+            _existingTeamId = ConfigurationManager.AppSettings["ExistingTeamId"];
         }
 
         [TestCleanup]
@@ -133,15 +138,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 #if !ONPREMISES
             var template = new ProvisioningTemplate {ParentHierarchy = new ProvisioningHierarchy()};
 
-            foreach (var teamTemplate in _teamTemplates)
-            {
-                template.ParentHierarchy.Teams.TeamTemplates.Add(new TeamTemplate { JsonTemplate = teamTemplate });
-            }
-
-            foreach (var team in _teams)
-            {
-                template.ParentHierarchy.Teams.Teams.Add(team);
-            }
+            template.ParentHierarchy.Teams.TeamTemplates.Add(new TeamTemplate { JsonTemplate = _jsonTemplate });
+            template.ParentHierarchy.Teams.Teams.Add(_team);
 
             Provision(template);
 
@@ -156,10 +154,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         {
             var template = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
 
-            foreach (var team in _teams)
-            {
-                template.ParentHierarchy.Teams.Teams.Add(team);
-            }
+            template.ParentHierarchy.Teams.Teams.Add(_team);
 
             template.ParentHierarchy.Teams.Teams[0].GroupId = _existingTeamId;
 
@@ -200,6 +195,33 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
         private bool TeamsHaveBeenUpdated()
         {
+            using (new PnPProvisioningContext((resource, scope) => Task.FromResult(TestCommon.AcquireTokenAsync(resource, scope))))
+            {
+                var accessToken = PnPProvisioningContext.Current.AcquireToken("https://graph.microsoft.com/", "Group.Read.All");
+
+                var existingChannels = ObjectTeams.GetExistingTeamChannels(_existingTeamId, accessToken);
+
+                var channels = _team.Channels;
+
+                foreach (var channel in channels)
+                {
+                    var existingChannel = existingChannels.FirstOrDefault(x => x["displayName"].ToString() == channel.DisplayName);
+
+                    if (existingChannel == null || channel.Description != existingChannel["description"].ToString()) return false;
+
+                    var existingTabs = ObjectTeams.GetExistingTeamChannelTabs(_existingTeamId, existingChannel["id"].ToString(), accessToken);
+
+                    foreach (var tab in channel.Tabs)
+                    {
+                        var existingTab = existingTabs.FirstOrDefault(x => HttpUtility.UrlDecode(x["displayName"].ToString()) == tab.DisplayName && x["teamsAppId"].ToString() == tab.TeamsAppId);
+
+                        if (existingTab == null) return false;
+
+                        // todo: check tab configurations after tab resource provisioning has been implemented and included in the test
+                    }
+                }
+            }
+
             return true;
         }
     }

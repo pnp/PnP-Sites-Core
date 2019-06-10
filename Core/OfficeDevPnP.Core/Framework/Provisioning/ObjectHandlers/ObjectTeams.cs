@@ -619,7 +619,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return true;
         }
 
-        private static JToken GetExistingTeamChannels(string teamId, string accessToken)
+        public static JToken GetExistingTeamChannels(string teamId, string accessToken)
         {
             return JToken.Parse(HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels", accessToken))["value"];
         }
@@ -627,11 +627,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private static string UpdateTeamChannel(TeamChannel channel, string teamId, JToken existingChannel, string accessToken)
         {
             var channelId = existingChannel["id"].ToString();
+            var channelDisplayName = existingChannel["displayName"].ToString();
+            var identicalChannelName = channel.DisplayName == channelDisplayName;
 
-            if (channel.DisplayName == existingChannel["displayName"].ToString()) channel.DisplayName = null;
+            // You can't update a channel if its displayName is exactly the same, so remove it temporarily.
+            if (identicalChannelName) channel.DisplayName = null;
 
             // Updating isFavouriteByDefault is currently not supported on either endpoint. Using the beta endpoint results in an error.
             HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{teamId}/channels/{channelId}", channel, HttpHelper.JsonContentType, accessToken);
+
+            // Add the channel displayName back again now that we've updated the channel
+            if (identicalChannelName) channel.DisplayName = channelDisplayName;
 
             return channelId;
         }
@@ -677,7 +683,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return true;
         }
 
-        private static JToken GetExistingTeamChannelTabs(string teamId, string channelId, string accessToken)
+        public static JToken GetExistingTeamChannelTabs(string teamId, string channelId, string accessToken)
         {
             return JToken.Parse(HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs", accessToken))["value"];
         }
@@ -685,9 +691,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private static string UpdateTeamTab(TeamTab tab, string teamId, string channelId, string tabId, string accessToken)
         {
             // teamsAppId is not allowed in the request
+            var teamsAppId = tab.TeamsAppId;
             tab.TeamsAppId = null;
 
             HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs/{tabId}", tab, HttpHelper.JsonContentType, accessToken);
+
+            // Add the teamsAppId back now that we've updated the tab
+            tab.TeamsAppId = teamsAppId;
+
             return tabId;
         }
 
