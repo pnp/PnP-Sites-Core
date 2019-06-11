@@ -1,17 +1,17 @@
 ﻿#if !ONPREMISES
+using Microsoft.Online.SharePoint.TenantAdministration;
+using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Teams;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
+using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Graph;
 using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
-using Newtonsoft.Json.Linq;
-using OfficeDevPnP.Core.Framework.Provisioning.Model.Teams;
-using OfficeDevPnP.Core.Utilities;
-using Microsoft.Online.SharePoint.TenantAdministration;
-using OfficeDevPnP.Core.Utilities.Graph;
-using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
-using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
-using System.IO;
 using System.Text.RegularExpressions;
 using System.Web;
 
@@ -69,33 +69,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (!String.IsNullOrEmpty(teamId))
             {
-                // Wait for the Team to be ready
-                Boolean wait = true;
-                Int32 iterations = 0;
-                while (wait)
-                {
-                    iterations++;
-
-                    try
-                    {
-                        var jsonOwners = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/owners?$select=id", accessToken);
-                        if (!String.IsNullOrEmpty(jsonOwners))
-                        {
-                            wait = false;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        // In case of exception wait for 5 secs
-                        System.Threading.Thread.Sleep(TimeSpan.FromSeconds(5));
-                    }
-
-                    // Don't wait more than 1 minute
-                    if (iterations > 12)
-                    {
-                        wait = false;
-                    }
-                }
+                // Wait to be sure that the Team is ready before configuring it
+                WaitForTeamToBeReady(accessToken, teamId);
 
                 // And now we configure security, channels, and apps
                 if (!SetGroupSecurity(scope, team, teamId, accessToken)) return null;
@@ -120,6 +95,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             return null;
+        }
+
+        private static void WaitForTeamToBeReady(string accessToken, string teamId)
+        {
+            // Wait for the Team to be ready
+            Boolean wait = true;
+            Int32 iterations = 0;
+            while (wait)
+            {
+                iterations++;
+
+                try
+                {
+                    var jsonOwners = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/owners?$select=id", accessToken);
+                    if (!String.IsNullOrEmpty(jsonOwners))
+                    {
+                        wait = false;
+                    }
+                }
+                catch (Exception)
+                {
+                    // In case of exception wait for 5 secs
+                    System.Threading.Thread.Sleep(TimeSpan.FromSeconds(5));
+                }
+
+                // Don't wait more than 1 minute
+                if (iterations > 12)
+                {
+                    wait = false;
+                }
+            }
         }
 
         /// <summary>
@@ -217,7 +223,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 };
 
                 // Make the Graph request to create the Office 365 Group
-                var createdGroupJson = HttpHelper.MakePostRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups", 
+                var createdGroupJson = HttpHelper.MakePostRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups",
                     groupCreationRequest, HttpHelper.JsonContentType, accessToken);
                 var createdGroupId = JToken.Parse(createdGroupJson).Value<string>("id");
 
@@ -230,7 +236,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     try
                     {
-                        var jsonGroup= HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{createdGroupId}", accessToken);
+                        var jsonGroup = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{createdGroupId}", accessToken);
                         if (!String.IsNullOrEmpty(jsonGroup))
                         {
                             wait = false;
@@ -630,14 +636,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var channelDisplayName = existingChannel["displayName"].ToString();
             var identicalChannelName = channel.DisplayName == channelDisplayName;
 
-            // You can't update a channel if its displayName is exactly the same, so remove it temporarily.
-            if (identicalChannelName) channel.DisplayName = null;
+            // Prepare the request body for the Channel update
+            var channelToUpdate = new
+            {
+                description = channel.Description,
+                // You can't update a channel if its displayName is exactly the same, so remove it temporarily.
+                displayName = identicalChannelName ? null : channel.DisplayName,
+            };
 
             // Updating isFavouriteByDefault is currently not supported on either endpoint. Using the beta endpoint results in an error.
-            HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{teamId}/channels/{channelId}", channel, HttpHelper.JsonContentType, accessToken);
-
-            // Add the channel displayName back again now that we've updated the channel
-            if (identicalChannelName) channel.DisplayName = channelDisplayName;
+            HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{teamId}/channels/{channelId}", channelToUpdate, HttpHelper.JsonContentType, accessToken);
 
             return channelId;
         }
@@ -694,7 +702,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var teamsAppId = tab.TeamsAppId;
             tab.TeamsAppId = null;
 
-            HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs/{tabId}", tab, HttpHelper.JsonContentType, accessToken);
+            // Prepare the request body for the Tab update
+            var tabToUpdate = new
+            {
+                displayName = tab.DisplayName,
+                configuration = tab.Configuration != null
+                    ? new
+                    {
+                        entityId = tab.Configuration.EntityId,
+                        contentUrl = tab.Configuration.ContentUrl,
+                        removeUrl = tab.Configuration.RemoveUrl,
+                        websiteUrl = tab.Configuration.WebsiteUrl,
+                    } : null,
+            };
+
+            HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs/{tabId}", tabToUpdate, HttpHelper.JsonContentType, accessToken);
 
             // Add the teamsAppId back now that we've updated the tab
             tab.TeamsAppId = teamsAppId;
@@ -887,7 +909,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return team.ToString();
         }
 
-#region PnP Provisioning Engine infrastructural code
+        #region PnP Provisioning Engine infrastructural code
 
         public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation)
         {

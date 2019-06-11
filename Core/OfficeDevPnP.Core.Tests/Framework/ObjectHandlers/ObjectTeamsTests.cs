@@ -1,4 +1,5 @@
 ﻿#if !ONPREMISES
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
@@ -18,10 +19,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
     [TestClass]
     public class ObjectTeamsTests
     {
+        public const String MicrosoftGraphBaseURI = "https://graph.microsoft.com/";
         private readonly List<string> _teamNames = new List<string>();
         private string _jsonTemplate;
         private Team _team;
-        private string _existingTeamId;
+
+        #region Init and Cleanup code
 
         [TestInitialize]
         public void Initialize()
@@ -87,9 +90,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             channel.Messages.Add(message);
 
             _team = new Team { DisplayName = teamName, Description = "Testing creating mailNickname from a display name that has unallowed and accented characters", Visibility = TeamVisibility.Public, Security = security, FunSettings = funSettings, GuestSettings = guestSettings, MemberSettings = memberSettings, MessagingSettings = messagingSettings, Channels = { channel } };
-            
-            // For testing updating
-            _existingTeamId = ConfigurationManager.AppSettings["ExistingTeamId"];
         }
 
         [TestCleanup]
@@ -103,64 +103,68 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                     foreach (var team in teams)
                     {
-                        DeleteTeam(team["id"].ToString());
+                        try
+                        {
+                            DeleteTeam(team["id"].ToString());
+                        }
+                        catch (Exception ex)
+                        {
+                            // NOOP
+                        }
                     }
                 }
             }
         }
 
+        #endregion
+
+        #region Private helper methods
+
         private static JToken GetTeamsByDisplayName(string displayName)
         {
-            if (displayName == null) return null;
+            if (String.IsNullOrEmpty(displayName)) return null;
 
-            var accessToken = PnPProvisioningContext.Current.AcquireToken("https://graph.microsoft.com/", "Group.Read.All");
+            var accessToken = PnPProvisioningContext.Current.AcquireToken(MicrosoftGraphBaseURI, "Group.Read.All");
+            var requestUrl = $"{MicrosoftGraphBaseURI}v1.0/groups?$filter=displayName eq '{HttpUtility.UrlEncode(displayName.Replace("'", "''"))}'";
+            return JToken.Parse(HttpHelper.MakeGetRequestForString(requestUrl, accessToken))["value"];
+        }
 
-            var requestUrl = $"https://graph.microsoft.com/v1.0/groups?$filter=displayName eq '{HttpUtility.UrlEncode(displayName.Replace("'", "''"))}'";
+        private static JToken GetTeamById(string teamId)
+        {
+            if (String.IsNullOrEmpty(teamId)) return null;
 
-            var response = HttpHelper.MakeGetRequestForString(requestUrl, accessToken);
-            var json = JToken.Parse(response);
+            var accessToken = PnPProvisioningContext.Current.AcquireToken(MicrosoftGraphBaseURI, "Group.Read.All");
+            return JToken.Parse(HttpHelper.MakeGetRequestForString($"{MicrosoftGraphBaseURI}beta/teams/{teamId}", accessToken));
+        }
 
-            return json["value"];
+        private static JToken GetTeamChannels(string teamId)
+        {
+            if (String.IsNullOrEmpty(teamId)) return null;
+
+            var accessToken = PnPProvisioningContext.Current.AcquireToken(MicrosoftGraphBaseURI, "Group.Read.All");
+            return JToken.Parse(HttpHelper.MakeGetRequestForString($"{MicrosoftGraphBaseURI}beta/teams/{teamId}/channels", accessToken))["value"];
+        }
+
+        private static JToken GetTeamChannelTabs(string teamId, string channelId)
+        {
+            if (String.IsNullOrEmpty(teamId)) return null;
+            if (String.IsNullOrEmpty(channelId)) return null;
+
+            var accessToken = PnPProvisioningContext.Current.AcquireToken(MicrosoftGraphBaseURI, "Group.Read.All");
+            return JToken.Parse(HttpHelper.MakeGetRequestForString($"{MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs", accessToken))["value"];
         }
 
         private static void DeleteTeam(string id)
         {
-            var accessToken = PnPProvisioningContext.Current.AcquireToken("https://graph.microsoft.com/", "Group.ReadWrite.All");
+            var accessToken = PnPProvisioningContext.Current.AcquireToken(MicrosoftGraphBaseURI, "Group.ReadWrite.All");
 
-            var requestUrl = $"https://graph.microsoft.com/v1.0/groups/{id}";
-
+            var requestUrl = $"{MicrosoftGraphBaseURI}v1.0/groups/{id}";
             HttpHelper.MakeDeleteRequest(requestUrl, accessToken);
-        }
 
-        [TestMethod]
-        public void CanProvisionObjects()
-        {
-#if !ONPREMISES
-            var template = new ProvisioningTemplate {ParentHierarchy = new ProvisioningHierarchy()};
+            //var accessToken = PnPProvisioningContext.Current.AcquireToken("https://api.spaces.skype.com", "user_impersonation");
 
-            template.ParentHierarchy.Teams.TeamTemplates.Add(new TeamTemplate { JsonTemplate = _jsonTemplate });
-            template.ParentHierarchy.Teams.Teams.Add(_team);
-
-            Provision(template);
-
-            Assert.IsTrue(TeamsHaveBeenProvisioned());
-#else
-            Assert.Inconclusive();
-#endif
-        }
-
-        [TestMethod]
-        public void CanUpdateObjects()
-        {
-            var template = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
-
-            template.ParentHierarchy.Teams.Teams.Add(_team);
-
-            template.ParentHierarchy.Teams.Teams[0].GroupId = _existingTeamId;
-
-            Provision(template);
-
-            Assert.IsTrue(TeamsHaveBeenUpdated());
+            //var requestUrl = $"https://teams.microsoft.com/api/mt/emea/beta/teams/{id}/delete";
+            //HttpHelper.MakeDeleteRequest(requestUrl, accessToken);
         }
 
         private static void Provision(ProvisioningTemplate template)
@@ -175,54 +179,101 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 }
             }
         }
+        
+        #endregion
 
-        private bool TeamsHaveBeenProvisioned()
+        [TestMethod]
+        public void CanProvisionObjects()
         {
-            // Wait for groups to be provisioned
-            Thread.Sleep(5000);
-
+#if !ONPREMISES
             using (new PnPProvisioningContext((resource, scope) => Task.FromResult(TestCommon.AcquireTokenAsync(resource, scope))))
             {
+                var template = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
+
+                template.ParentHierarchy.Teams.TeamTemplates.Add(new TeamTemplate { JsonTemplate = _jsonTemplate });
+                template.ParentHierarchy.Teams.Teams.Add(_team);
+
+                Provision(template);
+
+                // Wait for groups to be provisioned
+                Thread.Sleep(5000);
+
+                // Verify if Teams have been provisioned
                 foreach (var teamName in _teamNames)
                 {
                     var teams = GetTeamsByDisplayName(teamName);
-                    if (!teams.HasValues) return false;
+                    Assert.IsTrue(teams.HasValues);
                 }
             }
-
-            return true;
+#else
+            Assert.Inconclusive();
+#endif
         }
 
-        private bool TeamsHaveBeenUpdated()
+        [TestMethod]
+        public void CanUpdateObjects()
         {
+#if !ONPREMISES
             using (new PnPProvisioningContext((resource, scope) => Task.FromResult(TestCommon.AcquireTokenAsync(resource, scope))))
             {
-                var accessToken = PnPProvisioningContext.Current.AcquireToken("https://graph.microsoft.com/", "Group.Read.All");
+                // Prepare the hierarchy for provisioning
+                var template = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
 
-                var existingChannels = ObjectTeams.GetExistingTeamChannels(_existingTeamId, accessToken);
+                template.ParentHierarchy.Teams.Teams.Add(_team);
 
-                var channels = _team.Channels;
+                // Initial provisioning of a Team
+                Provision(template);
 
-                foreach (var channel in channels)
+                // Get the just provisioned Team
+                var provisionedTeam = GetTeamsByDisplayName(_team.DisplayName)?.FirstOrDefault();
+                if (provisionedTeam != null && provisionedTeam.HasValues)
                 {
-                    var existingChannel = existingChannels.FirstOrDefault(x => x["displayName"].ToString() == channel.DisplayName);
+                    // Store locally the just created Team ID
+                    var teamId = provisionedTeam["id"].ToString();
 
-                    if (existingChannel == null || channel.Description != existingChannel["description"].ToString()) return false;
-
-                    var existingTabs = ObjectTeams.GetExistingTeamChannelTabs(_existingTeamId, existingChannel["id"].ToString(), accessToken);
-
-                    foreach (var tab in channel.Tabs)
+                    // Now update the Team and test delta handling
+                    template.ParentHierarchy.Teams.Teams[0].FunSettings.AllowGiphy =
+                        !template.ParentHierarchy.Teams.Teams[0].FunSettings.AllowGiphy;
+                    template.ParentHierarchy.Teams.Teams[0].GuestSettings.AllowCreateUpdateChannels =
+                        !template.ParentHierarchy.Teams.Teams[0].GuestSettings.AllowCreateUpdateChannels;
+                    template.ParentHierarchy.Teams.Teams[0].MemberSettings.AllowDeleteChannels =
+                        !template.ParentHierarchy.Teams.Teams[0].MemberSettings.AllowDeleteChannels;
+                    template.ParentHierarchy.Teams.Teams[0].MessagingSettings.AllowUserEditMessages =
+                        !template.ParentHierarchy.Teams.Teams[0].MessagingSettings.AllowUserEditMessages;
+                    template.ParentHierarchy.Teams.Teams[0].Channels[0].Description += " - Updated";
+                    template.ParentHierarchy.Teams.Teams[0].Channels[0].Tabs.Add(new TeamTab
                     {
-                        var existingTab = existingTabs.FirstOrDefault(x => HttpUtility.UrlDecode(x["displayName"].ToString()) == tab.DisplayName && x["teamsAppId"].ToString() == tab.TeamsAppId);
+                        DisplayName = "OneNote Tab 2",
+                        TeamsAppId = "0d820ecd-def2-4297-adad-78056cde7c78"
+                    });
 
-                        if (existingTab == null) return false;
+                    Provision(template);
 
-                        // todo: check tab configurations after tab resource provisioning has been implemented and included in the test
-                    }
+                    var team = GetTeamById(teamId);
+                    var existingChannels = GetTeamChannels(teamId);
+                    var existingTabs = GetTeamChannelTabs(teamId, existingChannels[1]["id"].ToString());
+
+                    Assert.AreEqual(team["funSettings"]["allowGiphy"].Value<Boolean>(),
+                        template.ParentHierarchy.Teams.Teams[0].FunSettings.AllowGiphy);
+                    Assert.AreEqual(team["guestSettings"]["allowCreateUpdateChannels"].Value<Boolean>(),
+                        template.ParentHierarchy.Teams.Teams[0].GuestSettings.AllowCreateUpdateChannels);
+                    Assert.AreEqual(team["memberSettings"]["allowDeleteChannels"].Value<Boolean>(),
+                        template.ParentHierarchy.Teams.Teams[0].MemberSettings.AllowDeleteChannels);
+                    Assert.AreEqual(team["messagingSettings"]["allowUserEditMessages"].Value<Boolean>(),
+                        template.ParentHierarchy.Teams.Teams[0].MessagingSettings.AllowUserEditMessages);
+                    Assert.AreEqual(existingChannels[1]["description"],
+                        template.ParentHierarchy.Teams.Teams[0].Channels[0].Description);
+                    Assert.IsTrue(existingTabs.Any(t => t["displayName"].ToString() == template.ParentHierarchy.Teams.Teams[0].Channels[0].Tabs[1].DisplayName));
+                }
+                else
+                {
+                    // If the Team wasn't created ... just fail
+                    Assert.IsTrue(false);
                 }
             }
-
-            return true;
+#else
+            Assert.Inconclusive();
+#endif
         }
     }
 }
