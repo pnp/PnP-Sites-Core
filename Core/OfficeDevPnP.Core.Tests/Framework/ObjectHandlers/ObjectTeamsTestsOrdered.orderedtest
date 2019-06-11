@@ -1,7 +1,0 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<OrderedTest name="objectteamstestsordered" storage="c:\github\pnp-sites-core\core\officedevpnp.core.tests\framework\objecthandlers\objectteamstestsordered.orderedtest" id="ca3defcd-955c-4a1a-b504-df0ce3fc3bd6" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
-  <TestLinks>
-    <TestLink id="d44a9f3b-ddd0-9938-b5fe-01882c675024" name="CanProvisionObjects" storage="..\..\bin\debug\officedevpnp.core.tests.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel,   PublicKeyToken=b03f5f7f11d50a3a" />
-    <TestLink id="7cd83ff9-f0a6-c190-bdff-9095ef1cec12" name="CanUpdateObjects" storage="..\..\bin\debug\officedevpnp.core.tests.dll" type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel,   PublicKeyToken=b03f5f7f11d50a3a" />
-  </TestLinks>
-</OrderedTest>
