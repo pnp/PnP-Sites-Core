@@ -56,12 +56,12 @@ namespace OfficeDevPnP.Core.Sites
 
             ClientContext responseContext = null;
 
-            var accessToken = clientContext.GetAccessToken();
-
             if (clientContext.IsAppOnly() && string.IsNullOrEmpty(siteCollectionCreationInformation.Owner))
             {
                 throw new Exception("You need to set the owner in App-only context");
             }
+
+            var accessToken = clientContext.GetAccessToken();
 
             using (var handler = new HttpClientHandler())
             {
@@ -178,12 +178,13 @@ namespace OfficeDevPnP.Core.Sites
 
             ClientContext responseContext = null;
 
-            var accessToken = clientContext.GetAccessToken();
-
             if (clientContext.IsAppOnly())
             {
                 throw new Exception("App-Only is currently not supported.");
             }
+
+            var accessToken = clientContext.GetAccessToken();
+
             using (var handler = new HttpClientHandler())
             {
                 clientContext.Web.EnsureProperty(w => w.Url);
