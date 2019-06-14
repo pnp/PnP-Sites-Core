@@ -627,7 +627,7 @@ namespace OfficeDevPnP.Core.Sites
         /// Enable Microsoft Teams team in an O365 group connected team site
         /// Will also enable it on a newly Groupified classic site
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="context">Context to operate against</param>
         /// <returns></returns>
         public static async Task<string> TeamifySiteAsync(ClientContext context)
         {
@@ -638,7 +638,7 @@ namespace OfficeDevPnP.Core.Sites
             if (context.Web.IsSubSite())
             {
                 throw new Exception("You cannot Teamify a subsite");
-            }            
+            }
             else if (context.Site.GroupId == Guid.Empty)
             {
                 throw new Exception($"You cannot associate Teams on this site collection. It is only supported for O365 Group connected sites.");
@@ -652,6 +652,35 @@ namespace OfficeDevPnP.Core.Sites
                 responseString = Convert.ToString(teamId["value"]);
 
                 return await Task.Run(() => responseString);
+            }
+        }
+
+        /// <summary>
+        /// Deletes a Communication site or a Group-less Modern team site.
+        /// </summary>
+        /// <param name="context">Context to operate against</param>
+        /// <returns></returns>
+        public static async Task<bool> DeleteSiteAsync(ClientContext context)
+        {
+            bool siteDeleted = false;
+
+            var webTemplateId = context.Web.GetBaseTemplateId();
+
+            if (webTemplateId == "SITEPAGEPUBLISHING#0" || webTemplateId == "STS#3")
+            {
+                context.Site.EnsureProperties(s => s.Id);
+
+                var result = await context.Web.ExecutePost("/_api/SPSiteManager/delete", $@" {{ ""siteId"": ""{context.Site.Id.ToString()}"" }}");
+
+                var parsedResult = JObject.Parse(result);
+
+                siteDeleted = Convert.ToBoolean(parsedResult["odata.null"]);
+
+                return await Task.Run(() => siteDeleted);
+            }
+            else
+            {
+                throw new Exception("Only deletion of Communication site or Group-less Modern team site is supported by this method.");
             }
         }
     }

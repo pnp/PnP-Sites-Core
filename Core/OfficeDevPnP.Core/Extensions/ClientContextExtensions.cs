@@ -817,6 +817,18 @@ namespace Microsoft.SharePoint.Client
 
             return await SiteCollection.TeamifySiteAsync(clientContext);
         }
+
+        /// <summary>
+        /// Deletes a Communication site or a group-less Modern team site
+        /// </summary>
+        /// <param name="clientContext"></param>
+        /// <returns></returns>
+        public static async Task<bool> DeleteSiteAsync(this ClientContext clientContext)
+        {
+            await new SynchronizationContextRemover();
+
+            return await SiteCollection.DeleteSiteAsync(clientContext);
+        }
 #endif
     }
 }
