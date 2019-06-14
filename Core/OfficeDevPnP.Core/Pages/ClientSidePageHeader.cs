@@ -466,17 +466,19 @@ namespace OfficeDevPnP.Core.Pages
         {
             try
             {
-                this.clientContext.Site.EnsureProperties(p => p.Id);
-                this.clientContext.Web.EnsureProperties(p => p.Id);
+                this.siteId = this.clientContext.Site.EnsureProperty(p => p.Id);
+                this.webId = this.clientContext.Web.EnsureProperty(p => p.Id);
 
-                var pageHeaderImage = this.clientContext.Web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(ImageServerRelativeUrl));
-                this.clientContext.Load(pageHeaderImage, p => p.UniqueId, p => p.ListId);
-                this.clientContext.ExecuteQueryRetry();
+                if (!ImageServerRelativeUrl.StartsWith("/_LAYOUTS", StringComparison.OrdinalIgnoreCase))
+                {
+                    var pageHeaderImage = this.clientContext.Web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(ImageServerRelativeUrl));
+                    this.clientContext.Load(pageHeaderImage, p => p.UniqueId, p => p.ListId);
+                    this.clientContext.ExecuteQueryRetry();
 
-                this.siteId = this.clientContext.Site.Id;
-                this.webId = this.clientContext.Web.Id;
-                this.listId = pageHeaderImage.ListId;
-                this.uniqueId = pageHeaderImage.UniqueId;
+                    this.listId = pageHeaderImage.ListId;
+                    this.uniqueId = pageHeaderImage.UniqueId;
+                }
+
                 this.headerImageResolved = true;
             }
             catch (ServerException ex)
