@@ -22,7 +22,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     /// <summary>
     /// Handles methods for token parser
     /// </summary>
-    public class TokenParser
+    public class TokenParser : ICloneable
     {
         public Web _web;
 
@@ -104,6 +104,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.RemoveAll(t => t is RoleDefinitionToken || t is RoleDefinitionIdToken);
                 AddRoleDefinitionTokens(web);
             }
+        }
+
+        /// <summary>
+        /// Creates a new TokenParser. Only to be used by Clone().
+        /// </summary>
+        /// <param name="tokens">The list with TokenDefinitions to copy over</param>
+        /// <param name="web">The Web context to copy over</param>
+        private TokenParser(Web web, List<TokenDefinition> tokens)
+        {
+            _web = web;
+            _tokens = tokens;
         }
 
         public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy) :
@@ -320,6 +331,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             _tokens.RemoveAll(t => t is FieldTitleToken || t is FieldIdToken);
 
+            // Add all the site columns
             var fields = web.AvailableFields;
             web.Context.Load(fields, flds => flds.Include(f => f.Title, f => f.InternalName, f => f.Id));
             web.Context.ExecuteQueryRetry();
@@ -328,6 +340,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new FieldTitleToken(web, field.InternalName, field.Title));
                 _tokens.Add(new FieldIdToken(web, field.InternalName, field.Id));
             }
+
+           // Add all the list columns
+            //var lists = web.Lists;
+            //web.Context.Load(lists, list => list.Include(listField => listField.Fields.Include(field => field.Title, field => field.InternalName, field => field.Id)));
+            //web.Context.ExecuteQueryRetry();
+            //foreach (var list in lists)
+            //{
+            //    foreach (var field in list.Fields)
+            //    {
+            //        _tokens.Add(new FieldTitleToken(web, field.InternalName, field.Title));
+            //        _tokens.Add(new FieldIdToken(web, field.InternalName, field.Id));
+            //    }
+            //}
 
             //if (web.IsSubSite())
             //{
@@ -1099,6 +1124,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 });
             } while (hasMatch && xml != tempXml);
             return tokenIds;
+        }
+
+        /// <summary>
+        /// Clones the current TokenParser instance into a new instance
+        /// </summary>
+        /// <returns>New cloned instance of the TokenParser</returns>
+        public object Clone()
+        {
+            return new TokenParser(_web, _tokens);
         }
     }
 }

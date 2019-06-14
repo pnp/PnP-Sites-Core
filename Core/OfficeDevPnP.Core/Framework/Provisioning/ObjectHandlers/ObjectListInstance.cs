@@ -69,24 +69,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var currentListIndex = 0;
                     foreach (var templateList in template.Lists)
                     {
-                        templateList.Url = parser.ParseString(templateList.Url);
+                        // Create a clone of the parser so we can enrich the parser with tokens for this specific list, i.e. for list fields containing tokens pointing to this specific list, without poluting the "global" parser
+                        var listParser = (TokenParser) parser.Clone();
+
+                        templateList.Url = listParser.ParseString(templateList.Url);
                         currentListIndex++;
                         WriteMessage($"List|{templateList.Title}|{currentListIndex}|{total}", ProvisioningMessageType.Progress);
                         CheckContentTypes(web, template, scope, templateList);
                         // check if the List exists by url or by title
-                        var index = existingLists.FindIndex(x => x.Title.Equals(parser.ParseString(templateList.Title), StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, templateList.Url), StringComparison.OrdinalIgnoreCase));
-
+                        var index = existingLists.FindIndex(x => x.Title.Equals(listParser.ParseString(templateList.Title), StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, templateList.Url), StringComparison.OrdinalIgnoreCase));
+                        
                         if (index == -1)
                         {
+                            // Create a new list
                             try
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_list__0_, templateList.Title);
-                                var returnTuple = CreateList(web, templateList, parser, scope, isNoScriptSite);
+                                var returnTuple = CreateList(web, templateList, listParser, scope, isNoScriptSite);
                                 var createdList = returnTuple.Item1;
-                                parser = returnTuple.Item2;
-                                processedLists.Add(new ListInfo { SiteList = createdList, TemplateList = templateList });
+                                listParser = returnTuple.Item2;
+                                processedLists.Add(new ListInfo { SiteList = createdList, TemplateList = templateList, TokenParser = listParser });
 
+                                // Add this new list to the generic parser so other elements outside of this list can use it as well as to the list specific parser so fields in this list can use it
                                 parser.AddToken(new ListIdToken(web, createdList.Title, createdList.Id));
+                                listParser.AddToken(new ListIdToken(web, createdList.Title, createdList.Id));
 
 #if !SP2013
                                 foreach (var supportedlanguageId in web.SupportedUILanguageIds)
@@ -96,10 +102,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     createdList.Context.ExecuteQueryRetry();
 
                                     if (titleResource != null && titleResource.Value != null)
+                                    {
+                                        listParser.AddToken(new ListIdToken(web, titleResource.Value, createdList.Id));
                                         parser.AddToken(new ListIdToken(web, titleResource.Value, createdList.Id));
+                                    }
                                 }
 #endif
+                                listParser.AddToken(new ListUrlToken(web, createdList.Title, createdList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
                                 parser.AddToken(new ListUrlToken(web, createdList.Title, createdList.RootFolder.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length + 1)));
+
+                                // Add this new list to the list with existingLists. If in the same definition this list would be referenced again, it will threat it as an update to this created list. Useful in i.e. scenarios where you want to set the list validation to a list field you create in your first list instance declaration.
+                                existingLists.Add(createdList);
                             }
                             catch (Exception ex)
                             {
@@ -109,16 +122,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
+                            // Update an existing list
                             try
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Updating_list__0_, templateList.Title);
                                 var existingList = web.Lists[index];
-                                var returnTuple = UpdateList(web, existingList, templateList, parser, scope, isNoScriptSite);
+                                var returnTuple = UpdateList(web, existingList, templateList, listParser, scope, isNoScriptSite);
                                 var updatedList = returnTuple.Item1;
-                                parser = returnTuple.Item2;
+                                listParser = returnTuple.Item2;
                                 if (updatedList != null)
                                 {
-                                    processedLists.Add(new ListInfo { SiteList = updatedList, TemplateList = templateList });
+                                    processedLists.Add(new ListInfo { SiteList = updatedList, TemplateList = templateList, TokenParser = listParser });
                                 }
                             }
                             catch (Exception ex)
@@ -137,7 +151,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     foreach (var listInfo in processedLists)
                     {
-                        ProcessFieldRefs(web, siteFields, parser, scope, rootWeb, listInfo);
+                        ProcessFieldRefs(web, siteFields, listInfo.TokenParser ?? parser, scope, rootWeb, listInfo);
                     }
 
                     #endregion FieldRefs
@@ -146,7 +160,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     foreach (var listInfo in processedLists)
                     {
-                        ProcessFields(web, parser, scope, listInfo);
+                        ProcessFields(web, listInfo.TokenParser ?? parser, scope, listInfo);
                     }
 
                     #endregion Fields
@@ -159,7 +173,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         foreach (var listInfo in processedLists)
                         {
-                            ProcessFieldDefaults(web, parser, listInfo);
+                            ProcessFieldDefaults(web, listInfo.TokenParser ?? parser, listInfo);
                         }
 
                         #endregion Default Field Values
@@ -168,7 +182,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         foreach (var listInfo in processedLists)
                         {
-                            ProcessViews(web, parser, scope, listInfo);
+                            ProcessViews(web, listInfo.TokenParser ?? parser, scope, listInfo);
                         }
 
                         #endregion Views
@@ -176,9 +190,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         #region Folders
 
                         // Folders are supported for document libraries and generic lists only
-                        foreach (var list in processedLists)
+                        foreach (var listInfo in processedLists)
                         {
-                            ProcessFolders(web, parser, scope, list);
+                            ProcessFolders(web, listInfo.TokenParser ?? parser, scope, listInfo);
                         }
 
                         #endregion Folders
@@ -204,9 +218,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         #region Property Bag Entries
 
                         // Configure Property Bag Entries
-                        foreach (var list in processedLists)
+                        foreach (var listInfo in processedLists)
                         {
-                            ProcessPropertyBagEntries(parser, scope, list);
+                            ProcessPropertyBagEntries(listInfo.TokenParser ?? parser, scope, listInfo);
                         }
 
                         #endregion Property Bag Entries
@@ -1174,7 +1188,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.BaseType,
                 l => l.BaseTemplate,
                 l => l.MajorWithMinorVersionsLimit,
-                l => l.MajorVersionLimit
+                l => l.MajorVersionLimit,
+                l => l.Fields.Include(field => field.Title, field => field.InternalName, field => field.Id)
 #if !ONPREMISES
 , l => l.ListExperienceOptions
 , l => l.ReadSecurity
@@ -1182,6 +1197,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
 );
             web.Context.ExecuteQueryRetry();
+
+            // Add the fields of the updated list to the parser so they can be used in settings and actions which reference this list
+            foreach (var listField in existingList.Fields)
+            {
+                parser.AddToken(new FieldTitleToken(web, listField.InternalName, listField.Title));
+                parser.AddToken(new FieldIdToken(web, listField.InternalName, listField.Id));
+            }
 
             if (existingList.BaseTemplate == templateList.TemplateType)
             {
@@ -1192,7 +1214,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 string oldUrl = existingList.RootFolder.ServerRelativeUrl;
                 if (!newUrl.Equals(oldUrl, StringComparison.OrdinalIgnoreCase))
                 {
-                    Microsoft.SharePoint.Client.Folder folder = web.GetFolderByServerRelativeUrl(oldUrl);
+                    Folder folder = web.GetFolderByServerRelativeUrl(oldUrl);
                     folder.MoveTo(newUrl);
                     folder.Update();
                 }
@@ -1710,8 +1732,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 createdList = web.Lists.Add(listCreate);
                 createdList.Update();
             }
-            web.Context.Load(createdList, l => l.BaseTemplate);
+            web.Context.Load(createdList, l => l.BaseTemplate, l => l.Fields.Include(field => field.Title, field => field.InternalName, field => field.Id));
             web.Context.ExecuteQueryRetry();
+
+            // Add the fields of the created list to the parser so they can be used in settings and actions which reference this list
+            foreach(var listField in createdList.Fields)
+            {
+                parser.AddToken(new FieldTitleToken(web, listField.InternalName, listField.Title));
+                parser.AddToken(new FieldIdToken(web, listField.InternalName, listField.Id));
+            }
 
 #if !SP2013
             if (templateList.Title.ContainsResourceToken())
@@ -2023,6 +2052,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             public List SiteList { get; set; }
             public ListInstance TemplateList { get; set; }
+
+            /// <summary>
+            /// List specific TokenParser containing additional references to list elements such as list fields
+            /// </summary>
+            public TokenParser TokenParser { get; set; }
         }
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
