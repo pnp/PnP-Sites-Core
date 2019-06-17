@@ -57,7 +57,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            return hierarchy.Tenant != null;
+            if (!_willProvision.HasValue && hierarchy.Tenant != null)
+            {
+                _willProvision = ((hierarchy.Tenant.AppCatalog.Packages != null && hierarchy.Tenant.AppCatalog.Packages.Count > 0 ) ||
+                                hierarchy.Tenant.ContentDeliveryNetwork != null ||
+                                (hierarchy.Tenant.SiteDesigns != null && hierarchy.Tenant.SiteDesigns.Count > 0) ||
+                                (hierarchy.Tenant.SiteScripts != null && hierarchy.Tenant.SiteScripts.Count > 0) ||
+                                (hierarchy.Tenant.StorageEntities != null && hierarchy.Tenant.StorageEntities.Count > 0) ||
+                                (hierarchy.Tenant.WebApiPermissions != null && hierarchy.Tenant.WebApiPermissions.Count > 0) ||
+                                (hierarchy.Tenant.Themes != null && hierarchy.Tenant.Themes.Count > 0)
+                                );
+            }
+            return (_willProvision.Value);
         }
     }
 }
