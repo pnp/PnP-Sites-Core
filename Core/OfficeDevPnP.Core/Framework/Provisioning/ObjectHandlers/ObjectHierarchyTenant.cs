@@ -59,7 +59,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue && hierarchy.Tenant != null)
             {
-                _willProvision = ((hierarchy.Tenant.AppCatalog.Packages != null && hierarchy.Tenant.AppCatalog.Packages.Count > 0 ) ||
+                _willProvision = ((hierarchy.Tenant.AppCatalog?.Packages != null && hierarchy.Tenant.AppCatalog?.Packages.Count > 0 ) ||
                                 hierarchy.Tenant.ContentDeliveryNetwork != null ||
                                 (hierarchy.Tenant.SiteDesigns != null && hierarchy.Tenant.SiteDesigns.Count > 0) ||
                                 (hierarchy.Tenant.SiteScripts != null && hierarchy.Tenant.SiteScripts.Count > 0) ||
