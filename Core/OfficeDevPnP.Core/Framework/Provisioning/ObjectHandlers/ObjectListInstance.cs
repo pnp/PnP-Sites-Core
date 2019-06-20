@@ -629,6 +629,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     viewRowLimit = uint.Parse(rowLimitElement.Value);
                 }
+                
+                //BaseViewID
+                int BaseViewID = 1;
+                var baseviewIDElement = viewElementRaw.Attribute("BaseViewID");
+                if (baseviewIDElement != null)
+                {
+                    BaseViewID = int.Parse(baseviewIDElement.Value);
+                }
 
                 // Query
                 var viewQuery = new StringBuilder();
@@ -639,6 +647,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var viewCI = new ViewCreationInformation
                 {
+                    baseViewId = BaseViewID,
                     ViewFields = viewFields,
                     RowLimit = viewRowLimit,
                     Paged = viewPaged,
