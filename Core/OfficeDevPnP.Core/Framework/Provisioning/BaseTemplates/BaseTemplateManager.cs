@@ -7,6 +7,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -15,8 +16,11 @@ namespace Microsoft.SharePoint.Client
     /// </summary>
     public static class BaseTemplateManager
     {
-        private static readonly Guid PUBLISHING_FEATURE_WEB = new Guid("94c94ca6-b32f-4da9-a9e3-1f3d343d7ecb");
-
+        /// <summary>
+        /// Gets the base template.
+        /// </summary>
+        /// <param name="web">the target web to get template</param>
+        /// <returns>Returns a ProvisioningTemplate object</returns>
         public static ProvisioningTemplate GetBaseTemplate(this Web web)
         {
             web.Context.Load(web, p => p.WebTemplate, p => p.Configuration);
@@ -32,6 +36,13 @@ namespace Microsoft.SharePoint.Client
             //}
         }
 
+        /// <summary>
+        /// Gets the provisioning template of provided webtemplate and configuration.
+        /// </summary>
+        /// <param name="web">the target web</param>
+        /// <param name="webTemplate">the name of the webtemplate</param>
+        /// <param name="configuration">configuration of template</param>
+        /// <returns>Returns a ProvisioningTemplate object</returns>
         public static ProvisioningTemplate GetBaseTemplate(this Web web, string webTemplate, short configuration)
         {
 
@@ -39,7 +50,7 @@ namespace Microsoft.SharePoint.Client
 
             try
             {
-                string baseTemplate = string.Format("OfficeDevPnP.Core.Framework.Provisioning.BaseTemplates.v{0}.{1}{2}Template.xml", GetSharePointVersion(), webTemplate, configuration);
+                string baseTemplate = $"OfficeDevPnP.Core.Framework.Provisioning.BaseTemplates.{GetSharePointVersion()}.{webTemplate}{configuration}Template.xml";
                 using (Stream stream = typeof(BaseTemplateManager).Assembly.GetManifestResourceStream(baseTemplate))
                 {
                     // Figure out the formatter to use
@@ -73,7 +84,36 @@ namespace Microsoft.SharePoint.Client
         {
             Assembly asm = Assembly.GetAssembly(typeof(Site));
             AssemblyName name = asm.GetName();
-            return String.Format("{0}_{1}", name.Version.Major, name.Version.Minor);
+
+            try
+            {
+                FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
+                string version = fvi.FileVersion;
+
+                if (Version.TryParse(version, out Version v19))
+                {
+                    if (v19.Build > 10000)
+                    {
+                        return "_2019";
+                    }
+                }
+            }
+            catch
+            {
+                // catch errors here...if it goes wrong we'll fall back to the default logic, 2019 will return as 2016 at that point.
+            }
+
+            if (name.Version.Major == 15)
+            {
+                return "_2013";
+            }
+            else if (name.Version.Major == 16 && name.Version.Minor == 1)
+            {
+                return "SPO";
+            }
+
+            return "_2016";
+
         }
 
     }

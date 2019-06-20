@@ -9,7 +9,7 @@ namespace System
         /// <summary>
         /// Validates an object for not being null or not being the default value
         /// </summary>
-        /// <typeparam name="T"></typeparam>
+        /// <typeparam name="T">Generic Type</typeparam>
         /// <param name="input">The objec tto check</param>
         /// <param name="variableName">The name of the variable name to report in the error</param>
         /// <exception cref="System.ArgumentException">Thrown when variable is a zero-length string or contains only white space</exception>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NETSTANDARD2_0
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -45,7 +46,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
-
+            container = container.Replace('\\', '/');
+            
             this.AddParameterAsString(CONNECTIONSTRING, connectionString);
             this.AddParameterAsString(CONTAINER, container);
         }
@@ -72,7 +74,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
-
+            container = container.Replace('\\', '/');
+            
             if (!initialized)
             {
                 Initialize();
@@ -93,6 +96,54 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 {
                     CloudBlockBlob blob = (CloudBlockBlob)item;
                     result.Add(blob.Name);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get the folders of the default container
+        /// </summary>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders()
+        {
+            return GetFolders(GetContainer());
+        }
+
+        /// <summary>
+        /// Get the folders of a specified container
+        /// </summary>
+        /// <param name="container">Name of the container to get the folders from</param>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders(string container)
+        {
+            if (String.IsNullOrEmpty(container))
+            {
+                throw new ArgumentException("container");
+            }
+            container = container.Replace('\\', '/');
+            
+            if (!initialized)
+            {
+                Initialize();
+            }
+
+            List<string> result = new List<string>();
+
+            var containerTuple = ParseContainer(container);
+
+            container = containerTuple.Item1;
+            string prefix = string.IsNullOrEmpty(containerTuple.Item2) ? null : containerTuple.Item2;
+
+            CloudBlobContainer blobContainer = blobClient.GetContainerReference(container);
+
+            foreach (IListBlobItem item in blobContainer.ListBlobs(prefix, false))
+            {
+                if (item.GetType() == typeof(CloudBlobDirectory))
+                {
+                    CloudBlobDirectory blob = (CloudBlobDirectory)item;
+                    result.Add(blob.Uri.ToString());
                 }
             }
 
@@ -126,6 +177,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
+            container = container.Replace('\\', '/');            
 
             string result = null;
             MemoryStream stream = null;
@@ -178,6 +230,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
+            container = container.Replace('\\', '/');            
 
             return GetFileFromStorage(fileName, container);
         }
@@ -202,17 +255,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         {
             if (String.IsNullOrEmpty(fileName))
             {
-                throw new ArgumentException("fileName");
+                throw new ArgumentException(nameof(fileName));
             }
 
             if (String.IsNullOrEmpty(container))
             {
-                throw new ArgumentException("container");
+                throw new ArgumentException(nameof(container));
             }
+            container = container.Replace('\\', '/');            
 
             if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
 
             if (!initialized)
@@ -269,6 +323,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
+            container = container.Replace('\\', '/');            
 
             if (!initialized)
             {
@@ -297,17 +352,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             }
         }
 
+        /// <summary>
+        /// Returns a filename without a path
+        /// </summary>
+        /// <param name="fileName">Name of the file</param>
+        /// <returns>Returns filename without path</returns>
         public override string GetFilenamePart(string fileName)
         {
-            if (fileName.IndexOf(@"/") != -1)
-            {
-                var parts = fileName.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
-                return parts.LastOrDefault();
-            }
-            else
-            {
-                return fileName;
-            }
+            return Path.GetFileName(fileName);
         }
 
         #endregion
@@ -382,3 +434,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
 
     }
 }
+#endif

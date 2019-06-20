@@ -40,10 +40,10 @@ namespace OfficeDevPnP.Core.Utilities {
         /// Creates the &lt;Today /&gt; node.
         /// </summary>
         /// <param name="offset">Time offset from today (+5 days or -5 days, for example).</param>
-        /// <returns></returns>
+        /// <returns>Returns &lt;Today /&gt; node based on offset value</returns>
         public static string Today(int? offset = null) {
             if (offset.HasValue)
-                return string.Format("<Today Offset='{0}' />", offset.Value);
+                return $"<Today Offset='{offset.Value}' />";
             return "<Today />";
         }
 
@@ -75,11 +75,11 @@ namespace OfficeDevPnP.Core.Utilities {
         /// <summary>
         /// Creates both a &lt;FieldRef&gt; and &lt;Value&gt; nodes combination for Where clauses.
         /// </summary>
-        /// <param name="fieldName"></param>
-        /// <param name="fieldValueType"></param>
-        /// <param name="value"></param>
-        /// <param name="additionalFieldRefParams"></param>
-        /// <returns></returns>
+        /// <param name="fieldName">Name of the field</param>
+        /// <param name="fieldValueType">Value type of the field</param>
+        /// <param name="value">Value of the field</param>
+        /// <param name="additionalFieldRefParams">Additional FieldRef Parameters</param>
+        /// <returns>Returns FieldValue string to be used in CAML queries</returns>
         public static string FieldValue(string fieldName, string fieldValueType, string value, string additionalFieldRefParams = "") {
             return string.Format(FIELD_VALUE, fieldName, additionalFieldRefParams, fieldValueType, value);
         }
@@ -87,11 +87,11 @@ namespace OfficeDevPnP.Core.Utilities {
         /// <summary>
         /// Creates both a &lt;FieldRef&gt; and &lt;Value&gt; nodes combination for Where clauses.
         /// </summary>
-        /// <param name="fieldId"></param>
-        /// <param name="fieldValueType"></param>
-        /// <param name="value"></param>
-        /// <param name="additionalFieldRefParams"></param>
-        /// <returns></returns>
+        /// <param name="fieldId">Id of the field</param>
+        /// <param name="fieldValueType">Value type of the field</param>
+        /// <param name="value">Value of the field</param>
+        /// <param name="additionalFieldRefParams">Additional FieldRef Parameters</param>
+        /// <returns>Returns FieldValue string to be used in CAML queries</returns>
         public static string FieldValue(Guid fieldId, string fieldValueType, string value, string additionalFieldRefParams = "") {
             return string.Format(FIELD_VALUE_ID, fieldId.ToString(), additionalFieldRefParams, fieldValueType, value);
         }
@@ -99,12 +99,17 @@ namespace OfficeDevPnP.Core.Utilities {
         /// <summary>
         /// Creates a &lt;FieldRef&gt; node for ViewFields clause
         /// </summary>
-        /// <param name="fieldName"></param>
-        /// <returns></returns>
+        /// <param name="fieldName">Name of the field</param>
+        /// <returns>Returns FieldRef string to be used in CAML queries</returns>
         public static string FieldRef(string fieldName) {
             return string.Format(FIELD_REF_CLAUSE, fieldName);
         }
 
+        /// <summary>
+        /// Creates &lt;OrederBy&gt; node for sorting by field
+        /// </summary>
+        /// <param name="fieldRefs">Field References</param>
+        /// <returns>Returns string to be used in CAML queries</returns>
         public static string OrderBy(params OrderByField[] fieldRefs) {
             var sb = new StringBuilder();
             foreach (var field in fieldRefs){
@@ -113,10 +118,20 @@ namespace OfficeDevPnP.Core.Utilities {
             return string.Format(GENERIC_CLAUSE, CamlClauses.OrderBy, sb.ToString());
         }
 
+        /// <summary>
+        /// Creates &lt;Where&gt; node for Where clause
+        /// </summary>
+        /// <param name="conditionClause">The Clause condition</param>
+        /// <returns>Returns string to be used in CAML queries</returns>
         public static string Where(string conditionClause) {
             return string.Format(GENERIC_CLAUSE, CamlClauses.Where, conditionClause);
         }
 
+        /// <summary>
+        /// Creates &lt;ViewFields&gt; node for ViewFields clause
+        /// </summary>
+        /// <param name="fieldRefs">Field References</param>
+        /// <returns>Returns string to be used in CAML queries</returns>
         public static string ViewFields(params string[] fieldRefs) {
             string refs = string.Empty;
 
@@ -127,55 +142,137 @@ namespace OfficeDevPnP.Core.Utilities {
         }
 
         #region Conditions
+        /// <summary>
+        /// Creates &lt;And&gt; node 
+        /// </summary>
+        /// <param name="clause1">Clause</param>
+        /// <param name="conditionClauses">Clause Condition</param>
+        /// <returns>Returns Condition string to be used in CAML queries</returns>
         public static string And(string clause1, params string[] conditionClauses) {
             return Condition(CamlConditions.And, clause1, conditionClauses);
         }
 
+        /// <summary>
+        /// Creates &lt;Or&gt; node
+        /// </summary>
+        /// <param name="clause1">Clause</param>
+        /// <param name="conditionClauses">Clause Condition</param>
+        /// <returns>Returns Condition string to be used in CAML queries</returns>
         public static string Or(string clause1, params string[] conditionClauses) {
             return Condition(CamlConditions.Or, clause1, conditionClauses);
         } 
         #endregion
 
         #region Comparisons
+        /// <summary>
+        /// Creates &lt;BeginsWith&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldValue">Value of the field</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string BeginsWith(string fieldValue) {
             return Comparison(CamlComparisions.BeginsWith, fieldValue);
         }
+        /// <summary>
+        /// Creates &lt;Contains&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldValue">Value of the field</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string Contains(string fieldValue) {
             return Comparison(CamlComparisions.Contains, fieldValue);
         }
+        /// <summary>
+        /// Creates &lt;DateRangesOverlap&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldValue">Value of the field</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string DateRangesOverlap(string fieldValue) {
             return Comparison(CamlComparisions.DateRangesOverlap, fieldValue);
         }
+        /// <summary>
+        /// Creates &lt;Eq&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldValue">Value of the field</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string Eq(string fieldValue) {
             return Comparison(CamlComparisions.Eq, fieldValue);
         }
+        /// <summary>
+        /// Creates &lt;Geq&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldValue">Value of the field</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string Geq(string fieldValue) {
             return Comparison(CamlComparisions.Geq, fieldValue);
         }
+        /// <summary>
+        /// Creates &lt;Gt&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldValue">Value of the field</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string Gt(string fieldValue) {
             return Comparison(CamlComparisions.Gt, fieldValue);
         }
+        /// <summary>
+        /// Creates &lt;In&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldValue">Value of the field</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string In(string fieldValue) {
             return Comparison(CamlComparisions.In, fieldValue);
         }
+        /// <summary>
+        /// Creates &lt;Includes&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldValue">Value of the field</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string Includes(string fieldValue) {
             return Comparison(CamlComparisions.Includes, fieldValue);
         }
+        /// <summary>
+        /// Creates &lt;IsNotNull&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldValue">Value of the field</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string IsNotNull(string fieldValue) {
             return Comparison(CamlComparisions.IsNotNull, fieldValue);
         }
+        /// <summary>
+        /// Creates &lt;IsNull&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldValue">Value of the field</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string IsNull(string fieldValue) {
             return Comparison(CamlComparisions.IsNull, fieldValue);
         }
+        /// <summary>
+        /// Creates &lt;Leq&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldValue">Value of the field</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string Leq(string fieldValue) {
             return Comparison(CamlComparisions.Leq, fieldValue);
         }
+        /// <summary>
+        /// Creates &lt;Lt&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldValue">Value of the field</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string Lt(string fieldValue) {
             return Comparison(CamlComparisions.Lt, fieldValue);
         }
+        /// <summary>
+        /// Creates &lt;Neq&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldValue">Value of the field</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string Neq(string fieldValue) {
             return Comparison(CamlComparisions.Neq, fieldValue);
         }
+        /// <summary>
+        /// Creates &lt;NotIncludes&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldValue">Value of the field</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string NotIncludes(string fieldValue) {
             return Comparison(CamlComparisions.NotIncludes, fieldValue);
         }
@@ -205,15 +302,37 @@ namespace OfficeDevPnP.Core.Utilities {
 
     }
 
+    /// <summary>
+    /// Class is used to order the data by field.
+    /// </summary>
     public class OrderByField {
         const string ORDERBY_FIELD = "<FieldRef Name='{0}' Ascending='{1}' />";
+        /// <summary>
+        /// Constructor for OrderByField class
+        /// </summary>
+        /// <param name="name">Name of the field</param>
         public OrderByField(string name) : this(name, true) { }
+        /// <summary>
+        /// Constructor for OrderByField class
+        /// </summary>
+        /// <param name="name">Name of the field</param>
+        /// <param name="ascending">If we want to order in ascending order</param>
         public OrderByField(string name, bool ascending) {
             Name = name;
             Ascending = ascending;
         }
+        /// <summary>
+        /// Gets or sets the name of the field
+        /// </summary>
         public string Name { get; set; }
+        /// <summary>
+        /// Gets or sets the Ascending order flag
+        /// </summary>
         public bool Ascending { get; set; }
+        /// <summary>
+        /// OrderByField string
+        /// </summary>
+        /// <returns>Returns string</returns>
         public override string ToString() {
             return string.Format(ORDERBY_FIELD, Name, Ascending.ToString().ToUpper());
         }

@@ -16,12 +16,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for ObjectSecurity class
+        /// </summary>
         public ObjectSecurity()
         {
             this._roleAssignments = new RoleAssignmentCollection(this.ParentTemplate);
         }
 
+        /// <summary>
+        /// Constructor for ObjectSecurity class
+        /// </summary>
+        /// <param name="roleAssignments">RoleAssignments for security component</param>
         public ObjectSecurity(IEnumerable<RoleAssignment> roleAssignments):
             this()
         {
@@ -54,7 +60,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
@@ -64,6 +73,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with ObjectSecurity
+        /// </summary>
+        /// <param name="obj">Object that represents ObjectSecurity</param>
+        /// <returns>true if the current object is equal to the ObjectSecurity</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ObjectSecurity))
@@ -73,6 +87,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((ObjectSecurity)obj));
         }
 
+        /// <summary>
+        /// Compares ObjectSecurity object based on RoleAssignments, CopyRoleAssignments and ClearSubscopes properties.
+        /// </summary>
+        /// <param name="other">ObjectSecurity object</param>
+        /// <returns>true if the ObjectSecurity object is equal to the current object; otherwise, false.</returns>
         public bool Equals(ObjectSecurity other)
         {
             if (other == null)

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Entities;
@@ -16,6 +16,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return "Custom Actions"; }
         }
 
+        public override string InternalName => "CustomActions";
+
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -23,15 +25,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var context = web.Context as ClientContext;
                 var site = context.Site;
 
+                // Check if this is not a noscript site as we're not allowed to update some properties
+                bool isNoScriptSite = web.IsNoScriptSite();
+
                 // if this is a sub site then we're not enabling the site collection scoped custom actions
                 if (!web.IsSubSite())
                 {
                     var siteCustomActions = template.CustomActions.SiteCustomActions;
-                    ProvisionCustomActionImplementation(site, siteCustomActions, parser, scope);
+                    ProvisionCustomActionImplementation(site, siteCustomActions, parser, scope, isNoScriptSite);
                 }
 
                 var webCustomActions = template.CustomActions.WebCustomActions;
-                ProvisionCustomActionImplementation(web, webCustomActions, parser, scope);
+                ProvisionCustomActionImplementation(web, webCustomActions, parser, scope, isNoScriptSite);
 
                 // Switch parser context back to it's original context
                 parser.Rebase(web);
@@ -39,7 +44,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        private void ProvisionCustomActionImplementation(object parent, CustomActionCollection customActions, TokenParser parser, PnPMonitoredScope scope)
+        private void ProvisionCustomActionImplementation(object parent, CustomActionCollection customActions, TokenParser parser, PnPMonitoredScope scope, bool isNoScriptSite= false)
         {
             Web web = null;
             Site site = null;
@@ -59,6 +64,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             foreach (var customAction in customActions)
             {
+
+                if (isNoScriptSite && Guid.Empty == customAction.ClientSideComponentId)
+                {
+                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript, customAction.Name);
+                    continue;
+                }
+
                 var caExists = false;
                 if (site != null)
                 {
@@ -68,24 +80,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     caExists = web.CustomActionExists(customAction.Name);
                 }
-                if (!caExists)
+
+                // If the CustomAction does not exist, we don't have to remove it, and it is enabled
+                if (!caExists && !customAction.Remove && customAction.Enabled)
                 {
+                    // Then we add it to the target
                     var customActionEntity = new CustomActionEntity()
                     {
+#if !ONPREMISES
+                        ClientSideComponentId = customAction.ClientSideComponentId,
+                        ClientSideComponentProperties = customAction.ClientSideComponentProperties != null ? parser.ParseString(customAction.ClientSideComponentProperties) : customAction.ClientSideComponentProperties,
+#endif
                         CommandUIExtension = customAction.CommandUIExtension != null ? parser.ParseString(customAction.CommandUIExtension.ToString()) : string.Empty,
-                        Description = customAction.Description,
+                        Description = parser.ParseString(customAction.Description),
                         Group = customAction.Group,
                         ImageUrl = parser.ParseString(customAction.ImageUrl),
                         Location = customAction.Location,
                         Name = customAction.Name,
-                        RegistrationId = customAction.RegistrationId,
+                        RegistrationId = parser.ParseString(customAction.RegistrationId),
                         RegistrationType = customAction.RegistrationType,
                         Remove = customAction.Remove,
                         Rights = customAction.Rights,
                         ScriptBlock = parser.ParseString(customAction.ScriptBlock),
-                        ScriptSrc = parser.ParseString(customAction.ScriptSrc, "~site", "~sitecollection"),
+                        ScriptSrc = parser.ParseString(customAction.ScriptSrc),
                         Sequence = customAction.Sequence,
-                        Title = customAction.Title,
+                        Title = parser.ParseString(customAction.Title),
                         Url = parser.ParseString(customAction.Url)
                     };
 
@@ -98,7 +117,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if ((!string.IsNullOrEmpty(customAction.Title) && customAction.Title.ContainsResourceToken()) ||
                             (!string.IsNullOrEmpty(customAction.Description) && customAction.Description.ContainsResourceToken()))
                         {
-                            var uca = site.GetCustomActions().Where(uc => uc.Name == customAction.Name).FirstOrDefault();
+                            var uca = site.GetCustomActions().FirstOrDefault(uc => uc.Name == customAction.Name);
                             SetCustomActionResourceValues(parser, customAction, uca);
                         }
 #endif
@@ -110,7 +129,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
                         if (customAction.Title.ContainsResourceToken() || customAction.Description.ContainsResourceToken())
                         {
-                            var uca = web.GetCustomActions().Where(uc => uc.Name == customAction.Name).FirstOrDefault();
+                            var uca = web.GetCustomActions().FirstOrDefault(uc => uc.Name == customAction.Name);
                             SetCustomActionResourceValues(parser, customAction, uca);
                         }
 #endif
@@ -118,7 +137,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 else
                 {
-                    UserCustomAction existingCustomAction = null;
+                    UserCustomAction existingCustomAction;
                     if (site != null)
                     {
                         existingCustomAction = site.GetCustomActions().FirstOrDefault(c => c.Name == customAction.Name);
@@ -129,110 +148,163 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     if (existingCustomAction != null)
                     {
-                        var isDirty = false;
-
-                        if (customAction.CommandUIExtension != null)
+                        // If we have to remove the existing CustomAction
+                        if (customAction.Remove)
                         {
-                            if (existingCustomAction.CommandUIExtension != parser.ParseString(customAction.CommandUIExtension.ToString()))
-                            {
-                                scope.LogPropertyUpdate("CommandUIExtension");
-                                existingCustomAction.CommandUIExtension = parser.ParseString(customAction.CommandUIExtension.ToString());
-                                isDirty = true;
-                            }
-                        }
-
-                        if (existingCustomAction.Description != customAction.Description)
-                        {
-                            scope.LogPropertyUpdate("Description");
-                            existingCustomAction.Description = customAction.Description;
-                            isDirty = true;
-                        }
-#if !ONPREMISES
-                        if (customAction.Description.ContainsResourceToken())
-                        {
-                            if (existingCustomAction.DescriptionResource.SetUserResourceValue(customAction.Description, parser))
-                            {
-                                isDirty = true;
-                            }
-                        }
-#endif
-                        if (existingCustomAction.Group != customAction.Group)
-                        {
-                            scope.LogPropertyUpdate("Group");
-                            existingCustomAction.Group = customAction.Group;
-                            isDirty = true;
-                        }
-                        if (existingCustomAction.ImageUrl != parser.ParseString(customAction.ImageUrl))
-                        {
-                            scope.LogPropertyUpdate("ImageUrl");
-                            existingCustomAction.ImageUrl = parser.ParseString(customAction.ImageUrl);
-                            isDirty = true;
-                        }
-                        if (existingCustomAction.Location != customAction.Location)
-                        {
-                            scope.LogPropertyUpdate("Location");
-                            existingCustomAction.Location = customAction.Location;
-                            isDirty = true;
-                        }
-                        if (existingCustomAction.RegistrationId != customAction.RegistrationId)
-                        {
-                            scope.LogPropertyUpdate("RegistrationId");
-                            existingCustomAction.RegistrationId = customAction.RegistrationId;
-                            isDirty = true;
-                        }
-                        if (existingCustomAction.RegistrationType != customAction.RegistrationType)
-                        {
-                            scope.LogPropertyUpdate("RegistrationType");
-                            existingCustomAction.RegistrationType = customAction.RegistrationType;
-                            isDirty = true;
-                        }
-                        if (existingCustomAction.ScriptBlock != parser.ParseString(customAction.ScriptBlock))
-                        {
-                            scope.LogPropertyUpdate("ScriptBlock");
-                            existingCustomAction.ScriptBlock = parser.ParseString(customAction.ScriptBlock);
-                            isDirty = true;
-                        }
-                        if (existingCustomAction.ScriptSrc != parser.ParseString(customAction.ScriptSrc, "~site", "~sitecollection"))
-                        {
-                            scope.LogPropertyUpdate("ScriptSrc");
-                            existingCustomAction.ScriptSrc = parser.ParseString(customAction.ScriptSrc, "~site", "~sitecollection");
-                            isDirty = true;
-                        }
-                        if (existingCustomAction.Sequence != customAction.Sequence)
-                        {
-                            scope.LogPropertyUpdate("Sequence");
-                            existingCustomAction.Sequence = customAction.Sequence;
-                            isDirty = true;
-                        }
-                        if (existingCustomAction.Title != parser.ParseString(customAction.Title))
-                        {
-                            scope.LogPropertyUpdate("Title");
-                            existingCustomAction.Title = parser.ParseString(customAction.Title);
-                            isDirty = true;
-                        }
-#if !ONPREMISES
-                        if (customAction.Title.ContainsResourceToken())
-                        {
-                            if (existingCustomAction.TitleResource.SetUserResourceValue(customAction.Title, parser))
-                            {
-                                isDirty = true;
-                            }
-
-                        }
-#endif
-                        if (existingCustomAction.Url != parser.ParseString(customAction.Url))
-                        {
-                            scope.LogPropertyUpdate("Url");
-                            existingCustomAction.Url = parser.ParseString(customAction.Url);
-                            isDirty = true;
-                        }
-                        if (isDirty)
-                        {
-                            existingCustomAction.Update();
+                            // We simply remove it
+                            existingCustomAction.DeleteObject();
                             existingCustomAction.Context.ExecuteQueryRetry();
+                        }
+                        else
+                        {
+                            UpdateCustomAction(parser, scope, customAction, existingCustomAction, isNoScriptSite);
                         }
                     }
                 }
+            }
+        }
+
+        internal static void UpdateCustomAction(TokenParser parser, PnPMonitoredScope scope, CustomAction customAction, UserCustomAction existingCustomAction, bool isNoScriptSite = false)
+        {
+            var isDirty = false;
+
+            if (isNoScriptSite)
+            {
+                scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_CustomActions_SkippingAddUpdateDueToNoScript, customAction.Name);
+                return;
+            }
+
+            // Otherwise we update it
+            if (customAction.CommandUIExtension != null)
+            {
+                if (existingCustomAction.CommandUIExtension != parser.ParseString(customAction.CommandUIExtension.ToString()))
+                {
+                    scope.LogPropertyUpdate("CommandUIExtension");
+                    existingCustomAction.CommandUIExtension = parser.ParseString(customAction.CommandUIExtension.ToString());
+                    isDirty = true;
+                }
+            }
+            else
+            {
+                // Required to allow for a delta action to blank out the CommandUIExtension attribute
+                if (existingCustomAction.CommandUIExtension != null)
+                {
+                    scope.LogPropertyUpdate("CommandUIExtension");
+                    existingCustomAction.CommandUIExtension = null;
+                    isDirty = true;
+                }
+            }
+
+#if !ONPREMISES
+            if (customAction.ClientSideComponentId != null && customAction.ClientSideComponentId != Guid.Empty)
+            {
+                if  (existingCustomAction.ClientSideComponentId != customAction.ClientSideComponentId)
+                {
+                    existingCustomAction.ClientSideComponentId = customAction.ClientSideComponentId;
+                    isDirty = true;
+                }
+            }
+
+            if (!String.IsNullOrEmpty(customAction.ClientSideComponentProperties))
+            {
+                if (existingCustomAction.ClientSideComponentProperties != parser.ParseString(customAction.ClientSideComponentProperties))
+                {
+                    existingCustomAction.ClientSideComponentProperties = parser.ParseString(customAction.ClientSideComponentProperties);
+                    isDirty = true;
+                }
+            }
+#endif
+
+            if (existingCustomAction.Description != customAction.Description)
+            {
+                scope.LogPropertyUpdate("Description");
+                existingCustomAction.Description = customAction.Description;
+                isDirty = true;
+            }
+#if !ONPREMISES
+            if (customAction.Description.ContainsResourceToken())
+            {
+                if (existingCustomAction.DescriptionResource.SetUserResourceValue(customAction.Description, parser))
+                {
+                    isDirty = true;
+                }
+            }
+#endif
+            if (existingCustomAction.Group != customAction.Group)
+            {
+                scope.LogPropertyUpdate("Group");
+                existingCustomAction.Group = customAction.Group;
+                isDirty = true;
+            }
+            if (existingCustomAction.ImageUrl != parser.ParseString(customAction.ImageUrl))
+            {
+                scope.LogPropertyUpdate("ImageUrl");
+                existingCustomAction.ImageUrl = parser.ParseString(customAction.ImageUrl);
+                isDirty = true;
+            }
+            if (existingCustomAction.Location != customAction.Location)
+            {
+                scope.LogPropertyUpdate("Location");
+                existingCustomAction.Location = customAction.Location;
+                isDirty = true;
+            }
+            if (existingCustomAction.RegistrationId != parser.ParseString(customAction.RegistrationId))
+            {
+                scope.LogPropertyUpdate("RegistrationId");
+                existingCustomAction.RegistrationId = parser.ParseString(customAction.RegistrationId);
+                isDirty = true;
+            }
+            if (existingCustomAction.RegistrationType != customAction.RegistrationType)
+            {
+                scope.LogPropertyUpdate("RegistrationType");
+                existingCustomAction.RegistrationType = customAction.RegistrationType;
+                isDirty = true;
+            }
+            if (existingCustomAction.ScriptBlock != parser.ParseString(customAction.ScriptBlock))
+            {
+                scope.LogPropertyUpdate("ScriptBlock");
+                existingCustomAction.ScriptBlock = parser.ParseString(customAction.ScriptBlock);
+                isDirty = true;
+            }
+            if (existingCustomAction.ScriptSrc != parser.ParseString(customAction.ScriptSrc))
+            {
+                scope.LogPropertyUpdate("ScriptSrc");
+                existingCustomAction.ScriptSrc = parser.ParseString(customAction.ScriptSrc);
+                isDirty = true;
+            }
+            if (existingCustomAction.Sequence != customAction.Sequence)
+            {
+                scope.LogPropertyUpdate("Sequence");
+                existingCustomAction.Sequence = customAction.Sequence;
+                isDirty = true;
+            }
+            if (existingCustomAction.Title != parser.ParseString(customAction.Title))
+            {
+                scope.LogPropertyUpdate("Title");
+                existingCustomAction.Title = parser.ParseString(customAction.Title);
+                isDirty = true;
+            }
+#if !ONPREMISES
+            if (customAction.Title.ContainsResourceToken())
+            {
+                if (existingCustomAction.TitleResource.SetUserResourceValue(customAction.Title, parser))
+                {
+                    isDirty = true;
+                }
+
+            }
+#endif
+            if (existingCustomAction.Url != parser.ParseString(customAction.Url))
+            {
+                scope.LogPropertyUpdate("Url");
+                existingCustomAction.Url = parser.ParseString(customAction.Url);
+                isDirty = true;
+            }
+
+            if (isDirty)
+            {
+                existingCustomAction.Update();
+                existingCustomAction.Context.ExecuteQueryRetry();
             }
         }
 
@@ -269,7 +341,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                var context = web.Context as ClientContext;
+                var context = (ClientContext)web.Context;
                 bool isSubSite = web.IsSubSite();
                 var webCustomActions = web.GetCustomActions();
                 var siteCustomActions = context.Site.GetCustomActions();
@@ -349,6 +421,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             customAction.Url = userCustomAction.Url;
             customAction.RegistrationId = userCustomAction.RegistrationId;
             customAction.RegistrationType = userCustomAction.RegistrationType;
+
+#if !ONPREMISES
+            customAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
+            customAction.ClientSideComponentProperties = userCustomAction.ClientSideComponentProperties;
+#endif
+
             customAction.CommandUIExtension = !System.String.IsNullOrEmpty(userCustomAction.CommandUIExtension) ?
                 XElement.Parse(userCustomAction.CommandUIExtension) : null;
 
@@ -357,15 +435,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 var resourceKey = userCustomAction.Name.Replace(" ", "_");
 
-                if (UserResourceExtensions.PersistResourceValue(userCustomAction.TitleResource, string.Format("CustomAction_{0}_Title", resourceKey), template, creationInfo))
+                if (UserResourceExtensions.PersistResourceValue(userCustomAction.TitleResource, $"CustomAction_{resourceKey}_Title", template, creationInfo))
                 {
-                    var customActionTitle = string.Format("{{res:CustomAction_{0}_Title}}", resourceKey);
+                    var customActionTitle = $"{{res:CustomAction_{resourceKey}_Title}}";
                     customAction.Title = customActionTitle;
 
                 }
-                if (UserResourceExtensions.PersistResourceValue(userCustomAction.DescriptionResource, string.Format("CustomAction_{0}_Description", resourceKey), template, creationInfo))
+                if (UserResourceExtensions.PersistResourceValue(userCustomAction.DescriptionResource, $"CustomAction_{resourceKey}_Description", template, creationInfo))
                 {
-                    var customActionDescription = string.Format("{{res:CustomAction_{0}_Description}}", resourceKey);
+                    var customActionDescription = $"{{res:CustomAction_{resourceKey}_Description}}";
                     customAction.Description = customActionDescription;
                 }
             }
@@ -373,11 +451,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return customAction;
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = template.CustomActions != null ? template.CustomActions.SiteCustomActions.Any() || template.CustomActions.WebCustomActions.Any() : false;
+                _willProvision = template.CustomActions != null && (template.CustomActions.SiteCustomActions.Any() || template.CustomActions.WebCustomActions.Any());
             }
             return _willProvision.Value;
         }
@@ -386,7 +464,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willExtract.HasValue)
             {
-                var context = web.Context as ClientContext;
+                var context = (ClientContext)web.Context;
                 var webCustomActions = web.GetCustomActions();
                 var siteCustomActions = context.Site.GetCustomActions();
 

@@ -14,12 +14,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
     [TestClass]
     public class ConnectorFileSystemTests
     {
-        #region Test variables
-        static string testContainer = "pnptest";
-        static string testContainerSecure = "pnptestsecure";
-        #endregion
 
-        #region Test initialize and cleanup
+        #region Test initialize and cleanup    
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
@@ -265,6 +261,45 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
 
             // file will be deleted at end of test 
         }
+
+        /// <summary>
+        /// Containers using forward slash (/) as path separator should be supported
+        /// </summary>
+        [TestMethod]
+        public void FileConnectorForwardslashSupportTest()
+        {
+            // Path with forwardslash separator
+            var filename = "separator.png";
+            var containerWithForwardSlash = @"Resources/Templates/newfolder";
+
+            // Constructor replaces folder delimiter
+            FileSystemConnector fileSystemConnector = new FileSystemConnector(".", containerWithForwardSlash);
+            Assert.AreEqual(@"Resources\Templates\newfolder", fileSystemConnector.GetContainer());
+
+            // Save a file
+            long byteCount = 0;
+            using (var fileStream = System.IO.File.OpenRead(@".\resources\office365.png"))
+            {
+                byteCount = fileStream.Length;
+                fileSystemConnector.SaveFileStream(filename, containerWithForwardSlash, fileStream);
+            }
+
+            // List files
+            var files = fileSystemConnector.GetFiles(containerWithForwardSlash);
+            Assert.IsTrue(files.Contains(filename));
+
+            // Read the file
+            using (var bytes = fileSystemConnector.GetFileStream(filename, containerWithForwardSlash))
+            {
+                Assert.IsTrue(byteCount == bytes.Length);
+            }
+
+            // Delete the file 
+            fileSystemConnector.DeleteFile(filename, containerWithForwardSlash);
+
+            // Folder will be deleted in cleanup
+        }
+
         #endregion
     }
 }

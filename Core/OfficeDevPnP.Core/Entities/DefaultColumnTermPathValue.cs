@@ -23,7 +23,7 @@ namespace OfficeDevPnP.Core.Entities
         public IList<string> TermPaths { get; private set; }
 
         /// <summary>
-        /// ctor
+        /// Default Constructor
         /// </summary>
         public DefaultColumnTermPathValue()
         {

@@ -14,9 +14,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
         /// <summary>
         /// Defines a interface that accepts requests from the provisioning processing component
         /// </summary>
-        /// <param name="ctx"></param>
-        /// <param name="template"></param>
-        /// <param name="configurationData"></param>
+        /// <param name="ctx">The ClientContext to process</param>
+        /// <param name="template">The Provisioning template</param>
+        /// <param name="configurationData">Configuration Data string</param>
         void ProcessRequest(ClientContext ctx, ProvisioningTemplate template, string configurationData);
 
     }

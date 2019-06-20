@@ -30,14 +30,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Comparison code
 
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|",
-                (this.PackagePath != null ? this.PackagePath.GetHashCode() : 0),
-                (this.Source != null ? this.Source.GetHashCode() : 0)
+                PackagePath?.GetHashCode() ?? 0,
+                Source?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with AddIn class
+        /// </summary>
+        /// <param name="obj">Object that represents AddIn</param>
+        /// <returns>Checks whether object is AddIn class</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is AddIn))
@@ -47,6 +56,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((AddIn)obj));
         }
 
+        /// <summary>
+        /// Compares AddIn object based on PackagePath and source
+        /// </summary>
+        /// <param name="other">AddIn Class object</param>
+        /// <returns>true if the AddIn object is equal to the current object; otherwise, false.</returns>
         public bool Equals(AddIn other)
         {
             if (other == null)

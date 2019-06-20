@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<!-- Do not specify the CalendarType property (= equal to setting it to None), set AlternateCalendarType to none -->
+<pnp:ProvisioningTemplate ID="regionalsettings_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:RegionalSettings
+    AdjustHijriDays="1"
+    AlternateCalendarType="None"
+    Collation="13"
+    FirstDayOfWeek="Sunday"
+    FirstWeekOfYear="1"
+    LocaleId="1033"
+    ShowWeeks="true"
+    Time24="true"
+    TimeZone="13"
+    WorkDayEndHour="5:00PM"
+    WorkDayStartHour="9:00AM"
+    WorkDays="62" />
+</pnp:ProvisioningTemplate>

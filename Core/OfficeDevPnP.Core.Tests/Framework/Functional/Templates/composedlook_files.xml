@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+supporting template: add files needed in content type tests                
+-->
+
+<pnp:ProvisioningTemplate ID="composedlook_files" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:Files>
+    <pnp:File Src="garagebg.jpg" Folder="SiteAssets" Overwrite="true" />
+    <pnp:File Src="garagelogo.png" Folder="SiteAssets" Overwrite="true" />
+    <pnp:File Src="garagewhite.spcolor" Folder="SiteAssets" Overwrite="true" />
+  </pnp:Files>
+</pnp:ProvisioningTemplate>

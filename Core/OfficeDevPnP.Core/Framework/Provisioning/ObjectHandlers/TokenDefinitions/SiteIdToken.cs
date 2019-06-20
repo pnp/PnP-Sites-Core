@@ -1,11 +1,17 @@
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    internal class SiteIdToken : TokenDefinition
+    [TokenDefinitionDescription(
+       Token = "{siteid}",
+       Description = "Returns the id of the current site",
+       Example = "{siteid}",
+       Returns = "9188a794-cfcf-48b6-9ac5-df2048e8aa5d")]
+    internal class SiteIdToken : VolatileTokenDefinition
     {
         public SiteIdToken(Web web)
-            : base(web, "~siteid", "{siteid}")
+            : base(web, "{siteid}")
         {
         }
 
@@ -13,10 +19,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (CacheValue == null)
             {
-                var context = this.Web.Context as ClientContext;
-                context.Load(Web, w => w.Id);
-                context.ExecuteQueryRetry();
-                CacheValue = Web.Id.ToString();
+                TokenContext.Load(TokenContext.Web, w => w.Id);
+                TokenContext.ExecuteQueryRetry();
+                CacheValue = TokenContext.Web.Id.ToString();
             }
             return CacheValue;
         }

@@ -124,7 +124,7 @@ function showAlert(){alert("Hello!")};
   </pnp:Pages>
   <pnp:ComposedLook Name="Custom Look" ColorFile="_catalogs/Theme/15/Custom.spcolor" FontFile="_catalogs/Theme/15/Custom.spfont" BackgroundFile="Resources/Themes/Contoso/contosobg.jpg" MasterPage="_catalogs/MasterPage/CustomMaster.master" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" Version="1" />
   <pnp:Providers>
-    <pnp:Provider Enabled="true" HandlerType="OfficeDev.PnP.Provisioning.Providers.FakeProvider, OfficeDev.PnP.Provisioning.Providers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <pnp:Provider Enabled="false" HandlerType="OfficeDev.PnP.Provisioning.Providers.FakeProvider, OfficeDev.PnP.Provisioning.Providers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
       <pnp:Configuration>
         <MyProviderConfiguration id="SampleConfig" xmlns="http://schemas.somecompany.com/MyProviderConfiguration">
           <ChildNode Attribute="value">TextContent</ChildNode>

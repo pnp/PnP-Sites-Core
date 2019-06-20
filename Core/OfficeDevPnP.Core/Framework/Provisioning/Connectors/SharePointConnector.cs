@@ -33,7 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <summary>
         /// SharePointConnector constructor. Allows to directly set root folder and sub folder
         /// </summary>
-        /// <param name="clientContext"></param>
+        /// <param name="clientContext">Client context for SharePoint connection</param>
         /// <param name="connectionString">Site collection URL (e.g. https://yourtenant.sharepoint.com/sites/dev) </param>
         /// <param name="container">Library + folder that holds the files (mydocs/myfolder)</param>
         public SharePointConnector(ClientRuntimeContext clientContext, string connectionString, string container)
@@ -41,18 +41,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         {
             if (clientContext == null)
             {
-                throw new ArgumentNullException("clientContext");
+                throw new ArgumentNullException(nameof(clientContext));
             }
 
             if (String.IsNullOrEmpty(connectionString))
             {
-                throw new ArgumentException("connectionString");
+                throw new ArgumentException(nameof(connectionString));
             }
 
             if (String.IsNullOrEmpty(container))
             {
-                throw new ArgumentException("container");
+                throw new ArgumentException(nameof(container));
             }
+            container = container.Replace('\\', '/');
 
             this.AddParameter(CLIENTCONTEXT, clientContext);
             this.AddParameterAsString(CONNECTIONSTRING, connectionString);
@@ -82,20 +83,71 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 throw new ArgumentException("container");
             }
+            container = container.Replace('\\', '/');
 
             List<string> result = new List<string>();
 
             using (ClientContext cc = GetClientContext().Clone(GetConnectionString()))
             {
                 List list = cc.Web.GetListByUrl(GetDocumentLibrary(container));
-                string folders = GetFolders(container);
+                string folders = GetUrlFolders(container);
 
                 CamlQuery camlQuery = new CamlQuery();
                 camlQuery.ViewXml = @"<View Scope='FilesOnly'><Query></Query></View>";
 
                 if (folders.Length > 0)
                 {
-                    camlQuery.FolderServerRelativeUrl = string.Format("{0}{1}", list.RootFolder.ServerRelativeUrl, folders);
+                    camlQuery.FolderServerRelativeUrl = $"{list.RootFolder.ServerRelativeUrl}{folders}";
+                }
+
+                ListItemCollection listItems = list.GetItems(camlQuery);
+                cc.Load(listItems);
+                cc.ExecuteQueryRetry();
+
+                foreach (var listItem in listItems)
+                {
+                    result.Add(listItem.FieldValues["FileLeafRef"].ToString());
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Get the folders of the default container
+        /// </summary>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders()
+        {
+            return GetFolders(GetContainer());
+        }
+
+        /// <summary>
+        /// Get the folders of a specified container
+        /// </summary>
+        /// <param name="container">Name of the container to get the folders from</param>
+        /// <returns>List of folders</returns>
+        public override List<string> GetFolders(string container)
+        {
+            if (String.IsNullOrEmpty(container))
+            {
+                throw new ArgumentException("container");
+            }
+            container = container.Replace('\\', '/');
+
+            List<string> result = new List<string>();
+
+            using (ClientContext cc = GetClientContext().Clone(GetConnectionString()))
+            {
+                List list = cc.Web.GetListByUrl(GetDocumentLibrary(container));
+                string folders = GetUrlFolders(container);
+
+                CamlQuery camlQuery = new CamlQuery();
+                camlQuery.ViewXml = @"<View><Query><Where><Eq><FieldRef Name='ContentType' /><Value Type='Text'>Folder</Value></Eq></Where></Query></View>";
+
+                if (folders.Length > 0)
+                {
+                    camlQuery.FolderServerRelativeUrl = $"{list.RootFolder.ServerRelativeUrl}{folders}";
                 }
 
                 ListItemCollection listItems = list.GetItems(camlQuery);
@@ -132,6 +184,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             if (String.IsNullOrEmpty(fileName))
             {
                 throw new ArgumentException("fileName");
+            }
+
+            if (container != null) { 
+                container = container.Replace('\\', '/');
             }
 
             string result = null;
@@ -182,6 +238,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 throw new ArgumentException("fileName");
             }
 
+            if (container != null)
+            {
+                container = container.Replace('\\', '/');
+            }
+
             return GetFileFromStorage(fileName, container);
         }
 
@@ -203,6 +264,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <param name="stream">Stream containing the file contents</param>
         public override void SaveFileStream(string fileName, string container, Stream stream)
         {
+            if (container != null)
+            {
+                container = container.Replace('\\', '/');
+            }
+
             try
             {
                 using (ClientContext cc = GetClientContext().Clone(GetConnectionString()))
@@ -213,7 +279,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                     {
                         List list = cc.Web.GetListByUrl(GetDocumentLibrary(container));
 
-                        string folders = GetFolders(container);
+                        string folders = GetUrlFolders(container);
 
                         if (folders.Length == 0)
                         {
@@ -267,6 +333,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <param name="container">Name of the container to delete the file from</param>
         public override void DeleteFile(string fileName, string container)
         {
+            if (container != null)
+            {
+                container = container.Replace('\\', '/');
+            }
+
             try
             {
                 using (ClientContext cc = GetClientContext().Clone(GetConnectionString()))
@@ -295,17 +366,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             }
         }
 
+        /// <summary>
+        /// Returns a filename without a path
+        /// </summary>
+        /// <param name="fileName">Name of the file</param>
+        /// <returns>Returns a filename without a path</returns>
         public override string GetFilenamePart(string fileName)
         {
-            if (fileName.IndexOf(@"/") != -1)
-            {
-                var parts = fileName.Split(new[] { @"/" }, StringSplitOptions.RemoveEmptyEntries);
-                return parts.LastOrDefault();
-            }
-            else
-            {
-                return fileName;
-            }
+            return Path.GetFileName(fileName);
         }
 
         #endregion
@@ -317,7 +385,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             if (!string.IsNullOrEmpty(container))
             {
                 List list = cc.Web.GetListByUrl(GetDocumentLibrary(container));
-                string folders = GetFolders(container);
+                string folders = GetUrlFolders(container);
 
                 if (folders.Length == 0)
                 {
@@ -394,14 +462,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             {
                 if (parts[0].Equals("_catalogs", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    return string.Format("_catalogs/{0}", parts[1]);
+                    return $"_catalogs/{parts[1]}";
                 }
             }
 
             return parts[0];
         }
 
-        private string GetFolders(string container)
+        private string GetUrlFolders(string container)
         {
             string[] parts = container.Split(new string[] { "/" }, StringSplitOptions.RemoveEmptyEntries);
 

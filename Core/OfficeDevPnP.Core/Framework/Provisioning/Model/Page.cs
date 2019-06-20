@@ -16,13 +16,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Properties
-
+        /// <summary>
+        /// Gets or sets the page Url
+        /// </summary>
         public string Url { get; set; }
 
+        /// <summary>
+        /// Gets or sets the WikiPage layout
+        /// </summary>
         public WikiPageLayout Layout { get; set; }
 
+        /// <summary>
+        /// Gets or sets the overwrite flag for the page
+        /// </summary>
         public bool Overwrite { get; set; }
 
+        /// <summary>
+        /// Gets or sets the webparts of the page
+        /// </summary>
         public WebPartCollection WebParts
         {
             get { return _webParts; }
@@ -50,6 +61,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// This method is provided for tests to assign new Security object. 
+        /// It is unclear why the Security setter is private in the Page class
+        /// but not for instance in the ListInstance class.
+        /// A class redesign to make this implementation identical in the classes are recommended.
+        /// </summary>
+        /// <param name="security"></param>
+        internal void SetSecurity(ObjectSecurity security)
+        {
+            this.Security = security;
+        }
+
+        /// <summary>
         /// The Fields to setup for the Page
         /// </summary>
         public Dictionary<String, String> Fields
@@ -61,11 +84,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Constructor for Page class
+        /// </summary>
         public Page()
         {
             this._webParts = new WebPartCollection(this.ParentTemplate);
         }
 
+        /// <summary>
+        /// Constructor for Page class
+        /// </summary>
+        /// <param name="url">Url of the page</param>
+        /// <param name="overwrite">Overwrite flag for the page</param>
+        /// <param name="layout">Page Layout</param>
+        /// <param name="webParts">Webparts of the page</param>
+        /// <param name="security">Security Rules for the page</param>
+        /// <param name="fields">Fields used in the page</param>
         public Page(string url, bool overwrite, WikiPageLayout layout, IEnumerable<WebPart> webParts, ObjectSecurity security = null, Dictionary<String, String> fields = null) :
             this()
         {
@@ -89,20 +124,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
                 (this.Url != null ? this.Url.GetHashCode() : 0),
                 this.Overwrite.GetHashCode(),
                 this.Layout.GetHashCode(),
+#pragma warning disable 618
                 this.WelcomePage.GetHashCode(),
+#pragma warning restore 618
                 this.WebParts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 (this.Security != null ? this.Security.GetHashCode() : 0),
                 this.Fields.Aggregate(0, (acc, next) => acc += next.GetHashCode())
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with Page
+        /// </summary>
+        /// <param name="obj">Object that represents Page</param>
+        /// <returns>true if the current object is equal to the Page</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is Page))
@@ -112,6 +157,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((Page)obj));
         }
 
+        /// <summary>
+        /// Compares Page object based on Url, Overwrite, Layout, WelcomePage, Webparts, Security and Fields properties.
+        /// </summary>
+        /// <param name="other">Page object</param>
+        /// <returns>true if the Page object is equal to the current object; otherwise, false.</returns>
         public bool Equals(Page other)
         {
             if (other == null)
@@ -122,7 +172,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (this.Url == other.Url &&
                 this.Overwrite == other.Overwrite &&
                 this.Layout == other.Layout &&
+#pragma warning disable 618
                 this.WelcomePage == other.WelcomePage &&
+#pragma warning restore 618
                 this.WebParts.DeepEquals(other.WebParts) &&
                 (this.Security != null ? this.Security.Equals(other.Security) : true) &&
                 this.Fields.DeepEquals(other.Fields)

@@ -3,20 +3,32 @@ using System.Collections.Generic;
 using System.Text;
 namespace OfficeDevPnP.Core.Entities
 {
+    /// <summary>
+    /// Defines the role assignments for a user or group.
+    /// </summary>
     public class RoleAssignmentEntity
     {
+        /// <summary>
+        /// Path
+        /// </summary>
         public string Path
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// User entity
+        /// </summary>
         public UserEntity User
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// User Title
+        /// </summary>
         public string UserTitle
         {
             get
@@ -28,6 +40,9 @@ namespace OfficeDevPnP.Core.Entities
             }
         }
 
+        /// <summary>
+        /// User login name
+        /// </summary>
         public string UserLoginName
         {
             get
@@ -39,6 +54,9 @@ namespace OfficeDevPnP.Core.Entities
             }
         }
 
+        /// <summary>
+        /// User email
+        /// </summary>
         public string UserEmail
         {
             get
@@ -50,18 +68,27 @@ namespace OfficeDevPnP.Core.Entities
             }
         }
 
+        /// <summary>
+        /// User role
+        /// </summary>
         public string Role
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Gets the collection of role definition bindings for the role assignment
+        /// </summary>
         public ICollection<String> RoleDefinitionBindings
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// user permissions
+        /// </summary>
         public string Permissions
         {
             get
@@ -73,18 +100,28 @@ namespace OfficeDevPnP.Core.Entities
             }
         }
 
+        /// <summary>
+        /// Tag for the user
+        /// </summary>
         public string Tag
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// DateTime value of RoleAssignment created
+        /// </summary>
         public DateTime CreatedDate
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Returns a string that represents the current object
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             StringBuilder buffer = new StringBuilder();

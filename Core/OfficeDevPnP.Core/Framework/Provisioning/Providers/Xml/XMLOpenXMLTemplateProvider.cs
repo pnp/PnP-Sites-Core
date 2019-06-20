@@ -1,11 +1,7 @@
 ﻿using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using System;
+using System.Security.Cryptography.X509Certificates;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
@@ -14,9 +10,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         public XMLOpenXMLTemplateProvider(string packageFileName,
             FileConnectorBase persistenceConnector,
             String author = null,
-            X509Certificate2 signingCertificate = null) :
+            X509Certificate2 signingCertificate = null,
+            string templateFileName = null) :
             base(new OpenXMLConnector(packageFileName, persistenceConnector,
-                author, signingCertificate))
+                author, signingCertificate, templateFileName))
         {
         }
 
@@ -24,5 +21,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             base(openXMLConnector)
         {
         }
+
+        public ProvisioningHierarchy GetHierarchy()
+        {
+            ProvisioningHierarchy result = null;
+
+            var openXmlConnection = this.Connector as OpenXMLConnector;
+            var fileName = openXmlConnection.Info.Properties.TemplateFileName;
+            if (!String.IsNullOrEmpty(fileName))
+            {
+
+
+                var stream = this.Connector.GetFileStream(fileName);
+
+                if (stream != null)
+                {
+                    var formatter = new XMLPnPSchemaFormatter();
+
+                    ITemplateFormatter specificFormatter = formatter.GetSpecificFormatterInternal(ref stream);
+                    specificFormatter.Initialize(this);
+                    result = ((IProvisioningHierarchyFormatter)specificFormatter).ToProvisioningHierarchy(stream);
+                }
+            }
+            return (result);
+        }
+
     }
 }

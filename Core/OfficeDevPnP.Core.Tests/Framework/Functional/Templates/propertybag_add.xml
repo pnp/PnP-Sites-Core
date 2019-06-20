@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Base template: goal is to verify that all property bag properties work as expected. please keep this XML up to date if additional properties are added.
+-->
+
+<pnp:ProvisioningTemplate ID="propertybag_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:PropertyBagEntries>
+    
+    <!--
+      Possible attributes: 
+      Key       (*)
+      Value     (*) (parsed)
+      Overwrite 
+      Indexed
+    -->
+    
+    <pnp:PropertyBagEntry Key="PROP_1" Value ="https://testautomation.sharepointpnp.com" Overwrite="true" />
+    <pnp:PropertyBagEntry Key="PROP_2" Value ="https://localhost:44300" />
+    <pnp:PropertyBagEntry Key="PROP_3" Value ="https://localhost:4300" Indexed="true" />
+  </pnp:PropertyBagEntries>
+</pnp:ProvisioningTemplate>

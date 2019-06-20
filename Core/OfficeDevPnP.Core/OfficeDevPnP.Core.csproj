@@ -11,6 +11,7 @@
     <AssemblyName>OfficeDevPnP.Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,7 +21,7 @@
     <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Debug\OfficeDevPnP.Core.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
@@ -45,7 +46,7 @@
     <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;ONPREMISES;SP2013</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Debug15\OfficeDevPnP.Core.XML</DocumentationFile>
     <NoWarn>1591</NoWarn>
@@ -70,7 +71,7 @@
     <NoWarn>1591</NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
@@ -89,6 +90,30 @@
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug19|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug19\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;ONPREMISES;SP2019</DefineConstants>
+    <DocumentationFile>bin\Debug19\OfficeDevPnP.Core.XML</DocumentationFile>
+    <NoWarn>1591</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>BasicCorrectnessRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release19|AnyCPU'">
+    <OutputPath>bin\Release19\</OutputPath>
+    <DefineConstants>TRACE;ONPREMISES;SP2019</DefineConstants>
+    <DocumentationFile>bin\Release19\OfficeDevPnP.Core.XML</DocumentationFile>
+    <Optimize>true</Optimize>
+    <NoWarn>1591</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(Configuration)' == 'debug' Or '$(Configuration)' == 'release' ">
@@ -150,6 +175,68 @@
         <Reference Include="Microsoft.SharePoint.Client.WorkflowServices, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
           <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition=" '$(Configuration)' == 'debug19' Or '$(Configuration)' == 'release19' ">
+      <ItemGroup>
+        <Reference Include="Microsoft.Office.Client.Policy, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.Office.Client.Policy.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.Office.Client.TranslationServices, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.Office.Client.TranslationServices.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.Online.SharePoint.Client.Tenant, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.Online.SharePoint.Client.Tenant.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.DocumentManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.DocumentManagement.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.Publishing, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.Publishing.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.Runtime, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.Search, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.Search.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.Search.Applications, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.Search.Applications.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.Taxonomy, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.Taxonomy.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.UserProfiles, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.UserProfiles.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
+        <Reference Include="Microsoft.SharePoint.Client.WorkflowServices, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
@@ -269,28 +356,60 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Reference Include="Microsoft.Data.Edm, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Data.Edm.5.6.2\lib\net40\Microsoft.Data.Edm.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Data.OData, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Data.OData.5.6.2\lib\net40\Microsoft.Data.OData.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Data.Services.Client, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.Data.Services.Client.5.6.2\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.IdentityModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=2.18.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.18.206251556\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+    <Reference Include="AngleSharp, Version=0.9.9.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
+      <HintPath>..\packages\AngleSharp.0.9.9\lib\net45\AngleSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms, Version=2.18.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.2.18.206251556\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.WindowsForms.dll</HintPath>
+    <Reference Include="Microsoft.Data.Edm, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Edm.5.8.4\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.OData, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.OData.5.8.4\lib\net40\Microsoft.Data.OData.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.Services.Client, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.Services.Client.5.8.4\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.1.0.0\lib\netstandard1.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.IdentityModel.Extensions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=69c3241e6f0468ca, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Extensions.Options, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.1.0.0\lib\netstandard1.0\Microsoft.Extensions.Options.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.1.0.0\lib\netstandard1.0\Microsoft.Extensions.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.WebEncoders, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.WebEncoders.1.0.0\lib\netstandard1.0\Microsoft.Extensions.WebEncoders.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Graph, Version=1.9.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Graph.1.9.0\lib\net45\Microsoft.Graph.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Graph.Core, Version=1.9.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Graph.Core.1.9.0\lib\net45\Microsoft.Graph.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.6.1.7600.16394\lib\net35\Microsoft.IdentityModel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory, Version=3.19.8.16603, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Clients.ActiveDirectory.Platform, Version=3.19.8.16603, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Clients.ActiveDirectory.3.19.8\lib\net45\Microsoft.IdentityModel.Clients.ActiveDirectory.Platform.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.5.2.4\lib\net45\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.5.2.4\lib\net45\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.2.4\lib\net45\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
@@ -299,16 +418,23 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="SharePointPnP.IdentityModel.Extensions, Version=1.2.4.0, Culture=neutral, PublicKeyToken=5e633289e95c321a, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharePointPnP.IdentityModel.Extensions.1.2.4\lib\net45\SharePointPnP.IdentityModel.Extensions.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.IdentityModel.Selectors" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.2.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.2.4\lib\net45\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -317,9 +443,12 @@
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Spatial, Version=5.6.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\System.Spatial.5.6.2\lib\net40\System.Spatial.dll</HintPath>
+    <Reference Include="System.Spatial, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Spatial.5.8.4\lib\net40\System.Spatial.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.4.0.0\lib\netstandard1.0\System.Text.Encodings.Web.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
@@ -338,42 +467,371 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppModelExtensions\ClientContextExtensions.cs" />
-    <Compile Include="AppModelExtensions\ClientObjectExtensions.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\BrandingExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\ClientContextExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\FeatureExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\FieldAndContentTypeExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\FileFolderExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\InformationManagementExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\JavaScriptExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\ListExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\NavigationExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\PageExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\ProvisioningExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\RecordsManagementExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\SearchExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\SecurityExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\TaxonomyExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\TenantExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\VariationExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\WebExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\Deprecated\WorkflowExtensions.deprecated.cs" />
-    <Compile Include="AppModelExtensions\ExternalSharingExtensions.cs" />
-    <Compile Include="AppModelExtensions\FieldAndContentTypeExtensions.cs" />
-    <Compile Include="AppModelExtensions\FileFolderExtensions.cs" />
-    <Compile Include="AppModelExtensions\InformationManagementExtensions.cs" />
-    <Compile Include="AppModelExtensions\ListExtensions.cs" />
-    <Compile Include="AppModelExtensions\ListRatingExtensions.cs" />
-    <Compile Include="AppModelExtensions\ProvisioningExtensions.cs" />
-    <Compile Include="AppModelExtensions\RecordsManagementExtensions.cs" />
-    <Compile Include="AppModelExtensions\SearchExtensions.cs" />
-    <Compile Include="AppModelExtensions\TaxonomyExtensions.cs" />
-    <Compile Include="AppModelExtensions\TenantExtensions.cs" />
-    <Compile Include="AppModelExtensions\VariationExtensions.cs" />
-    <Compile Include="AppModelExtensions\WorkflowExtensions.cs" />
+    <Compile Include="ALM\AppManager.cs" />
+    <Compile Include="ALM\AppMetadata.cs" />
+    <Compile Include="Attributes\TokenDefinitionDescriptionAttribute.cs" />
+    <Compile Include="CanProvisionIssuesMessages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CanProvisionIssuesMessages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="CoreResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>CoreResources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Entities\UnifiedGroupUser.cs" />
+    <Compile Include="Entities\WebhookNotification.cs" />
+    <Compile Include="Entities\WebhookSubscription.cs" />
+    <Compile Include="Enums\AppCatalogScope.cs" />
+    <Compile Include="Enums\SharePointTheme.cs" />
+    <Compile Include="Extensions\ClientContextExtensions.cs" />
+    <Compile Include="Extensions\ClientObjectExtensions.cs" />
+    <Compile Include="Extensions\Deprecated\BrandingExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\ClientContextExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\FeatureExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\FieldAndContentTypeExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\FileFolderExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\InformationManagementExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\JavaScriptExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\ListExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\NavigationExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\PageExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\ProvisioningExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\RecordsManagementExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\SearchExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\SecurityExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\TaxonomyExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\TenantExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\VariationExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\WebExtensions.deprecated.cs" />
+    <Compile Include="Extensions\Deprecated\WorkflowExtensions.deprecated.cs" />
+    <Compile Include="Extensions\ExternalSharingExtensions.cs" />
+    <Compile Include="Extensions\FieldAndContentTypeExtensions.cs" />
+    <Compile Include="Extensions\FileFolderExtensions.cs" />
+    <Compile Include="Extensions\InformationManagementExtensions.cs" />
+    <Compile Include="Extensions\InternalClientContextExtensions.cs" />
+    <Compile Include="Extensions\ListExtensions.cs" />
+    <Compile Include="Extensions\ListRatingExtensions.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
+    <Compile Include="Extensions\ProvisioningExtensions.cs" />
+    <Compile Include="Extensions\PublishingExtensions.cs" />
+    <Compile Include="Extensions\RecordsManagementExtensions.cs" />
+    <Compile Include="Extensions\SearchExtensions.cs" />
+    <Compile Include="Extensions\SiteExtensions.cs" />
+    <Compile Include="Extensions\TaxonomyExtensions.cs" />
+    <Compile Include="Extensions\TenantExtensions.cs" />
+    <Compile Include="Extensions\TopologicalSort.cs" />
+    <Compile Include="Framework\Graph\GraphUtility.cs" />
+    <Compile Include="Framework\Graph\Model\DirectorySetting.cs" />
+    <Compile Include="Framework\Graph\Model\DirectorySettingTemplates.cs" />
+    <Compile Include="Framework\Graph\GraphHttpClient.cs" />
+    <Compile Include="Framework\Graph\Model\DirectorySettingValue.cs" />
+    <Compile Include="Framework\Graph\Model\SiteClassificationsSettings.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionIssueTags.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRuleAttribute.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRulesManager.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\Rules\CanProvisionAppsRuleTenant.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\Rules\CanProvisionTermStoreRuleTenant.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\Rules\CanProvisionTermStoreRuleSite.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\Rules\CanProvisionAppsRuleSite.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRuleOffice365Base.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRuleTenantBase.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRuleSiteBase.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionIssue.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionResult.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\ICanProvisionRuleBase.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\ICanProvisionRuleOffice365.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\ICanProvisionRuleSite.cs" />
+    <Compile Include="Framework\Provisioning\CanProvisionRules\ICanProvisionRuleTenant.cs" />
+    <Compile Include="Framework\Provisioning\Extensibility\IProvisioningTemplateProcessor.cs" />
+    <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\User.cs" />
+    <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\PasswordProfile.cs" />
+    <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\ProvisioningAzureActiveDirectory.cs" />
+    <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\UserCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\UserLicense.cs" />
+    <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\UserLicenseCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseHierarchyModel.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseProvisioningTemplateObjectCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\CommunicationSiteCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Deprecated\NavigationNode.deprecated.cs" />
+    <Compile Include="Framework\Provisioning\Model\IProvisioningHierarchyDescendant.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningHierarchy.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseProvisioningHierarchyObjectCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningSequenceCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateWebhook.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateWebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteFooter.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteFooterLink.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteFooterLinkCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteHeader.cs" />
+    <Compile Include="Framework\Provisioning\Model\SubSiteCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteCollectionCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\App.cs" />
+    <Compile Include="Framework\Provisioning\Model\AppCatalog.cs" />
+    <Compile Include="Framework\Provisioning\Model\AppCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ApplicationLifecycleManagement.cs" />
+    <Compile Include="Framework\Provisioning\Model\CanvasControl.cs" />
+    <Compile Include="Framework\Provisioning\Model\CanvasControlCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\CanvasSection.cs" />
+    <Compile Include="Framework\Provisioning\Model\CanvasSectionCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ClientSidePageHeader.cs" />
+    <Compile Include="Framework\Provisioning\Model\ContentDeliveryNetwork.cs" />
+    <Compile Include="Framework\Provisioning\Model\CdnOrigin.cs" />
+    <Compile Include="Framework\Provisioning\Model\CdnOriginCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\CdnSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\ClientSidePage.cs" />
+    <Compile Include="Framework\Provisioning\Model\ClientSidePageCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Package.cs" />
+    <Compile Include="Framework\Provisioning\Model\ImageRendition.cs" />
+    <Compile Include="Framework\Provisioning\Model\PackageCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ImageRenditionCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\IRMSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningSequence.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteDesignCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteDesignGrant.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteDesignGrantCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteScriptCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\StorageEntityCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteDesign.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteScript.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteWebhook.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteWebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningTenant.cs" />
+    <Compile Include="Framework\Provisioning\Model\StorageEntity.cs" />
+    <Compile Include="Framework\Provisioning\Model\SubSite.cs" />
+    <Compile Include="Framework\Provisioning\Model\ProvisioningTermStore.cs" />
+    <Compile Include="Framework\Provisioning\Model\TeamNoGroupSiteCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\TeamNoGroupSubSite.cs" />
+    <Compile Include="Framework\Provisioning\Model\TeamSiteCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\BaseTeam.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamTabCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamTabConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamTabResourceCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamChannelMessageCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamTabResource.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamTab.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamChannelMessage.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamFunSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamGuestSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamMemberSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamMessagingSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\ProvisioningTeams.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamAppInstance.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamAppInstanceCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamChannel.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamChannelCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamSecurity.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamSecurityUser.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamSecurityUserCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamTemplate.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamApp.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamAppCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamTemplateCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\Team.cs" />
+    <Compile Include="Framework\Provisioning\Model\Theme.cs" />
+    <Compile Include="Framework\Provisioning\Model\ThemeCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\WebApiPermission.cs" />
+    <Compile Include="Framework\Provisioning\Model\WebApiPermissionCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Webhook.cs" />
+    <Compile Include="Framework\Provisioning\Model\WebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\FieldAndListProvisioningStepHelper.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\NoScriptTemplateCleaner.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectApplicationLifecycleManagement.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTheme.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchyHandlerBase.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchySequenceSites.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchyTenant.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSiteFooterSettings.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSiteHeaderSettings.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectAzureActiveDirectory.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTeams.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTenant.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePageContents.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchySequenceTermGroups.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\PnPProvisioningContext.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AssociatedGroupIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneButExternalUsersToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FieldIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\O365GroupIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SequenceSiteGroupIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SequenceSiteIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SequenceSiteCollectionIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SequenceSiteUrlToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdTokenEncoded.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\HostUrlToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\PageUniqueIdEncodedToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\PageUniqueIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionConnectedOffice365GroupId.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionIdEncodedToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteIdEncodedToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteDesignIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\StorageEntityValueToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteScriptIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteTitleToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SimpleTokenDefinition.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\VolatileTokenDefinition.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\SimpleTokenParser.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\WebhookParameter.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ClientSidePageContentsHelper.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AppPackageIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUpdateValue.cs" />
+    <Compile Include="Utilities\Graph\GraphHelper.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ListItemUtilities.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ConnectorFileHelper.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUtilities.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ODataBindJsonResolver.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\TenantHelper.cs" />
+    <Compile Include="Framework\Provisioning\Providers\IProvisioningHierarchyFormatter.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\TermGroupHelper.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.cs">
+      <DependentUpon>ProvisioningSchema-2017-05.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-01.cs">
+      <DependentUpon>ProvisioningSchema-2018-01.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-05.cs">
+      <DependentUpon>ProvisioningSchema-2018-05.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.cs">
+      <DependentUpon>ProvisioningSchema-2018-07.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.cs">
+      <DependentUpon>ProvisioningSchema-2019-03.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\ComplexTypeFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TemplateSecurityUsersFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TeamSecurityFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TemplateSecurityUsersFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TeamsItemsFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\AADUsersFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\AADUsersPasswordProfileFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\AADUsersPasswordProfileFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\AADUsersFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TeamSecurityFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\SiteFooterLinkFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\SiteFooterLinkFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\DocumentTemplateFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TermSetFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionCollectionValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\CalendarTypeFromSchemaToModelValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\DocumentSetTemplateAllowedContentTypesFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\DocumentSetTemplateAllowedContentTypesFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\IRMSettingsFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\IRMSettingsFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\ListInstanceDataRowsFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\ListInstanceDataRowsFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201705\RemoveExistingContentTypesFromSchemaToModelValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\AppCatalogFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\CdnFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\CdnFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201801\AppCatalogFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\ClientSidePageHeaderFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\ClientSidePageHeaderFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\SiteScriptRefFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201805\SiteScriptRefFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201807\SiteCollectionsAndSitesFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201807\SiteCollectionsAndSitesFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\ComplexTypeFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TeamsFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TeamTemplatesFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201903\TenantSiteDesignsWebTemplateFromModelToSchemaValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\WorkHourFromSchemaToModelValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FoldersFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromAuditFlagsToArrayValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromArrayToAuditFlagsValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromBasePermissionsToStringValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromNullableToSpecifiedValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\PageLayoutsFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\PageLayoutsFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\NavigationFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\NavigationFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\NavigationNodeFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\NavigationNodeFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\RoleAssignmentsFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\RoleAssigmentsFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\PropertyObjectTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromStringToBasePermissionsValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromStringToEnumValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ExpressionValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ListViewsFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\SecurityFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\XmlAnyFromModelToSchemalValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201705\ClientSidePagesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201705\SiteWebhooksSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201705\ContentTypesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ExtensibilityHandlersSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AddInsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\PublishingSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ComposedLookSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\NavigationSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SecuritySerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\FeaturesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\DirectoriesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201705\ListInstancesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201801\ApplicationLifecycleManagementSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201801\TenantSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\ClientSidePagesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\ProvisioningHierarchySerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201807\SequenceSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\NavigationSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SecuritySerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\ThemeSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SiteFooterSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\SiteHeaderSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\ProvisioningTemplateWebhooksSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\AzureActiveDirectorySerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\TeamsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201903\TenantSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WorkflowsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\AuditSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SiteColumnsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\SupportedUILanguagesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TermGroupsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\PagesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\FilesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\CustomActionsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateBasePropertiesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\RegionalSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\WebSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLStreamTemplateProvider.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201903Serializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201807Serializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201805Serializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201801Serializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201705Serializer.cs" />
+    <Compile Include="Pages\AvailableClientSideComponents.cs" />
+    <Compile Include="Pages\CanvasColumn.cs" />
+    <Compile Include="Pages\CanvasControl.cs" />
+    <Compile Include="Pages\CanvasSection.cs" />
+    <Compile Include="Pages\CanvasSectionTemplate.cs" />
+    <Compile Include="Pages\ClientSideCanvasControlData.cs" />
+    <Compile Include="Pages\ClientSideCanvasControlPosition.cs" />
+    <Compile Include="Pages\ClientSideCanvasData.cs" />
+    <Compile Include="Pages\ClientSideCanvasPosition.cs" />
+    <Compile Include="Pages\ClientSidePage.cs" />
+    <Compile Include="Pages\ClientSideComponent.cs" />
+    <Compile Include="Pages\ClientSidePageHeader.cs" />
+    <Compile Include="Pages\ClientSidePageHeaderLayoutType.cs" />
+    <Compile Include="Pages\ClientSidePageHeaderTitleAlignment.cs" />
+    <Compile Include="Pages\ClientSidePageHeaderType.cs" />
+    <Compile Include="Pages\ClientSidePageLayoutType.cs" />
+    <Compile Include="Entities\UnifiedGroupEntity.cs" />
+    <Compile Include="Extensions\ExceptionExtensions.cs" />
+    <Compile Include="Framework\Graph\PnPHttpProvider.cs" />
+    <Compile Include="Framework\Graph\UnifiedGroupsUtility.cs" />
+    <Compile Include="Extensions\VariationExtensions.cs" />
+    <Compile Include="Extensions\WorkflowExtensions.cs" />
     <Compile Include="AuthenticationManager.cs" />
-    <Compile Include="AppModelExtensions\BrandingExtensions.cs" />
+    <Compile Include="Extensions\BrandingExtensions.cs" />
     <Compile Include="BuiltInContentTypeId.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Diagnostics\Log.cs" />
@@ -417,16 +875,9 @@
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\EnumerationExtensions.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
-    <Compile Include="Extensions\SafeConvertExtensions.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Extensions\SafeConvertExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\ValidationExtensions.cs" />
-    <Compile Include="CoreResources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>CoreResources.resx</DependentUpon>
-    </Compile>
     <Compile Include="Framework\Provisioning\BaseTemplates\BaseTemplateManager.cs" />
     <Compile Include="Framework\Provisioning\Connectors\AzureStorageConnector.cs" />
     <Compile Include="Framework\Provisioning\Connectors\FileConnectorBase.cs" />
@@ -443,7 +894,6 @@
     <Compile Include="Framework\Provisioning\Connectors\OpenXML\PnPPackageFormatException.cs" />
     <Compile Include="Framework\Provisioning\Connectors\OpenXML\PnPPackageHelper.cs" />
     <Compile Include="Framework\Provisioning\Connectors\SharePointConnector.cs" />
-    <Compile Include="Framework\Provisioning\Deprecated\Connectors\OpenXML\PnPPackage.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Extensibility\ExtensibilityManager.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Extensibility\IProvisioningExtensibilityProvider.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Deprecated\Model\ComposedLook.deprecated.cs" />
@@ -463,8 +913,12 @@
     <Compile Include="Framework\Provisioning\Extensibility\ExtensiblityPipelineException.cs" />
     <Compile Include="Framework\Provisioning\Extensibility\IProvisioningExtensibilityTokenProvider.cs" />
     <Compile Include="Framework\Provisioning\Extensibility\IProvisioningExtensibilityHandler.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseNavigationKind.cs" />
+    <Compile Include="Framework\Provisioning\Model\CurrentNavigation.cs" />
     <Compile Include="Framework\Provisioning\Model\DefaultDocumentCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Deprecated\CustomAction.deprecated.cs" />
+    <Compile Include="Framework\Provisioning\Model\Directory.cs" />
+    <Compile Include="Framework\Provisioning\Model\DirectoryCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ExtensibilityHandler.cs" />
     <Compile Include="Framework\Provisioning\Model\FeatureCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\AddIn.cs" />
@@ -492,13 +946,19 @@
     <Compile Include="Framework\Provisioning\Model\FieldRefCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\FieldCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\FileCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\FileLevel.cs" />
     <Compile Include="Framework\Provisioning\Model\Folder.cs" />
     <Compile Include="Framework\Provisioning\Model\FolderCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\GlobalNavigation.cs" />
     <Compile Include="Framework\Provisioning\Model\IProvisioningTemplateDescendant.cs" />
     <Compile Include="Framework\Provisioning\Model\ListInstanceCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Localization.cs" />
     <Compile Include="Framework\Provisioning\Model\Handlers.cs" />
     <Compile Include="Framework\Provisioning\Model\LocalizationCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\ManagedNavigation.cs" />
+    <Compile Include="Framework\Provisioning\Model\Navigation.cs" />
+    <Compile Include="Framework\Provisioning\Model\NavigationNode.cs" />
+    <Compile Include="Framework\Provisioning\Model\NavigationNodeCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ObjectSecurity.cs" />
     <Compile Include="Framework\Provisioning\Model\PageLayout.cs" />
     <Compile Include="Framework\Provisioning\Model\PageLayoutCollection.cs" />
@@ -506,7 +966,7 @@
     <Compile Include="Framework\Provisioning\Model\PropertyBagEntryCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ExtensibilityHandlerCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ProviderCollection.cs" />
-    <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateDictionary.cs" />
+    <Compile Include="Framework\Provisioning\Model\BaseProvisioningTemplateObjectDictionary.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Publishing.cs" />
     <Compile Include="Framework\Provisioning\Model\RoleAssignment.cs" />
@@ -517,6 +977,7 @@
     <Compile Include="Framework\Provisioning\Model\SiteSecurityPermissions.cs" />
     <Compile Include="Framework\Provisioning\Model\RegionalSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteGroup.cs" />
+    <Compile Include="Framework\Provisioning\Model\StructuralNavigation.cs" />
     <Compile Include="Framework\Provisioning\Model\SupportedUILanguage.cs" />
     <Compile Include="Framework\Provisioning\Model\SupportedUILanguageCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\TermCollection.cs" />
@@ -550,9 +1011,11 @@
     <Compile Include="Framework\Provisioning\Model\WorkflowSubscriptionCollection.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\PnPMonitoredScopeExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\SecurableObjectExtensions.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\LocalizationExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectContentHandlerBase.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Extensions\UserResourceExtensions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectLocalization.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectNavigation.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWebSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPageContents.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSupportedUILanguages.cs" />
@@ -568,7 +1031,6 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectField.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectRetrieveTemplateInfo.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPersistTemplateInfo.cs" />
-    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectLookupFields.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectPropertyBagEntry.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectCustomActions.cs" />
@@ -576,9 +1038,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectFeatures.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHandlerBase.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectListInstance.cs" />
-    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSiteSecurity.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSiteSecurity.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectTermGroups.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectWorkflows.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ProvisioningMessageType.cs" />
@@ -590,12 +1050,18 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CDATAStartToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CurrentUserFullNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CurrentUserLoginNameToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\DateNowToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\KeywordsTermStoreIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ContentTypeIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\GroupIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ListViewIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\LocalizationToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ResourceEntry.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FieldTitleToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionTermSetIdToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteOwnerToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\TermStoreIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\WebPartIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteCollectionTermGroupNameToken.cs" />
@@ -604,7 +1070,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\GuidToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\CurrentUserIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteIdToken.cs" />
-    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\SiteNameToken.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\WebNameToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\TermSetIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ParameterToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\ListUrlToken.cs" />
@@ -625,7 +1091,15 @@
     <Compile Include="Framework\Provisioning\Providers\Json\JsonSharePointTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Json\JsonTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\TemplateProviderBase.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\IPnPSchemaSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\IResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\ITypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\IValueResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\IXMLSchemaFormatter.cs" />
+    <Compile Include="Framework\Provisioning\Providers\ITemplateProviderExtension.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\PnPBaseSchemaSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\PnPObjectsMapper.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\PnPSerializationScope.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-03.cs">
       <DependentUpon>ProvisioningSchema-2015-03.xsd</DependentUpon>
     </Compile>
@@ -638,14 +1112,42 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.cs">
       <DependentUpon>ProvisioningSchema-2015-12.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.extensions.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.extensions.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.cs">
+      <DependentUpon>ProvisioningSchema-2016-05.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\CollectionFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FoldersFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\RemoveExistingViewsFromSchemaToModelValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ListViewsFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\CollectionFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromArrayToDictionaryValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromStringToGuidValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromDecimalToDoubleValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromDictionaryToArrayValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\FromDoubleToDecimalValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\ResolversExtensions.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\SecurityFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TemplateParameterFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\TemplateParameterFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\XmlAnyFromSchemaToModelValueResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ContentTypesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\ListInstancesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\LocalizationsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\TemplateSchemaSerializerAttribute.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\PropertyBagPropertiesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\TemplateParametersSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLAzureStorageTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLConstants.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLEnums.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLExtensions.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLFileSystemTemplateProvider.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLOpenXMLTemplateProvider.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XmlPnPSchemaBaseSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaFormatter.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201605Formatter.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201605Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201512Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201508Formatter.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201505Formatter.cs" />
@@ -656,7 +1158,33 @@
     <Compile Include="Framework\TimerJobs\TimerJob.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRun.cs" />
     <Compile Include="Framework\TimerJobs\TimerJobRunEventArgs.cs" />
-    <Compile Include="AppModelExtensions\PnPClientContext.cs" />
+    <Compile Include="Extensions\PnPClientContext.cs" />
+    <Compile Include="IdentityModel\TokenProviders\ADFS\CertificateMixed.cs" />
+    <Compile Include="IdentityModel\TokenProviders\ADFS\KerberosMixed.cs" />
+    <Compile Include="IdentityModel\WSTrustBindings\CertificateWSTrustBinding.cs" />
+    <Compile Include="IdentityModel\WSTrustBindings\KerberosWSTrustBinding.cs" />
+    <Compile Include="IdentityModel\WSTrustBindings\WindowsWSTrustBinding.cs" />
+    <Compile Include="Pages\ClientSideSectionEmphasis.cs" />
+    <Compile Include="Pages\ClientSideText.cs" />
+    <Compile Include="Pages\ClientSideTextControlData.cs" />
+    <Compile Include="Pages\ClientSideWebPart.cs" />
+    <Compile Include="Pages\ClientSideWebPartControlData.cs" />
+    <Compile Include="Pages\ClientSideWebPartControlDataOnly.cs" />
+    <Compile Include="Pages\ClientSideWebPartData.cs" />
+    <Compile Include="Pages\DefaultClientSideWebParts.cs" />
+    <Compile Include="Pages\PromotedState.cs" />
+    <Compile Include="Sites\SiteCollection.cs" />
+    <Compile Include="Sites\SiteCollectionCreationInformation.cs" />
+    <Compile Include="Utilities\Async\SynchronizationContextRemover.cs" />
+    <Compile Include="Utilities\Cache\ICacheProvider.cs" />
+    <Compile Include="Utilities\Cache\InMemoryCacheProvider.cs" />
+    <Compile Include="Utilities\Cache\SimpleAspNetCacheProvider.cs" />
+    <Compile Include="Utilities\CanvasControl\CanvasControlPostProcessorFactory.cs" />
+    <Compile Include="Utilities\CanvasControl\ICanvasControlPostProcessor.cs" />
+    <Compile Include="Utilities\CanvasControl\Processors\PassThroughProcessor.cs" />
+    <Compile Include="Utilities\CanvasControl\Processors\ListControlPostProcessor.cs" />
+    <Compile Include="Utilities\Context\ClientContextType.cs" />
+    <Compile Include="Utilities\Context\ClientContextSettings.cs" />
     <Compile Include="Utilities\CookieReader.cs" />
     <Compile Include="Utilities\Deprecated\Utility.deprecated.cs" />
     <Compile Include="Utilities\FileTokenCache.cs" />
@@ -680,7 +1208,32 @@
     <Compile Include="Diagnostics\Tree\Tree.cs" />
     <Compile Include="Diagnostics\Tree\TreeNode.cs" />
     <Compile Include="Diagnostics\Tree\TreeNodeList.cs" />
+    <Compile Include="Framework\Graph\SiteClassificationUtility.cs" />
+    <Compile Include="Utilities\HttpHelper.cs" />
     <Compile Include="Utilities\PnPCoreUtilities.cs" />
+    <Compile Include="Utilities\PnPHttpProvider.cs" />
+    <Compile Include="Utilities\PnPHttpUtility.cs" />
+    <Compile Include="Utilities\RESTUtilities.cs" />
+    <Compile Include="Utilities\StringUtilities.cs" />
+    <Compile Include="Utilities\Themes\Palettes\Color.cs" />
+    <Compile Include="Utilities\Themes\Palettes\Colors.cs" />
+    <Compile Include="Utilities\Themes\Palettes\ColorValues.cs" />
+    <Compile Include="Utilities\Themes\Palettes\Shades.cs" />
+    <Compile Include="Utilities\Themes\Generator\IThemeRules.cs" />
+    <Compile Include="Utilities\Themes\Generator\IThemeSlotRule.cs" />
+    <Compile Include="Utilities\Themes\Generator\ThemeGenerator.cs" />
+    <Compile Include="Utilities\Themes\Generator\ThemeRules.cs" />
+    <Compile Include="Utilities\Themes\Generator\ThemeRulesStandard.cs" />
+    <Compile Include="Utilities\Themes\Generator\ThemeSlotRule.cs" />
+    <Compile Include="Utilities\Themes\ThemeManager.cs" />
+    <Compile Include="Utilities\Themes\ThemeUtility.cs" />
+    <Compile Include="Utilities\Webhooks\ResponseModel.cs" />
+    <Compile Include="Utilities\Webhooks\WebhookUtility.cs" />
+    <Compile Include="Utilities\WebParts\IWebPartPostProcessor.cs" />
+    <Compile Include="Utilities\WebParts\Processors\PassThroughProcessor.cs" />
+    <Compile Include="Utilities\WebParts\Schema\WebPart.v3.cs" />
+    <Compile Include="Utilities\WebParts\WebPartPostProcessorFactory.cs" />
+    <Compile Include="Utilities\WebParts\Processors\XsltWebPartPostProcessor.cs" />
     <Compile Include="Utilities\XMLSerializer.cs" />
     <Compile Include="Web References\UPAWebService\Reference.cs">
       <AutoGen>True</AutoGen>
@@ -694,16 +1247,14 @@
     <Compile Include="WebAPI\WebAPIHelper.cs" />
     <Compile Include="Utilities\Caml.cs" />
     <Compile Include="Utilities\Deprecated\LoggingUtility.deprecated.cs" />
-    <Compile Include="Utilities\UrlUtility.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="AppModelExtensions\FeatureExtensions.cs" />
-    <Compile Include="AppModelExtensions\JavaScriptExtensions.cs" />
-    <Compile Include="AppModelExtensions\NavigationExtensions.cs" />
-    <Compile Include="AppModelExtensions\PageExtensions.cs" />
+    <Compile Include="Utilities\UrlUtility.cs" />
+    <Compile Include="Extensions\FeatureExtensions.cs" />
+    <Compile Include="Extensions\JavaScriptExtensions.cs" />
+    <Compile Include="Extensions\NavigationExtensions.cs" />
+    <Compile Include="Extensions\PageExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="AppModelExtensions\SecurityExtensions.cs" />
-    <Compile Include="AppModelExtensions\WebExtensions.cs" />
+    <Compile Include="Extensions\SecurityExtensions.cs" />
+    <Compile Include="Extensions\WebExtensions.cs" />
     <Compile Include="Utilities\EncryptionUtility.cs" />
     <Compile Include="Utilities\JsonUtility.cs" />
     <Compile Include="Utilities\MailUtility.cs" />
@@ -713,13 +1264,20 @@
     <Compile Include="Utilities\YammerUtility.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="CanProvisionIssuesMessages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CanProvisionIssuesMessages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="CoreResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-03.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -732,11 +1290,35 @@
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-12.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-01.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-05.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.xsd">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Pages\ClientSidePages.cd" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Include="Utilities\WebParts\Schema\WebPart.v3.xsd">
+      <SubType>Designer</SubType>
     </None>
     <None Include="Web References\UPAWebService\ContactData.datasource">
       <DependentUpon>Reference.map</DependentUpon>
@@ -794,78 +1376,101 @@
     </WebReferenceUrl>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\STS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\STS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BLOG0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\BLOG0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\COMMUNITY0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\STS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\STS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BDR0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BICENTERSITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\BLANKINTERNET0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\COMMUNITYPORTAL0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\DEV0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\EHS1Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\ENTERWIKI0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\OFFILE1Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\PROJECTSITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\SRCHCEN0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\SRCHCENTERLITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\VISPRUS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\BDR0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\BICENTERSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\COMMUNITYPORTAL0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\EHS1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\OFFILE1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\PROJECTSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\SRCHCENTERLITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\VISPRUS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\BDR0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\BICENTERSITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\BLANKINTERNET0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\BLOG0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\COMMUNITY0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\COMMUNITYPORTAL0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\DEV0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\ENTERWIKI0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\OFFILE1Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\PROJECTSITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\SRCHCEN0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\SRCHCENTERLITE0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\STS1Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\VISPRUS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\BDR0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\BICENTERSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\BLOG0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\COMMUNITYPORTAL0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\OFFILE1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\PROJECTSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\SRCHCENTERLITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\STS1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\VISPRUS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_1\CMSPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\CMSPUBLISHING0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v15_0\CMSPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\CMSPUBLISHING0Template.xml" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\Common\Publishing-Feature-Native-Files.xml" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\BLANKINTERNET0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\COMMUNITY0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\DEV0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\ENTERWIKI0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCEN0Template.xml" />
-    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\v16_0\STS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\STS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\BDR0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\BICENTERSITE0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\BLOG0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\CMSPUBLISHING0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\COMMUNITYPORTAL0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\OFFILE1Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\PROJECTSITE0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\SRCHCENTERLITE0Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\STS1Template.xml" />
-    <Content Include="Framework\Provisioning\BaseTemplates\v16_0\VISPRUS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BDR0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BICENTERSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BLOG0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\CMSPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\COMMUNITYPORTAL0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\OFFILE1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\PROJECTSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\SRCHCENTERLITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\STS1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\VISPRUS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\GROUP0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\SITEPAGEPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\BDR0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\BICENTERSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\BLOG0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\COMMUNITYPORTAL0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\OFFILE1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\PROJECTSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\SRCHCENTERLITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\STS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\STS1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\STS3Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\VISPRUS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\CMSPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\STS3Template.xml" />
     <Content Include="pnp.ico" />
     <None Include="Resources\SP-Responsive-UI_CSS.css" />
     <None Include="Resources\SP-Responsive-UI.js" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Framework\Provisioning\Deprecated\Connectors\OpenXML\" />
+    <Folder Include="Framework\Provisioning\Providers\Xml\Serializers\V201805\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <TFSBaseBuildYear>2014</TFSBaseBuildYear>
@@ -876,14 +1481,14 @@
   <Target Name="AfterBuild" DependsOnTargets="">
   </Target>
   <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
+    <PreBuildEvent>del $(ProjectDir)\obj\pnpcore.*
+del $(ProjectDir)\obj\*.json</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

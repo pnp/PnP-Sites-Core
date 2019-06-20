@@ -11,7 +11,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     public partial class ListInstance : BaseModel, IEquatable<ListInstance>
     {
         #region Constructors
-
+        /// <summary>
+        /// Constructor for ListInstance class
+        /// </summary>
         public ListInstance()
         {
             this._ctBindings = new ContentTypeBindingCollection(this.ParentTemplate);
@@ -20,22 +22,72 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._fieldRefs = new FieldRefCollection(this.ParentTemplate);
             this._dataRows = new DataRowCollection(this.ParentTemplate);
             this._folders = new FolderCollection(this.ParentTemplate);
+            this._userCustomActions = new CustomActionCollection(this.ParentTemplate);
+            this._webhooks = new WebhookCollection(this.ParentTemplate);
+            this._propertyBags = new PropertyBagEntryCollection(this.ParentTemplate);
         }
 
+        /// <summary>
+        /// Constructor for ListInstance class
+        /// </summary>
+        /// <param name="contentTypeBindings">ContentType Bindings of the list</param>
+        /// <param name="views">Views of the list</param>
+        /// <param name="fields">Fields of the list</param>
+        /// <param name="fieldRefs">FieldRefs of the list</param>
+        /// <param name="dataRows">DataRows of the list</param>
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
             IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows) :
                 this(contentTypeBindings, views, fields, fieldRefs, dataRows, null, null, null)
         {
         }
 
+        /// <summary>
+        /// Constructor for ListInstance class
+        /// </summary>
+        /// <param name="contentTypeBindings">ContentType Bindings of the list</param>
+        /// <param name="views">View of the list</param>
+        /// <param name="fields">Fields of the list</param>
+        /// <param name="fieldRefs">FieldRefs of the list</param>
+        /// <param name="dataRows">DataRows of the list</param>
+        /// <param name="fieldDefaults">FieldDefaults of the list</param>
+        /// <param name="security">Security Rules of the list</param>
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
             IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security) :
                 this(contentTypeBindings, views, fields, fieldRefs, dataRows, fieldDefaults, security, null)
         {
         }
 
+        /// <summary>
+        /// Constructor for ListInstance class
+        /// </summary>
+        /// <param name="contentTypeBindings">ContentTypeBindings  of the list</param>
+        /// <param name="views">Views of the list</param>
+        /// <param name="fields">Fields of the list</param>
+        /// <param name="fieldRefs">FieldRefs of the list</param>
+        /// <param name="dataRows">DataRows of the list</param>
+        /// <param name="fieldDefaults">FieldDefaults of the list</param>
+        /// <param name="security">Security Rules of the list</param>
+        /// <param name="folders">List Folders</param>
         public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
-            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders) : 
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders) :
+                this(contentTypeBindings, views, fields, fieldRefs, dataRows, fieldDefaults, security, folders, null)
+        {
+        }
+
+        /// <summary>
+        /// Constructor for the ListInstance class
+        /// </summary>
+        /// <param name="contentTypeBindings">ContentTypeBindings of the list</param>
+        /// <param name="views">Views of the list</param>
+        /// <param name="fields">Fields of the list</param>
+        /// <param name="fieldRefs">FieldRefs of the list</param>
+        /// <param name="dataRows">DataRows of the list</param>
+        /// <param name="fieldDefaults">FieldDefaults of the list</param>
+        /// <param name="security">Security Rules of the list</param>
+        /// <param name="folders">List Folders</param>
+        /// <param name="userCustomActions">UserCustomActions of the list</param>
+        public ListInstance(IEnumerable<ContentTypeBinding> contentTypeBindings,
+            IEnumerable<View> views, IEnumerable<Field> fields, IEnumerable<FieldRef> fieldRefs, List<DataRow> dataRows, Dictionary<String, String> fieldDefaults, ObjectSecurity security, List<Folder> folders, List<CustomAction> userCustomActions) :
             this()
         {
             this.ContentTypeBindings.AddRange(contentTypeBindings);
@@ -52,6 +104,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Security = security;
             }
             this.Folders.AddRange(folders);
+            this.UserCustomActions.AddRange(userCustomActions);
         }
 
         #endregion
@@ -67,6 +120,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private FolderCollection _folders;
         private bool _enableFolderCreation = true;
         private bool _enableAttachments = true;
+        private CustomActionCollection _userCustomActions;
+        private WebhookCollection _webhooks;
+        private IRMSettings _IRMSettings;
+        private Dictionary<String, String> _dataSource = new Dictionary<String, String>();
+        private PropertyBagEntryCollection _propertyBags;
         #endregion
 
         #region Properties
@@ -152,6 +210,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public bool Hidden { get; set; }
 
         /// <summary>
+        /// Gets or sets whether to force checkout of documents in the library
+        /// </summary>
+        public bool ForceCheckout { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets whether attachments are enabled. Defaults to true.
         /// </summary>
         public bool EnableAttachments
@@ -178,7 +241,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Gets or sets the content types to associate to the list
+        /// Gets or sets the views associated to the list
         /// </summary>
         public ViewCollection Views
         {
@@ -186,20 +249,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { this._views = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the Fields associated to the list
+        /// </summary>
         public FieldCollection Fields
         {
             get { return this._fields; }
             private set { this._fields = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the FieldRefs associated to the list
+        /// </summary>
         public FieldRefCollection FieldRefs
         {
             get { return this._fieldRefs; }
             private set { this._fieldRefs = value; }
         }
 
+        /// <summary>
+        /// Gets or sets the Guid for TemplateFeature
+        /// </summary>
         public Guid TemplateFeatureID { get; set; }
 
+        /// <summary>
+        /// Gets or sets the DataRows associated to the list
+        /// </summary>
         public DataRowCollection DataRows
         {
             get { return this._dataRows; }
@@ -245,13 +320,143 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { this._folders = value; }
         }
 
+        /// <summary>
+        /// Defines a collection of user custom actions that 
+        /// will be provisioned into the target list/library
+        /// </summary>
+        public CustomActionCollection UserCustomActions
+        {
+            get { return this._userCustomActions; }
+            private set { this._userCustomActions = value; }
+        }
+
+        public WebhookCollection Webhooks
+        {
+            get { return this._webhooks; }
+            private set { this._webhooks = value; }
+        }
+
+        public IRMSettings IRMSettings
+        {
+            get { return this._IRMSettings; }
+            set
+            {
+                if (this._IRMSettings != null)
+                {
+                    this._IRMSettings.ParentTemplate = null;
+                }
+                this._IRMSettings = value;
+                if (this._IRMSettings != null)
+                {
+                    this._IRMSettings.ParentTemplate = this.ParentTemplate;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Defines if the current list or library has to be included in crawling, optional attribute.
+        /// </summary>
+        public Boolean NoCrawl { get; set; }
+
+        /// <summary>
+        /// Defines the current list UI/UX experience (valid for SPO only).
+        /// </summary>
+        public ListExperience ListExperience { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies the location of the default display form for the list.
+        /// </summary>
+        public String DefaultDisplayFormUrl { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies the URL of the edit form to use for list items in the list.
+        /// </summary>
+        public String DefaultEditFormUrl { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies the location of the default new form for the list.
+        /// </summary>
+        public String DefaultNewFormUrl { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies the reading order of the list.
+        /// </summary>
+        public ListReadingDirection Direction { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies the URI for the icon of the list, optional attribute.
+        /// </summary>
+        public String ImageUrl { get; set; }
+
+        /// <summary>
+        /// Defines if IRM Expire property, optional attribute.
+        /// </summary>
+        public Boolean IrmExpire { get; set; }
+
+        /// <summary>
+        /// Defines the IRM Reject property, optional attribute.
+        /// </summary>
+        public Boolean IrmReject { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies a flag that a client application can use to determine whether to display the list, optional attribute.
+        /// </summary>
+        public Boolean IsApplicationList { get; set; }
+
+        /// <summary>
+        /// Defines the Read Security property, optional attribute.
+        /// </summary>
+        public Int32 ReadSecurity { get; set; }
+
+        /// <summary>
+        /// Defines the Write Security property, optional attribute.
+        /// </summary>
+        public Int32 WriteSecurity { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies the data validation criteria for a list item, optional attribute.
+        /// </summary>
+        public String ValidationFormula { get; set; }
+
+        /// <summary>
+        /// Defines a value that specifies the error message returned when data validation fails for a list item, optional attribute.
+        /// </summary>
+        public String ValidationMessage { get; set; }
+
+        /// <summary>
+        /// Defines a list of Data Source properties for the List Instance
+        /// </summary>
+        public Dictionary<String, String> DataSource
+        {
+            get { return this._dataSource; }
+            private set { this._dataSource = value; }
+        }
+
+        /// <summary>
+        /// Defines the property bag properties for the root folder of the list
+        /// </summary>
+        public PropertyBagEntryCollection PropertyBagEntries
+        {
+            get { return this._propertyBags; }
+            private set { this._propertyBags = value; }
+        }
+
+        /// <summary>
+        /// Defines the alternate template internal name for a list based on a .STP file/list definition
+        /// </summary>
+        public String TemplateInternalName { get; set; }
+
         #endregion
 
         #region Comparison code
 
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|{31}|{32}|{33}|{34}|{35}|{36}|{37}|{38}|{39}|{40}|{41}|{42}|{43}|{44}|{45}|",
                 this.ContentTypesEnabled.GetHashCode(),
                 (this.Description != null ? this.Description.GetHashCode() : 0),
                 (this.DocumentTemplate != null ? this.DocumentTemplate.GetHashCode() : 0),
@@ -262,6 +467,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.OnQuickLaunch.GetHashCode(),
                 this.EnableAttachments.GetHashCode(),
                 this.EnableFolderCreation.GetHashCode(),
+                this.ForceCheckout.GetHashCode(),
                 this.RemoveExistingContentTypes.GetHashCode(),
                 this.TemplateType.GetHashCode(),
                 (this.Title != null ? this.Title.GetHashCode() : 0),
@@ -276,10 +482,35 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.FieldRefs.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.FieldDefaults.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 (this.Security != null ? this.Security.GetHashCode() : 0),
-                this.Folders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.Folders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.UserCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Webhooks.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                (this.IRMSettings != null ? this.IRMSettings.GetHashCode() : 0),
+                this.NoCrawl.GetHashCode(),
+                this.ListExperience.GetHashCode(),
+                this.DefaultDisplayFormUrl?.GetHashCode() ?? 0,
+                this.DefaultEditFormUrl?.GetHashCode() ?? 0,
+                this.DefaultNewFormUrl?.GetHashCode() ?? 0,
+                this.Direction.GetHashCode(),
+                this.ImageUrl?.GetHashCode() ?? 0,
+                this.IrmExpire.GetHashCode(),
+                this.IrmReject.GetHashCode(),
+                this.IsApplicationList.GetHashCode(),
+                this.ReadSecurity.GetHashCode(),
+                this.ValidationFormula?.GetHashCode() ?? 0,
+                this.ValidationMessage?.GetHashCode() ?? 0,
+                this.DataSource.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.WriteSecurity.GetHashCode(),
+                this.PropertyBagEntries.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.TemplateInternalName?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with ListInstance
+        /// </summary>
+        /// <param name="obj">Object that represents ListInstance</param>
+        /// <returns>true if the current object is equal to the ListInstance</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ListInstance))
@@ -289,6 +520,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((ListInstance)obj));
         }
 
+        /// <summary>
+        /// Compares ListInstance object based on ContentTypesEnabled, Description, DocumentTemplate, EnableVersioning, EnableMinorVersions, EnableModeration, Hidden, 
+        /// MaxVersionLimit, MinorVersionLimit, OnQuickLaunch, EnableAttachments, EnableFolderCreation, ForceCheckOut, RemoveExistingContentTypes, TemplateType,
+        /// Title, Url, TemplateFeatureID, RemoveExistingViews, ContentTypeBindings, View, Fields, FieldRefs, FieldDefaults, Security, Folders, UserCustomActions, 
+        /// Webhooks, IRMSettings, DefaultDisplayFormUrl, DefaultEditFormUrl, DefaultNewFormUrl, Direction, ImageUrl, IrmExpire, IrmReject, IsApplicationList,
+        /// ReadSecurity, ValidationFormula, ValidationMessage, DataSource, WriteSecurity, and TemplateInternalName properties.
+        /// </summary>
+        /// <param name="other">ListInstance object</param>
+        /// <returns>true if the ListInstance object is equal to the current object; otherwise, false.</returns>
         public bool Equals(ListInstance other)
         {
             if (other == null)
@@ -308,6 +548,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.OnQuickLaunch == other.OnQuickLaunch &&
                 this.EnableAttachments == other.EnableAttachments &&
                 this.EnableFolderCreation == other.EnableFolderCreation &&
+                this.ForceCheckout == other.ForceCheckout &&
                 this.RemoveExistingContentTypes == other.RemoveExistingContentTypes &&
                 this.TemplateType == other.TemplateType &&
                 this.Title == other.Title &&
@@ -315,15 +556,95 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.TemplateFeatureID == other.TemplateFeatureID &&
                 this.RemoveExistingViews == other.RemoveExistingViews &&
                 this.ContentTypeBindings.DeepEquals(other.ContentTypeBindings) &&
-                this.Views.DeepEquals(other.Views) &&
-                this.Fields.DeepEquals(other.Fields) &&
+                // Only do a deep view compare on non system lists to avoid subtle changes in OOB view XML to popup system lists in the generated model
+                (this.IsApplicationList == false ? this.Views.DeepEquals(other.Views) : true) &&
+                // Only do a deep field compare on non system lists to avoid subtle changes in OOB field XML to popup system lists in the generated model
+                (this.IsApplicationList == false ? this.Fields.DeepEquals(other.Fields) : true) &&
                 this.FieldRefs.DeepEquals(other.FieldRefs) &&
                 this.FieldDefaults.DeepEquals(other.FieldDefaults) &&
-                (this.Security != null ? this.Security.Equals(other.Security) : true) &&
-                this.Folders.DeepEquals(other.Folders)
-                );
+                ((this.Security != null && other.Security != null) ? this.Security.Equals(other.Security) : true) &&
+                this.Folders.DeepEquals(other.Folders) &&
+                this.UserCustomActions.DeepEquals(other.UserCustomActions) &&
+                this.Webhooks.DeepEquals(other.Webhooks) &&
+                (this.IRMSettings != null ? this.IRMSettings.Equals(other.IRMSettings) : true) &&
+                this.NoCrawl == other.NoCrawl &&
+                this.ListExperience == other.ListExperience &&
+                this.DefaultDisplayFormUrl == other.DefaultDisplayFormUrl &&
+                this.DefaultEditFormUrl == other.DefaultEditFormUrl &&
+                this.DefaultNewFormUrl == other.DefaultNewFormUrl &&
+                this.Direction == other.Direction &&
+                CheckImage(this.ImageUrl, other.ImageUrl) &&
+                this.IrmExpire == other.IrmExpire &&
+                this.IrmReject == other.IrmReject &&
+                this.IsApplicationList == other.IsApplicationList &&
+                this.ReadSecurity == other.ReadSecurity &&
+                this.ValidationFormula == other.ValidationFormula &&
+                this.ValidationMessage == other.ValidationMessage &&
+                this.DataSource.DeepEquals(other.DataSource) &&
+                this.WriteSecurity == other.WriteSecurity &&
+                this.PropertyBagEntries.DeepEquals(other.PropertyBagEntries) &&
+                this.TemplateInternalName == other.TemplateInternalName
+            );
+        }
+
+        private bool CheckImage(string image1, string image2)
+        {
+            if (string.IsNullOrEmpty(image1) && string.IsNullOrEmpty(image2))
+            {
+                return true;
+            }
+            else if ((!string.IsNullOrEmpty(image1) && string.IsNullOrEmpty(image2)) || (string.IsNullOrEmpty(image1) && !string.IsNullOrEmpty(image2)))
+            {
+                return false;
+            }
+            else
+            {
+                if (image1.IndexOf("?") > -1)
+                {
+                    image1 = image1.Substring(0, image1.IndexOf("?"));
+                }
+                if (image2.IndexOf("?") > -1)
+                {
+                    image2 = image2.Substring(0, image2.IndexOf("?"));
+                }
+                return image1.Equals(image2, StringComparison.InvariantCultureIgnoreCase);
+            }
         }
 
         #endregion
+    }
+
+
+
+    public enum ListExperience
+    {
+        /// <summary>
+        ///  SPO will automatically define the right experience based on the settings of the current list, it is the default value.
+        /// </summary>
+        Auto,
+        /// <summary>
+        /// The Classic experience will be forced for the current list.
+        /// </summary>
+        ClassicExperience,
+        /// <summary>
+        /// The Modern experience will be forced for the current list.
+        /// </summary>
+        NewExperience,
+    }
+
+    public enum ListReadingDirection
+    {
+        /// <summary>
+        /// None
+        /// </summary>
+        None,
+        /// <summary>
+        /// Left to Right
+        /// </summary>
+        LTR,
+        /// <summary>
+        /// Right to Left
+        /// </summary>
+        RTL,
     }
 }

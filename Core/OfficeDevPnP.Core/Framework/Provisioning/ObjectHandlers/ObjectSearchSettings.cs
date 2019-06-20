@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
@@ -15,6 +11,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return "Search Settings"; }
         }
+
+        public override string InternalName => "SearchSettings";
+
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -22,11 +21,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var site = (web.Context as ClientContext).Site;
                 try
                 {
-                    var searchSettings = site.GetSearchConfiguration();
+                    var siteSearchSettings = site.GetSearchConfiguration();
 
-                    if (!String.IsNullOrEmpty(searchSettings))
+                    if (!String.IsNullOrEmpty(siteSearchSettings))
                     {
-                        template.SearchSettings = searchSettings;
+                        template.SiteSearchSettings = siteSearchSettings;
+                    }
+
+                    var webSearchSettings = web.GetSearchConfiguration();
+
+                    if (!String.IsNullOrEmpty(webSearchSettings))
+                    {
+                        template.WebSearchSettings = webSearchSettings;
                     }
                 }
                 catch (ServerException)
@@ -43,9 +49,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 var site = (web.Context as ClientContext).Site;
-                if (!String.IsNullOrEmpty(template.SearchSettings))
+                if (!String.IsNullOrEmpty(template.SiteSearchSettings))
                 {
-                    site.SetSearchConfiguration(template.SearchSettings);
+                    site.SetSearchConfiguration(parser.ParseXmlString(template.SiteSearchSettings));
+                }
+
+                if (!String.IsNullOrEmpty(template.WebSearchSettings))
+                {
+                    web.SetSearchConfiguration(parser.ParseXmlString(template.WebSearchSettings));
                 }
             }
 
@@ -57,9 +68,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return creationInfo.IncludeSearchConfiguration;
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
+#pragma warning disable 618
             return !String.IsNullOrEmpty(template.SearchSettings);
+#pragma warning restore 618
         }
     }
 }

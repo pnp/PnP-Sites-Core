@@ -19,6 +19,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Parameters required for the file.
+        /// </summary>
         public Dictionary<string, object> Parameters
         {
             get
@@ -41,6 +44,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         /// <param name="container">Name of the container to get the files from</param>
         /// <returns>List of files</returns>
         public abstract List<string> GetFiles(string container);
+
+        /// <summary>
+        /// Get the folders of the default container
+        /// </summary>
+        /// <returns>List of folders</returns>
+        public abstract List<string> GetFolders();
+
+        /// <summary>
+        /// Get the folders of a specified container
+        /// </summary>
+        /// <param name="container">Name of the container to get the folders from</param>
+        /// <returns>List of folders</returns>
+        public abstract List<string> GetFolders(string container);
 
         /// <summary>
         /// Gets a file as string from the default container
@@ -108,6 +124,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
         #endregion
 
         #region Helper methods
+        /// <summary>
+        /// Adds Parameter as a string.
+        /// </summary>
+        /// <param name="key">Key for adding parameter</param>
+        /// <param name="value">Value of the parameter</param>
         public void AddParameterAsString(string key, string value)
         {
             if (!this.Parameters.ContainsKey(key))
@@ -120,6 +141,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             }
         }
 
+        /// <summary>
+        /// Adds Parameter as an object.
+        /// </summary>
+        /// <param name="key">Key for adding parameter</param>
+        /// <param name="value">Value of the parameter</param>
         public void AddParameter(string key, object value)
         {
             if (!this.Parameters.ContainsKey(key))

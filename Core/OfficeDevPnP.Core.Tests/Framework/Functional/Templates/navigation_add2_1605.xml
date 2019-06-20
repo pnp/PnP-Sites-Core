@@ -1,0 +1,15 @@
+﻿<?xml version="1.0"?>
+<pnp:ProvisioningTemplate ID="navigation_add2_1605" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema">
+  <pnp:Navigation>
+    <pnp:GlobalNavigation NavigationType="Structural">
+      <pnp:StructuralNavigation RemoveExistingNodes="true">
+        <pnp:NavigationNode Title="Bing" IsExternal="true" Url="http://www.bing.com/" />
+      </pnp:StructuralNavigation>
+    </pnp:GlobalNavigation>
+    <pnp:CurrentNavigation NavigationType="Managed">
+      <pnp:ManagedNavigation
+        TermStoreId="{sitecollectiontermstoreid}"
+        TermSetId="{termsetid:TG_1:TS_1_1}" />
+    </pnp:CurrentNavigation>
+  </pnp:Navigation>
+</pnp:ProvisioningTemplate>

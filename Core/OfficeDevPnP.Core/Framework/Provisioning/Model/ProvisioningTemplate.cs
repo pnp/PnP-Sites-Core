@@ -13,9 +13,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object for the Provisioning Template
     /// </summary>
-    public partial class ProvisioningTemplate : IEquatable<ProvisioningTemplate>
+    public partial class ProvisioningTemplate : BaseHierarchyModel, IEquatable<ProvisioningTemplate>
     {
-        #region Private Members
+        #region Private Fields
 
         private Dictionary<string, string> _parameters = new Dictionary<string, string>();
         private LocalizationCollection _localizations;
@@ -26,8 +26,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private ComposedLook _composedLook;
         private Features _features;
         private SiteSecurity _siteSecurity;
+        private Navigation _navigation;
         private CustomActions _customActions;
         private FileCollection _files;
+        private DirectoryCollection _directories;
         private ExtensibilityHandlerCollection _extensibilityHandlers;
         private PageCollection _pages;
         private TermGroupCollection _termGroups;
@@ -43,10 +45,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private Publishing _publishing = null;
         private Dictionary<String, String> _properties = new Dictionary<string, string>();
 
+        private SiteWebhookCollection _siteWebhooks;
+        private ClientSidePageCollection _clientSidePages;
+
+        private ProvisioningTenant _tenant;
+        private ApplicationLifecycleManagement _applicationLifecycleManagement;
+        private Double _version;
+
+        private SiteHeader _header = null;
+        private SiteFooter _footer = null;
+        private Theme _theme = null;
+        private ProvisioningTemplateWebhookCollection _provisioningTemplateWebhooks;
+
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for ProvisioningTemplate class
+        /// </summary>
         public ProvisioningTemplate()
         {
             this.connector = new FileSystemConnector(".", "");
@@ -68,6 +84,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this._customActions.ParentTemplate = this;
 
             this._files = new FileCollection(this);
+            this._directories = new DirectoryCollection(this);
             this._providers = new ProviderCollection(this); // Deprecated
             this._extensibilityHandlers = new ExtensibilityHandlerCollection(this);
             this._pages = new PageCollection(this);
@@ -75,8 +92,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             this._supportedUILanguages = new SupportedUILanguageCollection(this);
             this._addins = new AddInCollection(this);
+
+            this._siteWebhooks = new SiteWebhookCollection(this);
+            this._clientSidePages = new ClientSidePageCollection(this);
+
+            this._tenant = new ProvisioningTenant();
+            this._tenant.ParentTemplate = this;
+
+            this._applicationLifecycleManagement = new ApplicationLifecycleManagement();
+            this._applicationLifecycleManagement.ParentTemplate = this;
+
+            this._provisioningTemplateWebhooks = new ProvisioningTemplateWebhookCollection(this);
         }
 
+        /// <summary>
+        /// Constructor for ProvisioningTemplate class
+        /// </summary>
+        /// <param name="connector">FileConnectorBase object</param>
         public ProvisioningTemplate(FileConnectorBase connector) :
             this()
         {
@@ -92,14 +124,56 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public Dictionary<string, string> Parameters
         {
-            get { return _parameters; }
-            private set { _parameters = value; }
+            get
+            {
+                if (this.ParentHierarchy != null)
+                {
+                    return (this.ParentHierarchy.Parameters);
+                }
+                else
+                {
+                    return _parameters;
+                }
+            }
+            private set {
+                if (this.ParentHierarchy != null)
+                {
+                    this.ParentHierarchy.Parameters = value;
+                }
+                else
+                {
+                    _parameters = value;
+                }
+            }
         }
 
+        /// <summary>
+        /// Gets or sets the Localizations
+        /// </summary>
         public LocalizationCollection Localizations
         {
-            get { return this._localizations; }
-            private set { this._localizations = value; }
+            get
+            {
+                if (this.ParentHierarchy != null)
+                {
+                    return (this.ParentHierarchy.Localizations);
+                }
+                else
+                {
+                    return _localizations;
+                }
+            }
+            private set
+            {
+                if (this.ParentHierarchy != null)
+                {
+                    this.ParentHierarchy.Localizations = value;
+                }
+                else
+                {
+                    _localizations = value;
+                }
+            }
         }
 
         /// <summary>
@@ -110,7 +184,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets the Version of the Provisioning Template
         /// </summary>
-        public double Version { get; set; }
+        public double Version {
+            get
+            {
+                if (this.ParentHierarchy != null)
+                {
+                    return (this.ParentHierarchy.Version);
+                }
+                else
+                {
+                    return _version;
+                }
+            }
+            set
+            {
+                if (this.ParentHierarchy != null)
+                {
+                    this.ParentHierarchy.Version = value;
+                }
+                else
+                {
+                    this._version = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or Sets the Site Policy
@@ -139,6 +236,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 if (this._siteSecurity != null)
                 {
                     this._siteSecurity.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The Navigation configurations of the Provisioning Template
+        /// </summary>
+        public Navigation Navigation
+        {
+            get { return this._navigation; }
+            set
+            {
+                if (this._navigation != null)
+                {
+                    this._navigation.ParentTemplate = null;
+                }
+                this._navigation = value;
+                if (this._navigation != null)
+                {
+                    this._navigation.ParentTemplate = this;
                 }
             }
         }
@@ -217,6 +334,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// Gets a collection of directories from which upload files for the template
+        /// </summary>
+        public DirectoryCollection Directories
+        {
+            get { return this._directories; }
+            private set { this._directories = value; }
+        }
+
+        /// <summary>
         /// Gets or Sets the composed look of the template
         /// </summary>
         public ComposedLook ComposedLook
@@ -236,6 +362,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
+        /// <summary>
+        /// Gets or sets the Extensibility Handlers
+        /// </summary>
         public ExtensibilityHandlerCollection ExtensibilityHandlers
         {
             get { return this._extensibilityHandlers; }
@@ -307,7 +436,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public SupportedUILanguageCollection SupportedUILanguages
         {
             get { return this._supportedUILanguages; }
-            private set { this._supportedUILanguages = value; }
+            internal set { this._supportedUILanguages = value; }
         }
 
         /// <summary>
@@ -358,9 +487,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// The Search Settings for the Provisioning Template
+        /// The Site Collection level Search Settings for the Provisioning Template
         /// </summary>
-        public String SearchSettings { get; set; }
+        public String SiteSearchSettings { get; set; }
+
+        /// <summary>
+        /// The Web level Search Settings for the Provisioning Template
+        /// </summary>
+        public String WebSearchSettings { get; set; }
 
         /// <summary>
         /// Defines the SharePoint Add-ins to provision
@@ -392,12 +526,164 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// Gets a collection of SiteWebhooks to configure for the site
+        /// </summary>
+        public SiteWebhookCollection SiteWebhooks
+        {
+            get { return this._siteWebhooks; }
+            private set { this._siteWebhooks = value; }
+        }
+
+        /// <summary>
+        /// Gets a collection of ClientSidePage to configure for the site
+        /// </summary>
+        public ClientSidePageCollection ClientSidePages
+        {
+            get { return this._clientSidePages; }
+            private set { this._clientSidePages = value; }
+        }
+
+        /// <summary>
         /// A set of custom Properties for the Provisioning Template
         /// </summary>
         public Dictionary<String, String> Properties
         {
             get { return this._properties; }
             private set { this._properties = value; }
+        }
+
+        /// <summary>
+        /// The Tenant-wide settings for the template
+        /// </summary>
+        public ProvisioningTenant Tenant
+        {
+            get
+            {
+                if (this.ParentHierarchy != null)
+                {
+                    return (this.ParentHierarchy.Tenant);
+                }
+                else
+                {
+                    return _tenant;
+                }
+            }
+            set
+            {
+                if (this.ParentHierarchy != null)
+                {
+                    this.ParentHierarchy.Tenant = value;
+                }
+                else
+                {
+                    if (this._tenant != null)
+                    {
+                        this._tenant.ParentTemplate = null;
+                    }
+                    this._tenant = value;
+                    if (this._tenant != null)
+                    {
+                        this._tenant.ParentTemplate = this;
+                    }
+                }
+            }
+        }
+
+        public ApplicationLifecycleManagement ApplicationLifecycleManagement
+        {
+            get { return this._applicationLifecycleManagement; }
+            set
+            {
+                if (this._applicationLifecycleManagement != null)
+                {
+                    this._applicationLifecycleManagement.ParentTemplate = null;
+                }
+                this._applicationLifecycleManagement = value;
+                if (this._applicationLifecycleManagement != null)
+                {
+                    this._applicationLifecycleManagement.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The Header of the Site
+        /// </summary>
+        public SiteHeader Header
+        {
+            get { return this._header; }
+            set
+            {
+                if (this._header != null)
+                {
+                    this._header.ParentTemplate = null;
+                }
+                this._header = value;
+                if (this._header != null)
+                {
+                    this._header.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The Footer of the Site
+        /// </summary>
+        public SiteFooter Footer
+        {
+            get { return this._footer; }
+            set
+            {
+                if (this._footer != null)
+                {
+                    this._footer.ParentTemplate = null;
+                }
+                this._footer = value;
+                if (this._footer != null)
+                {
+                    this._footer.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The Webhooks for the Provisioning Template
+        /// </summary>
+        public ProvisioningTemplateWebhookCollection ProvisioningTemplateWebhooks
+        {
+            get { return this._provisioningTemplateWebhooks; }
+            set
+            {
+                if (this._provisioningTemplateWebhooks != null)
+                {
+                    this._provisioningTemplateWebhooks.ParentTemplate = null;
+                }
+                this._provisioningTemplateWebhooks = value;
+                if (this._provisioningTemplateWebhooks != null)
+                {
+                    this._provisioningTemplateWebhooks.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The Theme of the Site
+        /// </summary>
+        public Theme Theme
+        {
+            get { return this._theme; }
+            set
+            {
+                if (this._theme != null)
+                {
+                    this._theme.ParentTemplate = null;
+                }
+                this._theme = value;
+                if (this._theme != null)
+                {
+                    this._theme.ParentTemplate = this;
+                }
+            }
         }
 
         /// <summary>
@@ -415,6 +701,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public String Description { get; set; }
 
+        /// <summary>
+        /// The Base SiteTemplate of the Provisioning Template
+        /// </summary>
+        public String BaseSiteTemplate { get; set; }
+
+        /// <summary>
+        /// The default CultureInfo of the Provisioning Template, used to format all input values, optional attribute.
+        /// </summary>
+        public String TemplateCultureInfo { get; set; }
+
+        /// <summary>
+        /// Declares the target scope of the current Provisioning Template
+        /// </summary>
+        public ProvisioningTemplateScope Scope { get; set; }
+
+        /// <summary>
+        /// Gets or sets the File Connector
+        /// </summary>
         public FileConnectorBase Connector
         {
             get
@@ -430,10 +734,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}|{21}|{22}|{23}|{24}|{25}|{26}|{27}|{28}|{29}|{30}|{31}|{32}|{33}|",
                 (this.ComposedLook != null ? this.ComposedLook.GetHashCode() : 0),
                 this.ContentTypes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.CustomActions.SiteCustomActions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
@@ -444,7 +751,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 (this.Id != null ? this.Id.GetHashCode() : 0),
                 this.Lists.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.PropertyBagEntries.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+#pragma warning disable 618
                 this.Providers.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+#pragma warning restore 618
                 this.Security.AdditionalAdministrators.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Security.AdditionalMembers.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Security.AdditionalOwners.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
@@ -462,10 +771,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.AddIns.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 (this.Publishing != null ? this.Publishing.GetHashCode() : 0),
                 this.Localizations.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.WebSettings.GetHashCode()
+                this.WebSettings.GetHashCode(),
+                this.SiteWebhooks.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.ClientSidePages.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.TemplateCultureInfo?.GetHashCode() ?? 0,
+                this.Scope.GetHashCode(),
+                this.Tenant.GetHashCode()
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with ProvisioningTemplate
+        /// </summary>
+        /// <param name="obj">Object that represents ProvisioningTemplate</param>
+        /// <returns>true if the current object is equal to the ProvisioningTemplate</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ProvisioningTemplate))
@@ -475,6 +794,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((ProvisioningTemplate)obj));
         }
 
+        /// <summary>
+        /// Compares ProvisioningTemplate object based on ComposedLook, ContentTypes, CustomActions, SiteFeature, WebFeatures, Files, Id, Lists,
+        /// PropertyBagEntries, Providers, Security, SiteFields, SitePolicy, Version, Pages, TermGroups, Workflows, AddIns, Publishing, Loaclizations,
+        /// WebSettings, SiteWebhooks, ClientSidePages, and Tenant properties.
+        /// </summary>
+        /// <param name="other">ProvisioningTemplate object</param>
+        /// <returns>true if the ProvisioningTemplate object is equal to the current object; otherwise, false.</returns>
         public bool Equals(ProvisioningTemplate other)
         {
             if (other == null)
@@ -493,7 +819,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Id == other.Id &&
                 this.Lists.DeepEquals(other.Lists) &&
                 this.PropertyBagEntries.DeepEquals(other.PropertyBagEntries) &&
+#pragma warning disable 618
                 this.Providers.DeepEquals(other.Providers) &&
+#pragma warning restore 618
                 this.Security.AdditionalAdministrators.DeepEquals(other.Security.AdditionalAdministrators) &&
                 this.Security.AdditionalMembers.DeepEquals(other.Security.AdditionalMembers) &&
                 this.Security.AdditionalOwners.DeepEquals(other.Security.AdditionalOwners) &&
@@ -506,21 +834,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Version == other.Version &&
                 this.Pages.DeepEquals(other.Pages) &&
                 this.TermGroups.DeepEquals(other.TermGroups) &&
-                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) : true) &&
-                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowSubscriptions.DeepEquals(other.Workflows.WorkflowSubscriptions) : true) &&
+                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) : this.Workflows == other.Workflows) &&
+                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowSubscriptions.DeepEquals(other.Workflows.WorkflowSubscriptions) : this.Workflows == other.Workflows) &&
                 this.AddIns.DeepEquals(other.AddIns) &&
                 this.Publishing == other.Publishing &&
-                this.Localizations.DeepEquals(other.Localizations) &&
-                this.WebSettings.Equals(other.WebSettings)
+                ((this.Localizations != null && other.Localizations != null) ? this.Localizations.DeepEquals(other.Localizations) : this.Localizations == other.Localizations) &&
+                ((this.WebSettings != null && other.WebSettings != null) ? this.WebSettings.Equals(other.WebSettings) : this.WebSettings == other.WebSettings) &&
+                ((this.SiteWebhooks != null && other.SiteWebhooks != null) ? this.SiteWebhooks.DeepEquals(other.SiteWebhooks) : this.SiteWebhooks == other.SiteWebhooks) &&
+                ((this.ClientSidePages != null && other.ClientSidePages != null) ? this.ClientSidePages.DeepEquals(other.ClientSidePages) : this.ClientSidePages == other.ClientSidePages) &&
+                this.TemplateCultureInfo == other.TemplateCultureInfo &&
+                this.Scope == other.Scope &&
+                this.Tenant == other.Tenant
             );
         }
 
         #endregion
+
         /// <summary>
         /// Serializes a template to XML
         /// </summary>
-        /// <param name="formatter"></param>
-        /// <returns></returns>
+        /// <param name="formatter">ITemplateFormatter object</param>
+        /// <returns>Returns XML string for the given stream</returns>
         public string ToXML(ITemplateFormatter formatter = null)
         {
             formatter = formatter ?? new XMLPnPSchemaFormatter();
@@ -529,5 +863,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return XElement.Load(stream).ToString();
             }
         }
+    }
+
+    /// <summary>
+    /// Declares the target scope of the current Provisioning Template
+    /// </summary>
+    public enum ProvisioningTemplateScope
+    {
+        /// <summary>
+        /// Value for when scope was not set in the template
+        /// </summary>
+        Undefined,
+        /// <summary>
+        /// The scope is a Root web of a Site Collection
+        /// </summary>
+        RootSite,
+        /// <summary>
+        /// The scope is a child Web of a Site Collection
+        /// </summary>
+        Web,
     }
 }

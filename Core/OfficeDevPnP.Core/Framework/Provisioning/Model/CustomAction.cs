@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// </summary>
     public partial class CustomAction : BaseModel, IEquatable<CustomAction>
     {
-        #region Properties
+        #region Public Members
 
         public System.Xml.Linq.XElement CommandUIExtension { get; set; }
 
@@ -49,18 +49,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public BasePermissions Rights { get; set; }
 
+        /// <summary>
+        /// Gets or sets the RegistrationId of the custom action.
+        /// </summary>
         public string RegistrationId { get; set; }
 
+        /// <summary>
+        /// Gets or sets the RegistrationType of the custom action.
+        /// </summary>
         public UserCustomActionRegistrationType RegistrationType { get; set; }
-
-        public bool Remove { get; set; }
 
         /// <summary>
         /// Gets or sets the URL, URI, or ECMAScript (JScript, JavaScript) function associated with the action.
         /// </summary>
         public string Url { get; set; }
 
-        public bool Enabled { get; set; }
+        /// <summary>
+        /// Gets or sets the Enabled property value.
+        /// </summary>
+        public bool Enabled { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the value that specifies the ECMAScript to be executed when the custom action is performed.
@@ -76,10 +83,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Gets or sets a value that specifies the URI of a file which contains the ECMAScript to execute on the page
         /// </summary>
         public string ScriptSrc { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value that specifies whether to Remove the CustomAction from the target
+        /// </summary>
+        public bool Remove { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets a value for the ClientSideComponentId, if any
+        /// </summary>
+        public Guid ClientSideComponentId { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value for the ClientSideComponentProperties, if any
+        /// </summary>
+        public String ClientSideComponentProperties { get; set; }
+
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}",
@@ -102,6 +128,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with CustomAction
+        /// </summary>
+        /// <param name="obj">Object that represents CustomAction</param>
+        /// <returns>true if the current object is equal to the CustomAction</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is CustomAction))
@@ -111,6 +142,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((CustomAction)obj));
         }
 
+        /// <summary>
+        /// Compares CustomAction object based on CommandUIExtension, Description, Enabled, Group, ImageUrl, Location, Name, RegistrationId, RegistrationType, Remove, Rights, ScriptBlock, ScriptSrc, Sequence, Title and Url properties.
+        /// </summary>
+        /// <param name="other">CustomAction object</param>
+        /// <returns>true if the CustomAction object is equal to the current object; otherwise, false.</returns>
         public bool Equals(CustomAction other)
         {
             if (other == null)

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+supporting template: add files needed in content type tests                
+-->
+
+<pnp:ProvisioningTemplate ID="contenttype_files" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:Files>
+    <pnp:File Src="ct1document.docx" Folder="SiteAssets" Overwrite="true" />
+    <pnp:File Src="ct3document.docx" Folder="SiteAssets" Overwrite="true" />
+    <pnp:File Src="CT3DisplayForm.aspx" Folder="SiteAssets" Overwrite="true" />
+    <pnp:File Src="CT3EditForm.aspx" Folder="SiteAssets" Overwrite="true" />
+  </pnp:Files>
+</pnp:ProvisioningTemplate>

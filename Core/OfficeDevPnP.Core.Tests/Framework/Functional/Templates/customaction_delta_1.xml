@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<!--
+Delta template: goal is to verify if the custom action delta handling is working as expected. All properties that can be changed are touched, 
+please keep this XML up to date if additional properties are added to the delta handling
+-->
+
+<pnp:ProvisioningTemplate ID="customaction_delta_1" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:CustomActions>
+    
+    <!-- Custom action properties that can be updated via delta handling:
+         CommandUIExtension     (parsed)
+         Description            (resource)
+         Group
+         ImageUrl               (parsed)
+         Location           (*)
+         RegistrationId
+         RegistrationType
+         ScriptBlock            (parsed)
+         ScriptSrc              (parsed, excluding ~site and ~sitecollection)
+         Sequence
+         Title                  (parsed,resource)
+         Url                    (parsed)   
+         -->
+    
+    <pnp:SiteCustomActions>
+      <!-- Changed properties: Description, Group, Location, Title, Sequence, Url, ScriptBlock -->
+      <pnp:CustomAction Name="CA_1" Description="CA 1 - updated" Group="SiteActions" Location="ScriptLink" Title="CA 1 updated {sitename}" Sequence="1001" ScriptBlock="alert('hi bert');" Rights="31" Enabled="true"/>
+      <!-- Changed properties: CommandUIExtension, ImageUrl, Location, RegistrationId, RegistrationType, ScriptSrc  -->
+      <pnp:CustomAction Name="CA_3" Description="ca 3" Title ="CA 3 Title" ImageUrl="https://site/SiteAssets/icons/imageupdated.png" RegistrationType="None" Location="ScriptLink" ScriptSrc="https://site/SiteAssets/myscript.js" Enabled="true">
+        <pnp:CommandUIExtension />
+      </pnp:CustomAction>
+    </pnp:SiteCustomActions>
+    <pnp:WebCustomActions>
+      <!-- Changed properties: Description, Title -->
+      <pnp:CustomAction Name="CA_4" Description="CA 4 - updated" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="SubSite Overide" Sequence="1000" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" Rights="31" Enabled="true"/>
+    </pnp:WebCustomActions>
+  </pnp:CustomActions>
+</pnp:ProvisioningTemplate>

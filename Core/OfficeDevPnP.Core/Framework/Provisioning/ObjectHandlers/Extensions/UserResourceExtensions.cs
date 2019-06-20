@@ -14,25 +14,30 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 {
 
-#if !SP2013
+
     internal static class UserResourceExtensions
     {
         private static List<Tuple<string, int, string>> ResourceTokens = new List<Tuple<string, int, string>>();
 
+#if !SP2013
         public static ProvisioningTemplate SaveResourceValues(ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             var tempFolder = System.IO.Path.GetTempPath();
 
-            var languages = ResourceTokens.Select(t => t.Item2).Distinct();
+            var languages = new List<int>(ResourceTokens.Select(t => t.Item2).Distinct());
             foreach (int language in languages)
             {
                 var culture = new CultureInfo(language);
 
-                var resourceFileName = System.IO.Path.Combine(tempFolder, string.Format("{0}.{1}.resx", creationInfo.ResourceFilePrefix, culture.Name));
+                var resourceFileName = System.IO.Path.Combine(tempFolder, $"{creationInfo.ResourceFilePrefix}.{culture.Name}.resx");
                 if (System.IO.File.Exists(resourceFileName))
                 {
                     // Read existing entries, if any
+#if !NETSTANDARD2_0
                     using (ResXResourceReader resxReader = new ResXResourceReader(resourceFileName))
+#else
+                    using (ResourceReader resxReader = new ResourceReader(resourceFileName))
+#endif
                     {
                         foreach (DictionaryEntry entry in resxReader)
                         {
@@ -46,10 +51,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                     }
                 }
 
-            
-
                 // Create new resource file
+#if !NETSTANDARD2_0
                 using (ResXResourceWriter resx = new ResXResourceWriter(resourceFileName))
+#else
+                using (ResourceWriter resx = new ResourceWriter(resourceFileName))
+#endif
                 {
                     foreach (var token in ResourceTokens.Where(t => t.Item2 == language))
                     {
@@ -58,12 +65,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                     }
                 }
 
-                template.Localizations.Add(new Localization() { LCID = language, Name = culture.NativeName, ResourceFile = string.Format("{0}.{1}.resx", creationInfo.ResourceFilePrefix, culture.Name) });
+                template.Localizations.Add(new Localization() { LCID = language, Name = culture.NativeName, ResourceFile = $"{creationInfo.ResourceFilePrefix}.{culture.Name}.resx" });
 
                 // Persist the file using the connector
                 using (FileStream stream = System.IO.File.Open(resourceFileName, FileMode.Open))
                 {
-                    creationInfo.FileConnector.SaveFileStream(string.Format("{0}.{1}.resx", creationInfo.ResourceFilePrefix, culture.Name), stream);
+                    creationInfo.FileConnector.SaveFileStream($"{creationInfo.ResourceFilePrefix}.{culture.Name}.resx", stream);
                 }
                 // remove the temp resx file
                 System.IO.File.Delete(resourceFileName);
@@ -88,18 +95,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
             return isDirty;
         }
 
-        public static bool ContainsResourceToken(this string value)
-        {
-            if (value != null)
-            {
-                return Regex.IsMatch(value, "\\{(res|loc|resource|localize|localization):(.*?)(\\})", RegexOptions.IgnoreCase);
-            }
-            else
-            {
-                return false;
-            }
-        }
-
         public static bool PersistResourceValue(UserResource userResource, string token, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             bool returnValue = false;
@@ -118,6 +113,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 
             return returnValue;
         }
-    }
+
+        public static bool PersistResourceValue(string token, int LCID, string Title)
+        {
+            bool returnValue = false;
+
+            if (!string.IsNullOrWhiteSpace(Title))
+            {
+                returnValue = true;
+                ResourceTokens.Add(new Tuple<string, int, string>(token, LCID, Title));
+            }
+
+            return returnValue;
+        }
+
+        public static bool PersistResourceValue(List siteList, Guid viewId, string token, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
+        {
+            bool returnValue = false;
+            var clientContext = siteList.Context;
+
+            foreach (var language in template.SupportedUILanguages)
+            {
+                var culture = new CultureInfo(language.LCID);
+                var currentView = siteList.GetViewById(viewId);
+                clientContext.Load(currentView, cc => cc.Title);
+                var acceptLanguage = clientContext.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"];
+                clientContext.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = new CultureInfo(language.LCID).Name;
+                clientContext.ExecuteQueryRetry();
+
+                if (!string.IsNullOrWhiteSpace(currentView.Title))
+                {
+                    returnValue = true;
+                    ResourceTokens.Add(new Tuple<string, int, string>(token, language.LCID, currentView.Title));
+                }
+
+                clientContext.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = acceptLanguage;
+
+            }
+            return returnValue;
+        }
+      
 #endif
+        public static bool ContainsResourceToken(this string value)
+        {
+            if (value != null)
+            {
+                return Regex.IsMatch(value, "\\{(res|loc|resource|localize|localization):(.*?)(\\})", RegexOptions.IgnoreCase);
+            }
+            else
+            {
+                return false;
+            }
+
+        }
+    }
+
 }

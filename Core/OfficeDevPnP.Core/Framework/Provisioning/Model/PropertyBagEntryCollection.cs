@@ -3,8 +3,12 @@
     /// <summary>
     /// Collection of PropertyBagEntry objects
     /// </summary>
-    public partial class PropertyBagEntryCollection : ProvisioningTemplateCollection<PropertyBagEntry>
+    public partial class PropertyBagEntryCollection : BaseProvisioningTemplateObjectCollection<PropertyBagEntry>
     {
+        /// <summary>
+        /// Constructor for PropertyBagEntryCollection
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
         public PropertyBagEntryCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {
 

@@ -1,13 +1,19 @@
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 using System;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
+    [TokenDefinitionDescription(
+        Token = "{roledefinition:[roletype]}",
+        Description = "Returns the name of role definition given the role type",
+        Example = "{roledefinition:Editor}",
+        Returns = "Editors")]
     internal class RoleDefinitionToken : TokenDefinition
     {
         private string name;
         public RoleDefinitionToken(Web web, RoleDefinition definition)
-            : base(web, string.Format("{{roledefinition:{0}}}", definition.RoleTypeKind.ToString()))
+            : base(web, $"{{roledefinition:{definition.RoleTypeKind}}}")
         {
             name = definition.EnsureProperty(r => r.Name);
             

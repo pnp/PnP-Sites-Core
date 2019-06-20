@@ -30,10 +30,10 @@ namespace OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS
             {
                 Wctx = samlServer + "_layouts/Authenticate.aspx?Source=%2F",
                 Wtrealm = samlServer,
-                Wreply = String.Format("{0}://{1}/_trust/", samlServerRoot.Scheme, samlServerRoot.Host)
+                Wreply = $"{samlServerRoot.Scheme}://{samlServerRoot.Host}/_trust/"
             };
 
-            string stringData = String.Format("wa=wsignin1.0&wctx={0}&wresult={1}", HttpUtility.UrlEncode(sharepointSite.Wctx), HttpUtility.UrlEncode(samlToken));
+            string stringData = $"wa=wsignin1.0&wctx={HttpUtility.UrlEncode(sharepointSite.Wctx)}&wresult={HttpUtility.UrlEncode(samlToken)}";
 
             HttpWebRequest sharepointRequest = WebRequest.Create(sharepointSite.Wreply) as HttpWebRequest;
             sharepointRequest.Method = "POST";

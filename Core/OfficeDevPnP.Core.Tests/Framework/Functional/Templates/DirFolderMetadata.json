@@ -1,0 +1,22 @@
+﻿{
+  ".\\DirFolder\\Doc1.docx": {
+    "Title": "Sample Document 1",
+    "CustomNotes": "Sample Notes for Document 1"
+  },
+  ".\\DirFolder\\Doc2.docx": {
+    "Title": "Sample Document 2",
+    "CustomNotes": "Sample Notes for Document 2"
+  },
+  ".\\DirFolder\\Doc3.docx": {
+    "Title": "Sample Document 3",
+    "CustomNotes": "Sample Notes for Document 3"
+  },
+  ".\\DirFolder\\sub1\\Doc6.docx": {
+    "Title": "Sample Document 6",
+    "CustomNotes": "Sample Notes for Document 6"
+  },
+  ".\\DirFolder\\sub1\\Doc7.docx": {
+    "Title": "Sample Document 7",
+    "CustomNotes": "Sample Notes for Document 7"
+  }
+}

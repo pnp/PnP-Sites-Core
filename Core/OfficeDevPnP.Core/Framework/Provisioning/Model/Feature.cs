@@ -29,6 +29,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         #region Comparison code
 
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}",
@@ -37,6 +41,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with Feature
+        /// </summary>
+        /// <param name="obj">Object that represents Feature</param>
+        /// <returns>true if the current object is equal to the ExtensibilityHandler</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is Feature))
@@ -46,6 +55,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((Feature)obj));
         }
 
+        /// <summary>
+        /// Compares Feature object based on Deactivate and Id properties.
+        /// </summary>
+        /// <param name="other">Feature object</param>
+        /// <returns>true if the Feature object is equal to the current object; otherwise, false.</returns>
         public bool Equals(Feature other)
         {
             if (other == null)

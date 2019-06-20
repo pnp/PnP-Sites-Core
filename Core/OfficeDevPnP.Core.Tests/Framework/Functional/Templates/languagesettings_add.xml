@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<pnp:ProvisioningTemplate ID="languagesettings_add" Version="1" xmlns:pnp="http://schemas.dev.office.com/PnP/2015/12/ProvisioningSchema">
+  <pnp:SupportedUILanguages>
+    <pnp:SupportedUILanguage LCID="1033"/>
+    <pnp:SupportedUILanguage LCID="1043"/>
+  </pnp:SupportedUILanguages>
+</pnp:ProvisioningTemplate>

@@ -80,6 +80,7 @@ namespace OfficeDevPnP.Core.Utilities
             return decryptedString;
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Encrypts a string using the machine's DPAPI
         /// </summary>
@@ -92,7 +93,9 @@ namespace OfficeDevPnP.Core.Utilities
                 System.Security.Cryptography.DataProtectionScope.LocalMachine);
             return Convert.ToBase64String(encryptedData);
         }
+#endif
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Decrypts a DPAPI encryped string
         /// </summary>
@@ -113,6 +116,7 @@ namespace OfficeDevPnP.Core.Utilities
                 return new SecureString();
             }
         }
+#endif
 
         /// <summary>
         /// Converts a string to a SecureString
@@ -122,7 +126,7 @@ namespace OfficeDevPnP.Core.Utilities
         public static SecureString ToSecureString(string input)
         {
             if (string.IsNullOrEmpty(input))
-                throw new ArgumentException("Input string is empty and cannot be made into a SecureString", "input");
+                throw new ArgumentException("Input string is empty and cannot be made into a SecureString", nameof(input));
 
             SecureString secure = new SecureString();
             foreach (char c in input)

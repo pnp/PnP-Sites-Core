@@ -31,9 +31,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// Constructor for Localization class
+        /// </summary>
         public Localization() { }
 
+        /// <summary>
+        /// Constructor for Localization class
+        /// </summary>
+        /// <param name="lcid">Language id for localization</param>
+        /// <param name="name">Name for localization</param>
+        /// <param name="resourceFile">Resource file for localization</param>
         public Localization(Int32 lcid, String name, String resourceFile)
         {
             this.LCID = lcid;
@@ -44,7 +52,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #endregion
 
         #region Comparison code
-
+        /// <summary>
+        /// Gets the hash code
+        /// </summary>
+        /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
@@ -54,6 +65,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             ).GetHashCode());
         }
 
+        /// <summary>
+        /// Compares object with Localization
+        /// </summary>
+        /// <param name="obj">Object that represents Localization</param>
+        /// <returns>true if the current object is equal to the Localization</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is Localization))
@@ -63,6 +79,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (Equals((Localization)obj));
         }
 
+        /// <summary>
+        /// Compares Localization object based on LCID, Name and ResourceFile
+        /// </summary>
+        /// <param name="other">Localization object</param>
+        /// <returns>true if the Localization object is equal to the current object; otherwise, false.</returns>
         public bool Equals(Localization other)
         {
             if (other == null)

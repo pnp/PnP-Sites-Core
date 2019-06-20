@@ -16,18 +16,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return "Supported UI Languages"; }
         }
 
+        public override string InternalName => "SupportedUILanguages";
+
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
 
                 web.Context.Load(web, w => w.SupportedUILanguageIds);
-
                 web.Context.ExecuteQueryRetry();
 
+                SupportedUILanguageCollection supportedUILanguageCollection = new SupportedUILanguageCollection(template);
                 foreach (var id in web.SupportedUILanguageIds)
                 {
-                    template.SupportedUILanguages.Add(new SupportedUILanguage() { LCID = id });
+                    supportedUILanguageCollection.Add(new SupportedUILanguage() { LCID = id });
+                }
+
+                if (creationInfo.BaseTemplate != null)
+                {
+                    if (!creationInfo.BaseTemplate.SupportedUILanguages.Equals(supportedUILanguageCollection))
+                    {
+                        template.SupportedUILanguages = supportedUILanguageCollection;
+                    }
+                }
+                else
+                {
+                    template.SupportedUILanguages = supportedUILanguageCollection;
                 }
 
             }
@@ -67,6 +81,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.AddSupportedUILanguage(id.LCID);
                 }
                 web.Update();
+                web.Context.Load(web, w => w.SupportedUILanguageIds);
                 web.Context.ExecuteQueryRetry();
             }
 
@@ -77,7 +92,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return true;
         }
 
-        public override bool WillProvision(Web web, ProvisioningTemplate template)
+        public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             return template.SupportedUILanguages.Any();
         }

@@ -1,11 +1,17 @@
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    internal class CurrentUserIdToken : TokenDefinition
+    [TokenDefinitionDescription(
+    Token = "{currentuserid}",
+    Description = "Returns the ID of the current user e.g. the user using the engine.",
+    Example = "{currentuserid}",
+    Returns = "4")]
+    internal class CurrentUserIdToken : VolatileTokenDefinition
     {
         public CurrentUserIdToken(Web web)
-            : base(web, "~currentuserid", "{currentuserid}")
+            : base(web, "{currentuserid}")
         {
         }
 
@@ -13,9 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (CacheValue == null)
             {
-                var context = this.Web.Context as ClientContext;
-                var currentUser = context.Web.EnsureProperty(w => w.CurrentUser);
-
+                var currentUser = TokenContext.Web.EnsureProperty(w => w.CurrentUser);
                 CacheValue = currentUser.Id.ToString();
             }
             return CacheValue;

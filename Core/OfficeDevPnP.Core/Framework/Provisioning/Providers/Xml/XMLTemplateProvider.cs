@@ -15,7 +15,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
     /// </summary>
     public abstract class XMLTemplateProvider : TemplateProviderBase
     {
-
         #region Constructor
         protected XMLTemplateProvider()
             : base()
@@ -49,14 +48,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 if (file.EndsWith(".xml", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    // Load it from a File Stream
-                    Stream stream = this.Connector.GetFileStream(file);
-
                     ProvisioningTemplate provisioningTemplate;
                     try
                     {
-                        // And convert it into a ProvisioningTemplate
-                        provisioningTemplate = formatter.ToProvisioningTemplate(stream);
+                        // Use the GetTemplate method to share the same logic
+                        provisioningTemplate = this.GetTemplate(file, formatter);
                     }
                     catch (ApplicationException)
                     {
@@ -75,18 +71,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             return (result);
         }
 
+        public override ProvisioningHierarchy GetHierarchy(string uri)
+        {
+            if (uri == null)
+            {
+                throw new ArgumentNullException(nameof(uri));
+            }
+
+            ProvisioningHierarchy result = null;
+
+            var stream = this.Connector.GetFileStream(uri);
+
+            if (stream != null)
+            {
+                var formatter = new XMLPnPSchemaFormatter();
+
+                ITemplateFormatter specificFormatter = formatter.GetSpecificFormatterInternal(ref stream);
+                specificFormatter.Initialize(this);
+                result = ((IProvisioningHierarchyFormatter)specificFormatter).ToProvisioningHierarchy(stream);
+            }
+
+            return (result);
+        }
+
         public override ProvisioningTemplate GetTemplate(string uri)
         {
-            var formatter = new XMLPnPSchemaFormatter();
-            formatter.Initialize(this);
-            return (this.GetTemplate(uri, null, formatter));
+            return (this.GetTemplate(uri, (ITemplateProviderExtension[])null));
+        }
+
+        public override ProvisioningTemplate GetTemplate(string uri, ITemplateProviderExtension[] extensions = null)
+        {
+            return (this.GetTemplate(uri, null, null, extensions));
         }
 
         public override ProvisioningTemplate GetTemplate(string uri, string identifier)
         {
-            var formatter = new XMLPnPSchemaFormatter();
-            formatter.Initialize(this);
-            return (this.GetTemplate(uri, identifier, formatter));
+            return (this.GetTemplate(uri, identifier, null));
         }
 
         public override ProvisioningTemplate GetTemplate(string uri, ITemplateFormatter formatter)
@@ -96,11 +116,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         public override ProvisioningTemplate GetTemplate(string uri, string identifier, ITemplateFormatter formatter)
         {
+            return (this.GetTemplate(uri, identifier, formatter, null));
+        }
+
+        public override ProvisioningTemplate GetTemplate(string uri, string identifier, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions = null)
+        {
             if (String.IsNullOrEmpty(uri))
             {
                 throw new ArgumentException("uri");
             }
-            
+
+            if (formatter == null)
+            {
+                formatter = new XMLPnPSchemaFormatter();
+                formatter.Initialize(this);
+            }
+
             // Get the XML document from a File Stream
             Stream stream = this.Connector.GetFileStream(uri);
 
@@ -109,11 +140,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 throw new ApplicationException(string.Format(CoreResources.Provisioning_Formatter_Invalid_Template_URI, uri));
             }
 
+            // Handle any pre-processing extension
+            stream = PreProcessGetTemplateExtensions(extensions, stream);
+
             //Resolve xml includes if any
             stream = ResolveXIncludes(stream);
 
             // And convert it into a ProvisioningTemplate
             ProvisioningTemplate provisioningTemplate = formatter.ToProvisioningTemplate(stream, identifier);
+
+            // Handle any post-processing extension
+            provisioningTemplate = PostProcessGetTemplateExtensions(extensions, provisioningTemplate);
 
             // Store the identifier of this template, is needed for latter save operation
             this.Uri = uri;
@@ -121,33 +158,134 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             return (provisioningTemplate);
         }
 
+        public override ProvisioningTemplate GetTemplate(Stream stream)
+        {
+            return (this.GetTemplate(stream, (ITemplateProviderExtension[])null));
+        }
+
+        public override ProvisioningTemplate GetTemplate(Stream stream, ITemplateProviderExtension[] extensions = null)
+        {
+            return (this.GetTemplate(stream, null, null, extensions));
+        }
+
+        public override ProvisioningTemplate GetTemplate(Stream stream, string identifier)
+        {
+            return (this.GetTemplate(stream, identifier, null));
+        }
+
+        public override ProvisioningTemplate GetTemplate(Stream stream, ITemplateFormatter formatter)
+        {
+            return (this.GetTemplate(stream, null, formatter));
+        }
+
+        public override ProvisioningTemplate GetTemplate(Stream stream, string identifier, ITemplateFormatter formatter)
+        {
+            return (this.GetTemplate(stream, identifier, formatter, null));
+        }
+
+        public override ProvisioningTemplate GetTemplate(Stream stream, string identifier, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions = null)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentException(nameof(stream));
+            }
+
+            if (formatter == null)
+            {
+                formatter = new XMLPnPSchemaFormatter();
+                formatter.Initialize(this);
+            }
+
+            // Handle any pre-processing extension
+            stream = PreProcessGetTemplateExtensions(extensions, stream);
+
+            //Resolve xml includes if any
+            stream = ResolveXIncludes(stream);
+
+            // And convert it into a ProvisioningTemplate
+            ProvisioningTemplate provisioningTemplate = formatter.ToProvisioningTemplate(stream, identifier);
+
+            // Handle any post-processing extension
+            provisioningTemplate = PostProcessGetTemplateExtensions(extensions, provisioningTemplate);
+
+            // Store the identifier of this template, is needed for latter save operation
+            this.Uri = null;
+
+            return (provisioningTemplate);
+        }
+
+
+
+        public override void Save(ProvisioningHierarchy hierarchy)
+        {
+            this.SaveAs(hierarchy, this.Uri);
+        }
+
         public override void Save(ProvisioningTemplate template)
         {
-            var formatter = new XMLPnPSchemaFormatter();
-            this.Save(template, formatter);
+            this.Save(template, (ITemplateProviderExtension[])null);
+        }
+
+        public override void Save(ProvisioningTemplate template, ITemplateProviderExtension[] extensions = null)
+        {
+            this.Save(template, null, extensions);
         }
 
         public override void Save(ProvisioningTemplate template, ITemplateFormatter formatter)
         {
-            if (template == null)
+            this.Save(template, formatter, null);
+        }
+
+        public override void Save(ProvisioningTemplate template, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions = null)
+        {
+            this.SaveAs(template, this.Uri, formatter, extensions);
+        }
+
+        public override void SaveAs(ProvisioningHierarchy hierarchy, string uri)
+        {
+            if (hierarchy == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(hierarchy));
             }
 
-            SaveToConnector(template, this.Uri, formatter);
+            if (uri == null)
+            {
+                throw new ArgumentNullException(nameof(uri));
+            }
+
+            var formatter = XMLPnPSchemaFormatter.LatestFormatter;
+            formatter.Initialize(this);
+
+            var stream = ((IProvisioningHierarchyFormatter)formatter).ToFormattedHierarchy(hierarchy);
+
+            this.Connector.SaveFileStream(uri, stream);
+
+            if (this.Connector is ICommitableFileConnector)
+            {
+                ((ICommitableFileConnector)this.Connector).Commit();
+            }
         }
 
         public override void SaveAs(ProvisioningTemplate template, string uri)
         {
-            var formatter = new XMLPnPSchemaFormatter();
-            this.SaveAs(template, uri, formatter);
+            this.SaveAs(template, uri, (ITemplateProviderExtension[])null);
+        }
+
+        public override void SaveAs(ProvisioningTemplate template, string uri, ITemplateProviderExtension[] extensions)
+        {
+            this.SaveAs(template, uri, null, extensions);
         }
 
         public override void SaveAs(ProvisioningTemplate template, string uri, ITemplateFormatter formatter)
         {
+            this.SaveAs(template, uri, formatter, null);
+        }
+
+        public override void SaveAs(ProvisioningTemplate template, string uri, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions)
+        {
             if (template == null)
             {
-                throw new ArgumentNullException("template");
+                throw new ArgumentNullException(nameof(template));
             }
 
             if (String.IsNullOrEmpty(uri))
@@ -155,7 +293,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 throw new ArgumentException("uri");
             }
 
-            SaveToConnector(template, uri, formatter);
+            if (formatter == null)
+            {
+                formatter = new XMLPnPSchemaFormatter();
+            }
+
+            SaveToConnector(template, uri, formatter, extensions);
         }
 
         public override void Delete(string uri)
@@ -172,29 +315,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         #region Helper methods
 
-        private void SaveToConnector(ProvisioningTemplate template, string uri, ITemplateFormatter formatter)
-        {
-            if (String.IsNullOrEmpty(template.Id))
-            {
-                template.Id = Path.GetFileNameWithoutExtension(uri);
-            }
-
-            using (var stream = formatter.ToFormattedTemplate(template))
-            {
-                this.Connector.SaveFileStream(uri, stream);
-            }
-
-            if (this.Connector is ICommitableFileConnector)
-            {
-                ((ICommitableFileConnector)this.Connector).Commit();
-            }
-        }
-
         private Stream ResolveXIncludes(Stream stream)
         {
-            if(stream == null)
+            if (stream == null)
             {
-                throw new ArgumentNullException("stream");
+                throw new ArgumentNullException(nameof(stream));
             }
             var res = stream;
             XDocument xml = XDocument.Load(stream);
@@ -210,20 +335,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     Boolean includeResolved = false;
 
                     // Resolve xInclude and replace
-                    String href = (String)xi.Attribute("href") ?? String.Empty; 
+                    String href = (String)xi.Attribute("href") ?? String.Empty;
 
                     // If there is the href attribute
                     if (!String.IsNullOrEmpty(href))
                     {
                         Stream incStream = this.Connector.GetFileStream(href);
                         // And if the referenced file can be loaded/resolved
-                        if(incStream == null)
+                        if (incStream == null)
                         {
                             //check if include has fallback
                             XName xiFallback = XName.Get("{http://www.w3.org/2001/XInclude}fallback");
                             var fallback = xi.Elements(xiFallback).FirstOrDefault();
-                            if ((fallback != null)&&
-                                ((fallback.Elements().Count() > 0)||!string.IsNullOrEmpty(fallback.Value)))
+                            if ((fallback != null) &&
+                                ((fallback.Elements().Count() > 0) || !string.IsNullOrEmpty(fallback.Value)))
                             {
                                 var innerXml = fallback.ToXmlElement().InnerXml;
                                 incStream = new MemoryStream(Encoding.UTF8.GetBytes(innerXml));

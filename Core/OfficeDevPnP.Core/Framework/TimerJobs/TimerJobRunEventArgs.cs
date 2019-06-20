@@ -31,7 +31,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         /// <param name="previousRunSuccessful">Bool showing if the previous run was successful</param>
         /// <param name="previousRunVersion">Version of the timer job that was used for the previous run</param>
         /// <param name="properties">Custom keyword value collection that can be used to persist custom properties</param>
-        /// <param name="configurationData">Optional timerjob configuration data</param>
+        /// <param name="configurationData">Optional TimerJob configuration data</param>
         internal TimerJobRunEventArgs(string url, ClientContext siteClientContext, ClientContext webClientContext, ClientContext tenantClientContext, DateTime? previousRun, bool? previousRunSuccessful, string previousRunVersion, Dictionary<String, String> properties, string configurationData)
         {
             this.Url = url;

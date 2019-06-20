@@ -2,7 +2,7 @@
 -- --------------------------------------------------
 -- Entity Designer DDL Script for SQL Server 2005, 2008, 2012 and Azure
 -- --------------------------------------------------
--- Date Created: 05/27/2016 10:37:37
+-- Date Created: 11/14/2016 08:56:27
 -- Generated from EDMX file: C:\github\BertPnPSitesCore\Core\Tools\OfficeDevPnP.Core.Tools.UnitTest\OfficeDevPnP.Core.Tools.UnitTest.SQL\TestModel.edmx
 -- --------------------------------------------------
 
@@ -122,7 +122,8 @@ CREATE TABLE [dbo].[TestConfigurationSet] (
     [TenantUrl] nvarchar(max)  NULL,
     [TestSiteUrl] nvarchar(max)  NOT NULL,
     [AnonymousAccess] bit  NOT NULL,
-    [TestAuthentication_Id] int  NOT NULL
+    [TestAuthentication_Id] int  NOT NULL,
+    [TestCategory_Id] int  NOT NULL
 );
 GO
 
@@ -190,6 +191,13 @@ CREATE TABLE [dbo].[UsersSet] (
 );
 GO
 
+-- Creating table 'TestCategorySet'
+CREATE TABLE [dbo].[TestCategorySet] (
+    [Id] int IDENTITY(1,1) NOT NULL,
+    [Name] nvarchar(max)  NOT NULL
+);
+GO
+
 -- --------------------------------------------------
 -- Creating all PRIMARY KEY constraints
 -- --------------------------------------------------
@@ -245,6 +253,12 @@ GO
 -- Creating primary key on [Id] in table 'UsersSet'
 ALTER TABLE [dbo].[UsersSet]
 ADD CONSTRAINT [PK_UsersSet]
+    PRIMARY KEY CLUSTERED ([Id] ASC);
+GO
+
+-- Creating primary key on [Id] in table 'TestCategorySet'
+ALTER TABLE [dbo].[TestCategorySet]
+ADD CONSTRAINT [PK_TestCategorySet]
     PRIMARY KEY CLUSTERED ([Id] ASC);
 GO
 
@@ -325,6 +339,21 @@ GO
 CREATE INDEX [IX_FK_TestConfigurationTestConfigurationProperty]
 ON [dbo].[TestConfigurationPropertySet]
     ([TestConfigurationId]);
+GO
+
+-- Creating foreign key on [TestCategory_Id] in table 'TestConfigurationSet'
+ALTER TABLE [dbo].[TestConfigurationSet]
+ADD CONSTRAINT [FK_TestCategoryTestConfiguration]
+    FOREIGN KEY ([TestCategory_Id])
+    REFERENCES [dbo].[TestCategorySet]
+        ([Id])
+    ON DELETE NO ACTION ON UPDATE NO ACTION;
+GO
+
+-- Creating non-clustered index for FOREIGN KEY 'FK_TestCategoryTestConfiguration'
+CREATE INDEX [IX_FK_TestCategoryTestConfiguration]
+ON [dbo].[TestConfigurationSet]
+    ([TestCategory_Id]);
 GO
 
 -- --------------------------------------------------

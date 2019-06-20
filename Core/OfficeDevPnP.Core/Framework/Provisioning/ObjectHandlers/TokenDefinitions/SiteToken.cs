@@ -1,11 +1,17 @@
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    internal class SiteToken : TokenDefinition
+    [TokenDefinitionDescription(
+      Token = "{site}",
+      Description = "Returns the server relative url of the current site",
+      Example = "{site}",
+      Returns = "/sites/mysitecollection/mysite")]
+    internal class SiteToken : VolatileTokenDefinition
     {
         public SiteToken(Web web)
-            : base(web, "~site", "{site}")
+            : base(web, "{site}")
         {
         }
 
@@ -13,9 +19,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (CacheValue == null)
             {
-                Web.Context.Load(Web, w => w.ServerRelativeUrl);
-                Web.Context.ExecuteQueryRetry();
-                CacheValue = Web.ServerRelativeUrl.TrimEnd('/');
+                TokenContext.Load(TokenContext.Web, w => w.ServerRelativeUrl);
+                TokenContext.ExecuteQueryRetry();
+                CacheValue = TokenContext.Web.ServerRelativeUrl.TrimEnd('/');
             }
             return CacheValue;
         }
