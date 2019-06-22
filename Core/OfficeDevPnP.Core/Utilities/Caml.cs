@@ -25,7 +25,6 @@ namespace OfficeDevPnP.Core.Utilities {
         const string VIEW_XML_WRAPPER = "<View Scope=\"{0}\"><Query>{1}{2}</Query>{3}<RowLimit>{4}</RowLimit></View>";
         const string FIELD_VALUE = "<FieldRef Name='{0}' {1}/><Value Type='{2}'>{3}</Value>";
         const string FIELD_VALUE_ID = "<FieldRef ID='{0}' {1} /><Value Type='{2}'>{3}</Value>";
-        const string WHERE_CLAUSE = "<Where>{0}</Where>";
         const string GENERIC_CLAUSE = "<{0}>{1}</{0}>";
         const string CONDITION_CLAUSE = "<{0}>{1}{2}</{0}>";
 
