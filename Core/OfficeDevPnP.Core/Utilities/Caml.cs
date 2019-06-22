@@ -220,6 +220,21 @@ namespace OfficeDevPnP.Core.Utilities {
             return Comparison(CamlComparisions.In, fieldValue);
         }
         /// <summary>
+        /// Creates &lt;In&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldRef">Field Reference</param>
+        /// <param name="values">Values to be included inside the &lt;In&gt;-clause</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
+        public static string In(string fieldRef, params string[] values) {
+            var fieldValue = fieldRef;
+            fieldValue += "<Values>";
+            foreach(var value in values) {
+                fieldValue = string.Format("<Value>{0}</Value>", value);
+            }
+            fieldValue += "</Values>";
+            return In(fieldValue);
+        }
+        /// <summary>
         /// Creates &lt;Includes&gt; node for Comparison
         /// </summary>
         /// <param name="fieldValue">Value of the field</param>
