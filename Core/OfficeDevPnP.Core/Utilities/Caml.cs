@@ -31,6 +31,8 @@ namespace OfficeDevPnP.Core.Utilities {
         const string VIEW_FIELDS_CLAUSE = "<ViewFields>{0}</ViewFields>";
         const string FIELD_REF_CLAUSE = "<FieldRef Name='{0}'/>";
 
+        const string VALUE_FOR_IN_CLAUSE = "<Value Type='{0}'>{1}</Value>";
+
         public static readonly string Me = "<UserId />";
         public static readonly string Month = "<Month />";
         public static readonly string Now = "<Now />";
@@ -69,6 +71,16 @@ namespace OfficeDevPnP.Core.Utilities {
         public static string ViewQuery(ViewScope scope, string whereClause = "", string orderByClause = "", string viewFields = "", int rowLimit = 100) {
             string viewScopeStr = scope == ViewScope.DefaultValue ? string.Empty : scope.ToString();
             return string.Format(VIEW_XML_WRAPPER, viewScopeStr, whereClause, orderByClause, viewFields, rowLimit);
+        }
+
+        /// <summary>
+        /// Creates a &lt;Value&gt; node for In comparison clauses.
+        /// </summary>
+        /// <param name="value">Value of the field</param>
+        /// <param name="fieldValueType">Value type of the field</param>
+        /// <returns>Value string to be used for In comparisions in CAML queries</returns>
+        public static string Value(string value, string fieldValueType) {
+            return string.Format(VALUE_FOR_IN_CLAUSE, fieldValueType, value);
         }
 
         /// <summary>
@@ -223,13 +235,13 @@ namespace OfficeDevPnP.Core.Utilities {
         /// Creates &lt;In&gt; node for Comparison
         /// </summary>
         /// <param name="fieldRef">Field Reference</param>
-        /// <param name="values">Values to be included inside the &lt;In&gt;-clause</param>
+        /// <param name="values">Value strings to be included inside the &lt;In&gt;-clause</param>
         /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string In(string fieldRef, params string[] values) {
             var fieldValue = fieldRef;
             fieldValue += "<Values>";
             foreach(var value in values) {
-                fieldValue = string.Format("<Value>{0}</Value>", value);
+                fieldValue += value;
             }
             fieldValue += "</Values>";
             return In(fieldValue);
