@@ -519,13 +519,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         page.PageListItem[ContentTypeIdField] = clientSidePage.ContentTypeID;
                         page.PageListItem.Update();
-                        web.Context.Load(page.PageListItem);
+                        //web.Context.Load(page.PageListItem); //refresh after we updated file properties
                         isDirty = true;
                     }
 
                     // Set page property bag values
                     if (clientSidePage.Properties != null && clientSidePage.Properties.Any())
                     {
+                        if (isDirty)
+                        {
+                            //Execute open Queries before we do updates to File 
+                            web.Context.ExecuteQueryRetry();
+                            isDirty = false;
+                        }
+
                         string pageFilePath = page.PageListItem[FileRefField].ToString();
                         var pageFile = web.GetFileByServerRelativeUrl(pageFilePath);
                         web.Context.Load(pageFile, p => p.Properties);
@@ -539,6 +546,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
 
                         pageFile.Update();
+                        web.Context.ExecuteQueryRetry();
                         isDirty = true;
                     }
 
