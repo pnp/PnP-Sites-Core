@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Ensure ID property is loaded for sitegroup provisioning #2303 [OliverZeiser]
 - Fix: "The 'Equals' member cannot be used in the expression" in GetPrincipalUniqueRoleAssignments #2305 [patrikhellgren]
 - Fix: Added BaseViewID into ViewCreationInformation #2304 [StaffanNelemans]
+- CAML query class improvements #2308 [kirschem]
 
 ## [3.10.1906.0 - June 2019 release ]
 
