@@ -25,12 +25,13 @@ namespace OfficeDevPnP.Core.Utilities {
         const string VIEW_XML_WRAPPER = "<View Scope=\"{0}\"><Query>{1}{2}</Query>{3}<RowLimit>{4}</RowLimit></View>";
         const string FIELD_VALUE = "<FieldRef Name='{0}' {1}/><Value Type='{2}'>{3}</Value>";
         const string FIELD_VALUE_ID = "<FieldRef ID='{0}' {1} /><Value Type='{2}'>{3}</Value>";
-        const string WHERE_CLAUSE = "<Where>{0}</Where>";
         const string GENERIC_CLAUSE = "<{0}>{1}</{0}>";
         const string CONDITION_CLAUSE = "<{0}>{1}{2}</{0}>";
 
         const string VIEW_FIELDS_CLAUSE = "<ViewFields>{0}</ViewFields>";
         const string FIELD_REF_CLAUSE = "<FieldRef Name='{0}'/>";
+
+        const string VALUE_FOR_IN_CLAUSE = "<Value Type='{0}'>{1}</Value>";
 
         public static readonly string Me = "<UserId />";
         public static readonly string Month = "<Month />";
@@ -70,6 +71,16 @@ namespace OfficeDevPnP.Core.Utilities {
         public static string ViewQuery(ViewScope scope, string whereClause = "", string orderByClause = "", string viewFields = "", int rowLimit = 100) {
             string viewScopeStr = scope == ViewScope.DefaultValue ? string.Empty : scope.ToString();
             return string.Format(VIEW_XML_WRAPPER, viewScopeStr, whereClause, orderByClause, viewFields, rowLimit);
+        }
+
+        /// <summary>
+        /// Creates a &lt;Value&gt; node for In comparison clauses.
+        /// </summary>
+        /// <param name="value">Value of the field</param>
+        /// <param name="fieldValueType">Value type of the field</param>
+        /// <returns>Value string to be used for In comparisions in CAML queries</returns>
+        public static string Value(string value, string fieldValueType) {
+            return string.Format(VALUE_FOR_IN_CLAUSE, fieldValueType, value);
         }
 
         /// <summary>
@@ -219,6 +230,21 @@ namespace OfficeDevPnP.Core.Utilities {
         /// <returns>Returns Comparison string to be used in CAML queries</returns>
         public static string In(string fieldValue) {
             return Comparison(CamlComparisions.In, fieldValue);
+        }
+        /// <summary>
+        /// Creates &lt;In&gt; node for Comparison
+        /// </summary>
+        /// <param name="fieldRef">Field Reference</param>
+        /// <param name="values">Value strings to be included inside the &lt;In&gt;-clause</param>
+        /// <returns>Returns Comparison string to be used in CAML queries</returns>
+        public static string In(string fieldRef, params string[] values) {
+            var fieldValue = fieldRef;
+            fieldValue += "<Values>";
+            foreach(var value in values) {
+                fieldValue += value;
+            }
+            fieldValue += "</Values>";
+            return In(fieldValue);
         }
         /// <summary>
         /// Creates &lt;Includes&gt; node for Comparison
