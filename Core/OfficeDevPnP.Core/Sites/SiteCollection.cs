@@ -56,6 +56,11 @@ namespace OfficeDevPnP.Core.Sites
 
             ClientContext responseContext = null;
 
+            if (clientContext.IsAppOnly() && string.IsNullOrEmpty(siteCollectionCreationInformation.Owner))
+            {
+                throw new Exception("You need to set the owner in App-only context");
+            }
+
             var accessToken = clientContext.GetAccessToken();
 
             using (var handler = new HttpClientHandler())
@@ -173,12 +178,13 @@ namespace OfficeDevPnP.Core.Sites
 
             ClientContext responseContext = null;
 
-            var accessToken = clientContext.GetAccessToken();
-
             if (clientContext.IsAppOnly())
             {
                 throw new Exception("App-Only is currently not supported.");
             }
+
+            var accessToken = clientContext.GetAccessToken();
+
             using (var handler = new HttpClientHandler())
             {
                 clientContext.Web.EnsureProperty(w => w.Url);
@@ -294,12 +300,13 @@ namespace OfficeDevPnP.Core.Sites
 
             ClientContext responseContext = null;
 
-            var accessToken = clientContext.GetAccessToken();
-
             if (clientContext.IsAppOnly())
             {
                 throw new Exception("App-Only is currently not supported.");
             }
+
+            var accessToken = clientContext.GetAccessToken();
+
             using (var handler = new HttpClientHandler())
             {
                 clientContext.Web.EnsureProperty(w => w.Url);
@@ -638,7 +645,7 @@ namespace OfficeDevPnP.Core.Sites
             if (context.Web.IsSubSite())
             {
                 throw new Exception("You cannot Teamify a subsite");
-            }            
+            }
             else if (context.Site.GroupId == Guid.Empty)
             {
                 throw new Exception($"You cannot associate Teams on this site collection. It is only supported for O365 Group connected sites.");
