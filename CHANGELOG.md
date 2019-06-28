@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: "The 'Equals' member cannot be used in the expression" in GetPrincipalUniqueRoleAssignments #2305 [patrikhellgren]
 - Fix: Added BaseViewID into ViewCreationInformation #2304 [StaffanNelemans]
 - CAML query class improvements #2308 [kirschem]
+- Fix tokenization issue with views in root site collection #2295 [jackpoz]
 
 ## [3.10.1906.0 - June 2019 release ]
 
