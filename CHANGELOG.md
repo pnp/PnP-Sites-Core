@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fixed version conflict in clientsidepage handler #2255, #2285
 - Fix: Made owner mandatory for communication site in app-only context #2297 [gautamdsheth]
 - Fix: Support for default header image for client side page based on visual layout #2301 [SchauDK]
+- Fix: Ensure ID property is loaded for sitegroup provisioning #2303 [OliverZeiser]
 
 ## [3.10.1906.0 - June 2019 release ]
 
