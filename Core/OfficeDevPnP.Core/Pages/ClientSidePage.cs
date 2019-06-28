@@ -948,7 +948,8 @@ namespace OfficeDevPnP.Core.Pages
                     }
 
                     // Validate the found preview image url
-                    if (!string.IsNullOrEmpty(previewImageServerRelativeUrl))
+                    if (!string.IsNullOrEmpty(previewImageServerRelativeUrl) &&
+                        !previewImageServerRelativeUrl.StartsWith("/_LAYOUTS", StringComparison.OrdinalIgnoreCase))
                     {
                         try
                         {
