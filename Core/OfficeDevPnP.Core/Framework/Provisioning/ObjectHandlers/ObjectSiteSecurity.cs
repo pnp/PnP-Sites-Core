@@ -275,7 +275,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 ))
                 {
                     Group group;
-                    var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName));
+                    var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName, gr => gr.Id));
                     web.Context.ExecuteQueryRetry();
 
                     string parsedGroupTitle = parser.ParseString(siteGroup.Title);
