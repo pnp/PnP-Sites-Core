@@ -214,8 +214,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 xml = masterPageRegex.Replace(xml, subsite ? "{sitecollection}/_catalogs/masterpage" : "{masterpagecatalog}");
 
                 // Site
-                var siteRegex = new Regex(web.ServerRelativeUrl.Replace("/", @"\/"));
-                xml = siteRegex.Replace(xml, "{site}");
+                var siteRegexReplacement = "{site}";
+                // If we are in the root site collection with just / as ServerRelativeUrl then we cannot replace all / with {site}, otherwise the urls will look like "{site}_layouts/15/images"
+                if (web.ServerRelativeUrl == "/")
+                    siteRegexReplacement += "/";
+
+                xml = Regex.Replace(xml, "(\"" + web.ServerRelativeUrl + ")(?!&)", "\"" + siteRegexReplacement, RegexOptions.IgnoreCase);
+                xml = Regex.Replace(xml, "'" + web.ServerRelativeUrl, "'" + siteRegexReplacement, RegexOptions.IgnoreCase);
+                xml = Regex.Replace(xml, ">" + web.ServerRelativeUrl, ">" + siteRegexReplacement, RegexOptions.IgnoreCase);
 
                 return xml;
             }
