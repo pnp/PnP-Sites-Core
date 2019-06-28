@@ -13,11 +13,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - Fixed issue when importing a CSV file using ImportTerms where terms where always added to the first termset. [IonutLupsan]
-- Fix fileUniqueId parsing in ReplaceFileUniqueToken when point to Folder #2289 [czullu]
+- Fix: fileUniqueId parsing in ReplaceFileUniqueToken when point to Folder #2289 [czullu]
 - Fixed version conflict in clientsidepage handler #2255, #2285
 - Fix: Made owner mandatory for communication site in app-only context #2297 [gautamdsheth]
 - Fix: Support for default header image for client side page based on visual layout #2301 [SchauDK]
 - Fix: Ensure ID property is loaded for sitegroup provisioning #2303 [OliverZeiser]
+- Fix: "The 'Equals' member cannot be used in the expression" in GetPrincipalUniqueRoleAssignments #2305 [patrikhellgren]
 
 ## [3.10.1906.0 - June 2019 release ]
 
