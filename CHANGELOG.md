@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - Fixed issue when importing a CSV file using ImportTerms where terms where always added to the first termset. [IonutLupsan]
+- Fix fileUniqueId parsing in ReplaceFileUniqueToken when point to Folder #2289 [czullu]
 
 ## [3.10.1906.0 - June 2019 release ]
 
