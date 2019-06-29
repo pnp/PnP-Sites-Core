@@ -25,10 +25,11 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static ClientContext Create(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
+        public static ClientContext Create(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
         {
-            var context = CreateAsync(clientContext, siteCollectionCreationInformation).GetAwaiter().GetResult();
+            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation).GetAwaiter().GetResult();
             return context;
         }
 
@@ -37,10 +38,11 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static ClientContext Create(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation)
+        public static ClientContext Create(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
         {
-            var context = CreateAsync(clientContext, siteCollectionCreationInformation).GetAwaiter().GetResult();
+            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation).GetAwaiter().GetResult();
             return context;
         }
 
@@ -49,8 +51,9 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
+        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
         {
             await new SynchronizationContextRemover();
 
@@ -145,6 +148,12 @@ namespace OfficeDevPnP.Core.Sites
                                 throw;
                             }
                         }
+
+                        // If there is a delay, let's wait
+                        if (delayAfterCreation > 0)
+                        {
+                            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(delayAfterCreation));
+                        }
                     }
                     else
                     {
@@ -161,8 +170,9 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation)
+        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
         {
             if (siteCollectionCreationInformation.Alias.Contains(" "))
             {
@@ -255,6 +265,12 @@ namespace OfficeDevPnP.Core.Sites
                         else
                         {
                             throw new Exception(responseString);
+                        }
+
+                        // If there is a delay, let's wait
+                        if (delayAfterCreation > 0)
+                        {
+                            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(delayAfterCreation));
                         }
                     }
                     else
