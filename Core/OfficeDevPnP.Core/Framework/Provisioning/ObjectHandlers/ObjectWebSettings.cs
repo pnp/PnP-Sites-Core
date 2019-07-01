@@ -272,17 +272,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         w => w.HasUniqueRoleAssignments);
 
                     var webSettings = template.WebSettings;
-#if !ONPREMISES
-                    if (!isNoScriptSite)
-                    {
-                        web.NoCrawl = webSettings.NoCrawl;
-                    }
-                    else
-                    {
-                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate);
-                    }
-#endif
 
+                    // Since the IsSubSite function can trigger an executequery ensure it's called before any updates to the web object are done.
                     if (!web.IsSubSite() || (web.IsSubSite() && web.HasUniqueRoleAssignments))
                     {
                         String requestAccessEmailValue = parser.ParseString(webSettings.RequestAccessEmail);
@@ -300,6 +291,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
 #if !ONPREMISES
+                    if (!isNoScriptSite)
+                    {
+                        web.NoCrawl = webSettings.NoCrawl;
+                    }
+                    else
+                    {
+                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate);
+                    }
+
                     if (web.CommentsOnSitePagesDisabled != webSettings.CommentsOnSitePagesDisabled)
                     {
                         web.CommentsOnSitePagesDisabled = webSettings.CommentsOnSitePagesDisabled;
