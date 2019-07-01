@@ -54,11 +54,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
 
                 // Add custom actions
                 var result = TestProvisioningTemplate(cc, "customaction_add.xml", Handlers.CustomActions);
+                // Ensure the needed tokens are added to the target token parser, this is needed due to the tokenparser perf optimalizations
+                result.TargetTokenParser.Tokens.Add(new SiteToken(cc.Web));
+                result.TargetTokenParser.Tokens.Add(new SiteTitleToken(cc.Web));
+
                 Assert.IsTrue(CustomActionValidator.ValidateCustomActions(result.SourceTemplate.CustomActions.WebCustomActions, result.TargetTemplate.CustomActions.WebCustomActions, result.TargetTokenParser, cc.Web));
 
 #if !SP2013
                 // Update custom actions
                 var result2 = TestProvisioningTemplate(cc, "customaction_delta_1.xml", Handlers.CustomActions);
+                // Ensure the needed tokens are added to the target token parser, this is needed due to the tokenparser perf optimalizations
+                result2.TargetTokenParser.Tokens.Add(new SiteToken(cc.Web));
+                result2.TargetTokenParser.Tokens.Add(new SiteTitleToken(cc.Web));
+
                 Assert.IsTrue(CustomActionValidator.ValidateCustomActions(result2.SourceTemplate.CustomActions.WebCustomActions, result2.TargetTemplate.CustomActions.WebCustomActions, result2.TargetTokenParser, cc.Web));
 #endif
             }
