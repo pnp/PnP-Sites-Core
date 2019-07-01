@@ -166,8 +166,7 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQLDB
                     writer.WriteEndElement(); //appSettings
 
                     writer.WriteStartElement("runtime");
-                    writer.WriteStartElement("assemblyBinding");
-                    writer.WriteAttributeString("xmlns", "urn:schemas-microsoft-com:asm.v1");
+                    writer.WriteStartElement("assemblyBinding", "urn:schemas-microsoft-com:asm.v1");
                     writer.WriteStartElement("dependentAssembly");
 
                     writer.WriteStartElement("assemblyIdentity");
