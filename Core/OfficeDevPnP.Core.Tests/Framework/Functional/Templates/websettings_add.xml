@@ -6,8 +6,8 @@
     WelcomePage="SitePages/Home.aspx"
     Title="Hi there"
     Description="Let's test"
-    SiteLogo="{sitecollection}/SiteAssets/garagelogo.png"
-    AlternateCSS="{sitecollection}/SiteAssets/garage.css"
-    MasterPageUrl="{sitecollection}/_catalogs/MasterPage/oslo.master"
-    CustomMasterPageUrl="{sitecollection}/_catalogs/MasterPage/oslo.master" />
+    SiteLogo="{site}/SiteAssets/garagelogo.png"
+    AlternateCSS="{site}/SiteAssets/garage.css"
+    MasterPageUrl="{site}/_catalogs/MasterPage/oslo.master"
+    CustomMasterPageUrl="{site}/_catalogs/MasterPage/oslo.master" />
 </pnp:ProvisioningTemplate>
