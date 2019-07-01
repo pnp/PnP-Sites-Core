@@ -633,7 +633,7 @@ namespace OfficeDevPnP.Core.Sites
         {
             string responseString = null;
 
-            context.Site.EnsureProperties(s => s.GroupId);
+            context.Site.EnsureProperty(s => s.GroupId);
 
             if (context.Web.IsSubSite())
             {
@@ -668,7 +668,7 @@ namespace OfficeDevPnP.Core.Sites
 
             if (webTemplateId == "SITEPAGEPUBLISHING#0" || webTemplateId == "STS#3")
             {
-                context.Site.EnsureProperties(s => s.Id);
+                context.Site.EnsureProperty(s => s.Id);
 
                 var result = await context.Web.ExecutePost("/_api/SPSiteManager/delete", $@" {{ ""siteId"": ""{context.Site.Id.ToString()}"" }}");
 
