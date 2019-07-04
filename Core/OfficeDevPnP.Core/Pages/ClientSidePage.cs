@@ -1581,7 +1581,7 @@ namespace OfficeDevPnP.Core.Pages
                         {
                             if (sectionData.Position != null)
                             {
-                                this.AddSection(new CanvasSection(this) { ZoneEmphasis = sectionData.Emphasis != null ? sectionData.Emphasis.ZoneEmphasis : 0 }, sectionData.Position.ZoneIndex);
+                                this.AddSection(new CanvasSection(this) { ZoneEmphasis = sectionData.Emphasis != null ? sectionData.Emphasis.ZoneEmphasis.GetValueOrDefault(0) : 0 }, sectionData.Position.ZoneIndex);
                                 currentSection = this.sections.Where(p => p.Order == sectionData.Position.ZoneIndex).First();
                             }
                         }
@@ -1668,7 +1668,7 @@ namespace OfficeDevPnP.Core.Pages
             var currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).FirstOrDefault();
             if (currentSection == null)
             {
-                this.AddSection(new CanvasSection(this) { ZoneEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0 }, position.ZoneIndex);
+                this.AddSection(new CanvasSection(this) { ZoneEmphasis = emphasis != null ? emphasis.ZoneEmphasis.GetValueOrDefault(0) : 0 }, position.ZoneIndex);
                 currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).First();
             }
 

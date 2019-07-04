@@ -1,15 +1,24 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Pages
 {
     public class ClientSideSectionEmphasis
     {
-        [JsonProperty(PropertyName = "zoneEmphasis")]
-        public int ZoneEmphasis { get; set; }
+        [JsonIgnore]
+        public int? ZoneEmphasis
+        {
+            get
+            {
+                if (!string.IsNullOrWhiteSpace(ZoneEmphasisString) && int.TryParse(ZoneEmphasisString, out int result))
+                {
+                    return result;
+                }
+                return null;
+            }
+            set { ZoneEmphasisString = value.ToString(); }
+        }
+
+        [JsonProperty(PropertyName = "zoneEmphasis", NullValueHandling = NullValueHandling.Ignore)]
+        public string ZoneEmphasisString { get; set; }
     }
 }
