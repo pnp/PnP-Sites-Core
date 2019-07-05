@@ -170,6 +170,7 @@ namespace OfficeDevPnP.Core
                 s_dict.Add(DeviceChannelMappings, true);
                 s_dict.Add(SystemPageLayout, true);
                 s_dict.Add(PageLayout, true);
+                s_dict.Add(HtmlPageLayout, true);
                 s_dict.Add(SystemMasterPage, true);
                 s_dict.Add(ASPNETMasterPage, true);
                 s_dict.Add(HtmlMasterPage, true);
