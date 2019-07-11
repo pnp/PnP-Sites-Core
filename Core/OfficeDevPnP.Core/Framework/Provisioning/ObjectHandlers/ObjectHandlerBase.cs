@@ -4,6 +4,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml.Linq;
 using System.Xml.XPath;
@@ -181,6 +182,49 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 isValid = false;
             }
             return isValid;
+        }
+
+        /// <summary>
+        /// Tokenize a XML snippet based attribute with {themecatalog} or {masterpagecatalog}
+        /// </summary>
+        /// <param name="xml">the XML snippet to tokenize as String</param>
+        /// <param name="web">Web being used</param>
+        /// <returns>tokenized xml as String</returns>
+        protected string TokenizeXml(string xml, Web web = null)
+        {
+            if (string.IsNullOrEmpty(xml))
+            {
+                // nothing to tokenize...
+                return string.Empty;
+            }
+            else
+            {
+                var subsite = false;
+                if (web != null)
+                {
+                    subsite = web.IsSubSite();
+                }
+                web.EnsureProperty(w => w.ServerRelativeUrl);
+                // Theme Catalog
+                var themeRegex = new Regex(@"(?<theme>\/_catalogs\/theme)");
+                xml = themeRegex.Replace(xml, subsite ? "{sitecollection}/_catalogs/theme" : "{themecatalog}");
+
+                // Master Page Catalog
+                var masterPageRegex = new Regex(@"(?<masterpage>\/_catalogs\/masterpage)");
+                xml = masterPageRegex.Replace(xml, subsite ? "{sitecollection}/_catalogs/masterpage" : "{masterpagecatalog}");
+
+                // Site
+                var siteRegexReplacement = "{site}";
+                // If we are in the root site collection with just / as ServerRelativeUrl then we cannot replace all / with {site}, otherwise the urls will look like "{site}_layouts/15/images"
+                if (web.ServerRelativeUrl == "/")
+                    siteRegexReplacement += "/";
+
+                xml = Regex.Replace(xml, "(\"" + web.ServerRelativeUrl + ")(?!&)", "\"" + siteRegexReplacement, RegexOptions.IgnoreCase);
+                xml = Regex.Replace(xml, "'" + web.ServerRelativeUrl, "'" + siteRegexReplacement, RegexOptions.IgnoreCase);
+                xml = Regex.Replace(xml, ">" + web.ServerRelativeUrl, ">" + siteRegexReplacement, RegexOptions.IgnoreCase);
+
+                return xml;
+            }
         }
 
         /// <summary>

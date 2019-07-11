@@ -56,7 +56,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (groupSiteInfo == null)
                                     {
                                         WriteMessage($"Creating Team Site {siteInfo.Alias}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo);
+                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, applyingInformation.DelayAfterModernSiteCreation);
                                     }
                                     else
                                     {
@@ -131,7 +131,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     else
                                     {
                                         WriteMessage($"Creating Communications Site at {siteInfo.Url}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo);
+                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, applyingInformation.DelayAfterModernSiteCreation);
                                     }
                                     if (c.IsHubSite)
                                     {

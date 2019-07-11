@@ -30,7 +30,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         /// <param name="pageUrl">Url of the page to extract</param>
         /// <param name="pageName">Name of the page to extract</param>
         /// <param name="isHomePage">Is this a home page?</param>
-        public void ExtractClientSidePage(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string pageUrl, string pageName, bool isHomePage)
+        /// <param name="isTemplate">Is this a template?</param>
+        public void ExtractClientSidePage(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string pageUrl, string pageName, bool isHomePage, bool isTemplate = false)
         {
             try
             {
@@ -63,7 +64,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     {
                         PageName = pageName,
                         PromoteAsNewsArticle = isNews,
-                        PromoteAsTemplate = false,
+                        PromoteAsTemplate = isTemplate,
                         Overwrite = true,
                         Publish = true,
                         Layout = pageToExtract.LayoutType.ToString(),
@@ -71,6 +72,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         Title = pageToExtract.PageTitle,
                         ContentTypeID = !pageContentTypeId.Equals(BuiltInContentTypeId.ModernArticlePage, StringComparison.InvariantCultureIgnoreCase) ? pageContentTypeId : null,                        
                     };
+
 
                     if(pageToExtract.PageHeader != null)
                     {

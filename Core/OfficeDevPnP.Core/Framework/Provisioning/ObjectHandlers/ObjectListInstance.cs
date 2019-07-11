@@ -635,6 +635,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     viewRowLimit = uint.Parse(rowLimitElement.Value);
                 }
 
+#if !SP2013 && !SP2016
+                //BaseViewID
+                int BaseViewID = 1;
+                var baseviewIDElement = viewElementRaw.Attribute("BaseViewID");
+                if (baseviewIDElement != null)
+                {
+                    BaseViewID = int.Parse(baseviewIDElement.Value);
+                }
+#endif
                 // Query
                 var viewQuery = new StringBuilder();
                 foreach (var queryElement in viewElement.Descendants("Query").Elements())
@@ -644,6 +653,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var viewCI = new ViewCreationInformation
                 {
+#if !SP2013 && !SP2016
+                    baseViewId = BaseViewID,
+#endif
                     ViewFields = viewFields,
                     RowLimit = viewRowLimit,
                     Paged = viewPaged,
@@ -2103,6 +2115,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     allLists.Add(list);
                 }
+
                 // Let's see if there are workflow subscriptions
                 Microsoft.SharePoint.Client.WorkflowServices.WorkflowSubscription[] workflowSubscriptions = null;
                 try
@@ -2120,6 +2133,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var listCount = 0;
                 foreach (var siteList in listsToProcess)
                 {
+                    if (creationInfo.ListsToExtract != null && creationInfo.ListsToExtract.Count > 0 &&
+                        (!creationInfo.ListsToExtract.Any(i =>
+                        {
+                            Guid listId;
+                            if (Guid.TryParse(i, out listId))
+                            {
+                                return (listId == siteList.Id);
+                            }
+                            else
+                            {
+                                return (false);
+                            }
+                        }) && !creationInfo.ListsToExtract.Contains(siteList.Title)))
+                    {
+                        // If we have a collection of lists to export and the current list
+                        // is not in that collection, just skip it
+                        continue;
+                    }
+
                     listCount++;
                     WriteMessage($"List|{siteList.Title}|{listCount}|{listsToProcess.Length}", ProvisioningMessageType.Progress);
                     ListInstance baseTemplateList = null;
@@ -2325,7 +2357,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 #endif
-                list.Views.Add(new View { SchemaXml = Tokenize(schemaElement.ToString(), web.Url) });
+                list.Views.Add(new View { SchemaXml = TokenizeXml(schemaElement.ToString(), web) });
             }
 
             return list;

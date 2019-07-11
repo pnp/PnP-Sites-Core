@@ -1114,6 +1114,7 @@ namespace OfficeDevPnP.Core
         /// Refreshes the SharePoint FedAuth cookie
         /// </summary>
         /// <param name="siteUrl">Url of the SharePoint site that's secured via ADFS</param>
+        /// <param name="serialNumber">Certificate's serial number. Can be found in Serial number field in the certificate.</param>
         /// <param name="sts">Hostname of the ADFS server (e.g. sts.company.com)</param>
         /// <param name="idpId">Identifier of the ADFS relying party that we're hitting</param>
         /// <param name="logonTokenCacheExpirationWindow">Optioanlly provide the value of the SharePoint STS logonTokenCacheExpirationWindow. Defaults to 10 minutes.</param>

@@ -25,10 +25,11 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static ClientContext Create(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
+        public static ClientContext Create(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
         {
-            var context = CreateAsync(clientContext, siteCollectionCreationInformation).GetAwaiter().GetResult();
+            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation).GetAwaiter().GetResult();
             return context;
         }
 
@@ -37,10 +38,11 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static ClientContext Create(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation)
+        public static ClientContext Create(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
         {
-            var context = CreateAsync(clientContext, siteCollectionCreationInformation).GetAwaiter().GetResult();
+            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation).GetAwaiter().GetResult();
             return context;
         }
 
@@ -49,12 +51,18 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation)
+        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
         {
             await new SynchronizationContextRemover();
 
             ClientContext responseContext = null;
+
+            if (clientContext.IsAppOnly() && string.IsNullOrEmpty(siteCollectionCreationInformation.Owner))
+            {
+                throw new Exception("You need to set the owner in App-only context");
+            }
 
             var accessToken = clientContext.GetAccessToken();
 
@@ -145,6 +153,12 @@ namespace OfficeDevPnP.Core.Sites
                                 throw;
                             }
                         }
+
+                        // If there is a delay, let's wait
+                        if (delayAfterCreation > 0)
+                        {
+                            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(delayAfterCreation));
+                        }
                     }
                     else
                     {
@@ -161,8 +175,9 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation)
+        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
         {
             if (siteCollectionCreationInformation.Alias.Contains(" "))
             {
@@ -173,12 +188,13 @@ namespace OfficeDevPnP.Core.Sites
 
             ClientContext responseContext = null;
 
-            var accessToken = clientContext.GetAccessToken();
-
             if (clientContext.IsAppOnly())
             {
                 throw new Exception("App-Only is currently not supported.");
             }
+
+            var accessToken = clientContext.GetAccessToken();
+
             using (var handler = new HttpClientHandler())
             {
                 clientContext.Web.EnsureProperty(w => w.Url);
@@ -256,6 +272,12 @@ namespace OfficeDevPnP.Core.Sites
                         {
                             throw new Exception(responseString);
                         }
+
+                        // If there is a delay, let's wait
+                        if (delayAfterCreation > 0)
+                        {
+                            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(delayAfterCreation));
+                        }
                     }
                     else
                     {
@@ -294,12 +316,13 @@ namespace OfficeDevPnP.Core.Sites
 
             ClientContext responseContext = null;
 
-            var accessToken = clientContext.GetAccessToken();
-
             if (clientContext.IsAppOnly())
             {
                 throw new Exception("App-Only is currently not supported.");
             }
+
+            var accessToken = clientContext.GetAccessToken();
+
             using (var handler = new HttpClientHandler())
             {
                 clientContext.Web.EnsureProperty(w => w.Url);
@@ -619,6 +642,38 @@ namespace OfficeDevPnP.Core.Sites
                         throw new Exception(await response.Content.ReadAsStringAsync());
                     }
                 }
+                return await Task.Run(() => responseString);
+            }
+        }
+
+        /// <summary>
+        /// Enable Microsoft Teams team in an O365 group connected team site
+        /// Will also enable it on a newly Groupified classic site
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static async Task<string> TeamifySiteAsync(ClientContext context)
+        {
+            string responseString = null;
+
+            context.Site.EnsureProperties(s => s.GroupId);
+
+            if (context.Web.IsSubSite())
+            {
+                throw new Exception("You cannot Teamify a subsite");
+            }
+            else if (context.Site.GroupId == Guid.Empty)
+            {
+                throw new Exception($"You cannot associate Teams on this site collection. It is only supported for O365 Group connected sites.");
+            }
+            else
+            {
+                var result = await context.Web.ExecutePost("/_api/groupsitemanager/EnsureTeamForGroup", string.Empty);
+
+                var teamId = JObject.Parse(result);
+
+                responseString = Convert.ToString(teamId["value"]);
+
                 return await Task.Run(() => responseString);
             }
         }

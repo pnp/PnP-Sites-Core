@@ -275,7 +275,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 ))
                 {
                     Group group;
-                    var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName));
+                    var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName, gr => gr.Id));
                     web.Context.ExecuteQueryRetry();
 
                     string parsedGroupTitle = parser.ParseString(siteGroup.Title);
@@ -299,6 +299,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (parsedGroupOwner != null && (parsedGroupTitle != parsedGroupOwner))
                         {
                             Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName.Equals(parsedGroupOwner, StringComparison.OrdinalIgnoreCase));
+
+                            if (ownerPrincipal == null)
+                            {
+                                if (Int32.TryParse(parsedGroupOwner, out int roleAssignmentPrincipalId))
+                                {
+                                    ownerPrincipal = allGroups.FirstOrDefault(g => g.Id.Equals(roleAssignmentPrincipalId));
+                                }
+                            }
+
                             if (ownerPrincipal == null)
                             {
                                 ownerPrincipal = web.EnsureUser(parsedGroupOwner);
@@ -620,7 +629,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 try
                 {
-                    principal = web.EnsureUser(parsedRoleDefinition);
+                    // Principal can be resolved via it's ID if an associatedgroupid token was used
+                    if (Int32.TryParse(parsedRoleDefinition, out int roleAssignmentPrincipalId))
+                    {
+                        principal = groups.FirstOrDefault(g => g.Id.Equals(roleAssignmentPrincipalId));
+                    }
+                    else
+                    {
+                        principal = web.EnsureUser(parsedRoleDefinition);
+                    }
+
                     web.Context.Load(principal, p => p.Id);
                     web.Context.ExecuteQueryRetry();
                 }
@@ -920,15 +938,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!web.AssociatedOwnerGroup.ServerObjectIsNull.Value)
             {
-                loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedowneridgroup}");
+                loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedownergroupid}");
             }
             if (!web.AssociatedMemberGroup.ServerObjectIsNull.Value)
             {
-                loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmemberidgroup}");
+                loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmembergroupid}");
             }
             if (!web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
             {
-                loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitoridgroup}");
+                loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroupid}");
             }
             if (!string.IsNullOrEmpty(web.Title))
             {

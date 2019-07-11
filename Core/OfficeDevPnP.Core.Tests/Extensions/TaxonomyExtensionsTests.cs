@@ -12,10 +12,12 @@ namespace Microsoft.SharePoint.Client.Tests
     public class TaxonomyExtensionsTests
     {
         private string _termGroupName; // For easy reference. Set in the Initialize method
-        private string _termSetName; // For easy reference. Set in the Initialize method
+        private string _termSetName1; // For easy reference. Set in the Initialize method
+        private string _termSetName2; // For easy reference. Set in the Initialize method
         private string _termName; // For easy reference. Set in the Initialize method
         private Guid _termGroupId = Guid.NewGuid(); //Hardcoded GUIDs had sideffects when running tests. Several successive taxonomy tests would trigger a server exception.
-        private Guid _termSetId = Guid.NewGuid(); //Hardcoded GUIDs had sideffects when running tests. Several successive taxonomy tests would trigger a server exception.
+        private Guid _termSet1Id = Guid.NewGuid(); //Hardcoded GUIDs had sideffects when running tests. Several successive taxonomy tests would trigger a server exception.
+        private Guid _termSet2Id = Guid.NewGuid();
         private Guid _termId = Guid.NewGuid(); //Hardcoded GUIDs had sideffects when running tests. Several successive taxonomy tests would trigger a server exception and term field value label was untestable as previous term label in hidden field would overwrite new term label in list item.
 
         private Guid _listId; // For easy reference
@@ -37,7 +39,8 @@ namespace Microsoft.SharePoint.Client.Tests
                 using (var clientContext = TestCommon.CreateClientContext())
                 {
                     _termGroupName = "Test_Group_" + DateTime.Now.ToFileTime();
-                    _termSetName = "Test_Termset_" + DateTime.Now.ToFileTime();
+                    _termSetName1 = "Test_Termset_1_" + DateTime.Now.ToFileTime();
+                    _termSetName2 = "Test_Termset_2_" + DateTime.Now.ToFileTime();
                     _termName = "Test_Term_" + DateTime.Now.ToFileTime();
 
                     var taxSession = TaxonomySession.GetTaxonomySession(clientContext);
@@ -59,15 +62,29 @@ namespace Microsoft.SharePoint.Client.Tests
 
                     // Termset
                     // Does the termset exist?
-                    var termSet = termStore.GetTermSet(_termSetId);
-                    clientContext.Load(termSet, ts => ts.Id);
+                    var termSet1 = termStore.GetTermSet(_termSet1Id);
+                    clientContext.Load(termSet1, ts => ts.Id);
                     clientContext.ExecuteQueryRetry();
 
                     // Create if non existant
-                    if (termSet.ServerObjectIsNull.Value)
+                    if (termSet1.ServerObjectIsNull.Value)
                     {
-                        termSet = termGroup.CreateTermSet(_termSetName, _termSetId, 1033);
-                        clientContext.Load(termSet);
+                        termSet1 = termGroup.CreateTermSet(_termSetName1, _termSet1Id, 1033);
+                        clientContext.Load(termSet1);
+                        clientContext.ExecuteQueryRetry();
+                    }
+
+                    // Termset
+                    // Does the termset exist?
+                    var termSet2 = termStore.GetTermSet(_termSet2Id);
+                    clientContext.Load(termSet2, ts => ts.Id);
+                    clientContext.ExecuteQueryRetry();
+
+                    // Create if non existant
+                    if (termSet2.ServerObjectIsNull.Value)
+                    {
+                        termSet2 = termGroup.CreateTermSet(_termSetName2, _termSet2Id, 1033);
+                        clientContext.Load(termSet2);
                         clientContext.ExecuteQueryRetry();
                     }
 
@@ -80,7 +97,7 @@ namespace Microsoft.SharePoint.Client.Tests
                     // Create if non existant
                     if (term.ServerObjectIsNull.Value)
                     {
-                        term = termSet.CreateTerm(_termName, 1033, _termId);
+                        term = termSet1.CreateTerm(_termName, 1033, _termId);
                         clientContext.ExecuteQueryRetry();
                     }
                     else
@@ -156,7 +173,7 @@ namespace Microsoft.SharePoint.Client.Tests
             {
                 // Retrieve Termset
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
-                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSetId);
+                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSet1Id);
                 clientContext.Load(termSet);
                 clientContext.ExecuteQueryRetry();
 
@@ -189,7 +206,7 @@ namespace Microsoft.SharePoint.Client.Tests
             {
                 // Retrieve Termset
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
-                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSetId);
+                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSet1Id);
                 clientContext.Load(termSet);
                 clientContext.ExecuteQueryRetry();
 
@@ -232,7 +249,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
                 // Retrieve Termset
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
-                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSetId);
+                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSet1Id);
                 clientContext.Load(termSet);
                 clientContext.ExecuteQueryRetry();
 
@@ -285,7 +302,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
                 // Retrieve Termset
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
-                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSetId);
+                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSet1Id);
                 clientContext.Load(termSet);
                 clientContext.ExecuteQueryRetry();
 
@@ -358,7 +375,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
                 // Retrieve Termset
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
-                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSetId);
+                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSet1Id);
                 clientContext.Load(termSet);
                 clientContext.ExecuteQueryRetry();
 
@@ -434,7 +451,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
                 // Retrieve Termset
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
-                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSetId);
+                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSet1Id);
                 clientContext.Load(termSet);
                 clientContext.ExecuteQueryRetry();
 
@@ -476,7 +493,7 @@ namespace Microsoft.SharePoint.Client.Tests
             {
                 // Retrieve Termset
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
-                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSetId);
+                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSet1Id);
                 clientContext.Load(termSet);
                 clientContext.ExecuteQueryRetry();
 
@@ -509,7 +526,7 @@ namespace Microsoft.SharePoint.Client.Tests
             {
                 // Retrieve Termset and Term
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
-                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSetId);
+                var termSet = session.GetDefaultSiteCollectionTermStore().GetTermSet(_termSet1Id);
                 var anchorTerm = termSet.GetTerm(_termId);
                 clientContext.Load(termSet);
                 clientContext.Load(anchorTerm);
@@ -581,7 +598,7 @@ namespace Microsoft.SharePoint.Client.Tests
             using (var clientContext = TestCommon.CreateClientContext())
             {
                 var site = clientContext.Site;
-                var termSetCollection = site.GetTermSetsByName(_termSetName);
+                var termSetCollection = site.GetTermSetsByName(_termSetName1);
                 Assert.IsInstanceOfType(termSetCollection, typeof(TermSetCollection), "Did not return TermSetCollection object");
                 Assert.IsTrue(termSetCollection.AreItemsAvailable, "No terms available");
             }
@@ -617,7 +634,7 @@ namespace Microsoft.SharePoint.Client.Tests
             using (var clientContext = TestCommon.CreateClientContext())
             {
                 var site = clientContext.Site;
-                var term = site.GetTermByName(_termSetId, _termName);
+                var term = site.GetTermByName(_termSet1Id, _termName);
                 Assert.IsInstanceOfType(term, typeof(Term), "Did not return Term object");
                 Assert.AreEqual(_termName, term.Name, "Name does not match");
             }
@@ -629,12 +646,12 @@ namespace Microsoft.SharePoint.Client.Tests
             using (var clientContext = TestCommon.CreateClientContext())
             {
                 var site = clientContext.Site;
-                var path = _termGroupName + "|" + _termSetName;
+                var path = _termGroupName + "|" + _termSetName1;
                 var taxonomyItem = site.GetTaxonomyItemByPath(path);
                 Assert.IsInstanceOfType(taxonomyItem, typeof(TaxonomyItem));
-                Assert.AreEqual(_termSetName, taxonomyItem.Name, "Did not return correct termset");
+                Assert.AreEqual(_termSetName1, taxonomyItem.Name, "Did not return correct termset");
 
-                path = _termGroupName + "|" + _termSetName + "|" + _termName;
+                path = _termGroupName + "|" + _termSetName1 + "|" + _termName;
                 taxonomyItem = site.GetTaxonomyItemByPath(path);
 
                 Assert.IsInstanceOfType(taxonomyItem, typeof(TaxonomyItem));
@@ -651,7 +668,7 @@ namespace Microsoft.SharePoint.Client.Tests
             {
                 var site = clientContext.Site;
                 var termName = "Test_Term_" + DateTime.Now.ToFileTime();
-                var term = site.AddTermToTermset(_termSetId, termName);
+                var term = site.AddTermToTermset(_termSet1Id, termName);
                 Assert.IsInstanceOfType(term, typeof(Term), "Did not return Term object");
                 Assert.AreEqual(termName, term.Name, "Name does not match");
             }
@@ -665,7 +682,7 @@ namespace Microsoft.SharePoint.Client.Tests
                 var site = clientContext.Site;
                 var termName = "Test_Term_" + DateTime.Now.ToFileTime();
                 var termId = Guid.NewGuid();
-                var term = site.AddTermToTermset(_termSetId, termName, termId);
+                var term = site.AddTermToTermset(_termSet1Id, termName, termId);
                 Assert.IsInstanceOfType(term, typeof(Term), "Did not return Term object");
                 Assert.AreEqual(termName, term.Name, "Name does not match");
                 Assert.AreEqual(termId, term.Id, "Id does not match");
@@ -686,16 +703,17 @@ namespace Microsoft.SharePoint.Client.Tests
                 var termName2 = "Test_Term_2" + DateTime.Now.ToFileTime();
 
                 List<string> termLines = new List<string>();
-                termLines.Add(_termGroupName + "|" + _termSetName + "|" + termName1);
-                termLines.Add(_termGroupName + "|" + _termSetName + "|" + termName2);
+                termLines.Add(_termGroupName + "|" + _termSetName1 + "|" + termName1);
+                termLines.Add(_termGroupName + "|" + _termSetName2 + "|" + termName2);
                 site.ImportTerms(termLines.ToArray(), 1033, "|");
 
                 var taxonomySession = TaxonomySession.GetTaxonomySession(clientContext);
                 var termStore = taxonomySession.GetDefaultSiteCollectionTermStore();
                 var termGroup = termStore.Groups.GetByName(_termGroupName);
-                var termSet = termGroup.TermSets.GetByName(_termSetName);
-                var term1 = termSet.Terms.GetByName(termName1);
-                var term2 = termSet.Terms.GetByName(termName2);
+                var termSet1 = termGroup.TermSets.GetByName(_termSetName1);
+                var termSet2 = termGroup.TermSets.GetByName(_termSetName2);
+                var term1 = termSet1.Terms.GetByName(termName1);
+                var term2 = termSet2.Terms.GetByName(termName2);
                 clientContext.Load(term1);
                 clientContext.Load(term2);
                 clientContext.ExecuteQueryRetry();
@@ -716,8 +734,8 @@ namespace Microsoft.SharePoint.Client.Tests
                 var termName2 = "Test_Term_2" + DateTime.Now.ToFileTime();
 
                 List<string> termLines = new List<string>();
-                termLines.Add(_termGroupName + "|" + _termSetName + "|" + termName1);
-                termLines.Add(_termGroupName + "|" + _termSetName + "|" + termName2);
+                termLines.Add(_termGroupName + "|" + _termSetName1 + "|" + termName1);
+                termLines.Add(_termGroupName + "|" + _termSetName1 + "|" + termName2);
 
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
                 var termStore = session.GetDefaultSiteCollectionTermStore();
@@ -725,7 +743,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
                 var taxonomySession = TaxonomySession.GetTaxonomySession(clientContext);
                 var termGroup = termStore.Groups.GetByName(_termGroupName);
-                var termSet = termGroup.TermSets.GetByName(_termSetName);
+                var termSet = termGroup.TermSets.GetByName(_termSetName1);
                 var term1 = termSet.Terms.GetByName(termName1);
                 var term2 = termSet.Terms.GetByName(termName2);
                 clientContext.Load(term1);
@@ -747,14 +765,14 @@ namespace Microsoft.SharePoint.Client.Tests
                 var termName1 = "Comma,Comma";
 
                 List<string> termLines = new List<string>();
-                string termSrc1 = _termGroupName + "|" + _termSetName + "|\"" + termName1 + "\"";
+                string termSrc1 = _termGroupName + "|" + _termSetName1 + "|\"" + termName1 + "\"";
                 termLines.Add(termSrc1);
 
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
                 var termStore = session.GetDefaultSiteCollectionTermStore();
                 site.ImportTerms(termLines.ToArray(), 1033, termStore, "|");
 
-                var terms = site.ExportTermSet(_termSetId, false);
+                var terms = site.ExportTermSet(_termSet1Id, false);
                 string termDest1 = terms.SingleOrDefault(t => t.Contains(termName1));
                 Assert.AreEqual(termSrc1, termDest1);
             }
@@ -774,11 +792,11 @@ namespace Microsoft.SharePoint.Client.Tests
                 var termName5 = "\"StartQuote \" MiddleQuote";
 
                 List<string> termLines = new List<string>();
-                string termSrc1 = _termGroupName + "|" + _termSetName + "|" + termName1;
-                string termSrc2 = _termGroupName + "|" + _termSetName + "|" + termName2;
-                string termSrc3 = _termGroupName + "|" + _termSetName + "|" + termName3;
-                string termSrc4 = _termGroupName + "|" + _termSetName + "|" + termName4;
-                string termSrc5 = _termGroupName + "|" + _termSetName + "|" + termName5;
+                string termSrc1 = _termGroupName + "|" + _termSetName1 + "|" + termName1;
+                string termSrc2 = _termGroupName + "|" + _termSetName1 + "|" + termName2;
+                string termSrc3 = _termGroupName + "|" + _termSetName1 + "|" + termName3;
+                string termSrc4 = _termGroupName + "|" + _termSetName1 + "|" + termName4;
+                string termSrc5 = _termGroupName + "|" + _termSetName1 + "|" + termName5;
                 termLines.Add(termSrc1);
                 termLines.Add(termSrc2);
                 termLines.Add(termSrc3);
@@ -789,7 +807,7 @@ namespace Microsoft.SharePoint.Client.Tests
                 var termStore = session.GetDefaultSiteCollectionTermStore();
                 site.ImportTerms(termLines.ToArray(), 1033, termStore, "|");
 
-                var terms = site.ExportTermSet(_termSetId, false);
+                var terms = site.ExportTermSet(_termSet1Id, false);
                 string termDest1 = terms.SingleOrDefault(t => t.Contains(termName1));
                 Assert.AreEqual(termSrc1, termDest1);
                 string termDest2 = terms.SingleOrDefault(t => t.Contains(termName2));
@@ -969,7 +987,7 @@ namespace Microsoft.SharePoint.Client.Tests
             using (var clientContext = TestCommon.CreateClientContext())
             {
                 var site = clientContext.Site;
-                var lines = site.ExportTermSet(_termSetId, false);
+                var lines = site.ExportTermSet(_termSet1Id, false);
                 Assert.IsTrue(lines.Any(), "No lines returned");
             }
         }
@@ -983,7 +1001,7 @@ namespace Microsoft.SharePoint.Client.Tests
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(clientContext);
                 var termStore = session.GetDefaultSiteCollectionTermStore();
 
-                var lines = site.ExportTermSet(_termSetId, false, termStore);
+                var lines = site.ExportTermSet(_termSet1Id, false, termStore);
                 Assert.IsTrue(lines.Any(), "No lines returned");
             }
         }

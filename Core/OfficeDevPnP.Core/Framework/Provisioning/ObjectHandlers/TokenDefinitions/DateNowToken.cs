@@ -4,14 +4,14 @@ using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
+    /// <summary>
+    /// Gets current date time in universal date time format yyyy-MM-ddTHH:mm:ss.fffK 
+    /// </summary>
     [TokenDefinitionDescription(
        Token = "{now}",
        Description = "Returns the current date in universal date time format: yyyy-MM-ddTHH:mm:ss.fffK",
        Example = "{now}",
-       Returns = "2018-04-18T15:44:45.898+02:00")]
-    /// <summary>
-    /// Gets current date time in universal date time format yyyy-MM-ddTHH:mm:ss.fffK 
-    /// </summary>
+       Returns = "2018-04-18T15:44:45.898+02:00")]    
     public class DateNowToken : TokenDefinition
     {
         /// <summary>

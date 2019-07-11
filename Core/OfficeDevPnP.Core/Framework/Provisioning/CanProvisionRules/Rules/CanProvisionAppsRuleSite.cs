@@ -45,7 +45,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
 
             // Verify if we need the App Catalog (i.e. the template contains apps or packages)
             if ((targetTemplate.ApplicationLifecycleManagement?.Apps != null && targetTemplate.ApplicationLifecycleManagement?.Apps?.Count > 0) ||
-                targetTemplate.ApplicationLifecycleManagement?.AppCatalog != null ||
+                (targetTemplate.ApplicationLifecycleManagement?.AppCatalog != null &&
+                targetTemplate.ApplicationLifecycleManagement?.AppCatalog?.Packages != null && targetTemplate.ApplicationLifecycleManagement?.AppCatalog?.Packages.Count > 0) ||
                 (targetTemplate.ParentHierarchy != null && targetTemplate.ParentHierarchy?.Tenant?.AppCatalog != null &&
                 targetTemplate.ParentHierarchy?.Tenant?.AppCatalog?.Packages != null && targetTemplate.ParentHierarchy?.Tenant?.AppCatalog?.Packages.Count > 0))
             {

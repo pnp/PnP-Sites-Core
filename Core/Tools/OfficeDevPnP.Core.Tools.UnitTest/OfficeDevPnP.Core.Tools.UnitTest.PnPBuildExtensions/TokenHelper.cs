@@ -1,8 +1,8 @@
 using Microsoft.IdentityModel;
-using Microsoft.IdentityModel.S2S.Protocols.OAuth2;
-using Microsoft.IdentityModel.S2S.Tokens;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.EventReceivers;
+using SharePointPnP.IdentityModel.Extensions.S2S.Protocols.OAuth2;
+using SharePointPnP.IdentityModel.Extensions.S2S.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

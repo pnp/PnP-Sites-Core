@@ -1509,10 +1509,26 @@ namespace Microsoft.SharePoint.Client
                 {
                     return;
                 }
-                var roleAssignments = web.Context.LoadQuery(obj.RoleAssignments.Where(i => i.Member.LoginName.Equals(principal.LoginName, StringComparison.OrdinalIgnoreCase)));
-                web.Context.ExecuteQueryRetry();
 
-                var assignment = roleAssignments.FirstOrDefault();
+                RoleAssignment assignment;
+                try
+                {
+                    assignment = obj.RoleAssignments.GetByPrincipal(principal);
+                    web.Context.ExecuteQueryRetry();
+                }
+                catch (ServerException ex)
+                {
+                    if (ex.HResult == -2146233088)
+                    {
+                        // Can not find the principal so suppress the exception
+                        assignment = null;
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
                 if (assignment != null)
                 {
                     var bindings = web.Context.LoadQuery(assignment.RoleDefinitionBindings.Where(b => b.Name != "Limited Access"));

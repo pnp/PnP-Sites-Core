@@ -573,7 +573,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.DefaultEditFormUrl == other.DefaultEditFormUrl &&
                 this.DefaultNewFormUrl == other.DefaultNewFormUrl &&
                 this.Direction == other.Direction &&
-                this.ImageUrl == other.ImageUrl &&
+                CheckImage(this.ImageUrl, other.ImageUrl) &&
                 this.IrmExpire == other.IrmExpire &&
                 this.IrmReject == other.IrmReject &&
                 this.IsApplicationList == other.IsApplicationList &&
@@ -587,8 +587,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             );
         }
 
+        private bool CheckImage(string image1, string image2)
+        {
+            if (string.IsNullOrEmpty(image1) && string.IsNullOrEmpty(image2))
+            {
+                return true;
+            }
+            else if ((!string.IsNullOrEmpty(image1) && string.IsNullOrEmpty(image2)) || (string.IsNullOrEmpty(image1) && !string.IsNullOrEmpty(image2)))
+            {
+                return false;
+            }
+            else
+            {
+                if (image1.IndexOf("?") > -1)
+                {
+                    image1 = image1.Substring(0, image1.IndexOf("?"));
+                }
+                if (image2.IndexOf("?") > -1)
+                {
+                    image2 = image2.Substring(0, image2.IndexOf("?"));
+                }
+                return image1.Equals(image2, StringComparison.InvariantCultureIgnoreCase);
+            }
+        }
+
         #endregion
     }
+
+
 
     public enum ListExperience
     {

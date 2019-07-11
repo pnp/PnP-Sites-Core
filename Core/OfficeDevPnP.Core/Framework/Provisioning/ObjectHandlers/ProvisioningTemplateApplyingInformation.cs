@@ -125,5 +125,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 this._accessTokens = value;
             }
         }
+
+        /// <summary>
+        /// Defines a delay to wait for after modern site creation
+        /// </summary>
+        public Int32 DelayAfterModernSiteCreation { get; set; }
     }
 }

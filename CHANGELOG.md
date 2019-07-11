@@ -6,6 +6,55 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.11.1907.0 - July 2019 release]
+
+### Added
+
+### Changed
+
+- Fixed issue when importing a CSV file using ImportTerms where terms where always added to the first termset. [IonutLupsan]
+- Fix: fileUniqueId parsing in ReplaceFileUniqueToken when point to Folder #2289 [czullu]
+- Fixed version conflict in clientsidepage handler #2255, #2285
+- Fix: Made owner mandatory for communication site in app-only context #2297 [gautamdsheth]
+- Fix: Support for default header image for client side page based on visual layout #2301 [SchauDK]
+- Fix: Ensure ID property is loaded for sitegroup provisioning #2303 [OliverZeiser]
+- Fix: "The 'Equals' member cannot be used in the expression" in GetPrincipalUniqueRoleAssignments #2305 [patrikhellgren]
+- Fix: Added BaseViewID into ViewCreationInformation #2304 [StaffanNelemans]
+- CAML query class improvements #2308 [kirschem]
+- Fix tokenization issue with views in root site collection #2295 [jackpoz]
+- Fix: NoCrawl web property setting did not always work
+
+## [3.10.1906.0 - June 2019 release ]
+
+### Added
+
+- Added ability to include all client side pages in an extracted template
+- Feature: Adds capability to connect existing team site to MS Teams team (teamify) #2265 [gautamdsheth]
+
+### Changed 
+
+- Client side page serialization fix: if web part serverProcessedContent properties contains htmlStrings then these are now correctly serialized in the resulting html
+- Update SiteLockState enum to support ReadOnly status #2275 [TomekPi]
+- Fix DataRow parameters replacement. #2248 [siata13]
+- The specified user {associatedownergroupid} could not be found. #2281 [StaffanNelemans]
+- Fix DataRow URL field name: data value URL,Description. #2273 [cgenero]
+- Provisioning webhook fixes
+
+## [3.9.1905.3 - May 2019 Intermediate Release 3]
+
+### Changed 
+
+- Reintroduced fieldlink reordering on content types after server side fixes are in place.
+- Allow for retrieval of principals via their ID in objectsitesecurity.cs
+- Improved 'delta' detection for lists factoring out version changes in the list image url
+- Fixed xml comments to reduce compiler warnings [gszdev]
+
+## [3.9.1905.2 - May 2019 Intermediate Release 2]
+
+### Changed 
+
+- Fixed issue with nested tokens in token parser
+
 ## [3.9.1905.1 - May 2019 Intermediate Release]
 
 ### Changed

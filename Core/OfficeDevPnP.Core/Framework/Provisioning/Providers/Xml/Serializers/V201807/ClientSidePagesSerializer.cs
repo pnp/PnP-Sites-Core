@@ -41,12 +41,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                 // FieldValues
                 expressions.Add(cp => cp.FieldValues,
                     new FromArrayToDictionaryValueResolver<String, String>(
-                        stringDictionaryType, stringDictionaryKeySelector, stringDictionaryValueSelector));
+                        stringDictionaryType, stringDictionaryKeySelector, stringDictionaryValueSelector, "FieldValues"));
 
                 // Properties
                 expressions.Add(cp => cp.Properties,
                     new FromArrayToDictionaryValueResolver<String, String>(
-                        stringDictionaryType, stringDictionaryKeySelector, stringDictionaryValueSelector));
+                        stringDictionaryType, stringDictionaryKeySelector, stringDictionaryValueSelector, "Properties"));
 
                 // Manage WebPartType for CanvasControl
                 expressions.Add(cp => cp.Sections[0].Controls[0].Type,

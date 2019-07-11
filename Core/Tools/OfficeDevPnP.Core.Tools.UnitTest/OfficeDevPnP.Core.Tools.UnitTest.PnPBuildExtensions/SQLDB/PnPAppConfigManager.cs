@@ -165,6 +165,25 @@ namespace OfficeDevPnP.Core.Tools.UnitTest.PnPBuildExtensions.SQLDB
                     }
                     writer.WriteEndElement(); //appSettings
 
+                    writer.WriteStartElement("runtime");
+                    writer.WriteStartElement("assemblyBinding", "urn:schemas-microsoft-com:asm.v1");
+                    writer.WriteStartElement("dependentAssembly");
+
+                    writer.WriteStartElement("assemblyIdentity");
+                    writer.WriteAttributeString("name", "Newtonsoft.Json");
+                    writer.WriteAttributeString("publicKeyToken", "30ad4fe6b2a6aeed");
+                    writer.WriteAttributeString("culture", "neutral");
+                    writer.WriteEndElement();
+
+                    writer.WriteStartElement("bindingRedirect");
+                    writer.WriteAttributeString("oldVersion", "0.0.0.0-11.0.0.0");
+                    writer.WriteAttributeString("newVersion", "11.0.0.0");
+                    writer.WriteEndElement();
+
+                    writer.WriteEndElement();
+                    writer.WriteEndElement();
+                    writer.WriteEndElement();
+
                     writer.WriteStartElement("system.diagnostics");
                     writer.WriteStartElement("sharedListeners");
                     writer.WriteStartElement("add");
