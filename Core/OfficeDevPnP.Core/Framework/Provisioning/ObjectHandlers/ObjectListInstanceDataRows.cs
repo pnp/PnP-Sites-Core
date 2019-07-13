@@ -11,11 +11,14 @@ using PnPFile = OfficeDevPnP.Core.Framework.Provisioning.Model.File;
 using PnPFileLevel = OfficeDevPnP.Core.Framework.Provisioning.Model.FileLevel;
 using PnPRoleAssignment = OfficeDevPnP.Core.Framework.Provisioning.Model.RoleAssignment;
 using PnPDataRow = OfficeDevPnP.Core.Framework.Provisioning.Model.DataRow;
+using PnPField = OfficeDevPnP.Core.Framework.Provisioning.Model.Field;
+using PnPView = OfficeDevPnP.Core.Framework.Provisioning.Model.View;
 using SPFolder = Microsoft.SharePoint.Client.Folder;
 using SPField = Microsoft.SharePoint.Client.Field;
 using SPFile = Microsoft.SharePoint.Client.File;
 using SPList = Microsoft.SharePoint.Client.List;
 using System.Collections.Generic;
+using System.Xml.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -179,7 +182,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         creationInfo.MessagesDelegate?.Invoke($"ListData|{listInstance.Url}|{listCount}|{total}", ProvisioningMessageType.Progress);
 
-                        List myList = web.GetListByUrl(listInstance.Url);
+                        SPList myList = web.GetListByUrl(listInstance.Url);
                         web.Context.Load(myList, l => l.BaseType, l => l.Id);
                         var fields = myList.Fields;
                         web.Context.Load(fields, fs => fs.Include(f => f.TypeAsString, f => f.InternalName, f => f.ReadOnlyField, f => f.FieldTypeKind, f => f.Title));
@@ -189,9 +192,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.Context.Load(listItems, lc => lc.Include(li => li.Id, li => li.FieldValuesAsText, li => li.FileSystemObjectType, li => li["Title"]));
                         web.Context.ExecuteQueryRetry();
 
-                        foreach (var spItem in listItems)
+                        if (myList.BaseType == BaseType.DocumentLibrary)
                         {
-                            if (myList.BaseType == BaseType.DocumentLibrary)
+                            foreach (var spItem in listItems)
                             {
                                 switch (spItem.FileSystemObjectType)
                                 {
@@ -215,12 +218,51 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         }
                                 }
                             }
-                            else
+                            //Check if we have Templates in Forms Folder
+                            ProcessFormsFolder(web, myList, listInstance, template, scope);
+                        }
+                        else
+                        {
+                            foreach (var spItem in listItems)
                             {
                                 //PnP:DataRow
                                 ProcessDataRow(web, spItem, listInstance, template, scope);
                             }
                         }
+
+                        //fix: Columns Added on List Level are Added to listInstance.FieldRefs
+                        if (listInstance.Fields != null && listInstance.Fields.Any())
+                        {
+                            foreach (PnPField siteField in listInstance.Fields)
+                            {
+                                Guid fieldId = Guid.Empty;
+                                XElement fieldSchema = XElement.Parse(siteField.SchemaXml);
+                                if (Guid.TryParse((string)fieldSchema.Attribute("ID"), out fieldId))
+                                {
+                                    if (!listInstance.FieldRefs.Any(f => f.Id == fieldId))
+                                    {
+                                        var spField = myList.GetFieldById(fieldId);
+                                        if (spField != null)
+                                        {
+                                            try
+                                            {
+                                                web.Context.Load(spField, f => f.SchemaXml);
+                                                web.Context.ExecuteQuery();
+                                                XElement fSchema = XElement.Parse(spField.SchemaXml);
+                                                string fieldName = (string)fSchema.Attribute("Name");
+                                                string fieldDisplayName = (string)fSchema.Attribute("DisplayName");
+                                                listInstance.FieldRefs.Add(new FieldRef(fieldName) { Id = fieldId, DisplayName = fieldDisplayName });
+                                            }
+                                            catch (Exception ex)
+                                            {
+
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         listCount++;
                     }
                 }
@@ -438,6 +480,83 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             catch (Exception ex)
             {
                 scope.LogError(ex, "Extract of File with uniqueId {0} failed", fileUniqueId);
+            }
+        }
+
+        /// <summary>
+        /// Extract File Referenced in NewDocumentTemplates
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="spList"></param>
+        /// <param name="listInstance"></param>
+        /// <param name="template"></param>
+        /// <param name="scope"></param>
+        private void ProcessFormsFolder(Web web, SPList spList, ListInstance listInstance, ProvisioningTemplate template, PnPMonitoredScope scope)
+        {
+            SPFolder formsFolder = null;
+            try
+            {
+                web.EnsureProperties(w => w.Url);
+                spList.EnsureProperties(l => l.RootFolder.ServerRelativeUrl);
+                formsFolder = web.GetFolderByServerRelativeUrl(spList.RootFolder.ServerRelativeUrl + "/Forms");
+                web.Context.ExecuteQueryRetry();
+            }
+            catch(Exception ex)
+            {
+                formsFolder = null;
+            }
+            if (formsFolder != null)
+            {
+                var baseUri = new Uri(web.Url);
+
+                foreach (PnPView instanceView in listInstance.Views)
+                {
+                    if (instanceView.SchemaXml.Contains("NewDocumentTemplates"))
+                    {
+                        var viewSchema = XDocument.Parse(instanceView.SchemaXml);
+                        var templateElement = viewSchema.Root.Elements().FirstOrDefault(element => element.Name.LocalName == "NewDocumentTemplates");
+                        if(templateElement!=null)
+                        {
+                            var NewDocumentTemplates = Newtonsoft.Json.Linq.JArray.Parse(templateElement.Value);
+                            foreach(var jTok in NewDocumentTemplates)
+                            {
+                                var jObj = jTok as Newtonsoft.Json.Linq.JObject;
+                                if (jObj != null)
+                                {
+                                    var contentTypeId = jObj.Children<Newtonsoft.Json.Linq.JProperty>().FirstOrDefault(p => p.Name == "contentTypeId");
+                                    var url = jObj.Children<Newtonsoft.Json.Linq.JProperty>().FirstOrDefault(p => p.Name == "url");
+
+                                    if(contentTypeId!=null && url!=null)
+                                    {
+                                        var fullUri = new Uri(baseUri, url.Value.ToString());
+                                        var folderPath = System.Web.HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
+                                        var fileName = System.Web.HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
+
+                                        var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
+
+                                        SPFile myFile = web.GetFileByUrl($"{folderPath}/{fileName}");
+                                        web.Context.Load(myFile);
+                                        var stream = myFile.OpenBinaryStream();
+                                        web.Context.ExecuteQueryRetry();
+
+                                        template.Connector.SaveFileStream(myFile.Name, templateFolderPath, stream.Value);
+
+                                        PnPFile newFile = new PnPFile()
+                                        {
+                                            Folder = templateFolderPath,
+                                            Src = $"{templateFolderPath}/{fileName}",
+                                            TargetFileName = myFile.Name,
+                                            Overwrite = true,
+                                            Level = (PnPFileLevel)Enum.Parse(typeof(PnPFileLevel), myFile.Level.ToString())
+                                        };
+
+                                        template.Files.Add(newFile);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
