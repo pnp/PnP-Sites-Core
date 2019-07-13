@@ -4,8 +4,18 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using System;
-using System.Collections.Generic;
 using System.Linq;
+using PnPFolder = OfficeDevPnP.Core.Framework.Provisioning.Model.Folder;
+using PnPSiteSecurity = OfficeDevPnP.Core.Framework.Provisioning.Model.SiteSecurity;
+using PnPFile = OfficeDevPnP.Core.Framework.Provisioning.Model.File;
+using PnPFileLevel = OfficeDevPnP.Core.Framework.Provisioning.Model.FileLevel;
+using PnPRoleAssignment = OfficeDevPnP.Core.Framework.Provisioning.Model.RoleAssignment;
+using PnPDataRow = OfficeDevPnP.Core.Framework.Provisioning.Model.DataRow;
+using SPFolder = Microsoft.SharePoint.Client.Folder;
+using SPField = Microsoft.SharePoint.Client.Field;
+using SPFile = Microsoft.SharePoint.Client.File;
+using SPList = Microsoft.SharePoint.Client.List;
+using System.Collections.Generic;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -156,10 +166,829 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            //using (var scope = new PnPMonitoredScope(this.Name))
-            //{ }
+            if (creationInfo.IncludeAllListContent)
+            {
+                //Export all List and Library Context exclude ClientSidePages and derived ContentType Files since handled in ObjectClientSidePageContent
+                using (var scope = new PnPMonitoredScope(this.Name))
+                {
+                    int total = template.Lists.Count;
+                    var listCount = 0;
+
+                    //all Libs but not SitePage
+                    foreach (ListInstance listInstance in template.Lists.Where(t => t.TemplateType != 119))
+                    {
+                        creationInfo.MessagesDelegate?.Invoke($"ListData|{listInstance.Url}|{listCount}|{total}", ProvisioningMessageType.Progress);
+
+                        List myList = web.GetListByUrl(listInstance.Url);
+                        web.Context.Load(myList, l => l.BaseType, l => l.Id);
+                        var fields = myList.Fields;
+                        web.Context.Load(fields, fs => fs.Include(f => f.TypeAsString, f => f.InternalName, f => f.ReadOnlyField, f => f.FieldTypeKind, f => f.Title));
+                        web.Context.ExecuteQueryRetry();
+
+                        ListItemCollection listItems = myList.GetItems(new CamlQuery() { ViewXml = "<View Scope=\"RecursiveAll\"><Query><OrderBy><FieldRef Name='ID' Ascending='True'></FieldRef></OrderBy></Query></View>" });
+                        web.Context.Load(listItems, lc => lc.Include(li => li.Id, li => li.FieldValuesAsText, li => li.FileSystemObjectType, li => li["Title"]));
+                        web.Context.ExecuteQueryRetry();
+
+                        foreach (var spItem in listItems)
+                        {
+                            if (myList.BaseType == BaseType.DocumentLibrary)
+                            {
+                                switch (spItem.FileSystemObjectType)
+                                {
+                                    case FileSystemObjectType.File:
+                                        {
+                                            //PnP:File
+                                            ProcessDocumentRow(web, spItem, listInstance, template, scope);
+                                            break;
+                                        }
+                                    case FileSystemObjectType.Folder:
+                                        {
+                                            //PnP:Folder
+                                            ProcessFolderRow(web, spItem, listInstance, template, scope);
+                                            break;
+                                        }
+                                    default:
+                                        {
+                                            //PnP:DataRow
+                                            ProcessDataRow(web, spItem, listInstance, template, scope);
+                                            break;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                //PnP:DataRow
+                                ProcessDataRow(web, spItem, listInstance, template, scope);
+                            }
+                        }
+                        listCount++;
+                    }
+                }
+            }
             return template;
         }
+
+
+        /// <summary>
+        /// Extract File in Document Library
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="listItem"></param>
+        /// <param name="listInstance"></param>
+        /// <param name="template"></param>
+        /// <param name="scope"></param>
+        /// <param name="excludeFileNames"></param>
+        private void ProcessDocumentRow(Web web, ListItem listItem, ListInstance listInstance, ProvisioningTemplate template, PnPMonitoredScope scope, string[] excludeFileNames = null)
+        {
+            web.EnsureProperties(w => w.Url, w => w.Title);
+            SPFile myFile = listItem.File;
+            web.Context.Load(myFile,
+                f => f.Name,
+                f => f.ServerRelativeUrl,
+                f => f.Level,
+                f => f.UniqueId);
+            web.Context.ExecuteQueryRetry();
+
+            // If we got here it's a file, let's grab the file's path and name
+            var baseUri = new Uri(web.Url);
+            var fullUri = new Uri(baseUri, myFile.ServerRelativeUrl);
+            var folderPath = System.Web.HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
+            var fileName = System.Web.HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
+
+            var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
+
+            //prepare for the ability to ignore certain files
+            if (excludeFileNames != null)
+            {
+                if (excludeFileNames.Any(f => f.Equals(fileName, StringComparison.InvariantCultureIgnoreCase)))
+                    return;
+            }
+
+            // Avoid duplicate file entries
+            PnPFile newFile = null;
+            bool addFile = false;
+
+            newFile = template.Files.FirstOrDefault(f => f.Src.Equals($"{templateFolderPath}/{fileName}", StringComparison.CurrentCultureIgnoreCase));
+            if (newFile == null)
+            {
+                newFile = new PnPFile()
+                {
+                    Folder = templateFolderPath,
+                    Src = $"{templateFolderPath}/{fileName}",
+                    TargetFileName = myFile.Name,
+                    Overwrite = true,
+                    Level = (PnPFileLevel)Enum.Parse(typeof(PnPFileLevel), myFile.Level.ToString())
+                };
+                addFile = true;
+            }
+
+            ExtractFileSettings(web, myFile.UniqueId, ref newFile, template.Security, scope, FileFieldsToExclude);
+
+            if (addFile)
+            {
+                SPFile file = listItem.File;
+                web.Context.Load(file);
+                web.Context.ExecuteQueryRetry();
+                var spFileStream = file.OpenBinaryStream();
+                web.Context.ExecuteQueryRetry();
+
+                template.Connector.SaveFileStream(file.Name, templateFolderPath, spFileStream.Value);
+                web.Context.Load(listItem.ContentType);
+                web.Context.ExecuteQueryRetry();
+
+                template.Files.Add(newFile);
+            }
+        }
+
+        /// <summary>
+        /// Extract FieldValues for File
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="fileUniqueId"></param>
+        /// <param name="pnpFile"></param>
+        /// <param name="siteSecurity"></param>
+        /// <param name="scope"></param>
+        /// <param name="fieldsToExclude"></param>
+        private void ExtractFileSettings(Web web, Guid fileUniqueId, ref PnPFile pnpFile, PnPSiteSecurity siteSecurity, PnPMonitoredScope scope, string[] fieldsToExclude = null)
+        {
+            try
+            {
+                var file = web.GetFileById(fileUniqueId);
+                web.Context.Load(file,
+                    f => f.Level,
+                    f => f.ServerRelativeUrl,
+                    f => f.Properties,
+                    f => f.ListItemAllFields,
+                    f => f.ListItemAllFields.RoleAssignments,
+                    f => f.ListItemAllFields.RoleAssignments.Include(r => r.Member, r => r.RoleDefinitionBindings),
+                    f => f.ListItemAllFields.HasUniqueRoleAssignments,
+                    f => f.ListItemAllFields.ParentList,
+                    f => f.ListItemAllFields.ContentType.StringId);
+                web.Context.Load(web,
+                    w => w.AssociatedOwnerGroup,
+                    w => w.AssociatedMemberGroup,
+                    w => w.AssociatedVisitorGroup,
+                    w => w.Title,
+                    w => w.RoleDefinitions.Include(r => r.RoleTypeKind, r => r.Name),
+                    w => w.ContentTypes.Include(c => c.Id, c => c.Name, c => c.StringId));
+
+                web.Context.ExecuteQueryRetry();
+
+                ////export PnPFile Properties
+                //if (file.Properties.FieldValues.Any())
+                //{
+                //    foreach (var propKey in file.Properties.FieldValues.Keys.Where(k => !k.StartsWith("vti_") && !k.StartsWith("docset_")))
+                //    {
+                //        //nowhere to store in schema, currently no need
+                //    }
+                //}
+
+                //export PnPFile FieldValues
+                if (file.ListItemAllFields.FieldValues.Any())
+                {
+                    var list = file.ListItemAllFields.ParentList;
+
+                    var fields = list.Fields;
+                    web.Context.Load(fields, fs => fs.IncludeWithDefaultProperties(f => f.TypeAsString, f => f.InternalName, f => f.Title));
+                    web.Context.ExecuteQueryRetry();
+
+                    var fieldValues = file.ListItemAllFields.FieldValues;
+
+                    var fieldValuesAsText = file.ListItemAllFields.EnsureProperty(li => li.FieldValuesAsText).FieldValues;
+
+                    if (fieldsToExclude == null)
+                    {
+                        fieldsToExclude = new string[] { };
+                    }
+
+                    #region //**** get correct Content Type
+                    string ctId = string.Empty;
+                    foreach (var ct in web.ContentTypes.OrderByDescending(c => c.StringId.Length))
+                    {
+                        if (file.ListItemAllFields.ContentType.StringId.StartsWith(ct.StringId))
+                        {
+                            pnpFile.Properties.Add("ContentTypeId", ct.StringId);
+                            break;
+                        }
+                    }
+                    #endregion //**** get correct Content Type
+
+                    foreach (var fieldValue in fieldValues.Where(f => !fieldsToExclude.Contains(f.Key)))
+                    {
+                        if (fieldValue.Value != null && !string.IsNullOrEmpty(fieldValue.Value.ToString()))
+                        {
+                            var field = fields.FirstOrDefault(fs => fs.InternalName == fieldValue.Key);
+                            string value = string.Empty;
+
+                            //ignore read only fields
+                            if (!field.ReadOnlyField || WriteableReadOnlyField.Contains(field.InternalName.ToLower()))
+                            {
+                                value = TokenizeValue(web, field, fieldValue, fieldValuesAsText);
+
+                                if (fieldValue.Key == "ContentTypeId")
+                                {
+                                    value = null; //it's already in Properties - we can ignore here
+                                }
+                            }
+
+                            // We process real values only
+                            if (value != null && !String.IsNullOrEmpty(value) && value != "[]")
+                            {
+                                pnpFile.Properties.Add(fieldValue.Key, value);
+                            }
+                        }
+                    }
+
+                    //get PnPFile Permissions
+                    if (file.ListItemAllFields.HasUniqueRoleAssignments && siteSecurity != null)
+                    {
+                        if (pnpFile.Security == null) pnpFile.Security = new ObjectSecurity();
+                        pnpFile.Security.ClearSubscopes = true;
+                        pnpFile.Security.CopyRoleAssignments = false;
+                        var LimitedAccess = web.RoleDefinitions.FirstOrDefault(role => role.RoleTypeKind == RoleType.Guest);
+
+                        foreach (var roleAssignment in file.ListItemAllFields.RoleAssignments)
+                        {
+                            foreach (var rDef in roleAssignment.RoleDefinitionBindings.OrderBy(d => d.Order))
+                            {
+                                if (!(LimitedAccess != null && rDef.Name.Equals(LimitedAccess.Name)))
+                                {
+                                    string principalName = roleAssignment.Member.LoginName.Replace(web.Title, "{sitetitle}");
+                                    //check if we have this Group in Template Security - if so, we add it
+
+                                    if ((!string.IsNullOrWhiteSpace(siteSecurity.AssociatedOwnerGroup) && siteSecurity.AssociatedOwnerGroup.Equals(principalName)) |
+                                        (!string.IsNullOrWhiteSpace(siteSecurity.AssociatedMemberGroup) && siteSecurity.AssociatedMemberGroup.Equals(principalName)) |
+                                        (!string.IsNullOrWhiteSpace(siteSecurity.AssociatedVisitorGroup) && siteSecurity.AssociatedVisitorGroup.Equals(principalName)) |
+                                        siteSecurity.SiteGroups.Any(g => g.Title.Equals(principalName)))
+                                    {
+                                        pnpFile.Security.RoleAssignments.Add(new PnPRoleAssignment()
+                                        {
+                                            Principal = principalName,
+                                            Remove = false,
+                                            RoleDefinition = rDef.Name
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                scope.LogError(ex, "Extract of File with uniqueId {0} failed", fileUniqueId);
+            }
+        }
+
+        /// <summary>
+        /// Extract Folder in DocumentLibrary
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="listItem"></param>
+        /// <param name="listInstance"></param>
+        /// <param name="template"></param>
+        /// <param name="scope"></param>
+        private void ProcessFolderRow(Web web, ListItem listItem, ListInstance listInstance, ProvisioningTemplate template, PnPMonitoredScope scope)
+        {
+            listItem.EnsureProperties(it => it.ParentList.RootFolder.ServerRelativeUrl);
+            string serverRelativeListUrl = listItem.ParentList.RootFolder.ServerRelativeUrl;
+            string folderPath = listItem.FieldValuesAsText["FileRef"].Substring(serverRelativeListUrl.Length).TrimStart(new char[] { '/' });
+
+            if (!string.IsNullOrWhiteSpace(folderPath))
+            {
+                listItem.EnsureProperties(it => it.Folder.UniqueId);
+                string[] folderSegments = folderPath.Split('/');
+                PnPFolder pnpFolder = null;
+                for (int i = 0; i < folderSegments.Length; i++)
+                {
+                    if (i == 0)
+                    {
+                        pnpFolder = listInstance.Folders.FirstOrDefault(f => f.Name.Equals(folderSegments[i], StringComparison.CurrentCultureIgnoreCase));
+                        if (pnpFolder == null)
+                        {
+                            string pathToCurrentFolder = string.Format("{0}/{1}", serverRelativeListUrl, string.Join("/", folderSegments.Take(i + 1)));
+                            pnpFolder = ExtractFolderSettings(web, pathToCurrentFolder, template.Security, scope, FolderFieldsToExclude);
+                            listInstance.Folders.Add(pnpFolder);
+                        }
+                    }
+                    else
+                    {
+                        var childFolder = pnpFolder.Folders.FirstOrDefault(f => f.Name.Equals(folderSegments[i], StringComparison.CurrentCultureIgnoreCase));
+                        if (childFolder == null)
+                        {
+                            string pathToCurrentFolder = string.Format("{0}/{1}", serverRelativeListUrl, string.Join("/", folderSegments.Take(i + 1)));
+                            childFolder = ExtractFolderSettings(web, pathToCurrentFolder, template.Security, scope, FolderFieldsToExclude);
+                            pnpFolder.Folders.Add(childFolder);
+                        }
+                        pnpFolder = childFolder;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Extract List Data (with Attachments as soon as Schema support is there)
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="listItem"></param>
+        /// <param name="listInstance"></param>
+        /// <param name="template"></param>
+        /// <param name="scope"></param>
+        private void ProcessDataRow(Web web, ListItem listItem, ListInstance listInstance, ProvisioningTemplate template, PnPMonitoredScope scope)
+        {
+            try
+            {
+                SPList myList = web.GetListByUrl(listInstance.Url);
+                ListItemCollection listItems = myList.GetItems(new CamlQuery() { ViewXml = "<View Scope=\"RecursiveAll\"><Query><OrderBy><FieldRef Name='ID' Ascending='True'></FieldRef></OrderBy></Query></View>" });
+                web.Context.Load(listItems, co => co.Include(cc => cc.Id, cc => cc["Title"]));
+                web.Context.ExecuteQueryRetry();
+
+                foreach (var spItem in listItems)
+                {
+                    //PnPDataRow
+                    var pnpDataRow = ExtractListItemSettings(web, myList, spItem.Id, listInstance, scope, ExcludeCustomListFields);
+                    if (pnpDataRow != null)
+                        listInstance.DataRows.Add(pnpDataRow);
+                }
+            }
+            catch (Exception ex)
+            {
+                scope.LogError(ex, "Extract of ListData from {0} failed", listInstance.Url);
+            }
+        }
+
+        private PnPDataRow ExtractListItemSettings(Web web, SPList spList, int ListItemId, ListInstance listInstance, PnPMonitoredScope scope, string[] fieldsToExclude = null)
+        {
+            try
+            {
+                web.EnsureProperties(w => w.Url, w => w.ContentTypes.Include(c => c.Id, c => c.Name, c => c.StringId));
+
+                var fields = spList.Fields;
+                web.Context.Load(fields, fs => fs.Include(f => f.InternalName, f => f.FieldTypeKind, f => f.TypeAsString, f => f.ReadOnlyField, f => f.Title));
+                web.Context.ExecuteQueryRetry();
+
+                var listItem = spList.GetItemById(ListItemId);
+                web.Context.Load(listItem);
+                web.Context.Load(listItem, li => li.AttachmentFiles.Include(a => a.FileName, a => a.ServerRelativeUrl), li => li.ContentType.StringId);
+                web.Context.ExecuteQueryRetry();
+
+                var fieldValues = listItem.FieldValues;
+                var fieldValuesAsText = listItem.EnsureProperty(li => li.FieldValuesAsText).FieldValues;
+
+                if (fieldsToExclude == null)
+                {
+                    fieldsToExclude = new string[] { };
+                }
+
+                Dictionary<string, string> dataRow = new Dictionary<string, string>();
+                #region //**** get correct Content Type
+                string ctId = string.Empty;
+                foreach (var ct in web.ContentTypes.OrderByDescending(c => c.StringId.Length))
+                {
+                    if (listItem.ContentType.StringId.StartsWith(ct.StringId))
+                    {
+                        dataRow.Add("ContentTypeId", ct.StringId);
+                        break;
+                    }
+                }
+                #endregion //**** get correct Content Type
+
+                foreach (var fieldValue in listItem.FieldValues.Where(f => !fieldsToExclude.Contains(f.Key)))
+                {
+                    if (fieldValue.Value != null && !string.IsNullOrEmpty(fieldValue.Value.ToString()))
+                    {
+                        var field = fields.FirstOrDefault(fs => fs.InternalName == fieldValue.Key);
+                        string value = string.Empty;
+
+                        //ignore read only fields
+                        if (!field.ReadOnlyField || WriteableReadOnlyListField.Contains(field.InternalName.ToLower()))
+                        {
+                            value = TokenizeValue(web, field, fieldValue, fieldValuesAsText);
+                        }
+
+
+                        if (fieldValue.Key == "ContentTypeId")
+                        {
+                            value = null; //ignore here since already in dataRow
+                        }
+
+                        // We process real values only
+                        if (value != null && !String.IsNullOrEmpty(value) && value != "[]")
+                        {
+                            dataRow.Add(fieldValue.Key, value);
+                        }
+                    }
+                }
+
+                if (listItem.AttachmentFiles.Count > 0)
+                {
+                    Dictionary<string, string> AttachmentFiles = new Dictionary<string, string>();
+                    foreach (Attachment file in listItem.AttachmentFiles)
+                    {
+                        AttachmentFiles.Add(file.FileName, file.ServerRelativeUrl);
+                    }
+                    var FilePaths = SaveAttachments(web, listInstance, listItem.Id, AttachmentFiles, scope);
+                    //Todo: complete when Schema Extension is here to store AttachmentFiles to DataRows
+                    //https://github.com/SharePoint/PnP-Provisioning-Schema/issues/409
+                }
+
+
+                return new PnPDataRow(dataRow);
+            }
+            catch (Exception ex)
+            {
+                scope.LogError(ex, "Extract of ListItemId {0} failed", ListItemId);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Save List Attachments
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="listInstance"></param>
+        /// <param name="ListItemId"></param>
+        /// <param name="AttachmentFiles"></param>
+        /// <param name="scope"></param>
+        private List<string> SaveAttachments(Web web, ListInstance listInstance, int ListItemId, Dictionary<string, string> AttachmentFiles, PnPMonitoredScope scope)
+        {
+            List<string> filePaths = new List<string>();
+            foreach (var fileName in AttachmentFiles.Keys)
+            {
+                string destfileFolder = $"{listInstance.Url.Remove(0, 6)}/{ListItemId}/";
+                try
+                {
+                    string serverRelativeUrl = AttachmentFiles[fileName];
+                    var spFile = web.GetFileByServerRelativeUrl(serverRelativeUrl);
+                    web.Context.Load(spFile);
+                    web.Context.ExecuteQueryRetry();
+                    var streamX = spFile.OpenBinaryStream();
+                    web.Context.ExecuteQueryRetry();
+                    listInstance.ParentTemplate.Connector.SaveFileStream(fileName, destfileFolder, streamX.Value);
+                    filePaths.Add($"{destfileFolder}{fileName}");
+                }
+                catch (Exception ex)
+                {
+                    scope.LogError(ex, "Extract of ListAttachment {0} failed", destfileFolder);
+                }
+            }
+            return filePaths;
+        }
+
+        /// <summary>
+        /// Tokenize values of different FieldTypes to string 
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="field"></param>
+        /// <param name="fieldValue"></param>
+        /// <param name="fieldValuesAsText"></param>
+        /// <returns></returns>
+        private string TokenizeValue(Web web, SPField field, KeyValuePair<string, object> fieldValue, Dictionary<string, string> fieldValuesAsText)
+        {
+            string value = string.Empty;
+            switch (field.TypeAsString)
+            {
+                case "URL":
+                    value = Tokenize(fieldValuesAsText[fieldValue.Key], web.Url, web);
+                    break;
+                case "User":
+                    var userFieldValue = fieldValue.Value as Microsoft.SharePoint.Client.FieldUserValue;
+                    if (userFieldValue != null)
+                    {
+                        value = userFieldValue.Email;
+                    }
+                    break;
+                case "UserMulti":
+                    var userMulitFieldValue = fieldValue.Value as Microsoft.SharePoint.Client.FieldUserValue[];
+                    if (userMulitFieldValue != null)
+                    {
+                        value = string.Join(",", userMulitFieldValue.Select(u => u.Email).ToArray())?.TrimEnd(new char[] { ',' });
+                    }
+                    break;
+                case "Lookup":
+                    var lookupFieldValue = fieldValue.Value as Microsoft.SharePoint.Client.FieldLookupValue;
+                    if (lookupFieldValue != null)
+                    {
+                        value = lookupFieldValue.LookupId.ToString();
+                    }
+                    break;
+                case "LookupMulti":
+                    var lookupMultiFieldValue = fieldValue.Value as Microsoft.SharePoint.Client.FieldLookupValue[];
+                    if (lookupMultiFieldValue != null)
+                    {
+                        value = value = string.Join(",", lookupMultiFieldValue.Select(l => l.LookupId).ToArray())?.TrimEnd(new char[] { ',' });
+                    }
+                    break;
+                case "TaxonomyFieldType":
+                    var taxonomyFieldValue = fieldValue.Value as Microsoft.SharePoint.Client.Taxonomy.TaxonomyFieldValue;
+                    if (taxonomyFieldValue != null)
+                    {
+                        value = $"{taxonomyFieldValue.Label}|{taxonomyFieldValue.TermGuid}";
+                    }
+                    break;
+                case "TaxonomyFieldTypeMulti":
+                    var taxonomyMultiFieldValue = fieldValue.Value as Microsoft.SharePoint.Client.Taxonomy.TaxonomyFieldValueCollection;
+                    if (taxonomyMultiFieldValue != null)
+                    {
+                        string terms = "";
+                        foreach (var term in taxonomyMultiFieldValue)
+                        {
+                            terms += $"{term.Label}|{term.TermGuid};";
+                        }
+                        value = terms.TrimEnd(new char[] { ';' });
+                    }
+                    break;
+                case "DateTime":
+                    var dateTimeFieldValue = fieldValue.Value as DateTime?;
+                    if (dateTimeFieldValue.HasValue)
+                    {
+                        value = dateTimeFieldValue.Value.ToString("yyyy-MM-ddTHH:mm:ssZ");
+                    }
+                    break;
+                case "ContentTypeIdFieldType":
+                default:
+                    value = Tokenize(fieldValue.Value.ToString(), web.Url, web);
+                    break;
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        /// Extract FieldValues, PropertyBag and Security Settings from Folder
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="serverRelativePathToFolder"></param>
+        /// <param name="siteSecurity"></param>
+        /// <param name="scope"></param>
+        /// <param name="fieldsToExclude"></param>
+        /// <returns></returns>
+        public PnPFolder ExtractFolderSettings(Web web, string serverRelativePathToFolder, PnPSiteSecurity siteSecurity, PnPMonitoredScope scope, string[] fieldsToExclude = null)
+        {
+            PnPFolder pnpFolder = null;
+            try
+            {
+                SPFolder spFolder = web.GetFolderByServerRelativeUrl(serverRelativePathToFolder);
+                web.Context.Load(spFolder,
+                    f => f.Name,
+                    f => f.ServerRelativeUrl,
+                    f => f.Properties,
+                    f => f.ListItemAllFields,
+                    f => f.ListItemAllFields.RoleAssignments,
+                    f => f.ListItemAllFields.RoleAssignments.Include(r => r.Member, r => r.RoleDefinitionBindings),
+                    f => f.ListItemAllFields.HasUniqueRoleAssignments,
+                    f => f.ListItemAllFields.ParentList,
+                    f => f.ListItemAllFields.ContentType.StringId);
+                web.Context.Load(web,
+                    w => w.AssociatedOwnerGroup,
+                    w => w.AssociatedMemberGroup,
+                    w => w.AssociatedVisitorGroup,
+                    w => w.Title,
+                    w => w.Url,
+                    w => w.RoleDefinitions.Include(r => r.RoleTypeKind, r => r.Name),
+                    w => w.ContentTypes.Include(c => c.Id, c => c.Name, c => c.StringId));
+                web.Context.ExecuteQueryRetry();
+
+                pnpFolder = new PnPFolder(spFolder.Name);
+
+                //export PnPFolder Properties
+                if (spFolder.Properties.FieldValues.Any())
+                {
+                    foreach (var propKey in spFolder.Properties.FieldValues.Keys.Where(k => !k.StartsWith("vti_") && !k.StartsWith("docset_")))
+                    {
+                        pnpFolder.PropertyBagEntries.Add(new PropertyBagEntry() { Key = propKey, Value = spFolder.Properties.FieldValues[propKey].ToString() });
+                    }
+                }
+
+                //export PnPFolder FieldValues
+                if (spFolder.ListItemAllFields.FieldValues.Any())
+                {
+                    var list = spFolder.ListItemAllFields.ParentList;
+
+                    var fields = list.Fields;
+                    web.Context.Load(fields, fs => fs.IncludeWithDefaultProperties(f => f.TypeAsString, f => f.InternalName, f => f.Title));
+                    web.Context.ExecuteQueryRetry();
+
+                    var fieldValues = spFolder.ListItemAllFields.FieldValues;
+
+                    var fieldValuesAsText = spFolder.ListItemAllFields.EnsureProperty(li => li.FieldValuesAsText).FieldValues;
+
+                    if (fieldsToExclude == null)
+                    {
+                        fieldsToExclude = new string[] { };
+                    }
+
+                    #region //**** get correct Content Type
+                    string ctId = string.Empty;
+                    foreach (var ct in web.ContentTypes.OrderByDescending(c => c.StringId.Length))
+                    {
+                        if (spFolder.ListItemAllFields.ContentType.StringId.StartsWith(ct.StringId))
+                        {
+                            //https://github.com/SharePoint/PnP-Provisioning-Schema/issues/412
+                            //pnpFolder.Properties.Add("ContentTypeId", ct.StringId);
+                            break;
+                        }
+                    }
+                    #endregion //**** get correct Content Type
+
+                    foreach (var fieldValue in fieldValues.Where(f => !fieldsToExclude.Contains(f.Key)))
+                    {
+                        if (fieldValue.Value != null && !string.IsNullOrEmpty(fieldValue.Value.ToString()))
+                        {
+                            var field = fields.FirstOrDefault(fs => fs.InternalName == fieldValue.Key);
+                            string value = string.Empty;
+
+                            //ignore read only fields
+                            if (!field.ReadOnlyField || WriteableReadOnlyField.Contains(field.InternalName.ToLower()))
+                            {
+                                value = TokenizeValue(web, field, fieldValue, fieldValuesAsText);
+
+                                if (fieldValue.Key == "ContentTypeId")
+                                {
+                                    value = null; //ignore here since already in dataRow
+                                }
+                            }
+                            //Todo: One Note Folder
+                            if (fieldValue.Key.Equals("HTML_x0020_File_x0020_Type", StringComparison.CurrentCultureIgnoreCase) &&
+                                fieldValuesAsText["HTML_x0020_File_x0020_Type"] == "OneNote.Notebook")
+                            {
+                                value = "OneNote.Notebook";
+                            }
+
+                            // We process real values only
+                            if (value != null && !String.IsNullOrEmpty(value) && value != "[]")
+                            {
+                                //Todo: FieldValues for Folders - needs schema extension since - SetDefaultColumnValuesImplementation handling pnpFolder.DefaultColumnValues has focus on something else
+                                //https://github.com/SharePoint/PnP-Provisioning-Schema/issues/412
+                                //pnpFolder.Properties.Add(fieldValue.Key, value);
+                            }
+                        }
+                    }
+                }
+
+                // get PnPFolder Permissions
+                if (spFolder.ListItemAllFields.HasUniqueRoleAssignments && siteSecurity != null)
+                {
+                    pnpFolder.Security.ClearSubscopes = true;
+                    pnpFolder.Security.CopyRoleAssignments = false;
+                    var LimitedAccess = web.RoleDefinitions.FirstOrDefault(role => role.RoleTypeKind == RoleType.Guest);
+
+                    foreach (var roleAssignment in spFolder.ListItemAllFields.RoleAssignments)
+                    {
+                        foreach (var rDef in roleAssignment.RoleDefinitionBindings.OrderBy(d => d.Order))
+                        {
+                            if (!(LimitedAccess != null && rDef.Name.Equals(LimitedAccess.Name)))
+                            {
+                                string principalName = roleAssignment.Member.LoginName.Replace(web.Title, "{sitetitle}");
+                                //check if we have this Group in Template Security - if so, we add it
+
+                                if ((!string.IsNullOrWhiteSpace(siteSecurity.AssociatedOwnerGroup) && siteSecurity.AssociatedOwnerGroup.Equals(principalName)) |
+                                    (!string.IsNullOrWhiteSpace(siteSecurity.AssociatedMemberGroup) && siteSecurity.AssociatedMemberGroup.Equals(principalName)) |
+                                    (!string.IsNullOrWhiteSpace(siteSecurity.AssociatedVisitorGroup) && siteSecurity.AssociatedVisitorGroup.Equals(principalName)) |
+                                    siteSecurity.SiteGroups.Any(g => g.Title.Equals(principalName)))
+                                {
+                                    pnpFolder.Security.RoleAssignments.Add(new PnPRoleAssignment()
+                                    {
+                                        Principal = principalName,
+                                        Remove = false,
+                                        RoleDefinition = rDef.Name
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                scope.LogError(ex, "Extract of Folder {0} failed", serverRelativePathToFolder);
+            }
+            return pnpFolder;
+        }
+
+
+        #region //**** static Field Lists as Hint how to handle 
+        public static string[] WriteableReadOnlyField = new[]
+        {
+            "description","publishingpagelayout", "contenttypeid","bannerimageurl","_originalsourceitemid","_originalsourcelistid","_originalsourcesiteid","_originalsourcewebid","_originalsourceurl"
+        };
+
+        //ignore this fields on one.note folder
+        public static string[] FolderFieldsToExclude = new[] {
+                "_Dirty",
+                "_IsCurrentVersion",
+                "_Level",
+                "_ModerationStatus",
+                "_Parsable",
+                "_UIVersion",
+                "_UIVersionString",
+                "AppAuthor",
+                "AppEditor",
+                "Author",
+                "ContentTypeId",
+                "ContentVersion",
+                "Created",
+                "Created_x0020_Date",
+                "DocConcurrencyNumber",
+                "Editor",
+                "FileRef",
+                "FileLeafRef",
+                "FolderChildCount",
+                "FSObjType",
+                "GUID",
+                "ID",
+                "IsCheckedoutToLocal",
+                "ItemChildCount",
+                "Last_x0020_Modified",
+                "MetaInfo",
+                "Modified",
+                "Modified_x0020_By",
+                "NoExecute",
+                "Order",
+                "owshiddenversion",
+                "ParentUniqueId",
+                "ProgId",
+                "ScopeId",
+                "SMLastModifiedDate",
+                "SMTotalFileStreamSize",
+                "SortBehavior",
+                "Title",
+                "UniqueId",
+                "WorkflowVersion",
+                "xd_Signature"
+            };
+
+        public static string[] FileFieldsToExclude = new[] {
+                    "ID",
+                    "GUID",
+                    "Author",
+                    "Editor",
+                    "FileLeafRef",
+                    "FileRef",
+                    "File_x0020_Type",
+                    "Modified_x0020_By",
+                    "Created_x0020_By",
+                    "Created",
+                    "Modified",
+                    "FileDirRef",
+                    "Last_x0020_Modified",
+                    "Created_x0020_Date",
+                    "File_x0020_Size",
+                    "FSObjType",
+                    "IsCheckedoutToLocal",
+                    "ScopeId",
+                    "UniqueId",
+                    "VirusStatus",
+                    "_Level",
+                    "_IsCurrentVersion",
+                    "ItemChildCount",
+                    "FolderChildCount",
+                    "SMLastModifiedDate",
+                    "owshiddenversion",
+                    "_UIVersion",
+                    "_UIVersionString",
+                    "Order",
+                    "WorkflowVersion",
+                    "DocConcurrencyNumber",
+                    "ParentUniqueId",
+                    "CheckedOutUserId",
+                    "SyncClientId",
+                    "CheckedOutTitle",
+                    "SMTotalSize",
+                    "SMTotalFileStreamSize",
+                    "SMTotalFileCount",
+                    "ParentVersionString",
+                    "ParentLeafName",
+                    "SortBehavior",
+                    "StreamHash",
+                    "TaxCatchAll",
+                    "TaxCatchAllLabel",
+                    "_ModerationStatus",
+                    //"HtmlDesignAssociated",
+                    //"HtmlDesignStatusAndPreview",
+                    "MetaInfo",
+                    "CheckoutUser",
+                    "NoExecute",
+                    "_HasCopyDestinations",
+                    "ContentVersion",
+                    "UIVersion",
+                    "Title",
+                    "ContentTypeId",
+                    //Feld welches sonst doppelt vorhanden wäre
+                };
+
+        public static string[] ExcludeCustomListFields = new[]
+        {
+            "_VirusStatus", "_VirusVendorID", "_VirusInfo", "FileLeafRef", "Attachments"
+        };
+
+        public static string[] WriteableReadOnlyListField = new[]
+        {
+            "description"
+        };
+
+        #endregion //**** static Field Lists as Hint how to handle 
 
         public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
@@ -174,7 +1003,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willExtract.HasValue)
             {
-                _willExtract = false;
+                _willExtract = creationInfo.HandlersToProcess.HasFlag(Handlers.Fields) && creationInfo.HandlersToProcess.HasFlag(Handlers.Lists);
             }
             return _willExtract.Value;
         }

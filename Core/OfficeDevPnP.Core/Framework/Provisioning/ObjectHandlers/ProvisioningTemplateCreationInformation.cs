@@ -32,6 +32,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private bool includeContentTypesFromSyndication = true;
         private bool includeHiddenLists = false;
         private bool includeAllClientSidePages = false;
+        private bool includeAllListContent = false;
 
         /// <summary>
         /// Provisioning Progress Delegate
@@ -265,6 +266,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             set
             {
                 this.includeAllClientSidePages = value;
+            }
+        }
+
+        /// <summary>
+        /// If true all client side pages will be included in the template.
+        /// </summary>
+        public bool IncludeAllListContent
+        {
+            get
+            {
+                return this.includeAllListContent;
+            }
+            set
+            {
+                this.includeAllListContent = value;
             }
         }
 

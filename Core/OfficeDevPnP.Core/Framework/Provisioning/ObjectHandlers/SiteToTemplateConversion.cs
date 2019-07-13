@@ -110,6 +110,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Tenant)) objectHandlers.Add(new ObjectTenant());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.ApplicationLifecycleManagement)) objectHandlers.Add(new ObjectApplicationLifecycleManagement());
 #endif
+                if (creationInfo.HandlersToProcess.HasFlag(Handlers.Fields) || creationInfo.HandlersToProcess.HasFlag(Handlers.Lists)) objectHandlers.Add(new ObjectListInstanceDataRows());
+
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.ExtensibilityProviders)) objectHandlers.Add(new ObjectExtensibilityHandlers());
 
                 objectHandlers.Add(new ObjectRetrieveTemplateInfo());
