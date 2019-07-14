@@ -276,9 +276,65 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var sitePagesLib = template.Lists.FirstOrDefault(t => t.TemplateType != 119);
 
                     }
+
+                    ProcessContentTypeDocumentTemplates(web, template, scope);
                 }
             }
             return template;
+        }
+
+        /// <summary>
+        /// Extract of TemplateDocuments specified with ContentTypes
+        /// </summary>
+        /// <param name="web"></param>
+        /// <param name="template"></param>
+        /// <param name="scope"></param>
+        private void ProcessContentTypeDocumentTemplates(Web web, ProvisioningTemplate template, PnPMonitoredScope scope)
+        {
+            //Handle ContentTypes DocumentTemplate
+            foreach (var ctype in template.ContentTypes.Where(ct => !string.IsNullOrWhiteSpace(ct.DocumentTemplate)))
+            {
+                try
+                {
+                    var cntTypeSite = web.GetContentTypeById(ctype.Id);
+                    cntTypeSite.EnsureProperty(t => t.DocumentTemplateUrl);
+
+                    var myFile = web.GetFileByServerRelativeUrl(cntTypeSite.DocumentTemplateUrl);
+                    myFile.EnsureProperties(f => f.Level, f => f.ServerRelativeUrl, f => f.Name);
+
+                    // If we got here it's a file, let's grab the file's path and name
+                    var baseUri = new Uri(web.Url);
+                    var fullUri = new Uri(baseUri, myFile.ServerRelativeUrl);
+                    var folderPath = System.Web.HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
+                    var fileName = System.Web.HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
+
+                    var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
+
+                    PnPFile newFile = new PnPFile()
+                    {
+                        Folder = templateFolderPath,
+                        Src = $"{templateFolderPath}/{fileName}",
+                        TargetFileName = myFile.Name,
+                        Overwrite = true,
+                        Level = (PnPFileLevel)Enum.Parse(typeof(PnPFileLevel), myFile.Level.ToString())
+                    };
+
+                    web.Context.Load(myFile);
+                    web.Context.ExecuteQueryRetry();
+                    var spFileStream = myFile.OpenBinaryStream();
+                    web.Context.ExecuteQueryRetry();
+
+                    template.Connector.SaveFileStream(myFile.Name, templateFolderPath, spFileStream.Value);
+
+                    //todo: causes issue on import - upload of file _cts/[CTName]/[FileName] to site/[siteTitle]/_cts/[CTName]/[FileName] returns 401 Error
+                    //ctype.DocumentTemplate = myFile.Name;
+                    ctype.DocumentTemplate = string.Empty;
+                }
+                catch (Exception ex)
+                {
+                    scope.LogError(ex, "Failed to extract DocumentTemplate for ContentType {0}", ctype.Id);
+                }
+            }
         }
 
 
@@ -346,8 +402,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
 
                 template.Connector.SaveFileStream(file.Name, templateFolderPath, spFileStream.Value);
-                web.Context.Load(listItem.ContentType);
-                web.Context.ExecuteQueryRetry();
 
                 template.Files.Add(newFile);
             }
