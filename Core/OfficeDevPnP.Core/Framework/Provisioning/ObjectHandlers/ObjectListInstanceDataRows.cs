@@ -265,6 +265,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         listCount++;
                     }
+
+                    //Handle SitePages 
+                    //Some Content is already taken care of by ObjectPageContents and ObjectClientSidePageContents
+                    //ObjectPageContents does not export security
+                    //ObjectClientSidePageContents does not care about Security and additional Fields from CustomContentType
+                    if (template.Lists.Any(t => t.TemplateType != 119) && creationInfo.HandlersToProcess.HasFlag(Handlers.PageContents))
+                    {
+                        //todo: handle all whats not .aspx or taking care of everything not yet extracted i.e. additional Fields, Security, ContentType
+                        var sitePagesLib = template.Lists.FirstOrDefault(t => t.TemplateType != 119);
+
+                    }
                 }
             }
             return template;
