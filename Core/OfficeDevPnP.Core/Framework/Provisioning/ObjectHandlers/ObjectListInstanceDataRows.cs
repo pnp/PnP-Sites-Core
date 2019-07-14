@@ -1122,7 +1122,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willExtract.HasValue)
             {
-                _willExtract = creationInfo.HandlersToProcess.HasFlag(Handlers.Fields) && creationInfo.HandlersToProcess.HasFlag(Handlers.Lists);
+                _willExtract = creationInfo.HandlersToProcess.HasFlag(Handlers.Fields) && creationInfo.HandlersToProcess.HasFlag(Handlers.ContentTypes) && creationInfo.HandlersToProcess.HasFlag(Handlers.Lists);
             }
             return _willExtract.Value;
         }
