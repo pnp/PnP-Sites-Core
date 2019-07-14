@@ -285,6 +285,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         /// <summary>
+        /// List of Files to ignore given the relative Path to Web i.e. "Shared Documents/test.docx"
+        /// </summary>
+        public List<String> FileContentToIgnore { get; set; } = new List<String>();
+
+        /// <summary>
         /// List of of handlers to process
         /// </summary>
         public Handlers HandlersToProcess

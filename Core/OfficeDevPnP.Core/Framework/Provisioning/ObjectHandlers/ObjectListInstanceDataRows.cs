@@ -201,7 +201,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     case FileSystemObjectType.File:
                                         {
                                             //PnP:File
-                                            ProcessDocumentRow(web, spItem, listInstance, template, scope);
+                                            ProcessDocumentRow(web, spItem, listInstance, template, scope, creationInfo.FileContentToIgnore);
                                             break;
                                         }
                                     case FileSystemObjectType.Folder:
@@ -291,7 +291,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="template"></param>
         /// <param name="scope"></param>
         /// <param name="excludeFileNames"></param>
-        private void ProcessDocumentRow(Web web, ListItem listItem, ListInstance listInstance, ProvisioningTemplate template, PnPMonitoredScope scope, string[] excludeFileNames = null)
+        private void ProcessDocumentRow(Web web, ListItem listItem, ListInstance listInstance, ProvisioningTemplate template, PnPMonitoredScope scope, List<String>excludeFileNames)
         {
             web.EnsureProperties(w => w.Url, w => w.Title);
             SPFile myFile = listItem.File;
@@ -310,10 +310,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
 
-            //prepare for the ability to ignore certain files
+            //ignore certain files
             if (excludeFileNames != null)
             {
-                if (excludeFileNames.Any(f => f.Equals(fileName, StringComparison.InvariantCultureIgnoreCase)))
+                if (excludeFileNames.Any(f => f.Equals($"{templateFolderPath}/{fileName}", StringComparison.InvariantCultureIgnoreCase)))
                     return;
             }
 
@@ -545,7 +545,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                         var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
 
-                                        SPFile myFile = web.GetFileByUrl($"{folderPath}/{fileName}");
+                                        SPFile myFile = web.GetFileByUrl($"{templateFolderPath}/{fileName}");
                                         web.Context.Load(myFile);
                                         var stream = myFile.OpenBinaryStream();
                                         web.Context.ExecuteQueryRetry();
