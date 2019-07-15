@@ -577,6 +577,18 @@ namespace OfficeDevPnP.Core.Pages
                         htmlWriter.RenderEndTag();
                     }
                 }
+
+                if (this.ServerProcessedContent["htmlStrings"] != null)
+                {
+                    foreach (JProperty property in this.ServerProcessedContent["htmlStrings"])
+                    {
+                        htmlWriter.AddAttribute("data-sp-prop-name", property.Name);
+                        htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
+                        htmlWriter.Write(property.Value.ToString());
+                        htmlWriter.RenderEndTag();
+                    }
+                }
+
             }
             else
             {

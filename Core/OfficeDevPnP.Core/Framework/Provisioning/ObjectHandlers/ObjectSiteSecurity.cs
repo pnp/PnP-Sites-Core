@@ -275,7 +275,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 ))
                 {
                     Group group;
-                    var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName));
+                    var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName, gr => gr.Id));
                     web.Context.ExecuteQueryRetry();
 
                     string parsedGroupTitle = parser.ParseString(siteGroup.Title);
@@ -299,6 +299,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (parsedGroupOwner != null && (parsedGroupTitle != parsedGroupOwner))
                         {
                             Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName.Equals(parsedGroupOwner, StringComparison.OrdinalIgnoreCase));
+
+                            if (ownerPrincipal == null)
+                            {
+                                if (Int32.TryParse(parsedGroupOwner, out int roleAssignmentPrincipalId))
+                                {
+                                    ownerPrincipal = allGroups.FirstOrDefault(g => g.Id.Equals(roleAssignmentPrincipalId));
+                                }
+                            }
+
                             if (ownerPrincipal == null)
                             {
                                 ownerPrincipal = web.EnsureUser(parsedGroupOwner);

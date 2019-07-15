@@ -729,7 +729,7 @@ namespace OfficeDevPnP.Core.ALM
         }
 
 
-        private async Task<bool> BaseRequest(Guid id, AppManagerAction action, bool switchToAppCatalogContext, Dictionary<string, object> postObject, AppCatalogScope scope)
+        private async Task<bool> BaseRequest(Guid id, AppManagerAction action, bool switchToAppCatalogContext, Dictionary<string, object> postObject, AppCatalogScope scope, int timeoutSeconds = 200)
         {
             var context = _context;
             if (switchToAppCatalogContext == true && scope == AppCatalogScope.Tenant)
@@ -754,6 +754,8 @@ namespace OfficeDevPnP.Core.ALM
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
+                    httpClient.Timeout = new TimeSpan(0, 0, timeoutSeconds);
+
                     var method = action.ToString();
                     var requestUrl = $"{context.Web.Url}/_api/web/{(scope == AppCatalogScope.Tenant ? "tenant" : "sitecollection")}appcatalog/AvailableApps/GetByID('{id}')/{method}";
 

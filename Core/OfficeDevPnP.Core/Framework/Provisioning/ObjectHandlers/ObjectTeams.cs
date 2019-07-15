@@ -1,23 +1,19 @@
 ﻿#if !ONPREMISES
-using Microsoft.SharePoint.Client;
+using Microsoft.Online.SharePoint.TenantAdministration;
+using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Teams;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
+using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Graph;
 using System;
+using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
-using Newtonsoft.Json.Linq;
-using OfficeDevPnP.Core.Framework.Provisioning.Model.Teams;
-using OfficeDevPnP.Core.Utilities;
-using System.Net;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Web;
-using System.Net.Http;
-using Microsoft.Online.SharePoint.TenantAdministration;
-using OfficeDevPnP.Core.Utilities.Graph;
-using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
-using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
-using System.IO;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -55,8 +51,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Check if the Group exists
                 if (GroupExistsById(scope, parsedGroupId, accessToken))
                 {
-                    // Then promote the Group into a Team or update it, if it already exists
-                    teamId = CreateOrUpdateTeamFromGroup(scope, team, parser, parsedGroupId, accessToken);
+                    // Then promote the Group into a Team or update it, if it already exists. Patching a team doesn't return an ID, so use the parsedGroupId directly (teamId and groupId are the same). 
+                    teamId = CreateOrUpdateTeamFromGroup(scope, team, parser, parsedGroupId, accessToken) ?? parsedGroupId;
                 }
                 else
                 {
@@ -73,33 +69,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (!String.IsNullOrEmpty(teamId))
             {
-                // Wait for the Team to be ready
-                Boolean wait = true;
-                Int32 iterations = 0;
-                while (wait)
-                {
-                    iterations++;
-
-                    try
-                    {
-                        var jsonOwners = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/owners?$select=id", accessToken);
-                        if (!String.IsNullOrEmpty(jsonOwners))
-                        {
-                            wait = false;
-                        }
-                    }
-                    catch (Exception)
-                    {
-                        // In case of exception wait for 5 secs
-                        System.Threading.Thread.Sleep(TimeSpan.FromSeconds(5));
-                    }
-
-                    // Don't wait more than 1 minute
-                    if (iterations > 12)
-                    {
-                        wait = false;
-                    }
-                }
+                // Wait to be sure that the Team is ready before configuring it
+                WaitForTeamToBeReady(accessToken, teamId);
 
                 // And now we configure security, channels, and apps
                 if (!SetGroupSecurity(scope, team, teamId, accessToken)) return null;
@@ -124,6 +95,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             return null;
+        }
+
+        private static void WaitForTeamToBeReady(string accessToken, string teamId)
+        {
+            // Wait for the Team to be ready
+            Boolean wait = true;
+            Int32 iterations = 0;
+            while (wait)
+            {
+                iterations++;
+
+                try
+                {
+                    var jsonOwners = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/owners?$select=id", accessToken);
+                    if (!String.IsNullOrEmpty(jsonOwners))
+                    {
+                        wait = false;
+                    }
+                }
+                catch (Exception)
+                {
+                    // In case of exception wait for 5 secs
+                    System.Threading.Thread.Sleep(TimeSpan.FromSeconds(5));
+                }
+
+                // Don't wait more than 1 minute
+                if (iterations > 12)
+                {
+                    wait = false;
+                }
+            }
         }
 
         /// <summary>
@@ -165,11 +167,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>The ID of the created or update Team</returns>
         private static string CreateOrUpdateTeam(PnPMonitoredScope scope, Team team, TokenParser parser, string accessToken)
         {
-            var parsedMailNickname = !String.IsNullOrEmpty(team.MailNickname) ? parser.ParseString(team.MailNickname).ToLower() : null;
+            var parsedMailNickname = !string.IsNullOrEmpty(team.MailNickname) ? parser.ParseString(team.MailNickname).ToLower() : null;
 
-            if (String.IsNullOrEmpty(parsedMailNickname))
+            if (string.IsNullOrEmpty(parsedMailNickname))
             {
-                parsedMailNickname = team.DisplayName.Replace(' ', '-').ToLower();
+                parsedMailNickname = CreateMailNicknameFromDisplayName(team.DisplayName);
             }
 
             // Check if the Group/Team already exists
@@ -221,7 +223,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 };
 
                 // Make the Graph request to create the Office 365 Group
-                var createdGroupJson = HttpHelper.MakePostRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups", 
+                var createdGroupJson = HttpHelper.MakePostRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups",
                     groupCreationRequest, HttpHelper.JsonContentType, accessToken);
                 var createdGroupId = JToken.Parse(createdGroupJson).Value<string>("id");
 
@@ -234,7 +236,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     try
                     {
-                        var jsonGroup= HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{createdGroupId}", accessToken);
+                        var jsonGroup = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{createdGroupId}", accessToken);
                         if (!String.IsNullOrEmpty(jsonGroup))
                         {
                             wait = false;
@@ -594,99 +596,197 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>Whether the Channels have been provisioned or not</returns>
         private static bool SetTeamChannels(PnPMonitoredScope scope, TokenParser parser, Team team, string teamId, string accessToken)
         {
-            if (team.Channels != null)
+            if (team.Channels == null) return true;
+
+            var existingChannels = GetExistingTeamChannels(teamId, accessToken);
+
+            foreach (var channel in team.Channels)
             {
-                foreach (var channel in team.Channels)
+                var existingChannel = existingChannels.FirstOrDefault(x => x["displayName"].ToString() == channel.DisplayName);
+
+                var channelId = existingChannel == null ? CreateTeamChannel(scope, channel, teamId, accessToken) : UpdateTeamChannel(channel, teamId, existingChannel, accessToken);
+
+                if (channelId == null) return false;
+
+                if (channel.Tabs != null && channel.Tabs.Any())
                 {
-                    // Create the channel object for the API call
-                    var channelToCreate = new
-                    {
-                        channel.Description,
-                        channel.DisplayName,
-                        channel.IsFavoriteByDefault
-                    };
+                    if (!SetTeamTabs(scope, channel.Tabs, teamId, channelId, accessToken)) return false;
+                }
 
-                    var channelId = GraphHelper.CreateOrUpdateGraphObject(scope,
-                        HttpMethodVerb.POST,
-                        $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels",
-                        channelToCreate,
-                        HttpHelper.JsonContentType,
-                        accessToken,
-                        "NameAlreadyExists",
-                        CoreResources.Provisioning_ObjectHandlers_Teams_Team_ChannelAlreadyExists,
-                        "displayName",
-                        channel.DisplayName,
-                        CoreResources.Provisioning_ObjectHandlers_Teams_Team_ProvisioningError,
-                        canPatch: false);
+                // TODO: Handle TabResources
+                // We need to define a "schema" for their settings
 
-                    if (channelId == null) return false;
-
-                    // If there are any Tabs for the current channel
-                    if (channel.Tabs == null || !channel.Tabs.Any()) continue;
-
-                    foreach (var tab in channel.Tabs)
-                    {
-                        // Create the object for the API call
-                        var tabToCreate = new
-                        {
-                            tab.DisplayName,
-                            tab.TeamsAppId,
-                            configuration = tab.Configuration != null ? new
-                            {
-                                tab.Configuration.EntityId,
-                                tab.Configuration.ContentUrl,
-                                tab.Configuration.RemoveUrl,
-                                tab.Configuration.WebsiteUrl
-                            } : null
-                        };
-
-                        var tabId = GraphHelper.CreateOrUpdateGraphObject(scope,
-                            HttpMethodVerb.POST,
-                            $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs",
-                            tabToCreate,
-                            HttpHelper.JsonContentType,
-                            accessToken,
-                            "NameAlreadyExists",
-                            CoreResources.Provisioning_ObjectHandlers_Teams_Team_TabAlreadyExists,
-                            "displayName",
-                            tab.DisplayName,
-                            CoreResources.Provisioning_ObjectHandlers_Teams_Team_ProvisioningError,
-                            canPatch: false);
-
-                        if (tabId == null) return false;
-                    }
-
-                    // TODO: Handle TabResources
-                    // We need to define a "schema" for their settings
-
-                    // If there are any messages for the current channel
-                    if (channel.Messages == null || !channel.Messages.Any()) continue;
-
-                    foreach (var message in channel.Messages)
-                    {
-                        // Get and parse the CData
-                        var messageString = parser.ParseString(message.Message);
-                        var messageJson = JToken.Parse(messageString);
-
-                        var messageId = GraphHelper.CreateOrUpdateGraphObject(scope,
-                            HttpMethodVerb.POST,
-                            $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/messages",
-                            messageJson,
-                            HttpHelper.JsonContentType,
-                            accessToken,
-                            null,
-                            null,
-                            null,
-                            null,
-                            CoreResources.Provisioning_ObjectHandlers_Teams_Team_CannotSendMessage,
-                            canPatch: false);
-
-                        if (messageId == null) return false;
-                    }
+                if (channel.Messages != null && channel.Messages.Any())
+                {
+                    if (!SetTeamChannelMessages(scope, parser, channel.Messages, teamId, channelId, accessToken)) return false;
                 }
             }
 
             return true;
+        }
+
+        public static JToken GetExistingTeamChannels(string teamId, string accessToken)
+        {
+            return JToken.Parse(HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels", accessToken))["value"];
+        }
+
+        private static string UpdateTeamChannel(TeamChannel channel, string teamId, JToken existingChannel, string accessToken)
+        {
+            var channelId = existingChannel["id"].ToString();
+            var channelDisplayName = existingChannel["displayName"].ToString();
+            var identicalChannelName = channel.DisplayName == channelDisplayName;
+
+            // Prepare the request body for the Channel update
+            var channelToUpdate = new
+            {
+                description = channel.Description,
+                // You can't update a channel if its displayName is exactly the same, so remove it temporarily.
+                displayName = identicalChannelName ? null : channel.DisplayName,
+            };
+
+            // Updating isFavouriteByDefault is currently not supported on either endpoint. Using the beta endpoint results in an error.
+            HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{teamId}/channels/{channelId}", channelToUpdate, HttpHelper.JsonContentType, accessToken);
+
+            return channelId;
+        }
+
+        private static string CreateTeamChannel(PnPMonitoredScope scope, TeamChannel channel, string teamId, string accessToken)
+        {
+            var channelToCreate = new
+            {
+                channel.Description,
+                channel.DisplayName,
+                channel.IsFavoriteByDefault
+            };
+
+            var channelId = GraphHelper.CreateOrUpdateGraphObject(scope,
+                HttpMethodVerb.POST,
+                $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels",
+                channelToCreate,
+                HttpHelper.JsonContentType,
+                accessToken,
+                "NameAlreadyExists",
+                CoreResources.Provisioning_ObjectHandlers_Teams_Team_ChannelAlreadyExists,
+                "displayName",
+                channel.DisplayName,
+                CoreResources.Provisioning_ObjectHandlers_Teams_Team_ProvisioningError,
+                false);
+
+            return channelId;
+        }
+
+        public static bool SetTeamTabs(PnPMonitoredScope scope, TeamTabCollection tabs, string teamId, string channelId, string accessToken)
+        {
+            var existingTabs = GetExistingTeamChannelTabs(teamId, channelId, accessToken);
+
+            foreach (var tab in tabs)
+            {
+                var existingTab = existingTabs.FirstOrDefault(x => HttpUtility.UrlDecode(x["displayName"].ToString()) == tab.DisplayName && x["teamsAppId"].ToString() == tab.TeamsAppId);
+
+                var tabId = existingTab == null ? CreateTeamTab(scope, tab, teamId, channelId, accessToken) : UpdateTeamTab(tab, teamId, channelId, existingTab["id"].ToString(), accessToken);
+
+                if (tabId == null) return false;
+            }
+
+            return true;
+        }
+
+        public static JToken GetExistingTeamChannelTabs(string teamId, string channelId, string accessToken)
+        {
+            return JToken.Parse(HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs", accessToken))["value"];
+        }
+
+        private static string UpdateTeamTab(TeamTab tab, string teamId, string channelId, string tabId, string accessToken)
+        {
+            // teamsAppId is not allowed in the request
+            var teamsAppId = tab.TeamsAppId;
+            tab.TeamsAppId = null;
+
+            // Prepare the request body for the Tab update
+            var tabToUpdate = new
+            {
+                displayName = tab.DisplayName,
+                configuration = tab.Configuration != null
+                    ? new
+                    {
+                        entityId = tab.Configuration.EntityId,
+                        contentUrl = tab.Configuration.ContentUrl,
+                        removeUrl = tab.Configuration.RemoveUrl,
+                        websiteUrl = tab.Configuration.WebsiteUrl,
+                    } : null,
+            };
+
+            HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs/{tabId}", tabToUpdate, HttpHelper.JsonContentType, accessToken);
+
+            // Add the teamsAppId back now that we've updated the tab
+            tab.TeamsAppId = teamsAppId;
+
+            return tabId;
+        }
+
+        private static string CreateTeamTab(PnPMonitoredScope scope, TeamTab tab, string teamId, string channelId, string accessToken)
+        {
+            var tabToCreate = new
+            {
+                tab.DisplayName,
+                tab.TeamsAppId,
+                configuration = tab.Configuration != null
+                    ? new
+                    {
+                        tab.Configuration.EntityId,
+                        tab.Configuration.ContentUrl,
+                        tab.Configuration.RemoveUrl,
+                        tab.Configuration.WebsiteUrl
+                    }
+                    : null
+            };
+
+            var tabId = GraphHelper.CreateOrUpdateGraphObject(scope,
+                HttpMethodVerb.POST,
+                $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs",
+                tabToCreate,
+                HttpHelper.JsonContentType,
+                accessToken,
+                "NameAlreadyExists",
+                CoreResources.Provisioning_ObjectHandlers_Teams_Team_TabAlreadyExists,
+                "displayName",
+                tab.DisplayName,
+                CoreResources.Provisioning_ObjectHandlers_Teams_Team_ProvisioningError,
+                false);
+
+            return tabId;
+        }
+
+        public static bool SetTeamChannelMessages(PnPMonitoredScope scope, TokenParser parser, TeamChannelMessageCollection messages, string teamId, string channelId, string accessToken)
+        {
+            foreach (var message in messages)
+            {
+                var messageId = CreateTeamChannelMessage(scope, parser, message, teamId, channelId, accessToken);
+                if (messageId == null) return false;
+            }
+
+            return true;
+        }
+
+        private static string CreateTeamChannelMessage(PnPMonitoredScope scope, TokenParser parser, TeamChannelMessage message, string teamId, string channelId, string accessToken)
+        {
+            var messageString = parser.ParseString(message.Message);
+            var messageJson = JToken.Parse($"{{ \"body\": {{ \"content\": \"{messageString}\" }} }}");
+
+            var messageId = GraphHelper.CreateOrUpdateGraphObject(scope,
+                HttpMethodVerb.POST,
+                $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/messages",
+                messageJson,
+                HttpHelper.JsonContentType,
+                accessToken,
+                null,
+                null,
+                null,
+                null,
+                CoreResources.Provisioning_ObjectHandlers_Teams_Team_CannotSendMessage,
+                false);
+
+            return messageId;
         }
 
         /// <summary>
@@ -809,7 +909,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return team.ToString();
         }
 
-#region PnP Provisioning Engine infrastructural code
+        #region PnP Provisioning Engine infrastructural code
 
         public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation)
         {
@@ -889,8 +989,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // So far, no extraction
             return hierarchy;
         }
+        #endregion
 
-#endregion
+        private static string CreateMailNicknameFromDisplayName(string displayName)
+        {
+            var mailNickname = displayName.ToLower();
+            mailNickname = RemoveUnallowedCharacters(mailNickname);
+            mailNickname = ReplaceAccentedCharactersWithLatin(mailNickname);
+            return mailNickname;
+        }
+
+        private static string RemoveUnallowedCharacters(string str)
+        {
+            const string unallowedCharacters = "[&_,!@;:#¤`´~¨='%<>/\\\\\"\\.\\$\\*\\^\\+\\|\\{\\}\\[\\]\\-\\(\\)\\?\\s]";
+            var regex = new Regex(unallowedCharacters);
+            return regex.Replace(str, "");
+        }
+
+        private static string ReplaceAccentedCharactersWithLatin(string str)
+        {
+            const string a = "[äåàáâã]";
+            var regex = new Regex(a, RegexOptions.IgnoreCase);
+            str = regex.Replace(str, "a");
+
+            const string e = "[èéêë]";
+            regex = new Regex(e, RegexOptions.IgnoreCase);
+            str = regex.Replace(str, "e");
+
+            const string i = "[ìíîï]";
+            regex = new Regex(i, RegexOptions.IgnoreCase);
+            str = regex.Replace(str, "i");
+
+            const string o = "[öòóôõ]";
+            regex = new Regex(o, RegexOptions.IgnoreCase);
+            str = regex.Replace(str, "o");
+
+            const string u = "[üùúû]";
+            regex = new Regex(u, RegexOptions.IgnoreCase);
+            str = regex.Replace(str, "u");
+
+            return str;
+        }
     }
 }
 #endif

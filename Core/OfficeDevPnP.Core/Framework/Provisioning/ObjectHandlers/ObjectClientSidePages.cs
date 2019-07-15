@@ -523,25 +523,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         isDirty = true;
                     }
 
-                    // Set page property bag values
-                    if (clientSidePage.Properties != null && clientSidePage.Properties.Any())
-                    {
-                        string pageFilePath = page.PageListItem[FileRefField].ToString();
-                        var pageFile = web.GetFileByServerRelativeUrl(pageFilePath);
-                        web.Context.Load(pageFile, p => p.Properties);
-
-                        foreach (var pageProperty in clientSidePage.Properties)
-                        {
-                            if (!string.IsNullOrEmpty(pageProperty.Key))
-                            {
-                                pageFile.Properties[pageProperty.Key] = pageProperty.Value;
-                            }
-                        }
-
-                        pageFile.Update();
-                        isDirty = true;
-                    }
-
                     if (clientSidePage.PromoteAsTemplate && page.LayoutType == Pages.ClientSidePageLayoutType.Article)
                     {
                         // Choice field, currently there's only one value possible and that's Template
@@ -559,6 +540,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (clientSidePage.FieldValues != null && clientSidePage.FieldValues.Any())
                     {
                         ListItemUtilities.UpdateListItem(page.PageListItem, parser, clientSidePage.FieldValues, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion);
+                    }
+
+                    // Set page property bag values
+                    if (clientSidePage.Properties != null && clientSidePage.Properties.Any())
+                    {
+                        string pageFilePath = page.PageListItem[FileRefField].ToString();
+                        var pageFile = web.GetFileByServerRelativeUrl(pageFilePath);
+                        web.Context.Load(pageFile, p => p.Properties);
+
+                        foreach (var pageProperty in clientSidePage.Properties)
+                        {
+                            if (!string.IsNullOrEmpty(pageProperty.Key))
+                            {
+                                pageFile.Properties[pageProperty.Key] = pageProperty.Value;
+                            }
+                        }
+
+                        pageFile.Update();
+                        web.Context.Load(page.PageListItem);
+                        web.Context.ExecuteQueryRetry();
                     }
 
                     if (page.LayoutType != Pages.ClientSidePageLayoutType.SingleWebPartAppPage)
