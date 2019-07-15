@@ -201,7 +201,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     case FileSystemObjectType.File:
                                         {
                                             //PnP:File
-                                            ProcessDocumentRow(web, spItem, listInstance, template, scope, creationInfo.FileContentToIgnore);
+                                            ProcessDocumentRow(web, spItem, listInstance, template, scope, creationInfo.FilesToIgnore);
                                             break;
                                         }
                                     case FileSystemObjectType.Folder:
@@ -326,9 +326,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     template.Connector.SaveFileStream(myFile.Name, templateFolderPath, spFileStream.Value);
 
-                    //todo: causes issue on import - upload of file _cts/[CTName]/[FileName] to site/[siteTitle]/_cts/[CTName]/[FileName] returns 401 Error
-                    //ctype.DocumentTemplate = myFile.Name;
-                    ctype.DocumentTemplate = string.Empty;
+                    //todo: causes issue on import - upload of file _cts/[CTName]/[FileName] to site/[siteTitle]/_cts/[CTName]/[FileName] returns 401 Error if DenyAddAndCustomizePages is not Disabled
+                    ctype.DocumentTemplate = myFile.Name;
                 }
                 catch (Exception ex)
                 {
@@ -507,39 +506,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     //get PnPFile Permissions
-                    if (file.ListItemAllFields.HasUniqueRoleAssignments && siteSecurity != null)
+                    if (file.ListItemAllFields.HasUniqueRoleAssignments) // && siteSecurity != null)
                     {
-                        if (pnpFile.Security == null) pnpFile.Security = new ObjectSecurity();
-                        pnpFile.Security.ClearSubscopes = true;
-                        pnpFile.Security.CopyRoleAssignments = false;
-                        var LimitedAccess = web.RoleDefinitions.FirstOrDefault(role => role.RoleTypeKind == RoleType.Guest);
-
-                        foreach (var roleAssignment in file.ListItemAllFields.RoleAssignments)
-                        {
-                            foreach (var rDef in roleAssignment.RoleDefinitionBindings.OrderBy(d => d.Order))
-                            {
-                                if (!(LimitedAccess != null && rDef.Name.Equals(LimitedAccess.Name)))
-                                {
-                                    string principalName = roleAssignment.Member.LoginName.Replace(web.Title, "{sitetitle}");
-                                    //check if we have this Group in Template Security - if so, we add it
-
-                                    if ((!string.IsNullOrWhiteSpace(siteSecurity.AssociatedOwnerGroup) && siteSecurity.AssociatedOwnerGroup.Equals(principalName)) |
-                                        (!string.IsNullOrWhiteSpace(siteSecurity.AssociatedMemberGroup) && siteSecurity.AssociatedMemberGroup.Equals(principalName)) |
-                                        (!string.IsNullOrWhiteSpace(siteSecurity.AssociatedVisitorGroup) && siteSecurity.AssociatedVisitorGroup.Equals(principalName)) |
-                                        siteSecurity.SiteGroups.Any(g => g.Title.Equals(principalName)))
-                                    {
-                                        pnpFile.Security.RoleAssignments.Add(new PnPRoleAssignment()
-                                        {
-                                            Principal = principalName,
-                                            Remove = false,
-                                            RoleDefinition = rDef.Name
-                                        });
-                                    }
-                                }
-                            }
-                        }
+                        GetObjectSecurity(web, file.ListItemAllFields.RoleAssignments, pnpFile.Security);
                     }
-
                 }
             }
             catch (Exception ex)
@@ -750,7 +720,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             value = TokenizeValue(web, field, fieldValue, fieldValuesAsText);
                         }
-
 
                         if (fieldValue.Key == "ContentTypeId")
                         {
@@ -1012,36 +981,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
 
                 // get PnPFolder Permissions
-                if (spFolder.ListItemAllFields.HasUniqueRoleAssignments && siteSecurity != null)
+                if (spFolder.ListItemAllFields.HasUniqueRoleAssignments) // && siteSecurity != null)
                 {
-                    pnpFolder.Security.ClearSubscopes = true;
-                    pnpFolder.Security.CopyRoleAssignments = false;
-                    var LimitedAccess = web.RoleDefinitions.FirstOrDefault(role => role.RoleTypeKind == RoleType.Guest);
-
-                    foreach (var roleAssignment in spFolder.ListItemAllFields.RoleAssignments)
-                    {
-                        foreach (var rDef in roleAssignment.RoleDefinitionBindings.OrderBy(d => d.Order))
-                        {
-                            if (!(LimitedAccess != null && rDef.Name.Equals(LimitedAccess.Name)))
-                            {
-                                string principalName = roleAssignment.Member.LoginName.Replace(web.Title, "{sitetitle}");
-                                //check if we have this Group in Template Security - if so, we add it
-
-                                if ((!string.IsNullOrWhiteSpace(siteSecurity.AssociatedOwnerGroup) && siteSecurity.AssociatedOwnerGroup.Equals(principalName)) |
-                                    (!string.IsNullOrWhiteSpace(siteSecurity.AssociatedMemberGroup) && siteSecurity.AssociatedMemberGroup.Equals(principalName)) |
-                                    (!string.IsNullOrWhiteSpace(siteSecurity.AssociatedVisitorGroup) && siteSecurity.AssociatedVisitorGroup.Equals(principalName)) |
-                                    siteSecurity.SiteGroups.Any(g => g.Title.Equals(principalName)))
-                                {
-                                    pnpFolder.Security.RoleAssignments.Add(new PnPRoleAssignment()
-                                    {
-                                        Principal = principalName,
-                                        Remove = false,
-                                        RoleDefinition = rDef.Name
-                                    });
-                                }
-                            }
-                        }
-                    }
+                    GetObjectSecurity(web, spFolder.ListItemAllFields.RoleAssignments, pnpFolder.Security);
                 }
             }
             catch (Exception ex)
@@ -1051,6 +993,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return pnpFolder;
         }
 
+        private void GetObjectSecurity(Web web, Microsoft.SharePoint.Client.RoleAssignmentCollection RoleAssignments, ObjectSecurity objectSecurity)
+        {
+            objectSecurity.ClearSubscopes = true;
+            objectSecurity.CopyRoleAssignments = false;
+            var LimitedAccess = web.RoleDefinitions.FirstOrDefault(role => role.RoleTypeKind == RoleType.Guest);
+
+            foreach (var roleAssignment in RoleAssignments)
+            {
+                foreach (var rDef in roleAssignment.RoleDefinitionBindings.OrderBy(d => d.Order))
+                {
+                    if (!(LimitedAccess != null && (rDef.Name.Equals(LimitedAccess.Name)))&&!roleAssignment.Member.LoginName.StartsWith("SharingLinks."))
+                    {
+                        string principalName = roleAssignment.Member.LoginName.Replace(web.Title, "{sitetitle}");
+                        //check if we have this Group in Template Security - if so, we add it
+
+                        //if ((!string.IsNullOrWhiteSpace(siteSecurity.AssociatedOwnerGroup) && siteSecurity.AssociatedOwnerGroup.Equals(principalName)) |
+                        //    (!string.IsNullOrWhiteSpace(siteSecurity.AssociatedMemberGroup) && siteSecurity.AssociatedMemberGroup.Equals(principalName)) |
+                        //    (!string.IsNullOrWhiteSpace(siteSecurity.AssociatedVisitorGroup) && siteSecurity.AssociatedVisitorGroup.Equals(principalName)) |
+                        //    siteSecurity.SiteGroups.Any(g => g.Title.Equals(principalName)))
+                        //{
+                        objectSecurity.RoleAssignments.Add(new PnPRoleAssignment()
+                        {
+                            Principal = principalName,
+                            Remove = false,
+                            RoleDefinition = rDef.Name
+                        });
+                        //}
+                    }
+                }
+            }
+        }
 
         #region //**** static Field Lists as Hint how to handle 
         public static string[] WriteableReadOnlyField = new[]

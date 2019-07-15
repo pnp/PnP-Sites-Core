@@ -270,7 +270,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         /// <summary>
-        /// If true all client side pages will be included in the template.
+        /// If true all List Content will be extracted if Handlers List, Fields, ContentTypes are active.
         /// </summary>
         public bool IncludeAllListContent
         {
@@ -287,7 +287,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <summary>
         /// List of Files to ignore given the relative Path to Web i.e. "Shared Documents/test.docx"
         /// </summary>
-        public List<String> FileContentToIgnore { get; set; } = new List<String>();
+        public List<String> FilesToIgnore { get; set; } = new List<String>();
 
         /// <summary>
         /// List of of handlers to process
