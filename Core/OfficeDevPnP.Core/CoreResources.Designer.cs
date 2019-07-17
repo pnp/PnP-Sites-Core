@@ -1224,6 +1224,33 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to add &apos;{1}&apos; as DocumentTemplate to ContentType &apos;{0}&apos;.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ContentTypes_ErrorDocumentTemplate {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_ErrorDocumentTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to extract DefaultDocument &apos;{0}&apos; from DocumentSet.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ContentTypes_ErrorExtractDocumentSetTemplate {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_ErrorExtractDocumentSetTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to extract DocumentTemplate &apos;{1}&apos; from ContentType &apos;{0}&apos;.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ContentTypes_ErrorSaveDocumentTemplateToConnector {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_ErrorSaveDocumentTemplateToConnector", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Field {0} exists in content type.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ContentTypes_Field__0__exists_in_content_type {
@@ -1266,6 +1293,15 @@ namespace OfficeDevPnP.Core {
         internal static string Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skipping adding DocumentTemplate to ContentType &apos;{0}&apos; because we can&apos;t upload them on &apos;noscript&apos; sites..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ContentTypes_SkipDocumentTemplate {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_SkipDocumentTemplate", resourceCulture);
             }
         }
         
@@ -1804,6 +1840,25 @@ namespace OfficeDevPnP.Core {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0___" +
                         "__1_", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to extract DocumentTemplate for ContentType {0}.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstancesDataRows_ErrorExtractDocumentTemplateFromContentType {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstancesDataRows_ErrorExtractDocumentTemplateFro" +
+                        "mContentType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to extract file and save to connector.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstancesDataRows_ErrorSaveFileToConnector {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstancesDataRows_ErrorSaveFileToConnector", resourceCulture);
             }
         }
         
@@ -2497,7 +2552,7 @@ namespace OfficeDevPnP.Core {
         /// * @see {@link http://usejsdoc.org/|JSDoc}
         /// */
         ///
-        /// /*
+        ////*
         /// * PnPResponsiveApp
         /// * @namespace
         /// */
@@ -2507,11 +2562,11 @@ namespace OfficeDevPnP.Core {
         ///    window.PnPResponsiveApp = window.PnPResponsiveApp || {};
         ///}
         ///
-        /// /**
+        ////**
         /// * PnP Responsive
         /// * @class
         /// */
-        /// PnPResponsiveApp.Main = (function ()  [rest of string was truncated]&quot;;.
+        ///PnPResponsiveApp.Main = (function ()  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI {
             get {
@@ -2536,7 +2591,7 @@ namespace OfficeDevPnP.Core {
         ///    min-width: auto;
         ///}
         ///
-        /// /* Make sure dialog windows don&apos;t break */
+        ////* Make sure dialog windows don&apos;t break */
         ///.ms-dialog #contentRow {
         ///    margin-left: 0;
         ///}

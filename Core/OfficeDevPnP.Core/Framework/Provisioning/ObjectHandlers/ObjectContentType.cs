@@ -406,10 +406,45 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (templateContentType.DocumentSetTemplate == null)
             {
-                // Only apply a document template when the contenttype is not a document set
-                if (!string.IsNullOrEmpty(parser.ParseString(templateContentType.DocumentTemplate)))
+                //Skipping updates of DocumentTemplate as we can't upload files to /_cts/ContentTypeName/FileName to noscript sites
+                if (!isNoScriptSite)
                 {
-                    createdCT.DocumentTemplate = parser.ParseString(templateContentType.DocumentTemplate);
+                    // Only apply a document template when the contenttype is not a document set
+                    if (!string.IsNullOrEmpty(parser.ParseString(templateContentType.DocumentTemplate)))
+                    {
+                        string documentTemplate= parser.ParseString(templateContentType.DocumentTemplate);
+                        web.EnsureProperties(w => w.ServerRelativeUrl, w=>w.Url);
+                        try
+                        {
+                            using (var fsstream = template.Connector.GetFileStream($"_cts/{name}/{documentTemplate}"))
+                            {
+                                Microsoft.SharePoint.Client.Folder ctFolder = web.GetFolderByServerRelativeUrl($"{web.ServerRelativeUrl}/_cts/{name}");
+                                web.Context.Load(ctFolder, fl => fl.Files.Include(f => f.Name, f => f.ServerRelativeUrl));
+                                web.Context.ExecuteQuery();
+
+                                FileCreationInformation newFile = new FileCreationInformation();
+                                newFile.ContentStream = fsstream;
+                                newFile.Url = $"{web.ServerRelativeUrl}/_cts/{name}/{documentTemplate}";
+
+                                Microsoft.SharePoint.Client.File uploadedFile = ctFolder.Files.Add(newFile);
+                                web.Context.Load(uploadedFile);
+                                web.Context.ExecuteQuery();
+                            }
+                            createdCT.DocumentTemplate = documentTemplate;
+                        }
+                        catch(Exception ex)
+                        {
+                            scope.LogError(ex, CoreResources.Provisioning_ObjectHandlers_ContentTypes_ErrorDocumentTemplate, name, documentTemplate);
+                        }
+                    }
+                }
+                else
+                {
+                    if (!string.IsNullOrEmpty(parser.ParseString(templateContentType.DocumentTemplate)))
+                    {
+                        // log message
+                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_SkipDocumentTemplate, name);
+                    }
                 }
             }
 
@@ -582,6 +617,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 WriteMessage("We discovered content types in this subweb. While technically possible, we recommend moving these content types to the root site collection. Consider excluding them from this template.", ProvisioningMessageType.Warning);
             }
+            web.EnsureProperties(w => w.Url,w=>w.ServerRelativeUrl);//neded for DocumentTemplate extraction
+
             List<ContentType> ctsToReturn = new List<ContentType>();
             var currentCtIndex = 0;
             foreach (var ct in cts)
@@ -606,6 +643,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (!ct.DocumentTemplate.StartsWith("_cts/"))
                         {
                             ctDocumentTemplate = ct.DocumentTemplate;
+                        }
+                        //extract DocumentTemplate if it points to ContentType Ressource Folder
+                        if (creationInfo.IncludeAllListContent && !string.IsNullOrWhiteSpace(ct.DocumentTemplateUrl) && ct.DocumentTemplateUrl.Contains("_cts/"))
+                        {
+                            try
+                            {
+                                var spFile = web.GetFileByServerRelativeUrl(ct.DocumentTemplateUrl);
+                                spFile.EnsureProperties(f => f.Level, f => f.ServerRelativeUrl, f => f.Name);
+
+                                // If we got here it's a file, let's grab the file's path and name
+                                var baseUri = new Uri(web.Url);
+                                var fullUri = new Uri(baseUri, spFile.ServerRelativeUrl);
+                                var folderPath = System.Web.HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
+                                var fileName = System.Web.HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
+
+                                var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
+
+                                web.Context.Load(spFile);
+                                web.Context.ExecuteQueryRetry();
+                                var spFileStream = spFile.OpenBinaryStream();
+                                web.Context.ExecuteQueryRetry();
+
+                                template.Connector.SaveFileStream(spFile.Name, templateFolderPath, spFileStream.Value);
+                            }
+                            catch(Exception ex)
+                            {
+                                scope.LogError(ex, CoreResources.Provisioning_ObjectHandlers_ContentTypes_ErrorSaveDocumentTemplateToConnector, ct.Name, ct.DocumentTemplateUrl);
+                            }
                         }
                     }
 
@@ -687,13 +752,44 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                              {
                                  ContentTypeId = defaultDocument.ContentTypeId.StringValue,
                                  Name = defaultDocument.Name,
-                                 FileSourcePath = String.Empty, // TODO: How can we extract the proper file?!
+                                 FileSourcePath = creationInfo.IncludeAllListContent?$"_cts/{ct.Name}/{defaultDocument.DocumentPath.DecodedUrl}":string.Empty,
                              }).ToList(),
                             (from sharedField in documentSetTemplate.SharedFields.AsEnumerable()
                              select sharedField.Id).ToList(),
                             (from welcomePageField in documentSetTemplate.WelcomePageFields.AsEnumerable()
                              select welcomePageField.Id).ToList()
                         );
+
+                        //extract the DefaultDocument files
+                        foreach(var defaultDoc in newCT.DocumentSetTemplate.DefaultDocuments.Where(dd=>!string.IsNullOrWhiteSpace(dd.FileSourcePath)))
+                        {
+                            try
+                            {
+                                string serverRelativeUrl = $"{web.ServerRelativeUrl}/{defaultDoc.FileSourcePath}";
+                                var spFile = web.GetFileByServerRelativeUrl(serverRelativeUrl);
+
+                                spFile.EnsureProperties(f => f.Level, f => f.ServerRelativeUrl, f => f.Name);
+
+                                // If we got here it's a file, let's grab the file's path and name
+                                var baseUri = new Uri(web.Url);
+                                var fullUri = new Uri(baseUri, spFile.ServerRelativeUrl);
+                                var folderPath = System.Web.HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
+                                var fileName = System.Web.HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
+
+                                var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
+
+                                web.Context.Load(spFile);
+                                web.Context.ExecuteQueryRetry();
+                                var spFileStream = spFile.OpenBinaryStream();
+                                web.Context.ExecuteQueryRetry();
+
+                                template.Connector.SaveFileStream(spFile.Name, templateFolderPath, spFileStream.Value);
+                            }
+                            catch (Exception ex)
+                            {
+                                scope.LogError(ex, CoreResources.Provisioning_ObjectHandlers_ContentTypes_ErrorExtractDocumentSetTemplate, defaultDoc.FileSourcePath);
+                            }
+                        }
                     }
 
                     ctsToReturn.Add(newCT);

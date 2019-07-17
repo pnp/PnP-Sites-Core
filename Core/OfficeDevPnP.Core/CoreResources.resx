@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1203,5 +1203,23 @@
   </data>
   <data name="Provisioning_ObjectHandlers_AAD_User_ProvisioningError" xml:space="preserve">
     <value>Provisioning a user failed.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_SkipDocumentTemplate" xml:space="preserve">
+    <value>Skipping adding DocumentTemplate to ContentType '{0}' because we can't upload them on 'noscript' sites.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_ErrorDocumentTemplate" xml:space="preserve">
+    <value>Failed to add '{1}' as DocumentTemplate to ContentType '{0}'</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstancesDataRows_ErrorSaveFileToConnector" xml:space="preserve">
+    <value>Failed to extract file and save to connector</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstancesDataRows_ErrorExtractDocumentTemplateFromContentType" xml:space="preserve">
+    <value>Failed to extract DocumentTemplate for ContentType {0}</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_ErrorExtractDocumentSetTemplate" xml:space="preserve">
+    <value>Failed to extract DefaultDocument '{0}' from DocumentSet</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_ErrorSaveDocumentTemplateToConnector" xml:space="preserve">
+    <value>Failed to extract DocumentTemplate '{1}' from ContentType '{0}'</value>
   </data>
 </root>

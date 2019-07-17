@@ -266,7 +266,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         listCount++;
                     }
 
-                    //Handle SitePages 
+                    //Handle SitePages-Library Content
                     //Some Content is already taken care of by ObjectPageContents and ObjectClientSidePageContents
                     //ObjectPageContents does not export security
                     //ObjectClientSidePageContents does not care about Security and additional Fields from CustomContentType
@@ -276,66 +276,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var sitePagesLib = template.Lists.FirstOrDefault(t => t.TemplateType != 119);
 
                     }
-
-                    ProcessContentTypeDocumentTemplates(web, template, scope);
                 }
             }
             return template;
         }
-
-        /// <summary>
-        /// Extract of TemplateDocuments specified with ContentTypes
-        /// </summary>
-        /// <param name="web"></param>
-        /// <param name="template"></param>
-        /// <param name="scope"></param>
-        private void ProcessContentTypeDocumentTemplates(Web web, ProvisioningTemplate template, PnPMonitoredScope scope)
-        {
-            //Handle ContentTypes DocumentTemplate
-            foreach (var ctype in template.ContentTypes.Where(ct => !string.IsNullOrWhiteSpace(ct.DocumentTemplate)))
-            {
-                try
-                {
-                    var cntTypeSite = web.GetContentTypeById(ctype.Id);
-                    cntTypeSite.EnsureProperty(t => t.DocumentTemplateUrl);
-
-                    var myFile = web.GetFileByServerRelativeUrl(cntTypeSite.DocumentTemplateUrl);
-                    myFile.EnsureProperties(f => f.Level, f => f.ServerRelativeUrl, f => f.Name);
-
-                    // If we got here it's a file, let's grab the file's path and name
-                    var baseUri = new Uri(web.Url);
-                    var fullUri = new Uri(baseUri, myFile.ServerRelativeUrl);
-                    var folderPath = System.Web.HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
-                    var fileName = System.Web.HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
-
-                    var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
-
-                    PnPFile newFile = new PnPFile()
-                    {
-                        Folder = templateFolderPath,
-                        Src = $"{templateFolderPath}/{fileName}",
-                        TargetFileName = myFile.Name,
-                        Overwrite = true,
-                        Level = (PnPFileLevel)Enum.Parse(typeof(PnPFileLevel), myFile.Level.ToString())
-                    };
-
-                    web.Context.Load(myFile);
-                    web.Context.ExecuteQueryRetry();
-                    var spFileStream = myFile.OpenBinaryStream();
-                    web.Context.ExecuteQueryRetry();
-
-                    template.Connector.SaveFileStream(myFile.Name, templateFolderPath, spFileStream.Value);
-
-                    //todo: causes issue on import - upload of file _cts/[CTName]/[FileName] to site/[siteTitle]/_cts/[CTName]/[FileName] returns 401 Error if DenyAddAndCustomizePages is not Disabled
-                    ctype.DocumentTemplate = myFile.Name;
-                }
-                catch (Exception ex)
-                {
-                    scope.LogError(ex, "Failed to extract DocumentTemplate for ContentType {0}", ctype.Id);
-                }
-            }
-        }
-
 
         /// <summary>
         /// Extract File in Document Library
@@ -379,6 +323,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             newFile = template.Files.FirstOrDefault(f => f.Src.Equals($"{templateFolderPath}/{fileName}", StringComparison.CurrentCultureIgnoreCase));
             if (newFile == null)
             {
+
                 newFile = new PnPFile()
                 {
                     Folder = templateFolderPath,
@@ -741,7 +686,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         AttachmentFiles.Add(file.FileName, file.ServerRelativeUrl);
                     }
-                    var FilePaths = SaveAttachments(web, listInstance, listItem.Id, AttachmentFiles, scope);
+                    var FilePaths = SaveAttachmentsToConnector(web, listInstance, listItem.Id, AttachmentFiles, scope);
                     //Todo: complete when Schema Extension is here to store AttachmentFiles to DataRows
                     //https://github.com/SharePoint/PnP-Provisioning-Schema/issues/409
                 }
@@ -764,7 +709,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="ListItemId"></param>
         /// <param name="AttachmentFiles"></param>
         /// <param name="scope"></param>
-        private List<string> SaveAttachments(Web web, ListInstance listInstance, int ListItemId, Dictionary<string, string> AttachmentFiles, PnPMonitoredScope scope)
+        private List<string> SaveAttachmentsToConnector(Web web, ListInstance listInstance, int ListItemId, Dictionary<string, string> AttachmentFiles, PnPMonitoredScope scope)
         {
             List<string> filePaths = new List<string>();
             foreach (var fileName in AttachmentFiles.Keys)

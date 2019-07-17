@@ -2098,7 +2098,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     // If current web is subweb then include the lists in the rootweb for lookup column support
                     var rootWeb = (web.Context as ClientContext).Site.RootWeb;
-                    rootWeb.Context.Load(rootWeb.Lists, lsts => lsts.Include(l => l.Id, l => l.Title));
+                    rootWeb.Context.Load(rootWeb.Lists, lsts => lsts.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl));
                     rootWeb.Context.ExecuteQueryRetry();
                     foreach (var rootList in rootWeb.Lists)
                     {
@@ -2135,6 +2135,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (Guid.TryParse(i, out listId))
                             {
                                 return (listId == siteList.Id);
+                            }
+                            else if (siteList.RootFolder.ServerRelativeUrl.EndsWith($"/{i}", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                return true;
                             }
                             else
                             {
