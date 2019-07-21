@@ -666,11 +666,21 @@ namespace OfficeDevPnP.Core.Sites
 
             var webTemplateId = context.Web.GetBaseTemplateId();
 
+            context.Site.EnsureProperties(s => s.Id, s => s.GroupId, s => s.Url);
+
             if (webTemplateId == "SITEPAGEPUBLISHING#0" || webTemplateId == "STS#3")
             {
-                context.Site.EnsureProperty(s => s.Id);
-
                 var result = await context.Web.ExecutePost("/_api/SPSiteManager/delete", $@" {{ ""siteId"": ""{context.Site.Id.ToString()}"" }}");
+
+                var parsedResult = JObject.Parse(result);
+
+                siteDeleted = Convert.ToBoolean(parsedResult["odata.null"]);
+
+                return await Task.Run(() => siteDeleted);
+            }
+            else if (webTemplateId == "GROUP#0" || context.Site.GroupId != Guid.Empty)
+            {
+                var result = await context.Web.ExecutePost($"/_api/GroupSiteManager/Delete?siteUrl='{context.Site.Url}'", string.Empty);
 
                 var parsedResult = JObject.Parse(result);
 
@@ -680,7 +690,7 @@ namespace OfficeDevPnP.Core.Sites
             }
             else
             {
-                throw new Exception("Only deletion of Communication site or Group-less Modern team site is supported by this method.");
+                throw new Exception("Only deletion of Communication site or Modern team site is supported by this method.");
             }
         }
     }
