@@ -35,6 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         {
             try
             {
+                List<string> errorneousOrNonImageFileGuids = new List<string>();
                 var pageToExtract = web.LoadClientSidePage(pageName);
 
                 if (pageToExtract.Sections.Count == 0 && pageToExtract.Controls.Count == 0 && isHomePage)
@@ -268,6 +269,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                                     controlInstance.JsonControlData = "{" + jsonControlData + "}";
 
+                                    var untokenizedJsonControlData = controlInstance.JsonControlData;
                                     // Tokenize the JsonControlData
                                     controlInstance.JsonControlData = TokenizeJsonControlData(web, controlInstance.JsonControlData);
 
@@ -278,41 +280,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         Dictionary<string, string> exportedFiles = new Dictionary<string, string>();
                                         Dictionary<string, string> exportedPages = new Dictionary<string, string>();
 
-                                        // grab all the guids in the already tokenized json and check try to get them as a file
-                                        string guidPattern = "\"[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}\"";
-                                        Regex regexClientIds = new Regex(guidPattern);
-                                        if (regexClientIds.IsMatch(controlInstance.JsonControlData))
-                                        {
-                                            foreach (Match guidMatch in regexClientIds.Matches(controlInstance.JsonControlData))
-                                            {
-                                                Guid uniqueId;
-                                                if (Guid.TryParse(guidMatch.Value.Trim("\"".ToCharArray()), out uniqueId))
-                                                {
-                                                    fileGuids.Add(uniqueId);
-                                                }
-                                            }
-                                        }
-                                        // grab all the encoded guids in the already tokenized json and check try to get them as a file
-                                        guidPattern = "=[a-fA-F0-9]{8}%2D([a-fA-F0-9]{4}%2D){3}[a-fA-F0-9]{12}";
-                                        regexClientIds = new Regex(guidPattern);
-                                        if (regexClientIds.IsMatch(controlInstance.JsonControlData))
-                                        {
-                                            foreach (Match guidMatch in regexClientIds.Matches(controlInstance.JsonControlData))
-                                            {
-                                                Guid uniqueId;
-                                                if (Guid.TryParse(guidMatch.Value.TrimStart("=".ToCharArray()), out uniqueId))
-                                                {
-                                                    fileGuids.Add(uniqueId);
-                                                }
-                                            }
-                                        }
+                                        CollectSiteAssetImageFiles(web, untokenizedJsonControlData, fileGuids);
+                                        CollectHeaderImageFiles(controlInstance.JsonControlData, fileGuids);
+                                        CollectImageFilesFromGenericGuids(controlInstance.JsonControlData, fileGuids);
 
                                         // Iterate over the found guids to see if they're exportable files
                                         foreach (var uniqueId in fileGuids)
                                         {
                                             try
                                             {
-                                                if (!exportedFiles.ContainsKey(uniqueId.ToString()))
+                                                if (!exportedFiles.ContainsKey(uniqueId.ToString()) && !errorneousOrNonImageFileGuids.Contains(uniqueId.ToString()))
                                                 {
                                                     // Try to see if this is a file
                                                     var file = web.GetFileById(uniqueId);
@@ -363,6 +340,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             catch (Exception ex)
                                             {
                                                 scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ClientSidePageContents_ErrorDuringFileExport, ex.Message);
+                                                errorneousOrNonImageFileGuids.Add(uniqueId.ToString());
                                             }
                                         }
 
@@ -372,7 +350,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedFile.Key.Replace("-", "%2D"), $"{{fileuniqueidencoded:{exportedFile.Value}}}", RegexOptions.IgnoreCase);
                                             controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedFile.Key, $"{{fileuniqueid:{exportedFile.Value}}}", RegexOptions.IgnoreCase);
                                         }
-                                        foreach(var exportedPage in exportedPages)
+                                        foreach (var exportedPage in exportedPages)
                                         {
                                             controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedPage.Key.Replace("-", "%2D"), $"{{pageuniqueidencoded:{exportedPage.Value}}}", RegexOptions.IgnoreCase);
                                             controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedPage.Key, $"{{pageuniqueid:{exportedPage.Value}}}", RegexOptions.IgnoreCase);
@@ -421,6 +399,95 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             catch (ArgumentException ex)
             {
                 scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ClientSidePageContents_NoValidPage, ex.Message);
+            }
+        }
+
+        private static void CollectImageFilesFromGenericGuids(string jsonControlData, List<Guid> fileGuids)
+        {
+            // grab all the guids in the already tokenized json and check try to get them as a file
+            string guidPattern = "\"[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}\"";
+            Regex regexClientIds = new Regex(guidPattern);
+            if (regexClientIds.IsMatch(jsonControlData))
+            {
+                foreach (Match guidMatch in regexClientIds.Matches(jsonControlData))
+                {
+                    Guid uniqueId;
+                    if (Guid.TryParse(guidMatch.Value.Trim("\"".ToCharArray()), out uniqueId))
+                    {
+                        fileGuids.Add(uniqueId);
+                    }
+                }
+            }
+            // grab potentially encoded guids in the already tokenized json and check try to get them as a file
+            guidPattern = "=[a-fA-F0-9]{8}(?:%2D|-)([a-fA-F0-9]{4}(?:%2D|-)){3}[a-fA-F0-9]{12}";
+            regexClientIds = new Regex(guidPattern);
+            if (regexClientIds.IsMatch(jsonControlData))
+            {
+                foreach (Match guidMatch in regexClientIds.Matches(jsonControlData))
+                {
+                    Guid uniqueId;
+                    if (Guid.TryParse(guidMatch.Value.TrimStart("=".ToCharArray()), out uniqueId))
+                    {
+                        fileGuids.Add(uniqueId);
+                    }
+                }
+            }
+        }
+
+        private static void CollectHeaderImageFiles(string jsonControlData, List<Guid> fileGuids)
+        {
+            var jsonControlDataPartialDefinition = new
+            {
+                serverprocessedContent = new
+                {
+                    customMetadata = new
+                    {
+                        imageSource = new
+                        {
+                            siteId = "",
+                            webId = "",
+                            listId = "",
+                            uniqueId = ""
+                        }
+                    }
+                }
+            };
+
+            try
+            {
+                var o = JsonConvert.DeserializeAnonymousType(jsonControlData, jsonControlDataPartialDefinition, new JsonSerializerSettings());
+                var imageGuidString = o?.serverprocessedContent?.customMetadata?.imageSource?.uniqueId;
+                var imageGuid = Guid.Empty;
+                if (Guid.TryParse(imageGuidString, out imageGuid))
+                {
+                    fileGuids.Add(imageGuid);
+                }
+            }
+            catch
+            {
+                // if JSON parsing fails then we just skip it; ignore exception
+            }
+        }
+
+        private static void CollectSiteAssetImageFiles(Web web, string untokenizedJsonControlData, List<Guid> fileGuids)
+        {
+            // match urls to SiteAssets library
+            string siteAssetUrlsPattern = @".*""(.*?/SiteAssets/SitePages/.+?)"".*";
+            Regex regexSiteAssetUrls = new Regex(siteAssetUrlsPattern);
+            if (regexSiteAssetUrls.IsMatch(untokenizedJsonControlData))
+            {
+                foreach (Match siteAssetUrlMatch in regexSiteAssetUrls.Matches(untokenizedJsonControlData))
+                {
+                    var s = siteAssetUrlMatch.Groups[1]?.Value;
+                    if (s != null)
+                    {
+                        var file = web.GetFileByServerRelativeUrl(s);
+                        web.Context.Load(file, f => f.UniqueId);
+                        web.Context.ExecuteQueryRetry();
+
+                        fileGuids.Add(file.UniqueId);
+                    }
+                }
             }
         }
 
