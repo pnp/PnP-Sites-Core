@@ -181,8 +181,8 @@ namespace OfficeDevPnP.Core.Sites
         /// <returns>ClientContext object for the created site collection</returns>
         public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation, 
             Int32 delayAfterCreation = 0, 
-            Int32 maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
-            Int32 retryDelay = 1000 * 10 // Wait time default to 10sec
+            Int32 maxRetryCount = 50, // Maximum number of retries
+            Int32 retryDelay = 500 // Wait time default to 500 milliseconds
             )
         {
             if (siteCollectionCreationInformation.Alias.Contains(" "))
@@ -274,81 +274,71 @@ namespace OfficeDevPnP.Core.Sites
                         {
                             responseContext = clientContext.Clone(responseJson["SiteUrl"].ToString());
                         }
-                        else
+#if !NETSTANDARD2_0
+                        else if (Convert.ToInt32(responseJson["SiteStatus"]) == 1)
+#else
+                        else if (responseJson["SiteStatus"].Value<int>() == 1)
+#endif
                         {
-                            /*
-                             * BEGIN : Changes to address the SiteStatus=Provisioning scenario
-                             */
-                            if (Convert.ToInt32(responseJson["SiteStatus"]) == 1 && string.IsNullOrWhiteSpace(Convert.ToString(responseJson["ErrorMessage"])))
+                            var spOperationsMaxRetryCount = maxRetryCount; 
+                            var spOperationsRetryWait = retryDelay; 
+                            var siteCreated = false;
+                            var siteUrl = string.Empty;
+                            var retryAttempt = 1;
+
+                            do
                             {
-                                var spOperationsMaxRetryCount = maxRetryCount; 
-                                var spOperationsRetryWait = retryDelay; 
-                                var siteCreated = false;
-                                var siteUrl = string.Empty;
-                                var retryAttempt = 1;
-
-                                do
+                                if (retryAttempt > 1)
                                 {
-                                    if (retryAttempt > 1)
+                                    await Task.Delay(retryAttempt * spOperationsRetryWait);                                    
+                                }
+
+                                try
+                                {
+                                    var groupId = responseJson["GroupId"].ToString();
+                                    var siteStatusRequestUrl = $"{clientContext.Web.Url}/_api/groupsitemanager/GetSiteStatus('{groupId}')";
+
+                                    var siteStatusRequest = new HttpRequestMessage(HttpMethod.Get, siteStatusRequestUrl);
+                                    siteStatusRequest.Headers.Add("accept", "application/json;odata=verbose");
+
+                                    if (!string.IsNullOrEmpty(accessToken))
                                     {
-                                        System.Threading.Thread.Sleep(retryAttempt * spOperationsRetryWait);
+                                        siteStatusRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                                     }
 
-                                    try
+                                    siteStatusRequest.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+
+                                    var siteStatusResponse = await httpClient.SendAsync(siteStatusRequest, new System.Threading.CancellationToken());
+                                    var siteStatusResponseString = await siteStatusResponse.Content.ReadAsStringAsync();
+                                    var siteStatusResponseJson = JObject.Parse(siteStatusResponseString);
+
+                                    if (siteStatusResponse.IsSuccessStatusCode)
                                     {
-                                        var groupId = responseJson["GroupId"].ToString();
-                                        var siteStatusRequestUrl = $"{clientContext.Web.Url}/_api/groupsitemanager/GetSiteStatus('{groupId}')";
-
-                                        var siteStatusRequest = new HttpRequestMessage(HttpMethod.Get, siteStatusRequestUrl);
-                                        siteStatusRequest.Headers.Add("accept", "application/json;odata=verbose");
-
-                                        if (!string.IsNullOrEmpty(accessToken))
+                                        var siteStatus = Convert.ToInt32(siteStatusResponseJson["d"]["GetSiteStatus"]["SiteStatus"].ToString());
+                                        if (siteStatus == 2)
                                         {
-                                            siteStatusRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                                        }
-
-                                        siteStatusRequest.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
-
-                                        var siteStatusResponse = await httpClient.SendAsync(siteStatusRequest, new System.Threading.CancellationToken());
-                                        var siteStatusResponseString = await siteStatusResponse.Content.ReadAsStringAsync();
-
-                                        var siteStatusResponseJson = JObject.Parse(siteStatusResponseString);
-
-                                        if (siteStatusResponse.IsSuccessStatusCode)
-                                        {
-                                            var siteStatus = Convert.ToInt32(siteStatusResponseJson["d"]["GetSiteStatus"]["SiteStatus"].ToString());
-                                            if (siteStatus == 2)
-                                            {
-                                                siteCreated = true;
-                                                siteUrl = siteStatusResponseJson["d"]["GetSiteStatus"]["SiteUrl"].ToString();
-                                            }
+                                            siteCreated = true;
+                                            siteUrl = siteStatusResponseJson["d"]["GetSiteStatus"]["SiteUrl"].ToString();
                                         }
                                     }
-                                    catch (Exception)
-                                    {
-                                        // Just skip it and retry after a delay
-                                    }
-
-                                    retryAttempt++;
                                 }
-                                while (!siteCreated && retryAttempt <= spOperationsMaxRetryCount);
-
-                                if (siteCreated)
+                                catch (Exception)
                                 {
-                                    responseContext = clientContext.Clone(siteUrl);
+                                    // Just skip it and retry after a delay
                                 }
-                                else
-                                {
-                                    throw new Exception("OfficeDevPnP.Core.Sites.SiteCollection.CreateAsync: Could not create team site.");
-                                }
+
+                                retryAttempt++;
+                            }
+                            while (!siteCreated && retryAttempt <= spOperationsMaxRetryCount);
+
+                            if (siteCreated)
+                            {
+                                responseContext = clientContext.Clone(siteUrl);
                             }
                             else
                             {
-                                throw new Exception(responseString);
+                                throw new Exception("OfficeDevPnP.Core.Sites.SiteCollection.CreateAsync: Could not create team site.");
                             }
-                            /*
-                             * END : Changes to address the SiteStatus=Provisioning scenario
-                             */
                         }
 
                         // If there is a delay, let's wait
