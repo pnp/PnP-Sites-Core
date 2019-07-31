@@ -7,6 +7,9 @@ using System.Net;
 using System.Data.SqlClient;
 #endif
 using System.Data;
+using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Security.Cryptography.X509Certificates;
 using OfficeDevPnP.Core.Utilities;
@@ -387,6 +390,33 @@ namespace OfficeDevPnP.Core.Tests
 
             var json = JToken.Parse(response);
             return json["access_token"].ToString();
+        }
+
+        private static Assembly _newtonsoftAssembly;
+        private static string _assemblyName;
+
+        public static void FixAssemblyResolving(string assemblyName)
+        {
+            _assemblyName = assemblyName;
+            _newtonsoftAssembly = Assembly.LoadFrom(Path.Combine(AssemblyDirectory, $"{assemblyName}.dll"));
+            AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
+        }
+
+        private static string AssemblyDirectory
+        {
+            get
+            {
+                var codeBase = Assembly.GetExecutingAssembly().CodeBase;
+                var uri = new UriBuilder(codeBase);
+                var path = Uri.UnescapeDataString(uri.Path);
+
+                return Path.GetDirectoryName(path);
+            }
+        }
+
+        private static Assembly CurrentDomain_AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            return args.Name.StartsWith(_assemblyName) ? _newtonsoftAssembly : AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(assembly => assembly.FullName == args.Name);
         }
 #endif
         public static void DeleteFile(ClientContext ctx, string serverRelativeFileUrl)

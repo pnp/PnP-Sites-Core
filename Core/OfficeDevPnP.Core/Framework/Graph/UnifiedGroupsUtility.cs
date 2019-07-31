@@ -9,6 +9,8 @@ using System.IO;
 using OfficeDevPnP.Core.Diagnostics;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Graph;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
@@ -1138,6 +1140,97 @@ namespace OfficeDevPnP.Core.Framework.Graph
             catch (ServiceException ex)
             {
                 Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
+            }
+        }
+
+        public static UnifiedGroupEntity GetDeletedUnifiedGroup(string groupId, string accessToken)
+        {
+            try
+            {
+                var response = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/directory/deleteditems/microsoft.graph.group/{groupId}", accessToken);
+
+                var group = JToken.Parse(response);
+
+                var deletedGroup = new UnifiedGroupEntity
+                {
+                    GroupId = group["id"].ToString(),
+                    Classification = group["classification"].ToString(),
+                    Description = group["description"].ToString(),
+                    DisplayName = group["displayName"].ToString(),
+                    Mail = group["mail"].ToString(),
+                    MailNickname = group["mailNickname"].ToString(),
+                    Visibility = group["visibility"].ToString()
+                };
+
+                return deletedGroup;
+            }
+            catch (Exception e)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, e.Message);
+                throw;
+            }
+        }
+
+        public static List<UnifiedGroupEntity> ListDeletedUnifiedGroups(string accessToken, List<UnifiedGroupEntity> deletedGroups = null, string nextPageUrl = null)
+        {
+            try
+            {
+                if (deletedGroups == null) deletedGroups = new List<UnifiedGroupEntity>();
+
+                var requestUrl = nextPageUrl ?? $"{GraphHelper.MicrosoftGraphBaseURI}beta/directory/deleteditems/microsoft.graph.group?filter=groupTypes/Any(x:x eq 'Unified')";
+                var response = JToken.Parse(HttpHelper.MakeGetRequestForString(requestUrl, accessToken));
+
+                var groups = response["value"];
+
+                foreach (var group in groups)
+                {
+                    var deletedGroup = new UnifiedGroupEntity
+                    {
+                        GroupId = group["id"].ToString(),
+                        Classification = group["classification"].ToString(),
+                        Description = group["description"].ToString(),
+                        DisplayName = group["displayName"].ToString(),
+                        Mail = group["mail"].ToString(),
+                        MailNickname = group["mailNickname"].ToString(),
+                        Visibility = group["visibility"].ToString()
+                    };
+
+                    deletedGroups.Add(deletedGroup);
+                }
+
+                // has paging?
+                return response["@odata.nextLink"] != null ? ListDeletedUnifiedGroups(accessToken, deletedGroups, response["@odata.nextLink"].ToString()) : deletedGroups;
+            }
+            catch (Exception e)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, e.Message);
+                throw;
+            }
+        }
+
+        public static void RestoreDeletedUnifiedGroup(string groupId, string accessToken)
+        {
+            try
+            {
+                HttpHelper.MakePostRequest($"{GraphHelper.MicrosoftGraphBaseURI}beta/directory/deleteditems/{groupId}/restore", contentType: "application/json", accessToken: accessToken);
+            }
+            catch (Exception e)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, e.Message);
+                throw;
+            }
+        }
+
+        public static void PermanentlyDeleteUnifiedGroup(string groupId, string accessToken)
+        {
+            try
+            {
+                HttpHelper.MakeDeleteRequest($"{GraphHelper.MicrosoftGraphBaseURI}beta/directory/deleteditems/{groupId}", accessToken);
+            }
+            catch (Exception e)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, e.Message);
                 throw;
             }
         }
