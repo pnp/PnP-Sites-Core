@@ -1144,6 +1144,12 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
         }
 
+        /// <summary>
+        /// Gets one deleted unified group based on its ID.
+        /// </summary>
+        /// <param name="groupId">The ID of the deleted group.</param>
+        /// <param name="accessToken">Access token for accessing Microsoft Graph</param>
+        /// <returns>The unified group object of the deleted group that matches the provided ID.</returns>
         public static UnifiedGroupEntity GetDeletedUnifiedGroup(string groupId, string accessToken)
         {
             try
@@ -1172,7 +1178,17 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
         }
 
-        public static List<UnifiedGroupEntity> ListDeletedUnifiedGroups(string accessToken, List<UnifiedGroupEntity> deletedGroups = null, string nextPageUrl = null)
+        /// <summary>
+        ///  Lists deleted unified groups.
+        /// </summary>
+        /// <param name="accessToken">Access token for accessing Microsoft Graph</param>
+        /// <returns>A list of unified group objects for the deleted groups.</returns>
+        public static List<UnifiedGroupEntity> ListDeletedUnifiedGroups(string accessToken)
+        {
+            return ListDeletedUnifiedGroups(accessToken, null, null);
+        }
+
+        private static List<UnifiedGroupEntity> ListDeletedUnifiedGroups(string accessToken, List<UnifiedGroupEntity> deletedGroups, string nextPageUrl)
         {
             try
             {
@@ -1209,6 +1225,12 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
         }
 
+        /// <summary>
+        /// Restores one deleted unified group based on its ID.
+        /// </summary>
+        /// <param name="groupId">The ID of the deleted group.</param>
+        /// <param name="accessToken">Access token for accessing Microsoft Graph</param>
+        /// <returns></returns>
         public static void RestoreDeletedUnifiedGroup(string groupId, string accessToken)
         {
             try
@@ -1222,6 +1244,12 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
         }
 
+        /// <summary>
+        /// Permanently deletes one deleted unified group based on its ID.
+        /// </summary>
+        /// <param name="groupId">The ID of the deleted group.</param>
+        /// <param name="accessToken">Access token for accessing Microsoft Graph</param>
+        /// <returns></returns>
         public static void PermanentlyDeleteUnifiedGroup(string groupId, string accessToken)
         {
             try
