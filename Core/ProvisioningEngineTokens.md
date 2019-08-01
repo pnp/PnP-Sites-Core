@@ -9,9 +9,9 @@ Below all the supported tokens are listed:
 Token|Description|Example|Returns
 :-----|:----------|:------|:------
 {apppackageid:[packagename]}|Returns the ID of an app package given its name|{apppackageid:MyPackageName}|55898e77-a7bf-4799-8034-506db5521b98
-{associatedmembersgroup}|Returns the title of the associated members SharePoint group of a site|{associatedmembersgroup}|My Site Members Group Title
-{associatedownersgroup}|Returns the title of the associated owners SharePoint group of a site|{associatedownersgroup}|My Site Owners Group Title
-{associatedvisitorsgroup}|Returns the title of the associated visitors SharePoint group of a site|{associatedvisitorsgroup}|My Site Visitors Group Title
+{associatedmembergroup}|Returns the title of the associated members SharePoint group of a site|{associatedmembergroup}|My Site Members Group Title
+{associatedownergroup}|Returns the title of the associated owners SharePoint group of a site|{associatedownergroup}|My Site Owners Group Title
+{associatedvisitorgroup}|Returns the title of the associated visitors SharePoint group of a site|{associatedvisitorgroup}|My Site Visitors Group Title
 {authenticationrealm}|Returns the authentication ID of the current tenant/farm|{authenticationrealm}|55898e77-a7bf-4799-8034-506db5521b98
 {contenttypeid:[contenttypename]}|Returns the ID of the specified content type|{contenttypeid:My Content Type}|0x0102004F51EFDEA49C49668EF9C6744C8CF87D
 {currentuserfullname}|Returns the full name of the current user e.g. the user using the engine.|{currentuserfullname}|John Doe
