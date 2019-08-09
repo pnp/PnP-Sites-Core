@@ -116,6 +116,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Version == other.Version);
         }
 
+        public bool IsEmptyOrBlank()
+        {
+            return string.IsNullOrWhiteSpace(this.BackgroundFile) &&
+                string.IsNullOrWhiteSpace(this.ColorFile) &&
+                string.IsNullOrWhiteSpace(this.FontFile) &&
+                string.IsNullOrWhiteSpace(this.Name) &&
+                Version == 0;
+        }
+
         #endregion
     }
 }

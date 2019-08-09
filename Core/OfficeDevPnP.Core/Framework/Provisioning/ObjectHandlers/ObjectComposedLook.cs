@@ -23,7 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 if (template.ComposedLook != null &&
-                    !template.ComposedLook.Equals(ComposedLook.Empty))
+                    !template.ComposedLook.IsEmptyOrBlank())
                 {
                     // Check if this is not a noscript site as themes and composed looks are not supported
                     if (web.IsNoScriptSite())
@@ -344,7 +344,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willProvision.HasValue)
             {
-                _willProvision = (template.ComposedLook != null && !template.ComposedLook.Equals(ComposedLook.Empty) && !web.IsNoScriptSite());
+                _willProvision = (template.ComposedLook != null && !template.ComposedLook.IsEmptyOrBlank() && !web.IsNoScriptSite());
             }
             return _willProvision.Value;
         }
