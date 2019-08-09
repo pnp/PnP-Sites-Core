@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.12.1908.0 - August 2019 release]
+
+### Added
+
+
+### Changed
+
+- Fix: Added Built in CT Html Page layout #2321 [SchauDK]
+- Fix: Handle CreateGroupEx with SiteStatus = 1 (provisioning status)
+- Fix: Increase default timeout for ALM API calls
+
 ## [3.11.1907.0 - July 2019 release]
 
 ### Added
