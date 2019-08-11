@@ -533,6 +533,7 @@
     <Compile Include="Utilities\EncryptionUtilityTests.cs" />
     <Compile Include="Diagnostics\PnPMonitoredScopeTests.cs" />
     <Compile Include="Utilities\ThemeUtilityTests.cs" />
+    <Compile Include="Utilities\UnifiedGroupsUtilityTests.cs" />
     <Compile Include="Utilities\UrlUtilityTests.cs" />
     <Compile Include="Extensions\WebExtensionsTests.cs" />
     <Compile Include="Extensions\PageExtensionsTests.cs" />
