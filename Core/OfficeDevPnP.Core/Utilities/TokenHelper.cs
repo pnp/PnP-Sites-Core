@@ -1081,9 +1081,14 @@ namespace OfficeDevPnP.Core.Utilities
                 throw new ArgumentOutOfRangeException("identity");
             }
 #endif
+            string claimType = NameIdentifierClaimType;
+            if (identity.Contains('@'))
+            {
+                claimType = "upn";
+            }
             JsonWebTokenClaim[] claims = new JsonWebTokenClaim[]
             {
-                new JsonWebTokenClaim(NameIdentifierClaimType, identity.ToLower()),
+                new JsonWebTokenClaim(claimType, identity.ToLower()),
                 new JsonWebTokenClaim("nii", "urn:office:idp:activedirectory")
             };
             return claims;
