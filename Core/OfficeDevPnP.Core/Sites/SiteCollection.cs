@@ -773,7 +773,7 @@ namespace OfficeDevPnP.Core.Sites
             }
             else
             {
-                var result = await context.Web.ExecutePost($"/_api/groupsitemanager/IsTeamifyPromptHidden?siteUrl='{context.Site.Url}'", string.Empty);
+                var result = await context.Web.ExecuteGet($"/_api/groupsitemanager/IsTeamifyPromptHidden?siteUrl='{context.Site.Url}'");
 
                 var teamifyPromptHidden = JObject.Parse(result);
 
