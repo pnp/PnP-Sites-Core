@@ -817,6 +817,30 @@ namespace Microsoft.SharePoint.Client
 
             return await SiteCollection.TeamifySiteAsync(clientContext);
         }
+
+        /// <summary>
+        /// Checks whether the teamify prompt is hidden in O365 Group connected sites
+        /// </summary>
+        /// <param name="clientContext">ClientContext of the site to operate against</param>
+        /// <returns></returns>
+        public static async Task<bool> IsTeamifyPromptHidden(this ClientContext clientContext)
+        {
+            await new SynchronizationContextRemover();
+
+            return await SiteCollection.IsTeamifyPromptHidden(clientContext);
+        }
+
+        /// <summary>
+        /// Hide the teamify prompt displayed in O365 group connected sites
+        /// </summary>
+        /// <param name="clientContext">ClientContext of the site to operate against</param>
+        /// <returns></returns>
+        public static async Task<bool> HideTeamifyPrompt(this ClientContext clientContext)
+        {
+            await new SynchronizationContextRemover();
+
+            return await SiteCollection.HideTeamifyPrompt(clientContext);
+        }
 #endif
     }
 }
