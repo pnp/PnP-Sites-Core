@@ -1,11 +1,10 @@
-﻿using Microsoft.SharePoint.Client;
+﻿using System;
+using System.Linq;
+using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -116,13 +115,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 if (processItem)
                                 {
+                                    ListItemUtilities.ListItemUpdateType updateMode;
                                     if (listitem == null)
                                     {
                                         var listitemCI = new ListItemCreationInformation();
                                         listitem = list.AddItem(listitemCI);
+                                        updateMode = ListItemUtilities.ListItemUpdateType.Update;
+                                    }
+                                    else
+                                    {
+                                        updateMode = ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion;
                                     }
 
-                                    ListItemUtilities.UpdateListItem(listitem, parser, dataRow.Values, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion);
+                                    ListItemUtilities.UpdateListItem(listitem, parser, dataRow.Values, updateMode);
 
                                     if (dataRow.Security != null && (dataRow.Security.ClearSubscopes || dataRow.Security.CopyRoleAssignments || dataRow.Security.RoleAssignments.Count > 0))
                                     {
@@ -136,7 +141,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     && applyingInformation.IgnoreDuplicateDataRowErrors)
                                 {
                                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate);
-                                    continue;
                                 }
                             }
                             catch (Exception ex)
@@ -156,8 +160,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            //using (var scope = new PnPMonitoredScope(this.Name))
-            //{ }
             return template;
         }
 
