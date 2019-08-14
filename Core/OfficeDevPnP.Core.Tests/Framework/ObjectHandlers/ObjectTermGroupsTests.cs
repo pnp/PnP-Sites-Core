@@ -88,11 +88,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             var template = new ProvisioningTemplate();
             _termGroupGuid = Guid.Empty;
 
-            TermGroup termGroup = new TermGroup(_termGroupGuid, "{sitecollectiontermgroupname}", null);
+            var termGroup = new TermGroup(_termGroupGuid, "{sitecollectiontermgroupname}", null);
 
-            List<TermSet> termSets = new List<TermSet>();
+            var termSets = new List<TermSet>();
 
-            TermSet termSet = new TermSet(_termSetGuid, "TestProvisioningTermSet", null, true, false, null, null);
+            var termSet = new TermSet(_termSetGuid, "TestProvisioningTermSet", null, true, false, null, null);
             termSets.Add(termSet);
 
             termGroup.TermSets.AddRange(termSets);
@@ -289,6 +289,114 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.AreEqual(sourceTerm.Id, newTermGroup.TermSets[1].Terms[0].Id);
                 Assert.IsTrue(newTermGroup.TermSets[0].Terms[0].IsReused);
                 Assert.IsTrue(newTermGroup.TermSets[1].Terms[0].IsReused);
+            }
+        }
+
+        [TestMethod]
+        public void CanProvisionTokenizedTermsTwiceIdMatch()
+        {
+            var template = new ProvisioningTemplate();
+            const string termGroupName = "TestProvisioningGroup";
+            var termGroup = new TermGroup(_termGroupGuid, termGroupName, null);
+
+            const string termSiteName = "TestProvisioningTermSet - {sitename}";
+            var termSet1 = new TermSet(_termSetGuid, termSiteName, null, true, false, null, null);
+
+            var term1Id = Guid.NewGuid();
+            const string term1Name = "TestProvisioningTerm - {siteid}";
+            var term1 = new Term(term1Id, term1Name, null, null, null, null, null);
+
+            termSet1.Terms.Add(term1);
+            termGroup.TermSets.Add(termSet1);
+            template.TermGroups.Add(termGroup);
+
+            for (int index = 0; index < 2; index++)
+            {
+                using (ClientContext ctx = TestCommon.CreateClientContext())
+                {
+                    var parser = new TokenParser(ctx.Web, template);
+                    new ObjectTermGroups().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                    TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
+
+                    var store = session.GetDefaultKeywordsTermStore();
+                    var group = store.GetGroup(_termGroupGuid);
+                    var set = store.GetTermSet(_termSetGuid);
+
+                    ctx.Load(group);
+                    ctx.Load(set, s => s.Id, s => s.Name, s => s.Terms);
+                    ctx.ExecuteQueryRetry();
+
+                    Assert.IsInstanceOfType(group, typeof(Microsoft.SharePoint.Client.Taxonomy.TermGroup));
+                    StringAssert.Matches(group.Name, new Regex(Regex.Escape(termGroupName)));
+                    Assert.AreEqual(_termGroupGuid, group.Id);
+
+                    Assert.IsInstanceOfType(set, typeof(Microsoft.SharePoint.Client.Taxonomy.TermSet));
+                    Assert.AreEqual(1, set.Terms.Count);
+                    Assert.AreEqual(_termSetGuid, set.Id);
+                    StringAssert.DoesNotMatch(set.Name, new Regex(Regex.Escape(termSiteName)));
+
+                    var remoteTerm1 = set.Terms[0];
+                    Assert.AreEqual(term1Id, remoteTerm1.Id);
+                    StringAssert.DoesNotMatch(remoteTerm1.Name, new Regex(Regex.Escape(term1Name)));
+                }
+            }
+        }
+
+        [TestMethod]
+        public void CanProvisionTokenizedTermsTwiceNameMatch()
+        {
+            var template = new ProvisioningTemplate();
+            const string termGroupName = "TestProvisioningGroup";
+            var termGroup = new TermGroup(_termGroupGuid, termGroupName, null);
+
+            const string termSiteName = "TestProvisioningTermSet - {sitename}";
+            var termSet1 = new TermSet(_termSetGuid, termSiteName, null, true, false, null, null);
+
+            var term1Id = Guid.NewGuid();
+            const string term1Name = "TestProvisioningTerm - {siteid}";
+            var term1 = new Term(term1Id, term1Name, null, null, null, null, null);
+
+            termSet1.Terms.Add(term1);
+            termGroup.TermSets.Add(termSet1);
+            template.TermGroups.Add(termGroup);
+
+            for (int index = 0; index < 2; index++)
+            {
+                if (index == 1)
+                {
+                    // Assign a new ID to the Term to test the name matching logic.
+                    term1.Id = Guid.NewGuid();
+                }
+
+                using (ClientContext ctx = TestCommon.CreateClientContext())
+                {
+                    var parser = new TokenParser(ctx.Web, template);
+                    new ObjectTermGroups().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                    TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
+
+                    var store = session.GetDefaultKeywordsTermStore();
+                    var group = store.GetGroup(_termGroupGuid);
+                    var set = store.GetTermSet(_termSetGuid);
+
+                    ctx.Load(group);
+                    ctx.Load(set, s => s.Id, s => s.Name, s => s.Terms);
+                    ctx.ExecuteQueryRetry();
+
+                    Assert.IsInstanceOfType(group, typeof(Microsoft.SharePoint.Client.Taxonomy.TermGroup));
+                    StringAssert.Matches(group.Name, new Regex(Regex.Escape(termGroupName)));
+                    Assert.AreEqual(_termGroupGuid, group.Id);
+
+                    Assert.IsInstanceOfType(set, typeof(Microsoft.SharePoint.Client.Taxonomy.TermSet));
+                    Assert.AreEqual(1, set.Terms.Count);
+                    Assert.AreEqual(_termSetGuid, set.Id);
+                    StringAssert.DoesNotMatch(set.Name, new Regex(Regex.Escape(termSiteName)));
+
+                    var remoteTerm1 = set.Terms[0];
+                    Assert.AreEqual(term1Id, remoteTerm1.Id);
+                    StringAssert.DoesNotMatch(remoteTerm1.Name, new Regex(Regex.Escape(term1Name)));
+                }
             }
         }
     }
