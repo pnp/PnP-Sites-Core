@@ -165,7 +165,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             var term = terms.FirstOrDefault(t => t.Id == modelTerm.Id);
                             if (term == null)
                             {
-                                var normalizedTermName = TaxonomyItem.NormalizeName(context, modelTerm.Name);
+                                var normalizedTermName = TaxonomyItem.NormalizeName(context, parser.ParseString(modelTerm.Name));
                                 context.ExecuteQueryRetry();
 
                                 term = terms.FirstOrDefault(t => t.Name == normalizedTermName.Value);
