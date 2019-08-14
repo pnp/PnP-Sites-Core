@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
+using System.Xml.Linq;
 using Microsoft.SharePoint.Client;
+using Microsoft.SharePoint.Client.Taxonomy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
-using System.Xml.Linq;
-using Microsoft.SharePoint.Client.Taxonomy;
+using RoleAssignment = OfficeDevPnP.Core.Framework.Provisioning.Model.RoleAssignment;
 
 namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 {
@@ -31,8 +33,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             listName = string.Format("Test_{0}", DateTime.Now.Ticks);
             listsForCleanup.Add(listName);
             datarowListName = $"DataRowTest_{DateTime.Now.Ticks}";
-
         }
+
         [TestCleanup]
         public void CleanUp()
         {
@@ -141,16 +143,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             }
 
             var template = new ProvisioningTemplate();
-            var listInstance = new Core.Framework.Provisioning.Model.ListInstance();
+            var listInstance = new ListInstance
+            {
+                Url = string.Format("lists/{0}", listName),
+                Title = listName,
+                TemplateType = (int)ListTemplateType.GenericList
+            };
 
-            listInstance.Url = string.Format("lists/{0}", listName);
-            listInstance.Title = listName;
-            listInstance.TemplateType = (int)ListTemplateType.GenericList;
             listInstance.FieldRefs.Add(new FieldRef() { Id = new Guid("23f27201-bee3-471e-b2e7-b64fd8b7ca38") });
 
             using (var ctx = TestCommon.CreateClientContext())
             {
-                //Create term
+                // Create term
                 var taxSession = TaxonomySession.GetTaxonomySession(ctx);
                 var termStore = taxSession.GetDefaultSiteCollectionTermStore();
 
@@ -167,15 +171,27 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 termSet.CreateTerm(termName, 1033, termId);
 
-                Dictionary<string, string> dataValues = new Dictionary<string, string>();
-                dataValues.Add("Title", "Test");
-                dataValues.Add("TaxKeyword", $"{termName}|{termId.ToString()}");
-                DataRow dataRow = new DataRow(dataValues);
+                // Data Row without Security
+                string taxonomyValue = $"{termName}|{termId.ToString()}";
+                var dataValues = new Dictionary<string, string>();
+                const string item1Title = "Test 1";
+                dataValues.Add("Title", item1Title);
+                dataValues.Add("TaxKeyword", taxonomyValue);
+                listInstance.DataRows.Add(new DataRow(dataValues));
 
-                listInstance.DataRows.Add(dataRow);
+                // Data Row with Security
+                var security2 = new ObjectSecurity();
+                security2.RoleAssignments.Add(new RoleAssignment { Remove = false, Principal = "{associatedownergroup}", RoleDefinition = "{roledefinition:Administrator}" });
+                security2.RoleAssignments.Add(new RoleAssignment { Remove = false, Principal = "{associatedvisitorgroup}", RoleDefinition = "{roledefinition:Reader}" });
+
+                var dataValues2 = new Dictionary<string, string>();
+                const string item2Title = "Test 2";
+                dataValues2.Add("Title", item2Title);
+                dataValues2.Add("TaxKeyword", taxonomyValue);
+
+                listInstance.DataRows.Add(new DataRow(dataValues2, security2));
 
                 template.Lists.Add(listInstance);
-
 
                 var parser = new TokenParser(ctx.Web, template);
 
@@ -189,20 +205,31 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var list = ctx.Web.GetListByUrl(listInstance.Url);
                 Assert.IsNotNull(list);
 
-                var items = list.GetItems(CamlQuery.CreateAllItemsQuery());
+                var query = new CamlQuery
+                {
+                    ViewXml = @"<View Scope=""RecursiveAll""><Query><OrderBy><FieldRef Name=""Title"" Ascending=""TRUE"" /></OrderBy></Query></View>"
+                };
+
+                ListItemCollection items = list.GetItems(query);
                 ctx.Load(items, itms => itms.Include(item => item["Title"], i => i["TaxKeyword"]));
                 ctx.ExecuteQueryRetry();
 
-                Assert.IsTrue(items.Count == 1);
-                Assert.IsTrue(items[0]["Title"].ToString() == "Test");
+                Assert.AreEqual(2, items.Count);
+                StringAssert.Matches(Convert.ToString(items[0]["Title"]), new Regex(Regex.Escape(item1Title)));
+                StringAssert.Matches(Convert.ToString(items[1]["Title"]), new Regex(Regex.Escape(item2Title)));
 
-                //Validate taxonomy field data
+                // Validate taxonomy field data
                 var value = items[0]["TaxKeyword"] as TaxonomyFieldValueCollection;
                 Assert.IsNotNull(value);
                 Assert.IsTrue(value[0].WssId > 0, "Term WSS ID not set correctly");
                 Assert.AreEqual(termName, value[0].Label, "Term label not set correctly");
                 Assert.AreEqual(termId.ToString(), value[0].TermGuid, "Term GUID not set correctly");
 
+                var value2 = items[1]["TaxKeyword"] as TaxonomyFieldValueCollection;
+                Assert.IsNotNull(value2);
+                Assert.IsTrue(value2[0].WssId > 0, "Term WSS ID not set correctly");
+                Assert.AreEqual(termName, value2[0].Label, "Term label not set correctly");
+                Assert.AreEqual(termId.ToString(), value2[0].TermGuid, "Term GUID not set correctly");
             }
         }
 
@@ -382,6 +409,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             }
         }
 #endif
+
         [TestMethod]
         public void CanProvisionCalculatedFieldRefInListInstance()
         {
@@ -837,6 +865,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsFalse(contentType4ExistsInList, "Content type 4 has not been removed from the list content types");
             }
         }
+
         [TestMethod]
         public void CanRemoveContentTypeWithoutModifyingContentTypeNewButtonVisibility()
         {
