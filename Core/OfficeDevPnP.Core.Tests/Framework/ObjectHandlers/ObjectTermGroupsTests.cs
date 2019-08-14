@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -15,7 +16,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
     [TestClass]
     public class ObjectTermGroupsTests
     {
-
         private Guid _termSetGuid;
         private Guid _additionalTermSetGuid;
         private Guid _termGroupGuid;
@@ -107,9 +107,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsInstanceOfType(group, typeof(Microsoft.SharePoint.Client.Taxonomy.TermGroup));
                 Assert.IsInstanceOfType(set, typeof(Microsoft.SharePoint.Client.Taxonomy.TermSet));
                 Assert.IsTrue(group.IsSiteCollectionGroup);
-
             }
-
         }
 
         [TestMethod]
@@ -117,24 +115,29 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         {
             var template = new ProvisioningTemplate();
 
-            TermGroup termGroup = new TermGroup(_termGroupGuid, "TestProvisioningGroup", null);
+            var termGroup = new TermGroup(_termGroupGuid, "TestProvisioningGroup", null);
 
-            List<TermSet> termSets = new List<TermSet>();
+            var termSets = new List<TermSet>();
 
-            TermSet termSet = new TermSet(_termSetGuid, "TestProvisioningTermSet", null, true, false, null, null);
+            var termSet = new TermSet(_termSetGuid, "TestProvisioningTermSet", null, true, false, null, null);
 
-            List<Term> terms = new List<Term>();
+            var terms = new List<Term>();
 
-            var term1 = new Term(Guid.NewGuid(), "TestProvisioningTerm 1", null, null, null, null, null);
+            var term1Id = Guid.NewGuid();
+            const string term1Name = "TestProvisioningTerm 1";
+            var term1 = new Term(term1Id, term1Name, null, null, null, null, null);
             term1.Properties.Add("TestProp1", "Test Value 1");
             term1.LocalProperties.Add("TestLocalProp1", "Test Value 1");
             term1.Labels.Add(new TermLabel() { Language = 1033, Value = "Testing" });
 
-            term1.Terms.Add(new Term(Guid.NewGuid(), "Sub Term 1", null, null, null, null, null));
+            var term1Subterm1Id = Guid.NewGuid();
+            term1.Terms.Add(new Term(term1Subterm1Id, "Sub Term 1", null, null, null, null, null));
 
             terms.Add(term1);
 
-            terms.Add(new Term(Guid.NewGuid(), "TestProvisioningTerm 2", null, null, null, null, null));
+            var term2Id = Guid.NewGuid();
+            const string term2Name = "TestProvisioningTerm 2";
+            terms.Add(new Term(term2Id, term2Name, null, null, null, null, null));
 
             termSet.Terms.AddRange(terms);
 
@@ -146,14 +149,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             using (var ctx = TestCommon.CreateClientContext())
             {
-
                 var parser = new TokenParser(ctx.Web, template);
 
                 new ObjectTermGroups().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
 
-                var store = session.GetDefaultKeywordsTermStore(); 
+                var store = session.GetDefaultKeywordsTermStore();
                 var group = store.GetGroup(_termGroupGuid);
                 var set = store.GetTermSet(_termSetGuid);
 
@@ -163,19 +165,26 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 Assert.IsInstanceOfType(group, typeof(Microsoft.SharePoint.Client.Taxonomy.TermGroup));
                 Assert.IsInstanceOfType(set, typeof(Microsoft.SharePoint.Client.Taxonomy.TermSet));
-                Assert.IsTrue(set.Terms.Count == 2);
 
+                var orderedTerms = set.Terms.OrderBy(t => t.Name, StringComparer.Ordinal).ToArray();
+                Assert.AreEqual(2, orderedTerms.Length);
+
+                var remoteTerm1 = orderedTerms[0];
+                Assert.AreEqual(term1Id, remoteTerm1.Id);
+                StringAssert.Matches(remoteTerm1.Name, new Regex(Regex.Escape(term1Name)));
+
+                var remoteTerm2 = orderedTerms[1];
+                Assert.AreEqual(term2Id, remoteTerm2.Id);
+                StringAssert.Matches(remoteTerm2.Name, new Regex(Regex.Escape(term2Name)));
 
                 var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
 
                 var template2 = new ProvisioningTemplate();
                 template2 = new ObjectTermGroups().ExtractObjects(ctx.Web, template, creationInfo);
 
-                Assert.IsTrue(template.TermGroups.Any());
-                Assert.IsInstanceOfType(template.TermGroups, typeof(Core.Framework.Provisioning.Model.TermGroupCollection));
+                Assert.IsTrue(template2.TermGroups.Any());
+                Assert.IsInstanceOfType(template2.TermGroups, typeof(Core.Framework.Provisioning.Model.TermGroupCollection));
             }
-
-
         }
 
         [TestMethod]
@@ -183,12 +192,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         {
             var template = new ProvisioningTemplate();
 
-            TermGroup termGroup = new TermGroup(_termGroupGuid, "TestProvisioningGroup", null);
+            var termGroup = new TermGroup(_termGroupGuid, "TestProvisioningGroup", null);
 
-            List<TermSet> termSets = new List<TermSet>();
+            var termSets = new List<TermSet>();
 
-            TermSet termSet1 = new TermSet(_termSetGuid, "TestProvisioningTermSet1", null, true, false, null, null);
-            TermSet termSet2 = new TermSet(_additionalTermSetGuid, "TestProvisioningTermSet2", null, true, false, null, null);
+            var termSet1 = new TermSet(_termSetGuid, "TestProvisioningTermSet1", null, true, false, null, null);
+            var termSet2 = new TermSet(_additionalTermSetGuid, "TestProvisioningTermSet2", null, true, false, null, null);
 
             var sourceTerm = new Term(Guid.NewGuid(), "Source Term 1", null, null, null, null, null)
             {
@@ -196,13 +205,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 IsSourceTerm = true
             };
 
-
             var reusedTerm = new Term(sourceTerm.Id, "Source Term 1", null, null, null, null, null)
             {
                 IsReused = true,
                 SourceTermId = sourceTerm.Id
             };
-
 
             termSet1.Terms.Add(reusedTerm);
             termSet2.Terms.Add(sourceTerm);
@@ -256,13 +263,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     HandlersToProcess = Handlers.TermGroups,
                     IncludeAllTermGroups = true // without this being true no term groups will be returned
                 });
+
                 // note: cannot use TermGroupValidator class to validate the result as XML since the read template contains additional information like Description="", Owner="[...]", differing TermGroup ID etc. which makes the validation fail; so manually compare what's interesting
                 var newTermGroups = result.TermGroups.Where(tg => tg.Name == termGroup.Name);
                 Assert.AreEqual(1, newTermGroups.Count());
+
                 var newTermGroup = newTermGroups.First();
                 Assert.AreEqual(2, newTermGroup.TermSets.Count);
                 Assert.AreEqual(1, newTermGroup.TermSets[0].Terms.Count);
                 Assert.AreEqual(1, newTermGroup.TermSets[1].Terms.Count);
+
                 // note: this check that the IDs of the source and reused term are the same to document this behavior
                 Assert.AreEqual(sourceTerm.Id, newTermGroup.TermSets[0].Terms[0].Id);
                 Assert.AreEqual(sourceTerm.Id, newTermGroup.TermSets[1].Terms[0].Id);
@@ -270,6 +280,5 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.IsTrue(newTermGroup.TermSets[1].Terms[0].IsReused);
             }
         }
-
     }
 }
