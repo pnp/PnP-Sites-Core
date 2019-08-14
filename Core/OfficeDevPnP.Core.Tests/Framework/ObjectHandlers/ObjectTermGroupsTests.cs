@@ -23,44 +23,55 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestInitialize]
         public void Initialize()
         {
-            if (!TestCommon.AppOnlyTesting())
-            {
-                _termSetGuid = Guid.NewGuid();
-                _termGroupGuid = Guid.NewGuid();
-                _additionalTermSetGuid = Guid.NewGuid();
-            }
-            else
+            if (TestCommon.AppOnlyTesting())
             {
                 Assert.Inconclusive("Taxonomy tests are not supported when testing using app-only");
+                return;
             }
+
+            _termSetGuid = Guid.NewGuid();
+            _termGroupGuid = Guid.NewGuid();
+            _additionalTermSetGuid = Guid.NewGuid();
         }
 
         [TestCleanup]
         public void CleanUp()
         {
-            if (!TestCommon.AppOnlyTesting())
+            if (TestCommon.AppOnlyTesting())
             {
-                using (var ctx = TestCommon.CreateClientContext())
+                return;
+            }
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                try
+                {
+                    TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
+                    var store = session.GetDefaultSiteCollectionTermStore();
+
+                    var termSet1 = store.GetTermSet(_termSetGuid);
+                    var termSet2 = store.GetTermSet(_additionalTermSetGuid);
+
+                    termSet1.DeleteObject();
+                    termSet2.DeleteObject();
+
+                    store.CommitAll();
+                    ctx.ExecuteQueryRetry();
+                }
+                catch
+                {
+                }
+
+                if (_termGroupGuid != Guid.Empty)
                 {
                     try
                     {
                         TaxonomySession session = TaxonomySession.GetTaxonomySession(ctx);
-
                         var store = session.GetDefaultSiteCollectionTermStore();
-                        var termSet1 = store.GetTermSet(_termSetGuid);
-                        var termSet2 = store.GetTermSet(_additionalTermSetGuid);
 
-                        termSet1.DeleteObject();
-                        termSet2.DeleteObject();
+                        var termGroup = store.GetGroup(_termGroupGuid);
+                        termGroup.DeleteObject();
 
-                        store.CommitAll();
-                        ctx.ExecuteQueryRetry();
-
-                        if (_termGroupGuid != Guid.Empty)
-                        {
-                            var termGroup = store.GetGroup(_termGroupGuid);
-                            termGroup.DeleteObject();
-                        }
                         store.CommitAll();
                         ctx.ExecuteQueryRetry();
                     }
@@ -182,8 +193,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 var template2 = new ProvisioningTemplate();
                 template2 = new ObjectTermGroups().ExtractObjects(ctx.Web, template, creationInfo);
 
-                Assert.IsTrue(template2.TermGroups.Any());
-                Assert.IsInstanceOfType(template2.TermGroups, typeof(Core.Framework.Provisioning.Model.TermGroupCollection));
+                Assert.IsTrue(template.TermGroups.Any());
+                Assert.IsInstanceOfType(template.TermGroups, typeof(Core.Framework.Provisioning.Model.TermGroupCollection));
             }
         }
 
