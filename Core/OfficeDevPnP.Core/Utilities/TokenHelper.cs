@@ -523,13 +523,15 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="targetApplicationUri">Url of the target SharePoint site</param>
         /// <param name="identity">Windows identity of the user on whose behalf to create the access token</param>
         /// <returns>An access token with an audience of the target principal</returns>
-        public static string GetS2SAccessTokenWithWindowsIdentity(
-            Uri targetApplicationUri,
-            WindowsIdentity identity)
+        public static string GetS2SAccessTokenWithWindowsIdentity(Uri targetApplicationUri, WindowsIdentity identity)
         {
-            string realm = string.IsNullOrEmpty(Realm) ? GetRealmFromTargetUrl(targetApplicationUri) : Realm;
+            string realm = string.IsNullOrWhiteSpace(Realm)
+                ? GetRealmFromTargetUrl(targetApplicationUri)
+                : Realm;
 
-            JsonWebTokenClaim[] claims = identity != null ? GetClaimsWithWindowsIdentity(identity) : null;
+            JsonWebTokenClaim[] claims = identity != null
+                ? GetClaimsWithWindowsIdentity(identity)
+                : null;
 
             return GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
         }
@@ -540,17 +542,40 @@ namespace OfficeDevPnP.Core.Utilities
         /// web.config, an auth challenge will be issued to the targetApplicationUri to discover it.
         /// </summary>
         /// <param name="targetApplicationUri">Url of the target SharePoint site</param>
-        /// <param name="identity">Name of the user (login name) on whose behalf to create the access token</param>
+        /// <param name="identity">Name of the user (login name) on whose behalf to create the access token. Supported name formats are SID and User Principal Name (UPN)</param>
         /// <returns>An access token with an audience of the target principal</returns>
-        public static string GetS2SAccessTokenWithUserName(
-            Uri targetApplicationUri,
-            string identity)
+        public static string GetS2SAccessTokenWithWindowsUserName(Uri targetApplicationUri, string identity)
         {
-            string realm = string.IsNullOrEmpty(Realm) ? GetRealmFromTargetUrl(targetApplicationUri) : Realm;
+            string realm = string.IsNullOrWhiteSpace(Realm)
+                ? GetRealmFromTargetUrl(targetApplicationUri)
+                : Realm;
 
             JsonWebTokenClaim[] claims = string.IsNullOrWhiteSpace(identity)
-                ? GetClaimsWithUserName(identity)
+                ? null
+                : GetClaimsWithWindowsUserName(identity);
+
+            return GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
+        }
+
+        /// <summary>
+        /// Retrieves an S2S access token signed by the application's private certificate on behalf of the specified
+        /// user name and intended for the SharePoint at the targetApplicationUri. If no Realm is specified in
+        /// web.config, an auth challenge will be issued to the targetApplicationUri to discover it.
+        /// </summary>
+        /// <param name="targetApplicationUri">Url of the target SharePoint site</param>
+        /// <param name="identity">Claims identity of the user on whose behalf to create the access token</param>
+        /// <returns>An access token with an audience of the target principal</returns>
+        public static string GetS2SAccessTokenWithClaimsIdentity(Uri targetApplicationUri, System.Security.Claims.ClaimsIdentity identity)
+        {
+            string realm = string.IsNullOrWhiteSpace(Realm)
+                ? GetRealmFromTargetUrl(targetApplicationUri)
+                : Realm;
+
+            JsonWebTokenClaim[] claims = identity != null
+                ? GetClaimsWithClaimsIdentity(identity, IdentityClaimType, TrustedIdentityTokenIssuerName)
                 : null;
+
+            string accessToken = GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
 
             return GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
         }
@@ -564,20 +589,28 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="targetApplicationUri">Url of the target SharePoint site</param>
         /// <param name="identity">Windows identity of the user on whose behalf to create the access token</param>
         /// <returns>A ClientContext using an access token with an audience of the target application</returns>
-        public static ClientContext GetS2SClientContextWithWindowsIdentity(
-            Uri targetApplicationUri,
-            WindowsIdentity identity)
+        public static ClientContext GetS2SClientContextWithWindowsIdentity(Uri targetApplicationUri, WindowsIdentity identity)
         {
-            string realm = string.IsNullOrEmpty(Realm) ? GetRealmFromTargetUrl(targetApplicationUri) : Realm;
-
-            JsonWebTokenClaim[] claims = identity != null
-                ? GetClaimsWithWindowsIdentity(identity)
-                : null;
-
-            string accessToken = GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
+            string accessToken = GetS2SAccessTokenWithWindowsIdentity(targetApplicationUri, identity);
 
             return GetClientContextWithAccessToken(targetApplicationUri.ToString(), accessToken);
 		}
+
+        /// <summary>
+        /// Retrieves an S2S client context with an access token signed by the application's private certificate on
+        /// behalf of the specified WindowsIdentity and intended for application at the targetApplicationUri using the
+        /// targetRealm. If no Realm is specified in web.config, an auth challenge will be issued to the
+        /// targetApplicationUri to discover it.
+        /// </summary>
+        /// <param name="targetApplicationUri">Url of the target SharePoint site</param>
+        /// <param name="identity">Name of the user (login name) on whose behalf to create the access token. Supported name formats are SID and User Principal Name (UPN)</param>
+        /// <returns>A ClientContext using an access token with an audience of the target application</returns>
+        public static ClientContext GetS2SClientContextWithWindowsUserName(Uri targetApplicationUri, string identity)
+        {
+            string accessToken = GetS2SAccessTokenWithWindowsUserName(targetApplicationUri, identity);
+
+            return GetClientContextWithAccessToken(targetApplicationUri.ToString(), accessToken);
+        }
 
 		/// <summary>
 		/// Retrieves an S2S client context with an access token signed by the application's private certificate on
@@ -597,11 +630,7 @@ namespace OfficeDevPnP.Core.Utilities
 		/// <returns>A ClientContext using an access token with an audience of the target application</returns>
 		public static ClientContext GetS2SClientContextWithClaimsIdentity(Uri targetApplicationUri, System.Security.Claims.ClaimsIdentity identity)
 		{
-			string realm = string.IsNullOrEmpty(Realm) ? GetRealmFromTargetUrl(targetApplicationUri) : Realm;
-
-			JsonWebTokenClaim[] claims = identity != null ? GetClaimsWithClaimsIdentity(identity, IdentityClaimType, TrustedIdentityTokenIssuerName) : null;
-
-			string accessToken = GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
+            string accessToken = GetS2SAccessTokenWithClaimsIdentity(targetApplicationUri, identity);
 
 			return GetClientContextWithAccessToken(targetApplicationUri.ToString(), accessToken);
 		}
@@ -1074,10 +1103,10 @@ namespace OfficeDevPnP.Core.Utilities
                 throw new ArgumentNullException("identity");
             }
 #endif
-            return GetClaimsWithUserName(identity.User.Value);
+            return GetClaimsWithWindowsUserName(identity.User.Value);
         }
 
-        private static JsonWebTokenClaim[] GetClaimsWithUserName(string identity)
+        private static JsonWebTokenClaim[] GetClaimsWithWindowsUserName(string identity)
         {
 #if DEBUG
             if (string.IsNullOrWhiteSpace(identity))

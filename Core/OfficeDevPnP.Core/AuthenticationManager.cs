@@ -613,7 +613,7 @@ namespace OfficeDevPnP.Core
             // Configure the handler to generate the Bearer Access Token on each request and add it to the request
             clientContext.ExecutingWebRequest += (sender, args) =>
             {
-                var accessToken = TokenHelper.GetS2SAccessTokenWithUserName(siteUri, loginName);
+                var accessToken = TokenHelper.GetS2SAccessTokenWithWindowsUserName(siteUri, loginName);
                 args.WebRequestExecutor.RequestHeaders["Authorization"] = "Bearer " + accessToken;
             };
 
