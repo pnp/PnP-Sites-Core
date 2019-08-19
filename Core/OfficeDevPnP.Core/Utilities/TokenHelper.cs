@@ -548,7 +548,9 @@ namespace OfficeDevPnP.Core.Utilities
         {
             string realm = string.IsNullOrEmpty(Realm) ? GetRealmFromTargetUrl(targetApplicationUri) : Realm;
 
-            JsonWebTokenClaim[] claims = identity != null ? GetClaimsWithUserName(identity) : null;
+            JsonWebTokenClaim[] claims = string.IsNullOrWhiteSpace(identity)
+                ? GetClaimsWithUserName(identity)
+                : null;
 
             return GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
         }
@@ -568,7 +570,9 @@ namespace OfficeDevPnP.Core.Utilities
         {
             string realm = string.IsNullOrEmpty(Realm) ? GetRealmFromTargetUrl(targetApplicationUri) : Realm;
 
-            JsonWebTokenClaim[] claims = identity != null ? GetClaimsWithWindowsIdentity(identity) : null;
+            JsonWebTokenClaim[] claims = identity != null
+                ? GetClaimsWithWindowsIdentity(identity)
+                : null;
 
             string accessToken = GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
 

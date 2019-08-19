@@ -529,7 +529,11 @@ namespace OfficeDevPnP.Core
         /// <param name="certificatePath">Full path to the private key certificate (.pfx) used to authenticate</param>
         /// <param name="certificatePassword">Password used for the private key certificate (.pfx)</param>
         /// <param name="certificateIssuerId">The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer</param>
-        /// <param name="loginName">Name of the user (login name) on whose behalf to create the access token</param>
+        /// <param name="loginName">
+        /// Name of the user (login name) on whose behalf to create the access token.
+        /// Supported input formats are SID and User Principal Name (UPN).
+        /// If the parameter is left empty (including null) an App Only Context will be created.
+        /// </param>
         /// <returns>Authenticated SharePoint ClientContext</returns>
         public ClientContext GetHighTrustCertificateAppAuthenticatedContext(string siteUrl, string clientId, string certificatePath, string certificatePassword, string certificateIssuerId, string loginName)
         {
@@ -545,7 +549,11 @@ namespace OfficeDevPnP.Core
         /// <param name="certificatePath">Full path to the private key certificate (.pfx) used to authenticate</param>
         /// <param name="certificatePassword">Password used for the private key certificate (.pfx)</param>
         /// <param name="certificateIssuerId">The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer</param>
-        /// <param name="loginName">Name of the user (login name) on whose behalf to create the access token</param>
+        /// <param name="loginName">
+        /// Name of the user (login name) on whose behalf to create the access token.
+        /// Supported input formats are SID and User Principal Name (UPN).
+        /// If the parameter is left empty (including null) an App Only Context will be created.
+        /// </param>
         /// <returns>Authenticated SharePoint ClientContext</returns>
         public ClientContext GetHighTrustCertificateAppAuthenticatedContext(string siteUrl, string clientId, string certificatePath, SecureString certificatePassword, string certificateIssuerId, string loginName)
         {
@@ -562,7 +570,11 @@ namespace OfficeDevPnP.Core
         /// <param name="storeLocation">The location of the store for the certificate</param>
         /// <param name="thumbPrint">The thumbprint of the certificate to locate in the store</param>
         /// <param name="certificateIssuerId">The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer</param>
-        /// <param name="loginName">Name of the user (login name) on whose behalf to create the access token</param>
+        /// <param name="loginName">
+        /// Name of the user (login name) on whose behalf to create the access token.
+        /// Supported input formats are SID and User Principal Name (UPN).
+        /// If the parameter is left empty (including null) an App Only Context will be created.
+        /// </param>
         /// <returns>Authenticated SharePoint ClientContext</returns>
         public ClientContext GetHighTrustCertificateAppAuthenticatedContext(string siteUrl, string clientId, StoreName storeName, StoreLocation storeLocation, string thumbPrint, string certificateIssuerId, string loginName)
         {
@@ -578,7 +590,11 @@ namespace OfficeDevPnP.Core
         /// <param name="clientId">The SharePoint Client ID</param>
         /// <param name="certificate">Private key certificate (.pfx) used to authenticate</param>
         /// <param name="certificateIssuerId">The IssuerID under which the CER counterpart of the PFX has been registered in SharePoint as a Trusted Security Token issuer</param>
-        /// <param name="loginName">Name of the user (login name) on whose behalf to create the access token</param>
+        /// <param name="loginName">
+        /// Name of the user (login name) on whose behalf to create the access token.
+        /// Supported input formats are SID and User Principal Name (UPN).
+        /// If the parameter is left empty (including null) an App Only Context will be created.
+        /// </param>
         /// <returns>Authenticated SharePoint ClientContext</returns>
         public ClientContext GetHighTrustCertificateAppAuthenticatedContext(string siteUrl, string clientId, X509Certificate2 certificate, string certificateIssuerId, string loginName)
         {
