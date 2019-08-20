@@ -93,33 +93,46 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
             {
                 var context = web.Context;
                 //preserve Default Language to set last since otherwise Entries in QuickLaunch can show wrong language
-                web.EnsureProperties(w => w.Language);
-                var culture = new CultureInfo((int)web.Language);
-
-                var resourceValues = parser.GetResourceTokenResourceValues(token);
-
-                var defaultLanguageResource = resourceValues.FirstOrDefault(r => !r.Item1.Equals(culture.Name, StringComparison.InvariantCultureIgnoreCase));
-                if (defaultLanguageResource != null)
+                web.EnsureProperties(w => w.Language, w => w.IsMultilingual, w => w.SupportedUILanguageIds);
+                if (web.IsMultilingual)
                 {
-                    foreach (var resourceValue in resourceValues.Where(r => !r.Item1.Equals(culture.Name, StringComparison.InvariantCultureIgnoreCase)))
+                    //just update if web is multilingual 
+                    var culture = new CultureInfo((int)web.Language);
+
+                    var resourceValues = parser.GetResourceTokenResourceValues(token);
+
+                    var defaultLanguageResource = resourceValues.FirstOrDefault(r => r.Item1.Equals(culture.Name, StringComparison.InvariantCultureIgnoreCase));
+                    if (defaultLanguageResource != null)
                     {
-                        // Save property with correct locale on the request to make it stick
-                        // http://sadomovalex.blogspot.no/2015/09/localize-web-part-titles-via-client.html
-                        context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = resourceValue.Item1;
-                        view.Title = resourceValue.Item2;
+                        foreach (var resourceValue in resourceValues.Where(r => !r.Item1.Equals(culture.Name, StringComparison.InvariantCultureIgnoreCase)))
+                        {
+                            var translationculture = new CultureInfo(resourceValue.Item1);
+                            if (web.SupportedUILanguageIds.Contains(translationculture.LCID))
+                            {
+                                // Save property with correct locale on the request to make it stick
+                                // http://sadomovalex.blogspot.no/2015/09/localize-web-part-titles-via-client.html
+                                context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = resourceValue.Item1;
+                                view.Title = resourceValue.Item2;
+                                view.Update();
+                                context.ExecuteQueryRetry();
+                            }
+                        }
+                        //Set for default Language of Web
+                        context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = defaultLanguageResource.Item1;
+                        view.Title = defaultLanguageResource.Item2;
                         view.Update();
                         context.ExecuteQueryRetry();
                     }
-                    //Set for default Language of Web
-                    context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = defaultLanguageResource.Item1;
-                    view.Title = defaultLanguageResource.Item2;
-                    view.Update();
-                    context.ExecuteQueryRetry();
+                    else
+                    {
+                        //skip since default language of web is not contained in resource file
+                        scope.LogWarning(CoreResources.Provisioning_Extensions_ViewLocalization_DefaultLngMissing_Skip);
+                    }
                 }
                 else
                 {
-                    //skip since default language of web is not contained in resource file
-                    scope.LogWarning(CoreResources.Provisioning_Extensions_ViewLocalization_Skip);
+                    //skip since web is not multilingual
+                    scope.LogWarning(CoreResources.Provisioning_Extensions_ViewLocalization_NoMUI_Skip);
                 }
             }
             else
