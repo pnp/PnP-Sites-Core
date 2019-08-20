@@ -10,7 +10,70 @@ namespace OfficeDevPnP.Core.Sites
     /// <summary>
     /// Class for communication site creation information
     /// </summary>
-    public class CommunicationSiteCollectionCreationInformation
+    public class CommunicationSiteCollectionCreationInformation : SiteCreationInformation
+    {
+        /// <summary>
+        /// The Guid of the site design to be used. If specified will override the SiteDesign property
+        /// </summary>
+        public Guid SiteDesignId { get; set; }
+
+        /// <summary>
+        /// The built-in site design to used. If both SiteDesignId and SiteDesign have been specified, the GUID specified as SiteDesignId will be used.
+        /// </summary>
+        public CommunicationSiteDesign SiteDesign { get; set; }
+
+        /// <summary>
+        /// The Guid of the hub site to be used. If specified will associate the communication site to the hub site
+        /// </summary>
+        public Guid HubSiteId { get; set; }
+
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public CommunicationSiteCollectionCreationInformation() : this(string.Empty, string.Empty)
+        {
+        }
+
+        /// <summary>
+        /// CommunicationSiteCollectionCreationInformation constructor
+        /// </summary>
+        /// <param name="fullUrl">Url for the new communication site</param>
+        /// <param name="title">Title of the site</param>
+        /// <param name="description">Description of the site</param>
+        public CommunicationSiteCollectionCreationInformation(string fullUrl, string title, string description = null) : base(fullUrl, title, description)
+        {
+            WebTemplate = "SITEPAGEPUBLISHING#0";
+        }
+    }
+
+    /// <summary>
+    /// Class for Team site with no group creation information
+    /// </summary>
+    public class TeamNoGroupSiteCollectionCreationInformation : SiteCreationInformation
+    {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public TeamNoGroupSiteCollectionCreationInformation() : this(string.Empty, string.Empty)
+        {
+        }
+
+        /// <summary>
+        /// TeamNoGroupSiteCollectionCreationInformation constructor
+        /// </summary>
+        /// <param name="fullUrl">Url for the new team site</param>
+        /// <param name="title">Title of the site</param>
+        /// <param name="description">Description of the site</param>
+        public TeamNoGroupSiteCollectionCreationInformation(string fullUrl, string title, string description = null) : base(fullUrl, title, description)
+        {
+            WebTemplate = "STS#3";
+        }
+    }
+
+    /// <summary>
+    /// Class for site creation information
+    /// </summary>
+    public abstract class SiteCreationInformation
     {
         /// <summary>
         /// The fully qualified URL (e.g. https://yourtenant.sharepoint.com/sites/mysitecollection) of the site.
@@ -27,15 +90,6 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         public string Owner { get; set; }
 
-        /// <summary>
-        /// The Guid of the site design to be used. If specified will override the SiteDesign property
-        /// </summary>
-        public Guid SiteDesignId { get; set; }
-
-        /// <summary>
-        /// The built-in site design to used. If both SiteDesignId and SiteDesign have been specified, the GUID specified as SiteDesignId will be used.
-        /// </summary>
-        public CommunicationSiteDesign SiteDesign { get; set; }
 
         /// <summary>
         /// If set to true, file sharing for guest users will be allowed.
@@ -57,6 +111,7 @@ namespace OfficeDevPnP.Core.Sites
         /// If set to true sharing files by email is enabled. Defaults to false.
         /// </summary>
         public bool ShareByEmailEnabled { get; set; }
+
         /// <summary>
         /// The Site classification to use. For instance 'Contoso Classified'. See https://www.youtube.com/watch?v=E-8Z2ggHcS0 for more information
         /// </summary>
@@ -73,25 +128,16 @@ namespace OfficeDevPnP.Core.Sites
         public uint Lcid { get; set; }
 
         /// <summary>
-        /// The Guid of the hub site to be used. If specified will associate the communication site to the hub site
+        /// The Web template to use for the site.
         /// </summary>
-        public Guid HubSiteId { get; set; }
+        public string WebTemplate { get; protected set; }
 
-        /// <summary>
-        /// Default constructor
-        /// </summary>
-        public CommunicationSiteCollectionCreationInformation()
+
+        public SiteCreationInformation()
         {
-
         }
 
-        /// <summary>
-        /// CommunicationSiteCollectionCreationInformation constructor
-        /// </summary>
-        /// <param name="fullUrl">Url for the new communication site</param>
-        /// <param name="title">Title of the site</param>
-        /// <param name="description">Description of the site</param>
-        public CommunicationSiteCollectionCreationInformation(string fullUrl, string title, string description = null)
+        public SiteCreationInformation(string fullUrl, string title, string description = null)
         {
             this.Url = fullUrl;
             this.Title = title;
@@ -102,7 +148,7 @@ namespace OfficeDevPnP.Core.Sites
     /// <summary>
     /// Class for site groupify information
     /// </summary>
-    public class TeamSiteCollectionGroupifyInformation : SiteCreationInformation
+    public class TeamSiteCollectionGroupifyInformation : SiteCreationGroupInformation
     {
 
         /// <summary>
@@ -135,11 +181,10 @@ namespace OfficeDevPnP.Core.Sites
 
     }
 
-
     /// <summary>
-    /// Class for site creation information
+    /// Class for group site creation information
     /// </summary>
-    public class TeamSiteCollectionCreationInformation : SiteCreationInformation
+    public class TeamSiteCollectionCreationInformation : SiteCreationGroupInformation
     {
         /// <summary>
         /// Set the owners of the modern team site. Specify the UPN values in a string array.
@@ -167,7 +212,7 @@ namespace OfficeDevPnP.Core.Sites
     /// <summary>
     /// Base class for site creation/groupify information
     /// </summary>
-    public abstract class SiteCreationInformation
+    public abstract class SiteCreationGroupInformation
     {
         //{"displayName":"test modernteamsite","alias":"testmodernteamsite","isPublic":true,"optionalParams":{"Description":"","CreationOptions":{"results":[]},"Classification":""}}
 
@@ -203,12 +248,12 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         public Guid HubSiteId { get; set; }
 
-        public SiteCreationInformation()
+        public SiteCreationGroupInformation()
         {
 
         }
 
-        public SiteCreationInformation(string alias, string displayName, string description = null)
+        public SiteCreationGroupInformation(string alias, string displayName, string description = null)
         {
             this.Alias = alias;
             this.DisplayName = displayName;

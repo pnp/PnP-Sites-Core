@@ -34,6 +34,19 @@ namespace OfficeDevPnP.Core.Sites
         }
 
         /// <summary>
+        /// Creates a new Team Site Collection with no group and waits for it to be created
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+        public static ClientContext Create(ClientContext clientContext, TeamNoGroupSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
+        {
+            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation).GetAwaiter().GetResult();
+            return context;
+        }
+
+        /// <summary>
         /// Creates a new Team Site Collection and waits for it to be created
         /// </summary>
         /// <param name="clientContext">ClientContext object of a regular site</param>
@@ -55,11 +68,53 @@ namespace OfficeDevPnP.Core.Sites
         /// <returns>ClientContext object for the created site collection</returns>
         public static async Task<ClientContext> CreateAsync(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
         {
+            Dictionary<string, object> payload = GetRequestPayload(siteCollectionCreationInformation);
+
+            var siteDesignId = GetSiteDesignId(siteCollectionCreationInformation);
+            if (siteDesignId != Guid.Empty)
+            {
+                payload.Add("SiteDesignId", siteDesignId);
+            }
+            payload.Add("HubSiteId", siteCollectionCreationInformation.HubSiteId);
+
+            return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation);
+        }
+
+        /// <summary>
+        /// Creates a new Team Site Collection with no group
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamNoGroupSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
+        {
+            Dictionary<string, object> payload = GetRequestPayload(siteCollectionCreationInformation);
+            return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation);
+        }
+
+        private static Dictionary<string, object> GetRequestPayload(SiteCreationInformation siteCollectionCreationInformation)
+        {
+            Dictionary<string, object> payload = new Dictionary<string, object>();
+            payload.Add("Title", siteCollectionCreationInformation.Title);
+            payload.Add("Lcid", siteCollectionCreationInformation.Lcid);
+            payload.Add("ShareByEmailEnabled", siteCollectionCreationInformation.ShareByEmailEnabled);
+            payload.Add("Url", siteCollectionCreationInformation.Url);
+            payload.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
+            payload.Add("Description", siteCollectionCreationInformation.Description ?? "");
+            payload.Add("WebTemplate", siteCollectionCreationInformation.WebTemplate);
+            payload.Add("WebTemplateExtensionId", Guid.Empty);
+            payload.Add("Owner", siteCollectionCreationInformation.Owner);
+            return payload;
+        }
+
+        private static async Task<ClientContext> CreateAsync(ClientContext clientContext, string owner, Dictionary<string, object> payload, Int32 delayAfterCreation = 0)
+        {
             await new SynchronizationContextRemover();
 
             ClientContext responseContext = null;
 
-            if (clientContext.IsAppOnly() && string.IsNullOrEmpty(siteCollectionCreationInformation.Owner))
+            if (clientContext.IsAppOnly() && string.IsNullOrEmpty(owner))
             {
                 throw new Exception("You need to set the owner in App-only context");
             }
@@ -78,28 +133,6 @@ namespace OfficeDevPnP.Core.Sites
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
                     string requestUrl = $"{clientContext.Web.Url}/_api/SPSiteManager/Create";
-                    //    string requestUrl = String.Format("{0}/_api/sitepages/communicationsite/create", clientContext.Web.Url);
-
-                    var siteDesignId = GetSiteDesignId(siteCollectionCreationInformation);
-
-                    Dictionary<string, object> payload = new Dictionary<string, object>();
-                    //payload.Add("__metadata", new { type = "Microsoft.SharePoint.Portal.SPSiteCreationRequest" });
-                    payload.Add("Title", siteCollectionCreationInformation.Title);
-                    payload.Add("Lcid", siteCollectionCreationInformation.Lcid);
-                    payload.Add("ShareByEmailEnabled", siteCollectionCreationInformation.ShareByEmailEnabled);
-                    payload.Add("Url", siteCollectionCreationInformation.Url);
-                    // Deprecated
-                    // payload.Add("AllowFileSharingForGuestUsers", siteCollectionCreationInformation.AllowFileSharingForGuestUsers);
-                    if (siteDesignId != Guid.Empty)
-                    {
-                        payload.Add("SiteDesignId", siteDesignId);
-                    }
-                    payload.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
-                    payload.Add("Description", siteCollectionCreationInformation.Description ?? "");
-                    payload.Add("WebTemplate", "SITEPAGEPUBLISHING#0");
-                    payload.Add("WebTemplateExtensionId", Guid.Empty);
-                    payload.Add("HubSiteId", siteCollectionCreationInformation.HubSiteId);
-                    payload.Add("Owner", siteCollectionCreationInformation.Owner);
 
                     var body = new { request = payload };
 

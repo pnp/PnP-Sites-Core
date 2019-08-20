@@ -768,6 +768,19 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// BETA: Creates a Team Site Collection with no group
+        /// </summary>
+        /// <param name="clientContext"></param>
+        /// <param name="siteCollectionCreationInformation"></param>
+        /// <returns></returns>
+        public static async Task<ClientContext> CreateSiteAsync(this ClientContext clientContext, TeamNoGroupSiteCollectionCreationInformation siteCollectionCreationInformation)
+        {
+            await new SynchronizationContextRemover();
+
+            return await SiteCollection.CreateAsync(clientContext, siteCollectionCreationInformation);
+        }
+
+        /// <summary>
         /// BETA: Creates a Team Site Collection
         /// </summary>
         /// <param name="clientContext"></param>
