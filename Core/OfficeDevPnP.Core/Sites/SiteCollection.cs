@@ -95,16 +95,18 @@ namespace OfficeDevPnP.Core.Sites
 
         private static Dictionary<string, object> GetRequestPayload(SiteCreationInformation siteCollectionCreationInformation)
         {
-            Dictionary<string, object> payload = new Dictionary<string, object>();
-            payload.Add("Title", siteCollectionCreationInformation.Title);
-            payload.Add("Lcid", siteCollectionCreationInformation.Lcid);
-            payload.Add("ShareByEmailEnabled", siteCollectionCreationInformation.ShareByEmailEnabled);
-            payload.Add("Url", siteCollectionCreationInformation.Url);
-            payload.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
-            payload.Add("Description", siteCollectionCreationInformation.Description ?? "");
-            payload.Add("WebTemplate", siteCollectionCreationInformation.WebTemplate);
-            payload.Add("WebTemplateExtensionId", Guid.Empty);
-            payload.Add("Owner", siteCollectionCreationInformation.Owner);
+            Dictionary<string, object> payload = new Dictionary<string, object>
+            {
+                { "Title", siteCollectionCreationInformation.Title },
+                { "Lcid", siteCollectionCreationInformation.Lcid },
+                { "ShareByEmailEnabled", siteCollectionCreationInformation.ShareByEmailEnabled },
+                { "Url", siteCollectionCreationInformation.Url },
+                { "Classification", siteCollectionCreationInformation.Classification ?? "" },
+                { "Description", siteCollectionCreationInformation.Description ?? "" },
+                { "WebTemplate", siteCollectionCreationInformation.WebTemplate },
+                { "WebTemplateExtensionId", Guid.Empty },
+                { "Owner", siteCollectionCreationInformation.Owner }
+            };
             return payload;
         }
 
