@@ -9,7 +9,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace OfficeDevPnP.Core.Sites
 {
@@ -110,7 +112,11 @@ namespace OfficeDevPnP.Core.Sites
             return payload;
         }
 
-        private static async Task<ClientContext> CreateAsync(ClientContext clientContext, string owner, Dictionary<string, object> payload, Int32 delayAfterCreation = 0)
+        private static async Task<ClientContext> CreateAsync(ClientContext clientContext, string owner, Dictionary<string, object> payload, 
+            Int32 delayAfterCreation = 0,
+            Int32 maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
+            Int32 retryDelay = 1000 * 10 // Wait time default to 10sec
+            )
         {
             await new SynchronizationContextRemover();
 
@@ -180,7 +186,80 @@ namespace OfficeDevPnP.Core.Sites
                                 }
                                 else
                                 {
-                                    throw new Exception(responseString);
+                                    /*
+                                     * BEGIN : Changes to address the SiteStatus=Provisioning scenario
+                                     */
+                                    if (Convert.ToInt32(responseJson["SiteStatus"]) == 1)
+                                    {
+                                        var spOperationsMaxRetryCount = maxRetryCount;
+                                        var spOperationsRetryWait = retryDelay;
+                                        var siteCreated = false;
+                                        var siteUrl = string.Empty;
+                                        var retryAttempt = 1;
+
+                                        do
+                                        {
+                                            if (retryAttempt > 1)
+                                            {
+                                                System.Threading.Thread.Sleep(retryAttempt * spOperationsRetryWait);
+                                            }
+
+                                            try
+                                            {
+                                                var urlToCheck = HttpUtility.UrlEncode(payload["Url"].ToString());
+
+                                                var siteStatusRequestUrl = $"{clientContext.Web.Url}/_api/SPSiteManager/status?url='{urlToCheck}'";
+
+                                                var siteStatusRequest = new HttpRequestMessage(HttpMethod.Get, siteStatusRequestUrl);
+                                                siteStatusRequest.Headers.Add("accept", "application/json;odata=verbose");
+
+                                                if (!string.IsNullOrEmpty(accessToken))
+                                                {
+                                                    siteStatusRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                                                }
+
+                                                siteStatusRequest.Headers.Add("X-RequestDigest", await clientContext.GetRequestDigest());
+
+                                                var siteStatusResponse = await httpClient.SendAsync(siteStatusRequest, new System.Threading.CancellationToken());
+                                                var siteStatusResponseString = await siteStatusResponse.Content.ReadAsStringAsync();
+
+                                                var siteStatusResponseJson = JObject.Parse(siteStatusResponseString);
+
+                                                if (siteStatusResponse.IsSuccessStatusCode)
+                                                {
+                                                    var siteStatus = Convert.ToInt32(siteStatusResponseJson["d"]["Status"]["SiteStatus"].ToString());
+                                                    if (siteStatus == 2)
+                                                    {
+                                                        siteCreated = true;
+                                                        siteUrl = siteStatusResponseJson["d"]["Status"]["SiteUrl"].ToString();
+                                                    }
+                                                }
+                                            }
+                                            catch (Exception)
+                                            {
+                                                // Just skip it and retry after a delay
+                                            }
+
+                                            retryAttempt++;
+                                        }
+                                        while (!siteCreated && retryAttempt <= spOperationsMaxRetryCount);
+
+                                        if (siteCreated)
+                                        {
+                                            responseContext = clientContext.Clone(siteUrl);
+                                        }
+                                        else
+                                        {
+                                            throw new Exception($"OfficeDevPnP.Core.Sites.SiteCollection.CreateAsync: Could not create {payload["WebTemplate"].ToString()} site.");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        throw new Exception(responseString);
+                                    }
+                                    /*
+                                     * END : Changes to address the SiteStatus=Provisioning scenario
+                                     */
                                 }
                             }
                             catch (Exception)
