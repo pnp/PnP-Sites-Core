@@ -189,7 +189,7 @@ namespace OfficeDevPnP.Core.Pages
 
             // By default simple plain text is wrapped in a Paragraph, need to drop it to avoid getting multiple paragraphs on page edits.
             // Only drop the paragraph tag when there's only one Paragraph element underneath the DIV tag
-            if ((div.FirstChild != null && (div.FirstChild as IElement).TagName.Equals("P", StringComparison.InvariantCultureIgnoreCase)) &&
+            if ((div.FirstChild != null && (div.FirstChild as IElement) != null && (div.FirstChild as IElement).TagName.Equals("P", StringComparison.InvariantCultureIgnoreCase)) &&
                 (div.ChildElementCount == 1))
             {
                 this.Text = (div.FirstChild as IElement).InnerHtml;
