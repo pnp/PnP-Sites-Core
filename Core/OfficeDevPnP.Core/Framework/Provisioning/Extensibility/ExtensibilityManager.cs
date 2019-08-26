@@ -66,18 +66,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
             }
             catch (Exception ex)
             {
+                Log.Error(_loggingSource, CoreResources.Provisioning_Extensibility_Pipeline_Exception,
+                    provider.Assembly,
+                    provider.Type,
+                    ex);
+
                 string _message = string.Format(
                     CoreResources.Provisioning_Extensibility_Pipeline_Exception,
                     provider.Assembly,
                     provider.Type,
                     ex);
-                Log.Error(_loggingSource, _message);
+
                 throw new ExtensiblityPipelineException(_message, ex);
             }
         }
 
         /// <summary>
-        /// Method to Invoke Custom Provisioning Handlers. 
+        /// Method to Invoke Custom Provisioning Handlers.
         /// </summary>
         /// <remarks>
         /// Ensure the ClientContext is not disposed in the custom provider.
@@ -91,8 +96,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
         /// <exception cref="ExtensiblityPipelineException"></exception>
         /// <exception cref="ArgumentException">Provider.Assembly or Provider.Type is NullOrWhiteSpace></exception>
         /// <exception cref="ArgumentNullException">ClientContext is Null></exception>
-        public void ExecuteExtensibilityProvisionCallOut(ClientContext ctx, ExtensibilityHandler handler, 
-            ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation, 
+        public void ExecuteExtensibilityProvisionCallOut(ClientContext ctx, ExtensibilityHandler handler,
+            ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation,
             TokenParser tokenParser, PnPMonitoredScope scope)
         {
             var _loggingSource = "OfficeDevPnP.Core.Framework.Provisioning.Extensibility.ExtensibilityManager.ExecuteCallout";
@@ -149,19 +154,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
             }
             catch (Exception ex)
             {
+                Log.Error(_loggingSource, CoreResources.Provisioning_Extensibility_Pipeline_Exception,
+                    handler.Assembly,
+                    handler.Type,
+                    ex);
+
                 string _message = string.Format(
                     CoreResources.Provisioning_Extensibility_Pipeline_Exception,
                     handler.Assembly,
                     handler.Type,
                     ex);
-                Log.Error(_loggingSource, _message);
-                throw new ExtensiblityPipelineException(_message, ex);
 
+                throw new ExtensiblityPipelineException(_message, ex);
             }
         }
 
         /// <summary>
-        /// Method to Invoke Custom Extraction Handlers. 
+        /// Method to Invoke Custom Extraction Handlers.
         /// </summary>
         /// <remarks>
         /// Ensure the ClientContext is not disposed in the custom provider.
@@ -217,12 +226,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Extensibility
             }
             catch (Exception ex)
             {
+                Log.Error(_loggingSource, CoreResources.Provisioning_Extensibility_Pipeline_Exception,
+                    handler.Assembly,
+                    handler.Type,
+                    ex);
+
                 string _message = string.Format(
                     CoreResources.Provisioning_Extensibility_Pipeline_Exception,
                     handler.Assembly,
                     handler.Type,
                     ex);
-                Log.Error(_loggingSource, _message);
+
                 throw new ExtensiblityPipelineException(_message, ex);
             }
 
