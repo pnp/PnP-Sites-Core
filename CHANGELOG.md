@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 - Fix: Handle SPSiteManager/Create with SiteStatus = 1 (provisioning status)
 - Fix: Avoid 'object reference not found' error [kachihro]
+- Fix: Allow ZoneEmphasis in ClientSidePage to be undefined #2318 [KoenZomers]
 
 ## [3.12.1908.0 - August 2019 release]
 

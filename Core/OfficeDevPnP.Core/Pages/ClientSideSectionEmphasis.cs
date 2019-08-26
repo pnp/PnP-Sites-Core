@@ -5,7 +5,7 @@ namespace OfficeDevPnP.Core.Pages
     public class ClientSideSectionEmphasis
     {
         [JsonIgnore]
-        public int? ZoneEmphasis
+        public int ZoneEmphasis
         {
             get
             {
@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     return result;
                 }
-                return null;
+                return 0;
             }
             set { ZoneEmphasisString = value.ToString(); }
         }
