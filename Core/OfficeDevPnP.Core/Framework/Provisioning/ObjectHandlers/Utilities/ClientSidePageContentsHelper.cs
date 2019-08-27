@@ -304,19 +304,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                                     // Item2 = file name (if file found)
                                                     var imageAddedTuple = LoadAndAddPageImage(web, file, template, creationInfo, scope);
 
-                                                    if (!string.IsNullOrEmpty(imageAddedTuple.Item2) && !imageAddedTuple.Item2.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase))
+                                                    if (!string.IsNullOrEmpty(imageAddedTuple.Item2))
                                                     {
-                                                        if (imageAddedTuple.Item1)
+                                                        if (!imageAddedTuple.Item2.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase))
                                                         {
-                                                            // Keep track of the exported file path and it's UniqueId
-                                                            exportedFiles.Add(uniqueId.ToString(), file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()));
+                                                            if (imageAddedTuple.Item1)
+                                                            {
+                                                                // Keep track of the exported file path and it's UniqueId
+                                                                exportedFiles.Add(uniqueId.ToString(), file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()));
+                                                            }
                                                         }
-                                                    }
-                                                    else
-                                                    {
-                                                        if (!exportedPages.ContainsKey(uniqueId.ToString()))
+                                                        else
                                                         {
-                                                            exportedPages.Add(uniqueId.ToString(), file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()));
+                                                            if (!exportedPages.ContainsKey(uniqueId.ToString()))
+                                                            {
+                                                                exportedPages.Add(uniqueId.ToString(), file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()));
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -421,58 +424,56 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
         private void IncludePageHeaderImageInExport(Web web, string imageServerRelativeUrl, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope)
         {
-            if (!imageServerRelativeUrl.StartsWith("/_LAYOUTS", StringComparison.OrdinalIgnoreCase))
-            {
-                var pageHeaderImage = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(imageServerRelativeUrl));
-                web.Context.Load(pageHeaderImage, p => p.Level, p => p.ServerRelativeUrl);
-                web.Context.ExecuteQueryRetry();
-
-                LoadAndAddPageImage(web, pageHeaderImage, template, creationInfo, scope);
-            }
-        }
-
-        private Tuple<bool, string> LoadAndAddPageImage(Web web, Microsoft.SharePoint.Client.File pageImage, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope)
-        {
             try
             {
-                var baseUri = new Uri(web.Url);
-                var fullUri = new Uri(baseUri, pageImage.ServerRelativeUrl);
-                var folderPath = HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
-                var fileName = HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
-
-                if (!fileName.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase))
+                if (!imageServerRelativeUrl.StartsWith("/_LAYOUTS", StringComparison.OrdinalIgnoreCase))
                 {
-                    var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
+                    var pageHeaderImage = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(imageServerRelativeUrl));
+                    web.Context.Load(pageHeaderImage, p => p.Level, p => p.ServerRelativeUrl);
+                    web.Context.ExecuteQueryRetry();
 
-                    // Avoid duplicate file entries
-                    var fileAlreadyExported = template.Files.Where(p => p.Folder.Equals(templateFolderPath, StringComparison.CurrentCultureIgnoreCase) &&
-                                                                        p.Src.Equals(fileName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
-                    if (fileAlreadyExported == null)
-                    {
-                        // Add a File to the template
-                        template.Files.Add(new Model.File()
-                        {
-                            Folder = templateFolderPath,
-                            Src = $"{templateFolderPath}/{fileName}",
-                            Overwrite = true,
-                            Level = (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), pageImage.Level.ToString())
-                        });
-
-                        // Export the file
-                        PersistFile(web, creationInfo, scope, folderPath, fileName);
-
-                        return new Tuple<bool, string>(true, fileName);
-                    }
+                    LoadAndAddPageImage(web, pageHeaderImage, template, creationInfo, scope);
                 }
-
-                return new Tuple<bool, string>(false, fileName);
             }
             catch (Exception ex)
             {
                 // Eat possible exceptions as header images may point to locations outside of the current site (other site collections, _layouts, CDN's, internet)
             }
+        }
 
-            return new Tuple<bool, string>(false, null);
+        private Tuple<bool, string> LoadAndAddPageImage(Web web, Microsoft.SharePoint.Client.File pageImage, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope)
+        {
+            var baseUri = new Uri(web.Url);
+            var fullUri = new Uri(baseUri, pageImage.ServerRelativeUrl);
+            var folderPath = HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
+            var fileName = HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
+
+            if (!fileName.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
+
+                // Avoid duplicate file entries
+                var fileAlreadyExported = template.Files.Where(p => p.Folder.Equals(templateFolderPath, StringComparison.CurrentCultureIgnoreCase) &&
+                                                                    p.Src.Equals(fileName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                if (fileAlreadyExported == null)
+                {
+                    // Add a File to the template
+                    template.Files.Add(new Model.File()
+                    {
+                        Folder = templateFolderPath,
+                        Src = $"{templateFolderPath}/{fileName}",
+                        Overwrite = true,
+                        Level = (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), pageImage.Level.ToString())
+                    });
+
+                    // Export the file
+                    PersistFile(web, creationInfo, scope, folderPath, fileName);
+
+                    return new Tuple<bool, string>(true, fileName);
+                }
+            }
+
+            return new Tuple<bool, string>(false, fileName);
         }
 
         private static void CollectSiteAssetImageFiles(Web web, string untokenizedJsonControlData, List<Guid> fileGuids)
