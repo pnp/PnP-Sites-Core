@@ -21,6 +21,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Avoid 'object reference not found' error [kachihro]
 - Fix: Allow ZoneEmphasis in ClientSidePage to be undefined #2318 [KoenZomers]
 - Fix: Corrected AssociatedGroup Tokens documentation #2348 [pmatthews05]
+- Fix: Improve check for empty ComposedLook #2354 [heinrich-ulbricht]
 
 ### Deprecated
 
