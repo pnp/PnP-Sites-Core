@@ -869,6 +869,60 @@ namespace OfficeDevPnP.Core.Sites
                 return await Task.Run(() => responseString);
             }
         }
+
+        /// <summary>
+        /// Checks if the Teamify prompt/banner is displayed in the O365 group connected sites.        
+        /// </summary>
+        /// <param name="context">ClientContext of the site to operate against</param>
+        /// <returns></returns>
+        public static async Task<bool> IsTeamifyPromptHidden(ClientContext context)
+        {
+            bool responseString = false;
+
+            context.Site.EnsureProperties(s => s.GroupId, s => s.Url);
+
+            if (context.Site.GroupId == Guid.Empty)
+            {
+                throw new Exception("Teamify prompts are only displayed in O365 group connected sites.");
+            }
+            else
+            {
+                var result = await context.Web.ExecuteGet($"/_api/groupsitemanager/IsTeamifyPromptHidden?siteUrl='{context.Site.Url}'");
+
+                var teamifyPromptHidden = JObject.Parse(result);
+
+                responseString = Convert.ToBoolean(teamifyPromptHidden["value"]);
+
+                return await Task.Run(() => responseString);
+            }
+        }
+
+        /// <summary>
+        /// Hide the teamify prompt/banner displayed in O365 group connected sites
+        /// </summary>
+        /// <param name="context">ClientContext of the site to operate against</param>
+        /// <returns></returns>
+        public static async Task<bool> HideTeamifyPrompt(ClientContext context)
+        {
+            bool responseString = false;
+
+            context.Site.EnsureProperties(s => s.GroupId, s => s.Url);
+
+            if (context.Site.GroupId == Guid.Empty)
+            {
+                throw new Exception("Teamify prompts can only be hidden in O365 group connected sites.");
+            }
+            else
+            {
+                var result = await context.Web.ExecutePost("/_api/groupsitemanager/HideTeamifyPrompt", $@" {{ ""siteUrl"": ""{context.Site.Url}"" }}");
+
+                var teamifyPromptHidden = JObject.Parse(result);
+
+                responseString = Convert.ToBoolean(teamifyPromptHidden["odata.null"]);
+
+                return await Task.Run(() => responseString);
+            }
+        }
     }
 }
 #endif
