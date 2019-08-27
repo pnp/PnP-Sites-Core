@@ -112,7 +112,7 @@ namespace OfficeDevPnP.Core.Sites
             return payload;
         }
 
-        private static async Task<ClientContext> CreateAsync(ClientContext clientContext, string owner, Dictionary<string, object> payload, 
+        private static async Task<ClientContext> CreateAsync(ClientContext clientContext, string owner, Dictionary<string, object> payload,
             Int32 delayAfterCreation = 0,
             Int32 maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
             Int32 retryDelay = 1000 * 10 // Wait time default to 10sec
@@ -293,8 +293,8 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="maxRetryCount">Maximum number of retries for a pending site provisioning. Default 12 retries.</param>
         /// <param name="retryDelay">Delay between retries for a pending site provisioning. Default 10 seconds.</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation, 
-            Int32 delayAfterCreation = 0, 
+        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation,
+            Int32 delayAfterCreation = 0,
             Int32 maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
             Int32 retryDelay = 1000 * 10 // Wait time default to 10sec
             )
@@ -395,8 +395,8 @@ namespace OfficeDevPnP.Core.Sites
                              */
                             if (Convert.ToInt32(responseJson["SiteStatus"]) == 1 && string.IsNullOrWhiteSpace(Convert.ToString(responseJson["ErrorMessage"])))
                             {
-                                var spOperationsMaxRetryCount = maxRetryCount; 
-                                var spOperationsRetryWait = retryDelay; 
+                                var spOperationsMaxRetryCount = maxRetryCount;
+                                var spOperationsRetryWait = retryDelay;
                                 var siteCreated = false;
                                 var siteUrl = string.Empty;
                                 var retryAttempt = 1;
@@ -699,7 +699,19 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="context">Context to operate against</param>
         /// <param name="alias">Alias to check</param>
         /// <returns>True if in use, false otherwise</returns>
+        [Obsolete("Use GetGroupInfoAsync instead of GetGroupInfo")]
         public static async Task<Dictionary<string, string>> GetGroupInfo(ClientContext context, string alias)
+        {
+            return await GetGroupInfoAsync(context, alias);
+        }
+
+        /// <summary>
+        /// Checks if a given alias is already in use or not
+        /// </summary>
+        /// <param name="context">Context to operate against</param>
+        /// <param name="alias">Alias to check</param>
+        /// <returns>True if in use, false otherwise</returns>
+        public static async Task<Dictionary<string, string>> GetGroupInfoAsync(ClientContext context, string alias)
         {
             await new SynchronizationContextRemover();
 
@@ -751,7 +763,20 @@ namespace OfficeDevPnP.Core.Sites
             }
         }
 
+        [Obsolete("Use SetGroupImageAsync instead of SetGroupImage")]
         public static async Task<bool> SetGroupImage(ClientContext context, byte[] file, string mimeType)
+        {
+            return await SetGroupImageAsync(context, file, mimeType);
+        }
+
+        /// <summary>
+        /// Sets the image for an Office 365 group
+        /// </summary>
+        /// <param name="context">Context to operate on</param>
+        /// <param name="file">Byte array containing the group image</param>
+        /// <param name="mimeType">Image mime type</param>
+        /// <returns>true if succeeded</returns>
+        public static async Task<bool> SetGroupImageAsync(ClientContext context, byte[] file, string mimeType)
         {
             var accessToken = context.GetAccessToken();
             var returnValue = false;
@@ -875,7 +900,7 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         /// <param name="context">ClientContext of the site to operate against</param>
         /// <returns></returns>
-        public static async Task<bool> IsTeamifyPromptHidden(ClientContext context)
+        public static async Task<bool> IsTeamifyPromptHiddenAsync(ClientContext context)
         {
             bool responseString = false;
 
@@ -902,7 +927,7 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         /// <param name="context">ClientContext of the site to operate against</param>
         /// <returns></returns>
-        public static async Task<bool> HideTeamifyPrompt(ClientContext context)
+        public static async Task<bool> HideTeamifyPromptAsync(ClientContext context)
         {
             bool responseString = false;
 

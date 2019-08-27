@@ -840,7 +840,7 @@ namespace Microsoft.SharePoint.Client
         {
             await new SynchronizationContextRemover();
 
-            return await SiteCollection.IsTeamifyPromptHidden(clientContext);
+            return await SiteCollection.IsTeamifyPromptHiddenAsync(clientContext);
         }
 
         /// <summary>
@@ -852,7 +852,7 @@ namespace Microsoft.SharePoint.Client
         {
             await new SynchronizationContextRemover();
 
-            return await SiteCollection.HideTeamifyPrompt(clientContext);
+            return await SiteCollection.HideTeamifyPromptAsync(clientContext);
         }
 #endif
     }

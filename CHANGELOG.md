@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Add extension to create team site with no group using SPSiteManager #2364 [NicolajHedeager]
 - Improved image extraction when extracting modern pages: header image and images linked by quick links webparts are now included #2336 [heinrich-ulbricht]
 - Added support for page header images which reside outside current site collection #2360 [gautamdsheth]
+- Added support for additional teamify methods #2359 [gautamdsheth]
 
 ### Changed
 
@@ -20,6 +21,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Avoid 'object reference not found' error [kachihro]
 - Fix: Allow ZoneEmphasis in ClientSidePage to be undefined #2318 [KoenZomers]
 - Fix: Corrected AssociatedGroup Tokens documentation #2348 [pmatthews05]
+
+### Deprecated
+
+- Deprecated GetGroupInfo in favor of GetGroupInfoAsync (OfficeDevPnP.Core.Sites.SiteCollection class)
+- Deprecated SetGroupImage in favor of SetGroupImageAsync (OfficeDevPnP.Core.Sites.SiteCollection class)
 
 ## [3.12.1908.0 - August 2019 release]
 
