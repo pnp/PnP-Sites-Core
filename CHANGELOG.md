@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Add extension to create team site with no group using SPSiteManager #2364 [NicolajHedeager]
+- Improved image extraction when extracting modern pages: header image and images linked by quick links webparts are now included #2336 [heinrich-ulbricht]
 
 ### Changed
 
