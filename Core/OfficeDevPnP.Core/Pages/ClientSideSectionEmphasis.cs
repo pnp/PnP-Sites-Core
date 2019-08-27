@@ -4,7 +4,7 @@ namespace OfficeDevPnP.Core.Pages
 {
     public class ClientSideSectionEmphasis
     {
-        [JsonIgnore]
+        [JsonProperty(PropertyName = "zoneEmphasis", NullValueHandling = NullValueHandling.Ignore)]
         public int ZoneEmphasis
         {
             get
@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Pages
             set { ZoneEmphasisString = value.ToString(); }
         }
 
-        [JsonProperty(PropertyName = "zoneEmphasis", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonIgnore]
         public string ZoneEmphasisString { get; set; }
     }
 }
