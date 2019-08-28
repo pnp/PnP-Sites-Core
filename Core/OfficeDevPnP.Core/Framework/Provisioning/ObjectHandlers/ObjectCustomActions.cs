@@ -87,7 +87,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Then we add it to the target
                     var customActionEntity = new CustomActionEntity()
                     {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                         ClientSideComponentId = customAction.ClientSideComponentId,
                         ClientSideComponentProperties = customAction.ClientSideComponentProperties != null ? parser.ParseString(customAction.ClientSideComponentProperties) : customAction.ClientSideComponentProperties,
 #endif
@@ -113,7 +113,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Site, customActionEntity.Name);
                         site.AddCustomAction(customActionEntity);
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                         if ((!string.IsNullOrEmpty(customAction.Title) && customAction.Title.ContainsResourceToken()) ||
                             (!string.IsNullOrEmpty(customAction.Description) && customAction.Description.ContainsResourceToken()))
                         {
@@ -126,7 +126,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_CustomActions_Adding_custom_action___0___to_scope_Web, customActionEntity.Name);
                         web.AddCustomAction(customActionEntity);
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                         if (customAction.Title.ContainsResourceToken() || customAction.Description.ContainsResourceToken())
                         {
                             var uca = web.GetCustomActions().FirstOrDefault(uc => uc.Name == customAction.Name);
@@ -195,7 +195,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             if (customAction.ClientSideComponentId != null && customAction.ClientSideComponentId != Guid.Empty)
             {
                 if  (existingCustomAction.ClientSideComponentId != customAction.ClientSideComponentId)
@@ -221,7 +221,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingCustomAction.Description = customAction.Description;
                 isDirty = true;
             }
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             if (customAction.Description.ContainsResourceToken())
             {
                 if (existingCustomAction.DescriptionResource.SetUserResourceValue(customAction.Description, parser))
@@ -284,7 +284,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingCustomAction.Title = parser.ParseString(customAction.Title);
                 isDirty = true;
             }
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             if (customAction.Title.ContainsResourceToken())
             {
                 if (existingCustomAction.TitleResource.SetUserResourceValue(customAction.Title, parser))
@@ -313,7 +313,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (uca != null)
             {
                 bool isDirty = false;
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 if (!string.IsNullOrEmpty(customAction.Title) && customAction.Title.ContainsResourceToken())
                 {
                     if (uca.TitleResource.SetUserResourceValue(customAction.Title, parser))
@@ -422,7 +422,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             customAction.RegistrationId = userCustomAction.RegistrationId;
             customAction.RegistrationType = userCustomAction.RegistrationType;
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             customAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
             customAction.ClientSideComponentProperties = userCustomAction.ClientSideComponentProperties;
 #endif
@@ -430,7 +430,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             customAction.CommandUIExtension = !System.String.IsNullOrEmpty(userCustomAction.CommandUIExtension) ?
                 XElement.Parse(userCustomAction.CommandUIExtension) : null;
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             if (creationInfo.PersistMultiLanguageResources)
             {
                 var resourceKey = userCustomAction.Name.Replace(" ", "_");
