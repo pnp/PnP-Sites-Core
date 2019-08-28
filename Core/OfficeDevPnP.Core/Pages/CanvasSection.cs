@@ -57,22 +57,47 @@ namespace OfficeDevPnP.Core.Pages
                 case CanvasSectionTemplate.OneColumnFullWidth:
                     this.columns.Add(new CanvasColumn(this, 1, 0));
                     break;
+                case CanvasSectionTemplate.OneColumnVerticalSection:
+                    this.columns.Add(new CanvasColumn(this, 1, 0, 1));
+                    this.columns.Add(new CanvasColumn(this, 1, 12, 2));
+                    break;
                 case CanvasSectionTemplate.TwoColumn:
                     this.columns.Add(new CanvasColumn(this, 1, 6));
                     this.columns.Add(new CanvasColumn(this, 2, 6));
+                    break;
+                case CanvasSectionTemplate.TwoColumnVerticalSection:
+                    this.columns.Add(new CanvasColumn(this, 1, 6, 1));
+                    this.columns.Add(new CanvasColumn(this, 2, 6, 1));
+                    this.columns.Add(new CanvasColumn(this, 1, 12, 2));
                     break;
                 case CanvasSectionTemplate.ThreeColumn:
                     this.columns.Add(new CanvasColumn(this, 1, 4));
                     this.columns.Add(new CanvasColumn(this, 2, 4));
                     this.columns.Add(new CanvasColumn(this, 3, 4));
                     break;
+                case CanvasSectionTemplate.ThreeColumnVerticalSection:
+                    this.columns.Add(new CanvasColumn(this, 1, 4, 1));
+                    this.columns.Add(new CanvasColumn(this, 2, 4, 1));
+                    this.columns.Add(new CanvasColumn(this, 3, 4, 1));
+                    this.columns.Add(new CanvasColumn(this, 1, 12, 2));
+                    break;
                 case CanvasSectionTemplate.TwoColumnLeft:
                     this.columns.Add(new CanvasColumn(this, 1, 8));
                     this.columns.Add(new CanvasColumn(this, 2, 4));
                     break;
+                case CanvasSectionTemplate.TwoColumnLeftVerticalSection:
+                    this.columns.Add(new CanvasColumn(this, 1, 8, 1));
+                    this.columns.Add(new CanvasColumn(this, 2, 4, 1));
+                    this.columns.Add(new CanvasColumn(this, 1, 12, 2));
+                    break;
                 case CanvasSectionTemplate.TwoColumnRight:
                     this.columns.Add(new CanvasColumn(this, 1, 4));
                     this.columns.Add(new CanvasColumn(this, 2, 8));
+                    break;
+                case CanvasSectionTemplate.TwoColumnRightVerticalSection:
+                    this.columns.Add(new CanvasColumn(this, 1, 4, 1));
+                    this.columns.Add(new CanvasColumn(this, 2, 8, 1));
+                    this.columns.Add(new CanvasColumn(this, 1, 12, 2));
                     break;
                 default:
                     this.columns.Add(new CanvasColumn(this, 1, 12));
@@ -142,6 +167,17 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// A page can contain one section that has a vertical section column...use this attribute to get that column
+        /// </summary>
+        public CanvasColumn VerticalSectionColumn
+        {
+            get
+            {
+                return this.columns.Where(p => p.LayoutIndex == 2).FirstOrDefault();                
+            }
+        }
+
+        /// <summary>
         /// Color emphasis of the section 
         /// </summary>
         public int ZoneEmphasis
@@ -176,7 +212,7 @@ namespace OfficeDevPnP.Core.Pages
             {
                 htmlWriter.NewLine = string.Empty;
 #endif
-                foreach (var column in this.columns.OrderBy(z => z.Order))
+                foreach (var column in this.columns.OrderBy(z => z.LayoutIndex).ThenBy(z => z.Order))
                 {
 #if NETSTANDARD2_0
                 html.Append(column.ToHtml());

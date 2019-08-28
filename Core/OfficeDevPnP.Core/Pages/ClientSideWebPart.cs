@@ -351,11 +351,14 @@ namespace OfficeDevPnP.Core.Pages
                 ZoneIndex = this.Section.Order,
                 SectionIndex = this.Column.Order,
                 SectionFactor = this.Column.ColumnFactor,
+#if !SP2019
+                LayoutIndex = this.Column.LayoutIndex,
+#endif
                 ControlIndex = controlIndex,
             };
             controlData.Emphasis = new ClientSideSectionEmphasis()
             {
-                ZoneEmphasis = this.Section.ZoneEmphasis,
+                ZoneEmphasis = this.Column.VerticalSectionEmphasis.HasValue ? this.Column.VerticalSectionEmphasis.Value : this.Section.ZoneEmphasis,
             };
 
             // Set the control's data version to the latest version...default was 1.0, but some controls use a higher version
@@ -596,9 +599,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 #endif
-        #endregion
+#endregion
 
-        #region Internal and private methods
+                #region Internal and private methods
         internal override void FromHtml(IElement element)
         {
             base.FromHtml(element);
@@ -777,7 +780,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.dynamicDataValues = (JObject)parsedJson["dynamicDataValues"];
             }
         }
-        #endregion
+                #endregion
     }
 #endif
-}
+            }

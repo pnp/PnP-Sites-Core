@@ -24,6 +24,14 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         [JsonProperty(PropertyName = "sectionFactor", NullValueHandling = NullValueHandling.Ignore)]
         public int? SectionFactor { get; set; }
+
+#if !SP2019
+        /// <summary>
+        /// Gets or sets JsonProperty "layoutIndex"
+        /// </summary>
+        [JsonProperty(PropertyName = "layoutIndex", NullValueHandling = NullValueHandling.Ignore)]
+        public int? LayoutIndex { get; set; }
+#endif
     }
 #endif
 }
