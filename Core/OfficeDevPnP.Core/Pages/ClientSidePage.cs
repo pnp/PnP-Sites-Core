@@ -1684,6 +1684,7 @@ namespace OfficeDevPnP.Core.Pages
                         section.Type = CanvasSectionTemplate.ThreeColumn;
                     }
                 }
+#if !SP2019
                 else
                 {
                     if (section.Columns.Count == 2)
@@ -1710,6 +1711,7 @@ namespace OfficeDevPnP.Core.Pages
                         section.Type = CanvasSectionTemplate.ThreeColumnVerticalSection;
                     }
                 }
+#endif
             }
 
             // Reindex the control order. We're starting control order from 1 for each column.
