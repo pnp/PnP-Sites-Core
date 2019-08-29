@@ -31,6 +31,7 @@ namespace OfficeDevPnP.Core
         internal const string LOGGING_SOURCE_FRAMEWORK_PROVISIONING = "PnP Provisioning";
 
         internal const string FIELD_XML_FORMAT = @"<Field Type=""{0}"" Name=""{1}"" DisplayName=""{2}"" ID=""{3}"" Group=""{4}"" Required=""{5}"" {6}/>";
+        internal const string FIELD_XML_FORMAT_WITH_CHILD_NODE = @"<Field Type=""{0}"" Name=""{1}"" DisplayName=""{2}"" ID=""{3}"" Group=""{4}"" Required=""{5}"" {6}>{7}</Field>";
         internal const string FIELD_XML_PARAMETER_FORMAT = @"{0}=""{1}""";
         internal const string FIELD_XML_PARAMETER_WRAPPER_FORMAT = @"<Params {0}></Params>";
         internal const string FIELD_XML_USER_LISTIDENTIFIER = "UserInfo";

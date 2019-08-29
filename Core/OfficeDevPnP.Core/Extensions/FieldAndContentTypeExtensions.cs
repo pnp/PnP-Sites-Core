@@ -581,14 +581,32 @@ namespace Microsoft.SharePoint.Client
             }
 #endif
 
-            string newFieldCAML = string.Format(Constants.FIELD_XML_FORMAT,
-                fieldCreationInformation.FieldType,
-                fieldCreationInformation.InternalName,
-                fieldCreationInformation.DisplayName,
-                fieldCreationInformation.Id,
-                fieldCreationInformation.Group,
-                fieldCreationInformation.Required ? "TRUE" : "FALSE",
-                additionalAttributesList.Any() ? string.Join(" ", additionalAttributesList) : "");
+            string newFieldCAML = null; 
+
+            if (fieldCreationInformation.FieldType == "Calculated")
+            {
+                // Calculated fields require a Formula child node
+                newFieldCAML = string.Format(Constants.FIELD_XML_FORMAT_WITH_CHILD_NODE,
+                    fieldCreationInformation.FieldType,
+                    fieldCreationInformation.InternalName,
+                    fieldCreationInformation.DisplayName,
+                    fieldCreationInformation.Id,
+                    fieldCreationInformation.Group,
+                    fieldCreationInformation.Required ? "TRUE" : "FALSE",
+                    additionalAttributesList.Any() ? string.Join(" ", additionalAttributesList) : "",
+                    @"<Formula>=""""</Formula>");
+            }
+            else
+            {
+                newFieldCAML = string.Format(Constants.FIELD_XML_FORMAT,
+                    fieldCreationInformation.FieldType,
+                    fieldCreationInformation.InternalName,
+                    fieldCreationInformation.DisplayName,
+                    fieldCreationInformation.Id,
+                    fieldCreationInformation.Group,
+                    fieldCreationInformation.Required ? "TRUE" : "FALSE",
+                    additionalAttributesList.Any() ? string.Join(" ", additionalAttributesList) : "");
+            }
 
             return newFieldCAML;
         }
