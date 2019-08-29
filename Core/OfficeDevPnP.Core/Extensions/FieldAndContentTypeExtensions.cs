@@ -564,6 +564,16 @@ namespace Microsoft.SharePoint.Client
                 }
             }
 
+            List<string> additionalChildNodesList = new List<string>();
+
+            if (fieldCreationInformation.AdditionalChildNodes != null)
+            {
+                foreach (var keyvaluepair in fieldCreationInformation.AdditionalChildNodes)
+                {
+                    additionalChildNodesList.Add(string.Format(Constants.FIELD_XML_CHILD_NODE, keyvaluepair.Key, keyvaluepair.Value));
+                }
+            }
+
 #if !ONPREMISES
             if (!additionalAttributesList.Contains("ClientSideComponentId"))
             {
@@ -583,10 +593,10 @@ namespace Microsoft.SharePoint.Client
 
             string newFieldCAML = null; 
 
-            if (fieldCreationInformation.FieldType == "Calculated")
+            if (additionalChildNodesList.Count > 0)
             {
                 // Calculated fields require a Formula child node
-                newFieldCAML = string.Format(Constants.FIELD_XML_FORMAT_WITH_CHILD_NODE,
+                newFieldCAML = string.Format(Constants.FIELD_XML_FORMAT_WITH_CHILD_NODES,
                     fieldCreationInformation.FieldType,
                     fieldCreationInformation.InternalName,
                     fieldCreationInformation.DisplayName,
@@ -594,7 +604,7 @@ namespace Microsoft.SharePoint.Client
                     fieldCreationInformation.Group,
                     fieldCreationInformation.Required ? "TRUE" : "FALSE",
                     additionalAttributesList.Any() ? string.Join(" ", additionalAttributesList) : "",
-                    @"<Formula>=""""</Formula>");
+                    string.Join("", additionalChildNodesList));
             }
             else
             {
