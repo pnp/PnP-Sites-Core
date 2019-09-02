@@ -371,7 +371,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         mimeType = "image/jpeg";
                                     }
 #endif
-                                    Sites.SiteCollection.SetGroupImage((ClientContext)web.Context, fileBytes, mimeType).GetAwaiter().GetResult();
+                                    Sites.SiteCollection.SetGroupImageAsync((ClientContext)web.Context, fileBytes, mimeType).GetAwaiter().GetResult();
 
                                 }
                             }
