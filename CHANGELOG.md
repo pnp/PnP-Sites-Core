@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Improved image extraction when extracting modern pages: header image and images linked by quick links webparts are now included #2336 [heinrich-ulbricht]
 - Added support for page header images which reside outside current site collection #2360 [gautamdsheth]
 - Added support for additional teamify methods #2359 [gautamdsheth]
+- Added support for Teal theme #2376 [gautamdsheth]
 
 ### Changed
 
