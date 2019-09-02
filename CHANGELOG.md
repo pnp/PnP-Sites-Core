@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Don't pass formatted string to logger #2368 [SchauDK]
 - Fix: Enabled custom action functionality for SharePoint 2019 that was incorrectly disabled. #2371 [jensotto]
 - Fix: use JsonConvert.ToString to handle special char in Title and Description #2372 [czullu]
+- Modified TeamNoGroup provisioning to use the new SPSiteManager API #2375 [gautamdsheth]
 
 ### Deprecated
 
