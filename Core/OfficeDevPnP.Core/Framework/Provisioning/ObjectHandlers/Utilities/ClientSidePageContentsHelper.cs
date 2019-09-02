@@ -111,17 +111,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             case Pages.CanvasSectionTemplate.OneColumn:
                                 sectionInstance.Type = CanvasSectionType.OneColumn;
                                 break;
+                            case Pages.CanvasSectionTemplate.OneColumnVerticalSection:
+                                sectionInstance.Type = CanvasSectionType.OneColumnVerticalSection;
+                                break;
                             case Pages.CanvasSectionTemplate.TwoColumn:
                                 sectionInstance.Type = CanvasSectionType.TwoColumn;
+                                break;
+                            case Pages.CanvasSectionTemplate.TwoColumnVerticalSection:
+                                sectionInstance.Type = CanvasSectionType.TwoColumnVerticalSection;
                                 break;
                             case Pages.CanvasSectionTemplate.TwoColumnLeft:
                                 sectionInstance.Type = CanvasSectionType.TwoColumnLeft;
                                 break;
+                            case Pages.CanvasSectionTemplate.TwoColumnLeftVerticalSection:
+                                sectionInstance.Type = CanvasSectionType.TwoColumnLeftVerticalSection;
+                                break;
                             case Pages.CanvasSectionTemplate.TwoColumnRight:
                                 sectionInstance.Type = CanvasSectionType.TwoColumnRight;
                                 break;
+                            case Pages.CanvasSectionTemplate.TwoColumnRightVerticalSection:
+                                sectionInstance.Type = CanvasSectionType.TwoColumnRightVerticalSection;
+                                break;
                             case Pages.CanvasSectionTemplate.ThreeColumn:
                                 sectionInstance.Type = CanvasSectionType.ThreeColumn;
+                                break;
+                            case Pages.CanvasSectionTemplate.ThreeColumnVerticalSection:
+                                sectionInstance.Type = CanvasSectionType.ThreeColumnVerticalSection;
                                 break;
                             case Pages.CanvasSectionTemplate.OneColumnFullWidth:
                                 sectionInstance.Type = CanvasSectionType.OneColumnFullWidth;

@@ -123,21 +123,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// One column, full browser width. This one only works for communication sites in combination with image or hero webparts
         /// </summary>
         OneColumnFullWidth,
+        OneColumnVerticalSection,
         /// <summary>
         /// Two columns of the same size
         /// </summary>
         TwoColumn,
+        TwoColumnVerticalSection,
         /// <summary>
         /// Three columns of the same size
         /// </summary>
         ThreeColumn,
+        ThreeColumnVerticalSection,
         /// <summary>
         /// Two columns, left one is 2/3, right one 1/3
         /// </summary>
         TwoColumnLeft,
+        TwoColumnLeftVerticalSection,
         /// <summary>
         /// Two columns, left one is 1/3, right one 2/3
         /// </summary>
         TwoColumnRight,
+        TwoColumnRightVerticalSection,
     }
 }
