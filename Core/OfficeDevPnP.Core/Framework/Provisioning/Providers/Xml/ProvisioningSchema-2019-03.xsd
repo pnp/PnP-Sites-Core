@@ -4743,6 +4743,13 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:enumeration>
+          <xsd:enumeration value="OneColumnVerticalSection">
+            <xsd:annotation>
+              <xsd:documentation xml:lang="en">
+                One column, vertical Section
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
           <xsd:enumeration value="OneColumnFullWidth">
             <xsd:annotation>
               <xsd:documentation xml:lang="en">
@@ -4757,10 +4764,24 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:enumeration>
+          <xsd:enumeration value="TwoColumnVerticalSection">
+            <xsd:annotation>
+              <xsd:documentation xml:lang="en">
+                Two columns of the same size, vertical section
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
           <xsd:enumeration value="ThreeColumn">
             <xsd:annotation>
               <xsd:documentation xml:lang="en">
                 Three columns of the same size
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ThreeColumnVerticalSection">
+            <xsd:annotation>
+              <xsd:documentation xml:lang="en">
+                Three columns of the same size, vertical section
               </xsd:documentation>
             </xsd:annotation>
           </xsd:enumeration>
@@ -4771,10 +4792,24 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:enumeration>
+          <xsd:enumeration value="TwoColumnLeftVerticalSection">
+            <xsd:annotation>
+              <xsd:documentation xml:lang="en">
+                Two columns, left one is 2/3, right one 1/3, vertical section
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
           <xsd:enumeration value="TwoColumnRight">
             <xsd:annotation>
               <xsd:documentation xml:lang="en">
                 Two columns, left one is 1/3, right one 2/3
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="TwoColumnRightVerticalSection">
+            <xsd:annotation>
+              <xsd:documentation xml:lang="en">
+                Two columns, left one is 1/3, right one 2/3, vertical section
               </xsd:documentation>
             </xsd:annotation>
           </xsd:enumeration>
@@ -4916,6 +4951,21 @@
       </xsd:annotation>
     </xsd:attribute>
 
+    <xsd:attribute name="LayoutIndex" type="xsd:int" use="optional" default="1">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The LayoutIndex of the Column of the Section in which the Canvas Control will be inserted. Optional, default 1.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="ZoneEmphasis" type="xsd:int" use="optional" default="0">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          Zone Emphasis of vertical Column. If 0 then no background color
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
   </xsd:complexType>
 
   <xsd:complexType name="CanvasColumn">

@@ -159,6 +159,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                     Order = control.Order,
                                 };
 
+                                if (column.IsVerticalSectionColumn)
+                                {
+                                    controlInstance.LayoutIndex = column.LayoutIndex;
+                                    controlInstance.ZoneEmphasis = column.VerticalSectionEmphasis;
+                                }
+
                                 // Set control type
                                 if (control.Type == typeof(Pages.ClientSideText))
                                 {
@@ -364,7 +370,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 sectionInstance.Controls.Add(controlInstance);
                             }
                         }
-
                         extractedPageInstance.Sections.Add(sectionInstance);
                     }
 

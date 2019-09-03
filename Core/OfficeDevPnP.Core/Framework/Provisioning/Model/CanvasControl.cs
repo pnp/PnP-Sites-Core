@@ -49,6 +49,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public Int32 Column { get; set; }
 
+        /// <summary>
+        /// Defines if in Horizontal=1 or Vertical=2 Column
+        /// </summary>
+        public Int32 LayoutIndex { get; set; } = 1;
+
+
+        public Int32? ZoneEmphasis { get; set; }
+
         #endregion
 
         #region Comparison code
@@ -59,14 +67,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|",
                 this.ControlProperties.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 Type.GetHashCode(),
                 CustomWebPartName?.GetHashCode() ?? 0,
                 JsonControlData?.GetHashCode() ?? 0,
                 ControlId.GetHashCode(),
                 Order.GetHashCode(),
-                Column.GetHashCode()
+                Column.GetHashCode(),
+                LayoutIndex.GetHashCode(),
+                ZoneEmphasis.HasValue? ZoneEmphasis.Value:0
             ).GetHashCode());
         }
 
@@ -102,7 +112,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.JsonControlData == other.JsonControlData &&
                 this.ControlId == other.ControlId &&
                 this.Order == other.Order &&
-                this.Column == other.Column
+                this.Column == other.Column &&
+                this.LayoutIndex == other.LayoutIndex &&
+                this.ZoneEmphasis.HasValue && other.ZoneEmphasis.HasValue? this.ZoneEmphasis.Value == other.ZoneEmphasis.Value:(!this.ZoneEmphasis.HasValue && !other.ZoneEmphasis.HasValue?true:false)
                 );
         }
 

@@ -119,11 +119,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// One column
         /// </summary>
         OneColumn,
+        OneColumnVerticalSection,
         /// <summary>
         /// One column, full browser width. This one only works for communication sites in combination with image or hero webparts
         /// </summary>
         OneColumnFullWidth,
-        OneColumnVerticalSection,
         /// <summary>
         /// Two columns of the same size
         /// </summary>
