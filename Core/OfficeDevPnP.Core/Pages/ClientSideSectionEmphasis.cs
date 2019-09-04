@@ -9,18 +9,7 @@ namespace OfficeDevPnP.Core.Pages
         [JsonConverter(typeof(EmphasisJsonConverter))]
         public int ZoneEmphasis
         {
-            get
-            {
-                if (!string.IsNullOrWhiteSpace(ZoneEmphasisString) && int.TryParse(ZoneEmphasisString, out int result))
-                {
-                    return result;
-                }
-                return 0;
-            }
-            set { ZoneEmphasisString = value.ToString(); }
+            get; set;
         }
-
-        [JsonIgnore]
-        public string ZoneEmphasisString { get; set; }
     }
 }

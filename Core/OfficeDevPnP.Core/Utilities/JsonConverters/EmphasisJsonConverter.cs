@@ -1,12 +1,11 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Utilities.JsonConverters
 {
+    /// <summary>
+    /// Converts Emphasis values into the supported integer format
+    /// </summary>
     public class EmphasisJsonConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)
