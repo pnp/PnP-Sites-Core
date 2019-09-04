@@ -324,9 +324,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 }
                                             }
                                         }
-                                        // Reduce column number by 1 due 0 start indexing
-                                        page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
 
+                                        if (control.LayoutIndex == 2)
+                                        {
+                                            var verticalColumn = page.Sections.FirstOrDefault().VerticalSectionColumn;
+                                            verticalColumn.VerticalSectionEmphasis = control.ZoneEmphasis;
+                                            page.AddControl(textControl, verticalColumn, control.Order);
+                                        }
+                                        else
+                                        {
+                                            // Reduce column number by 1 due 0 start indexing
+                                            page.AddControl(textControl, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
+                                        }
                                     }
                                     // It is a web part
                                     else
@@ -463,9 +472,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 }
                                             }
 
-                                            // Reduce column number by 1 due 0 start indexing
-                                            page.AddControl(myWebPart, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
-
+                                            if (control.LayoutIndex == 2)
+                                            {
+                                                var verticalColumn = page.Sections.FirstOrDefault().VerticalSectionColumn;
+                                                verticalColumn.VerticalSectionEmphasis = control.ZoneEmphasis;
+                                                page.AddControl(myWebPart, verticalColumn, control.Order);
+                                            }
+                                            else { 
+                                                // Reduce column number by 1 due 0 start indexing
+                                                page.AddControl(myWebPart, page.Sections[sectionCount].Columns[control.Column - 1], control.Order);
+                                            }
                                             // set properties using json string
                                             if (!String.IsNullOrEmpty(control.JsonControlData))
                                             {

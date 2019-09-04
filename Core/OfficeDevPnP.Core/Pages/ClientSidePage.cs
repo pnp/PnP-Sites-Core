@@ -578,7 +578,6 @@ namespace OfficeDevPnP.Core.Pages
             control.section = column.Section;
             control.column = column;
             control.Order = order;
-
             this.controls.Add(control);
         }
 
