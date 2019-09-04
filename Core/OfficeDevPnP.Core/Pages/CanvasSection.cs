@@ -57,31 +57,66 @@ namespace OfficeDevPnP.Core.Pages
                 case CanvasSectionTemplate.OneColumnFullWidth:
                     this.columns.Add(new CanvasColumn(this, 1, 0));
                     break;
+#if !SP2019
+                case CanvasSectionTemplate.OneColumnVerticalSection:
+                    this.columns.Add(new CanvasColumn(this, 1, 0, 1));
+                    this.columns.Add(new CanvasColumn(this, 1, 12, 2));
+                    break;
+#endif
                 case CanvasSectionTemplate.TwoColumn:
                     this.columns.Add(new CanvasColumn(this, 1, 6));
                     this.columns.Add(new CanvasColumn(this, 2, 6));
                     break;
+#if !SP2019
+                case CanvasSectionTemplate.TwoColumnVerticalSection:
+                    this.columns.Add(new CanvasColumn(this, 1, 6, 1));
+                    this.columns.Add(new CanvasColumn(this, 2, 6, 1));
+                    this.columns.Add(new CanvasColumn(this, 1, 12, 2));
+                    break;
+#endif
                 case CanvasSectionTemplate.ThreeColumn:
                     this.columns.Add(new CanvasColumn(this, 1, 4));
                     this.columns.Add(new CanvasColumn(this, 2, 4));
                     this.columns.Add(new CanvasColumn(this, 3, 4));
                     break;
+#if !SP2019
+                case CanvasSectionTemplate.ThreeColumnVerticalSection:
+                    this.columns.Add(new CanvasColumn(this, 1, 4, 1));
+                    this.columns.Add(new CanvasColumn(this, 2, 4, 1));
+                    this.columns.Add(new CanvasColumn(this, 3, 4, 1));
+                    this.columns.Add(new CanvasColumn(this, 1, 12, 2));
+                    break;
+#endif
                 case CanvasSectionTemplate.TwoColumnLeft:
                     this.columns.Add(new CanvasColumn(this, 1, 8));
                     this.columns.Add(new CanvasColumn(this, 2, 4));
                     break;
+#if !SP2019
+                case CanvasSectionTemplate.TwoColumnLeftVerticalSection:
+                    this.columns.Add(new CanvasColumn(this, 1, 8, 1));
+                    this.columns.Add(new CanvasColumn(this, 2, 4, 1));
+                    this.columns.Add(new CanvasColumn(this, 1, 12, 2));
+                    break;
+#endif
                 case CanvasSectionTemplate.TwoColumnRight:
                     this.columns.Add(new CanvasColumn(this, 1, 4));
                     this.columns.Add(new CanvasColumn(this, 2, 8));
                     break;
+#if !SP2019
+                case CanvasSectionTemplate.TwoColumnRightVerticalSection:
+                    this.columns.Add(new CanvasColumn(this, 1, 4, 1));
+                    this.columns.Add(new CanvasColumn(this, 2, 8, 1));
+                    this.columns.Add(new CanvasColumn(this, 1, 12, 2));
+                    break;
+#endif
                 default:
                     this.columns.Add(new CanvasColumn(this, 1, 12));
                     break;
             }
         }
-        #endregion
+#endregion
 
-        #region Properties
+                    #region Properties
         /// <summary>
         /// Type of the section
         /// </summary>
@@ -142,6 +177,17 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// A page can contain one section that has a vertical section column...use this attribute to get that column
+        /// </summary>
+        public CanvasColumn VerticalSectionColumn
+        {
+            get
+            {
+                return this.columns.Where(p => p.LayoutIndex == 2).FirstOrDefault();                
+            }
+        }
+
+        /// <summary>
         /// Color emphasis of the section 
         /// </summary>
         public int ZoneEmphasis
@@ -161,9 +207,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
-        #endregion
+                    #endregion
 
-        #region public methods
+                    #region public methods
         /// <summary>
         /// Renders this section as a HTML fragment
         /// </summary>
@@ -176,7 +222,7 @@ namespace OfficeDevPnP.Core.Pages
             {
                 htmlWriter.NewLine = string.Empty;
 #endif
-                foreach (var column in this.columns.OrderBy(z => z.Order))
+                foreach (var column in this.columns.OrderBy(z => z.LayoutIndex).ThenBy(z => z.Order))
                 {
 #if NETSTANDARD2_0
                 html.Append(column.ToHtml());
@@ -189,9 +235,9 @@ namespace OfficeDevPnP.Core.Pages
 #endif
             return html.ToString();
         }
-        #endregion
+                    #endregion
 
-        #region internal and private methods
+                    #region internal and private methods
         internal void AddColumn(CanvasColumn column)
         {
             if (column == null)
@@ -201,7 +247,7 @@ namespace OfficeDevPnP.Core.Pages
 
             this.columns.Add(column);
         }
-        #endregion
+                    #endregion
     }
 #endif
-}
+            }

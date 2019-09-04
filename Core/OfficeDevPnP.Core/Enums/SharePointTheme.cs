@@ -9,6 +9,7 @@
         Green,
         Gray,
         DarkYellow,
-        DarkBlue
+        DarkBlue,
+        Teal
     }
 }

@@ -112,11 +112,14 @@ namespace OfficeDevPnP.Core.Pages
                     ZoneIndex = this.Section.Order,
                     SectionIndex = this.Column.Order,
                     SectionFactor = this.Column.ColumnFactor,
+#if !SP2019
+                    LayoutIndex = this.Column.LayoutIndex,
+#endif
                     ControlIndex = controlIndex,
                 },
                 Emphasis = new ClientSideSectionEmphasis()
                 {
-                    ZoneEmphasis = this.Section.ZoneEmphasis,
+                    ZoneEmphasis = this.Column.VerticalSectionEmphasis.HasValue ? this.Column.VerticalSectionEmphasis.Value : this.Section.ZoneEmphasis,
                 },
                 EditorType = "CKEditor"
             };
@@ -167,9 +170,9 @@ namespace OfficeDevPnP.Core.Pages
 #endif
             return html.ToString();
         }
-        #endregion
+#endregion
 
-        #region Internal and private methods
+                    #region Internal and private methods
         internal override void FromHtml(IElement element)
         {
             base.FromHtml(element);
@@ -189,7 +192,7 @@ namespace OfficeDevPnP.Core.Pages
 
             // By default simple plain text is wrapped in a Paragraph, need to drop it to avoid getting multiple paragraphs on page edits.
             // Only drop the paragraph tag when there's only one Paragraph element underneath the DIV tag
-            if ((div.FirstChild != null && (div.FirstChild as IElement).TagName.Equals("P", StringComparison.InvariantCultureIgnoreCase)) &&
+            if ((div.FirstChild != null && (div.FirstChild as IElement) != null && (div.FirstChild as IElement).TagName.Equals("P", StringComparison.InvariantCultureIgnoreCase)) &&
                 (div.ChildElementCount == 1))
             {
                 this.Text = (div.FirstChild as IElement).InnerHtml;
@@ -207,7 +210,7 @@ namespace OfficeDevPnP.Core.Pages
             this.spControlData = JsonConvert.DeserializeObject<ClientSideTextControlData>(element.GetAttribute(CanvasControl.ControlDataAttribute), jsonSerializerSettings);
             this.controlType = this.spControlData.ControlType;
         }
-        #endregion
+                    #endregion
     }
 #endif
-}
+                }

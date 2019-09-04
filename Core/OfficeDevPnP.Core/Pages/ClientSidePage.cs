@@ -414,7 +414,11 @@ namespace OfficeDevPnP.Core.Pages
             {
                 throw new ArgumentNullException("Passed section cannot be null");
             }
-            this.sections.Add(section);
+
+            if (CanThisSectionBeAdded(section))
+            {
+                this.sections.Add(section);
+            }
         }
 
         /// <summary>
@@ -428,8 +432,12 @@ namespace OfficeDevPnP.Core.Pages
             {
                 throw new ArgumentNullException("Passed section cannot be null");
             }
-            section.Order = order;
-            this.sections.Add(section);
+
+            if (CanThisSectionBeAdded(section))
+            {
+                section.Order = order;
+                this.sections.Add(section);
+            }
         }
 
         /// <summary>
@@ -1442,6 +1450,39 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        private bool CanThisSectionBeAdded(CanvasSection section)
+        {
+            if (this.Sections.Count == 0)
+            {
+                return true;
+            }
+
+            if (section.VerticalSectionColumn != null)
+            {
+                // we're adding a section that has a vertical column. This can not be combined with either another section with a vertical column or a full width section
+                if (this.Sections.Where(p=>p.VerticalSectionColumn != null).Any())
+                {
+                    throw new Exception("You can only have one section with a vertical column on a page");
+                }
+                
+                if (this.Sections.Where(p => p.Type == CanvasSectionTemplate.OneColumnFullWidth).Any())
+                {
+                    throw new Exception("You already have a full width section on this page, you can't add a section with vertical column");
+                }
+            }
+            
+            if (section.Type == CanvasSectionTemplate.OneColumnFullWidth)
+            {
+                // we're adding a full width section. This can not be combined with either a vertical column section
+                if (this.Sections.Where(p => p.VerticalSectionColumn != null).Any())
+                {
+                    throw new Exception("You already have a section with vertical column on this page, you can't add a full width section");
+                }
+            }
+
+            return true;
+        }
+
         private void ValidateOneColumnFullWidthSectionUsage()
         {
             bool hasOneColumnFullWidthSection = false;
@@ -1611,37 +1652,69 @@ namespace OfficeDevPnP.Core.Pages
             // Perform section type detection
             foreach (var section in this.sections)
             {
-                if (section.Columns.Count == 1)
+                if (section.VerticalSectionColumn == null)
                 {
-                    if (section.Columns[0].ColumnFactor == 0)
+                    if (section.Columns.Count == 1)
                     {
-                        section.Type = CanvasSectionTemplate.OneColumnFullWidth;
+                        if (section.Columns[0].ColumnFactor == 0)
+                        {
+                            section.Type = CanvasSectionTemplate.OneColumnFullWidth;
+                        }
+                        else
+                        {
+                            section.Type = CanvasSectionTemplate.OneColumn;
+                        }
                     }
-                    else
+                    else if (section.Columns.Count == 2)
                     {
-                        section.Type = CanvasSectionTemplate.OneColumn;
+                        if (section.Columns[0].ColumnFactor == 6)
+                        {
+                            section.Type = CanvasSectionTemplate.TwoColumn;
+                        }
+                        else if (section.Columns[0].ColumnFactor == 4)
+                        {
+                            section.Type = CanvasSectionTemplate.TwoColumnRight;
+                        }
+                        else if (section.Columns[0].ColumnFactor == 8)
+                        {
+                            section.Type = CanvasSectionTemplate.TwoColumnLeft;
+                        }
+                    }
+                    else if (section.Columns.Count == 3)
+                    {
+                        section.Type = CanvasSectionTemplate.ThreeColumn;
                     }
                 }
-                else if (section.Columns.Count == 2)
+#if !SP2019
+                else
                 {
-                    if (section.Columns[0].ColumnFactor == 6)
+                    if (section.Columns.Count == 2)
                     {
-                        section.Type = CanvasSectionTemplate.TwoColumn;
+                        section.Type = CanvasSectionTemplate.OneColumnVerticalSection;
                     }
-                    else if (section.Columns[0].ColumnFactor == 4)
+                    else if (section.Columns.Count == 3)
                     {
-                        section.Type = CanvasSectionTemplate.TwoColumnRight;
+                        if (section.Columns[1].ColumnFactor == 6)
+                        {
+                            section.Type = CanvasSectionTemplate.TwoColumnVerticalSection;
+                        }
+                        else if (section.Columns[1].ColumnFactor == 4)
+                        {
+                            section.Type = CanvasSectionTemplate.TwoColumnRightVerticalSection;
+                        }
+                        else if (section.Columns[1].ColumnFactor == 8)
+                        {
+                            section.Type = CanvasSectionTemplate.TwoColumnLeftVerticalSection;
+                        }
                     }
-                    else if (section.Columns[0].ColumnFactor == 8)
+                    else if (section.Columns.Count == 4)
                     {
-                        section.Type = CanvasSectionTemplate.TwoColumnLeft;
+                        section.Type = CanvasSectionTemplate.ThreeColumnVerticalSection;
                     }
                 }
-                else if (section.Columns.Count == 3)
-                {
-                    section.Type = CanvasSectionTemplate.ThreeColumn;
-                }
+#endif
             }
+
             // Reindex the control order. We're starting control order from 1 for each column.
             ReIndex();
 
@@ -1675,10 +1748,37 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             var currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).FirstOrDefault();
+
+#if !SP2019
+            // if layout index was set this means that we possibly have a vertical section column
+            if (position.LayoutIndex.HasValue)
+            {
+                currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex && p.LayoutIndex == position.LayoutIndex.Value).FirstOrDefault();
+            }
+#endif
+
             if (currentColumn == null)
             {
-                currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor));
-                currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).First();
+#if !SP2019
+                if (position.LayoutIndex.HasValue)
+                {
+                    currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor, position.LayoutIndex.Value));
+                    currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex && p.LayoutIndex == position.LayoutIndex.Value).First();
+
+                    // ZoneEmphasis on a vertical section column needs to be retained as that "overrides" the zone emphasis set on the section
+                    if (currentColumn.IsVerticalSectionColumn)
+                    {
+                        currentColumn.VerticalSectionEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0;
+                    }
+                }
+                else
+                {
+#endif
+                    currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor));
+                    currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).First();
+#if !SP2019
+                }                
+#endif
             }
 
             control.section = currentSection;
@@ -1768,7 +1868,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
         }
-        #endregion
+#endregion
     }
 #endif
-}
+            }
