@@ -1113,7 +1113,8 @@ namespace OfficeDevPnP.Core.Pages
                 case "0ef418ba-5d19-4ade-9db0-b339873291d0": return DefaultClientSideWebParts.NewsFeed;
                 case "a5df8fdf-b508-4b66-98a6-d83bc2597f63": return DefaultClientSideWebParts.NewsReel;
                 // Seems like we've been having 2 guids to identify this web part...
-                case "8c88f208-6c77-4bdb-86a0-0c47b4316588": return DefaultClientSideWebParts.NewsReel;
+                // Now that _api/web/GetClientSideWebParts returns both guids / controls we can distinguish News v NewsReel
+                case "8c88f208-6c77-4bdb-86a0-0c47b4316588": return DefaultClientSideWebParts.News;
 #if !ONPREMISES
                 case "58fcd18b-e1af-4b0a-b23b-422c2c52d5a2": return DefaultClientSideWebParts.PowerBIReportEmbed;
 #endif

@@ -176,6 +176,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         case Pages.DefaultClientSideWebParts.LinkPreview:
                                             controlInstance.Type = WebPartType.LinkPreview;
                                             break;
+                                        case Pages.DefaultClientSideWebParts.News:
+                                            controlInstance.Type = WebPartType.News;
+                                            break;
                                         case Pages.DefaultClientSideWebParts.NewsFeed:
                                             controlInstance.Type = WebPartType.NewsFeed;
                                             break;
