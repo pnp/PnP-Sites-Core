@@ -698,6 +698,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (var tab in tabs)
             {
+                // Avoid ActivityLimitReached 
+                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(5));
+
                 var existingTab = existingTabs.FirstOrDefault(x => HttpUtility.UrlDecode(x["displayName"].ToString()) == tab.DisplayName && x["teamsAppId"].ToString() == tab.TeamsAppId);
 
                 var tabId = existingTab == null ? CreateTeamTab(scope, tab, parser, teamId, channelId, accessToken) : UpdateTeamTab(tab, parser, teamId, channelId, existingTab["id"].ToString(), accessToken);
