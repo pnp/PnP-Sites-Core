@@ -196,7 +196,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         .Distinct(StringComparer.OrdinalIgnoreCase)
                         .ToDictionary(k => k, k =>
                         {
-                            var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{k}?$select=id", accessToken);
+                            var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(k.Replace("'", "''"))}?$select=id", accessToken);
                             return JToken.Parse(jsonUser).Value<string>("id");
                         });
 
@@ -221,8 +221,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     mailNickname = parsedMailNickname,
                     securityEnabled = false,
                     visibility = team.Visibility.ToString(),
-                    owners_odata_bind = (from o in desideredOwnerIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{o}").ToArray(),
-                    members_odata_bind = (from m in desideredMemberIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{m}").ToArray()
+                    owners_odata_bind = (from o in desideredOwnerIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(o.Replace("'", "''"))}").ToArray(),
+                    members_odata_bind = (from m in desideredMemberIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(m.Replace("'", "''"))}").ToArray()
                 };
 
                 // Make the Graph request to create the Office 365 Group
@@ -369,31 +369,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 //team.Visibility,
                 funSettings = new
                 {
-                    team.FunSettings.AllowGiphy,
-                    team.FunSettings.GiphyContentRating,
-                    team.FunSettings.AllowStickersAndMemes,
-                    team.FunSettings.AllowCustomMemes,
+                    team.FunSettings?.AllowGiphy,
+                    team.FunSettings?.GiphyContentRating,
+                    team.FunSettings?.AllowStickersAndMemes,
+                    team.FunSettings?.AllowCustomMemes,
                 },
                 guestSettings = new
                 {
-                    team.GuestSettings.AllowCreateUpdateChannels,
-                    team.GuestSettings.AllowDeleteChannels,
+                    team.GuestSettings?.AllowCreateUpdateChannels,
+                    team.GuestSettings?.AllowDeleteChannels,
                 },
                 memberSettings = new
                 {
-                    team.MemberSettings.AllowCreateUpdateChannels,
-                    team.MemberSettings.AllowAddRemoveApps,
-                    team.MemberSettings.AllowDeleteChannels,
-                    team.MemberSettings.AllowCreateUpdateRemoveTabs,
-                    team.MemberSettings.AllowCreateUpdateRemoveConnectors
+                    team.MemberSettings?.AllowCreateUpdateChannels,
+                    team.MemberSettings?.AllowAddRemoveApps,
+                    team.MemberSettings?.AllowDeleteChannels,
+                    team.MemberSettings?.AllowCreateUpdateRemoveTabs,
+                    team.MemberSettings?.AllowCreateUpdateRemoveConnectors
                 },
                 messagingSettings = new
                 {
-                    team.MessagingSettings.AllowUserEditMessages,
-                    team.MessagingSettings.AllowUserDeleteMessages,
-                    team.MessagingSettings.AllowOwnerDeleteMessages,
-                    team.MessagingSettings.AllowTeamMentions,
-                    team.MessagingSettings.AllowChannelMentions
+                    team.MessagingSettings?.AllowUserEditMessages,
+                    team.MessagingSettings?.AllowUserDeleteMessages,
+                    team.MessagingSettings?.AllowOwnerDeleteMessages,
+                    team.MessagingSettings?.AllowTeamMentions,
+                    team.MessagingSettings?.AllowChannelMentions
                 }
             };
 
@@ -451,7 +451,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToDictionary(k => k, k =>
                     {
-                        var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{k}?$select=id", accessToken);
+                        var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(k.Replace("'", "''"))}?$select=id", accessToken);
                         return JToken.Parse(jsonUser).Value<string>("id");
                     });
 
@@ -955,18 +955,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-#if !ONPREMISES
             if (!_willProvision.HasValue)
             {
                 _willProvision = hierarchy.Teams?.TeamTemplates?.Any() |
                     hierarchy.Teams?.Teams?.Any();
             }
-#else
-            if (!_willProvision.HasValue)
-            {
-                _willProvision = false;
-            }
-#endif
             return _willProvision.Value;
         }
 
@@ -981,7 +974,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-#if !ONPREMISES
             using (var scope = new PnPMonitoredScope(Name))
             {
                 // Prepare a method global variable to store the Access Token
@@ -993,13 +985,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var teamTemplate in teamTemplates)
                     {
-                        // Get a fresh Access Token for every request
-                        accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All");
+                        if (PnPProvisioningContext.Current != null)
+                        {
+                            // Get a fresh Access Token for every request
+                            accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All");
 
-                        // Create the Team starting from the JSON template
-                        var team = CreateTeamFromJsonTemplate(scope, parser, teamTemplate, accessToken);
+                            if (accessToken != null)
+                            {
+                                // Create the Team starting from the JSON template
+                                var team = CreateTeamFromJsonTemplate(scope, parser, teamTemplate, accessToken);
 
-                        // TODO: possible further processing...
+                                // TODO: possible further processing...
+                            }
+
+                        }
+
                     }
                 }
 
@@ -1021,7 +1021,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // - Apps
             }
-#endif
 
             return parser;
         }
