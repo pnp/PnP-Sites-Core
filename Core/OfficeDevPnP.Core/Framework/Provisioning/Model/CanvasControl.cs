@@ -133,6 +133,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         MarkDown,
         MicrosoftForms,
         MyDocuments,
+        News,
         NewsFeed,
         NewsReel,
         PageFields,

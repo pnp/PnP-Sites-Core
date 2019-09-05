@@ -41,6 +41,10 @@
         /// </summary>
         LinkPreview,
         /// <summary>
+        /// News webpart (the "new" version of NewsReel) - they look the same but this one supports filtering properly
+        /// </summary>
+        News,
+        /// <summary>
         /// News Feed webpart
         /// </summary>
         NewsFeed,

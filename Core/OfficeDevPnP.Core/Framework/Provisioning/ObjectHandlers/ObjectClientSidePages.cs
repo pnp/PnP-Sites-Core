@@ -379,6 +379,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 case WebPartType.List:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.List);
                                                     break;
+                                                case WebPartType.News:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.News);
+                                                    break;
                                                 case WebPartType.NewsFeed:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.NewsFeed);
                                                     break;

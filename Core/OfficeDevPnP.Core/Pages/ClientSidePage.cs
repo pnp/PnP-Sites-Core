@@ -1057,6 +1057,7 @@ namespace OfficeDevPnP.Core.Pages
                 case DefaultClientSideWebParts.Image: return "d1d91016-032f-456d-98a4-721247c305e8";
                 case DefaultClientSideWebParts.ImageGallery: return "af8be689-990e-492a-81f7-ba3e4cd3ed9c";
                 case DefaultClientSideWebParts.LinkPreview: return "6410b3b6-d440-4663-8744-378976dc041e";
+                case DefaultClientSideWebParts.News: return "8c88f208-6c77-4bdb-86a0-0c47b4316588";
                 case DefaultClientSideWebParts.NewsFeed: return "0ef418ba-5d19-4ade-9db0-b339873291d0";
                 case DefaultClientSideWebParts.NewsReel: return "a5df8fdf-b508-4b66-98a6-d83bc2597f63";
 #if !ONPREMISES
@@ -1121,7 +1122,8 @@ namespace OfficeDevPnP.Core.Pages
                 case "0ef418ba-5d19-4ade-9db0-b339873291d0": return DefaultClientSideWebParts.NewsFeed;
                 case "a5df8fdf-b508-4b66-98a6-d83bc2597f63": return DefaultClientSideWebParts.NewsReel;
                 // Seems like we've been having 2 guids to identify this web part...
-                case "8c88f208-6c77-4bdb-86a0-0c47b4316588": return DefaultClientSideWebParts.NewsReel;
+                // Now that _api/web/GetClientSideWebParts returns both guids / controls we can distinguish News v NewsReel
+                case "8c88f208-6c77-4bdb-86a0-0c47b4316588": return DefaultClientSideWebParts.News;
 #if !ONPREMISES
                 case "58fcd18b-e1af-4b0a-b23b-422c2c52d5a2": return DefaultClientSideWebParts.PowerBIReportEmbed;
 #endif
