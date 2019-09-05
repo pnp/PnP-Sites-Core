@@ -29,6 +29,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: use JsonConvert.ToString to handle special char in Title and Description #2372 [czullu]
 - Modified TeamNoGroup provisioning to use the new SPSiteManager API #2375 [gautamdsheth]
 - Fix: Modern page API now supports the two versions of News (older NewsreelWebPart vs newer NewsWebPart) #2389 [bogeorge]
+- Fix: Minor bugfixes for Channels and Tabs #2340 [PBLPointwork]
+- Fix: Additional null checks and content rating fix while creating team #2296 [gautamdsheth]
 
 ### Deprecated
 
