@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.9.1905.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.13.1909.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-SRCHCEN0template">
     <pnp:ProvisioningTemplate ID="SRCHCEN0template" Version="1" BaseSiteTemplate="SRCHCEN#0" Scope="RootSite">
       <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="Pages/default.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
@@ -1460,33 +1460,6 @@
             <pnp:FieldRef ID="3b63724f-3418-461f-868b-7706f69b029c" Name="_dlc_DocIdUrl" UpdateChildren="false" />
             <pnp:FieldRef ID="c010d384-479c-494f-968c-c413dbe3de29" Name="_dlc_DocIdPersistId" Hidden="true" UpdateChildren="false" />
           </pnp:FieldRefs>
-        </pnp:ContentType>
-        <pnp:ContentType ID="0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE8110003D357F861E29844953D5CAA1D4D8A3B" Name="Html Page Layout" Description="Build a SharePoint page layout - a template for authored page data within a master page - using only HTML.   SharePoint will allow you to embed common components and will create and update a functional page layout automatically." Group="Publishing Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
-          <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="false" />
-            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="false" />
-            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="9da97a8a-1da5-4a77-98d3-4bc10456e700" Name="Comments" UpdateChildren="false" />
-            <pnp:FieldRef ID="aea1a4dd-0f19-417d-8721-95a1d28762ab" Name="PublishingContact" UpdateChildren="false" />
-            <pnp:FieldRef ID="188ce56c-61e0-4d2a-9d3e-7561390668f7" Name="PublishingPreviewImage" UpdateChildren="false" />
-            <pnp:FieldRef ID="7581e709-5d87-42e7-9fe6-698ef5e86dd3" Name="PublishingHidden" UpdateChildren="false" />
-            <pnp:FieldRef ID="75bed596-0661-4edd-9724-1d607ab8d3b5" Name="_PublishingMigratedGuid" UpdateChildren="false" />
-            <pnp:FieldRef ID="b510aac1-bba3-4652-ab70-2d756c29540f" Name="PublishingAssociatedContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="d211d750-4fe6-4d92-90e8-eb16dff196c8" Name="PublishingAssociatedVariations" UpdateChildren="false" />
-            <pnp:FieldRef ID="e5bef06d-165e-40fb-8d47-923d0f94fab7" Name="HtmlDesignFromMaster" UpdateChildren="false" />
-            <pnp:FieldRef ID="2b67bcd7-14d4-4c13-85dd-605eb8109b5e" Name="HtmlDesignAssociated" UpdateChildren="false" />
-            <pnp:FieldRef ID="8bf5c77a-8a02-47a1-b361-9bf3da831b56" Name="HtmlDesignStatusAndPreview" UpdateChildren="false" />
-            <pnp:FieldRef ID="b98612e2-3bda-4485-a510-2cfc4cbb99c8" Name="HtmlDesignPreviewUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="ae3e2a36-125d-45d3-9051-744b513536a6" Name="_dlc_DocId" UpdateChildren="false" />
-            <pnp:FieldRef ID="3b63724f-3418-461f-868b-7706f69b029c" Name="_dlc_DocIdUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="c010d384-479c-494f-968c-c413dbe3de29" Name="_dlc_DocIdPersistId" Hidden="true" UpdateChildren="false" />
-          </pnp:FieldRefs>
-          <pnp:DocumentTemplate TargetName="/_layouts/15/CreateNewHtml.aspx?Mode=PL" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101002039C03B61C64EC4A04F5361F3851066" Name="Display Template" Description="Base Content Type containing common Display Template columns. Use one of Control, Group, Item or Filter Display Template content types to create a display type. " Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
