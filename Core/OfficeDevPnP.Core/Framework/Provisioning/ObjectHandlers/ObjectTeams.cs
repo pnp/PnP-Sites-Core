@@ -813,7 +813,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private static string CreateTeamChannelMessage(PnPMonitoredScope scope, TokenParser parser, TeamChannelMessage message, string teamId, string channelId, string accessToken)
         {
             var messageString = parser.ParseString(message.Message);
-            var messageJson = JToken.Parse($"{{ \"body\": {{ \"content\": \"{messageString}\" }} }}");
+            var messageJson = messageString.Contains("\"body\":")
+                ? JToken.Parse(messageString)
+                : JToken.Parse($"{{ \"body\": {{ \"content\": \"{messageString}\" }} }}");
 
             var messageId = GraphHelper.CreateOrUpdateGraphObject(scope,
                 HttpMethodVerb.POST,
