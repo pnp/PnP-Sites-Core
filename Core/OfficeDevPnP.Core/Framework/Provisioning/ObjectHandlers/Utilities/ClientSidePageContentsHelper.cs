@@ -397,7 +397,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         {
             // grab all the guids in the already tokenized json and check try to get them as a file
             string guidPattern = "\"[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}\"";
-            Regex regexClientIds = new Regex(guidPattern);
+            Regex regexClientIds = new Regex(guidPattern, RegexOptions.Compiled);
             if (regexClientIds.IsMatch(jsonControlData))
             {
                 foreach (Match guidMatch in regexClientIds.Matches(jsonControlData))
@@ -411,7 +411,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             }
             // grab potentially encoded guids in the already tokenized json and check try to get them as a file
             guidPattern = "=[a-fA-F0-9]{8}(?:%2D|-)([a-fA-F0-9]{4}(?:%2D|-)){3}[a-fA-F0-9]{12}";
-            regexClientIds = new Regex(guidPattern);
+            regexClientIds = new Regex(guidPattern, RegexOptions.Compiled);
             if (regexClientIds.IsMatch(jsonControlData))
             {
                 foreach (Match guidMatch in regexClientIds.Matches(jsonControlData))
@@ -483,7 +483,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         {
             // match urls to SiteAssets library
             string siteAssetUrlsPattern = @".*""(.*?/SiteAssets/SitePages/.+?)"".*";
-            Regex regexSiteAssetUrls = new Regex(siteAssetUrlsPattern);
+            Regex regexSiteAssetUrls = new Regex(siteAssetUrlsPattern,RegexOptions.Compiled);
             if (regexSiteAssetUrls.IsMatch(untokenizedJsonControlData))
             {
                 foreach (Match siteAssetUrlMatch in regexSiteAssetUrls.Matches(untokenizedJsonControlData))
