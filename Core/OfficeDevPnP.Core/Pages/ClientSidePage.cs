@@ -1096,6 +1096,8 @@ namespace OfficeDevPnP.Core.Pages
                 case DefaultClientSideWebParts.MarkDown: return "1ef5ed11-ce7b-44be-bc5e-4abd55101d16";
                 case DefaultClientSideWebParts.Planner: return "39c4c1c2-63fa-41be-8cc2-f6c0b49b253d";
                 case DefaultClientSideWebParts.Sites: return "7cba020c-5ccb-42e8-b6fc-75b3149aba7b";
+                case DefaultClientSideWebParts.CallToAction: return "df8e44e7-edd5-46d5-90da-aca1539313b8";
+                case DefaultClientSideWebParts.Button: return "0f087d7f-520e-42b7-89c0-496aaf979d58";
 #endif
                 default: return "";
             }
@@ -1160,6 +1162,8 @@ namespace OfficeDevPnP.Core.Pages
                 case "1ef5ed11-ce7b-44be-bc5e-4abd55101d16": return DefaultClientSideWebParts.MarkDown;
                 case "39c4c1c2-63fa-41be-8cc2-f6c0b49b253d": return DefaultClientSideWebParts.Planner;
                 case "7cba020c-5ccb-42e8-b6fc-75b3149aba7b": return DefaultClientSideWebParts.Sites;
+                case "df8e44e7-edd5-46d5-90da-aca1539313b8": return DefaultClientSideWebParts.CallToAction;
+                case "0f087d7f-520e-42b7-89c0-496aaf979d58": return DefaultClientSideWebParts.Button;
 #endif
                 default: return DefaultClientSideWebParts.ThirdParty;
             }

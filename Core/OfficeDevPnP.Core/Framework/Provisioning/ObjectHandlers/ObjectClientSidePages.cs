@@ -352,6 +352,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 case WebPartType.BingMap:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.BingMap);
                                                     break;
+                                                case WebPartType.Button:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Button);
+                                                    break;
+                                                case WebPartType.CallToAction:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.CallToAction);
+                                                    break;
                                                 case WebPartType.ContentEmbed:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.ContentEmbed);
                                                     break;
@@ -405,6 +411,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                     break;
                                                 case WebPartType.SiteActivity:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.SiteActivity);
+                                                    break;
+                                                case WebPartType.Sites:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Sites);
                                                     break;
                                                 case WebPartType.VideoEmbed:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.VideoEmbed);
