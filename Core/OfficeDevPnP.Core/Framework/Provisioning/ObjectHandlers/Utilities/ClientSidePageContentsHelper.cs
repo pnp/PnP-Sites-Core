@@ -98,6 +98,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     string guidPattern = "\"[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}\"";
                     Regex regexGuidPattern = new Regex(guidPattern, RegexOptions.Compiled);
 
+                    string guidPatternEncoded = "=[a-fA-F0-9]{8}(?:%2D|-)([a-fA-F0-9]{4}(?:%2D|-)){3}[a-fA-F0-9]{12}";
+                    Regex regexGuidPatternEncoded = new Regex(guidPatternEncoded, RegexOptions.Compiled);
+
                     string siteAssetUrlsPattern = @".*""(.*?/SiteAssets/SitePages/.+?)"".*";
                     Regex regexSiteAssetUrls = new Regex(siteAssetUrlsPattern, RegexOptions.Compiled);
 
@@ -295,7 +298,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         Dictionary<string, string> exportedPages = new Dictionary<string, string>();
 
                                         CollectSiteAssetImageFiles(regexSiteAssetUrls,web, untokenizedJsonControlData, fileGuids);
-                                        CollectImageFilesFromGenericGuids(regexGuidPattern,controlInstance.JsonControlData, fileGuids);
+                                        CollectImageFilesFromGenericGuids(regexGuidPattern, regexGuidPatternEncoded,controlInstance.JsonControlData, fileGuids);
 
                                         // Iterate over the found guids to see if they're exportable files
                                         foreach (var uniqueId in fileGuids)
@@ -399,14 +402,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         }
 
         #region Helper methods
-        private static void CollectImageFilesFromGenericGuids(Regex regexClientIds, string jsonControlData, List<Guid> fileGuids)
+        private static void CollectImageFilesFromGenericGuids(Regex regexGuidPattern, Regex regexGuidPatternEncoded, string jsonControlData, List<Guid> fileGuids)
         {
             // grab all the guids in the already tokenized json and check try to get them as a file
             //string guidPattern = "\"[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}\"";
             //Regex regexClientIds = new Regex(guidPattern, RegexOptions.Compiled);
-            if (regexClientIds.IsMatch(jsonControlData))
+            if (regexGuidPattern.IsMatch(jsonControlData))
             {
-                foreach (Match guidMatch in regexClientIds.Matches(jsonControlData))
+                foreach (Match guidMatch in regexGuidPattern.Matches(jsonControlData))
                 {
                     Guid uniqueId;
                     if (Guid.TryParse(guidMatch.Value.Trim("\"".ToCharArray()), out uniqueId))
@@ -415,12 +418,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                 }
             }
-            // grab potentially encoded guids in the already tokenized json and check try to get them as a file
-            guidPattern = "=[a-fA-F0-9]{8}(?:%2D|-)([a-fA-F0-9]{4}(?:%2D|-)){3}[a-fA-F0-9]{12}";
-            regexClientIds = new Regex(guidPattern, RegexOptions.Compiled);
-            if (regexClientIds.IsMatch(jsonControlData))
+            //// grab potentially encoded guids in the already tokenized json and check try to get them as a file
+            //guidPattern = "=[a-fA-F0-9]{8}(?:%2D|-)([a-fA-F0-9]{4}(?:%2D|-)){3}[a-fA-F0-9]{12}";
+            //regexClientIds = new Regex(guidPattern, RegexOptions.Compiled);
+            if (regexGuidPatternEncoded.IsMatch(jsonControlData))
             {
-                foreach (Match guidMatch in regexClientIds.Matches(jsonControlData))
+                foreach (Match guidMatch in regexGuidPatternEncoded.Matches(jsonControlData))
                 {
                     Guid uniqueId;
                     if (Guid.TryParse(guidMatch.Value.TrimStart("=".ToCharArray()), out uniqueId))
