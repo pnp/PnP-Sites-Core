@@ -593,7 +593,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 termsToReturn.Add(modelTerm);
 
-                if (!string.IsNullOrEmpty(customSortOrder))
+                if (!string.IsNullOrEmpty(customSortOrder) && !customSortOrder.Equals("False", StringComparison.OrdinalIgnoreCase))
                 {
                     var sortOrder = customSortOrder.Split(new[] { ':' }).ToList();
 
