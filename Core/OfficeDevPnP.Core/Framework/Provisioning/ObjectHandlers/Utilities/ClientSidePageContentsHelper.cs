@@ -168,6 +168,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         case Pages.DefaultClientSideWebParts.BingMap:
                                             controlInstance.Type = WebPartType.BingMap;
                                             break;
+                                        case Pages.DefaultClientSideWebParts.Button:
+                                            controlInstance.Type = WebPartType.Button;
+                                            break;
+                                        case Pages.DefaultClientSideWebParts.CallToAction:
+                                            controlInstance.Type = WebPartType.CallToAction;
+                                            break;
                                         case Pages.DefaultClientSideWebParts.ContentEmbed:
                                             controlInstance.Type = WebPartType.ContentEmbed;
                                             break;
@@ -200,6 +206,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             break;
                                         case Pages.DefaultClientSideWebParts.SiteActivity:
                                             controlInstance.Type = WebPartType.SiteActivity;
+                                            break;
+                                        case Pages.DefaultClientSideWebParts.Sites:
+                                            controlInstance.Type = WebPartType.Sites;
                                             break;
                                         case Pages.DefaultClientSideWebParts.VideoEmbed:
                                             controlInstance.Type = WebPartType.VideoEmbed;

@@ -174,7 +174,15 @@
         /// <summary>
         /// Sites web part
         /// </summary>
-        Sites
+        Sites,
+        /// <summary>
+        /// Call to Action web part
+        /// </summary>
+        CallToAction,
+        /// <summary>
+        /// Button web part
+        /// </summary>
+        Button
 #endif
     }
 #endif
