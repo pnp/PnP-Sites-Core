@@ -84,6 +84,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                     else
                     {
                         // Try to access the AppCatalog with the current user
+                       
                         try
                         {
                             using (var appCatalogContext = web.Context.Clone(appCatalogUri))
@@ -100,6 +101,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                                 if (!userEffectivePermissions.Value.Has(PermissionKind.EditListItems))
                                 {
                                     throw new SecurityException("Invalid user's permissions for the AppCatalog");
+                                }
+
+                                // we seem to have access, but is it done fully provisioning?
+                                if(appCatalogContext.Web.PropertyBagContainsKey("allusersofthistenantgrantedaccess"))
+                                {
+                                    var provisioningTime = appCatalogContext.Web.GetPropertyBagValueDateTime("allusersofthistenantgrantedaccess", DateTime.Now);
+                                    if(DateTime.Now.Subtract(provisioningTime.Value).Hours < 2)
+                                    {
+                                        result.CanProvision = false;
+                                        result.Issues.Add(new CanProvisionIssue()
+                                        {
+                                            Source = this.Name,
+                                            Tag = CanProvisionIssueTags.APP_CATALOG_NOT_YEY_FULLY_PROVISIONED,
+                                            Message = CanProvisionIssuesMessages.App_Catalog_Not_Yet_Fully_Provisioned,
+                                            ExceptionMessage = null, // Here we don't have any specific exception
+                                            ExceptionStackTrace = null, // Here we don't have any specific exception
+                                        });
+                                    }
+                                       
                                 }
                             }
                         }

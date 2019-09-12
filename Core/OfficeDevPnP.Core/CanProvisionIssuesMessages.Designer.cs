@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class CanProvisionIssuesMessages {
@@ -61,7 +61,16 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to In order to provision the template you need to have an App Catalog in your tenant. Please, create one (for instructions you can read this document: https://go.microsoft.com/fwlink/?linkid=2087251), wait up to 30 minutes, and try again..
+        ///   Looks up a localized string similar to This template requires a fully provisioned App Catalog. The App Catalog on your tenant has been created within the last 2 hours. Please wait a bit longer to provision the template..
+        /// </summary>
+        internal static string App_Catalog_Not_Yet_Fully_Provisioned {
+            get {
+                return ResourceManager.GetString("App_Catalog_Not_Yet_Fully_Provisioned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In order to provision the template you need to have an App Catalog in your tenant. Please, create one (for instructions you can read this document: https://go.microsoft.com/fwlink/?linkid=2087251), wait up to 2 hours, and try again..
         /// </summary>
         internal static string Missing_App_Catalog {
             get {
