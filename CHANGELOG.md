@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Only load tenant CDN settings whenever there are public/private CDN settings defined in the template
+
 ## [3.13.1909.0 - September 2019 release]
 
 ### Added
