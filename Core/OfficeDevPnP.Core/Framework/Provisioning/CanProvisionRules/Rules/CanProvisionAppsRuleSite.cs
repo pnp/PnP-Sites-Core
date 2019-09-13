@@ -106,8 +106,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules.Rules
                                 // we seem to have access, but is it done fully provisioning?
                                 if(appCatalogContext.Web.PropertyBagContainsKey("allusersofthistenantgrantedaccess"))
                                 {
-                                    var provisioningTime = appCatalogContext.Web.GetPropertyBagValueDateTime("allusersofthistenantgrantedaccess", DateTime.Now);
-                                    if(DateTime.Now.Subtract(provisioningTime.Value).Hours < 2)
+                                    var provisioningTime = appCatalogContext.Web.GetPropertyBagValueDateTime("allusersofthistenantgrantedaccess", DateTime.UtcNow);
+                                    if(DateTime.UtcNow.Subtract(provisioningTime.Value).Hours < 2)
                                     {
                                         result.CanProvision = false;
                                         result.Issues.Add(new CanProvisionIssue()
