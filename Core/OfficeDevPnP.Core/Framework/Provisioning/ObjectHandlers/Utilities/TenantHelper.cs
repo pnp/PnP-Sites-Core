@@ -114,7 +114,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 if (!exists)
                                 {
                                     messagesDelegate?.Invoke($"Processing solution {app.Src}", ProvisioningMessageType.Progress);
-                                    appMetadata = manager.Add(appBytes, appFilename, app.Overwrite, timeoutSeconds: 300);
+                                    appMetadata = manager.Add(appBytes, appFilename, app.Overwrite, timeoutSeconds: 500);
                                 }
                                 else
                                 {
