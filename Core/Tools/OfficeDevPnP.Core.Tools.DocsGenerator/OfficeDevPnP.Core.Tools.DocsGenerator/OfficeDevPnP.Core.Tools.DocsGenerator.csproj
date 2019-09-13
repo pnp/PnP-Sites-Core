@@ -105,6 +105,10 @@
       <Link>ProvisioningSchema-2019-03.xsd</Link>
       <SubType>Designer</SubType>
     </None>
+    <None Include="..\..\..\OfficeDevPnP.Core\Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.xsd">
+      <Link>ProvisioningSchema-2019-09.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
     <None Include="..\..\..\ProvisioningSchema-2015-05.md">
       <Link>ProvisioningSchema-2015-05.md</Link>
     </None>
