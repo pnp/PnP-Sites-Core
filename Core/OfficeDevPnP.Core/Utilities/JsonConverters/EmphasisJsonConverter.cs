@@ -40,7 +40,7 @@ namespace OfficeDevPnP.Core.Utilities.JsonConverters
             if (value!=null)
             {
                 int zoneEmphasis = 0;
-                if (int.TryParse(value.ToString(), out zoneEmphasis));
+                int.TryParse(value.ToString(), out zoneEmphasis);
                 writer.WriteValue(zoneEmphasis);
             }
         }
