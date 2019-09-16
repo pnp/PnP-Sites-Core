@@ -683,6 +683,9 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUpdateValue.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.cs">
+      <DependentUpon>ProvisioningSchema-2019-09.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Utilities\Graph\GraphHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ListItemUtilities.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ConnectorFileHelper.cs" />
@@ -1309,6 +1312,9 @@
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <None Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />
     <None Include="packages.config">
       <SubType>Designer</SubType>

@@ -64,11 +64,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         Layout = pageToExtract.LayoutType.ToString(),
                         EnableComments = !pageToExtract.CommentsDisabled,
                         Title = pageToExtract.PageTitle,
-                        ContentTypeID = !pageContentTypeId.Equals(BuiltInContentTypeId.ModernArticlePage, StringComparison.InvariantCultureIgnoreCase) ? pageContentTypeId : null,                        
+                        ContentTypeID = !pageContentTypeId.Equals(BuiltInContentTypeId.ModernArticlePage, StringComparison.InvariantCultureIgnoreCase) ? pageContentTypeId : null,
                     };
 
 
-                    if(pageToExtract.PageHeader != null)
+                    if (pageToExtract.PageHeader != null)
                     {
                         var extractedHeader = new ClientSidePageHeader()
                         {
@@ -95,13 +95,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         }
                     }
 
+                    // define reusable RegEx pre-compiled objects
                     string guidPattern = "\"[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}\"";
                     Regex regexGuidPattern = new Regex(guidPattern, RegexOptions.Compiled);
 
                     string guidPatternEncoded = "=[a-fA-F0-9]{8}(?:%2D|-)([a-fA-F0-9]{4}(?:%2D|-)){3}[a-fA-F0-9]{12}";
                     Regex regexGuidPatternEncoded = new Regex(guidPatternEncoded, RegexOptions.Compiled);
 
-                    string siteAssetUrlsPattern = @".*""(.*?/SiteAssets/SitePages/.+?)"".*";
+                    string siteAssetUrlsPattern = "(?:\")(?<AssetUrl>[\\w|\\.|\\/|:|-]*\\/SiteAssets\\/SitePages\\/[\\w|\\.|\\/|:|-]*)(?:\")";
+                    // OLD RegEx with Catastrophic Backtracking: @".*""(.*?/SiteAssets/SitePages/.+?)"".*";
                     Regex regexSiteAssetUrls = new Regex(siteAssetUrlsPattern, RegexOptions.Compiled);
 
                     // Add the sections
@@ -306,8 +308,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         Dictionary<string, string> exportedFiles = new Dictionary<string, string>();
                                         Dictionary<string, string> exportedPages = new Dictionary<string, string>();
 
-                                        CollectSiteAssetImageFiles(regexSiteAssetUrls,web, untokenizedJsonControlData, fileGuids);
-                                        CollectImageFilesFromGenericGuids(regexGuidPattern, regexGuidPatternEncoded,controlInstance.JsonControlData, fileGuids);
+                                        CollectSiteAssetImageFiles(regexSiteAssetUrls, web, untokenizedJsonControlData, fileGuids);
+                                        CollectImageFilesFromGenericGuids(regexGuidPattern, regexGuidPatternEncoded, controlInstance.JsonControlData, fileGuids);
 
                                         // Iterate over the found guids to see if they're exportable files
                                         foreach (var uniqueId in fileGuids)
@@ -414,8 +416,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         private static void CollectImageFilesFromGenericGuids(Regex regexGuidPattern, Regex regexGuidPatternEncoded, string jsonControlData, List<Guid> fileGuids)
         {
             // grab all the guids in the already tokenized json and check try to get them as a file
-            //string guidPattern = "\"[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}\"";
-            //Regex regexClientIds = new Regex(guidPattern, RegexOptions.Compiled);
             if (regexGuidPattern.IsMatch(jsonControlData))
             {
                 foreach (Match guidMatch in regexGuidPattern.Matches(jsonControlData))
@@ -427,9 +427,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                 }
             }
-            //// grab potentially encoded guids in the already tokenized json and check try to get them as a file
-            //guidPattern = "=[a-fA-F0-9]{8}(?:%2D|-)([a-fA-F0-9]{4}(?:%2D|-)){3}[a-fA-F0-9]{12}";
-            //regexClientIds = new Regex(guidPattern, RegexOptions.Compiled);
+            // grab potentially encoded guids in the already tokenized json and check try to get them as a file
             if (regexGuidPatternEncoded.IsMatch(jsonControlData))
             {
                 foreach (Match guidMatch in regexGuidPatternEncoded.Matches(jsonControlData))
@@ -499,9 +497,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
         private static void CollectSiteAssetImageFiles(Regex regexSiteAssetUrls, Web web, string untokenizedJsonControlData, List<Guid> fileGuids)
         {
-            //// match urls to SiteAssets library
-            //string siteAssetUrlsPattern = @".*""(.*?/SiteAssets/SitePages/.+?)"".*";
-            //Regex regexSiteAssetUrls = new Regex(siteAssetUrlsPattern,RegexOptions.Compiled);
+            // match urls to SiteAssets library
             if (regexSiteAssetUrls.IsMatch(untokenizedJsonControlData))
             {
                 foreach (Match siteAssetUrlMatch in regexSiteAssetUrls.Matches(untokenizedJsonControlData))
@@ -509,6 +505,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     var s = siteAssetUrlMatch.Groups[1]?.Value;
                     if (s != null)
                     {
+                        // Check if the URL is relative
+                        if (s.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            // and if not make it relative to the current root site, if it is from the current host
+                            var webUrl = web.EnsureProperty(w => w.Url);
+                            var hostUrl = webUrl.Substring(0, webUrl.IndexOf("/", 9));
+                            if (s.StartsWith(hostUrl))
+                            {
+                                s = s.Substring(hostUrl.Length);
+                            }
+                        }
+
                         var file = web.GetFileByServerRelativeUrl(s);
                         web.Context.Load(file, f => f.UniqueId);
                         web.Context.ExecuteQueryRetry();
@@ -591,14 +599,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             var site = (web.Context as ClientContext).Site;
             web.Context.Load(site, s => s.Id, s => s.GroupId);
             web.Context.Load(web, w => w.ServerRelativeUrl, w => w.Id, w => w.Url);
-            web.Context.Load(lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.Views.Include(v=>v.Id, v => v.Title)));
+            web.Context.Load(lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.Views.Include(v => v.Id, v => v.Title)));
             web.Context.ExecuteQueryRetry();
 
             // Tokenize list and list view id's as they can be used by client side web parts (like the list web part)
             foreach (var list in lists)
             {
                 json = Regex.Replace(json, list.Id.ToString(), $"{{listid:{System.Security.SecurityElement.Escape(list.Title)}}}", RegexOptions.IgnoreCase);
-                foreach(var view in list.Views)
+                foreach (var view in list.Views)
                 {
                     json = Regex.Replace(json, view.Id.ToString(), $"{{viewid:{System.Security.SecurityElement.Escape(list.Title)},{System.Security.SecurityElement.Escape(view.Title)}}}", RegexOptions.IgnoreCase);
                 }
