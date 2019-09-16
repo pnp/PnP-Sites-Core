@@ -841,7 +841,7 @@ namespace OfficeDevPnP.Core.Pages
                     item[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
                     item[ClientSidePage.BannerImageUrl] = "/_layouts/15/images/sitepagethumbnail.png";
                 }
-                item.Update();
+                item.UpdateOverwriteVersion();
                 this.Context.Web.Context.Load(item);
             }
             else
@@ -859,7 +859,7 @@ namespace OfficeDevPnP.Core.Pages
                 item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.RepostPage;
                 item[ClientSidePage.CanvasField] = "";
                 item[ClientSidePage.PageLayoutContentField] = "";
-                item.Update();
+                item.UpdateOverwriteVersion();
                 this.Context.Web.Context.Load(item);
                 this.Context.ExecuteQueryRetry();
 
@@ -878,7 +878,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
 
                 // The page must first be saved, otherwise the page contents gets erased
-                item.Update();
+                item.UpdateOverwriteVersion();
                 this.Context.Web.Context.Load(item);
             }
 
@@ -922,7 +922,7 @@ namespace OfficeDevPnP.Core.Pages
 #endif
             }
 
-            item.Update();
+            item.UpdateOverwriteVersion();
             this.Context.Web.Context.Load(item);
             this.Context.ExecuteQueryRetry();
 
@@ -1014,7 +1014,7 @@ namespace OfficeDevPnP.Core.Pages
 
             if (isDirty)
             {
-                item.Update();
+                item.UpdateOverwriteVersion();
                 this.Context.Web.Context.Load(item);
                 this.Context.ExecuteQueryRetry();
             }
