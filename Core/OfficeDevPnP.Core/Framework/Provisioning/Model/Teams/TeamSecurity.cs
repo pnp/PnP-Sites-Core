@@ -34,6 +34,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// </summary>
         public Boolean ClearExistingMembers { get; set; }
 
+        /// <summary>
+        /// Defines whether guests are allowed in the Team
+        /// </summary>
+        public Boolean AllowToAddGuests { get; set; }
+
         #endregion
 
         #region Constructors
@@ -57,9 +62,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}",
+            return (String.Format("{0}|{1}|{2}|",
                 Owners.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                Members.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                Members.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                AllowToAddGuests.GetHashCode()
             ).GetHashCode());
         }
 
@@ -78,7 +84,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         }
 
         /// <summary>
-        /// Compares TeamSecurity object based on Owners, and Members
+        /// Compares TeamSecurity object based on Owners, Members, and AllowToAddGuests
         /// </summary>
         /// <param name="other">TeamSecurity Class object</param>
         /// <returns>true if the TeamSecurity object is equal to the current object; otherwise, false.</returns>
@@ -90,10 +96,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
             }
 
             return (this.Owners.DeepEquals(other.Owners) &&
-                this.Members.DeepEquals(other.Members)
+                this.Members.DeepEquals(other.Members) &&
+                this.AllowToAddGuests == other.AllowToAddGuests
                 );
         }
 
         #endregion
     }
-    }
+}
