@@ -11,5 +11,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
     /// </summary>
     public partial class DriveFolder : DriveItemBase
     {
+        protected override bool EqualsInherited(DriveItemBase other)
+        {
+            if (!(other is DriveItem otherTyped))
+            {
+                return (false);
+            }
+
+            // At the moment we don't have anything to compare
+            return (true);
+        }
+
+        protected override int GetInheritedHashCode()
+        {
+            // At the moment we don't have an hashcode for this specialized type
+            return ((String.Empty).GetHashCode());
+        }
     }
 }

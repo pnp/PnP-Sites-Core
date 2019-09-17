@@ -138,9 +138,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 );
         }
 
-
         /// <summary>
-        /// Returns the HashCode of the members of any inherited type
+        /// Compares the HashCode of the members of any inherited type
         /// </summary>
         /// <returns></returns>
         protected abstract bool EqualsInherited(SiteCollection other);

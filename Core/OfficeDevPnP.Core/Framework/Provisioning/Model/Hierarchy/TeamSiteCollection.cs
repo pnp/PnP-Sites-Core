@@ -31,6 +31,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public string Classification { get; set; }
 
+        /// <summary>
+        /// Defines whether to create a Microsoft Team backing the modern Team Site
+        /// </summary>
+        public bool Teamify { get; set; }
+
+        /// <summary>
+        /// Defines whether to hide the create a Microsoft Team option in the UI of the Team Site
+        /// </summary>
+        public bool HideTeamify { get; set; }
+
         protected override bool EqualsInherited(SiteCollection other)
         {
             if (!(other is TeamSiteCollection otherTyped))
@@ -41,17 +51,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (this.Alias == otherTyped.Alias &&
                 this.DisplayName == otherTyped.DisplayName &&
                 this.IsPublic == otherTyped.IsPublic &&
-                this.Classification == otherTyped.Classification
+                this.Classification == otherTyped.Classification &&
+                this.Teamify == otherTyped.Teamify &&
+                this.HideTeamify == otherTyped.HideTeamify
                 );
         }
 
         protected override int GetInheritedHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|",
                 this.Alias.GetHashCode(),
                 this.DisplayName.GetHashCode(),
                 this.IsPublic.GetHashCode(),
-                this.Classification.GetHashCode()
+                this.Classification.GetHashCode(),
+                this.Teamify.GetHashCode(),
+                this.HideTeamify.GetHashCode()
             ).GetHashCode());
         }
     }

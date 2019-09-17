@@ -44,11 +44,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|",
+            return (String.Format("{0}|{1}|{2}|",
                 DriveFolders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                DriveFiles.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                DriveFiles.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),ù,
+                this.GetInheritedHashCode()
             ).GetHashCode());
         }
+
+        /// <summary>
+        /// Returns the HashCode of the members of any inherited type
+        /// </summary>
+        /// <returns></returns>
+        protected abstract int GetInheritedHashCode();
 
         /// <summary>
         /// Compares object with DriveItemBase class
@@ -78,9 +85,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
 
             return (
                 this.DriveFolders.DeepEquals(other.DriveFolders) &&
-                this.DriveFiles.DeepEquals(other.DriveFiles)
+                this.DriveFiles.DeepEquals(other.DriveFiles) &&
+                this.EqualsInherited(other)
                 );
         }
+
+        /// <summary>
+        /// Compares the members of any inherited type
+        /// </summary>
+        /// <returns></returns>
+        protected abstract bool EqualsInherited(DriveItemBase other);
 
         #endregion
     }
