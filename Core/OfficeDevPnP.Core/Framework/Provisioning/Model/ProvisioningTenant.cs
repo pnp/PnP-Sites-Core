@@ -22,6 +22,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private WebApiPermissionCollection _webApiPermissions;
         private ThemeCollection _themes;
         private Office365Groups.Office365GroupLifecyclePolicyCollection _office365GroupLifecyclePolicies;
+        private SharePoint.UserProfileCollection _SPUserProfiles;
 
         #endregion
 
@@ -225,7 +226,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public Office365Groups.Office365GroupsSettings Office365GroupsSettings { get; set; }
 
         /// <summary>
-        /// Gets or sets StorageEntities for the tenant
+        /// Gets or sets Office365GroupLifecyclePolicies for the tenant
         /// </summary>
         public Office365Groups.Office365GroupLifecyclePolicyCollection Office365GroupLifecyclePolicies
         {
@@ -251,6 +252,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
+        /// <summary>
+        /// Gets or sets SPUserProfiles for the tenant
+        /// </summary>
+        public SharePoint.UserProfileCollection SPUserProfiles
+        {
+            get
+            {
+                if (this._SPUserProfiles == null)
+                {
+                    this._SPUserProfiles = new SharePoint.UserProfileCollection(this.ParentTemplate);
+                }
+                return this._SPUserProfiles;
+            }
+            set
+            {
+                if (this._SPUserProfiles != null)
+                {
+                    this._SPUserProfiles.ParentTemplate = null;
+                }
+                this._SPUserProfiles = value;
+                if (this._SPUserProfiles != null)
+                {
+                    this._SPUserProfiles.ParentTemplate = this.ParentTemplate;
+                }
+            }
+        }
         #endregion
 
         #region Comparison code
@@ -260,7 +287,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|",
                 this.AppCatalog?.GetHashCode() ?? 0,
                 this.ContentDeliveryNetwork?.GetHashCode() ?? 0,
                 this.SiteDesigns.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
@@ -269,7 +296,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.WebApiPermissions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Themes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Office365GroupsSettings.GetHashCode(),
-                this.Office365GroupLifecyclePolicies.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.Office365GroupLifecyclePolicies.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.SPUserProfiles.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
@@ -289,7 +317,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         /// <summary>
         /// Compares ProvisioningTenant object based on AppCatalog, CDN, SiteDesigns, SiteScripts,
-        /// StorageEntities, WebApiPermissions, Themes, Office365GroupsSettings, and Office365GroupLifecyclePolicies
+        /// StorageEntities, WebApiPermissions, Themes, Office365GroupsSettings, Office365GroupLifecyclePolicies,
+        /// and SPUserProfiles
         /// </summary>
         /// <param name="other">ProvisioningTenant object</param>
         /// <returns>true if the ProvisioningTenant object is equal to the current object; otherwise, false.</returns>
@@ -308,7 +337,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.WebApiPermissions.DeepEquals(other.WebApiPermissions) &&
                 this.Themes.DeepEquals(other.Themes) &&
                 this.Office365GroupsSettings.Equals(other.Office365GroupsSettings) &&
-                this.Office365GroupLifecyclePolicies.DeepEquals(other.Office365GroupLifecyclePolicies)
+                this.Office365GroupLifecyclePolicies.DeepEquals(other.Office365GroupLifecyclePolicies) &&
+                this.SPUserProfiles.DeepEquals(other.SPUserProfiles)
                 );
         }
 

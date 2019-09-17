@@ -574,6 +574,8 @@
     <Compile Include="Framework\Provisioning\Model\ProvisioningSequenceCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateWebhook.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateWebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\UserProfile.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\UserProfileCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteFooter.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteFooterLink.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteFooterLinkCollection.cs" />
