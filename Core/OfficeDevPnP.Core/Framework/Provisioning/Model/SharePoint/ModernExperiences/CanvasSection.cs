@@ -42,8 +42,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// The emphasis color of the Canvas Section for a Client-side Page
         /// </summary>
-        public BackgroundEmphasis BackgroundEmphasis { get; set; }
+        public Emphasis BackgroundEmphasis { get; set; }
 
+        /// <summary>
+        /// The emphasis color of the Canvas Section for a Client-side Page
+        /// </summary>
+        public Emphasis VerticalSectionEmphasis { get; set; }
+        
         #endregion
 
         #region Constructors
@@ -66,11 +71,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
                 this.Controls.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 Order.GetHashCode(),
                 Type.GetHashCode(),
-                BackgroundEmphasis.GetHashCode()
+                BackgroundEmphasis.GetHashCode(),
+                VerticalSectionEmphasis.GetHashCode()
             ).GetHashCode());
         }
 
@@ -89,7 +95,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares CanvasSection object based on Controls, Order, Type, and BackgroundEmphasis
+        /// Compares CanvasSection object based on Controls, Order, Type, BackgroundEmphasis, and VerticalSectionEmphasis
         /// </summary>
         /// <param name="other">CanvasSection Class object</param>
         /// <returns>true if the CanvasSection object is equal to the current object; otherwise, false.</returns>
@@ -103,7 +109,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (this.Controls.DeepEquals(other.Controls) &&
                 this.Order == other.Order &&
                 this.Type == other.Type &&
-                this.BackgroundEmphasis == other.BackgroundEmphasis
+                this.BackgroundEmphasis == other.BackgroundEmphasis &&
+                this.VerticalSectionEmphasis == other.VerticalSectionEmphasis
                 );
         }
 
@@ -139,5 +146,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Two columns, left one is 1/3, right one 2/3
         /// </summary>
         TwoColumnRight,
+        /// <summary>
+        /// One column, and a vertical section
+        /// </summary>
+        OneColumnVerticalSection,
+        /// <summary>
+        /// Two columns of the same size, and a vertical section
+        /// </summary>
+        TwoColumnVerticalSection,
+        /// <summary>
+        /// Three columns of the same size, and a vertical section
+        /// </summary>
+        ThreeColumnVerticalSection,
+        /// <summary>
+        /// Two columns, left one is 2/3, right one 1/3, and a vertical section
+        /// </summary>
+        TwoColumnLeftVerticalSection,
+        /// <summary>
+        /// Two columns, left one is 1/3, right one 2/3, and a vertical section
+        /// </summary>
+        TwoColumnRightVerticalSection,
     }
 }

@@ -26,7 +26,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the Background Emphasis of the Header
         /// </summary>
-        public BackgroundEmphasis BackgroundEmphasis { get; set; }
+        public Emphasis BackgroundEmphasis { get; set; }
 
         #endregion
 
@@ -111,9 +111,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     }
 
     /// <summary>
-    /// Defines the Background Emphasis
+    /// Defines the Emphasis for a modern section
     /// </summary>
-    public enum BackgroundEmphasis
+    public enum Emphasis
     {
         /// <summary>
         /// Defines No emphasis for the Site Header.

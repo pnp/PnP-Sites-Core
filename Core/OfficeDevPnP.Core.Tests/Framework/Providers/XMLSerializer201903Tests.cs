@@ -171,7 +171,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             Assert.AreEqual(SiteHeaderLayout.Standard, template.Header.Layout);
             Assert.AreEqual(SiteHeaderMenuStyle.MegaMenu, template.Header.MenuStyle);
-            Assert.AreEqual(Core.Framework.Provisioning.Model.BackgroundEmphasis.Soft, template.Header.BackgroundEmphasis);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.Emphasis.Soft, template.Header.BackgroundEmphasis);
         }
 
         [TestMethod]
@@ -186,7 +186,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 {
                     MenuStyle = SiteHeaderMenuStyle.Cascading,
                     Layout = SiteHeaderLayout.Compact,
-                    BackgroundEmphasis = Core.Framework.Provisioning.Model.BackgroundEmphasis.Strong
+                    BackgroundEmphasis = Core.Framework.Provisioning.Model.Emphasis.Strong
                 }
             };
 
@@ -4262,7 +4262,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             // sections
             Assert.AreEqual(1, section.Order);
             Assert.AreEqual(Core.Framework.Provisioning.Model.CanvasSectionType.OneColumn, section.Type);
-            Assert.AreEqual(Core.Framework.Provisioning.Model.BackgroundEmphasis.Neutral, section.BackgroundEmphasis);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.Emphasis.Neutral, section.BackgroundEmphasis);
 
             Assert.AreEqual("...", section.Controls[0].CustomWebPartName);
             Assert.AreEqual(WebPartType.Image, section.Controls[0].Type);
@@ -4328,7 +4328,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     {
                         Order = 1,
                         Type = CanvasSectionType.OneColumn,
-                        BackgroundEmphasis = Core.Framework.Provisioning.Model.BackgroundEmphasis.Soft,
+                        BackgroundEmphasis = Core.Framework.Provisioning.Model.Emphasis.Soft,
                         Controls =
                         {
                             new Core.Framework.Provisioning.Model.CanvasControl
