@@ -22,7 +22,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private WebApiPermissionCollection _webApiPermissions;
         private ThemeCollection _themes;
         private Office365Groups.Office365GroupLifecyclePolicyCollection _office365GroupLifecyclePolicies;
-        private SharePoint.UserProfileCollection _SPUserProfiles;
+        private SPUPS.UserProfileCollection _SPUserProfiles;
 
         #endregion
 
@@ -255,13 +255,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets SPUserProfiles for the tenant
         /// </summary>
-        public SharePoint.UserProfileCollection SPUserProfiles
+        public SPUPS.UserProfileCollection SPUserProfiles
         {
             get
             {
                 if (this._SPUserProfiles == null)
                 {
-                    this._SPUserProfiles = new SharePoint.UserProfileCollection(this.ParentTemplate);
+                    this._SPUserProfiles = new SPUPS.UserProfileCollection(this.ParentTemplate);
                 }
                 return this._SPUserProfiles;
             }

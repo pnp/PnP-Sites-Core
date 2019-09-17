@@ -574,8 +574,8 @@
     <Compile Include="Framework\Provisioning\Model\ProvisioningSequenceCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateWebhook.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningTemplateWebhookCollection.cs" />
-    <Compile Include="Framework\Provisioning\Model\SharePoint\UserProfile.cs" />
-    <Compile Include="Framework\Provisioning\Model\SharePoint\UserProfileCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SPUPS\UserProfile.cs" />
+    <Compile Include="Framework\Provisioning\Model\SPUPS\UserProfileCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteFooter.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteFooterLink.cs" />
     <Compile Include="Framework\Provisioning\Model\SiteFooterLinkCollection.cs" />
@@ -652,6 +652,7 @@
     <Compile Include="Framework\Provisioning\Model\WebApiPermissionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Webhook.cs" />
     <Compile Include="Framework\Provisioning\Model\WebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SiteSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\FieldAndListProvisioningStepHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\NoScriptTemplateCleaner.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectApplicationLifecycleManagement.cs" />
