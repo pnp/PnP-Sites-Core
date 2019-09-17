@@ -530,7 +530,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (!string.IsNullOrEmpty(clientSidePage.ContentTypeID))
                     {
                         page.PageListItem[ContentTypeIdField] = clientSidePage.ContentTypeID;
-                        page.PageListItem.Update();
+                        page.PageListItem.UpdateOverwriteVersion();
+                        //page.PageListItem.Update();
                         web.Context.Load(page.PageListItem);
                         isDirty = true;
                     }
@@ -539,7 +540,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         // Choice field, currently there's only one value possible and that's Template
                         page.PageListItem[SPSitePageFlagsField] = ";#Template;#";
-                        page.PageListItem.Update();
+                        page.PageListItem.UpdateOverwriteVersion();
+                        //page.PageListItem.Update();
                         web.Context.Load(page.PageListItem);
                         isDirty = true;
                     }
