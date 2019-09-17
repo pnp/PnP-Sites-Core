@@ -594,6 +594,7 @@
     <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\CanvasSection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\CanvasSectionCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\ClientSidePageHeader.cs" />
+    <Compile Include="Framework\Provisioning\Model\Teams\TeamDiscoverySettings.cs" />
     <Compile Include="Framework\Provisioning\Model\TenantSettings\ContentDeliveryNetwork.cs" />
     <Compile Include="Framework\Provisioning\Model\TenantSettings\CdnOrigin.cs" />
     <Compile Include="Framework\Provisioning\Model\TenantSettings\CdnOriginCollection.cs" />
