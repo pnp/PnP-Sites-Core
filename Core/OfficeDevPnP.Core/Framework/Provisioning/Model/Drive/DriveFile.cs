@@ -57,7 +57,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
         /// Compares object with DriveFile class
         /// </summary>
         /// <param name="obj">Object that represents DriveFile</param>
-        /// <returns>Checks whether object is User class</returns>
+        /// <returns>Checks whether object is DriveFile class</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is DriveFile))

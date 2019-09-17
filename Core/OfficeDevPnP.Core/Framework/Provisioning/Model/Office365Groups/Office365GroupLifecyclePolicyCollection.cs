@@ -6,7 +6,18 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Office365Groups
 {
-    class Office365GroupLifecyclePolicyCollection
+    /// <summary>
+    /// Collection of Office365GroupLifecyclePolicy items
+    /// </summary>
+    public class Office365GroupLifecyclePolicyCollection : BaseProvisioningTemplateObjectCollection<Office365GroupLifecyclePolicy>
     {
+        /// <summary>
+        /// Constructor for Office365GroupLifecyclePolicyCollection class
+        /// </summary>
+        /// <param name="parentTemplate">Parent provisioning template</param>
+        public Office365GroupLifecyclePolicyCollection(ProvisioningTemplate parentTemplate) :
+            base(parentTemplate)
+        {
+        }
     }
 }

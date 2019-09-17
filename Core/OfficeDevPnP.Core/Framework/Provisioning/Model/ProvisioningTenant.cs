@@ -21,6 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private StorageEntityCollection _storageEntities;
         private WebApiPermissionCollection _webApiPermissions;
         private ThemeCollection _themes;
+        private Office365Groups.Office365GroupLifecyclePolicyCollection _office365GroupLifecyclePolicies;
 
         #endregion
 
@@ -223,6 +224,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         public Office365Groups.Office365GroupsSettings Office365GroupsSettings { get; set; }
 
+        /// <summary>
+        /// Gets or sets StorageEntities for the tenant
+        /// </summary>
+        public Office365Groups.Office365GroupLifecyclePolicyCollection Office365GroupLifecyclePolicies
+        {
+            get
+            {
+                if (this._office365GroupLifecyclePolicies == null)
+                {
+                    this._office365GroupLifecyclePolicies = new Office365Groups.Office365GroupLifecyclePolicyCollection(this.ParentTemplate);
+                }
+                return this._office365GroupLifecyclePolicies;
+            }
+            set
+            {
+                if (this._office365GroupLifecyclePolicies != null)
+                {
+                    this._office365GroupLifecyclePolicies.ParentTemplate = null;
+                }
+                this._office365GroupLifecyclePolicies = value;
+                if (this._office365GroupLifecyclePolicies != null)
+                {
+                    this._office365GroupLifecyclePolicies.ParentTemplate = this.ParentTemplate;
+                }
+            }
+        }
+
         #endregion
 
         #region Comparison code
@@ -232,7 +260,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|",
                 this.AppCatalog?.GetHashCode() ?? 0,
                 this.ContentDeliveryNetwork?.GetHashCode() ?? 0,
                 this.SiteDesigns.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
@@ -240,7 +268,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.StorageEntities.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.WebApiPermissions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Themes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.Office365GroupsSettings.GetHashCode()
+                this.Office365GroupsSettings.GetHashCode(),
+                this.Office365GroupLifecyclePolicies.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
@@ -260,7 +289,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         /// <summary>
         /// Compares ProvisioningTenant object based on AppCatalog, CDN, SiteDesigns, SiteScripts,
-        /// StorageEntities, WebApiPermissions, Themes, and Office365GroupsSettings
+        /// StorageEntities, WebApiPermissions, Themes, Office365GroupsSettings, and Office365GroupLifecyclePolicies
         /// </summary>
         /// <param name="other">ProvisioningTenant object</param>
         /// <returns>true if the ProvisioningTenant object is equal to the current object; otherwise, false.</returns>
@@ -278,7 +307,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.StorageEntities.DeepEquals(other.StorageEntities) &&
                 this.WebApiPermissions.DeepEquals(other.WebApiPermissions) &&
                 this.Themes.DeepEquals(other.Themes) &&
-                this.Office365GroupsSettings.Equals(other.Office365GroupsSettings)
+                this.Office365GroupsSettings.Equals(other.Office365GroupsSettings) &&
+                this.Office365GroupLifecyclePolicies.DeepEquals(other.Office365GroupLifecyclePolicies)
                 );
         }
 

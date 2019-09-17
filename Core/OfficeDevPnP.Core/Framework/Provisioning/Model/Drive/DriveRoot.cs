@@ -53,7 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
         /// Compares object with DriveRoot class
         /// </summary>
         /// <param name="obj">Object that represents DriveRoot</param>
-        /// <returns>Checks whether object is User class</returns>
+        /// <returns>Checks whether object is DriveRoot class</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is DriveRoot))
