@@ -46,7 +46,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
         {
             return (String.Format("{0}|{1}|{2}|",
                 DriveFolders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                DriveFiles.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),ù,
+                DriveFiles.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.GetInheritedHashCode()
             ).GetHashCode());
         }

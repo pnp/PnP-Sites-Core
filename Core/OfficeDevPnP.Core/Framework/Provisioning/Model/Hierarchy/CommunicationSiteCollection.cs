@@ -63,11 +63,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         protected override int GetInheritedHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|",
-                this.Url.GetHashCode(),
-                this.Owner.GetHashCode(),
-                this.SiteDesign.GetHashCode(),
+                this.Url?.GetHashCode() ?? 0,
+                this.Owner?.GetHashCode() ?? 0,
+                this.SiteDesign?.GetHashCode() ?? 0,
                 this.AllowFileSharingForGuestUsers.GetHashCode(),
-                this.Classification.GetHashCode(),
+                this.Classification?.GetHashCode() ?? 0,
                 this.Language.GetHashCode()
             ).GetHashCode());
         }

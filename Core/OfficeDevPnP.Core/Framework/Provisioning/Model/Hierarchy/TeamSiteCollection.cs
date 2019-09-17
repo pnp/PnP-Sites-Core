@@ -41,6 +41,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public bool HideTeamify { get; set; }
 
+        /// <summary>
+        /// Allows to associate the Office 365 Group associated with the Team Site to a Group Lifecycle Policy
+        /// </summary>
+        public string GroupLifecyclePolicyId { get; set; }
+
         protected override bool EqualsInherited(SiteCollection other)
         {
             if (!(other is TeamSiteCollection otherTyped))
@@ -53,19 +58,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.IsPublic == otherTyped.IsPublic &&
                 this.Classification == otherTyped.Classification &&
                 this.Teamify == otherTyped.Teamify &&
-                this.HideTeamify == otherTyped.HideTeamify
+                this.HideTeamify == otherTyped.HideTeamify &&
+                this.GroupLifecyclePolicyId == otherTyped.GroupLifecyclePolicyId
                 );
         }
 
         protected override int GetInheritedHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|",
-                this.Alias.GetHashCode(),
-                this.DisplayName.GetHashCode(),
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
+                this.Alias?.GetHashCode() ?? 0,
+                this.DisplayName?.GetHashCode() ?? 0,
                 this.IsPublic.GetHashCode(),
-                this.Classification.GetHashCode(),
+                this.Classification?.GetHashCode() ?? 0,
                 this.Teamify.GetHashCode(),
-                this.HideTeamify.GetHashCode()
+                this.HideTeamify.GetHashCode(),
+                this.GroupLifecyclePolicyId?.GetHashCode() ?? 0
             ).GetHashCode());
         }
     }

@@ -51,8 +51,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         protected override int GetInheritedHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|",
-                this.Url.GetHashCode(),
-                this.Owner.GetHashCode(),
+                this.Url?.GetHashCode() ?? 0,
+                this.Owner?.GetHashCode() ?? 0,
                 this.Language.GetHashCode(),
                 this.TimeZoneId.GetHashCode()
             ).GetHashCode());

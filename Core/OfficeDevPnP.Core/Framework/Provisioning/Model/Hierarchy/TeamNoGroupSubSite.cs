@@ -42,7 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         protected override int GetInheritedHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
-                this.Url.GetHashCode(),
+                this.Url?.GetHashCode() ?? 0,
                 this.Language.GetHashCode(),
                 this.TimeZoneId.GetHashCode()
             ).GetHashCode());
