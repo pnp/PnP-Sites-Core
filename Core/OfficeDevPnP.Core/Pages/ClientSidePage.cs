@@ -815,6 +815,7 @@ namespace OfficeDevPnP.Core.Pages
                 serverRelativePageName = $"{this.sitePagesServerRelativeUrl}/{this.pageName}";
             }
 
+            bool updatingExistingPage = false;
             if (this.spPagesLibrary != null && (pageFile == null || !pageFile.Exists))
             {
                 Folder folderHostingThePage = null;
@@ -846,6 +847,7 @@ namespace OfficeDevPnP.Core.Pages
             }
             else
             {
+                updatingExistingPage = true;
                 item = pageFile.ListItemAllFields;
                 if (!string.IsNullOrWhiteSpace(this.pageTitle))
                 {
@@ -859,7 +861,15 @@ namespace OfficeDevPnP.Core.Pages
                 item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.RepostPage;
                 item[ClientSidePage.CanvasField] = "";
                 item[ClientSidePage.PageLayoutContentField] = "";
-                item.UpdateOverwriteVersion();
+
+                if (updatingExistingPage)
+                {
+                    item.Update();
+                }
+                else
+                {
+                    item.UpdateOverwriteVersion();
+                }
                 this.Context.Web.Context.Load(item);
                 this.Context.ExecuteQueryRetry();
 
@@ -878,7 +888,14 @@ namespace OfficeDevPnP.Core.Pages
                 }
 
                 // The page must first be saved, otherwise the page contents gets erased
-                item.UpdateOverwriteVersion();
+                if (updatingExistingPage)
+                {
+                    item.Update();
+                }
+                else
+                {
+                    item.UpdateOverwriteVersion();
+                }
                 this.Context.Web.Context.Load(item);
             }
 
