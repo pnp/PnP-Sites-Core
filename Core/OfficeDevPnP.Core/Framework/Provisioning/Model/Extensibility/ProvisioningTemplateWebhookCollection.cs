@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// The Webhooks for the Provisioning Template
     /// </summary>
-    public class ProvisioningTemplateWebhookCollection : BaseProvisioningTemplateObjectCollection<ProvisioningTemplateWebhook>
+    public partial class ProvisioningTemplateWebhookCollection : BaseProvisioningTemplateObjectCollection<ProvisioningTemplateWebhook>
     {
         public ProvisioningTemplateWebhookCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {

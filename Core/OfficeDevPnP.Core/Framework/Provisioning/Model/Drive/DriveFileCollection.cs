@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
     /// <summary>
     /// Collection of DriveFile items
     /// </summary>
-    public class DriveFileCollection : BaseProvisioningTemplateObjectCollection<DriveFile>
+    public partial class DriveFileCollection : BaseProvisioningTemplateObjectCollection<DriveFile>
     {
         /// <summary>
         /// Constructor for DriveFileCollection class

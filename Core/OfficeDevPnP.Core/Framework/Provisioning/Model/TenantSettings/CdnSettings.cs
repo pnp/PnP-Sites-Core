@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines the CDN Settings for a CDN to provision
     /// </summary>
-    public class CdnSettings : BaseModel, IEquatable<CdnSettings>
+    public partial class CdnSettings : BaseModel, IEquatable<CdnSettings>
     {
         #region Private Members
 

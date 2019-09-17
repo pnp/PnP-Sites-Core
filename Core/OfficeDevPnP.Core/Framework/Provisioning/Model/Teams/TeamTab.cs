@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Defines an TeamTab for automated provisiong of Microsoft Teams
     /// </summary>
-    public class TeamTab : BaseModel, IEquatable<TeamTab>
+    public partial class TeamTab : BaseModel, IEquatable<TeamTab>
     {
         #region Public Members
 

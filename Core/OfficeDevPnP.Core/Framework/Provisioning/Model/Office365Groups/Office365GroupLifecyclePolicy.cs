@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Office365Groups
     /// <summary>
     /// Defines a Office365GroupLifecyclePolicy object
     /// </summary>
-    public class Office365GroupLifecyclePolicy : BaseModel, IEquatable<Office365GroupLifecyclePolicy>
+    public partial class Office365GroupLifecyclePolicy : BaseModel, IEquatable<Office365GroupLifecyclePolicy>
     {
         #region Public members
 
@@ -52,9 +52,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Office365Groups
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|{3}|",
-                ID.GetHashCode(),
+                ID?.GetHashCode() ?? 0,
                 GroupLifetimeInDays.GetHashCode(),
-                AlternateNotificationEmails.GetHashCode(),
+                AlternateNotificationEmails?.GetHashCode() ?? 0,
                 ManagedGroupTypes.GetHashCode()
             ).GetHashCode());
         }

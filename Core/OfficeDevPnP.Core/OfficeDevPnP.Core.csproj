@@ -574,6 +574,8 @@
     <Compile Include="Framework\Provisioning\Model\Hierarchy\ProvisioningSequenceCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningTemplateWebhook.cs" />
     <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningTemplateWebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachment.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachmentCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\UserProfile\UserProfile.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\UserProfile\UserProfileCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\SiteFooter.cs" />
@@ -613,7 +615,7 @@
     <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\SiteScript.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Customizations\SiteWebhook.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Customizations\SiteWebhookCollection.cs" />
-    <Compile Include="Framework\Provisioning\Model\ProvisioningTenant.cs" />
+    <Compile Include="Framework\Provisioning\Model\TenantSettings\ProvisioningTenant.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Customizations\StorageEntity.cs" />
     <Compile Include="Framework\Provisioning\Model\Hierarchy\SubSite.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Taxonomy\ProvisioningTermStore.cs" />

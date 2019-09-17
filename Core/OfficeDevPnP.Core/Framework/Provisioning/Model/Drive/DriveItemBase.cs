@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
     /// <summary>
     /// Defines a DriveItem object
     /// </summary>
-    public abstract class DriveItemBase : BaseModel, IEquatable<DriveItemBase>
+    public abstract partial class DriveItemBase : BaseModel, IEquatable<DriveItemBase>
     {
         #region Public members
 

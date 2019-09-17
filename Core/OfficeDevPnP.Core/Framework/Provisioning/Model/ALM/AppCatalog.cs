@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines the AppCatalog packages to provision
     /// </summary>
-    public class AppCatalog: BaseModel, IEquatable<AppCatalog>
+    public partial class AppCatalog : BaseModel, IEquatable<AppCatalog>
     {
         #region Private Members
 

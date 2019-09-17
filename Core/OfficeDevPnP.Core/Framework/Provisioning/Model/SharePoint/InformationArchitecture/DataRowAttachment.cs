@@ -4,27 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
+namespace OfficeDevPnP.Core.Framework.Provisioning.Model.SharePoint.InformationArchitecture
 {
-    /// <summary>
-    /// Defines a DriveFile object
-    /// </summary>
-    public partial class DriveFile : BaseModel, IEquatable<DriveFile>
+    public partial class DataRowAttachment : BaseModel, IEquatable<DataRowAttachment>
     {
         #region Public members
 
         /// <summary>
-        /// The Name of the target DriveFile
+        /// The Name of the File Attachment
         /// </summary>
         public String Name { get; set; }
 
         /// <summary>
-        /// The Source of the target DriveFile
+        /// The Src of the File
         /// </summary>
         public String Src { get; set; }
 
         /// <summary>
-        /// Defines whether to Overwrite the target DriveFile
+        /// Defines whether to overwrite an already existing file or not
         /// </summary>
         public Boolean Overwrite { get; set; }
 
@@ -32,7 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
 
         #region Constructors
 
-        public DriveFile() : base()
+        public DataRowAttachment() : base()
         {
         }
 
@@ -54,25 +51,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
         }
 
         /// <summary>
-        /// Compares object with DriveFile class
+        /// Compares object with DataRowAttachment class
         /// </summary>
-        /// <param name="obj">Object that represents DriveFile</param>
-        /// <returns>Checks whether object is DriveFile class</returns>
+        /// <param name="obj">Object that represents DataRowAttachment</param>
+        /// <returns>Checks whether object is DataRowAttachment class</returns>
         public override bool Equals(object obj)
         {
-            if (!(obj is DriveFile))
+            if (!(obj is DataRowAttachment))
             {
                 return (false);
             }
-            return (Equals((DriveFile)obj));
+            return (Equals((DataRowAttachment)obj));
         }
 
         /// <summary>
-        /// Compares DriveFile object based on Name, Src, and Overwrite
+        /// Compares DataRowAttachment object based on Name, Src, and Overwrite
         /// </summary>
-        /// <param name="other">User DriveFile object</param>
-        /// <returns>true if the DriveFile object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(DriveFile other)
+        /// <param name="other">User DataRowAttachment object</param>
+        /// <returns>true if the DataRowAttachment object is equal to the current object; otherwise, false.</returns>
+        public bool Equals(DataRowAttachment other)
         {
             if (other == null)
             {

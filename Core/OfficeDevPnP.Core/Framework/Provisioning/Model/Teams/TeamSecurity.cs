@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Defines the Security settings for the Team
     /// </summary>
-    public class TeamSecurity : BaseModel, IEquatable<TeamSecurity>
+    public partial class TeamSecurity : BaseModel, IEquatable<TeamSecurity>
     {
         #region Public Members
 

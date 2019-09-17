@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of Footer Links for the target site
     /// </summary>
-    public class SiteFooterLinkCollection : BaseProvisioningTemplateObjectCollection<SiteFooterLink>
+    public partial class SiteFooterLinkCollection : BaseProvisioningTemplateObjectCollection<SiteFooterLink>
     {
         /// <summary>
         /// Constructor for SiteFooterLinkCollection class

@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines the Header settings for the target site
     /// </summary>
-    public class SiteHeader: BaseModel, IEquatable<SiteHeader>
+    public partial class SiteHeader : BaseModel, IEquatable<SiteHeader>
     {
         #region Public Members
 

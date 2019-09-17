@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.SPUPS
     /// <summary>
     /// Defines a UserProfile object for SharePoint
     /// </summary>
-    public class UserProfile : BaseModel, IEquatable<UserProfile>
+    public partial class UserProfile : BaseModel, IEquatable<UserProfile>
     {
         #region Public members
 
@@ -48,8 +48,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.SPUPS
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|{2}|",
-                TargetUser.GetHashCode(),
-                TargetGroup.GetHashCode(),
+                TargetUser?.GetHashCode() ?? 0,
+                TargetGroup?.GetHashCode() ?? 0,
                 this.Properties.Aggregate(0, (acc, next) => acc += next.GetHashCode())
             ).GetHashCode());
         }

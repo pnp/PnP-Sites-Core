@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Base abstract class for Team and TeamTemplate types
     /// </summary>
-    public abstract class BaseTeam: BaseModel, IEquatable<BaseTeam>
+    public abstract partial class BaseTeam: BaseModel, IEquatable<BaseTeam>
     {
         #region Public Members
 

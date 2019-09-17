@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines the Footer settings for the target site
     /// </summary>
-    public class SiteFooter : BaseModel, IEquatable<SiteFooter>
+    public partial class SiteFooter : BaseModel, IEquatable<SiteFooter>
     {
         #region Public Members
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public class ProvisioningTemplateWebhook: BaseModel, IEquatable<ProvisioningTemplateWebhook>
+    public partial class ProvisioningTemplateWebhook : BaseModel, IEquatable<ProvisioningTemplateWebhook>
     {
         #region Public Members
 

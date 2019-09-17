@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of ProvisioningSequence items
     /// </summary>
-    public class ProvisioningSequenceCollection : BaseProvisioningHierarchyObjectCollection<ProvisioningSequence>
+    public partial class ProvisioningSequenceCollection : BaseProvisioningHierarchyObjectCollection<ProvisioningSequence>
     {
         /// <summary>
         /// Constructor for ProvisioningSequenceCollection class

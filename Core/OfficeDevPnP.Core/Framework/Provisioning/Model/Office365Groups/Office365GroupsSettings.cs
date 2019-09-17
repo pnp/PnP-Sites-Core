@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Office365Groups
     /// <summary>
     /// Defines a Office365GroupsSettings object
     /// </summary>
-    public class Office365GroupsSettings : BaseModel, IEquatable<Office365GroupsSettings>
+    public partial class Office365GroupsSettings : BaseModel, IEquatable<Office365GroupsSettings>
     {
         #region Public members
 

@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Defines a Resource for a Tab in a Channel of a Team
     /// </summary>
-    public class TeamTabResource : BaseModel, IEquatable<TeamTabResource>
+    public partial class TeamTabResource : BaseModel, IEquatable<TeamTabResource>
     {
         #region Public Members
 

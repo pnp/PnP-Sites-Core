@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// The Fun Settings for the Team
     /// </summary>
-    public class TeamFunSettings: BaseModel, IEquatable<TeamFunSettings>
+    public partial class TeamFunSettings : BaseModel, IEquatable<TeamFunSettings>
     {
         #region Public Members
 

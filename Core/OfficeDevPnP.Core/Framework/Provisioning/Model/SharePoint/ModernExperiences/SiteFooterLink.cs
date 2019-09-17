@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines a Footer Link for the target site
     /// </summary>
-    public class SiteFooterLink: BaseModel, IEquatable<SiteFooterLink>
+    public partial class SiteFooterLink : BaseModel, IEquatable<SiteFooterLink>
     {
         #region Public Members
 

@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of SubSite items
     /// </summary>
-    public class SubSiteCollection : BaseProvisioningHierarchyObjectCollection<SubSite>
+    public partial class SubSiteCollection : BaseProvisioningHierarchyObjectCollection<SubSite>
     {
         /// <summary>
         /// Constructor for SubSiteCollection class

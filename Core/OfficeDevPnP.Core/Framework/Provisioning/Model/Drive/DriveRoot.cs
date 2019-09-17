@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
     /// <summary>
     /// Defines a Drive object
     /// </summary>
-    public class DriveRoot : BaseModel, IEquatable<DriveRoot>
+    public partial class DriveRoot : BaseModel, IEquatable<DriveRoot>
     {
         #region Public members
 
@@ -44,7 +44,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
         public override int GetHashCode()
         {
             return (String.Format("{0}|{1}|",
-                DriveUrl.GetHashCode(),
+                DriveUrl?.GetHashCode() ?? 0,
                 DriveItems.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }

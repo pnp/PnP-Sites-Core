@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Defines a Channel for a Team
     /// </summary>
-    public class TeamChannel : BaseModel, IEquatable<TeamChannel>
+    public partial class TeamChannel : BaseModel, IEquatable<TeamChannel>
     {
         #region Public Members
 

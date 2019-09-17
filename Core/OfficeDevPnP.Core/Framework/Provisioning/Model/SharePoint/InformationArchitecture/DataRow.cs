@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OfficeDevPnP.Core.Extensions;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.SharePoint.InformationArchitecture;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
@@ -31,6 +32,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             get { return _keyValue; }
             set { _keyValue = value; }
         }
+
         /// <summary>
         /// Defines the security rules for the row that will be added to the List Instance
         /// </summary>
@@ -51,6 +53,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
+        /// <summary>
+        /// Defines a collection of DataRowAttachments
+        /// </summary>
+        public DataRowAttachmentCollection Attachments { get; private set; }
+
+
         #endregion
 
         #region constructors
@@ -60,6 +68,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public DataRow()
         {
             this.Security = new ObjectSecurity();
+            this.Attachments = new DataRowAttachmentCollection(this.ParentTemplate);
         }
 
         /// <summary>
@@ -115,10 +124,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}",
+            return (String.Format("{0}|{1}|{2}|{3}|",
                 this.Values.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
                 (this.Security != null ? this.Security.GetHashCode() : 0),
-                (this.Key != null ? this.Key.GetHashCode() : 0)
+                (this.Key != null ? this.Key.GetHashCode() : 0),
+                this.Attachments.Aggregate(0, (acc, next) => acc += next.GetHashCode())
             ).GetHashCode());
         }
 
@@ -137,7 +147,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares DataRow object based on values and Security properties.
+        /// Compares DataRow object based on Values, Security, Key, and Attachments properties.
         /// </summary>
         /// <param name="other">DataRow object</param>
         /// <returns>true if the DataRow object is equal to the current object; otherwise, false.</returns>
@@ -150,7 +160,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             return (this.Values.DeepEquals(other.Values) &&
                     (this.Security != null ? this.Security.Equals(other.Security) : true) &&
-                    (this.Key != null ? this.Key.Equals(other.Key) : true)
+                    (this.Key != null ? this.Key.Equals(other.Key) : true) &&
+                    this.Attachments.DeepEquals(other.Attachments)
                 );
         }
 

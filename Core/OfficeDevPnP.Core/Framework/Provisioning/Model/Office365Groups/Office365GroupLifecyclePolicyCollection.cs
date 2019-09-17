@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Office365Groups
     /// <summary>
     /// Collection of Office365GroupLifecyclePolicy items
     /// </summary>
-    public class Office365GroupLifecyclePolicyCollection : BaseProvisioningTemplateObjectCollection<Office365GroupLifecyclePolicy>
+    public partial class Office365GroupLifecyclePolicyCollection : BaseProvisioningTemplateObjectCollection<Office365GroupLifecyclePolicy>
     {
         /// <summary>
         /// Constructor for Office365GroupLifecyclePolicyCollection class

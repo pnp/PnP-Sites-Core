@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.SPUPS
     /// <summary>
     /// Collection of UserProfile items
     /// </summary>
-    public class UserProfileCollection : BaseProvisioningTemplateObjectCollection<UserProfile>
+    public partial class UserProfileCollection : BaseProvisioningTemplateObjectCollection<UserProfile>
     {
         /// <summary>
         /// Constructor for UserProfileCollection class

@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
     /// <summary>
     /// Defines a DriveFolder object
     /// </summary>
-    public class DriveFolder : DriveItemBase
+    public partial class DriveFolder : DriveItemBase
     {
     }
 }

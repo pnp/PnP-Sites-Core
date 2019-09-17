@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// The Guest Settings for the Team
     /// </summary>
-    public class TeamGuestSettings : BaseModel, IEquatable<TeamGuestSettings>
+    public partial class TeamGuestSettings : BaseModel, IEquatable<TeamGuestSettings>
     {
         #region Public Members
 

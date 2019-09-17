@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of SiteCollection items
     /// </summary>
-    public class SiteCollectionCollection : BaseProvisioningHierarchyObjectCollection<SiteCollection>
+    public partial class SiteCollectionCollection : BaseProvisioningHierarchyObjectCollection<SiteCollection>
     {
         /// <summary>
         /// Constructor for SiteCollectionCollection class

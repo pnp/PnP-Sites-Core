@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Defines the Tenant-wide settings to provision
     /// </summary>
-    public class ProvisioningTenant : BaseModel, IEquatable<ProvisioningTenant>
+    public partial class ProvisioningTenant : BaseModel, IEquatable<ProvisioningTenant>
     {
         #region Private Members
 
