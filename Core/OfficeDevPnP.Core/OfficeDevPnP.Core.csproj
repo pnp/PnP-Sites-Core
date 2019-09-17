@@ -566,6 +566,9 @@
     <Compile Include="Framework\Provisioning\Model\Drive\Drive.cs" />
     <Compile Include="Framework\Provisioning\Model\Drive\DriveRootCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\IProvisioningHierarchyDescendant.cs" />
+    <Compile Include="Framework\Provisioning\Model\Office365Groups\Office365GroupLifecyclePolicy.cs" />
+    <Compile Include="Framework\Provisioning\Model\Office365Groups\Office365GroupLifecyclePolicyCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Office365Groups\Office365GroupsSettings.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningHierarchy.cs" />
     <Compile Include="Framework\Provisioning\Model\BaseProvisioningHierarchyObjectCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\ProvisioningSequenceCollection.cs" />

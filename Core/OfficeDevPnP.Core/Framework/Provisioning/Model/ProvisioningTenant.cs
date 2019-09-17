@@ -221,6 +221,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
+        public Office365Groups.Office365GroupsSettings Office365GroupsSettings { get; set; }
+
         #endregion
 
         #region Comparison code
@@ -230,14 +232,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|",
                 this.AppCatalog?.GetHashCode() ?? 0,
                 this.ContentDeliveryNetwork?.GetHashCode() ?? 0,
                 this.SiteDesigns.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.SiteScripts.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.StorageEntities.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.WebApiPermissions.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.Themes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.Themes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.Office365GroupsSettings.GetHashCode()
             ).GetHashCode());
         }
 
@@ -256,7 +259,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares ProvisioningTenant object based on AppCatalog and Cdn properties.
+        /// Compares ProvisioningTenant object based on AppCatalog, CDN, SiteDesigns, SiteScripts,
+        /// StorageEntities, WebApiPermissions, Themes, and Office365GroupsSettings
         /// </summary>
         /// <param name="other">ProvisioningTenant object</param>
         /// <returns>true if the ProvisioningTenant object is equal to the current object; otherwise, false.</returns>
@@ -273,7 +277,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.SiteScripts.DeepEquals(other.SiteScripts) &&
                 this.StorageEntities.DeepEquals(other.StorageEntities) &&
                 this.WebApiPermissions.DeepEquals(other.WebApiPermissions) &&
-                this.Themes.DeepEquals(other.Themes)
+                this.Themes.DeepEquals(other.Themes) &&
+                this.Office365GroupsSettings.Equals(other.Office365GroupsSettings)
                 );
         }
 
