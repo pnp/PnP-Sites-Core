@@ -70,6 +70,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public Dictionary<String, String> DefaultColumnValues { get; set; } = new Dictionary<string, string>();
 
+        /// <summary>
+        /// Properties of the folder
+        /// </summary>
+        public Dictionary<string, string> Properties { get; private set; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// The Content Type ID for the Folder
+        /// </summary>
+        public String ContentTypeID { get; set; }
+
         #endregion
 
         #region Constructors
@@ -109,12 +119,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
                 (this.Name.GetHashCode()),
                 (this.Folders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))),
                 (this.Security != null ? this.Security.GetHashCode() : 0),
                 this.PropertyBagEntries.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.DefaultColumnValues.Aggregate(0, (acc, next) => acc += (next.Value != null ? next.Value.GetHashCode() : 0))
+                this.DefaultColumnValues.Aggregate(0, (acc, next) => acc += (next.Value != null ? next.Value.GetHashCode() : 0)),
+                this.Properties.Aggregate(0, (acc, next) => acc += next.GetHashCode()),
+                this.ContentTypeID?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 
@@ -133,7 +145,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares Folder object based on Name, Folders and Security properties.
+        /// Compares Folder object based on Name, Folders, Security, 
+        /// PropertyBagEntries, DefaultColumnValues, Properties, and ContentTypeId properties.
         /// </summary>
         /// <param name="other">Folder object</param>
         /// <returns>true if the Folder object is equal to the current object; otherwise, false.</returns>
@@ -148,7 +161,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this.Folders.DeepEquals(other.Folders) &&
                     (this.Security != null ? this.Security.Equals(other.Security) : true) &&
                     this.PropertyBagEntries.DeepEquals(other.PropertyBagEntries) &&
-                    this.DefaultColumnValues.DeepEquals(other.DefaultColumnValues)
+                    this.DefaultColumnValues.DeepEquals(other.DefaultColumnValues) &&
+                    this.Properties.DeepEquals(other.Properties) &&
+                    this.ContentTypeID == other.ContentTypeID
                );
         }
 
