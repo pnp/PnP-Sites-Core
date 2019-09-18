@@ -44,20 +44,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            if (template.ParentHierarchy?.Drive?.DriveRoots != null)
-            {
-                var driveRootTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DriveRoot, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-                var driveRootType = Type.GetType(driveRootTypeName, false);
+            //if (template.ParentHierarchy?.Drive?.DriveRoots != null)
+            //{
+            //    var driveRootTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DriveRoot, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            //    var driveRootType = Type.GetType(driveRootTypeName, false);
 
-                if (driveRootType != null)
-                {
-                    persistence.GetPublicInstanceProperty("Drive")
-                        .SetValue(
-                            persistence,
-                            PnPObjectsMapper.MapObjects(template.ParentHierarchy.Drive.DriveRoots,
-                                new CollectionFromModelToSchemaTypeResolver(driveRootType)));
-                }
-            }
+            //    if (driveRootType != null)
+            //    {
+            //        persistence.GetPublicInstanceProperty("Drive")
+            //            .SetValue(
+            //                persistence,
+            //                PnPObjectsMapper.MapObjects(template.ParentHierarchy.Drive.DriveRoots,
+            //                    new CollectionFromModelToSchemaTypeResolver(driveRootType)));
+            //    }
+            //}
         }
     }
 }

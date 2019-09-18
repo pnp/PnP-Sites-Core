@@ -11,7 +11,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory;
 using OfficeDevPnP.Core.Framework.Provisioning.Model.Teams;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
-using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201903;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909;
 using OfficeDevPnP.Core.Utilities;
 using App = OfficeDevPnP.Core.Framework.Provisioning.Model.App;
 using CalendarType = Microsoft.SharePoint.Client.CalendarType;
@@ -91,14 +91,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     [TestClass]
     public class XMLSerializer201909Tests
     {
-#region Test variables
+        #region Test variables
         private const string TEST_CATEGORY = "Framework Provisioning XML Serialization\\Deserialization 201909";
         private const string TEST_OUT_FILE = "ProvisioningTemplate-2019-09-Sample-01-test.xml";
         private const string TEST_TEMPLATE = "ProvisioningSchema-2019-09-FullSample-01.xml";
 
-#endregion
+        #endregion
 
-#region Test initialize
+        #region Test initialize
         [ClassCleanup]
         public static void Clean()
         {
@@ -108,7 +108,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 File.Delete(testFilePath);
             }
         }
-#endregion
+        #endregion
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
@@ -218,7 +218,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             Assert.AreEqual(HeaderLayout.Compact, template.Header.Layout);
             Assert.AreEqual(HeaderMenuStyle.Cascading, template.Header.MenuStyle);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.BackgroundEmphasis.Strong, template.Header.BackgroundEmphasis);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.Emphasis.Strong, template.Header.BackgroundEmphasis);
         }
 
         [TestMethod]
@@ -560,7 +560,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
 
             var teamTempaltes = wrappedResult.Teams.Items
-                .Where(t => t is Core.Framework.Provisioning.Providers.Xml.V201903.TeamTemplate).Cast<Core.Framework.Provisioning.Providers.Xml.V201903.TeamTemplate>().ToList();
+                .Where(t => t is Core.Framework.Provisioning.Providers.Xml.V201909.TeamTemplate).Cast<Core.Framework.Provisioning.Providers.Xml.V201909.TeamTemplate>().ToList();
 
             Assert.AreEqual(1, teamTempaltes.Count);
             Assert.AreEqual("MyClass", teamTempaltes[0].Classification);
@@ -1043,14 +1043,44 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
-            //result.ParentHierarchy.Drive.DriveRoots.Add(new Core.Framework.Provisioning.Model.Drive.DriveRoot
-            //{
-            //    DriveUrl = "/users/jim.black@contoso.onmicrosoft.com/drive",
-            //    RootFolder = new Core.Framework.Provisioning.Model.Drive.DriveFolder
-            //    {
-            //        Name 
-            //    }
-            //});
+            var driveRoot = new Core.Framework.Provisioning.Model.Drive.DriveRoot
+            {
+                DriveUrl = "/users/jim.black@contoso.onmicrosoft.com/drive",
+                RootFolder = new Core.Framework.Provisioning.Model.Drive.DriveRootFolder()
+            };
+            driveRoot.RootFolder.DriveFiles.AddRange(new Core.Framework.Provisioning.Model.Drive.DriveFile[]
+            {
+                new Core.Framework.Provisioning.Model.Drive.DriveFile
+                {
+                    Name = "MyFavoriteSlides.pptx",
+                    Src = "OneDrive/Jim.Black/MyFavoriteSlides.pptx",
+                    Overwrite = false,
+                },
+                new Core.Framework.Provisioning.Model.Drive.DriveFile
+                {
+                    Name = "Jim-Black-Resume.docx",
+                    Src = "OneDrive/Jim.Black/Jim-Black-Resume.docx",
+                    Overwrite = false,
+                },
+            });
+            driveRoot.RootFolder.DriveFolders.AddRange(new Core.Framework.Provisioning.Model.Drive.DriveFolder[]
+            {
+                new Core.Framework.Provisioning.Model.Drive.DriveFolder
+                {
+                    Name = "Projects",
+                    Src = "OneDrive/Jim.Black/Projects",
+                    Overwrite = false,
+                    IncludedExtensions = "*.pdf",
+                    ExcludedExtensions = "*.xlsx,*.pptx",
+                    Recursive = true
+                },
+                new Core.Framework.Provisioning.Model.Drive.DriveFolder
+                {
+                    Name = "ExpenseReports",
+                    Overwrite = true,
+                },
+            });
+            result.ParentHierarchy.Drive.DriveRoots.Add(driveRoot);
 
 
             var serializer = new XMLPnPSchemaV201909Serializer();
@@ -1060,28 +1090,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(File.Exists(path));
             var xml = XDocument.Load(path);
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
-            var users = wrappedResult.AzureActiveDirectory.Users;
+            var drives = wrappedResult.Drive;
 
-            Assert.AreEqual(1, users.Count());
-            Assert.AreEqual("John White", users[0].DisplayName);
-            Assert.AreEqual(true, users[0].AccountEnabled);
-            Assert.AreEqual("john.white", users[0].MailNickname);
-            Assert.AreEqual("john.white@{parameter:domain}.onmicrosoft.com", users[0].UserPrincipalName);
-            Assert.AreEqual("Policy1", users[0].PasswordPolicies);
-            Assert.AreEqual("photo.jpg", users[0].ProfilePhoto);
-            Assert.AreEqual("John", users[0].GivenName);
-            Assert.AreEqual("White", users[0].Surname);
-            Assert.AreEqual("Senior Partner", users[0].JobTitle);
-            Assert.AreEqual("+1-601-123456", users[0].MobilePhone);
-            Assert.AreEqual("Seattle, WA", users[0].OfficeLocation);
-            Assert.AreEqual("en-US", users[0].PreferredLanguage);
-
-            Assert.AreEqual(true, users[0].PasswordProfile.ForceChangePasswordNextSignIn);
-            Assert.AreEqual(true, users[0].PasswordProfile.ForceChangePasswordNextSignInWithMfa);
-            Assert.IsFalse(users[0].PasswordProfile.Password == null);
-            Assert.AreEqual(2, users[0].Licenses.Count());
-            Assert.AreEqual("26d45bd9-adf1-46cd-a9e1-51e9a5524128", users[0].Licenses[0].SkuId);
-            Assert.AreEqual("e212cbc7-0961-4c40-9825-01117710dcb1", users[0].Licenses[0].DisabledPlans[0]);
+            Assert.AreEqual(1, drives.Count());
+            Assert.AreEqual("/users/jim.black@contoso.onmicrosoft.com/drive", drives[0].DriveUrl);
+            Assert.AreEqual(4, drives[0].DriveItems.Length);
         }
 
         [TestMethod]
@@ -1730,17 +1743,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var regionalSettings = template.RegionalSettings;
 
             Assert.AreEqual(1, regionalSettings.AdjustHijriDays);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.CalendarType.ChineseLunar, regionalSettings.AlternateCalendarType);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.CalendarType.Hebrew, regionalSettings.CalendarType);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.CalendarType.ChineseLunar, regionalSettings.AlternateCalendarType);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.CalendarType.Hebrew, regionalSettings.CalendarType);
             Assert.AreEqual(5, regionalSettings.Collation);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.DayOfWeek.Sunday, regionalSettings.FirstDayOfWeek);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.DayOfWeek.Sunday, regionalSettings.FirstDayOfWeek);
             Assert.AreEqual(1, regionalSettings.FirstWeekOfYear);
             Assert.AreEqual(1040, regionalSettings.LocaleId);
             Assert.AreEqual(true, regionalSettings.ShowWeeks);
             Assert.AreEqual(true, regionalSettings.Time24);
             Assert.AreEqual("4", regionalSettings.TimeZone);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.WorkHour.Item500PM, regionalSettings.WorkDayEndHour);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.WorkHour.Item900AM, regionalSettings.WorkDayStartHour);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.WorkHour.Item500PM, regionalSettings.WorkDayEndHour);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.WorkHour.Item900AM, regionalSettings.WorkDayStartHour);
             Assert.AreEqual(62, regionalSettings.WorkDays);
         }
 
@@ -3785,7 +3798,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Full Control", file.Security.BreakRoleInheritance.RoleAssignment[0].RoleDefinition);
 
             file = template.Files.File.SingleOrDefault(f => f.Src == "CustomMaster.master");
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.FileLevel.Published, file.Level);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.FileLevel.Published, file.Level);
 
             var dir = template.Files.Directory.SingleOrDefault(d => d.Src == @"c:\LocalPath\StyleLibrary");
             Assert.AreEqual("Style%20Library", dir.Folder);
@@ -3887,7 +3900,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
             var pages = template.Pages;
 
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.WikiPageLayout.TwoColumns, pages[0].Layout);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.WikiPageLayout.TwoColumns, pages[0].Layout);
             Assert.AreEqual(true, template.Pages[0].Overwrite);
             Assert.AreEqual("{site}/SitePages/DemoWikiPage.aspx", pages[0].Url);
 
@@ -4419,8 +4432,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     new Core.Framework.Provisioning.Model.CanvasSection
                     {
                         Order = 1,
-                        Type = CanvasSectionType.OneColumn,
+                        Type = CanvasSectionType.ThreeColumnVerticalSection,
                         BackgroundEmphasis = Core.Framework.Provisioning.Model.Emphasis.Soft,
+                        VerticalSectionEmphasis = Core.Framework.Provisioning.Model.Emphasis.Strong,
                         Controls =
                         {
                             new Core.Framework.Provisioning.Model.CanvasControl
@@ -4482,12 +4496,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var page = clientSidePages[0];
             // header
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.ClientSidePageHeaderType.Custom, page.Header.Type);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.ClientSidePageHeaderType.Custom, page.Header.Type);
             Assert.AreEqual("./site%20assets/picture.png", page.Header.ServerRelativeImageUrl);
             Assert.AreEqual(10.56, page.Header.TranslateX);
             Assert.AreEqual(15.12345, page.Header.TranslateY);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.ClientSidePageHeaderLayoutType.FullWidthImage, page.Header.LayoutType);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.ClientSidePageHeaderTextAlignment.Center, page.Header.TextAlignment);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.ClientSidePageHeaderLayoutType.FullWidthImage, page.Header.LayoutType);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.ClientSidePageHeaderTextAlignment.Center, page.Header.TextAlignment);
             Assert.AreEqual("Alternate text", page.Header.AlternativeText);
             Assert.AreEqual("John Black, Mike White", page.Header.Authors);
             Assert.AreEqual("Bill Green", page.Header.AuthorByLine);
@@ -4500,11 +4514,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             // sections
             Assert.AreEqual(1, section.Order);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.CanvasSectionType.OneColumn, section.Type);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.BackgroundEmphasis.Soft, section.BackgroundEmphasis);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.CanvasSectionType.ThreeColumnVerticalSection, section.Type);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.Emphasis.Soft, section.BackgroundEmphasis);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.Emphasis.Strong, section.VerticalSectionEmphasis);
 
             Assert.AreEqual("...", section.Controls[0].CustomWebPartName);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201903.CanvasControlWebPartType.Image, section.Controls[0].WebPartType);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.CanvasControlWebPartType.Image, section.Controls[0].WebPartType);
             Assert.AreEqual("{}", section.Controls[0].JsonControlData);
             Assert.AreEqual("0eaba53f-55d8-44b5-9f7c-61301c7f1e0e", section.Controls[0].ControlId);
             Assert.AreEqual(1, section.Controls[0].Order);
