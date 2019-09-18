@@ -20,9 +20,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
         public String DriveUrl { get; set; }
 
         /// <summary>
-        /// Defines a collection of DriveItem items
+        /// Defines the RootFolder of a DriveRoot item
         /// </summary>
-        public DriveItemCollection DriveItems { get; private set; }
+        public DriveFolder RootFolder { get; private set; }
 
         #endregion
 
@@ -30,7 +30,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
 
         public DriveRoot() : base()
         {
-            this.DriveItems = new DriveItemCollection(this.ParentTemplate);
         }
 
         #endregion
@@ -45,7 +44,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
         {
             return (String.Format("{0}|{1}|",
                 DriveUrl?.GetHashCode() ?? 0,
-                DriveItems.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                RootFolder.GetHashCode()
             ).GetHashCode());
         }
 
@@ -64,7 +63,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
         }
 
         /// <summary>
-        /// Compares DriveRoot object based on DriveUrl, and DriveItems
+        /// Compares DriveRoot object based on DriveUrl, and RootFolder
         /// </summary>
         /// <param name="other">User DriveRoot object</param>
         /// <returns>true if the DriveRoot object is equal to the current object; otherwise, false.</returns>
@@ -76,7 +75,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
             }
 
             return (this.DriveUrl == other.DriveUrl &&
-                this.DriveItems.DeepEquals(other.DriveItems)
+                this.RootFolder.Equals(other.RootFolder)
                 );
         }
 
