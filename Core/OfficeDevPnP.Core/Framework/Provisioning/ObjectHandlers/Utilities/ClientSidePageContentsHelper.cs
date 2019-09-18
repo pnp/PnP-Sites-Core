@@ -137,6 +137,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             case Pages.CanvasSectionTemplate.OneColumnFullWidth:
                                 sectionInstance.Type = CanvasSectionType.OneColumnFullWidth;
                                 break;
+                            case Pages.CanvasSectionTemplate.OneColumnVerticalSection:
+                                sectionInstance.Type = CanvasSectionType.OneColumnVerticalSection;
+                                break;
+                            case Pages.CanvasSectionTemplate.TwoColumnVerticalSection:
+                                sectionInstance.Type = CanvasSectionType.TwoColumnVerticalSection;
+                                break;
+                            case Pages.CanvasSectionTemplate.TwoColumnLeftVerticalSection:
+                                sectionInstance.Type = CanvasSectionType.TwoColumnLeftVerticalSection;
+                                break;
+                            case Pages.CanvasSectionTemplate.TwoColumnRightVerticalSection:
+                                sectionInstance.Type = CanvasSectionType.TwoColumnRightVerticalSection;
+                                break;
+                            case Pages.CanvasSectionTemplate.ThreeColumnVerticalSection:
+                                sectionInstance.Type = CanvasSectionType.ThreeColumnVerticalSection;
+                                break;
                             default:
                                 sectionInstance.Type = CanvasSectionType.OneColumn;
                                 break;
