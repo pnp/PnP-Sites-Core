@@ -1042,43 +1042,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
-            var passWord = new SecureString();
-            foreach (char c in "Pass@w0rd") passWord.AppendChar(c);
-
             var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
-            result.ParentHierarchy.AzureActiveDirectory.Users.Add(new Core.Framework.Provisioning.Model.AzureActiveDirectory.User
-            {
-                AccountEnabled = true,
-                DisplayName = "John White",
-                MailNickname = "john.white",
-                UserPrincipalName = "john.white@{parameter:domain}.onmicrosoft.com",
-                PasswordPolicies = "Policy1",
-                ProfilePhoto = "photo.jpg",
-                GivenName = "John",
-                Surname = "White",
-                JobTitle = "Senior Partner",
-                MobilePhone = "+1-601-123456",
-                OfficeLocation = "Seattle, WA",
-                PreferredLanguage = "en-US",
-                PasswordProfile = new PasswordProfile
-                {
-                    ForceChangePasswordNextSignIn = true,
-                    ForceChangePasswordNextSignInWithMfa = true,
-                    Password = passWord
-                },
-                Licenses =
-                {
-                    new UserLicense
-                    {
-                        SkuId = "26d45bd9-adf1-46cd-a9e1-51e9a5524128",
-                        DisabledPlans = new []{ "e212cbc7-0961-4c40-9825-01117710dcb1", "3fb82609-8c27-4f7b-bd51-30634711ee67", "b1188c4c-1b36-4018-b48b-ee07604f6feb" }
-                    },
-                    new UserLicense
-                    {
-                        SkuId = "26d45bd9-adf1-46cd-a9e1-51e9a5524128"
-                    }
-                }
-            });
+            //result.ParentHierarchy.Drive.DriveRoots.Add(new Core.Framework.Provisioning.Model.Drive.DriveRoot
+            //{
+            //    DriveUrl = "/users/jim.black@contoso.onmicrosoft.com/drive",
+            //    RootFolder = new Core.Framework.Provisioning.Model.Drive.DriveFolder
+            //    {
+            //        Name 
+            //    }
+            //});
 
 
             var serializer = new XMLPnPSchemaV201909Serializer();

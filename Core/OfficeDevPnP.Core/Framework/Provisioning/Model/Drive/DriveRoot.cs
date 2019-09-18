@@ -22,7 +22,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
         /// <summary>
         /// Defines the RootFolder of a DriveRoot item
         /// </summary>
-        public DriveFolder RootFolder { get; private set; }
+        public DriveRootFolder RootFolder { get; set; }
 
         #endregion
 

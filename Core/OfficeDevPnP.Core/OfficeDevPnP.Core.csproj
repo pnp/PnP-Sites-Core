@@ -553,6 +553,8 @@
     <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\UserLicenseCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Base\BaseHierarchyModel.cs" />
     <Compile Include="Framework\Provisioning\Model\Base\BaseProvisioningTemplateObjectCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Drive\DriveRootFolder.cs" />
+    <Compile Include="Framework\Provisioning\Model\Drive\DriveFolderBase.cs" />
     <Compile Include="Framework\Provisioning\Model\Hierarchy\CommunicationSiteCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Deprecated\NavigationNode.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Model\Drive\DriveFile.cs" />
@@ -703,7 +705,7 @@
       <DependentUpon>ProvisioningSchema-2019-09.xsd</DependentUpon>
     </Compile>
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveItemsFromSchemaToModelTypeResolver.cs" />
-    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveItemFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveRootFolderFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveRootsFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\DriveSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201909Serializer.cs" />

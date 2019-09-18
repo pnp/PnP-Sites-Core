@@ -32,7 +32,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                 // Manage the DriveRoot items
                 expressions.Add(d => d.DriveRoots, new DriveRootsFromSchemaToModelTypeResolver());
-                expressions.Add(d => d.DriveRoots[0].RootFolder, new DriveItemFromSchemaToModelTypeResolver());
+                expressions.Add(d => d.DriveRoots[0].RootFolder, new DriveRootFolderFromSchemaToModelTypeResolver());
                 expressions.Add(d => d.DriveRoots[0].RootFolder.DriveFolders, 
                     new DriveItemsFromSchemaToModelTypeResolver(typeof(Model.Drive.DriveFolder)));
                 expressions.Add(d => d.DriveRoots[0].RootFolder.DriveFiles, 

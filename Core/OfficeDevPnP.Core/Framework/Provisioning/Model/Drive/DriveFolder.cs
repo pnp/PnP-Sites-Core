@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
     /// <summary>
     /// Defines a DriveFolder object
     /// </summary>
-    public partial class DriveFolder : BaseModel, IEquatable<DriveFolder>
+    public partial class DriveFolder : DriveFolderBase
     {
         #region Public Members
 
@@ -23,16 +23,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
         /// Defines the Source path of the folder in OneDrive for Business
         /// </summary>
         public string Src { get; set; }
-
-        /// <summary>
-        /// Defines a collection of DriveFolder items
-        /// </summary>
-        public DriveFolderCollection DriveFolders { get; private set; }
-
-        /// <summary>
-        /// Defines a collection of DriveFile items
-        /// </summary>
-        public DriveFileCollection DriveFiles { get; private set; }
 
         /// <summary>
         /// The Overwrite flag for the File items in the Directory
@@ -60,8 +50,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
 
         public DriveFolder() : base()
         {
-            this.DriveFolders = new DriveFolderCollection(this.ParentTemplate);
-            this.DriveFiles = new DriveFileCollection(this.ParentTemplate);
         }
 
         #endregion
@@ -72,11 +60,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
         /// Gets the hash code
         /// </summary>
         /// <returns>Returns HashCode</returns>
-        public override int GetHashCode()
+        protected override int GetInheritedHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|",
-                DriveFolders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                DriveFiles.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|",
                 this.Name?.GetHashCode() ?? 0,
                 this.Src?.GetHashCode() ?? 0,
                 this.Overwrite.GetHashCode(),
@@ -86,42 +72,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
             ).GetHashCode());
         }
 
-        /// <summary>
-        /// Compares object with DriveFolder class
-        /// </summary>
-        /// <param name="obj">Object that represents DriveFolder</param>
-        /// <returns>Checks whether object is DriveFolder class</returns>
-        public override bool Equals(object obj)
+        protected override bool EqualsInherited(DriveFolderBase other)
         {
-            if (!(obj is DriveFolder))
-            {
-                return (false);
-            }
-            return (Equals((DriveFolder)obj));
-        }
-
-        /// <summary>
-        /// Compares DriveFolder object based on Drivefolders, DriveFiles, Name, Src,
-        /// Overwrite, Recursive, IncludedExtensions, and ExcludedExtensions
-        /// </summary>
-        /// <param name="other">DriveFolder Class object</param>
-        /// <returns>true if the DriveFolder object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(DriveFolder other)
-        {
-            if (other == null)
+            if (!(other is DriveFolder otherTyped))
             {
                 return (false);
             }
 
-            return (
-                this.DriveFolders.DeepEquals(other.DriveFolders) &&
-                this.DriveFiles.DeepEquals(other.DriveFiles) &&
-                this.Name == other.Name &&
-                this.Src == other.Src &&
-                this.Overwrite == other.Overwrite &&
-                this.Recursive == other.Recursive &&
-                this.IncludedExtensions == other.IncludedExtensions &&
-                this.ExcludedExtensions == other.ExcludedExtensions
+            return (this.Name == otherTyped.Name &&
+                this.Src == otherTyped.Src &&
+                this.Overwrite == otherTyped.Overwrite &&
+                this.Recursive == otherTyped.Recursive &&
+                this.IncludedExtensions == otherTyped.IncludedExtensions &&
+                this.ExcludedExtensions == otherTyped.ExcludedExtensions
                 );
         }
 

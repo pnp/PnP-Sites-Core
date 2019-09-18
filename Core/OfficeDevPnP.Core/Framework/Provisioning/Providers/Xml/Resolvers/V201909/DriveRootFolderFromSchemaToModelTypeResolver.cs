@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// <summary>
     /// Resolves the Drive Items from the Schema to the Model
     /// </summary>
-    internal class DriveItemFromSchemaToModelTypeResolver : ITypeResolver
+    internal class DriveRootFolderFromSchemaToModelTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
 
@@ -20,7 +20,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 
         public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {
-            var result = new DriveFolder();
+            var result = new DriveRootFolder();
 
             var driveItems = source.GetPublicInstancePropertyValue("DriveItems") ?? source.GetPublicInstancePropertyValue("Items");
 
