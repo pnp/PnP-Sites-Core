@@ -32,9 +32,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                 // Manage the DriveRoot items
                 expressions.Add(d => d.DriveRoots, new DriveRootsFromSchemaToModelTypeResolver());
-                expressions.Add(d => d.DriveRoots[0].RootFolder, new DriveFolderFromSchemaToModelTypeResolver());
-                expressions.Add(d => d.DriveRoots[0].RootFolder.DriveFolders, new DriveFoldersFromSchemaToModelTypeResolver());
-                expressions.Add(d => d.DriveRoots[0].RootFolder.DriveFiles, new DriveFilesFromSchemaToModelTypeResolver());
+                expressions.Add(d => d.DriveRoots[0].RootFolder, new DriveItemFromSchemaToModelTypeResolver());
+                expressions.Add(d => d.DriveRoots[0].RootFolder.DriveFolders, 
+                    new DriveItemsFromSchemaToModelTypeResolver(typeof(Model.Drive.DriveFolder)));
+                expressions.Add(d => d.DriveRoots[0].RootFolder.DriveFiles, 
+                    new DriveItemsFromSchemaToModelTypeResolver(typeof(Model.Drive.DriveFile)));
 
                 PnPObjectsMapper.MapProperties(drive, template.ParentHierarchy.Drive, expressions, true);
             }

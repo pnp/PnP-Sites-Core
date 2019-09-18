@@ -1026,6 +1026,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(2, driveRoots[0].RootFolder.DriveFolders[1].DriveFolders.Count);
             Assert.AreEqual("FY2018", driveRoots[0].RootFolder.DriveFolders[1].DriveFolders[0].Name);
             Assert.AreEqual(12, driveRoots[0].RootFolder.DriveFolders[1].DriveFolders[0].DriveFiles.Count);
+            Assert.AreEqual("Expense-Report-Jan2018.xlsx", driveRoots[0].RootFolder.DriveFolders[1].DriveFolders[0].DriveFiles[0].Name);
+            Assert.AreEqual("OneDrive/Jim.Black/ExpenseReports/FY2018/Expense-Report-Jan2018.xlsx", driveRoots[0].RootFolder.DriveFolders[1].DriveFolders[0].DriveFiles[0].Src);
+            Assert.AreEqual(false, driveRoots[0].RootFolder.DriveFolders[1].DriveFolders[0].DriveFiles[0].Overwrite);
+            Assert.AreEqual("FY2019", driveRoots[0].RootFolder.DriveFolders[1].DriveFolders[1].Name);
+            Assert.AreEqual(9, driveRoots[0].RootFolder.DriveFolders[1].DriveFolders[1].DriveFiles.Count);
             Assert.AreEqual("MyFavoriteSlides.pptx", driveRoots[0].RootFolder.DriveFiles[0].Name);
             Assert.AreEqual("OneDrive/Jim.Black/MyFavoriteSlides.pptx", driveRoots[0].RootFolder.DriveFiles[0].Src);
             Assert.AreEqual("/users/john.white@{parameter:O365TenantName}.onmicrosoft.com/drive", driveRoots[1].DriveUrl);

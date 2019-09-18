@@ -12,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
     /// <summary>
     /// Resolves the Drive Items from the Schema to the Model
     /// </summary>
-    internal class DriveFolderFromSchemaToModelTypeResolver : ITypeResolver
+    internal class DriveItemFromSchemaToModelTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
 
