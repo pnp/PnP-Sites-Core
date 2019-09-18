@@ -270,6 +270,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 case CanvasSectionType.TwoColumnRight:
                                     page.AddSection(Pages.CanvasSectionTemplate.TwoColumnRight, section.Order, (Int32)section.BackgroundEmphasis);
                                     break;
+                                case CanvasSectionType.OneColumnVerticalSection:
+                                    page.AddSection(Pages.CanvasSectionTemplate.OneColumnVerticalSection, section.Order, (Int32)section.VerticalSectionEmphasis);
+                                    break;
+                                case CanvasSectionType.TwoColumnVerticalSection:
+                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnVerticalSection, section.Order, (Int32)section.VerticalSectionEmphasis);
+                                    break;
+                                case CanvasSectionType.TwoColumnLeftVerticalSection:
+                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnLeftVerticalSection, section.Order, (Int32)section.VerticalSectionEmphasis);
+                                    break;
+                                case CanvasSectionType.TwoColumnRightVerticalSection:
+                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnRightVerticalSection, section.Order, (Int32)section.VerticalSectionEmphasis);
+                                    break;
+                                case CanvasSectionType.ThreeColumnVerticalSection:
+                                    page.AddSection(Pages.CanvasSectionTemplate.ThreeColumnVerticalSection, section.Order, (Int32)section.VerticalSectionEmphasis);
+                                    break;
                                 default:
                                     page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order, (Int32)section.BackgroundEmphasis);
                                     break;
