@@ -1,20 +1,20 @@
 ﻿namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
     /// <summary>
-    /// Implements the logic to serialize a schema of version 201903
+    /// Implements the logic to serialize a schema of version 201909
     /// </summary>
-    internal class XMLPnPSchemaV201903Serializer : XmlPnPSchemaBaseSerializer<V201903.ProvisioningTemplate>
+    internal class XMLPnPSchemaV201909Serializer : XmlPnPSchemaBaseSerializer<V201909.ProvisioningTemplate>
     {
-        public XMLPnPSchemaV201903Serializer():
+        public XMLPnPSchemaV201909Serializer():
             base(typeof(XMLConstants)
                 .Assembly
-                .GetManifestResourceStream("OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.ProvisioningSchema-2019-03.xsd"))
+                .GetManifestResourceStream("OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.ProvisioningSchema-2019-09.xsd"))
         {
         }
 
         public override string NamespaceUri
         {
-            get { return (XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2019_03); }
+            get { return (XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2019_09); }
         }
 
         public override string NamespacePrefix

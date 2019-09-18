@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
 {
     /// <summary>
-    /// Defines a DriveItem object
+    /// Defines a DriveFolderBase object
     /// </summary>
-    public abstract partial class DriveItemBase : BaseModel, IEquatable<DriveItemBase>
+    public abstract partial class DriveFolderBase : BaseModel, IEquatable<DriveFolderBase>
     {
-        #region Public members
+        #region Public Members
 
         /// <summary>
         /// Defines a collection of DriveFolder items
@@ -28,7 +28,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
 
         #region Constructors
 
-        public DriveItemBase() : base()
+        public DriveFolderBase() : base()
         {
             this.DriveFolders = new DriveFolderCollection(this.ParentTemplate);
             this.DriveFiles = new DriveFileCollection(this.ParentTemplate);
@@ -58,25 +58,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
         protected abstract int GetInheritedHashCode();
 
         /// <summary>
-        /// Compares object with DriveItemBase class
+        /// Compares object with DriveFolderBase class
         /// </summary>
-        /// <param name="obj">Object that represents DriveItemBase</param>
-        /// <returns>Checks whether object is DriveItemBase class</returns>
+        /// <param name="obj">Object that represents DriveFolderBase</param>
+        /// <returns>Checks whether object is DriveFolderBase class</returns>
         public override bool Equals(object obj)
         {
-            if (!(obj is DriveItemBase))
+            if (!(obj is DriveFolderBase))
             {
                 return (false);
             }
-            return (Equals((DriveItemBase)obj));
+            return (Equals((DriveFolderBase)obj));
         }
 
         /// <summary>
-        /// Compares DriveItemBase object based on Drivefolders, and DriveFiles
+        /// Compares DriveFolderBase object based on Drivefolders, DriveFiles
         /// </summary>
-        /// <param name="other">DriveItemBase Class object</param>
-        /// <returns>true if the DriveItemBase object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(DriveItemBase other)
+        /// <param name="other">DriveFolderBase Class object</param>
+        /// <returns>true if the DriveFolderBase object is equal to the current object; otherwise, false.</returns>
+        public bool Equals(DriveFolderBase other)
         {
             if (other == null)
             {
@@ -91,10 +91,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Drive
         }
 
         /// <summary>
-        /// Compares the members of any inherited type
+        /// Compares the HashCode of the members of any inherited type
         /// </summary>
         /// <returns></returns>
-        protected abstract bool EqualsInherited(DriveItemBase other);
+        protected abstract bool EqualsInherited(DriveFolderBase other);
 
         #endregion
     }
