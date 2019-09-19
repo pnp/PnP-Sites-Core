@@ -115,7 +115,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             Order = section.Order,
                             BackgroundEmphasis = (Emphasis)section.ZoneEmphasis,
                         };
-
+                        if(section.VerticalSectionColumn != null)
+                        {
+                            sectionInstance.VerticalSectionEmphasis = (Emphasis) section.VerticalSectionColumn.VerticalSectionEmphasis;
+                        }
                         // Set section type
                         switch (section.Type)
                         {
