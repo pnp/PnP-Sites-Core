@@ -362,6 +362,12 @@ namespace OfficeDevPnP.Core.Pages
             this.instanceId = new Guid(controlData.Id);
         }
 
+        internal void MoveTo(CanvasSection newSection, CanvasColumn newColumn)
+        {
+            this.section = newSection;
+            this.column = newColumn;
+        }
+
         #endregion
     }
 #endif

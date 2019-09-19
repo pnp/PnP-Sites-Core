@@ -251,7 +251,15 @@ namespace OfficeDevPnP.Core.Pages
             this.Order = order;
             this.columnFactor = columnFactor;
         }
-#endregion
+
+        #region Internal and helper methods
+        internal void MoveTo(CanvasSection section)
+        {
+            this.section = section;
+        }
+        #endregion
+
+        #endregion
     }
 #endif
-                        }
+}

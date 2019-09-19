@@ -114,9 +114,9 @@ namespace OfficeDevPnP.Core.Pages
                     break;
             }
         }
-#endregion
+        #endregion
 
-                    #region Properties
+        #region Properties
         /// <summary>
         /// Type of the section
         /// </summary>
@@ -207,9 +207,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
-                    #endregion
+        #endregion
 
-                    #region public methods
+        #region public methods
         /// <summary>
         /// Renders this section as a HTML fragment
         /// </summary>
@@ -235,9 +235,9 @@ namespace OfficeDevPnP.Core.Pages
 #endif
             return html.ToString();
         }
-                    #endregion
+        #endregion
 
-                    #region internal and private methods
+        #region internal and private methods
         internal void AddColumn(CanvasColumn column)
         {
             if (column == null)
@@ -247,7 +247,25 @@ namespace OfficeDevPnP.Core.Pages
 
             this.columns.Add(column);
         }
-                    #endregion
+
+        internal void MergeVerticalSectionColumn(CanvasColumn column)
+        {
+            // What was the highest order
+            int order = 1;
+            var lastColumn = this.columns.OrderBy(p => p.Order).FirstOrDefault();
+            if (lastColumn != null)
+            {
+                order = lastColumn.Order + 1;
+            }
+
+            // Add the column to this section, first ensure it's connected to the new section and it's order has been updated for insertion in the new section
+            column.MoveTo(this);
+            column.Order = order;
+
+            this.AddColumn(column);            
+        }
+
+        #endregion
     }
 #endif
             }

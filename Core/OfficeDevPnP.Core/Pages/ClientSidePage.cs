@@ -1671,6 +1671,38 @@ namespace OfficeDevPnP.Core.Pages
                 }
             }
 
+            // Perform vertical section column matchup if that did not happen yet
+            var verticalSectionColumn = this.sections.Where(p => p.VerticalSectionColumn != null).FirstOrDefault();
+            if (verticalSectionColumn != null)
+            {
+                // find another, non vertical section, column with the same zoneindex
+                var matchedUpSection = this.sections.Where(p => p.VerticalSectionColumn == null && p.Order == verticalSectionColumn.Order).FirstOrDefault();
+                if (matchedUpSection == null)
+                {
+                    // matchup did not yet happen, so let's handle it now
+                    // Get the top section
+                    var topSection = this.sections.Where(p=> p.VerticalSectionColumn == null).OrderBy(p => p.Order).FirstOrDefault();
+                    if (topSection != null)
+                    {
+                        // Add the "standalone" vertical section column to this section
+                        topSection.MergeVerticalSectionColumn(verticalSectionColumn.Columns[0]);
+
+                        // Move the controls to the new section/column
+                        var controlsToMove = this.controls.Where(p => p.section == verticalSectionColumn);
+                        if (controlsToMove.Any())
+                        {
+                            foreach(var controlToMove in controlsToMove)
+                            {
+                                controlToMove.MoveTo(topSection, topSection.VerticalSectionColumn);
+                            }
+                        }
+
+                        // Remove the "standalone" vertical section column section
+                        this.sections.Remove(verticalSectionColumn);
+                    }                    
+                }
+            }
+
             // Perform section type detection
             foreach (var section in this.sections)
             {
