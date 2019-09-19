@@ -145,12 +145,12 @@
         <pnp:Property Key="OfficeLocation" Value="Seattle, WS"/>
         <pnp:Property Key="PhoneNumber" Value="+1-321-123456"/>
       </pnp:SPUserProfile>
-      <pnp:SPUserProfile TargetUser="group01@contoso.com">
+      <pnp:SPUserProfile TargetGroup="group01@contoso.com">
         <pnp:Property Key="Department" Value="R&amp;D"/>
         <pnp:Property Key="OfficeLocation" Value="New York, NY"/>
         <pnp:Property Key="PhoneNumber" Value="+1-456-123456"/>
       </pnp:SPUserProfile>
-      <pnp:SPUserProfile TargetUser="group02@{parameter:O365TenantName}.onmicrosoft.com">
+      <pnp:SPUserProfile TargetGroup="group02@{parameter:O365TenantName}.onmicrosoft.com">
         <pnp:Property Key="Department" Value="Production"/>
         <pnp:Property Key="OfficeLocation" Value="Washington, DC"/>
         <pnp:Property Key="PhoneNumber" Value="+1-789-123456"/>

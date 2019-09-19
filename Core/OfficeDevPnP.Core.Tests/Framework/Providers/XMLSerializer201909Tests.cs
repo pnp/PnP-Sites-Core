@@ -72,15 +72,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     ///     SiteScripts
     ///     StorageEntities
     ///     Themes
+    ///     SPUserProfile
+    /// Drive
     /// 
     /// To Cover:
-    ///     Drive
-    ///     SPUserProfile
     ///     Office365Group Settings
     ///     SiteSettings
     ///     DataRow Attachments
     ///     Properties for Folders
-    ///     Vertical section in Client Side Pages + Vertical Emphasis
     ///     Teamify/HideTeamify in TeamSite
     ///     GroupLifecyclePolicyId in TeamSite
     ///     DiscoverySettings in Teams
@@ -1190,7 +1189,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_AppCatalog()
+        public void XMLSerializer_Serialize_Tenant_AppCatalog()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1248,7 +1247,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_WebApiPermissions()
+        public void XMLSerializer_Serialize_Tenant_WebApiPermissions()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1306,7 +1305,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_ContentDeliveryNetwork()
+        public void XMLSerializer_Serialize_Tenant_ContentDeliveryNetwork()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1382,7 +1381,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_SiteDesigns()
+        public void XMLSerializer_Serialize_Tenant_SiteDesigns()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1454,7 +1453,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_SiteScripts()
+        public void XMLSerializer_Serialize_Tenant_SiteScripts()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1515,7 +1514,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_StorageEntities()
+        public void XMLSerializer_Serialize_Tenant_StorageEntities()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1567,7 +1566,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_Themes()
+        public void XMLSerializer_Serialize_Tenant_Themes()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1598,6 +1597,92 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(false, themes[0].IsInverted);
             Assert.AreEqual("CustomOrange", themes[0].Name);
             Assert.IsTrue(themes[0].Text[0].Contains("\"neutralQuaternaryAlt\": \"#dadada\""));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Tenant_SPUserProfiles()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
+            var ups = hierarchy.Tenant.SPUsersProfiles;
+
+            Assert.AreEqual(4, ups.Count);
+            Assert.AreEqual("user1@contoso.com", ups[0].TargetUser);
+            Assert.AreEqual("IT", ups[0].Properties["Department"]);
+            Assert.AreEqual("Milan, Italy", ups[0].Properties["OfficeLocation"]);
+            Assert.AreEqual("+39-030-123456", ups[0].Properties["PhoneNumber"]);
+
+            Assert.AreEqual("user2@{parameter:O365TenantName}.onmicrosoft.com", ups[1].TargetUser);
+            Assert.AreEqual("HR", ups[1].Properties["Department"]);
+            Assert.AreEqual("Seattle, WS", ups[1].Properties["OfficeLocation"]);
+            Assert.AreEqual("+1-321-123456", ups[1].Properties["PhoneNumber"]);
+
+            Assert.AreEqual("group01@contoso.com", ups[2].TargetGroup);
+            Assert.AreEqual("R&D", ups[2].Properties["Department"]);
+            Assert.AreEqual("New York, NY", ups[2].Properties["OfficeLocation"]);
+            Assert.AreEqual("+1-456-123456", ups[2].Properties["PhoneNumber"]);
+
+            Assert.AreEqual("group02@{parameter:O365TenantName}.onmicrosoft.com", ups[3].TargetGroup);
+            Assert.AreEqual("Production", ups[3].Properties["Department"]);
+            Assert.AreEqual("Washington, DC", ups[3].Properties["OfficeLocation"]);
+            Assert.AreEqual("+1-789-123456", ups[3].Properties["PhoneNumber"]);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Tenant_SPUserProfiles()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
+
+            result.ParentHierarchy.Tenant = new ProvisioningTenant(result.ApplicationLifecycleManagement.AppCatalog,
+                new Core.Framework.Provisioning.Model.ContentDeliveryNetwork());
+
+            result.Tenant.SPUsersProfiles.AddRange(new Core.Framework.Provisioning.Model.SPUPS.UserProfile[]
+            {
+                new Core.Framework.Provisioning.Model.SPUPS.UserProfile
+                {
+                    TargetUser = "user1@contoso.com",
+                },
+                new Core.Framework.Provisioning.Model.SPUPS.UserProfile
+                {
+                    TargetGroup = "group01@contoso.com",
+                },
+            });
+            result.Tenant.SPUsersProfiles[0].Properties.Add("Department", "IT");
+            result.Tenant.SPUsersProfiles[0].Properties.Add("OfficeLocation", "Milan, Italy");
+            result.Tenant.SPUsersProfiles[0].Properties.Add("PhoneNumber", "+39-030-123456");
+            result.Tenant.SPUsersProfiles[1].Properties.Add("Department", "R&D");
+            result.Tenant.SPUsersProfiles[1].Properties.Add("OfficeLocation", "New York, NY");
+            result.Tenant.SPUsersProfiles[1].Properties.Add("PhoneNumber", "+1-456-123456");
+
+            var serializer = new XMLPnPSchemaV201909Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+            var ups = wrappedResult.Tenant.SPUsersProfiles;
+
+            Assert.AreEqual(2, ups.Length);
+            Assert.AreEqual("user1@contoso.com", ups[0].TargetUser);
+            Assert.AreEqual("Department", ups[0].Property[0].Key);
+            Assert.AreEqual("IT", ups[0].Property[0].Value);
+            Assert.AreEqual("OfficeLocation", ups[0].Property[1].Key);
+            Assert.AreEqual("Milan, Italy", ups[0].Property[1].Value);
+            Assert.AreEqual("PhoneNumber", ups[0].Property[2].Key);
+            Assert.AreEqual("+39-030-123456", ups[0].Property[2].Value);
+            Assert.AreEqual("group01@contoso.com", ups[1].TargetGroup);
+            Assert.AreEqual("Department", ups[1].Property[0].Key);
+            Assert.AreEqual("R&D", ups[1].Property[0].Value);
+            Assert.AreEqual("OfficeLocation", ups[1].Property[1].Key);
+            Assert.AreEqual("New York, NY", ups[1].Property[1].Value);
+            Assert.AreEqual("PhoneNumber", ups[1].Property[2].Key);
+            Assert.AreEqual("+1-456-123456", ups[1].Property[2].Value);
         }
 
         [TestMethod]
