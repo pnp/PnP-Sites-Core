@@ -73,10 +73,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     ///     StorageEntities
     ///     Themes
     ///     SPUserProfile
+    ///     Office365Group Settings
+    ///     Office365Group Lifecycle
     /// Drive
     /// 
     /// To Cover:
-    ///     Office365Group Settings
     ///     SiteSettings
     ///     DataRow Attachments
     ///     Properties for Folders
@@ -1739,6 +1740,58 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 o365LifecyclePolicies[0].AlternateNotificationEmails);
             Assert.AreEqual(Office365GroupLifecyclePolicyManagedGroupTypes.Selected,
                 o365LifecyclePolicies[0].ManagedGroupTypes);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Tenant_Office365GroupsSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
+            var o365GroupsSettings = hierarchy.Tenant.Office365GroupsSettings;
+            
+            Assert.AreEqual(4, o365GroupsSettings.Properties.Count);
+            Assert.AreEqual("http://aka.ms/SharePointPnP", o365GroupsSettings.Properties["UsageGuidelinesUrl"]);
+            Assert.AreEqual("HBI,MBI,LBI,GDPR,TopSecret", o365GroupsSettings.Properties["ClassificationList"]);
+            Assert.AreEqual("true", o365GroupsSettings.Properties["EnableGroupCreation"]);
+            Assert.AreEqual("MBI", o365GroupsSettings.Properties["DefaultClassification"]);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Tenant_Office365GroupsSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
+
+            result.ParentHierarchy.Tenant = new ProvisioningTenant(result.ApplicationLifecycleManagement.AppCatalog,
+                new Core.Framework.Provisioning.Model.ContentDeliveryNetwork());
+
+            result.Tenant.Office365GroupsSettings.Properties.Add("UsageGuidelinesUrl", "http://aka.ms/SharePointPnP");
+            result.Tenant.Office365GroupsSettings.Properties.Add("ClassificationList", "HBI,MBI,LBI,GDPR,TopSecret");
+            result.Tenant.Office365GroupsSettings.Properties.Add("EnableGroupCreation", "true");
+            result.Tenant.Office365GroupsSettings.Properties.Add("DefaultClassification", "MBI");
+
+            var serializer = new XMLPnPSchemaV201909Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+            var o365GroupsSettings = wrappedResult.Tenant.Office365GroupsSettings;
+
+            Assert.AreEqual(4, o365GroupsSettings.Length);
+            Assert.AreEqual("UsageGuidelinesUrl", o365GroupsSettings[0].Key);
+            Assert.AreEqual("http://aka.ms/SharePointPnP", o365GroupsSettings[0].Value);
+            Assert.AreEqual("ClassificationList", o365GroupsSettings[1].Key);
+            Assert.AreEqual("HBI,MBI,LBI,GDPR,TopSecret", o365GroupsSettings[1].Value);
+            Assert.AreEqual("EnableGroupCreation", o365GroupsSettings[2].Key);
+            Assert.AreEqual("true", o365GroupsSettings[2].Value);
+            Assert.AreEqual("DefaultClassification", o365GroupsSettings[3].Key);
+            Assert.AreEqual("MBI", o365GroupsSettings[3].Value);
         }
 
         [TestMethod]

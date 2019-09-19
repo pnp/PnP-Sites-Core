@@ -223,7 +223,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
-        public Office365Groups.Office365GroupsSettings Office365GroupsSettings { get; set; }
+        public Office365Groups.Office365GroupsSettings Office365GroupsSettings { get; set; } = new Office365Groups.Office365GroupsSettings();
 
         /// <summary>
         /// Gets or sets Office365GroupLifecyclePolicies for the tenant

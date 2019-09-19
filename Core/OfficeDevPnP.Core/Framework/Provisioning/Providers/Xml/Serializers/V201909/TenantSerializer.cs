@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using OfficeDevPnP.Core.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201903;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201909;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V201909
 {
@@ -66,6 +67,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                 expressions.Add(t => t.SPUsersProfiles[0].Properties,
                     new FromArrayToDictionaryValueResolver<String, String>(
                         propertiesType, propertiesKeySelector, propertiesValueSelector));
+
+                // Manage Office 365 Groups Settings
+                expressions.Add(t => t.Office365GroupsSettings,
+                    new Office365GroupsSettingsFromSchemaToModel());
 
                 PnPObjectsMapper.MapProperties(tenantSettings, template.Tenant, expressions, true);
             }
@@ -125,8 +130,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
 
                     // Manage the Office 365 Groups Settings
                     resolvers.Add($"{tenantType}.Office365GroupsSettings",
-                        new FromDictionaryToArrayValueResolver<String, String>(
-                            propertiesType, keySelector, valueSelector, "Properties"));
+                        new Office365GroupsSettingsFromModelToSchema());
 
                     PnPObjectsMapper.MapProperties(template.Tenant, target, resolvers, recursive: true);
 

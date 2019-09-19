@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Office365Groups
         /// <summary>
         /// Properties of the file
         /// </summary>
-        public Dictionary<string, string> Properties { get; private set; }
+        public Dictionary<string, string> Properties { get; private set; } = new Dictionary<string, string>();
 
         #endregion
 

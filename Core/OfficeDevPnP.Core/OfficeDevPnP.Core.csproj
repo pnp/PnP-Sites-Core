@@ -708,6 +708,8 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveRootFolderFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveItemsFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveRootsFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\Office365GroupsSettingsFromModelToSchema.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\Office365GroupsSettingsFromSchemaToModel.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\DriveSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\TenantSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201909Serializer.cs" />
