@@ -123,6 +123,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                         new FromDictionaryToArrayValueResolver<String, String>(
                             propertiesType, keySelector, valueSelector, "Properties"));
 
+                    // Manage the Office 365 Groups Settings
+                    resolvers.Add($"{tenantType}.Office365GroupsSettings",
+                        new FromDictionaryToArrayValueResolver<String, String>(
+                            propertiesType, keySelector, valueSelector, "Properties"));
 
                     PnPObjectsMapper.MapProperties(template.Tenant, target, resolvers, recursive: true);
 

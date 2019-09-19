@@ -1687,6 +1687,62 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Tenant_Office365GroupsLifecyclePolicies()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
+            var o365LifecyclePolicies = hierarchy.Tenant.Office365GroupLifecyclePolicies;
+
+            Assert.AreEqual(1, o365LifecyclePolicies.Count);
+            Assert.AreEqual("GROUP_LIFECYCLE_01", o365LifecyclePolicies[0].ID);
+            Assert.AreEqual(180, o365LifecyclePolicies[0].GroupLifetimeInDays);
+            Assert.AreEqual("admin01@contoso.com,admin02@{parameter:O365TenantName}.onmicrosoft.com", o365LifecyclePolicies[0].AlternateNotificationEmails);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.Office365Groups.ManagedGroupTypes.Selected, 
+                o365LifecyclePolicies[0].ManagedGroupTypes);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Tenant_Office365GroupsLifecyclePolicies()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
+
+            result.ParentHierarchy.Tenant = new ProvisioningTenant(result.ApplicationLifecycleManagement.AppCatalog,
+                new Core.Framework.Provisioning.Model.ContentDeliveryNetwork());
+
+            result.Tenant.Office365GroupLifecyclePolicies.Add(
+                new Core.Framework.Provisioning.Model.Office365Groups.Office365GroupLifecyclePolicy
+                {
+                    ID = "GROUP_LIFECYCLE_01",
+                    GroupLifetimeInDays = 180,
+                    AlternateNotificationEmails = "admin01@contoso.com,admin02@{parameter:O365TenantName}.onmicrosoft.com",
+                    ManagedGroupTypes = Core.Framework.Provisioning.Model.Office365Groups.ManagedGroupTypes.Selected,
+                }
+                );
+
+            var serializer = new XMLPnPSchemaV201909Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+            var o365LifecyclePolicies = wrappedResult.Tenant.Office365GroupLifecyclePolicies;
+
+            Assert.AreEqual(1, o365LifecyclePolicies.Length);
+            Assert.AreEqual("GROUP_LIFECYCLE_01", o365LifecyclePolicies[0].ID);
+            Assert.AreEqual(180, o365LifecyclePolicies[0].GroupLifetimeInDays);
+            Assert.AreEqual("admin01@contoso.com,admin02@{parameter:O365TenantName}.onmicrosoft.com", 
+                o365LifecyclePolicies[0].AlternateNotificationEmails);
+            Assert.AreEqual(Office365GroupLifecyclePolicyManagedGroupTypes.Selected,
+                o365LifecyclePolicies[0].ManagedGroupTypes);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_Properties()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
