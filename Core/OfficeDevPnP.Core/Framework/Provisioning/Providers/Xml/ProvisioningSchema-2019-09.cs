@@ -3706,7 +3706,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         /// <remarks/>
         BingMap,
-        
+
+        /// <remarks/>
+        Button,
+
+        /// <remarks/>
+        CallToAction,
+
         /// <remarks/>
         ClientWebPart,
         
@@ -3799,7 +3805,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         /// <remarks/>
         SiteActivity,
-        
+
+        /// <remarks/>
+        Sites,
+
         /// <remarks/>
         Spacer,
         

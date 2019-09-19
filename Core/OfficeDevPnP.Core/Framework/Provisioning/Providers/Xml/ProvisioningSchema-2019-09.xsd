@@ -5,6 +5,22 @@
     xmlns:pnp="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
+  <!--
+  ****  WARNING ****
+
+  If you want to change this schema, please target the proper repository, which is the PnP-Provisioning-Schema one that is
+  available at the following URL:
+  
+  https://github.com/OfficeDev/PnP-Provisioning-Schema/
+  
+  Submit your Pull Requests against the experimental branch of the PnP-Provisioning-Schema repository and we will validate them.
+  We plan to update the master schema (the one used here) once every 2/3 months or more, depending on the number of changes and 
+  on the PnP Provisioning Engine roadmap.
+  
+  Thanks for your cooperation.
+  
+  -->
+
   <!-- The main element -->
   <xsd:element name="Provisioning" type="pnp:Provisioning">
     <xsd:annotation>
@@ -5301,6 +5317,22 @@
           <xsd:enumeration value="Custom" />
           <xsd:enumeration value="Text" />
           <xsd:enumeration value="BingMap" />
+          <xsd:enumeration value="Button">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Button Client Side Web Part
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="CallToAction">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                CallToAction Client Side Web Part
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
           <xsd:enumeration value="ClientWebPart" />
           <xsd:enumeration value="CodeSnippet" />
           <xsd:enumeration value="ContentEmbed" />
@@ -5339,6 +5371,14 @@
           <xsd:enumeration value="QuickChart" />
           <xsd:enumeration value="QuickLinks" />
           <xsd:enumeration value="SiteActivity" />
+          <xsd:enumeration value="Sites">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Sites Client Side Web Part
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
           <xsd:enumeration value="Spacer" />
           <xsd:enumeration value="ThirdParty" />
           <xsd:enumeration value="VideoEmbed" />

@@ -1043,12 +1043,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
             var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
-            var driveRoot = new Core.Framework.Provisioning.Model.Drive.DriveRoot
+            var driveRootOne = new Core.Framework.Provisioning.Model.Drive.DriveRoot
             {
                 DriveUrl = "/users/jim.black@contoso.onmicrosoft.com/drive",
                 RootFolder = new Core.Framework.Provisioning.Model.Drive.DriveRootFolder()
             };
-            driveRoot.RootFolder.DriveFiles.AddRange(new Core.Framework.Provisioning.Model.Drive.DriveFile[]
+            driveRootOne.RootFolder.DriveFiles.AddRange(new Core.Framework.Provisioning.Model.Drive.DriveFile[]
             {
                 new Core.Framework.Provisioning.Model.Drive.DriveFile
                 {
@@ -1063,7 +1063,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     Overwrite = false,
                 },
             });
-            driveRoot.RootFolder.DriveFolders.AddRange(new Core.Framework.Provisioning.Model.Drive.DriveFolder[]
+            driveRootOne.RootFolder.DriveFolders.AddRange(new Core.Framework.Provisioning.Model.Drive.DriveFolder[]
             {
                 new Core.Framework.Provisioning.Model.Drive.DriveFolder
                 {
@@ -1080,8 +1080,22 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     Overwrite = true,
                 },
             });
-            result.ParentHierarchy.Drive.DriveRoots.Add(driveRoot);
-
+            driveRootOne.RootFolder.DriveFolders[1].DriveFolders.Add(
+                new Core.Framework.Provisioning.Model.Drive.DriveFolder
+                {
+                    Name = "FY2018",
+                    Overwrite = true,
+                });
+            driveRootOne.RootFolder.DriveFolders[1].DriveFolders[0].DriveFiles.AddRange(
+                from f in Enumerable.Range(1, 12)
+                select new Core.Framework.Provisioning.Model.Drive.DriveFile
+                {
+                    Name = $"Expense-Report-{String.Format("{0:00}", f)}-2018.xlsx",
+                    Src = $"OneDrive/Jim.Black/ExpenseReports/FY2018/Expense-Report-{String.Format("{0:00}", f)}-2018.xlsx",
+                    Overwrite = false,
+                }
+                );
+            result.ParentHierarchy.Drive.DriveRoots.Add(driveRootOne);
 
             var serializer = new XMLPnPSchemaV201909Serializer();
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
@@ -4432,7 +4446,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     new Core.Framework.Provisioning.Model.CanvasSection
                     {
                         Order = 1,
-                        Type = CanvasSectionType.ThreeColumnVerticalSection,
+                        Type = CanvasSectionType.OneColumnVerticalSection,
                         BackgroundEmphasis = Core.Framework.Provisioning.Model.Emphasis.Soft,
                         VerticalSectionEmphasis = Core.Framework.Provisioning.Model.Emphasis.Strong,
                         Controls =
@@ -4514,7 +4528,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             // sections
             Assert.AreEqual(1, section.Order);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.CanvasSectionType.ThreeColumnVerticalSection, section.Type);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.CanvasSectionType.OneColumnVerticalSection, section.Type);
             Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.Emphasis.Soft, section.BackgroundEmphasis);
             Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.Emphasis.Strong, section.VerticalSectionEmphasis);
 

@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.13.1909.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Templates ID="CONTAINER-ProvisioningTemplate-2019-09-Sample-01-test">
+    <pnp:ProvisioningTemplate ID="ProvisioningTemplate-2019-09-Sample-01-test" Version="0" Scope="Undefined">
+      <pnp:ClientSidePages>
+        <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" PromoteAsTemplate="true" Overwrite="true" Title="Client Side Page Title" ContentTypeID="0x01010012345">
+          <pnp:Sections>
+            <pnp:Section Order="1" Type="OneColumnVerticalSection" BackgroundEmphasis="Soft" VerticalSectionEmphasis="Strong">
+              <pnp:Controls>
+                <pnp:CanvasControl WebPartType="Image" CustomWebPartName="..." JsonControlData="{}" ControlId="0eaba53f-55d8-44b5-9f7c-61301c7f1e0e" Order="1">
+                  <pnp:CanvasControlProperties>
+                    <pnp:CanvasControlProperty Key="Key1" Value="{token}" />
+                  </pnp:CanvasControlProperties>
+                </pnp:CanvasControl>
+              </pnp:Controls>
+            </pnp:Section>
+          </pnp:Sections>
+          <pnp:Header Type="Custom" ServerRelativeImageUrl="./site%20assets/picture.png" TranslateX="10.56" TranslateY="15.12345" LayoutType="FullWidthImage" TextAlignment="Center" ShowTopicHeader="true" ShowPublishDate="true" TopicHeader="Topic header value" AlternativeText="Alternate text" Authors="John Black, Mike White" AuthorByLine="Bill Green" AuthorByLineId="5" />
+          <pnp:FieldValues>
+            <pnp:FieldValue Key="Category" Value="Marketing" />
+          </pnp:FieldValues>
+          <pnp:Security>
+            <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="true">
+              <pnp:RoleAssignment Principal="user1@contoso.com" RoleDefinition="Full Control" />
+            </pnp:BreakRoleInheritance>
+          </pnp:Security>
+          <pnp:Properties>
+            <pnp:Property Key="Key01" Value="Value 01" />
+          </pnp:Properties>
+        </pnp:ClientSidePage>
+      </pnp:ClientSidePages>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>
