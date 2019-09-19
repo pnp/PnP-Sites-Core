@@ -1042,6 +1042,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
+            #region Prepare source model
+
             var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
             var driveRootOne = new Core.Framework.Provisioning.Model.Drive.DriveRoot
             {
@@ -1095,7 +1097,52 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     Overwrite = false,
                 }
                 );
+            driveRootOne.RootFolder.DriveFolders[1].DriveFolders.Add(
+                new Core.Framework.Provisioning.Model.Drive.DriveFolder
+                {
+                    Name = "FY2019",
+                    Overwrite = true,
+                });
+            driveRootOne.RootFolder.DriveFolders[1].DriveFolders[1].DriveFiles.AddRange(
+                from f in Enumerable.Range(1, 9)
+                select new Core.Framework.Provisioning.Model.Drive.DriveFile
+                {
+                    Name = $"Expense-Report-{String.Format("{0:00}", f)}-2019.xlsx",
+                    Src = $"OneDrive/Jim.Black/ExpenseReports/FY2018/Expense-Report-{String.Format("{0:00}", f)}-2019.xlsx",
+                    Overwrite = true,
+                }
+                );
             result.ParentHierarchy.Drive.DriveRoots.Add(driveRootOne);
+
+            var driveRootTwo = new Core.Framework.Provisioning.Model.Drive.DriveRoot
+            {
+                DriveUrl = "/users/john.white@{parameter:O365TenantName}.onmicrosoft.com/drive",
+                RootFolder = new Core.Framework.Provisioning.Model.Drive.DriveRootFolder()
+            };
+            driveRootTwo.RootFolder.DriveFiles.AddRange(new Core.Framework.Provisioning.Model.Drive.DriveFile[]
+            {
+                new Core.Framework.Provisioning.Model.Drive.DriveFile
+                {
+                    Name = "John-White-Resume.docx",
+                    Src = "OneDrive/John.White/JWResume.docx",
+                    Overwrite = true,
+                },
+            });
+            driveRootTwo.RootFolder.DriveFolders.AddRange(new Core.Framework.Provisioning.Model.Drive.DriveFolder[]
+            {
+                new Core.Framework.Provisioning.Model.Drive.DriveFolder
+                {
+                    Name = "Documents",
+                    Src = "OneDrive/John.White/Documents",
+                    Overwrite = false,
+                    IncludedExtensions = "*.pdf",
+                    ExcludedExtensions = "*.xlsx,*.pptx",
+                    Recursive = true
+                },
+            });
+            result.ParentHierarchy.Drive.DriveRoots.Add(driveRootTwo);
+
+            #endregion
 
             var serializer = new XMLPnPSchemaV201909Serializer();
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
@@ -1106,9 +1153,21 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
             var drives = wrappedResult.Drive;
 
-            Assert.AreEqual(1, drives.Count());
+            Assert.AreEqual(2, drives.Count());
             Assert.AreEqual("/users/jim.black@contoso.onmicrosoft.com/drive", drives[0].DriveUrl);
             Assert.AreEqual(4, drives[0].DriveItems.Length);
+            Assert.AreEqual("/users/john.white@{parameter:O365TenantName}.onmicrosoft.com/drive", drives[1].DriveUrl);
+            Assert.AreEqual(2, drives[1].DriveItems.Length);
+
+            Assert.AreEqual("ExpenseReports", ((DriveFolder)drives[0].DriveItems[1]).Name);
+            Assert.AreEqual(2, ((DriveFolder)drives[0].DriveItems[1]).Items.Length);
+            Assert.AreEqual("FY2018", ((DriveFolder)((DriveFolder)drives[0].DriveItems[1]).Items[0]).Name);
+            Assert.AreEqual(12, ((DriveFolder)((DriveFolder)drives[0].DriveItems[1]).Items[0]).Items.Length);
+            Assert.AreEqual("FY2019", ((DriveFolder)((DriveFolder)drives[0].DriveItems[1]).Items[1]).Name);
+            Assert.AreEqual(9, ((DriveFolder)((DriveFolder)drives[0].DriveItems[1]).Items[1]).Items.Length);
+            Assert.AreEqual("Expense-Report-01-2018.xlsx", ((DriveFile)((DriveFolder)((DriveFolder)drives[0].DriveItems[1]).Items[0]).Items[0]).Name);
+            Assert.AreEqual("Expense-Report-02-2018.xlsx", ((DriveFile)((DriveFolder)((DriveFolder)drives[0].DriveItems[1]).Items[0]).Items[1]).Name);
+            Assert.AreEqual("Expense-Report-12-2018.xlsx", ((DriveFile)((DriveFolder)((DriveFolder)drives[0].DriveItems[1]).Items[0]).Items[11]).Name);
         }
 
         [TestMethod]

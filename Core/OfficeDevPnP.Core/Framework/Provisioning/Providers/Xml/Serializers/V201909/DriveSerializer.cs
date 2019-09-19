@@ -48,6 +48,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             {
                 var driveRootTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DriveRoot, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var driveRootType = Type.GetType(driveRootTypeName, false);
+                var driveFolderTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DriveFolder, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var driveFolderType = Type.GetType(driveFolderTypeName, false);
 
                 if (driveRootType != null)
                 {
@@ -58,7 +60,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     //    new DriveRootFolderFromModelToSchemaTypeResolver());
 
                     resolvers.Add($"{driveRootType}.DriveItems",
-                        new DriveRootsFromModelToSchemaTypeResolver());
+                        new DriveItemsFromModelToSchemaTypeResolver()); // DriveRootsFromModelToSchemaTypeResolver());
+                    resolvers.Add($"{driveFolderType}.Items",
+                        new DriveItemsFromModelToSchemaTypeResolver());
+
 
                     persistence.GetPublicInstanceProperty("Drive")
                         .SetValue(
