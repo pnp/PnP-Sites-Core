@@ -53,6 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.EnsureProperties(w => w.ServerRelativeUrl, w => w.SupportedUILanguageIds);
 
                     web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
+                    web.Context.Load(web.AvailableFields, fields => fields.Include(f => f.Id, f => f.InternalName, f => f.SchemaXmlWithResourceTokens));
                     web.Context.ExecuteQueryRetry();
                     var existingLists = web.Lists.AsEnumerable().ToList();
                     var serverRelativeUrl = web.ServerRelativeUrl;
@@ -1518,7 +1519,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (var ctb in templateList.ContentTypeBindings)
             {
-                var tempCT = web.GetContentTypeById(ctb.ContentTypeId, searchInSiteHierarchy: true);
+                var tempCT = web.GetContentTypeById(
+                    ctb.ContentTypeId,
+                    cts => cts.Include(
+                        ct => ct.Id,
+                        ct => ct.Name,
+                        ct => ct.FieldLinks.Include(fl => fl.Id, fl => fl.Hidden)
+                    ),
+                    searchInSiteHierarchy: true
+                    );
                 if (tempCT != null)
                 {
                     ContentTypeId existingContentTypeId = list.ContentTypes.BestMatch(ctb.ContentTypeId);
@@ -1543,6 +1552,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
+                            // To avoid error [Exception setting "Hidden": "Cannot change Hidden attribute for this field], add fields to list before adding the content type. #2407
+                            AddContentTypeHiddenFieldsToList(tempCT, list);
                             // Add the content type
                             listContentType = list.ContentTypes.AddExistingContentType(tempCT);
                         }
@@ -1596,6 +1607,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        private void AddContentTypeHiddenFieldsToList(ContentType tempCT, List list)
+        {
+            var ctx = (ClientContext)list.Context;
+            var web = ctx.Web;
+            foreach (var fieldLink in tempCT.FieldLinks)
+            {
+                if (fieldLink.Hidden && !list.FieldExistsById(fieldLink.Id))
+                {
+                    var siteField = web.AvailableFields.First(f => f.Id == fieldLink.Id);
+
+                    var fieldSchema = XElement.Parse(siteField.SchemaXmlWithResourceTokens);
+                    var displayNameBackup = (string)fieldSchema.Attribute("DisplayName") ?? (string)fieldSchema.Attribute("Name");
+
+                    fieldSchema.SetAttributeValue("DisplayName", (string)fieldSchema.Attribute("Name"));
+
+                    var createdField = list.Fields.AddFieldAsXml(fieldSchema.ToString(), false, AddFieldOptions.AddToNoContentType);
+                    ctx.ExecuteQuery();
+                    var createdFieldSchema = XElement.Parse(createdField.EnsureProperty(f => f.SchemaXml));
+                    createdFieldSchema.SetAttributeValue("DisplayName", displayNameBackup);
+                    createdField.SchemaXml = createdFieldSchema.ToString();
+                    ctx.ExecuteQuery();
+                }
+            }
+        }
         private static void CreateListCustomAction(List existingList, TokenParser parser, CustomAction userCustomAction)
         {
             UserCustomAction newUserCustomAction = existingList.UserCustomActions.Add();

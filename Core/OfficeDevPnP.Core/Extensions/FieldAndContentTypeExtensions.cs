@@ -7,6 +7,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client.DocumentSet;
 using Microsoft.SharePoint.Client.Taxonomy;
+using System.Linq.Expressions;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -1667,9 +1668,10 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web to be processed</param>
         /// <param name="contentTypeId">Complete ID for the content type</param>
+        /// <param name="retrievals">Specify additional data to load when retrieving the content types</param>
         /// <param name="searchInSiteHierarchy">Searches accross all content types in the site up to the root site</param>
         /// <returns>Content type object or null if was not found</returns>
-        public static ContentType GetContentTypeById(this Web web, string contentTypeId, bool searchInSiteHierarchy = false)
+        public static ContentType GetContentTypeById(this Web web, string contentTypeId, Expression<Func<ContentTypeCollection, object>> retrievals, bool searchInSiteHierarchy = false)
         {
             if (string.IsNullOrEmpty(contentTypeId))
             {
@@ -1677,8 +1679,14 @@ namespace Microsoft.SharePoint.Client
             }
 
             var ctCol = searchInSiteHierarchy ? web.AvailableContentTypes : web.ContentTypes;
-
-            web.Context.Load(ctCol);
+            if (retrievals != null)
+            {
+                web.Context.Load(ctCol, retrievals);
+            }
+            else
+            {
+                web.Context.Load(ctCol);
+            }
             web.Context.ExecuteQueryRetry();
             foreach (var item in ctCol)
             {
@@ -1689,6 +1697,18 @@ namespace Microsoft.SharePoint.Client
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Return content type by Id
+        /// </summary>
+        /// <param name="web">Web to be processed</param>
+        /// <param name="contentTypeId">Complete ID for the content type</param>
+        /// <param name="searchInSiteHierarchy">Searches accross all content types in the site up to the root site</param>
+        /// <returns>Content type object or null if was not found</returns>
+        public static ContentType GetContentTypeById(this Web web, string contentTypeId, bool searchInSiteHierarchy = false)
+        {
+            return GetContentTypeById(web, contentTypeId, null, searchInSiteHierarchy);
         }
 
         /// <summary>
