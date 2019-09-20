@@ -884,8 +884,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         if (spFolder.ListItemAllFields.ContentType.StringId.StartsWith(ct.StringId))
                         {
-                            //https://github.com/SharePoint/PnP-Provisioning-Schema/issues/412
-                            //pnpFolder.Properties.Add("ContentTypeId", ct.StringId);
+                            pnpFolder.ContentTypeID = ct.StringId;
                             break;
                         }
                     }
@@ -918,9 +917,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             // We process real values only
                             if (value != null && !String.IsNullOrEmpty(value) && value != "[]")
                             {
-                                //Todo: FieldValues for Folders - needs schema extension since - SetDefaultColumnValuesImplementation handling pnpFolder.DefaultColumnValues has focus on something else
-                                //https://github.com/SharePoint/PnP-Provisioning-Schema/issues/412
-                                //pnpFolder.Properties.Add(fieldValue.Key, value);
+                                pnpFolder.Properties.Add(fieldValue.Key, value);
                             }
                         }
                     }
