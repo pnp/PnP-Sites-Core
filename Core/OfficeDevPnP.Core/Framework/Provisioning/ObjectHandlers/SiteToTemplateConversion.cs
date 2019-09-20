@@ -401,7 +401,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             step++;
                         }
                         CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted, handler);
-                        tokenParser = handler.ProvisionObjects(web, template, tokenParser, provisioningInfo);
+
+                        try
+                        {
+                            tokenParser = handler.ProvisionObjects(web, template, tokenParser, provisioningInfo);
+                        }
+                        catch (Exception ex)
+                        {
+                            CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ExceptionOccurred, handler, ex);
+                            throw ex;
+                        }
                         CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted, handler);
                     }
                 }
@@ -417,7 +426,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private void CallWebHooks(ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateWebhookKind kind, ObjectHandlerBase objectHandler = null)
+        private void CallWebHooks(ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateWebhookKind kind, ObjectHandlerBase objectHandler = null, Exception exception = null)
         {
             using (var scope = new PnPMonitoredScope("ProvisioningTemplate WebHook Call"))
             {
@@ -426,6 +435,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     foreach (var webhook in template.ProvisioningTemplateWebhooks.Where(w => w.Kind == kind))
                     {
                         var requestParameters = new Dictionary<String, String>();
+
+                        if (exception != null)
+                        {
+                            // For GET requests we limit the size of the exception to avoid issues
+                            requestParameters["__exception"] =
+                                webhook.Method == ProvisioningTemplateWebhookMethod.GET ?
+                                exception.Message : exception.ToString();
+                        }
 
                         SimpleTokenParser internalParser = new SimpleTokenParser();
                         foreach (var webhookparam in webhook.Parameters)
@@ -440,10 +457,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             case ProvisioningTemplateWebhookMethod.GET:
                                 {
-                                    if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted)
+                                    if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted 
+                                        || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted
+                                        || kind == ProvisioningTemplateWebhookKind.ExceptionOccurred)
                                     {
                                         url += $"&__handler={objectHandler.InternalName}"; // add the handler name to the REST request URL
                                         url += $"&__webhookKind={kind.ToString()}"; // add the webhook kind to the REST request URL
+
+                                        foreach (var k in requestParameters.Keys)
+                                        {
+                                            url += $"&{HttpUtility.UrlEncode(k)}={HttpUtility.UrlEncode(requestParameters[k])}";
+                                        }
                                     }
                                     try
                                     {
