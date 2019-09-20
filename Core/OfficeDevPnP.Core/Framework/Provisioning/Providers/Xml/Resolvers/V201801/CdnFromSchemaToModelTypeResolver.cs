@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201801
 {
     /// <summary>
     /// Resolves the CDN settings at the Tenant level from the Schema to the Model
     /// </summary>
-    public class CdnFromSchemaToModelTypeResolver : ITypeResolver
+    internal class CdnFromSchemaToModelTypeResolver : ITypeResolver
     {
         public string Name => this.GetType().Name;
 

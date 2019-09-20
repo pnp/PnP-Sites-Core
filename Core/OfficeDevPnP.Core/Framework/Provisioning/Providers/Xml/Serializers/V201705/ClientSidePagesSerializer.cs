@@ -1,11 +1,13 @@
 ﻿using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V201805;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -15,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201705,
         SerializationSequence = 2300, DeserializationSequence = 2300,
-        Default = true)]
+        Scope = SerializerScope.ProvisioningTemplate)]
     internal class ClientSidePagesSerializer : PnPBaseSchemaSerializer<ClientSidePage>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
@@ -26,12 +28,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             {
                 var expressions = new Dictionary<Expression<Func<ClientSidePage, Object>>, IResolver>();
 
-                // Manage CanvasControlProperties for CanvasControl
+                // Manage CanvasControlProperties for CanvasControl and FieldValues for ClientSidePage
                 var stringDictionaryTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var stringDictionaryType = Type.GetType(stringDictionaryTypeName, true);
                 var stringDictionaryKeySelector = CreateSelectorLambda(stringDictionaryType, "Key");
                 var stringDictionaryValueSelector = CreateSelectorLambda(stringDictionaryType, "Value");
+
                 expressions.Add(cp => cp.Sections[0].Controls[0].ControlProperties,
+                    new FromArrayToDictionaryValueResolver<String, String>(
+                        stringDictionaryType, stringDictionaryKeySelector, stringDictionaryValueSelector));
+
+                // FieldValues
+                expressions.Add(cp => cp.FieldValues,
                     new FromArrayToDictionaryValueResolver<String, String>(
                         stringDictionaryType, stringDictionaryKeySelector, stringDictionaryValueSelector));
 
@@ -44,6 +52,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 // Manage ControlId for CanvasControl
                 expressions.Add(cp => cp.Sections[0].Controls[0].ControlId,
                     new FromStringToGuidValueResolver());
+
+                // Manage Header for client side page
+                expressions.Add(cp => cp.Header, new ClientSidePageHeaderFromSchemaToModelTypeResolver());
 
                 template.ClientSidePages.AddRange(
                     PnPObjectsMapper.MapObjects(clientSidePages,
@@ -87,7 +98,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                         (s, p) => Enum.Parse(canvasControlWebPartTypeType, s.GetPublicInstancePropertyValue("Type").ToString()))
                         );
 
-                // Manage CanvasControlProperties for CanvasControl
+                // Manage CanvasControlProperties for CanvasControl and FieldValues for ClientSidePage
                 var dictionaryItemTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var dictionaryItemType = Type.GetType(dictionaryItemTypeName, true);
                 var dictionaryItemKeySelector = CreateSelectorLambda(dictionaryItemType, "Key");
@@ -96,6 +107,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add($"{canvasControlType}.CanvasControlProperties",
                     new FromDictionaryToArrayValueResolver<string, string>(
                         dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector, "ControlProperties"));
+
+                expressions.Add($"{clientSidePageType}.FieldValues", new FromDictionaryToArrayValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
+
+                // Manage Header for client side page
+                var clientSidePageHeaderType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ClientSidePageHeader, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}", false);
+
+                if (null != clientSidePageHeaderType)
+                {
+                    expressions.Add($"{clientSidePageType}.Header", new ClientSidePageHeaderFromModelToSchemaTypeResolver());
+                    expressions.Add($"{clientSidePageHeaderType}.TranslateX", new FromNullableToSpecifiedValueResolver<double>("TranslateXSpecified"));
+                    expressions.Add($"{clientSidePageHeaderType}.TranslateY", new FromNullableToSpecifiedValueResolver<double>("TranslateYSpecified"));
+                }
 
                 persistence.GetPublicInstanceProperty("ClientSidePages")
                     .SetValue(

@@ -3,7 +3,7 @@
     /// <summary>
     /// Collection of FieldRef objects
     /// </summary>
-    public partial class FieldRefCollection : ProvisioningTemplateCollection<FieldRef>
+    public partial class FieldRefCollection : BaseProvisioningTemplateObjectCollection<FieldRef>
     {
         /// <summary>
         /// Constructor for FieldRefCollection class

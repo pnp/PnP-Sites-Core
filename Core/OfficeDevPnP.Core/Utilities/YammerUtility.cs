@@ -43,7 +43,7 @@ namespace OfficeDevPnP.Core.Utilities
         {
             YammerGroup yamGroup = null;
             var groups = GetYammerGroups(accessToken);
-           
+
             foreach (var item in groups)
             {
                 if (item.id == groupId)
@@ -132,7 +132,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// Creates web part entity with the Yammer OpenGraph structure on it for specific URL
         /// </summary>
         /// <param name="yammerNetworkName">Yammer network name</param>
-        /// <param name="url">yammer url</param>
+        /// <param name="url">yammer URL</param>
         /// <param name="showHeader">Shows header based on value</param>
         /// <param name="showFooter">Shows footer based on value</param>
         /// <param name="postTitle">creates webpart with given post title</param>
@@ -214,7 +214,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// Constructs web part definition for Open Graph discussion web part definition
         /// </summary>
         /// <param name="yammerNetworkName">Yammer network name</param>
-        /// <param name="url">Yammer url</param>
+        /// <param name="url">Yammer URL</param>
         /// <param name="showHeader">Shows header based on value</param>
         /// <param name="showFooter">Shows footer based on value</param>
         /// <param name="postImageUrl">creates webpart with given post title</param>
@@ -222,8 +222,8 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="postTitle">creates webpart with given post title</param>
         /// <param name="groupId">yammer group id</param>
         /// <returns>The constructed Open Graph Discussion Part XML</returns>
-        public static string CreateYammerOpenGraphDiscussionPartXml(string yammerNetworkName, string url, bool showHeader, 
-                                                                    bool showFooter, string postTitle="", string postImageUrl="", 
+        public static string CreateYammerOpenGraphDiscussionPartXml(string yammerNetworkName, string url, bool showHeader,
+                                                                    bool showFooter, string postTitle = "", string postImageUrl = "",
                                                                     bool useSso = true, string groupId = "")
         {
             StringBuilder wp = new StringBuilder(100);
@@ -262,10 +262,10 @@ namespace OfficeDevPnP.Core.Utilities
             wp.Append("				                     , promptText: 'Start a conversation'");
             if (!string.IsNullOrEmpty(groupId))
             {
-                wp.Append("				                 , defaultGroupId: '" + groupId + "'"); 
+                wp.Append("				                 , defaultGroupId: '" + groupId + "'");
             }
             wp.Append("				                }");
-            wp.Append("				                , objectProperties: {"); 
+            wp.Append("				                , objectProperties: {");
             wp.Append("				                  url: '" + url + "'");
             wp.Append("				                  , type: 'page'");
             wp.Append("				                  , title: '" + postTitle + "'");

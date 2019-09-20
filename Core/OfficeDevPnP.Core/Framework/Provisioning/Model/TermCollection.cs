@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of Term objects
     /// </summary>
-    public partial class TermCollection : ProvisioningTemplateCollection<Term>
+    public partial class TermCollection : BaseProvisioningTemplateObjectCollection<Term>
     {
         /// <summary>
         /// Constructor for TermCollection class

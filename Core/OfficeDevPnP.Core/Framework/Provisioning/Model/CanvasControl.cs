@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the custom properties for the client-side web part control.
         /// </summary>
-        public Dictionary<String, String> ControlProperties { get; set; }
+        public Dictionary<String, String> ControlProperties { get; set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// Defines the Type of Client-side Web Part.
@@ -113,30 +113,44 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         Custom,
         Text,
-        ContentRollup,
         BingMap,
+        ClientWebPart,
+        CodeSnippet,
         ContentEmbed,
+        ContentRollup,
+        CountDown,
+        CustomMessageRegion,
+        Divider,
         DocumentEmbed,
-        Image,
-        ImageGallery,
-        LinkPreview,
-        NewsFeed,
-        NewsReel,
-        PowerBIReportEmbed,
-        QuickChart,
-        SiteActivity,
-        VideoEmbed,
-        YammerEmbed,
         Events,
         GroupCalendar,
         Hero,
+        Image,
+        ImageGallery,
+        LinkPreview,
         List,
+        ListProperties,
+        MarkDown,
+        MicrosoftForms,
+        MyDocuments,
+        News,
+        NewsFeed,
+        NewsReel,
+        PageFields,
         PageTitle,
         People,
+        Planner,
+        PowerApps,
+        PowerBIReportEmbed,
+        QuickChart,
         QuickLinks,
-        CustomMessageRegion,
-        Divider,
-        MicrosoftForms,
-        Spacer
+        SiteActivity,
+        Spacer,
+        ThirdParty,
+        VideoEmbed,
+        Weather,
+        YammerEmbed,
+        YammerFullFeed,
+        YouTube,
     }
 }

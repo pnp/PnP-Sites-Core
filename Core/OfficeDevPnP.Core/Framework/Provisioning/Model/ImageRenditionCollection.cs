@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// A collection of ImageRendition objects
     /// </summary>
-    public partial class ImageRenditionCollection : ProvisioningTemplateCollection<ImageRendition>
+    public partial class ImageRenditionCollection : BaseProvisioningTemplateObjectCollection<ImageRendition>
     {
         /// <summary>
         /// Constructor for ImageRenditionCollection class

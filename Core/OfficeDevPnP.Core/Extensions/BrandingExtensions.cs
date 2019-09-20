@@ -238,7 +238,7 @@ namespace Microsoft.SharePoint.Client
                 masterUrl = masterServerRelativeUrl;
             }
 
-            //URL decode retrieved url's
+            //URL decode retrieved URL's
             paletteUrl = System.Net.WebUtility.UrlDecode(paletteUrl);
             fontUrl = System.Net.WebUtility.UrlDecode(fontUrl);
             backgroundUrl = System.Net.WebUtility.UrlDecode(backgroundUrl);
@@ -919,7 +919,7 @@ namespace Microsoft.SharePoint.Client
                                     theme.Name = name;
                                     theme.IsCustomComposedLook = !defaultComposedLooks.Contains(theme.Name);
 
-                                    // Restore the default composed look image url
+                                    // Restore the default composed look image URL
                                     if (imageUrl != null)
                                     {
                                         theme.BackgroundImage = imageUrl;
@@ -991,7 +991,7 @@ namespace Microsoft.SharePoint.Client
                 return null;
             }
 
-            // Clean up the fully qualified urls
+            // Clean up the fully qualified URLs
             if (theme.BackgroundImage != null && theme.BackgroundImage.IndexOf(siteCollectionUrl, StringComparison.InvariantCultureIgnoreCase) > -1)
             {
                 theme.BackgroundImage = theme.BackgroundImage.Replace(siteCollectionUrl, "");
@@ -1483,6 +1483,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The Web to activate the Responsive UI to</param>
         /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
+        [Obsolete]
         public static void EnableResponsiveUI(this Web web, string infrastructureUrl = null)
         {
             EnableResponsiveUIImplementation(web, infrastructureUrl);
@@ -1493,6 +1494,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="site">The Site to activate the Responsive UI to</param>
         /// <param name="infrastructureUrl">URL pointing to an infrastructure site</param>
+        [Obsolete]
         public static void EnableResponsiveUI(this Site site, string infrastructureUrl = null)
         {
             EnableResponsiveUIImplementation(site, infrastructureUrl);
@@ -1611,6 +1613,7 @@ namespace Microsoft.SharePoint.Client
         /// Disables the Responsive UI on a Classic SharePoint Web
         /// </summary>
         /// <param name="web">The Web to disable the Responsive UI on</param>
+        [Obsolete]
         public static void DisableResponsiveUI(this Web web)
         {
             try
@@ -1627,6 +1630,7 @@ namespace Microsoft.SharePoint.Client
         /// Disables the Responsive UI on a Classic SharePoint Site
         /// </summary>
         /// <param name="site">The Site to disable the Responsive UI on</param>
+        [Obsolete]
         public static void DisableResponsiveUI(this Site site)
         {
             try

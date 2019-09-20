@@ -78,11 +78,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             }
 
 #if ONPREMISES
-            // we don't support NoCrawl and RequestAccessEmail in on-premises so drop them from source and target
+            // we don't support NoCrawl in on-premises so drop them from source and target
             DropAttribute(sourceObject, "NoCrawl");
             DropAttribute(targetObject, "NoCrawl");
-            DropAttribute(sourceObject, "RequestAccessEmail");
-            DropAttribute(targetObject, "RequestAccessEmail");
 #endif
 
             if (isNoScriptSite)

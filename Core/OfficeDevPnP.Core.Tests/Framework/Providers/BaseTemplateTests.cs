@@ -46,7 +46,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             bool createSites = true;
 
             List<BaseTemplate> templates = new List<BaseTemplate>(1);
-            templates.Add(new BaseTemplate("STS#0"));
+            templates.Add(new BaseTemplate("GROUP#0", skipDeleteCreateCycle: true));
 
             ProcessBaseTemplates(templates, deleteSites, createSites);
         }
@@ -55,6 +55,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         [Ignore]
         public void ExtractBaseTemplates2()
         {
+            // IMPORTANT: extraction needs to be done with user credentials, not app-only. With app-only certain templates (like BDR) will fail
             // use these flags to save time if the process failed after delete or create sites was done
             bool deleteSites = true;
             bool createSites = true;
@@ -73,6 +74,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 #else
             templates.Add(new BaseTemplate("STS#1"));
             templates.Add(new BaseTemplate("BLANKINTERNET#0"));
+#endif
+#if !ONPREMISES || SP2019
+            templates.Add(new BaseTemplate("STS#3"));
 #endif
             templates.Add(new BaseTemplate("BICENTERSITE#0"));
             templates.Add(new BaseTemplate("SRCHCEN#0"));
@@ -246,7 +250,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         private static string GetSiteUrl(BaseTemplate template, bool siteCollectionUrl = true)
         {
-            Uri devSiteUrl = new Uri(ConfigurationManager.AppSettings["SPODevSiteUrl"]);
+            Uri devSiteUrl = new Uri(TestCommon.AppSetting("SPODevSiteUrl"));
             string baseUrl = String.Format("{0}://{1}", devSiteUrl.Scheme, devSiteUrl.DnsSafeHost);
 
             string siteUrl = "";
@@ -317,7 +321,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         private void DumpTemplate(ClientContext ctx, string template, string subSiteTemplate = "", string saveAsTemplate = "")
         {
 
-            Uri devSiteUrl = new Uri(ConfigurationManager.AppSettings["SPODevSiteUrl"]);
+            Uri devSiteUrl = new Uri(TestCommon.AppSetting("SPODevSiteUrl"));
             string baseUrl = String.Format("{0}://{1}", devSiteUrl.Scheme, devSiteUrl.DnsSafeHost);
 
             string siteUrl = "";

@@ -20,6 +20,11 @@ namespace OfficeDevPnP.Core.Tests.Sites
         [TestInitialize]
         public void Initialize()
         {
+            if (TestCommon.AppOnlyTesting())
+            {
+                Assert.Inconclusive("Test that require modern site collection creation are not supported in app-only.");
+            }
+
             using (var clientContext = TestCommon.CreateClientContext())
             {
                 communicationSiteGuid = Guid.NewGuid().ToString("N");
@@ -60,6 +65,25 @@ namespace OfficeDevPnP.Core.Tests.Sites
                 Assert.IsNotNull(commResults);
             }
         }
+
+        [TestMethod]
+        public async Task CreateTeamNoGroupSiteTestAsync()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+
+                var teamNoGroupSiteResult = await clientContext.CreateSiteAsync(new Core.Sites.TeamNoGroupSiteCollectionCreationInformation()
+                {
+                    Url = $"{baseUrl}/sites/site{teamSiteGuid}",
+                    Title = "Team no group Site Test",
+                    Description = "Site description",
+                    Lcid = 1033
+                });
+
+                Assert.IsNotNull(teamNoGroupSiteResult);
+            }
+        }
+
 
         //[TestMethod]
         //public async Task CreateTeamSiteTestAsync()

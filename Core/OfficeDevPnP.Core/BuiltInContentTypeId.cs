@@ -83,6 +83,7 @@ namespace OfficeDevPnP.Core
         public const string DeviceChannelMappings = "0x010100FDA260FD09A244B183A666F2AE2475A6";
         public const string SystemPageLayout = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC1";
         public const string PageLayout = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE811";
+        public const string HtmlPageLayout = "0x01010007FF3E057FA8AB4AA42FCB67B453FFC100E214EEE741181F4E9F7ACC43278EE8110003D357F861E29844953D5CAA1D4D8A3B";
         public const string SystemMasterPage = "0x0101000F1C8B9E0EB4BE489F09807B2C53288F";
         public const string ASPNETMasterPage = "0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD1";
         public const string HtmlMasterPage = "0x0101000F1C8B9E0EB4BE489F09807B2C53288F0054AD6EF48B9F7B45A142F8173F171BD10003D357F861E29844953D5CAA1D4D8A3A";
@@ -99,6 +100,7 @@ namespace OfficeDevPnP.Core
         /// Contains the content identifier (ID) for content types used in the modern page infrastructure
         /// </summary>
         public const string ModernArticlePage = "0x0101009D1CB255DA76424F860D91F20E6C4118";
+        public const string RepostPage = "0x0101009D1CB255DA76424F860D91F20E6C4118002A50BFCFB7614729B56886FADA02339B";
 
 
         private static Dictionary<string, bool> s_dict = (Dictionary<string, bool>) null;
@@ -168,6 +170,7 @@ namespace OfficeDevPnP.Core
                 s_dict.Add(DeviceChannelMappings, true);
                 s_dict.Add(SystemPageLayout, true);
                 s_dict.Add(PageLayout, true);
+                s_dict.Add(HtmlPageLayout, true);
                 s_dict.Add(SystemMasterPage, true);
                 s_dict.Add(ASPNETMasterPage, true);
                 s_dict.Add(HtmlMasterPage, true);

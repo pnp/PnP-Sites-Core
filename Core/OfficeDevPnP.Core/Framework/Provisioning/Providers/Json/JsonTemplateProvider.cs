@@ -61,6 +61,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
             return (result);
         }
 
+        public override ProvisioningHierarchy GetHierarchy(string uri)
+        {
+            throw new NotImplementedException();
+        }
+
         public override ProvisioningTemplate GetTemplate(string uri)
         {
             return (this.GetTemplate(uri, (ITemplateProviderExtension[])null));
@@ -122,6 +127,64 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
             return (provisioningTemplate);
         }
 
+        public override ProvisioningTemplate GetTemplate(Stream stream)
+        {
+            return (this.GetTemplate(stream, (ITemplateProviderExtension[])null));
+        }
+
+        public override ProvisioningTemplate GetTemplate(Stream stream, ITemplateProviderExtension[] extensions)
+        {
+            return (this.GetTemplate(stream, null, null, extensions));
+        }
+
+        public override ProvisioningTemplate GetTemplate(Stream stream, string identifier)
+        {
+            return (this.GetTemplate(stream, identifier, null));
+        }
+
+        public override ProvisioningTemplate GetTemplate(Stream stream, ITemplateFormatter formatter)
+        {
+            return (this.GetTemplate(stream, null, formatter));
+        }
+
+        public override ProvisioningTemplate GetTemplate(Stream stream, string identifier, ITemplateFormatter formatter)
+        {
+            return (this.GetTemplate(stream, null, formatter, null));
+        }
+
+        public override ProvisioningTemplate GetTemplate(Stream stream, string identifier, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions)
+        {
+            if (stream == null)
+            {
+                throw new ArgumentException(nameof(stream));
+            }
+
+            if (formatter == null)
+            {
+                formatter = new JsonPnPFormatter();
+                formatter.Initialize(this);
+            }
+
+            // Handle any pre-processing extension
+            stream = PreProcessGetTemplateExtensions(extensions, stream);
+
+            // And convert it into a ProvisioningTemplate
+            ProvisioningTemplate provisioningTemplate = formatter.ToProvisioningTemplate(stream, identifier);
+
+            // Handle any post-processing extension
+            provisioningTemplate = PostProcessGetTemplateExtensions(extensions, provisioningTemplate);
+
+            // Store the identifier of this template, is needed for latter save operation
+            this.Uri = null;
+
+            return (provisioningTemplate);
+        }
+
+        public override void Save(ProvisioningHierarchy hierarchy)
+        {
+            throw new NotImplementedException();
+        }
+
         public override void Save(ProvisioningTemplate template)
         {
             this.Save(template, (ITemplateProviderExtension[])null);
@@ -140,6 +203,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
         public override void Save(ProvisioningTemplate template, ITemplateFormatter formatter, ITemplateProviderExtension[] extensions = null)
         {
             this.SaveAs(template, this.Uri, formatter, extensions);
+        }
+
+        public override void SaveAs(ProvisioningHierarchy hierarchy, string uri)
+        {
+            throw new NotImplementedException();
         }
 
         public override void SaveAs(ProvisioningTemplate template, string uri)

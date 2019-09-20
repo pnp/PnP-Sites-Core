@@ -10,6 +10,10 @@ using System.Collections;
 using System.Linq.Expressions;
 using Microsoft.SharePoint.Client.Publishing.Navigation;
 using Microsoft.SharePoint.Client.Taxonomy;
+using OfficeDevPnP.Core.Utilities;
+using Newtonsoft.Json;
+using OfficeDevPnP.Core;
+using Newtonsoft.Json.Linq;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -44,11 +48,6 @@ namespace Microsoft.SharePoint.Client
             //Read all the properties of the web
             web.Context.Load(web, w => w.AllProperties);
             web.Context.ExecuteQueryRetry();
-
-            if (!ArePublishingFeaturesActivated(web.AllProperties))
-            {
-                throw new ArgumentException("Structural navigation settings are only supported for publishing sites");
-            }
 
             // Determine if managed navigation is used...if so the other properties are not relevant
             string webNavigationSettings = web.AllProperties.GetPropertyAsString(WebNavigationSettings);
@@ -525,13 +524,14 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
         /// <param name="nodeTitle">the title of node to add</param>
-        /// <param name="nodeUri">the url of node to add</param>
-        /// <param name="parentNodeTitle">if string.Empty, then will add this node as top level node</param>
+        /// <param name="nodeUri">the URL of node to add</param>
+        /// <param name="parentNodeTitle">if string.Empty, then will add this node as top level node. Contains the title of the immediate parent node, for third level nodes, providing <paramref name="l1ParentNodeTitle"/> is required.</param>
         /// <param name="navigationType">the type of navigation, quick launch, top navigation or search navigation</param>
         /// <param name="isExternal">true if the link is an external link</param>
         /// <param name="asLastNode">true if the link should be added as the last node of the collection</param>
+        /// <param name="l1ParentNodeTitle">title of the first level parent, if this node is a third level navigation node</param>
         /// <returns>Newly added NavigationNode</returns>
-        public static NavigationNode AddNavigationNode(this Web web, string nodeTitle, Uri nodeUri, string parentNodeTitle, NavigationType navigationType, bool isExternal = false, bool asLastNode = true)
+        public static NavigationNode AddNavigationNode(this Web web, string nodeTitle, Uri nodeUri, string parentNodeTitle, NavigationType navigationType, bool isExternal = false, bool asLastNode = true, string l1ParentNodeTitle = null)
         {
             web.Context.Load(web, w => w.Navigation.QuickLaunch, w => w.Navigation.TopNavigationBar);
             web.Context.ExecuteQueryRetry();
@@ -555,8 +555,7 @@ namespace Microsoft.SharePoint.Client
                     }
                     else
                     {
-                        var parentNode = quickLaunch.FirstOrDefault(n => n.Title == parentNodeTitle);
-                        navigationNode = parentNode?.Children.Add(node);
+                        navigationNode = CreateNodeAsChild(web, quickLaunch, node, parentNodeTitle, l1ParentNodeTitle);
                     }
                 }
                 else if (navigationType == NavigationType.TopNavigationBar)
@@ -564,8 +563,7 @@ namespace Microsoft.SharePoint.Client
                     var topLink = web.Navigation.TopNavigationBar;
                     if (!string.IsNullOrEmpty(parentNodeTitle))
                     {
-                        var parentNode = topLink.FirstOrDefault(n => n.Title == parentNodeTitle);
-                        navigationNode = parentNode?.Children.Add(node);
+                        navigationNode = CreateNodeAsChild(web, topLink, node, parentNodeTitle, l1ParentNodeTitle);
                     }
                     else
                     {
@@ -582,6 +580,34 @@ namespace Microsoft.SharePoint.Client
             {
                 web.Context.ExecuteQueryRetry();
             }
+            return navigationNode;
+        }
+
+        /// <summary>
+        /// Creates a navigation node as a child of another (first or second level) navigation node.
+        /// </summary>
+        /// <param name="web">Site to be processed - can be root web or sub site</param>
+        /// <param name="parentNodes">Level one nodes under which the node should be created</param>
+        /// <param name="nodeToCreate">Node information</param>
+        /// <param name="parentNodeTitle">The title of the immediate parent node (level two if child should be level three, level one otherwise)</param>
+        /// <param name="l1ParentNodeTitle">The level one parent title or null, if the node to be created should be a level two node</param>
+        /// <returns></returns>
+        private static NavigationNode CreateNodeAsChild(Web web, NavigationNodeCollection parentNodes, NavigationNodeCreationInformation nodeToCreate, string parentNodeTitle, string l1ParentNodeTitle)
+        {
+            if (l1ParentNodeTitle != null)
+            {
+                var l1ParentNode = parentNodes.FirstOrDefault(n => n.Title.Equals(l1ParentNodeTitle, StringComparison.InvariantCultureIgnoreCase));
+                if (l1ParentNode == null)
+                {
+                    return null;
+                }
+                web.Context.Load(l1ParentNode.Children);
+                web.Context.ExecuteQueryRetry();
+                parentNodes = l1ParentNode.Children;
+            }
+
+            var parentNode = parentNodes.FirstOrDefault(n => n.Title.Equals(parentNodeTitle, StringComparison.InvariantCultureIgnoreCase));
+            var navigationNode = parentNode?.Children.Add(nodeToCreate);
             return navigationNode;
         }
 
@@ -693,6 +719,20 @@ namespace Microsoft.SharePoint.Client
                     searchNavigation[i].DeleteObject();
                 }
                 web.Context.ExecuteQueryRetry();
+#if !ONPREMISES
+            }
+            else if (navigationType == NavigationType.Footer)
+            {
+                var footerNavigation = web.LoadFooterNavigation();
+                if (footerNavigation != null)
+                {
+                    for (var i = footerNavigation.Count - 1; i >= 0; i--)
+                    {
+                        footerNavigation[i].DeleteObject();
+                    }
+                    web.Context.ExecuteQueryRetry();
+                }
+#endif
             }
         }
 
@@ -715,13 +755,51 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Collection of NavigationNode instances</returns>
         public static NavigationNodeCollection LoadSearchNavigation(this Web web)
         {
-            var searchNav = web.Navigation.GetNodeById(1040); // 1040 is the id of the search navigation            
-            var nodeCollection = searchNav.Children;
-            web.Context.Load(searchNav);
-            web.Context.Load(nodeCollection);
-            web.Context.ExecuteQueryRetry();
-            return nodeCollection;
+            try
+            {
+                var searchNav = web.Navigation.GetNodeById(1040); // 1040 is the id of the search navigation            
+                var nodeCollection = searchNav.Children;
+                web.Context.Load(searchNav);
+                web.Context.Load(nodeCollection);
+                web.Context.ExecuteQueryRetry();
+                return nodeCollection;
+            }
+            catch
+            {
+                 return null;
+            }
         }
+
+#if !ONPREMISES
+        public static NavigationNodeCollection LoadFooterNavigation(this Web web)
+        {
+            var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
+            var menuState = JObject.Parse(structureString);
+
+            if (menuState["StartingNodeKey"] == null)
+            {
+                var now = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss:Z");
+                web.ExecutePost($"/_api/navigation/SaveMenuState", $@"{{ ""menuState"":{{ ""Version"":""{now}"",""StartingNodeTitle"":""3a94b35f-030b-468e-80e3-b75ee84ae0ad"",""SPSitePrefix"":""/"",""SPWebPrefix"":""{web.ServerRelativeUrl}"",""FriendlyUrlPrefix"":"""",""SimpleUrl"":"""",""Nodes"":[]}}}}").GetAwaiter().GetResult();
+                structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
+                menuState = JObject.Parse(structureString);
+            }
+
+            if (menuState["nodes"] != null)
+            {
+                var nodes = menuState["nodes"] as JArray;
+                var topNode = web.Navigation.GetNodeById(Convert.ToInt32(menuState["StartingNodeKey"].Value<string>()));
+                web.Context.Load(topNode, n => n.Children.IncludeWithDefaultProperties());
+                web.Context.ExecuteQueryRetry();
+                var menuNode = topNode.Children.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_MENUNODEKEY);
+                menuNode.EnsureProperty(n => n.Children.IncludeWithDefaultProperties());
+                return menuNode.Children;
+            }
+            else
+            {
+                return null;
+            }
+        }
+#endif
         #endregion
 
         #region Custom actions
@@ -899,7 +977,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="site">The site to process</param>
         /// <param name="expressions">List of lambda expressions of properties to load when retrieving the object</param>
         /// <returns>Returns all custom actions</returns>
-        public static IEnumerable<UserCustomAction> GetCustomActions(this Site site, params Expression<Func<UserCustomAction,object>>[] expressions)
+        public static IEnumerable<UserCustomAction> GetCustomActions(this Site site, params Expression<Func<UserCustomAction, object>>[] expressions)
         {
             var clientContext = (ClientContext)site.Context;
 
@@ -1027,7 +1105,7 @@ namespace Microsoft.SharePoint.Client
             return false;
         }
 
-#endregion
+        #endregion
     }
 
     /// <summary>

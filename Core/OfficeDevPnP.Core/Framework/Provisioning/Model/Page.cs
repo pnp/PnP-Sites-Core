@@ -61,6 +61,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// This method is provided for tests to assign new Security object. 
+        /// It is unclear why the Security setter is private in the Page class
+        /// but not for instance in the ListInstance class.
+        /// A class redesign to make this implementation identical in the classes are recommended.
+        /// </summary>
+        /// <param name="security"></param>
+        internal void SetSecurity(ObjectSecurity security)
+        {
+            this.Security = security;
+        }
+
+        /// <summary>
         /// The Fields to setup for the Page
         /// </summary>
         public Dictionary<String, String> Fields

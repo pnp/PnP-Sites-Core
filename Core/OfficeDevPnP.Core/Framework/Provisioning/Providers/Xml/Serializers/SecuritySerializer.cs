@@ -4,6 +4,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -12,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 700, DeserializationSequence = 700,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
-        Default = true)]
+        Scope = SerializerScope.ProvisioningTemplate)]
     internal class SecuritySerializer : PnPBaseSchemaSerializer<SiteSecurity>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
@@ -26,7 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add(s => s.SiteSecurityPermissions, new PropertyObjectTypeResolver<SiteSecurity>(s => s.SiteSecurityPermissions, o => o.GetPublicInstancePropertyValue("Permissions")));
                 expressions.Add(s => s.SiteSecurityPermissions.RoleDefinitions[0].Permissions, 
                     new ExpressionCollectionValueResolver<PermissionKind>((i) => (PermissionKind)Enum.Parse(typeof(PermissionKind), i.ToString())));
-
+                
                 PnPObjectsMapper.MapProperties(security, template.Security, expressions, true);
             }
         }
@@ -37,6 +38,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
             {
                 var securityTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Security, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var securityType = Type.GetType(securityTypeName, true);
+
+                var expressions = new Dictionary<string, IResolver>();
+
+                expressions.Add($"{securityType}.BreakRoleInheritanceSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{securityType}.ResetRoleInheritanceSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{securityType}.CopyRoleAssignmentsSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{securityType}.RemoveExistingUniqueRoleAssignmentsSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{securityType}.ClearSubscopesSpecified", new ExpressionValueResolver(() => true));
+
                 var securityPermissionsType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SecurityPermissions, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}");
                 var roleDefinitionType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.RoleDefinition, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}");
                 var roleDefinitionPermissionType = Type.GetType($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.RoleDefinitionPermission, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}");
@@ -44,7 +54,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
                 var target = Activator.CreateInstance(securityType, true);
 
-                var expressions = new Dictionary<string, IResolver>();
                 expressions.Add($"{securityType}.Permissions", new PropertyObjectTypeResolver(securityPermissionsType, "SiteSecurityPermissions"));
                 expressions.Add($"{roleDefinitionType}.Permissions", new ExpressionCollectionValueResolver((i) => Enum.Parse(roleDefinitionPermissionType, i.ToString()), roleDefinitionPermissionType));
 

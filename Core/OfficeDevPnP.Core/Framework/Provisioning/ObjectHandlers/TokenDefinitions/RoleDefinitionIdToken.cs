@@ -1,8 +1,14 @@
 ﻿using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
+    [TokenDefinitionDescription(
+        Token = "{roledefinitionid:[rolename]}",
+        Description = "Returns the id of the given role definition name",
+        Example = "{roledefinitionid:My Role Definition}",
+        Returns = "23")]
     internal class RoleDefinitionIdToken : TokenDefinition
     {
         private readonly int _roleDefinitionId = 0;

@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
+    /// <summary>
+    /// Utility class for managing Site Classifications settings on the target tenant using Graph.
+    /// </summary>
     public static class SiteClassificationsUtility
     {
         /// <summary>
@@ -47,7 +50,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// Enables Site Classifications for the target tenant 
         /// </summary>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
-        /// <param name="siteClassificationsSettings">The site classifications settings to apply./param>
+        /// <param name="siteClassificationsSettings">The site classifications settings to apply.</param>
         public static void EnableSiteClassifications(string accessToken, SiteClassificationsSettings siteClassificationsSettings)
         {
             if (string.IsNullOrEmpty(accessToken))
@@ -65,7 +68,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// Enables Site Classifications for the target tenant 
         /// </summary>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
-        /// <param name="classificationList">The list of classification values</param>
+        /// <param name="classificationsList">The list of classification values</param>
         /// <param name="defaultClassification">The default classification</param>
         /// <param name="usageGuidelinesUrl">The URL of a guidance page</param>
         public static void EnableSiteClassifications(string accessToken, IEnumerable<String> classificationsList, String defaultClassification = "", String usageGuidelinesUrl = "")
@@ -184,7 +187,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// Updates Site Classifications settings for the target tenant
         /// </summary>
         /// <param name="accessToken">The OAuth accessToken for Microsoft Graph with Azure AD</param>
-        /// <param name="siteClassificationsSettings">The site classifications settings to apply./param>
+        /// <param name="siteClassificationsSettings">The site classifications settings to apply.</param>
         public static void UpdateSiteClassificationsSettings(string accessToken, SiteClassificationsSettings siteClassificationsSettings)
         {
             if (string.IsNullOrEmpty(accessToken))

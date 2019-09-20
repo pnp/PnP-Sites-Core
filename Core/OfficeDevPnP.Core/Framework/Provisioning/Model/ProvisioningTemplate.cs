@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Domain Object for the Provisioning Template
     /// </summary>
-    public partial class ProvisioningTemplate : IEquatable<ProvisioningTemplate>
+    public partial class ProvisioningTemplate : BaseHierarchyModel, IEquatable<ProvisioningTemplate>
     {
         #region Private Fields
 
@@ -50,6 +50,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         private ProvisioningTenant _tenant;
         private ApplicationLifecycleManagement _applicationLifecycleManagement;
+        private Double _version;
+
+        private SiteHeader _header = null;
+        private SiteFooter _footer = null;
+        private Theme _theme = null;
+        private ProvisioningTemplateWebhookCollection _provisioningTemplateWebhooks;
 
         #endregion
 
@@ -95,6 +101,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             this._applicationLifecycleManagement = new ApplicationLifecycleManagement();
             this._applicationLifecycleManagement.ParentTemplate = this;
+
+            this._provisioningTemplateWebhooks = new ProvisioningTemplateWebhookCollection(this);
         }
 
         /// <summary>
@@ -116,8 +124,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public Dictionary<string, string> Parameters
         {
-            get { return _parameters; }
-            private set { _parameters = value; }
+            get
+            {
+                if (this.ParentHierarchy != null)
+                {
+                    return (this.ParentHierarchy.Parameters);
+                }
+                else
+                {
+                    return _parameters;
+                }
+            }
+            private set {
+                if (this.ParentHierarchy != null)
+                {
+                    this.ParentHierarchy.Parameters = value;
+                }
+                else
+                {
+                    _parameters = value;
+                }
+            }
         }
 
         /// <summary>
@@ -125,8 +152,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public LocalizationCollection Localizations
         {
-            get { return this._localizations; }
-            private set { this._localizations = value; }
+            get
+            {
+                if (this.ParentHierarchy != null)
+                {
+                    return (this.ParentHierarchy.Localizations);
+                }
+                else
+                {
+                    return _localizations;
+                }
+            }
+            private set
+            {
+                if (this.ParentHierarchy != null)
+                {
+                    this.ParentHierarchy.Localizations = value;
+                }
+                else
+                {
+                    _localizations = value;
+                }
+            }
         }
 
         /// <summary>
@@ -137,7 +184,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets the Version of the Provisioning Template
         /// </summary>
-        public double Version { get; set; }
+        public double Version {
+            get
+            {
+                if (this.ParentHierarchy != null)
+                {
+                    return (this.ParentHierarchy.Version);
+                }
+                else
+                {
+                    return _version;
+                }
+            }
+            set
+            {
+                if (this.ParentHierarchy != null)
+                {
+                    this.ParentHierarchy.Version = value;
+                }
+                else
+                {
+                    this._version = value;
+                }
+            }
+        }
 
         /// <summary>
         /// Gets or Sets the Site Policy
@@ -487,17 +557,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public ProvisioningTenant Tenant
         {
-            get { return this._tenant; }
+            get
+            {
+                if (this.ParentHierarchy != null)
+                {
+                    return (this.ParentHierarchy.Tenant);
+                }
+                else
+                {
+                    return _tenant;
+                }
+            }
             set
             {
-                if (this._tenant != null)
+                if (this.ParentHierarchy != null)
                 {
-                    this._tenant.ParentTemplate = null;
+                    this.ParentHierarchy.Tenant = value;
                 }
-                this._tenant = value;
-                if (this._tenant != null)
+                else
                 {
-                    this._tenant.ParentTemplate = this;
+                    if (this._tenant != null)
+                    {
+                        this._tenant.ParentTemplate = null;
+                    }
+                    this._tenant = value;
+                    if (this._tenant != null)
+                    {
+                        this._tenant.ParentTemplate = this;
+                    }
                 }
             }
         }
@@ -515,6 +602,86 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 if (this._applicationLifecycleManagement != null)
                 {
                     this._applicationLifecycleManagement.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The Header of the Site
+        /// </summary>
+        public SiteHeader Header
+        {
+            get { return this._header; }
+            set
+            {
+                if (this._header != null)
+                {
+                    this._header.ParentTemplate = null;
+                }
+                this._header = value;
+                if (this._header != null)
+                {
+                    this._header.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The Footer of the Site
+        /// </summary>
+        public SiteFooter Footer
+        {
+            get { return this._footer; }
+            set
+            {
+                if (this._footer != null)
+                {
+                    this._footer.ParentTemplate = null;
+                }
+                this._footer = value;
+                if (this._footer != null)
+                {
+                    this._footer.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The Webhooks for the Provisioning Template
+        /// </summary>
+        public ProvisioningTemplateWebhookCollection ProvisioningTemplateWebhooks
+        {
+            get { return this._provisioningTemplateWebhooks; }
+            set
+            {
+                if (this._provisioningTemplateWebhooks != null)
+                {
+                    this._provisioningTemplateWebhooks.ParentTemplate = null;
+                }
+                this._provisioningTemplateWebhooks = value;
+                if (this._provisioningTemplateWebhooks != null)
+                {
+                    this._provisioningTemplateWebhooks.ParentTemplate = this;
+                }
+            }
+        }
+
+        /// <summary>
+        /// The Theme of the Site
+        /// </summary>
+        public Theme Theme
+        {
+            get { return this._theme; }
+            set
+            {
+                if (this._theme != null)
+                {
+                    this._theme.ParentTemplate = null;
+                }
+                this._theme = value;
+                if (this._theme != null)
+                {
+                    this._theme.ParentTemplate = this;
                 }
             }
         }
@@ -667,14 +834,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Version == other.Version &&
                 this.Pages.DeepEquals(other.Pages) &&
                 this.TermGroups.DeepEquals(other.TermGroups) &&
-                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) : true) &&
-                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowSubscriptions.DeepEquals(other.Workflows.WorkflowSubscriptions) : true) &&
+                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowDefinitions.DeepEquals(other.Workflows.WorkflowDefinitions) : this.Workflows == other.Workflows) &&
+                ((this.Workflows != null && other.Workflows != null) ? this.Workflows.WorkflowSubscriptions.DeepEquals(other.Workflows.WorkflowSubscriptions) : this.Workflows == other.Workflows) &&
                 this.AddIns.DeepEquals(other.AddIns) &&
                 this.Publishing == other.Publishing &&
-                this.Localizations.DeepEquals(other.Localizations) &&
-                this.WebSettings.Equals(other.WebSettings) &&
-                this.SiteWebhooks.DeepEquals(other.SiteWebhooks) &&
-                this.ClientSidePages.DeepEquals(other.ClientSidePages) &&
+                ((this.Localizations != null && other.Localizations != null) ? this.Localizations.DeepEquals(other.Localizations) : this.Localizations == other.Localizations) &&
+                ((this.WebSettings != null && other.WebSettings != null) ? this.WebSettings.Equals(other.WebSettings) : this.WebSettings == other.WebSettings) &&
+                ((this.SiteWebhooks != null && other.SiteWebhooks != null) ? this.SiteWebhooks.DeepEquals(other.SiteWebhooks) : this.SiteWebhooks == other.SiteWebhooks) &&
+                ((this.ClientSidePages != null && other.ClientSidePages != null) ? this.ClientSidePages.DeepEquals(other.ClientSidePages) : this.ClientSidePages == other.ClientSidePages) &&
                 this.TemplateCultureInfo == other.TemplateCultureInfo &&
                 this.Scope == other.Scope &&
                 this.Tenant == other.Tenant

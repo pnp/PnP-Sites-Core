@@ -8,10 +8,11 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using File = OfficeDevPnP.Core.Framework.Provisioning.Model.File;
 using Microsoft.SharePoint.Client.UserProfiles;
 using OfficeDevPnP.Core.Diagnostics;
+using System.Globalization;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
 {
-#if !SP2013
+
     internal static class LocalizationExtensions
     {
         internal static void LocalizeWebParts(this Page page, Web web, TokenParser parser, PnPMonitoredScope scope)
@@ -62,11 +63,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                 var allParts = web.GetWebParts(parser.ParseString(url)).ToList();
                 foreach (var webPart in webParts)
                 {
-#if !SP2016
                     var partOnPage = allParts.FirstOrDefault(w => w.ZoneId == webPart.Zone && w.WebPart.ZoneIndex == webPart.Order);
-#else
-                    var partOnPage = allParts.FirstOrDefault(w => w.WebPart.ZoneIndex == webPart.Order);
-#endif
                     if (webPart.Title.ContainsResourceToken() && partOnPage != null)
                     {
                         var resourceValues = parser.GetResourceTokenResourceValues(webPart.Title);
@@ -95,15 +92,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
             if (CanUseAcceptLanguageHeaderForLocalization(web))
             {
                 var context = web.Context;
+                //preserve Default Language to set last since otherwise Entries in QuickLaunch can show wrong language
+                web.EnsureProperties(w => w.Language);
+                var culture = new CultureInfo((int)web.Language);
+
                 var resourceValues = parser.GetResourceTokenResourceValues(token);
-                foreach (var resourceValue in resourceValues)
+
+                var defaultLanguageResource = resourceValues.FirstOrDefault(r => !r.Item1.Equals(culture.Name, StringComparison.InvariantCultureIgnoreCase));
+                if (defaultLanguageResource != null)
                 {
-                    // Save property with correct locale on the request to make it stick
-                    // http://sadomovalex.blogspot.no/2015/09/localize-web-part-titles-via-client.html
-                    context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = resourceValue.Item1;
-                    view.Title = resourceValue.Item2;
+                    foreach (var resourceValue in resourceValues.Where(r => !r.Item1.Equals(culture.Name, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        // Save property with correct locale on the request to make it stick
+                        // http://sadomovalex.blogspot.no/2015/09/localize-web-part-titles-via-client.html
+                        context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = resourceValue.Item1;
+                        view.Title = resourceValue.Item2;
+                        view.Update();
+                        context.ExecuteQueryRetry();
+                    }
+                    //Set for default Language of Web
+                    context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = defaultLanguageResource.Item1;
+                    view.Title = defaultLanguageResource.Item2;
                     view.Update();
                     context.ExecuteQueryRetry();
+                }
+                else
+                {
+                    //skip since default language of web is not contained in resource file
+                    scope.LogWarning(CoreResources.Provisioning_Extensions_ViewLocalization_Skip);
                 }
             }
             else
@@ -136,5 +152,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
             }
         }
     }
-#endif
 }

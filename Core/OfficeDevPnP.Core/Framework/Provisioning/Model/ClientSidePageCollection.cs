@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// A collection of ClientSidePage objects
     /// </summary>
-    public partial class ClientSidePageCollection : ProvisioningTemplateCollection<ClientSidePage>
+    public partial class ClientSidePageCollection : BaseProvisioningTemplateObjectCollection<ClientSidePage>
     {
         /// <summary>
         /// Constructor for ClientSidePageCollection class

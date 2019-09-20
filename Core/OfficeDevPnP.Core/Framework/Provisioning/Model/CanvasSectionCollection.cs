@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// A collection of CanvasZone objects
     /// </summary>
-    public partial class CanvasSectionCollection : ProvisioningTemplateCollection<CanvasSection>
+    public partial class CanvasSectionCollection : BaseProvisioningTemplateObjectCollection<CanvasSection>
     {
         /// <summary>
         /// Constructor for CanvasZoneCollection class

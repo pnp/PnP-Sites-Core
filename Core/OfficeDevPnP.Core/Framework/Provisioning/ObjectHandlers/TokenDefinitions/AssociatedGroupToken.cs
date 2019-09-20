@@ -1,8 +1,24 @@
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    internal class AssociatedGroupToken : TokenDefinition
+    [TokenDefinitionDescription(
+       Token = "{associatedownergroup}",
+       Description = "Returns the title of the associated owners SharePoint group of a site",
+       Example = "{associatedownersgroup}",
+       Returns = "My Site Owners Group Title")]
+    [TokenDefinitionDescription(
+       Token = "{associatedmembergroup}",
+       Description = "Returns the title of the associated members SharePoint group of a site",
+       Example = "{associatedmembergroup}",
+       Returns = "My Site Members Group Title")]
+    [TokenDefinitionDescription(
+       Token = "{associatedvisitorgroup}",
+       Description = "Returns the title of the associated visitors SharePoint group of a site",
+       Example = "{associatedvisitorgroup}",
+       Returns = "My Site Visitors Group Title")]
+    internal class AssociatedGroupToken : VolatileTokenDefinition
     {
         private AssociatedGroupType _groupType;
 
@@ -12,34 +28,45 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
             _groupType = groupType;
         }
 
+        internal AssociatedGroupType GroupType { get => _groupType; set => _groupType = value; }
+
         public override string GetReplaceValue()
         {
 
             if (string.IsNullOrEmpty(CacheValue))
             {
-                this.Web.EnsureProperty(w => w.Url);
-                using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
+                switch (_groupType)
                 {
-                    context.Load(context.Web, w => w.AssociatedOwnerGroup.Title, w => w.AssociatedMemberGroup.Title, w => w.AssociatedVisitorGroup.Title);
-                    context.ExecuteQueryRetry();
-                    switch (_groupType)
-                    {
-                        case AssociatedGroupType.owners:
+                    case AssociatedGroupType.owners:
+                        {
+                            TokenContext.Load(TokenContext.Web, w => w.AssociatedOwnerGroup.Title);
+                            TokenContext.ExecuteQueryRetry();
+                            if (!TokenContext.Web.AssociatedOwnerGroup.ServerObjectIsNull.Value)
                             {
-                                CacheValue = context.Web.AssociatedOwnerGroup.Title;
-                                break;
+                                CacheValue = TokenContext.Web.AssociatedOwnerGroup.Title;
                             }
-                        case AssociatedGroupType.members:
+                            break;
+                        }
+                    case AssociatedGroupType.members:
+                        {
+                            TokenContext.Load(TokenContext.Web, w => w.AssociatedMemberGroup.Title);
+                            TokenContext.ExecuteQueryRetry();
+                            if (!TokenContext.Web.AssociatedMemberGroup.ServerObjectIsNull.Value)
                             {
-                                CacheValue = context.Web.AssociatedMemberGroup.Title;
-                                break;
+                                CacheValue = TokenContext.Web.AssociatedMemberGroup.Title;
                             }
-                        case AssociatedGroupType.visitors:
+                            break;
+                        }
+                    case AssociatedGroupType.visitors:
+                        {
+                            TokenContext.Load(TokenContext.Web, w => w.AssociatedVisitorGroup.Title);
+                            TokenContext.ExecuteQueryRetry();
+                            if (!TokenContext.Web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
                             {
-                                CacheValue = context.Web.AssociatedVisitorGroup.Title;
-                                break;
+                                CacheValue = TokenContext.Web.AssociatedVisitorGroup.Title;
                             }
-                    }
+                            break;
+                        }
                 }
             }
             return CacheValue;

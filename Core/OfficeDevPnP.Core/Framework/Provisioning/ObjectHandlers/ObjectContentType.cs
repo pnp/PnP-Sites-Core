@@ -1,27 +1,40 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
+﻿using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
-using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
-using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
-using System.IO;
-using System.Text.RegularExpressions;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
-using System.Xml;
-using System.Text;
+using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
+using Field = OfficeDevPnP.Core.Framework.Provisioning.Model.Field;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectContentType : ObjectHandlerBase
     {
+        private FieldAndListProvisioningStepHelper.Step _step;
+
         public override string Name
         {
-            get { return "Content Types"; }
+#if DEBUG
+            get { return $"Content Types ({_step})"; }
+#else
+            get { return $"Content Types"; }
+#endif
+        }
+
+        public override string InternalName => "ContentTypes";
+
+        public ObjectContentType(FieldAndListProvisioningStepHelper.Step step)
+        {
+            this._step = step;
         }
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
@@ -33,7 +46,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 web.Context.Load(web.ContentTypes, ct => ct.IncludeWithDefaultProperties(c => c.StringId, c => c.FieldLinks,
                                                                                          c => c.FieldLinks.Include(fl => fl.Id, fl => fl.Required, fl => fl.Hidden)));
-                web.Context.Load(web.Fields, fld => fld.IncludeWithDefaultProperties(f => f.Id));
+                web.Context.Load(web.Fields, fld => fld.IncludeWithDefaultProperties(f => f.Id, f => f.SchemaXml));
 
                 web.Context.ExecuteQueryRetry();
 
@@ -57,7 +70,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (existingCT == null)
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Creating_new_Content_Type___0_____1_, ct.Id, ct.Name);
-                            var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, scope, existingCTs, existingFields, isNoScriptSite);
+                            var newCT = CreateContentType(web, template, ct, parser, template.Connector, scope, existingCTs, existingFields, isNoScriptSite);
                             if (newCT != null)
                             {
                                 existingCTs.Add(newCT);
@@ -65,13 +78,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
-                            if (ct.Overwrite)
+                            if (ct.Overwrite && this._step == FieldAndListProvisioningStepHelper.Step.ListAndStandardFields)
                             {
                                 scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Recreating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
 
                                 existingCT.DeleteObject();
                                 web.Context.ExecuteQueryRetry();
-                                var newCT = CreateContentType(web, ct, parser, template.Connector ?? null, scope, existingCTs, existingFields, isNoScriptSite);
+                                var newCT = CreateContentType(web, template, ct, parser, template.Connector, scope, existingCTs, existingFields, isNoScriptSite);
                                 if (newCT != null)
                                 {
                                     existingCTs.Add(newCT);
@@ -83,7 +96,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 if (!existingCT.Sealed || !ct.Sealed)
                                 {
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
-                                    UpdateContentType(web, existingCT, ct, parser, scope);
+                                    UpdateContentType(web, template, existingCT, ct, parser, scope);
                                 }
                                 else
                                 {
@@ -98,8 +111,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-
-        private static void UpdateContentType(Web web, Microsoft.SharePoint.Client.ContentType existingContentType, ContentType templateContentType, TokenParser parser, PnPMonitoredScope scope, bool isNoScriptSite = false)
+        private void UpdateContentType(
+            Web web,
+            ProvisioningTemplate template,
+            Microsoft.SharePoint.Client.ContentType existingContentType,
+            ContentType templateContentType,
+            TokenParser parser,
+            PnPMonitoredScope scope,
+            bool isNoScriptSite = false
+            )
         {
             var isDirty = false;
             var reOrderFields = false;
@@ -136,10 +156,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             if (existingContentType.Name != parser.ParseString(templateContentType.Name))
             {
+                var oldName = existingContentType.Name;
                 scope.LogPropertyUpdate("Name");
                 existingContentType.Name = parser.ParseString(templateContentType.Name);
                 isDirty = true;
                 // CT is being renamed, add an extra token to the tokenparser
+                parser.RemoveToken(new ContentTypeIdToken(web, oldName, existingContentType.StringId));
                 parser.AddToken(new ContentTypeIdToken(web, existingContentType.Name, existingContentType.StringId));
             }
             if (templateContentType.Group != null && existingContentType.Group != parser.ParseString(templateContentType.Group))
@@ -148,7 +170,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 existingContentType.Group = parser.ParseString(templateContentType.Group);
                 isDirty = true;
             }
-
 
             if (!isNoScriptSite)
             {
@@ -203,12 +224,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // Set flag to reorder fields CT fields are not equal to template fields
             var existingFieldNames = existingContentType.FieldLinks.AsEnumerable().Select(fld => fld.Name).ToArray();
             var ctFieldNames = templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray();
-            reOrderFields = !existingFieldNames.SequenceEqual(ctFieldNames);
+            reOrderFields = ctFieldNames.Length > 0 && !existingFieldNames.SequenceEqual(ctFieldNames);
 
             // Delta handling
             existingContentType.EnsureProperty(c => c.FieldLinks);
             var targetIds = existingContentType.FieldLinks.AsEnumerable().Select(c1 => c1.Id).ToList();
-            var sourceIds = templateContentType.FieldRefs.Select(c1 => c1.Id).ToList();                      
+            var sourceIds = templateContentType.FieldRefs.Select(c1 => c1.Id).ToList();
 
             var fieldsNotPresentInTarget = sourceIds.Except(targetIds).ToArray();
 
@@ -219,8 +240,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var fieldId in fieldsNotPresentInTarget)
                 {
-                    var fieldRef = templateContentType.FieldRefs.Find(fr => fr.Id == fieldId);
-                    var field = web.AvailableFields.GetById(fieldRef.Id);
+                    var fieldRef = templateContentType.FieldRefs.First(fr => fr.Id == fieldId);
+
+                    var templateField = template.SiteFields.FirstOrDefault(tf => (Guid)XElement.Parse(parser.ParseString(tf.SchemaXml)).Attribute("ID") == fieldRef.Id);
+                    var fieldStep = templateField != null ? templateField.GetFieldProvisioningStep(parser) : FieldAndListProvisioningStepHelper.Step.ListAndStandardFields;
+                    if (fieldStep != _step) continue; // Do not handle this field at this step
+
+                    Microsoft.SharePoint.Client.Field field = null;
+                    if (_step == FieldAndListProvisioningStepHelper.Step.LookupFields
+                        && templateField != null
+                        && XElement.Parse(parser.ParseString(templateField.SchemaXml)).Attribute("FieldRef") != null)
+                    {
+                        // Because the id of dependent lookup cannot be set and is autogenerated,
+                        // we have to retrieve the actual field id and convert it into a token
+                        var mappedFieldId = Guid.Parse(parser.ParseString(fieldRef.Id.ToString("D")));
+                        field = web.AvailableFields.GetById(mappedFieldId);
+                    }
+                    else
+                    {
+                        field = web.AvailableFields.GetById(fieldRef.Id);
+                    }
+
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldId);
                     web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden);
                 }
@@ -279,8 +319,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static Microsoft.SharePoint.Client.ContentType CreateContentType(Web web, ContentType templateContentType, TokenParser parser, FileConnectorBase connector, PnPMonitoredScope scope,
-            List<Microsoft.SharePoint.Client.ContentType> existingCTs = null, List<Microsoft.SharePoint.Client.Field> existingFields = null, bool isNoScriptSite = false)
+        private Microsoft.SharePoint.Client.ContentType CreateContentType(
+            Web web,
+            ProvisioningTemplate template,
+            ContentType templateContentType,
+            TokenParser parser,
+            FileConnectorBase connector,
+            PnPMonitoredScope scope,
+            List<Microsoft.SharePoint.Client.ContentType> existingCTs = null,
+            List<Microsoft.SharePoint.Client.Field> existingFields = null,
+            bool isNoScriptSite = false)
         {
             var name = parser.ParseString(templateContentType.Name);
             var description = parser.ParseString(templateContentType.Description);
@@ -288,7 +336,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var group = parser.ParseString(templateContentType.Group);
 
             var createdCT = web.CreateContentType(name, description, id, group);
-            foreach (var fieldRef in templateContentType.FieldRefs)
+            createdCT.EnsureProperties(ct => ct.ReadOnly, ct => ct.Hidden, ct => ct.Sealed);
+
+            List<FieldRef> fieldsRefsToProcess = new List<FieldRef>();
+            foreach (FieldRef fr in templateContentType.FieldRefs)
+            {
+                var templateField = template.SiteFields.FirstOrDefault(tf => tf.GetFieldId(parser) == fr.Id);
+                if (templateField == null || templateField.GetFieldProvisioningStep(parser) == _step)
+                {
+                    fieldsRefsToProcess.Add(fr);
+                }
+            }
+
+            foreach (var fieldRef in fieldsRefsToProcess)
             {
                 Microsoft.SharePoint.Client.Field field = null;
                 try
@@ -323,14 +383,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
             //Reorder the elements so that the new created Content Type has the same order as defined in the
             //template. The order can be different if the new Content Type inherits from another Content Type.
-            //In this case the new Content Type has all field of the original Content Type and missing fields 
+            //In this case the new Content Type has all field of the original Content Type and missing fields
             //will be added at the end. To fix this issue we ordering the fields once more.
 
-            createdCT.FieldLinks.Reorder(templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray());
-
-            createdCT.ReadOnly = templateContentType.ReadOnly;
-            createdCT.Hidden = templateContentType.Hidden;
-            createdCT.Sealed = templateContentType.Sealed;
+            var ctFields = templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray();
+            if (ctFields.Length > 0)
+            {
+                createdCT.FieldLinks.Reorder(ctFields);
+            }
+            if (createdCT.ReadOnly != templateContentType.ReadOnly)
+            {
+                createdCT.ReadOnly = templateContentType.ReadOnly;
+            }
+            if (createdCT.Hidden != templateContentType.Hidden)
+            {
+                createdCT.Hidden = templateContentType.Hidden;
+            }
+            if (createdCT.Sealed != templateContentType.Sealed)
+            {
+                createdCT.Sealed = templateContentType.Sealed;
+            }
 
             if (templateContentType.DocumentSetTemplate == null)
             {
@@ -464,7 +536,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     createdCT.Fields.Where(f => f.TypeAsString == "OutcomeChoice"));
                 web.Context.ExecuteQueryRetry();
 
-                if (outcomeFields.Count() > 1)
+                if (outcomeFields.Any())
                 {
                     // 2 OutcomeChoice specified means the user has certainly push its own.
                     // Let's remove the default outcome field
@@ -503,7 +575,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private IEnumerable<ContentType> GetEntities(Web web, PnPMonitoredScope scope, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
             var cts = web.ContentTypes;
-            web.Context.Load(cts, ctCollection => ctCollection.IncludeWithDefaultProperties(ct => ct.FieldLinks, ct=>ct.SchemaXmlWithResourceTokens));
+            web.Context.Load(cts, ctCollection => ctCollection.IncludeWithDefaultProperties(ct => ct.FieldLinks, ct => ct.SchemaXmlWithResourceTokens));
             web.Context.ExecuteQueryRetry();
 
             if (cts.Count > 0 && web.IsSubSite())
@@ -517,12 +589,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 currentCtIndex++;
                 WriteMessage($"Content Type|{ct.Name}|{currentCtIndex}|{cts.Count()}", ProvisioningMessageType.Progress);
 
-                if (!BuiltInContentTypeId.Contains(ct.StringId) && 
+                if (!BuiltInContentTypeId.Contains(ct.StringId) &&
                     (creationInfo.ContentTypeGroupsToInclude.Count == 0 || creationInfo.ContentTypeGroupsToInclude.Contains(ct.Group)))
                 {
-
                     // Exclude the content type if it's from syndication, and if the flag is not set
-                    if(!creationInfo.IncludeContentTypesFromSyndication && IsContentTypeFromSyndication(ct))
+                    if (!creationInfo.IncludeContentTypesFromSyndication && IsContentTypeFromSyndication(ct))
                     {
                         scope.LogInfo($"Content type {ct.Name} excluded from export because it's a syndicated content type.");
 
@@ -610,18 +681,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         newCT.DocumentSetTemplate = new DocumentSetTemplate(
                             null, // TODO: WelcomePage not yet supported
                             (from allowedCT in documentSetTemplate.AllowedContentTypes.AsEnumerable()
-                             select allowedCT.StringValue).ToArray(),
+                             select allowedCT.StringValue).ToList(),
                             (from defaultDocument in documentSetTemplate.DefaultDocuments.AsEnumerable()
                              select new DefaultDocument
                              {
                                  ContentTypeId = defaultDocument.ContentTypeId.StringValue,
                                  Name = defaultDocument.Name,
                                  FileSourcePath = String.Empty, // TODO: How can we extract the proper file?!
-                             }).ToArray(),
+                             }).ToList(),
                             (from sharedField in documentSetTemplate.SharedFields.AsEnumerable()
-                             select sharedField.Id).ToArray(),
+                             select sharedField.Id).ToList(),
                             (from welcomePageField in documentSetTemplate.WelcomePageFields.AsEnumerable()
-                             select welcomePageField.Id).ToArray()
+                             select welcomePageField.Id).ToList()
                         );
                     }
 
@@ -652,7 +723,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return (string)contentTypeXml.Attribute("ContentTypeId") == ct.Id.StringValue;
         }
 
-
         private ProvisioningTemplate CleanupEntities(ProvisioningTemplate template, ProvisioningTemplate baseTemplate, PnPMonitoredScope scope)
         {
             foreach (var ct in baseTemplate.ContentTypes)
@@ -666,7 +736,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_content_type_to_template___0_____1_, ct.Id, ct.Name);
                 }
-
             }
 
             return template;

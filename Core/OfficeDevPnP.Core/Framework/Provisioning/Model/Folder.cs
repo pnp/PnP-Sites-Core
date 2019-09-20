@@ -56,11 +56,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { _folders = value; }
         }
 
+        /// <summary>
+        /// Defines the property bag properties for the current folder
+        /// </summary>
         public PropertyBagEntryCollection PropertyBagEntries
         {
             get { return this._propertyBags; }
             private set { this._propertyBags = value; }
         }
+
+        /// <summary>
+        /// Defines the default column values for the folder, if any
+        /// </summary>
+        public Dictionary<String, String> DefaultColumnValues { get; set; } = new Dictionary<string, string>();
 
         #endregion
 
@@ -101,11 +109,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
                 (this.Name.GetHashCode()),
                 (this.Folders.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))),
                 (this.Security != null ? this.Security.GetHashCode() : 0),
-                this.PropertyBagEntries.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.PropertyBagEntries.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.DefaultColumnValues.Aggregate(0, (acc, next) => acc += (next.Value != null ? next.Value.GetHashCode() : 0))
             ).GetHashCode());
         }
 
@@ -138,7 +147,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (this.Name == other.Name &&
                     this.Folders.DeepEquals(other.Folders) &&
                     (this.Security != null ? this.Security.Equals(other.Security) : true) &&
-                    this.PropertyBagEntries.DeepEquals(other.PropertyBagEntries)
+                    this.PropertyBagEntries.DeepEquals(other.PropertyBagEntries) &&
+                    this.DefaultColumnValues.DeepEquals(other.DefaultColumnValues)
                );
         }
 

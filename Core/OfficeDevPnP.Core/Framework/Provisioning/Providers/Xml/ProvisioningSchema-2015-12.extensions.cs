@@ -43,7 +43,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
             schemaSet.XmlResolver = new XmlUrlResolver();
             schemaSet.Add(webPartSchema);
 
-            return (new XmlQualifiedName("WikiPageWebPart", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12));
+            return (new XmlQualifiedName("WikiPageWebPart",
+#pragma warning disable 0618
+                XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12
+#pragma warning restore 0618
+                ));
         }
 
         XmlSchema IXmlSerializable.GetSchema()
@@ -53,7 +57,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
 
         void IXmlSerializable.ReadXml(XmlReader reader)
         {
-            XNamespace ns = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
+            XNamespace ns =
+#pragma warning disable 0618
+                XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12
+#pragma warning restore 0618
+                ;
 
             XElement webPartXml = (XElement)XElement.ReadFrom(reader);
             this.Title = webPartXml.Attribute("Title").Value;
@@ -69,7 +77,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
             writer.WriteAttributeString("Title", this.Title);
             writer.WriteAttributeString("Row", this.Row.ToString());
             writer.WriteAttributeString("Column", this.Column.ToString());
-            writer.WriteStartElement(XMLConstants.PROVISIONING_SCHEMA_PREFIX, "Contents", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12);
+            writer.WriteStartElement(XMLConstants.PROVISIONING_SCHEMA_PREFIX, "Contents",
+#pragma warning disable 0618
+                XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12
+#pragma warning restore 0618
+                );
 
             using (XmlReader xr = new XmlNodeReader(this.Contents))
             {
@@ -104,7 +116,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
             schemaSet.XmlResolver = new XmlUrlResolver();
             schemaSet.Add(baseFieldValueSchema);
 
-            return (new XmlQualifiedName("BaseFieldValue", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12));
+            return (new XmlQualifiedName("BaseFieldValue",
+#pragma warning disable 0618
+                XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12
+#pragma warning restore 0618
+                ));
         }
 
         XmlSchema IXmlSerializable.GetSchema()
@@ -114,7 +130,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
 
         void IXmlSerializable.ReadXml(XmlReader reader)
         {
-            XNamespace ns = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
+            XNamespace ns =
+#pragma warning disable 0618
+                XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12
+#pragma warning restore 0618
+                ;
 
             XElement baseFieldValueXml = (XElement)XElement.ReadFrom(reader);
             this.FieldName = baseFieldValueXml.Attribute("FieldName").Value;
@@ -177,7 +197,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
             schemaSet.XmlResolver = new XmlUrlResolver();
             schemaSet.Add(webPartSchema);
 
-            return (new XmlQualifiedName("WebPartPageWebPart", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12));
+            return (new XmlQualifiedName("WebPartPageWebPart",
+#pragma warning disable 0618
+                XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12
+#pragma warning restore 0618
+                ));
         }
 
         XmlSchema IXmlSerializable.GetSchema()
@@ -187,7 +211,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
 
         void IXmlSerializable.ReadXml(XmlReader reader)
         {
-            XNamespace ns = XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12;
+            XNamespace ns =
+#pragma warning disable 0618
+                XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12
+#pragma warning restore 0618
+                ;
 
             XElement webPartXml = (XElement)XElement.ReadFrom(reader);
             this.Title = webPartXml.Attribute("Title").Value;
@@ -203,7 +231,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201512
             writer.WriteAttributeString("Title", this.Title);
             writer.WriteAttributeString("Zone", this.Zone);
             writer.WriteAttributeString("Order", this.Order.ToString());
-            writer.WriteStartElement(XMLConstants.PROVISIONING_SCHEMA_PREFIX, "Contents", XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12);
+            writer.WriteStartElement(XMLConstants.PROVISIONING_SCHEMA_PREFIX, 
+                "Contents",
+#pragma warning disable 0618
+                XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2015_12
+#pragma warning restore 0618
+                );
 
             using (XmlReader xr = new XmlNodeReader(this.Contents))
             {

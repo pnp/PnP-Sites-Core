@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Utilities
 {
+    /// <summary>
+    /// Provides functions for sending email using either Office 365 SMTP service or SharePoint's SendEmail utility
+    /// </summary>
     public class MailUtility
     {
         /// <summary>

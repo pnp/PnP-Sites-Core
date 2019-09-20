@@ -1,4 +1,5 @@
 ﻿using Microsoft.SharePoint.Client;
+using Newtonsoft.Json;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
@@ -29,15 +30,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private List<ExtensibilityHandler> extensibilityHandlers = new List<ExtensibilityHandler>();
         private Handlers handlersToProcess = Handlers.All;
         private bool includeContentTypesFromSyndication = true;
+        private bool includeHiddenLists = false;
+        private bool includeAllClientSidePages = false;
 
         /// <summary>
         /// Provisioning Progress Delegate
         /// </summary>
+        [JsonIgnore]
         public ProvisioningProgressDelegate ProgressDelegate { get; set; }
 
         /// <summary>
         /// Provisioning Messages Delegate
         /// </summary>
+        [JsonIgnore]
         public ProvisioningMessagesDelegate MessagesDelegate { get; set; }
 
         /// <summary>
@@ -54,6 +59,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <summary>
         /// Base template used to compare against when we're "getting" a template
         /// </summary>
+        [JsonIgnore]
         public ProvisioningTemplate BaseTemplate
         {
             get
@@ -69,6 +75,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <summary>
         /// Connector used to persist files when needed
         /// </summary>
+        [JsonIgnore]
         public FileConnectorBase FileConnector
         {
             get
@@ -116,6 +123,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// we're "getting" a template
         /// </summary>
         [Obsolete("Use PersistBrandingFiles instead")]
+        [JsonIgnore]
         public bool PersistComposedLookFiles
         {
             get
@@ -172,7 +180,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 this.includeNativePublishingFiles = value;
             }
         }
-        
+
         /// <summary>
         /// If true includes all term groups in the template
         /// </summary>
@@ -212,7 +220,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <summary>
         /// List of content type groups
         /// </summary>
-        public List<String> ContentTypeGroupsToInclude {
+        public List<String> ContentTypeGroupsToInclude
+        {
             get { return this.contentTypeGroupsToInclude; }
             set { this.contentTypeGroupsToInclude = value; }
         }
@@ -241,6 +250,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             set
             {
                 this.includeSearchConfiguration = value;
+            }
+        }
+
+        /// <summary>
+        /// If true all client side pages will be included in the template.
+        /// </summary>
+        public bool IncludeAllClientSidePages
+        {
+            get
+            {
+                return this.includeAllClientSidePages;
+            }
+            set
+            {
+                this.includeAllClientSidePages = value;
             }
         }
 
@@ -295,5 +319,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return includeContentTypesFromSyndication; }
             set { includeContentTypesFromSyndication = value; }
         }
+
+        /// <summary>
+        /// Declares whether to include hidden lists in the output or not
+        /// </summary>
+        public bool IncludeHiddenLists
+        {
+            get { return includeHiddenLists; }
+            set { includeHiddenLists = value; }
+        }
+
+        /// <summary>
+        /// Optional argument to specify the collection of lists to extract
+        /// </summary>
+        /// <remarks>
+        /// Can contain the title or the ID of the lists to export
+        /// </remarks>
+        public List<String> ListsToExtract { get; set; } = new List<String>();
     }
 }

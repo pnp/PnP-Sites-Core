@@ -86,7 +86,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
                 if (index > -1)
                 {
-                    // Remove ?rev=23 in url
+                    // Remove ?rev=23 in URL
                     Regex regex = new Regex("\\?rev=([0-9])\\w+");
                     element.SetAttributeValue("ImageUrl", regex.Replace(element.Attribute("ImageUrl").Value, ""));
                 }

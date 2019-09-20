@@ -41,7 +41,7 @@ Base template: goal is to verify the delta behavior on content types. Note that 
         <pnp:FieldRef ID="{56407FDD-C7FA-4321-8FA5-06B7AF970519}" />
       </pnp:FieldRefs>
       <!-- Changed attributes are: TargetName -->
-      <pnp:DocumentTemplate TargetName="~sitecollection/siteassets/ct3document.docx"/>
+      <pnp:DocumentTemplate TargetName="{site}/siteassets/ct3document.docx"/>
     </pnp:ContentType>
     <!-- Bare minimum -->
     <!-- Use of Overwrite, changed properties: Group-->
@@ -49,7 +49,7 @@ Base template: goal is to verify the delta behavior on content types. Note that 
     <!-- Complex one -->
     <!-- Changed attributes are: DisplayFormUrl, EditFormUrl, Overwrite set to false-->
     <pnp:ContentType ID="0x0101001AF9DBB0E32F47A1A0BA519392153128" Name="CT_3" Description="CT 3" Group="PnP Demo" Hidden="false" ReadOnly="false" Sealed="false" 
-                     Overwrite="false" DisplayFormUrl="~sitecollection/siteassets/CT3EditForm.aspx" EditFormUrl="~sitecollection/siteassets/CT3DisplayForm.aspx">
+                     Overwrite="false" DisplayFormUrl="{site}/siteassets/CT3EditForm.aspx" EditFormUrl="{site}/siteassets/CT3DisplayForm.aspx">
       <pnp:FieldRefs>
         <!-- Specify all FieldRef properties-->
         <!-- Changed fieldrefs: changed Required and Hidden attributes-->
@@ -58,7 +58,7 @@ Base template: goal is to verify the delta behavior on content types. Note that 
         <pnp:FieldRef ID="{B46D91E2-C755-4C3A-AC72-7FD3E4853476}" />
         <pnp:FieldRef ID="{B2C51364-8C48-4779-8265-1169B81CE5A0}" />
       </pnp:FieldRefs>
-      <pnp:DocumentTemplate TargetName="~sitecollection/siteassets/ct3document.docx"/>
+      <pnp:DocumentTemplate TargetName="{site}/siteassets/ct3document.docx"/>
     </pnp:ContentType>
     <!-- List content types 0x01 -->
     <!-- Simple one -->

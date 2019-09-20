@@ -9,7 +9,7 @@ using FILETIME = System.Runtime.InteropServices.ComTypes.FILETIME;
 namespace OfficeDevPnP.Core.Utilities
 {
     /// <summary>
-    /// Class for getting and managing Credentials for SharePoint Online and SharePoint Onpremise
+    /// Class for getting and managing Credentials for SharePoint Online and SharePoint On-premises
     /// </summary>
     public static class CredentialManager
     {

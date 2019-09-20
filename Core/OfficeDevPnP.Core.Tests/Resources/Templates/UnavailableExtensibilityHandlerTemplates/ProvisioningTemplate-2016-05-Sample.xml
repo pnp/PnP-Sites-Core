@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://schemas.dev.office.com/PnP/2016/05/ProvisioningSchema https://raw.githubusercontent.com/SharePoint/PnP-Provisioning-Schema/master/OfficeDevPnP.ProvisioningSchema/ProvisioningSchema-2016-05.xsd">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=2.12.1702.0, Culture=neutral, PublicKeyToken=null">
+  </pnp:Preferences>
+  <pnp:Templates ID="CONTAINER-SPECIALTEAM">
+    <pnp:ProvisioningTemplate ID="SPECIALTEAM-01" Version="1.2"
+                              BaseSiteTemplate="STS#0"
+                              Description="Sample Template #01 Description"
+                              DisplayName="Sample Template #01"
+                              ImagePreviewUrl="https://camo.githubusercontent.com/a732087ed949b0f2f84f5f02b8c79f1a9dd96f65/687474703a2f2f692e696d6775722e636f6d2f6c3031686876452e706e67">
+      <pnp:Providers>
+        <pnp:Provider HandlerType="OfficeDev.PnP.Provisioning.Providers.InvalidProvider, OfficeDev.PnP.Provisioning.Providers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" Enabled="true">
+          <pnp:Configuration>
+            <MyProviderConfiguration id="SampleConfig" xmlns="http://schemas.somecompany.com/MyProviderConfiguration">
+              <ChildNode Attribute="value">TextContent</ChildNode>
+            </MyProviderConfiguration>
+          </pnp:Configuration>
+        </pnp:Provider>
+      </pnp:Providers>
+    </pnp:ProvisioningTemplate>
+  </pnp:Templates>
+</pnp:Provisioning>

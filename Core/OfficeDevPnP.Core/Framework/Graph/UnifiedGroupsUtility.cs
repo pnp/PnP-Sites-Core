@@ -7,9 +7,20 @@ using System.Net.Http.Headers;
 using OfficeDevPnP.Core.Entities;
 using System.IO;
 using OfficeDevPnP.Core.Diagnostics;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Utilities.Graph;
 
 namespace OfficeDevPnP.Core.Framework.Graph
 {
+    public class GroupExtended : Group
+    {
+        [JsonProperty("owners@odata.bind", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] OwnersODataBind { get; set; }
+        [JsonProperty("members@odata.bind", NullValueHandling = NullValueHandling.Ignore)]
+        public string[] MembersODataBind { get; set; }
+    }
     /// <summary>
     /// Class that deals with Unified group CRUD operations.
     /// </summary>
@@ -109,12 +120,13 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="members">A list of UPNs for group members, if any</param>
         /// <param name="groupLogo">The binary stream of the logo for the Office 365 Group</param>
         /// <param name="isPrivate">Defines whether the group will be private or public, optional with default false (i.e. public)</param>
+        /// <param name="createTeam">Defines whether to create MS Teams team associated with the group</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <returns>The just created Office 365 Group</returns>
         public static UnifiedGroupEntity CreateUnifiedGroup(string displayName, string description, string mailNickname,
             string accessToken, string[] owners = null, string[] members = null, Stream groupLogo = null,
-            bool isPrivate = false, int retryCount = 10, int delay = 500)
+            bool isPrivate = false, bool createTeam = false, int retryCount = 10, int delay = 500)
         {
             UnifiedGroupEntity result = null;
 
@@ -148,7 +160,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     var graphClient = CreateGraphClient(accessToken, retryCount, delay);
 
                     // Prepare the group resource object
-                    var newGroup = new Microsoft.Graph.Group
+                    var newGroup = new GroupExtended
                     {
                         DisplayName = displayName,
                         Description = description,
@@ -158,6 +170,24 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         Visibility = isPrivate == true ? "Private" : "Public",
                         GroupTypes = new List<string> { "Unified" },
                     };
+
+                    if (owners != null && owners.Length > 0)
+                    {
+                        var users = GetUsers(graphClient, owners);
+                        if (users != null && users.Count > 0)
+                        {
+                            newGroup.OwnersODataBind = users.Select(u => string.Format("https://graph.microsoft.com/v1.0/users/{0}", u.Id)).ToArray();
+                        }
+                    }
+
+                    if (members != null && members.Length > 0)
+                    {
+                        var users = GetUsers(graphClient, members);
+                        if (users != null && users.Count > 0)
+                        {
+                            newGroup.MembersODataBind = users.Select(u => string.Format("https://graph.microsoft.com/v1.0/users/{0}", u.Id)).ToArray();
+                        }
+                    }
 
                     Microsoft.Graph.Group addedGroup = null;
                     String modernSiteUrl = null;
@@ -242,12 +272,12 @@ namespace OfficeDevPnP.Core.Framework.Graph
                             group.SiteUrl = modernSiteUrl;
                         }
                     }
-
+                    /*
                     #region Handle group's owners
 
                     if (owners != null && owners.Length > 0)
                     {
-                        await AddOwners(owners, graphClient, addedGroup);
+                        await UpdateOwners(owners, graphClient, addedGroup);
                     }
 
                     #endregion
@@ -256,10 +286,16 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                     if (members != null && members.Length > 0)
                     {
-                        await AddMembers(members, graphClient, addedGroup);
+                        await UpdateMembers(members, graphClient, addedGroup);
                     }
 
                     #endregion
+                    */
+
+                    if (createTeam)
+                    {
+                        await CreateTeam(group.GroupId, accessToken);
+                    }
 
                     return (group);
 
@@ -273,14 +309,14 @@ namespace OfficeDevPnP.Core.Framework.Graph
             return (result);
         }
 
-        private static async Task AddMembers(string[] members, GraphServiceClient graphClient, Group addedGroup)
+        private static async Task UpdateMembers(string[] members, GraphServiceClient graphClient, Group targetGroup)
         {
             foreach (var m in members)
             {
                 // Search for the user object
                 var memberQuery = await graphClient.Users
                     .Request()
-                    .Filter($"userPrincipalName eq '{m}'")
+                    .Filter($"userPrincipalName eq '{Uri.EscapeDataString(m.Replace("'", "''"))}'")
                     .GetAsync();
 
                 var member = memberQuery.FirstOrDefault();
@@ -290,7 +326,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     try
                     {
                         // And if any, add it to the collection of group's owners
-                        await graphClient.Groups[addedGroup.Id].Members.References.Request().AddAsync(member);
+                        await graphClient.Groups[targetGroup.Id].Members.References.Request().AddAsync(member);
                     }
                     catch (ServiceException ex)
                     {
@@ -306,16 +342,57 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     }
                 }
             }
+
+            // Remove any leftover member
+            var fullListOfMembers = await graphClient.Groups[targetGroup.Id].Members.Request().Select("userPrincipalName, Id").GetAsync();
+            var pageExists = true;
+
+            while (pageExists)
+            {
+                foreach (var member in fullListOfMembers)
+                {
+                    var currentMemberPrincipalName = (member as Microsoft.Graph.User)?.UserPrincipalName;
+                    if (!String.IsNullOrEmpty(currentMemberPrincipalName) &&
+                        !members.Contains(currentMemberPrincipalName, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        try
+                        {
+                            // If it is not in the list of current owners, just remove it
+                            await graphClient.Groups[targetGroup.Id].Members[member.Id].Reference.Request().DeleteAsync();
+                        }
+                        catch (ServiceException ex)
+                        {
+                            if (ex.Error.Code == "Request_BadRequest")
+                            {
+                                // Skip any failing removal
+                            }
+                            else
+                            {
+                                throw ex;
+                            }
+                        }
+                    }
+                }
+
+                if (fullListOfMembers.NextPageRequest != null)
+                {
+                    fullListOfMembers = await fullListOfMembers.NextPageRequest.GetAsync();
+                }
+                else
+                {
+                    pageExists = false;
+                }
+            }
         }
 
-        private static async Task AddOwners(string[] owners, GraphServiceClient graphClient, Group addedGroup)
+        private static async Task UpdateOwners(string[] owners, GraphServiceClient graphClient, Group targetGroup)
         {
             foreach (var o in owners)
             {
                 // Search for the user object
                 var ownerQuery = await graphClient.Users
                     .Request()
-                    .Filter($"userPrincipalName eq '{o}'")
+                    .Filter($"userPrincipalName eq '{Uri.EscapeDataString(o.Replace("'", "''"))}'")
                     .GetAsync();
 
                 var owner = ownerQuery.FirstOrDefault();
@@ -325,7 +402,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     try
                     {
                         // And if any, add it to the collection of group's owners
-                        await graphClient.Groups[addedGroup.Id].Owners.References.Request().AddAsync(owner);
+                        await graphClient.Groups[targetGroup.Id].Owners.References.Request().AddAsync(owner);
                     }
                     catch (ServiceException ex)
                     {
@@ -341,6 +418,47 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     }
                 }
             }
+
+            // Remove any leftover owner
+            var fullListOfOwners = await graphClient.Groups[targetGroup.Id].Owners.Request().Select("userPrincipalName, Id").GetAsync();
+            var pageExists = true;
+
+            while (pageExists)
+            {
+                foreach (var owner in fullListOfOwners)
+                {
+                    var currentOwnerPrincipalName = (owner as Microsoft.Graph.User)?.UserPrincipalName;
+                    if (!String.IsNullOrEmpty(currentOwnerPrincipalName) &&
+                        !owners.Contains(currentOwnerPrincipalName, StringComparer.InvariantCultureIgnoreCase))
+                    {
+                        try
+                        {
+                            // If it is not in the list of current owners, just remove it
+                            await graphClient.Groups[targetGroup.Id].Owners[owner.Id].Reference.Request().DeleteAsync();
+                        }
+                        catch (ServiceException ex)
+                        {
+                            if (ex.Error.Code == "Request_BadRequest")
+                            {
+                                // Skip any failing removal
+                            }
+                            else
+                            {
+                                throw ex;
+                            }
+                        }
+                    }
+                }
+
+                if (fullListOfOwners.NextPageRequest != null)
+                {
+                    fullListOfOwners = await fullListOfOwners.NextPageRequest.GetAsync();
+                }
+                else
+                {
+                    pageExists = false;
+                }
+            }
         }
 
         /// <summary>
@@ -352,6 +470,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="owners">A list of UPNs for group owners, if any, to be added to the site</param>
         /// <param name="members">A list of UPNs for group members, if any, to be added to the site</param>
         /// <param name="isPrivate">Defines whether the group will be private or public, optional with default false (i.e. public)</param>
+        /// <param name="createTeam">Defines whether to create MS Teams team associated with the group</param>
         /// <param name="groupLogo">The binary stream of the logo for the Office 365 Group</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
@@ -360,7 +479,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         public static bool UpdateUnifiedGroup(string groupId,
             string accessToken, int retryCount = 10, int delay = 500,
             string displayName = null, string description = null, string[] owners = null, string[] members = null,
-            Stream groupLogo = null, bool isPrivate = false)
+            Stream groupLogo = null, bool? isPrivate = null, bool createTeam = false)
         {
             bool result;
             try
@@ -374,6 +493,12 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         .Request()
                         .GetAsync();
 
+                    // Workaround for the PATCH request, needed after update to Graph Library
+                    var clonedGroup = new Group
+                    {
+                        Id = groupToUpdate.Id
+                    };
+
                     #region Logic to update the group DisplayName and Description
 
                     var updateGroup = false;
@@ -382,38 +507,44 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     // Check if we have to update the DisplayName
                     if (!String.IsNullOrEmpty(displayName) && groupToUpdate.DisplayName != displayName)
                     {
-                        groupToUpdate.DisplayName = displayName;
+                        clonedGroup.DisplayName = displayName;
                         updateGroup = true;
                     }
 
                     // Check if we have to update the Description
                     if (!String.IsNullOrEmpty(description) && groupToUpdate.Description != description)
                     {
-                        groupToUpdate.Description = description;
+                        clonedGroup.Description = description;
                         updateGroup = true;
                     }
 
                     // Check if visibility has changed for the Group
                     bool existingIsPrivate = groupToUpdate.Visibility == "Private";
-                    if (existingIsPrivate != isPrivate)
+                    if (isPrivate.HasValue && existingIsPrivate != isPrivate)
                     {
-                        groupToUpdate.Visibility = isPrivate == true ? "Private" : "Public";
+                        clonedGroup.Visibility = isPrivate == true ? "Private" : "Public";
                         updateGroup = true;
                     }
 
-                    // Check if we are to add owners
+                    // Check if we need to update owners
                     if (owners != null && owners.Length > 0)
                     {
                         // For each and every owner
-                        await AddOwners(owners, graphClient, groupToUpdate);
+                        await UpdateOwners(owners, graphClient, groupToUpdate);
                         updateGroup = true;
                     }
 
-                    // Check if we are to add members
+                    // Check if we need to update members
                     if (members != null && members.Length > 0)
                     {
                         // For each and every owner
-                        await AddMembers(members, graphClient, groupToUpdate);
+                        await UpdateMembers(members, graphClient, groupToUpdate);
+                        updateGroup = true;
+                    }
+
+                    if (createTeam)
+                    {
+                        await CreateTeam(groupId, accessToken);
                         updateGroup = true;
                     }
 
@@ -422,7 +553,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     {
                         var updatedGroup = await graphClient.Groups[groupId]
                             .Request()
-                            .UpdateAsync(groupToUpdate);
+                            .UpdateAsync(clonedGroup);
 
                         groupUpdated = true;
                     }
@@ -465,12 +596,13 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="members">A list of UPNs for group members, if any</param>
         /// <param name="groupLogoPath">The path of the logo for the Office 365 Group</param>
         /// <param name="isPrivate">Defines whether the group will be private or public, optional with default false (i.e. public)</param>
+        /// <param name="createTeam">Defines whether to create MS Teams team associated with the group</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <returns>The just created Office 365 Group</returns>
         public static UnifiedGroupEntity CreateUnifiedGroup(string displayName, string description, string mailNickname,
             string accessToken, string[] owners = null, string[] members = null, String groupLogoPath = null,
-            bool isPrivate = false, int retryCount = 10, int delay = 500)
+            bool isPrivate = false, bool createTeam = false, int retryCount = 10, int delay = 500)
         {
             if (!String.IsNullOrEmpty(groupLogoPath) && !System.IO.File.Exists(groupLogoPath))
             {
@@ -483,7 +615,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     return (CreateUnifiedGroup(displayName, description,
                         mailNickname, accessToken, owners, members,
                         groupLogo: groupLogoStream, isPrivate: isPrivate,
-                        retryCount: retryCount, delay: delay));
+                        createTeam: createTeam, retryCount: retryCount, delay: delay));
                 }
             }
             else
@@ -491,7 +623,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 return (CreateUnifiedGroup(displayName, description,
                     mailNickname, accessToken, owners, members,
                     groupLogo: null, isPrivate: isPrivate,
-                    retryCount: retryCount, delay: delay));
+                    createTeam: createTeam, retryCount: retryCount, delay: delay));
             }
         }
 
@@ -505,17 +637,18 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="owners">A list of UPNs for group owners, if any</param>
         /// <param name="members">A list of UPNs for group members, if any</param>
         /// <param name="isPrivate">Defines whether the group will be private or public, optional with default false (i.e. public)</param>
+        /// <param name="createTeam">Defines whether to create MS Teams team associated with the group</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <returns>The just created Office 365 Group</returns>
         public static UnifiedGroupEntity CreateUnifiedGroup(string displayName, string description, string mailNickname,
             string accessToken, string[] owners = null, string[] members = null,
-            bool isPrivate = false, int retryCount = 10, int delay = 500)
+            bool isPrivate = false, bool createTeam = false, int retryCount = 10, int delay = 500)
         {
             return (CreateUnifiedGroup(displayName, description,
                 mailNickname, accessToken, owners, members,
                 groupLogo: null, isPrivate: isPrivate,
-                retryCount: retryCount, delay: delay));
+                createTeam: createTeam, retryCount: retryCount, delay: delay));
         }
 
         /// <summary>
@@ -542,7 +675,6 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 // Use a synchronous model to invoke the asynchronous process
                 Task.Run(async () =>
                 {
-
                     var graphClient = CreateGraphClient(accessToken, retryCount, delay);
                     await graphClient.Groups[groupId].Request().DeleteAsync();
 
@@ -563,7 +695,8 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="includeSite">Defines whether to return details about the Modern SharePoint Site backing the group. Default is true.</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
-        public static UnifiedGroupEntity GetUnifiedGroup(String groupId, String accessToken, int retryCount = 10, int delay = 500, bool includeSite = true)
+        /// <param name="includeClassification">Defines whether to return classification value of the unified group. Default is true.</param>
+        public static UnifiedGroupEntity GetUnifiedGroup(String groupId, String accessToken, int retryCount = 10, int delay = 500, bool includeSite = true, bool includeClassification = false)
         {
             if (String.IsNullOrEmpty(groupId))
             {
@@ -593,7 +726,8 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         DisplayName = g.DisplayName,
                         Description = g.Description,
                         Mail = g.Mail,
-                        MailNickname = g.MailNickname
+                        MailNickname = g.MailNickname,
+                        Visibility = g.Visibility
                     };
                     if (includeSite)
                     {
@@ -606,6 +740,12 @@ namespace OfficeDevPnP.Core.Framework.Graph
                             group.SiteUrl = e.Error.Message;
                         }
                     }
+
+                    if (includeClassification)
+                    {
+                        group.Classification = g.Classification;
+                    }
+
                     return (group);
 
                 }).GetAwaiter().GetResult();
@@ -629,11 +769,12 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="includeSite">Defines whether to return details about the Modern SharePoint Site backing the group. Default is true.</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
+        /// <param name="includeClassification">Defines whether or not to return details about the Modern Site classification value.</param>
         /// <returns>An IList of SiteEntity objects</returns>
         public static List<UnifiedGroupEntity> ListUnifiedGroups(string accessToken,
             String displayName = null, string mailNickname = null,
             int startIndex = 0, int endIndex = 999, bool includeSite = true,
-            int retryCount = 10, int delay = 500)
+            int retryCount = 10, int delay = 500, bool includeClassification = false)
         {
             if (String.IsNullOrEmpty(accessToken))
             {
@@ -651,8 +792,8 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     var graphClient = CreateGraphClient(accessToken, retryCount, delay);
 
                     // Apply the DisplayName filter, if any
-                    var displayNameFilter = !String.IsNullOrEmpty(displayName) ? $" and startswith(DisplayName,'{displayName}')" : String.Empty;
-                    var mailNicknameFilter = !String.IsNullOrEmpty(mailNickname) ? $" and startswith(MailNickname,'{mailNickname}')" : String.Empty;
+                    var displayNameFilter = !String.IsNullOrEmpty(displayName) ? $" and (DisplayName eq '{Uri.EscapeDataString(displayName.Replace("'", "''"))}')" : String.Empty;
+                    var mailNicknameFilter = !String.IsNullOrEmpty(mailNickname) ? $" and (MailNickname eq '{Uri.EscapeDataString(mailNickname.Replace("'", "''"))}')" : String.Empty;
 
                     var pagedGroups = await graphClient.Groups
                         .Request()
@@ -680,6 +821,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                                     Description = g.Description,
                                     Mail = g.Mail,
                                     MailNickname = g.MailNickname,
+                                    Visibility = g.Visibility
                                 };
 
                                 if (includeSite)
@@ -693,6 +835,12 @@ namespace OfficeDevPnP.Core.Framework.Graph
                                         group.SiteUrl = e.Error.Message;
                                     }
                                 }
+
+                                if (includeClassification)
+                                {
+                                    group.Classification = g.Classification;
+                                }
+
                                 groups.Add(group);
                             }
                         }
@@ -753,7 +901,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     {
                         unifiedGroupGraphUsers = new List<User>();
 
-                        GenerateGraphUserCollection(groupUsers.CurrentPage,unifiedGroupGraphUsers);
+                        GenerateGraphUserCollection(groupUsers.CurrentPage, unifiedGroupGraphUsers);
                     }
 
                     // Retrieve users when the results are paged.
@@ -875,6 +1023,244 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
 
             return unifiedGroupGraphUsers;
+        }
+
+        /// <summary>
+        /// Helper method. Generates a collection of Microsoft.Graph.User entity from string array
+        /// </summary>
+        /// <param name="graphClient">Graph service client</param>
+        /// <param name="groupUsers">String array of users</param>
+        /// <returns></returns>
+
+        private static List<User> GetUsers(GraphServiceClient graphClient, string[] groupUsers)
+        {
+            if (groupUsers == null || groupUsers.Length == 0)
+            {
+                return new List<User>();
+            }
+
+            var result = Task.Run(async () =>
+            {
+                var usersResult = new List<User>();
+                foreach (string groupUser in groupUsers)
+                {
+                    try
+                    {
+                        // Search for the user object
+                        IGraphServiceUsersCollectionPage userQuery = await graphClient.Users
+                                            .Request()
+                                            .Select("Id")
+                                            .Filter($"userPrincipalName eq '{Uri.EscapeDataString(groupUser.Replace("'", "''"))}'")
+                                            .GetAsync();
+
+                        User user = userQuery.FirstOrDefault();
+                        if (user != null)
+                        {
+                            usersResult.Add(user);
+                        }
+                    }
+                    catch (ServiceException ex)
+                    {
+                        // skip, group provisioning shouldnt stop because of error in user object
+                    }
+                }
+                return usersResult;
+            }).GetAwaiter().GetResult();
+            return result;
+        }
+
+        /// <summary>
+        /// Returns the classification value of an Office 365 Group.
+        /// </summary>
+        /// <param name="groupId">ID of the unified Group</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <returns>Classification value of a Unified group</returns>
+        public static string GetGroupClassification(string groupId, string accessToken)
+        {
+            if (String.IsNullOrEmpty(groupId))
+            {
+                throw new ArgumentNullException(nameof(groupId));
+            }
+
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            string classification = string.Empty;
+
+            try
+            {
+                string getGroupUrl = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groups/{groupId}";
+
+                var getGroupResult = GraphHttpClient.MakeGetRequestForString(
+                    getGroupUrl,
+                    accessToken: accessToken);
+
+                JObject groupObject = JObject.Parse(getGroupResult);
+
+                if (groupObject["classification"] != null)
+                {
+                    classification = Convert.ToString(groupObject["classification"]);
+                }
+
+            }
+            catch (ServiceException e)
+            {
+                classification = e.Error.Message;
+            }
+
+            return classification;
+        }
+
+        /// <summary>
+        /// Creates a team associated with an Office 365 group
+        /// </summary>
+        /// <param name="groupId">The ID of the Office 365 Group</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <returns></returns>
+        public static async Task CreateTeam(String groupId, String accessToken)
+        {
+            if (String.IsNullOrEmpty(groupId))
+            {
+                throw new ArgumentNullException(nameof(groupId));
+            }
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+            var createTeamEndPoint = GraphHttpClient.MicrosoftGraphV1BaseUri + $"groups/{groupId}/team";
+            try
+            {
+                await Task.Run(() =>
+                {
+                    GraphHttpClient.MakePutRequest(createTeamEndPoint, new { }, "application/json", accessToken);
+                });
+            }
+            catch (ServiceException ex)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Gets one deleted unified group based on its ID.
+        /// </summary>
+        /// <param name="groupId">The ID of the deleted group.</param>
+        /// <param name="accessToken">Access token for accessing Microsoft Graph</param>
+        /// <returns>The unified group object of the deleted group that matches the provided ID.</returns>
+        public static UnifiedGroupEntity GetDeletedUnifiedGroup(string groupId, string accessToken)
+        {
+            try
+            {
+                var response = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/directory/deleteditems/microsoft.graph.group/{groupId}", accessToken);
+
+                var group = JToken.Parse(response);
+
+                var deletedGroup = new UnifiedGroupEntity
+                {
+                    GroupId = group["id"].ToString(),
+                    Classification = group["classification"].ToString(),
+                    Description = group["description"].ToString(),
+                    DisplayName = group["displayName"].ToString(),
+                    Mail = group["mail"].ToString(),
+                    MailNickname = group["mailNickname"].ToString(),
+                    Visibility = group["visibility"].ToString()
+                };
+
+                return deletedGroup;
+            }
+            catch (Exception e)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, e.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        ///  Lists deleted unified groups.
+        /// </summary>
+        /// <param name="accessToken">Access token for accessing Microsoft Graph</param>
+        /// <returns>A list of unified group objects for the deleted groups.</returns>
+        public static List<UnifiedGroupEntity> ListDeletedUnifiedGroups(string accessToken)
+        {
+            return ListDeletedUnifiedGroups(accessToken, null, null);
+        }
+
+        private static List<UnifiedGroupEntity> ListDeletedUnifiedGroups(string accessToken, List<UnifiedGroupEntity> deletedGroups, string nextPageUrl)
+        {
+            try
+            {
+                if (deletedGroups == null) deletedGroups = new List<UnifiedGroupEntity>();
+
+                var requestUrl = nextPageUrl ?? $"{GraphHelper.MicrosoftGraphBaseURI}beta/directory/deleteditems/microsoft.graph.group?filter=groupTypes/Any(x:x eq 'Unified')";
+                var response = JToken.Parse(HttpHelper.MakeGetRequestForString(requestUrl, accessToken));
+
+                var groups = response["value"];
+
+                foreach (var group in groups)
+                {
+                    var deletedGroup = new UnifiedGroupEntity
+                    {
+                        GroupId = group["id"].ToString(),
+                        Classification = group["classification"].ToString(),
+                        Description = group["description"].ToString(),
+                        DisplayName = group["displayName"].ToString(),
+                        Mail = group["mail"].ToString(),
+                        MailNickname = group["mailNickname"].ToString(),
+                        Visibility = group["visibility"].ToString()
+                    };
+
+                    deletedGroups.Add(deletedGroup);
+                }
+
+                // has paging?
+                return response["@odata.nextLink"] != null ? ListDeletedUnifiedGroups(accessToken, deletedGroups, response["@odata.nextLink"].ToString()) : deletedGroups;
+            }
+            catch (Exception e)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, e.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Restores one deleted unified group based on its ID.
+        /// </summary>
+        /// <param name="groupId">The ID of the deleted group.</param>
+        /// <param name="accessToken">Access token for accessing Microsoft Graph</param>
+        /// <returns></returns>
+        public static void RestoreDeletedUnifiedGroup(string groupId, string accessToken)
+        {
+            try
+            {
+                HttpHelper.MakePostRequest($"{GraphHelper.MicrosoftGraphBaseURI}beta/directory/deleteditems/{groupId}/restore", contentType: "application/json", accessToken: accessToken);
+            }
+            catch (Exception e)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, e.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Permanently deletes one deleted unified group based on its ID.
+        /// </summary>
+        /// <param name="groupId">The ID of the deleted group.</param>
+        /// <param name="accessToken">Access token for accessing Microsoft Graph</param>
+        /// <returns></returns>
+        public static void PermanentlyDeleteUnifiedGroup(string groupId, string accessToken)
+        {
+            try
+            {
+                HttpHelper.MakeDeleteRequest($"{GraphHelper.MicrosoftGraphBaseURI}beta/directory/deleteditems/{groupId}", accessToken);
+            }
+            catch (Exception e)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, e.Message);
+                throw;
+            }
         }
     }
 }

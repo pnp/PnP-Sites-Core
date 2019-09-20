@@ -1,13 +1,20 @@
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
+using OfficeDevPnP.Core.Attributes;
 using System;
+using OfficeDevPnP.Core.Diagnostics;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    internal class SiteCollectionTermGroupNameToken : TokenDefinition
+    [TokenDefinitionDescription(
+        Token = "{sitecollectiontermgroupname}",
+        Description = "Returns the name of the site collection term group",
+        Example = "{sitecollectiontermgroupname}",
+        Returns = "Site Collection - mytenant.sharepoint.com-sites-mysite")]
+    internal class SiteCollectionTermGroupNameToken : VolatileTokenDefinition
     {
         public SiteCollectionTermGroupNameToken(Web web)
-            : base(web, "~sitecollectiontermgroupname", "{sitecollectiontermgroupname}")
+            : base(web, "{sitecollectiontermgroupname}")
         {
         }
 
@@ -15,18 +22,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (string.IsNullOrEmpty(CacheValue))
             {
-                // The token is requested. Check if the group exists and if not, create it
-                this.Web.EnsureProperty(w => w.Url);
-                using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
+                try
                 {
-                    var site = context.Site;
-                    var session = TaxonomySession.GetTaxonomySession(context);
+                    // The token is requested. Check if the group exists and if not, create it
+                    var site = TokenContext.Site;
+                    var session = TaxonomySession.GetTaxonomySession(TokenContext);
                     var termstore = session.GetDefaultSiteCollectionTermStore();
                     var termGroup = termstore.GetSiteCollectionGroup(site, true);
-                    context.Load(termGroup);
-                    context.ExecuteQueryRetry();
+                    TokenContext.Load(termGroup);
+                    TokenContext.ExecuteQueryRetry();
 
                     CacheValue = termGroup.Name.ToString();
+                }
+                catch (ServerUnauthorizedAccessException)
+                {
+                    Log.Warning(Constants.LOGGING_SOURCE, CoreResources.TermGroup_No_Access);
                 }
             }
             return CacheValue;

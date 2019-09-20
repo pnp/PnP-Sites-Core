@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of SupportedUILanguage objects
     /// </summary>
-    public partial class SupportedUILanguageCollection : ProvisioningTemplateCollection<SupportedUILanguage>, IEquatable<SupportedUILanguageCollection>
+    public partial class SupportedUILanguageCollection : BaseProvisioningTemplateObjectCollection<SupportedUILanguage>, IEquatable<SupportedUILanguageCollection>
     {
         /// <summary>
         /// Constructor for SupportedUILangaugeCollection class

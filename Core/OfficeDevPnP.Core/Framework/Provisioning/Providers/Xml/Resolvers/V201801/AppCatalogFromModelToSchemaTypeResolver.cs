@@ -31,7 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2018
             {
                 // If that one is missing, let's try with the local Site Collection App Catalog
                 var alm = source as Model.ApplicationLifecycleManagement;
-                appCatalog = alm.AppCatalog;
+                appCatalog = alm?.AppCatalog;
             }
 
             if (null != appCatalog)

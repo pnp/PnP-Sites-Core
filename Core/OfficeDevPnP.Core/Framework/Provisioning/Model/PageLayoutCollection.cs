@@ -3,7 +3,7 @@
     /// <summary>
     /// Collection of PageLayout objects
     /// </summary>
-    public partial class PageLayoutCollection : ProvisioningTemplateCollection<PageLayout>
+    public partial class PageLayoutCollection : BaseProvisioningTemplateObjectCollection<PageLayout>
     {
         /// <summary>
         /// Constructor for PageLayoutCollection class

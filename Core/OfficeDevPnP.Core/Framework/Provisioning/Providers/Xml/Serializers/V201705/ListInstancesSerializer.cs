@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V201705
 {
@@ -17,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 1100, DeserializationSequence = 1100,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201705,
-        Default = true)]
+        Scope = SerializerScope.ProvisioningTemplate)]
     internal class ListInstancesSerializer : PnPBaseSchemaSerializer<ListInstance>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
@@ -86,6 +87,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
 
                 // IRM Settings
                 expressions.Add(l => l.IRMSettings, new IRMSettingsFromSchemaToModelTypeResolver());
+
+                // DataSource
+                var dataSourceItemTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var dataSourceItemType = Type.GetType(dataSourceItemTypeName, true);
+                var dataSourceItemKeySelector = CreateSelectorLambda(dataSourceItemType, "Key");
+                var dataSourceItemValueSelector = CreateSelectorLambda(dataSourceItemType, "Value");
+                expressions.Add(l => l.DataSource, new FromArrayToDictionaryValueResolver<string, string>(dataSourceItemType, dataSourceItemKeySelector, dataSourceItemValueSelector));
 
                 template.Lists.AddRange(
                     PnPObjectsMapper.MapObjects<ListInstance>(lists,
@@ -179,6 +187,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
 
                 // IRM Settings
                 resolvers.Add($"{listInstanceType}.IRMSettings", new IRMSettingsFromModelToSchemaTypeResolver());
+
+                // DataSource
+                var dataSourceItemTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var dataSourceItemType = Type.GetType(dataSourceItemTypeName, true);
+                var dataSourceItemKeySelector = CreateSelectorLambda(dataSourceItemType, "Key");
+                var dataSourceItemValueSelector = CreateSelectorLambda(dataSourceItemType, "Value");
+
+                resolvers.Add($"{listInstanceType}.DataSource", new FromDictionaryToArrayValueResolver<string, string>(dataSourceItemType, dataSourceItemKeySelector, dataSourceItemValueSelector));
 
                 // Manage empty TemplateFeatureID
                 resolvers.Add($"{listInstanceType}.TemplateFeatureID", new ExpressionValueResolver((s, v) =>

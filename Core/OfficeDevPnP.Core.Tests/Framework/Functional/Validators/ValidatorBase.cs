@@ -363,9 +363,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             {
                 foreach (Microsoft.SharePoint.Client.RoleAssignment r in roles)
                 {
-                    if (r.Member.LoginName.Contains(s.Principal) && r.RoleDefinitionBindings.Where(i => i.Name == s.RoleDefinition).FirstOrDefault() != null)
+                    if (r.Member.LoginName.Contains(s.Principal))
                     {
-                        roleCount++;
+                        if (r.Member.LoginName.Equals("c:0(.s|true", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            roleCount++;
+                        }
+                        else if (r.RoleDefinitionBindings.Where(i => i.Name == s.RoleDefinition).FirstOrDefault() != null)
+                        {
+                            roleCount++;
+                        }
                     }
                 }
             }

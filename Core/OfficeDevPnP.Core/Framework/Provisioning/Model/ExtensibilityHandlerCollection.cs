@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of ExtensibilityHandler objects
     /// </summary>
-    public partial class ExtensibilityHandlerCollection : ProvisioningTemplateCollection<ExtensibilityHandler>
+    public partial class ExtensibilityHandlerCollection : BaseProvisioningTemplateObjectCollection<ExtensibilityHandler>
     {
         /// <summary>
         /// Constructor for ExtensibilityHandlerCollection class

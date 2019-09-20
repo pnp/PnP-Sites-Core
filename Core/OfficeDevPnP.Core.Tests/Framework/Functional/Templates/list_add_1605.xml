@@ -23,8 +23,8 @@ Base template: goal is to verify that all list properties and elements work as e
                 <Button
                   Id="Ribbon.Documents.Copies.OfficeDevPnPDownloadAll"
                   Command="OfficeDevPnP.Cmd.DownloadAll"
-                  Image16by16="~sitecollection/SiteAssets/icons/DownloadAll16x16.png"
-                  Image32by32="~sitecollection/SiteAssets/icons/DownloadAll32x32.png"
+                  Image16by16="{site}/SiteAssets/icons/DownloadAll16x16.png"
+                  Image32by32="{site}/SiteAssets/icons/DownloadAll32x32.png"
                   LabelText="Download All"
                   Description="Download all files separately"
                   ToolTipTitle="Download All"
@@ -36,8 +36,8 @@ Base template: goal is to verify that all list properties and elements work as e
                 <Button
                   Id="Ribbon.Documents.Copies.OfficeDevPnPDownloadAllAsZip"
                   Command="OfficeDevPnP.Cmd.DownloadAllAsZip"
-                  Image16by16="~sitecollection/SiteAssets/icons/DownloadAllAsZip16x16.png"
-                  Image32by32="~sitecollection/SiteAssets/icons/DownloadAllAsZip32x32.png"
+                  Image16by16="{site}/SiteAssets/icons/DownloadAllAsZip16x16.png"
+                  Image32by32="{site}/SiteAssets/icons/DownloadAllAsZip32x32.png"
                   LabelText="Download All as Zip"
                   Description="Download all files as single Zip"
                   ToolTipTitle="Download All as Zip"
@@ -65,8 +65,8 @@ Base template: goal is to verify that all list properties and elements work as e
                 <Button
                   Id="Ribbon.Documents.Copies.OfficeDevPnPDownloadAll"
                   Command="OfficeDevPnP.Cmd.DownloadAll"
-                  Image16by16="~sitecollection/SiteAssets/icons/DownloadAll16x16.png"
-                  Image32by32="~sitecollection/SiteAssets/icons/DownloadAll32x32.png"
+                  Image16by16="{site}/SiteAssets/icons/DownloadAll16x16.png"
+                  Image32by32="{site}/SiteAssets/icons/DownloadAll32x32.png"
                   LabelText="Download All"
                   Description="Download all files separately"
                   ToolTipTitle="Download All"
@@ -78,8 +78,8 @@ Base template: goal is to verify that all list properties and elements work as e
                 <Button
                   Id="Ribbon.Documents.Copies.OfficeDevPnPDownloadAllAsZip"
                   Command="OfficeDevPnP.Cmd.DownloadAllAsZip"
-                  Image16by16="~sitecollection/SiteAssets/icons/DownloadAllAsZip16x16.png"
-                  Image32by32="~sitecollection/SiteAssets/icons/DownloadAllAsZip32x32.png"
+                  Image16by16="{site}/SiteAssets/icons/DownloadAllAsZip16x16.png"
+                  Image32by32="{site}/SiteAssets/icons/DownloadAllAsZip32x32.png"
                   LabelText="Download All as Zip"
                   Description="Download all files as single Zip"
                   ToolTipTitle="Download All as Zip"

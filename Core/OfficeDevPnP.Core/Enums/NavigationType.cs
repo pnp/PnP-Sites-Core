@@ -1,6 +1,6 @@
 ﻿namespace OfficeDevPnP.Core.Enums
 {
- 
+
     /// <summary>
     /// Enum that defines the navigation types
     /// </summary>
@@ -17,6 +17,12 @@
         /// <summary>
         /// Search Navigation
         /// </summary>
-        SearchNav = 2
+        SearchNav = 2,
+#if !ONPREMISES
+        /// <summary>
+        /// Footer Navigation
+        /// </summary>
+        Footer = 3
+#endif
     }
 }

@@ -32,6 +32,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="OfficeDevPnP.Core">
+      <HintPath>..\..\..\OfficeDevPnP.Core\bin\Debug\OfficeDevPnP.Core.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -53,6 +59,16 @@
       <Link>ProvisioningSchema-2018-01.cs</Link>
       <DependentUpon>ProvisioningSchema-2018-01.xsd</DependentUpon>
     </Compile>
+    <Compile Include="..\..\..\OfficeDevPnP.Core\Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.cs">
+      <Link>ProvisioningSchema-2018-07.cs</Link>
+      <DependentUpon>ProvisioningSchema-2018-07.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="..\..\..\OfficeDevPnP.Core\Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.cs">
+      <Link>ProvisioningSchema-2019-03.cs</Link>
+      <DependentUpon>ProvisioningSchema-2019-03.xsd</DependentUpon>
+    </Compile>
+    <Compile Include="EngineParameter.cs" />
+    <Compile Include="ParameterAnalyzer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -81,9 +97,19 @@
       <Link>ProvisioningSchema-2018-01.xsd</Link>
       <SubType>Designer</SubType>
     </None>
+    <None Include="..\..\..\OfficeDevPnP.Core\Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.xsd">
+      <Link>ProvisioningSchema-2018-07.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="..\..\..\OfficeDevPnP.Core\Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.xsd">
+      <Link>ProvisioningSchema-2019-03.xsd</Link>
+      <SubType>Designer</SubType>
+    </None>
     <None Include="..\..\..\ProvisioningSchema-2015-05.md">
       <Link>ProvisioningSchema-2015-05.md</Link>
     </None>
+    <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="ProvisioningSchema-2015-08.md" />
   </ItemGroup>
   <ItemGroup>

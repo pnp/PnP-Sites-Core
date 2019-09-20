@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
-using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
-using System.IO;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using OfficeDevPnP.Core.Utilities;
+using System;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Web;
 
@@ -21,6 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return "Web Settings"; }
         }
 
+        public override string InternalName => "WebSettings";
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -28,13 +27,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.EnsureProperties(
 #if !ONPREMISES
                     w => w.NoCrawl,
-                    w => w.RequestAccessEmail,
+                    w => w.CommentsOnSitePagesDisabled,
 #endif
                     //w => w.Title,
                     //w => w.Description,
                     w => w.MasterUrl,
                     w => w.CustomMasterUrl,
                     w => w.SiteLogoUrl,
+                    w => w.RequestAccessEmail,
                     w => w.RootFolder,
                     w => w.AlternateCssUrl,
                     w => w.ServerRelativeUrl,
@@ -43,7 +43,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var webSettings = new WebSettings();
 #if !ONPREMISES
                 webSettings.NoCrawl = web.NoCrawl;
-                webSettings.RequestAccessEmail = web.RequestAccessEmail;
+                webSettings.CommentsOnSitePagesDisabled = web.CommentsOnSitePagesDisabled;
 #endif
                 // We're not extracting Title and Description
                 //webSettings.Title = Tokenize(web.Title, web.Url);
@@ -54,6 +54,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Notice. No tokenization needed for the welcome page, it's always relative for the site
                 webSettings.WelcomePage = web.RootFolder.WelcomePage;
                 webSettings.AlternateCSS = Tokenize(web.AlternateCssUrl, web.Url);
+                webSettings.RequestAccessEmail = web.RequestAccessEmail;
 
                 if (creationInfo.PersistBrandingFiles)
                 {
@@ -83,7 +84,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Extract site logo if property has been set and it's not dynamic image from _api URL
                     if (!string.IsNullOrEmpty(web.SiteLogoUrl) && (!web.SiteLogoUrl.ToLowerInvariant().Contains("_api/")))
                     {
-                        // Convert to server relative URL if needed (web.SiteLogoUrl can be set to FQDN url of a file hosted in the site (e.g. for communication sites))
+                        // Convert to server relative URL if needed (web.SiteLogoUrl can be set to FQDN URL of a file hosted in the site (e.g. for communication sites))
                         Uri webUri = new Uri(web.Url);
                         string webUrl = $"{webUri.Scheme}://{webUri.DnsSafeHost}";
                         string siteLogoServerRelativeUrl = web.SiteLogoUrl.Replace(webUrl, "");
@@ -184,11 +185,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var baseUri = new Uri(web.Url);
                         var fullUri = new Uri(baseUri, file.ServerRelativeUrl);
                         var folderPath = HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
-                        
+
                         // Configure the filename to use 
                         fileName = HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
-                        
-                        // Build up a site relative container url...might end up empty as well
+
+                        // Build up a site relative container URL...might end up empty as well
                         String container = HttpUtility.UrlDecode(folderPath.Replace(web.ServerRelativeUrl, "")).Trim('/').Replace("/", "\\");
 
                         using (Stream memStream = new MemoryStream())
@@ -263,19 +264,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Check if this is not a noscript site as we're not allowed to update some properties
                     bool isNoScriptSite = web.IsNoScriptSite();
 
-                    web.EnsureProperty(w => w.HasUniqueRoleAssignments);
+                    web.EnsureProperties(
+#if !ONPREMISES
+                        w => w.CommentsOnSitePagesDisabled,
+#endif
+                        w => w.WebTemplate,
+                        w => w.HasUniqueRoleAssignments);
 
                     var webSettings = template.WebSettings;
-#if !ONPREMISES
-                    if (!isNoScriptSite)
-                    {
-                        web.NoCrawl = webSettings.NoCrawl;
-                    }
-                    else
-                    {
-                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate);
-                    }
 
+                    // Since the IsSubSite function can trigger an executequery ensure it's called before any updates to the web object are done.
                     if (!web.IsSubSite() || (web.IsSubSite() && web.HasUniqueRoleAssignments))
                     {
                         String requestAccessEmailValue = parser.ParseString(webSettings.RequestAccessEmail);
@@ -290,6 +288,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             web.Update();
                             web.Context.ExecuteQueryRetry();
                         }
+                    }
+
+#if !ONPREMISES
+                    if (!isNoScriptSite)
+                    {
+                        web.NoCrawl = webSettings.NoCrawl;
+                    }
+                    else
+                    {
+                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate);
+                    }
+
+                    if (web.CommentsOnSitePagesDisabled != webSettings.CommentsOnSitePagesDisabled)
+                    {
+                        web.CommentsOnSitePagesDisabled = webSettings.CommentsOnSitePagesDisabled;
                     }
 #endif
                     var masterUrl = parser.ParseString(webSettings.MasterPageUrl);
@@ -326,7 +339,48 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     if (webSettings.SiteLogo != null)
                     {
-                        web.SiteLogoUrl = parser.ParseString(webSettings.SiteLogo);
+                        var logoUrl = parser.ParseString(webSettings.SiteLogo);
+                        // Modern site? Then we assume the SiteLogo is actually a filepath
+                        if (web.WebTemplate == "GROUP")
+                        {
+#if !ONPREMISES
+                            if (!string.IsNullOrEmpty(logoUrl) && !logoUrl.ToLower().Contains("_api/groupservice/getgroupimage"))
+                            {
+                                var fileBytes = ConnectorFileHelper.GetFileBytes(template.Connector, logoUrl);
+                                if (fileBytes != null && fileBytes.Length > 0)
+                                {
+#if !NETSTANDARD2_0
+                                    var mimeType = MimeMapping.GetMimeMapping(logoUrl);
+#else
+                                    var mimeType = "";
+                                    var imgUrl = logoUrl;
+                                    if (imgUrl.Contains("?"))
+                                    {
+                                        imgUrl = imgUrl.Split(new[] { '?' })[0];
+                                    }
+                                    if(imgUrl.EndsWith(".gif",StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        mimeType = "image/gif";
+                                    }
+                                    if (imgUrl.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        mimeType = "image/png";
+                                    }
+                                    if (imgUrl.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase))
+                                    {
+                                        mimeType = "image/jpeg";
+                                    }
+#endif
+                                    Sites.SiteCollection.SetGroupImageAsync((ClientContext)web.Context, fileBytes, mimeType).GetAwaiter().GetResult();
+
+                                }
+                            }
+#endif
+                                }
+                        else
+                        {
+                            web.SiteLogoUrl = logoUrl;
+                        }
                     }
                     var welcomePage = parser.ParseString(webSettings.WelcomePage);
                     if (!string.IsNullOrEmpty(welcomePage))
@@ -338,9 +392,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         web.AlternateCssUrl = parser.ParseString(webSettings.AlternateCSS);
                     }
-
                     web.Update();
                     web.Context.ExecuteQueryRetry();
+
+#if !ONPREMISES
+                    if (webSettings.HubSiteUrl != null)
+                    {
+                        var hubsiteUrl = parser.ParseString(webSettings.HubSiteUrl);
+                        try
+                        {
+                            using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl(), applyingInformation.AccessTokens))
+                            {
+                                var tenant = new Tenant(tenantContext);
+                                tenant.ConnectSiteToHubSite(web.Url, hubsiteUrl);
+                                tenantContext.ExecuteQueryRetry();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            WriteMessage($"Hub site association failed: {ex.Message}", ProvisioningMessageType.Warning);
+                        }
+                    }
+#endif
                 }
             }
 
@@ -356,5 +429,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             return template.WebSettings != null;
         }
+
+
     }
 }

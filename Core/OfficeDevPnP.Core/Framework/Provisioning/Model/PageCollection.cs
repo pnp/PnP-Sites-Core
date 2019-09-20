@@ -3,7 +3,7 @@
     /// <summary>
     /// Collection of Page objects
     /// </summary>
-    public partial class PageCollection : ProvisioningTemplateCollection<Page>
+    public partial class PageCollection : BaseProvisioningTemplateObjectCollection<Page>
     {
         public PageCollection(ProvisioningTemplate parentTemplate) : base(parentTemplate)
         {

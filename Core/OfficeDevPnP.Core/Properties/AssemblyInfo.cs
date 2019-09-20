@@ -11,12 +11,14 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Office Dev PnP Core library for SharePoint 2013")]
 #elif SP2016
 [assembly: AssemblyDescription("Office Dev PnP Core library for SharePoint 2016")]
+#elif SP2019
+[assembly: AssemblyDescription("Office Dev PnP Core library for SharePoint 2019")]
 #else
 [assembly: AssemblyDescription("Office Dev PnP Core library for SharePoint Online")]
 #endif
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("OfficeDevPnP.Core")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2018")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en-US")]
@@ -39,11 +41,11 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // Convention:
-// Major version = current version 2
-// Minor version = Sequence...version 0 was with January release...so 1=Feb 2=Mar...11=Jan 2017...15=May 2017...20=Nov
+// Major version = current version 3 (released as of Aug 2018)
+// Minor version = Sequence...version 0 was with Aug 2018 release, 1 = Sept, 2 = Oct,...
 // Third part = version indenpendant showing the release month in YYMM
 // Fourth part = 0 normally or a sequence number when we do an emergency release
-[assembly: AssemblyVersion("2.23.1802.0")]
-[assembly: AssemblyFileVersion("2.23.1802.0")]
+[assembly: AssemblyVersion("3.13.1909.0")]
+[assembly: AssemblyFileVersion("3.13.1909.0")]
 
 [assembly: InternalsVisibleTo("OfficeDevPnP.Core.Tests")]

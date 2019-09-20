@@ -67,13 +67,13 @@ Base template: goal is to verify that all content type properties work as expect
       <pnp:FieldRefs>
         <pnp:FieldRef ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}" />
       </pnp:FieldRefs>
-      <pnp:DocumentTemplate TargetName="~sitecollection/siteassets/ct1document.docx"/>
+      <pnp:DocumentTemplate TargetName="{site}/siteassets/ct1document.docx"/>
     </pnp:ContentType>
     <!-- Bare minimum -->
     <pnp:ContentType ID="0x0101008C05EC4BEB1F4DFE9D8828D2DA449D41" Name="CT_2" />
     <!-- Complex one -->
     <pnp:ContentType ID="0x0101001AF9DBB0E32F47A1A0BA519392153128" Name="CT_3" Description="CT 3" Group="PnP Demo" Hidden="false" ReadOnly="false" Sealed="false" 
-                     Overwrite="true" DisplayFormUrl="~sitecollection/siteassets/CT3DisplayForm.aspx" EditFormUrl="~sitecollection/siteassets/CT3EditForm.aspx">
+                     Overwrite="true" DisplayFormUrl="{site}/siteassets/CT3DisplayForm.aspx" EditFormUrl="{site}/siteassets/CT3EditForm.aspx">
       <pnp:FieldRefs>
         <!-- Specify all FieldRef properties-->
         <pnp:FieldRef ID="{92BC6A41-D501-4FE2-938E-17FBF574A7CB}"  Required="true" Hidden="false" />
@@ -81,7 +81,7 @@ Base template: goal is to verify that all content type properties work as expect
         <pnp:FieldRef ID="{B46D91E2-C755-4C3A-AC72-7FD3E4853476}" />
         <pnp:FieldRef ID="{B2C51364-8C48-4779-8265-1169B81CE5A0}" />
       </pnp:FieldRefs>
-      <pnp:DocumentTemplate TargetName="~sitecollection/siteassets/ct3document.docx"/>
+      <pnp:DocumentTemplate TargetName="{site}/siteassets/ct3document.docx"/>
     </pnp:ContentType>
     <!-- List content types 0x01 -->
     <!-- Simple one -->
@@ -112,7 +112,7 @@ Base template: goal is to verify that all content type properties work as expect
       </pnp:FieldRefs>
       <!-- Note that a DocumentTemplate is not possible for DocumentSet content types -->
       <!-- Note: the WelcomePage attribute value is not used as there's currently no CSOM implementation to set the welcome page -->
-      <pnp:DocumentSetTemplate WelcomePage="~sitecollection/_cts/CT_20/docsethomepage.aspx">
+      <pnp:DocumentSetTemplate WelcomePage="{site}/_cts/CT_20/docsethomepage.aspx">
         <pnp:AllowedContentTypes>
           <pnp:AllowedContentType ContentTypeID="0x0101"/>
           <pnp:AllowedContentType ContentTypeID="0x0101005D4F34E4BE7F4B6892AEBE088EDD215E"/>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
@@ -111,6 +112,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public Boolean RemoveExistingContentTypes { get; set; }
 
+        /// <summary>
+        /// Gets a value that specifies the XML Documents settings for the Document Set.
+        /// <seealso>
+        ///     <cref>https://msdn.microsoft.com/en-us/library/office/aa543904.aspx</cref>
+        /// </seealso>
+        /// </summary>
+        public XElement XmlDocuments { get; set; }
+
         #endregion
 
         #region Comparison code
@@ -121,12 +130,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|",
                 this.AllowedContentTypes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.DefaultDocuments.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.SharedFields.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.WelcomePageFields.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.RemoveExistingContentTypes.GetHashCode()
+                this.RemoveExistingContentTypes.GetHashCode(),
+                this.XmlDocuments?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 
@@ -145,7 +155,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
-        /// Compares DocumentSetTemplate object based on AllowedContentTypes, DefaultDocuments, SharedFields, WelcomePageFields, and RemoveExistingContentTypes properties.
+        /// Compares DocumentSetTemplate object based on AllowedContentTypes, DefaultDocuments, SharedFields, WelcomePageFields, RemoveExistingContentTypes, and XmlDocuments properties.
         /// </summary>
         /// <param name="other">DocumentSetTemplate object</param>
         /// <returns>true if the DocumentSetTemplate object is equal to the current object; otherwise, false.</returns>
@@ -160,7 +170,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this.DefaultDocuments.DeepEquals(other.DefaultDocuments) &&
                     this.SharedFields.DeepEquals(other.SharedFields) &&
                     this.WelcomePageFields.DeepEquals(other.WelcomePageFields) &&
-                    this.RemoveExistingContentTypes == other.RemoveExistingContentTypes
+                    this.RemoveExistingContentTypes == other.RemoveExistingContentTypes &&
+                    this.XmlDocuments == other.XmlDocuments
                 );
         }
 

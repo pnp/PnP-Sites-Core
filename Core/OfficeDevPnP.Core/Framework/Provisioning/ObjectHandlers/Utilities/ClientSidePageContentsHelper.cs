@@ -7,9 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Web;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
@@ -20,6 +18,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
     /// </summary>
     public class ClientSidePageContentsHelper
     {
+        private const string ContentTypeIdField = "ContentTypeId";
+
         /// <summary>
         /// Extracts a client side page
         /// </summary>
@@ -30,29 +30,70 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         /// <param name="pageUrl">Url of the page to extract</param>
         /// <param name="pageName">Name of the page to extract</param>
         /// <param name="isHomePage">Is this a home page?</param>
-        public void ExtractClientSidePage(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string pageUrl, string pageName, bool isHomePage)
+        /// <param name="isTemplate">Is this a template?</param>
+        public void ExtractClientSidePage(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string pageUrl, string pageName, bool isHomePage, bool isTemplate = false)
         {
             try
             {
+                List<string> errorneousOrNonImageFileGuids = new List<string>();
                 var pageToExtract = web.LoadClientSidePage(pageName);
 
-                if (pageToExtract.Sections.Count == 0 && pageToExtract.Controls.Count == 0)
+                if (pageToExtract.Sections.Count == 0 && pageToExtract.Controls.Count == 0 && isHomePage)
                 {
                     // This is default home page which was not customized...and as such there's no page definition stored in the list item. We don't need to extact this page.
                     scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ClientSidePageContents_DefaultHomePage);
                 }
                 else
                 {
+                    // Get the page content type
+                    string pageContentTypeId = pageToExtract.PageListItem[ContentTypeIdField].ToString();
+
+                    if (!string.IsNullOrEmpty(pageContentTypeId))
+                    {
+                        pageContentTypeId = GetParentIdValue(pageContentTypeId);
+                    }
+
                     // Create the page
                     var extractedPageInstance = new ClientSidePage()
                     {
                         PageName = pageName,
                         PromoteAsNewsArticle = false,
+                        PromoteAsTemplate = isTemplate,
                         Overwrite = true,
                         Publish = true,
                         Layout = pageToExtract.LayoutType.ToString(),
                         EnableComments = !pageToExtract.CommentsDisabled,
+                        Title = pageToExtract.PageTitle,
+                        ContentTypeID = !pageContentTypeId.Equals(BuiltInContentTypeId.ModernArticlePage, StringComparison.InvariantCultureIgnoreCase) ? pageContentTypeId : null,                        
                     };
+
+
+                    if(pageToExtract.PageHeader != null)
+                    {
+                        var extractedHeader = new ClientSidePageHeader()
+                        {
+                            Type = (ClientSidePageHeaderType)Enum.Parse(typeof(Pages.ClientSidePageHeaderType), pageToExtract.PageHeader.Type.ToString()),
+                            ServerRelativeImageUrl = TokenizeJsonControlData(web, pageToExtract.PageHeader.ImageServerRelativeUrl),
+                            TranslateX = pageToExtract.PageHeader.TranslateX,
+                            TranslateY = pageToExtract.PageHeader.TranslateY,
+                            LayoutType = (ClientSidePageHeaderLayoutType)Enum.Parse(typeof(Pages.ClientSidePageHeaderLayoutType), pageToExtract.PageHeader.LayoutType.ToString()),
+                            TextAlignment = (ClientSidePageHeaderTextAlignment)Enum.Parse(typeof(Pages.ClientSidePageHeaderTitleAlignment), pageToExtract.PageHeader.TextAlignment.ToString()),
+                            ShowTopicHeader = pageToExtract.PageHeader.ShowTopicHeader,
+                            ShowPublishDate = pageToExtract.PageHeader.ShowPublishDate,
+                            TopicHeader = pageToExtract.PageHeader.TopicHeader,
+                            AlternativeText = pageToExtract.PageHeader.AlternativeText,
+                            Authors = pageToExtract.PageHeader.Authors,
+                            AuthorByLine = pageToExtract.PageHeader.AuthorByLine,
+                            AuthorByLineId = pageToExtract.PageHeader.AuthorByLineId,
+                        };
+                        extractedPageInstance.Header = extractedHeader;
+
+                        // Add the page header image to template if that was requested
+                        if (creationInfo.PersistBrandingFiles && !string.IsNullOrEmpty(pageToExtract.PageHeader.ImageServerRelativeUrl))
+                        {
+                            IncludePageHeaderImageInExport(web, pageToExtract.PageHeader.ImageServerRelativeUrl, template, creationInfo, scope);
+                        }
+                    }
 
                     // Add the sections
                     foreach (var section in pageToExtract.Sections)
@@ -61,6 +102,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         var sectionInstance = new CanvasSection()
                         {
                             Order = section.Order,
+                            BackgroundEmphasis = (BackgroundEmphasis)section.ZoneEmphasis,
                         };
 
                         // Set section type
@@ -94,7 +136,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         {
                             foreach (var control in column.Controls)
                             {
-                                // Create control 
+                                // Create control
                                 CanvasControl controlInstance = new CanvasControl()
                                 {
                                     Column = column.Order,
@@ -115,7 +157,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 }
                                 else
                                 {
-                                    // set ControlId to webpart id 
+                                    // set ControlId to webpart id
                                     controlInstance.ControlId = Guid.Parse((control as Pages.ClientSideWebPart).WebPartId);
                                     var webPartType = Pages.ClientSidePage.NameToClientSideWebPartEnum((control as Pages.ClientSideWebPart).WebPartId);
                                     switch (webPartType)
@@ -140,6 +182,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             break;
                                         case Pages.DefaultClientSideWebParts.LinkPreview:
                                             controlInstance.Type = WebPartType.LinkPreview;
+                                            break;
+                                        case Pages.DefaultClientSideWebParts.News:
+                                            controlInstance.Type = WebPartType.News;
                                             break;
                                         case Pages.DefaultClientSideWebParts.NewsFeed:
                                             controlInstance.Type = WebPartType.NewsFeed;
@@ -195,6 +240,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         case Pages.DefaultClientSideWebParts.Spacer:
                                             controlInstance.Type = WebPartType.Spacer;
                                             break;
+                                        case Pages.DefaultClientSideWebParts.ClientWebPart:
+                                            controlInstance.Type = WebPartType.ClientWebPart;
+                                            break;
                                         case Pages.DefaultClientSideWebParts.ThirdParty:
                                             controlInstance.Type = WebPartType.Custom;
                                             break;
@@ -203,18 +251,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             break;
                                     }
 
+                                    string jsonControlData = "\"id\": \"" + (control as Pages.ClientSideWebPart).WebPartId + "\", \"instanceId\": \"" + (control as Pages.ClientSideWebPart).InstanceId + "\", \"title\": " + JsonConvert.ToString((control as Pages.ClientSideWebPart).Title) + ", \"description\": " + JsonConvert.ToString((control as Pages.ClientSideWebPart).Description) + ", \"dataVersion\": \"" + (control as Pages.ClientSideWebPart).DataVersion + "\", \"properties\": " + (control as Pages.ClientSideWebPart).PropertiesJson + "";
+
                                     // set the control properties
                                     if ((control as Pages.ClientSideWebPart).ServerProcessedContent != null)
                                     {
                                         // If we have serverProcessedContent then also export that one, it's important as some controls depend on this information to be present
                                         string serverProcessedContent = (control as Pages.ClientSideWebPart).ServerProcessedContent.ToString(Formatting.None);
-                                        controlInstance.JsonControlData = "{ \"serverProcessedContent\": " + serverProcessedContent + ", \"properties\": " + (control as Pages.ClientSideWebPart).PropertiesJson + "}";
-                                    }
-                                    else
-                                    {
-                                        controlInstance.JsonControlData = (control as Pages.ClientSideWebPart).PropertiesJson;
+                                        jsonControlData = jsonControlData + ", \"serverProcessedContent\": " + serverProcessedContent + "";
                                     }
 
+                                    if ((control as Pages.ClientSideWebPart).DynamicDataPaths != null)
+                                    {
+                                        // If we have serverProcessedContent then also export that one, it's important as some controls depend on this information to be present
+                                        string dynamicDataPaths = (control as Pages.ClientSideWebPart).DynamicDataPaths.ToString(Formatting.None);
+                                        jsonControlData = jsonControlData + ", \"dynamicDataPaths\": " + dynamicDataPaths + "";
+                                    }
+
+                                    if ((control as Pages.ClientSideWebPart).DynamicDataValues != null)
+                                    {
+                                        // If we have serverProcessedContent then also export that one, it's important as some controls depend on this information to be present
+                                        string dynamicDataValues = (control as Pages.ClientSideWebPart).DynamicDataValues.ToString(Formatting.None);
+                                        jsonControlData = jsonControlData + ", \"dynamicDataValues\": " + dynamicDataValues + "";
+                                    }
+
+                                    controlInstance.JsonControlData = "{" + jsonControlData + "}";
+
+                                    var untokenizedJsonControlData = controlInstance.JsonControlData;
                                     // Tokenize the JsonControlData
                                     controlInstance.JsonControlData = TokenizeJsonControlData(web, controlInstance.JsonControlData);
 
@@ -225,84 +288,41 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         Dictionary<string, string> exportedFiles = new Dictionary<string, string>();
                                         Dictionary<string, string> exportedPages = new Dictionary<string, string>();
 
-                                        // grab all the guids in the already tokenized json and check try to get them as a file
-                                        string guidPattern = "\"[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}\"";
-                                        Regex regexClientIds = new Regex(guidPattern);
-                                        if (regexClientIds.IsMatch(controlInstance.JsonControlData))
-                                        {
-                                            foreach (Match guidMatch in regexClientIds.Matches(controlInstance.JsonControlData))
-                                            {
-                                                Guid uniqueId;
-                                                if (Guid.TryParse(guidMatch.Value.Trim("\"".ToCharArray()), out uniqueId))
-                                                {
-                                                    fileGuids.Add(uniqueId);
-                                                }
-                                            }
-                                        }
-                                        // grab all the encoded guids in the already tokenized json and check try to get them as a file
-                                        guidPattern = "=[a-fA-F0-9]{8}%2D([a-fA-F0-9]{4}%2D){3}[a-fA-F0-9]{12}";
-                                        regexClientIds = new Regex(guidPattern);
-                                        if (regexClientIds.IsMatch(controlInstance.JsonControlData))
-                                        {
-                                            foreach (Match guidMatch in regexClientIds.Matches(controlInstance.JsonControlData))
-                                            {
-                                                Guid uniqueId;
-                                                if (Guid.TryParse(guidMatch.Value.TrimStart("=".ToCharArray()), out uniqueId))
-                                                {
-                                                    fileGuids.Add(uniqueId);
-                                                }
-                                            }
-                                        }
+                                        CollectSiteAssetImageFiles(web, untokenizedJsonControlData, fileGuids);
+                                        CollectImageFilesFromGenericGuids(controlInstance.JsonControlData, fileGuids);
 
                                         // Iterate over the found guids to see if they're exportable files
                                         foreach (var uniqueId in fileGuids)
                                         {
                                             try
                                             {
-                                                if (!exportedFiles.ContainsKey(uniqueId.ToString()))
+                                                if (!exportedFiles.ContainsKey(uniqueId.ToString()) && !errorneousOrNonImageFileGuids.Contains(uniqueId.ToString()))
                                                 {
                                                     // Try to see if this is a file
                                                     var file = web.GetFileById(uniqueId);
                                                     web.Context.Load(file, f => f.Level, f => f.ServerRelativeUrl);
                                                     web.Context.ExecuteQueryRetry();
 
-                                                    // If we got here it's a file, let's grab the file's path and name
-                                                    var baseUri = new Uri(web.Url);
-                                                    var fullUri = new Uri(baseUri, file.ServerRelativeUrl);
-                                                    var folderPath = HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
-                                                    var fileName = HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
+                                                    // Item1 = was file added to the template
+                                                    // Item2 = file name (if file found)
+                                                    var imageAddedTuple = LoadAndAddPageImage(web, file, template, creationInfo, scope);
 
-                                                    // Don't export aspx files as some web parts refer to other client side pages --> pages have to be either exported as well or already exist in the target site
-                                                    if (!fileName.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase))
+                                                    if (!string.IsNullOrEmpty(imageAddedTuple.Item2))
                                                     {
-                                                        var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
-
-                                                        // Avoid duplicate file entries
-                                                        var fileAlreadyExported = template.Files.Where(p => p.Folder.Equals(templateFolderPath, StringComparison.CurrentCultureIgnoreCase) &&
-                                                                                                            p.Src.Equals(fileName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
-                                                        if (fileAlreadyExported == null)
+                                                        if (!imageAddedTuple.Item2.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase))
                                                         {
-                                                            // Add a File to the template
-                                                            template.Files.Add(new Model.File()
+                                                            if (imageAddedTuple.Item1)
                                                             {
-                                                                Folder = templateFolderPath,
-                                                                Src = $"{templateFolderPath}/{fileName}",
-                                                                Overwrite = true,
-                                                                Level = (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), file.Level.ToString())
-                                                            });
-
-                                                            // Export the file
-                                                            PersistFile(web, creationInfo, scope, folderPath, fileName);
-
-                                                            // Keep track of the exported file path and it's UniqueId
-                                                            exportedFiles.Add(uniqueId.ToString(), file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()));
+                                                                // Keep track of the exported file path and it's UniqueId
+                                                                exportedFiles.Add(uniqueId.ToString(), file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()));
+                                                            }
                                                         }
-                                                    }
-                                                    else
-                                                    {
-                                                        if (!exportedPages.ContainsKey(uniqueId.ToString()))
+                                                        else
                                                         {
-                                                            exportedPages.Add(uniqueId.ToString(), file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()));
+                                                            if (!exportedPages.ContainsKey(uniqueId.ToString()))
+                                                            {
+                                                                exportedPages.Add(uniqueId.ToString(), file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()));
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -310,6 +330,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             catch (Exception ex)
                                             {
                                                 scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ClientSidePageContents_ErrorDuringFileExport, ex.Message);
+                                                errorneousOrNonImageFileGuids.Add(uniqueId.ToString());
                                             }
                                         }
 
@@ -319,7 +340,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedFile.Key.Replace("-", "%2D"), $"{{fileuniqueidencoded:{exportedFile.Value}}}", RegexOptions.IgnoreCase);
                                             controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedFile.Key, $"{{fileuniqueid:{exportedFile.Value}}}", RegexOptions.IgnoreCase);
                                         }
-                                        foreach(var exportedPage in exportedPages)
+                                        foreach (var exportedPage in exportedPages)
                                         {
                                             controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedPage.Key.Replace("-", "%2D"), $"{{pageuniqueidencoded:{exportedPage.Value}}}", RegexOptions.IgnoreCase);
                                             controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedPage.Key, $"{{pageuniqueid:{exportedPage.Value}}}", RegexOptions.IgnoreCase);
@@ -351,7 +372,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     {
                         if (template.WebSettings == null)
                         {
-                            template.WebSettings = new WebSettings();                            
+                            template.WebSettings = new WebSettings();
                         }
 
                         if (pageUrl.StartsWith(web.ServerRelativeUrl, StringComparison.InvariantCultureIgnoreCase))
@@ -361,7 +382,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         else
                         {
                             template.WebSettings.WelcomePage = pageUrl;
-                        }                        
+                        }
                     }
                 }
             }
@@ -372,6 +393,135 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         }
 
         #region Helper methods
+        private static void CollectImageFilesFromGenericGuids(string jsonControlData, List<Guid> fileGuids)
+        {
+            // grab all the guids in the already tokenized json and check try to get them as a file
+            string guidPattern = "\"[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}\"";
+            Regex regexClientIds = new Regex(guidPattern);
+            if (regexClientIds.IsMatch(jsonControlData))
+            {
+                foreach (Match guidMatch in regexClientIds.Matches(jsonControlData))
+                {
+                    Guid uniqueId;
+                    if (Guid.TryParse(guidMatch.Value.Trim("\"".ToCharArray()), out uniqueId))
+                    {
+                        fileGuids.Add(uniqueId);
+                    }
+                }
+            }
+            // grab potentially encoded guids in the already tokenized json and check try to get them as a file
+            guidPattern = "=[a-fA-F0-9]{8}(?:%2D|-)([a-fA-F0-9]{4}(?:%2D|-)){3}[a-fA-F0-9]{12}";
+            regexClientIds = new Regex(guidPattern);
+            if (regexClientIds.IsMatch(jsonControlData))
+            {
+                foreach (Match guidMatch in regexClientIds.Matches(jsonControlData))
+                {
+                    Guid uniqueId;
+                    if (Guid.TryParse(guidMatch.Value.TrimStart("=".ToCharArray()), out uniqueId))
+                    {
+                        fileGuids.Add(uniqueId);
+                    }
+                }
+            }
+        }
+
+        private void IncludePageHeaderImageInExport(Web web, string imageServerRelativeUrl, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope)
+        {
+            try
+            {
+                if (!imageServerRelativeUrl.StartsWith("/_LAYOUTS", StringComparison.OrdinalIgnoreCase))
+                {
+                    var pageHeaderImage = web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(imageServerRelativeUrl));
+                    web.Context.Load(pageHeaderImage, p => p.Level, p => p.ServerRelativeUrl);
+                    web.Context.ExecuteQueryRetry();
+
+                    LoadAndAddPageImage(web, pageHeaderImage, template, creationInfo, scope);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Eat possible exceptions as header images may point to locations outside of the current site (other site collections, _layouts, CDN's, internet)
+            }
+        }
+
+        private Tuple<bool, string> LoadAndAddPageImage(Web web, Microsoft.SharePoint.Client.File pageImage, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope)
+        {
+            var baseUri = new Uri(web.Url);
+            var fullUri = new Uri(baseUri, pageImage.ServerRelativeUrl);
+            var folderPath = HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
+            var fileName = HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
+
+            if (!fileName.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase))
+            {
+                var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
+
+                // Avoid duplicate file entries
+                var fileAlreadyExported = template.Files.Where(p => p.Folder.Equals(templateFolderPath, StringComparison.CurrentCultureIgnoreCase) &&
+                                                                    p.Src.Equals(fileName, StringComparison.CurrentCultureIgnoreCase)).FirstOrDefault();
+                if (fileAlreadyExported == null)
+                {
+                    // Add a File to the template
+                    template.Files.Add(new Model.File()
+                    {
+                        Folder = templateFolderPath,
+                        Src = $"{templateFolderPath}/{fileName}",
+                        Overwrite = true,
+                        Level = (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), pageImage.Level.ToString())
+                    });
+
+                    // Export the file
+                    PersistFile(web, creationInfo, scope, folderPath, fileName);
+
+                    return new Tuple<bool, string>(true, fileName);
+                }
+            }
+
+            return new Tuple<bool, string>(false, fileName);
+        }
+
+        private static void CollectSiteAssetImageFiles(Web web, string untokenizedJsonControlData, List<Guid> fileGuids)
+        {
+            // match urls to SiteAssets library
+            string siteAssetUrlsPattern = @".*""(.*?/SiteAssets/SitePages/.+?)"".*";
+            Regex regexSiteAssetUrls = new Regex(siteAssetUrlsPattern);
+            if (regexSiteAssetUrls.IsMatch(untokenizedJsonControlData))
+            {
+                foreach (Match siteAssetUrlMatch in regexSiteAssetUrls.Matches(untokenizedJsonControlData))
+                {
+                    var s = siteAssetUrlMatch.Groups[1]?.Value;
+                    if (s != null)
+                    {
+                        var file = web.GetFileByServerRelativeUrl(s);
+                        web.Context.Load(file, f => f.UniqueId);
+                        web.Context.ExecuteQueryRetry();
+
+                        fileGuids.Add(file.UniqueId);
+                    }
+                }
+            }
+        }
+
+        private string GetParentIdValue(string contentTypeId)
+        {
+            int length = 0;
+            //Exclude the 0x part
+            string contentTypeIdValue = contentTypeId.Substring(2);
+            for (int i = 0; i < contentTypeIdValue.Length; i += 2)
+            {
+                length = i;
+                if (contentTypeIdValue.Substring(i, 2).Equals("00", StringComparison.OrdinalIgnoreCase))
+                {
+                    i += 32;
+                }
+            }
+            string parentIdValue = string.Empty;
+            if (length > 0)
+            {
+                parentIdValue = "0x" + contentTypeIdValue.Substring(0, length);
+            }
+            return parentIdValue;
+        }
+
         private void PersistFile(Web web, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string folderPath, string fileName)
         {
             if (creationInfo.FileConnector != null)
@@ -414,6 +564,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
         private string TokenizeJsonControlData(Web web, string json)
         {
+            if (string.IsNullOrEmpty(json))
+            {
+                return json;
+            }
+
             var lists = web.Lists;
             var site = (web.Context as ClientContext).Site;
             web.Context.Load(site, s => s.Id, s => s.GroupId);
@@ -432,9 +587,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             }
 
             // Some webparts might already contains the site URL using ~sitecollection token (i.e: CQWP) - shouldn't be needed for client side web parts, but just in case
-            json = Regex.Replace(json, "\"~sitecollection/(.)*\"", "\"{site}\"", RegexOptions.IgnoreCase);
-            json = Regex.Replace(json, "'~sitecollection/(.)*'", "'{site}'", RegexOptions.IgnoreCase);
-            json = Regex.Replace(json, ">~sitecollection/(.)*<", ">{site}<", RegexOptions.IgnoreCase);
+            //json = Regex.Replace(json, "\"~sitecollection/(.)*\"", "\"{site}\"", RegexOptions.IgnoreCase);
+            //json = Regex.Replace(json, "'~sitecollection/(.)*'", "'{site}'", RegexOptions.IgnoreCase);
+            //json = Regex.Replace(json, ">~sitecollection/(.)*<", ">{site}<", RegexOptions.IgnoreCase);
 
             // HostUrl token replacement
             var uri = new Uri(web.Url);

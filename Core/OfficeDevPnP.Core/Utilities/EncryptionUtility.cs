@@ -80,6 +80,7 @@ namespace OfficeDevPnP.Core.Utilities
             return decryptedString;
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Encrypts a string using the machine's DPAPI
         /// </summary>
@@ -92,7 +93,9 @@ namespace OfficeDevPnP.Core.Utilities
                 System.Security.Cryptography.DataProtectionScope.LocalMachine);
             return Convert.ToBase64String(encryptedData);
         }
+#endif
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Decrypts a DPAPI encryped string
         /// </summary>
@@ -113,6 +116,7 @@ namespace OfficeDevPnP.Core.Utilities
                 return new SecureString();
             }
         }
+#endif
 
         /// <summary>
         /// Converts a string to a SecureString

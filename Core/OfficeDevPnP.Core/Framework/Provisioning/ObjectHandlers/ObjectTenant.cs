@@ -1,16 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
-using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Diagnostics;
-using OfficeDevPnP.Core.ALM;
-using System.IO;
-using System.Net;
-using Microsoft.Online.SharePoint.TenantAdministration;
-using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
+using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
+using OfficeDevPnP.Core.Utilities;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -22,6 +15,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             get { return "Tenant Settings"; }
         }
 
+        public override string InternalName => "TenantSettings";
+
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             return template;
@@ -29,76 +24,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
+            web.EnsureProperty(w => w.Url);
+
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 if (template.Tenant != null)
                 {
-                    var manager = new AppManager(web.Context as ClientContext);
-
-                    if (template.Tenant.AppCatalog != null && template.Tenant.AppCatalog.Packages.Count > 0)
+                    using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
                     {
-                        foreach (var app in template.Tenant.AppCatalog.Packages)
+                        var tenant = new Tenant(tenantContext);
+                        TenantHelper.ProcessCdns(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                        parser = TenantHelper.ProcessApps(tenant, template.Tenant, template.Connector, parser, scope, applyingInformation, MessagesDelegate);
+
+                        try
                         {
-                            AppMetadata appMetadata = null;
-
-                            if (app.Action == PackageAction.Upload ||
-                                app.Action == PackageAction.UploadAndPublish)
-                            {
-                                using (var packageStream = GetPackageStream(template, app))
-                                {
-                                    var memStream = new MemoryStream();
-                                    packageStream.CopyTo(memStream);
-                                    memStream.Position = 0;
-
-                                    var appFilename = app.Src.Substring(app.Src.LastIndexOf('\\') + 1);
-                                    appMetadata = manager.Add(memStream.ToArray(),
-                                        appFilename,
-                                        app.Overwrite);
-
-                                    parser.Tokens.Add(new AppPackageIdToken(web, appFilename, appMetadata.Id));
-                                }
-                            }
-
-                            if (app.Action == PackageAction.Publish || app.Action == PackageAction.UploadAndPublish)
-                            {
-                                if (appMetadata == null)
-                                {
-                                    appMetadata = manager.GetAvailable()
-                                        .FirstOrDefault(a => a.Id == Guid.Parse(parser.ParseString(app.PackageId)));
-                                }
-                                if (appMetadata != null)
-                                {
-                                    manager.Deploy(appMetadata, app.SkipFeatureDeployment);
-                                }
-                                else
-                                {
-                                    scope.LogError("Referenced App Package {0} not available", app.PackageId);
-                                    throw new Exception($"Referenced App Package {app.PackageId} not available");
-                                }
-                            }
-
-                            if (app.Action == PackageAction.Remove)
-                            {
-                                var appId = Guid.Parse(parser.ParseString(app.PackageId));
-
-                                // Get the apps already installed in the site
-                                var appExists = manager.GetAvailable()?.Any(a => a.Id == appId);
-
-                                if (appExists.HasValue && appExists.Value)
-                                {
-                                    manager.Remove(appId);
-                                }
-                                else
-                                {
-                                    WriteMessage($"App Package with ID {appId} does not exist in the AppCatalog and cannot be removed!", ProvisioningMessageType.Warning);
-                                }
-                            }
+                            parser = TenantHelper.ProcessWebApiPermissions(tenant, template.Tenant, parser, scope, MessagesDelegate);
                         }
-                    }
+                        catch (ServerUnauthorizedAccessException ex)
+                        {
+                            scope.LogError(ex.Message);
+                        }
 
-                    // So far we do not provision CDN settings
-                    // It will come in the near future
-                    // NOOP on CDN
+                        parser = TenantHelper.ProcessSiteScripts(tenant, template.Tenant, template.Connector, parser, scope, MessagesDelegate);
+                        parser = TenantHelper.ProcessSiteDesigns(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                        parser = TenantHelper.ProcessStorageEntities(tenant, template.Tenant, parser, scope, applyingInformation, MessagesDelegate);
+                        parser = TenantHelper.ProcessThemes(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                    }
                 }
             }
 
@@ -113,65 +64,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            return (template.Tenant != null);
-        }
-
-        /// <summary>
-        /// Retrieves <see cref="Stream"/> from connector. If the file name contains special characters (e.g. "%20") and cannot be retrieved, a workaround will be performed
-        /// </summary>
-        private static Stream GetPackageStream(ProvisioningTemplate template, Model.Package package)
-        {
-            var fileName = package.Src;
-            var container = String.Empty;
-            if (fileName.Contains(@"\") || fileName.Contains(@"/"))
+            if (!_willProvision.HasValue && template.Tenant != null)
             {
-                var tempFileName = fileName.Replace(@"/", @"\");
-                container = fileName.Substring(0, tempFileName.LastIndexOf(@"\"));
-                fileName = fileName.Substring(tempFileName.LastIndexOf(@"\") + 1);
+                _willProvision = (template.Tenant.AppCatalog != null ||
+                                template.Tenant.ContentDeliveryNetwork != null ||
+                                (template.Tenant.SiteDesigns != null && template.Tenant.SiteDesigns.Count > 0) ||
+                                (template.Tenant.SiteScripts!= null && template.Tenant.SiteScripts.Count > 0) ||
+                                (template.Tenant.StorageEntities != null && template.Tenant.StorageEntities.Count > 0) ||
+                                (template.Tenant.WebApiPermissions!= null && template.Tenant.WebApiPermissions.Count > 0) ||
+                                (template.Tenant.Themes != null && template.Tenant.Themes.Count > 0)
+                                );
             }
-
-            // add the default provided container (if any)
-            if (!String.IsNullOrEmpty(container))
-            {
-                if (!String.IsNullOrEmpty(template.Connector.GetContainer()))
-                {
-                    if (container.StartsWith("/"))
-                    {
-                        container = container.TrimStart("/".ToCharArray());
-                    }
-
-                    if (template.Connector.GetType() == typeof(Connectors.AzureStorageConnector))
-                    {
-                        if (template.Connector.GetContainer().EndsWith("/"))
-                        {
-                            container = $@"{template.Connector.GetContainer()}{container}";
-                        }
-                        else
-                        {
-                            container = $@"{template.Connector.GetContainer()}/{container}";
-                        }
-                    }
-                    else
-                    {
-                        container = $@"{template.Connector.GetContainer()}\{container}";
-                    }
-                }
-            }
-            else
-            {
-                container = template.Connector.GetContainer();
-            }
-
-            var stream = template.Connector.GetFileStream(fileName, container);
-            if (stream == null)
-            {
-                //Decode the URL and try again
-                fileName = WebUtility.UrlDecode(fileName);
-                stream = template.Connector.GetFileStream(fileName, container);
-            }
-
-            return stream;
+            return (_willProvision.Value);
         }
     }
+
 #endif
 }

@@ -17,11 +17,13 @@ namespace Microsoft.SharePoint.Client.Tests
         private string _termSetName; // For easy reference. Set in the Initialize method
         private string _termName; // For easy reference. Set in the Initialize method
         private string _textFieldName; // For easy reference. Set in the Initialize method
+        private string _textFieldName2; // For easy reference. Set in the Initialize method
 
         private Guid _termGroupId;
         private Guid _termSetId;
         private Guid _termId;
         private Guid _textFieldId;
+        private Guid _textFieldId2;
 
         private Guid _listId; // For easy reference
         private Guid webHookListId;
@@ -48,6 +50,7 @@ namespace Microsoft.SharePoint.Client.Tests
                     _termSetName = "Test_Termset_" + DateTime.Now.ToFileTime();
                     _termName = "Test_Term_" + DateTime.Now.ToFileTime();
                     _textFieldName = "Test_Text_Field_" + DateTime.Now.ToFileTime();
+                    _textFieldName2 = "Test_Text_Field2_" + DateTime.Now.ToFileTime();
 
                     _termGroupId = Guid.NewGuid();
                     _termSetId = Guid.NewGuid();
@@ -71,7 +74,8 @@ namespace Microsoft.SharePoint.Client.Tests
 
                     // List
 
-                   _textFieldId = Guid.NewGuid();
+                    _textFieldId = Guid.NewGuid();
+                    _textFieldId2 = Guid.NewGuid();
 
                     var fieldCI = new FieldCreationInformation(FieldType.Text)
                     {
@@ -81,7 +85,16 @@ namespace Microsoft.SharePoint.Client.Tests
                         Group = "Test Group"
                     };
 
+                    var fieldCI2 = new FieldCreationInformation(FieldType.Text)
+                    {
+                        Id = _textFieldId2,
+                        InternalName = _textFieldName2,
+                        DisplayName = "Test Text Field 2",
+                        Group = "Test Group"
+                    };
+
                     var textfield = clientContext.Web.CreateField(fieldCI);
+                    var textfield2 = clientContext.Web.CreateField(fieldCI2);
 
                     var list = clientContext.Web.CreateList(ListTemplateType.DocumentLibrary, "Test_list_" + DateTime.Now.ToFileTime(), false);
 
@@ -89,6 +102,7 @@ namespace Microsoft.SharePoint.Client.Tests
 
                     list.Fields.Add(field);
                     list.Fields.Add(textfield);
+                    list.Fields.Add(textfield2);
 
                     list.Update();
                     clientContext.Load(list);
@@ -96,6 +110,49 @@ namespace Microsoft.SharePoint.Client.Tests
 
                     _listId = list.Id;
                 }
+            }
+            else
+            {
+                using (var clientContext = TestCommon.CreateClientContext())
+                {
+                    _textFieldName = "Test_Text_Field_" + DateTime.Now.ToFileTime();
+                    _textFieldName2 = "Test_Text_Field2_" + DateTime.Now.ToFileTime();
+
+                    // List
+                    _textFieldId = Guid.NewGuid();
+                    _textFieldId2 = Guid.NewGuid();
+
+                    var fieldCI = new FieldCreationInformation(FieldType.Text)
+                    {
+                        Id = _textFieldId,
+                        InternalName = _textFieldName,
+                        DisplayName = "Test Text Field",
+                        Group = "Test Group"
+                    };
+
+                    var fieldCI2 = new FieldCreationInformation(FieldType.Text)
+                    {
+                        Id = _textFieldId2,
+                        InternalName = _textFieldName2,
+                        DisplayName = "Test Text Field 2",
+                        Group = "Test Group"
+                    };
+
+                    var textfield = clientContext.Web.CreateField(fieldCI);
+                    var textfield2 = clientContext.Web.CreateField(fieldCI2);
+
+                    var list = clientContext.Web.CreateList(ListTemplateType.DocumentLibrary, "Test_list_" + DateTime.Now.ToFileTime(), false);
+
+                    list.Fields.Add(textfield);
+                    list.Fields.Add(textfield2);
+
+                    list.Update();
+                    clientContext.Load(list);
+                    clientContext.ExecuteQueryRetry();
+
+                    _listId = list.Id;
+                }
+
             }
         }
 
@@ -110,9 +167,9 @@ namespace Microsoft.SharePoint.Client.Tests
                 clientContext.ExecuteQueryRetry();
             }
 
-            if (!TestCommon.AppOnlyTesting())
+            using (var clientContext = TestCommon.CreateClientContext())
             {
-                using (var clientContext = TestCommon.CreateClientContext())
+                if (!TestCommon.AppOnlyTesting())
                 {
                     // Clean up Taxonomy
                     var taxSession = TaxonomySession.GetTaxonomySession(clientContext);
@@ -127,22 +184,22 @@ namespace Microsoft.SharePoint.Client.Tests
                     }
                     termGroup.DeleteObject(); // Will delete underlying termset
                     clientContext.ExecuteQueryRetry();
-
-                    // Clean up list
-                    var list = clientContext.Web.Lists.GetById(_listId);
-                    list.DeleteObject();
-                    clientContext.ExecuteQueryRetry();
-
-                    // Clean up fields
-                    var fields = clientContext.LoadQuery(clientContext.Web.Fields);
-                    clientContext.ExecuteQueryRetry();
-                    var testFields = fields.Where(f => f.InternalName.StartsWith("Test_", StringComparison.OrdinalIgnoreCase));
-                    foreach (var field in testFields)
-                    {
-                        field.DeleteObject();
-                    }
-                    clientContext.ExecuteQueryRetry();
                 }
+
+                // Clean up list
+                var list = clientContext.Web.Lists.GetById(_listId);
+                list.DeleteObject();
+                clientContext.ExecuteQueryRetry();
+
+                // Clean up fields
+                var fields = clientContext.LoadQuery(clientContext.Web.Fields);
+                clientContext.ExecuteQueryRetry();
+                var testFields = fields.Where(f => f.InternalName.StartsWith("Test_", StringComparison.OrdinalIgnoreCase));
+                foreach (var field in testFields)
+                {
+                    field.DeleteObject();
+                }
+                clientContext.ExecuteQueryRetry();
             }
         }
         #endregion
@@ -321,6 +378,116 @@ namespace Microsoft.SharePoint.Client.Tests
                 list.SetDefaultColumnValues(defaultValues);
             }
         }
+
+        [TestMethod()]
+        public void ClearOneDefaultColumnValuesTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                // arrange
+                List<IDefaultColumnValue> defaultValues = new List<IDefaultColumnValue>();
+
+                var testFooDefaultValue = new DefaultColumnTextValue();
+                testFooDefaultValue.Text = "Foo";
+                testFooDefaultValue.FieldInternalName = _textFieldName;
+                testFooDefaultValue.FolderRelativePath = "/"; // Root folder
+
+                var testBarDefaultValue = new DefaultColumnTextValue();
+                testBarDefaultValue.Text = "Bar";
+                testBarDefaultValue.FieldInternalName = _textFieldName2;
+                testBarDefaultValue.FolderRelativePath = "/"; // Root folder
+
+                defaultValues.Add(testFooDefaultValue);
+                defaultValues.Add(testBarDefaultValue);
+
+                var list = clientContext.Web.Lists.GetById(_listId);
+
+                list.SetDefaultColumnValues(defaultValues);
+                var result = list.GetDefaultColumnValues();
+                var itemToRemove = result.First(d => d["Field"] == _textFieldName);
+                result.Remove(itemToRemove);
+                var expected = result;
+
+                // act
+                list.ClearDefaultColumnValues(new List<IDefaultColumnValue> { testFooDefaultValue });
+                var actual = list.GetDefaultColumnValues();
+
+                // assert
+                CollectionAssert.AreEqual(actual[0], expected[0]);
+            }
+        }
+
+        [TestMethod()]
+        public void ClearAllDefaultColumnValuesTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                // arrange
+                List<IDefaultColumnValue> defaultValues = new List<IDefaultColumnValue>();
+
+                var testFooDefaultValue = new DefaultColumnTextValue();
+                testFooDefaultValue.Text = "Foo";
+                testFooDefaultValue.FieldInternalName = _textFieldName;
+                testFooDefaultValue.FolderRelativePath = "/"; // Root folder
+
+                var testBarDefaultValue = new DefaultColumnTextValue();
+                testBarDefaultValue.Text = "Bar";
+                testBarDefaultValue.FieldInternalName = _textFieldName2;
+                testBarDefaultValue.FolderRelativePath = "/"; // Root folder
+
+                defaultValues.Add(testFooDefaultValue);
+                defaultValues.Add(testBarDefaultValue);
+
+                var list = clientContext.Web.Lists.GetById(_listId);
+
+                list.SetDefaultColumnValues(defaultValues);
+
+                // act
+                list.ClearDefaultColumnValues();
+                var actual = list.GetDefaultColumnValues();
+
+                // assert
+                Assert.IsNull(actual);
+            }
+        }
+
+        [TestMethod()]
+        public void OverwriteDefaultColumnValuesTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                // arrange
+                List<IDefaultColumnValue> defaultValues = new List<IDefaultColumnValue>();
+
+                var testFooDefaultValue = new DefaultColumnTextValue();
+                testFooDefaultValue.Text = "Foo";
+                testFooDefaultValue.FieldInternalName = _textFieldName;
+                testFooDefaultValue.FolderRelativePath = "/"; // Root folder
+
+                var testBarDefaultValue = new DefaultColumnTextValue();
+                testBarDefaultValue.Text = "Bar";
+                testBarDefaultValue.FieldInternalName = _textFieldName2;
+                testBarDefaultValue.FolderRelativePath = "/"; // Root folder
+
+                defaultValues.Add(testFooDefaultValue);
+                defaultValues.Add(testBarDefaultValue);
+
+                var list = clientContext.Web.Lists.GetById(_listId);
+
+                list.SetDefaultColumnValues(defaultValues);
+                var result = list.GetDefaultColumnValues();
+                var itemToRemove = result.First(d => d["Field"] == _textFieldName);
+                result.Remove(itemToRemove);
+                var expected = result;
+
+                // act
+                list.SetDefaultColumnValues(new List<IDefaultColumnValue> { testBarDefaultValue }, true);
+                var actual = list.GetDefaultColumnValues();
+
+                // assert
+                CollectionAssert.AreEqual(actual[0], expected[0]);
+            }
+        }
         #endregion
 
         #region Webhooks tests
@@ -460,8 +627,26 @@ namespace Microsoft.SharePoint.Client.Tests
                 Assert.IsTrue(actualSubscriptions.Count > 0);
             }
         }
+
+        [TestMethod]
+        public async Task GetAllWebhookSubscriptionsTestAsync()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var testList = clientContext.Web.Lists.GetById(webHookListId);
+                clientContext.Load(testList);
+                await clientContext.ExecuteQueryRetryAsync();
+
+                WebhookSubscription createdSubscription = testList.AddWebhookSubscription(TestCommon.TestWebhookUrl, 3);
+
+                IList<WebhookSubscription> actualSubscriptions = await testList.GetWebhookSubscriptionsAsync();
+
+                Assert.IsTrue(actualSubscriptions.Count > 0);
+            }
+        }
+
 #endif
-    #endregion
+        #endregion
 
     }
 }

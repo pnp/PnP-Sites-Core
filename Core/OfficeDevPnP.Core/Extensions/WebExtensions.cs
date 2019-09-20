@@ -75,7 +75,7 @@ namespace Microsoft.SharePoint.Client
             bool isNoScript = parentWeb.IsNoScriptSite();
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_CreateWeb, leafUrl, template);
-            WebCreationInformation creationInfo = new WebCreationInformation()
+            WebCreationInformation creationInfo = new WebCreationInformation
             {
                 Url = leafUrl,
                 Title = title,
@@ -86,6 +86,7 @@ namespace Microsoft.SharePoint.Client
             };
 
             Web newWeb = parentWeb.Webs.Add(creationInfo);
+            parentWeb.Context.ExecuteQueryRetry();
 
             if (!isNoScript)
             {
@@ -1203,7 +1204,7 @@ namespace Microsoft.SharePoint.Client
         #region Output Cache
 
         /// <summary>
-        /// Sets output cache on publishing web. The settings can be maintained from UI by visiting url /_layouts/15/sitecachesettings.aspx
+        /// Sets output cache on publishing web. The settings can be maintained from UI by visiting URL /_layouts/15/sitecachesettings.aspx
         /// </summary>
         /// <param name="web">SharePoint web</param>
         /// <param name="enableOutputCache">Specify true to enable output cache. False otherwise.</param>
@@ -1229,7 +1230,6 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region Request Access
-#if !ONPREMISES
         /// <summary>
         /// Disables the request access on the web.
         /// </summary>
@@ -1309,16 +1309,49 @@ namespace Microsoft.SharePoint.Client
 
             return emails;
         }
-#endif
         #endregion
 
-#if !ONPREMISES
+        /// <summary>
+        /// Gets the name part of the URL of the Server Relative URL of the Web.
+        /// </summary>
+        /// <param name="web">The Web to process</param>
+        /// <returns>A string that contains the name part of the Server Relative URL (the last part of the URL) of a web.</returns>
+        public static string GetName(this Web web)
+        {
+            web.Context.Load(web, w => w.ParentWeb.ServerRelativeUrl);
+            web.Context.Load(web, w => w.ServerRelativeUrl);
+            web.Context.ExecuteQueryRetry();
+            string webName;
+            string parentWebUrl = null;
+
+            //web.ParentWeb.ServerObjectIsNull will be null if a parent web exists.
+            //ClientObjectExtensions.ServerObjectIsNull() seems to have a problem when
+            //ClientObject.ServerObjectIsNull == null
+            //ServerObjectIsNull is then undefined but ClientObjectExtensions.ServerObjectIsNull()
+            //incorrectly returns true.
+            if (web.ParentWeb.ServerObjectIsNull == null || !web.ParentWeb.ServerObjectIsNull.Value)
+            {
+                parentWebUrl = web.ParentWeb.ServerRelativeUrl;
+            }
+
+            if (parentWebUrl == null)
+            {
+                webName = string.Empty;
+            }
+            else
+            {
+                webName = UrlUtility.ConvertToServiceRelUrl(web.ServerRelativeUrl, parentWebUrl);
+            }
+            return webName;
+        }
+
+#if !SP2013 && !SP2016
         #region ClientSide Package Deployment
         /// <summary>
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
         /// </summary>
         /// <param name="web">Web to operate against</param>
-        /// <returns>The Uri holding the app catalog site url</returns>
+        /// <returns>The Uri holding the app catalog site URL</returns>
         public static Uri GetAppCatalog(this Web web)
         {
             var tenantSettings = TenantSettings.GetCurrent(web.Context);
@@ -1376,13 +1409,13 @@ namespace Microsoft.SharePoint.Client
         {
             if (String.IsNullOrEmpty(appCatalogSiteUrl))
             {
-                throw new ArgumentException("Please specify a app catalog site url");
+                throw new ArgumentException("Please specify a app catalog site URL");
             }
 
             Uri catalogUri;
             if (!Uri.TryCreate(appCatalogSiteUrl, UriKind.Absolute, out catalogUri))
             {
-                throw new ArgumentException("Please specify a valid app catalog site url");
+                throw new ArgumentException("Please specify a valid app catalog site URL");
             }
 
             if (String.IsNullOrEmpty(spPkgName))
@@ -1432,7 +1465,7 @@ namespace Microsoft.SharePoint.Client
                 return sppkgFile.ListItemAllFields;
             }
         }
-    #endregion
+        #endregion
 #endif
 
     }

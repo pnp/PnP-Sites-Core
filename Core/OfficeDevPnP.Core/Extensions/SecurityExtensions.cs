@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+#if NETSTANDARD2_0
+using System.Net;
+#endif
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.Online.SharePoint.TenantManagement;
 using OfficeDevPnP.Core;
@@ -143,6 +146,7 @@ namespace Microsoft.SharePoint.Client
                     }
                 case BuiltInIdentity.EveryoneButExternalUsers:
                     {
+#if !NETSTANDARD2_0
                         User spReader = null;
                         try
                         {
@@ -158,144 +162,8 @@ namespace Microsoft.SharePoint.Client
                             // old tenant?
                             string userIdentity = string.Empty;
 
-                            web.Context.Load(web, w => w.Language);
-                            web.Context.ExecuteQueryRetry();
+                            userIdentity = web.GetEveryoneExceptExternalUsersClaimName();
 
-                            switch (web.Language)
-                            {
-                                case 1025: // Arabic
-                                    userIdentity = "الجميع باستثناء المستخدمين الخارجيين";
-                                    break;
-                                case 1069: // Basque
-                                    userIdentity = "Guztiak kanpoko erabiltzaileak izan ezik";
-                                    break;
-                                case 1026: // Bulgarian
-                                    userIdentity = "Всички освен външни потребители";
-                                    break;
-                                case 1027: // Catalan
-                                    userIdentity = "Tothom excepte els usuaris externs";
-                                    break;
-                                case 2052: // Chinese (Simplified)
-                                    userIdentity = "除外部用户外的任何人";
-                                    break;
-                                case 1028: // Chinese (Traditional)
-                                    userIdentity = "外部使用者以外的所有人";
-                                    break;
-                                case 1050: // Croatian
-                                    userIdentity = "Svi osim vanjskih korisnika";
-                                    break;
-                                case 1029: // Czech
-                                    userIdentity = "Všichni kromě externích uživatelů";
-                                    break;
-                                case 1030: // Danish
-                                    userIdentity = "Alle undtagen eksterne brugere";
-                                    break;
-                                case 1043: // Dutch
-                                    userIdentity = "Iedereen behalve externe gebruikers";
-                                    break;
-                                case 1033: // English
-                                    userIdentity = "Everyone except external users";
-                                    break;
-                                case 1061: // Estonian
-                                    userIdentity = "Kõik peale väliskasutajate";
-                                    break;
-                                case 1035: // Finnish
-                                    userIdentity = "Kaikki paitsi ulkoiset käyttäjät";
-                                    break;
-                                case 1036: // French
-                                    userIdentity = "Tout le monde sauf les utilisateurs externes";
-                                    break;
-                                case 1110: // Galician
-                                    userIdentity = "Todo o mundo excepto os usuarios externos";
-                                    break;
-                                case 1031: // German
-                                    userIdentity = "Jeder, außer externen Benutzern";
-                                    break;
-                                case 1032: // Greek
-                                    userIdentity = "Όλοι εκτός από εξωτερικούς χρήστες";
-                                    break;
-                                case 1037: // Hebrew
-                                    userIdentity = "כולם פרט למשתמשים חיצוניים";
-                                    break;
-                                case 1081: // Hindi
-                                    userIdentity = "बाह्य उपयोगकर्ताओं को छोड़कर सभी";
-                                    break;
-                                case 1038: // Hungarian
-                                    userIdentity = "Mindenki, kivéve külső felhasználók";
-                                    break;
-                                case 1057: // Indonesian
-                                    userIdentity = "Semua orang kecuali pengguna eksternal";
-                                    break;
-                                case 1040: // Italian
-                                    userIdentity = "Tutti tranne gli utenti esterni";
-                                    break;
-                                case 1041: // Japanese
-                                    userIdentity = "外部ユーザー以外のすべてのユーザー";
-                                    break;
-                                case 1087: // Kazakh
-                                    userIdentity = "Сыртқы пайдаланушылардан басқасының барлығы";
-                                    break;
-                                case 1042: // Korean
-                                    userIdentity = "외부 사용자를 제외한 모든 사람";
-                                    break;
-                                case 1062: // Latvian
-                                    userIdentity = "Visi, izņemot ārējos lietotājus";
-                                    break;
-                                case 1063: // Lithuanian
-                                    userIdentity = "Visi, išskyrus išorinius vartotojus";
-                                    break;
-                                case 1086: // Malay
-                                    userIdentity = "Semua orang kecuali pengguna luaran";
-                                    break;
-                                case 1044: // Norwegian (Bokmål)
-                                    userIdentity = "Alle bortsett fra eksterne brukere";
-                                    break;
-                                case 1045: // Polish
-                                    userIdentity = "Wszyscy oprócz użytkowników zewnętrznych";
-                                    break;
-                                case 1046: // Portuguese (Brazil)
-                                    userIdentity = "Todos exceto os usuários externos";
-                                    break;
-                                case 2070: // Portuguese (Portugal)
-                                    userIdentity = "Todos exceto os utilizadores externos";
-                                    break;
-                                case 1048: // Romanian
-                                    userIdentity = "Toată lumea, cu excepția utilizatorilor externi";
-                                    break;
-                                case 1049: // Russian
-                                    userIdentity = "Все, кроме внешних пользователей";
-                                    break;
-                                case 10266: // Serbian (Cyrillic, Serbia)
-                                    userIdentity = "Сви осим спољних корисника";
-                                    break;
-                                case 2074:// Serbian (Latin)
-                                    userIdentity = "Svi osim spoljnih korisnika";
-                                    break;
-                                case 1051:// Slovak
-                                    userIdentity = "Všetci okrem externých používateľov";
-                                    break;
-                                case 1060: // Slovenian
-                                    userIdentity = "Vsi razen zunanji uporabniki";
-                                    break;
-                                case 3082: // Spanish
-                                    userIdentity = "Todos excepto los usuarios externos";
-                                    break;
-                                case 1053: // Swedish
-                                    userIdentity = "Alla utom externa användare";
-                                    break;
-                                case 1054: // Thai
-                                    userIdentity = "ทุกคนยกเว้นผู้ใช้ภายนอก";
-                                    break;
-                                case 1055: // Turkish
-                                    userIdentity = "Dış kullanıcılar hariç herkes";
-                                    break;
-                                case 1058: // Ukranian
-                                    userIdentity = "Усі, крім зовнішніх користувачів";
-                                    break;
-                                case 1066: // Vietnamese
-                                    userIdentity = "Tất cả mọi người trừ người dùng bên ngoài";
-                                    break;
-                            }
                             if (!string.IsNullOrEmpty(userIdentity))
                             {
                                 spReader = web.EnsureUser(userIdentity);
@@ -311,16 +179,169 @@ namespace Microsoft.SharePoint.Client
                         web.AssociatedVisitorGroup.Update();
                         web.Context.ExecuteQueryRetry();
                         return spReader;
+#else
+                        throw new Exception("Not supported");
+#endif
                     }
             }
 
             return null;
         }
 
+        /// <summary>
+        /// Returns the correct value of the "Everyone except external users" string value
+        /// </summary>
+        /// <param name="web">Web to get the language from</param>
+        /// <returns>String in correct translation</returns>
+        public static string GetEveryoneExceptExternalUsersClaimName(this Web web)
+        {
+            string userIdentity = string.Empty;
+
+            web.EnsureProperty(p => p.Language);
+
+            switch (web.Language)
+            {
+                case 1025: // Arabic
+                    userIdentity = "الجميع باستثناء المستخدمين الخارجيين";
+                    break;
+                case 1069: // Basque
+                    userIdentity = "Guztiak kanpoko erabiltzaileak izan ezik";
+                    break;
+                case 1026: // Bulgarian
+                    userIdentity = "Всички освен външни потребители";
+                    break;
+                case 1027: // Catalan
+                    userIdentity = "Tothom excepte els usuaris externs";
+                    break;
+                case 2052: // Chinese (Simplified)
+                    userIdentity = "除外部用户外的任何人";
+                    break;
+                case 1028: // Chinese (Traditional)
+                    userIdentity = "外部使用者以外的所有人";
+                    break;
+                case 1050: // Croatian
+                    userIdentity = "Svi osim vanjskih korisnika";
+                    break;
+                case 1029: // Czech
+                    userIdentity = "Všichni kromě externích uživatelů";
+                    break;
+                case 1030: // Danish
+                    userIdentity = "Alle undtagen eksterne brugere";
+                    break;
+                case 1043: // Dutch
+                    userIdentity = "Iedereen behalve externe gebruikers";
+                    break;
+                case 1033: // English
+                    userIdentity = "Everyone except external users";
+                    break;
+                case 1061: // Estonian
+                    userIdentity = "Kõik peale väliskasutajate";
+                    break;
+                case 1035: // Finnish
+                    userIdentity = "Kaikki paitsi ulkoiset käyttäjät";
+                    break;
+                case 1036: // French
+                    userIdentity = "Tout le monde sauf les utilisateurs externes";
+                    break;
+                case 1110: // Galician
+                    userIdentity = "Todo o mundo excepto os usuarios externos";
+                    break;
+                case 1031: // German
+                    userIdentity = "Jeder, außer externen Benutzern";
+                    break;
+                case 1032: // Greek
+                    userIdentity = "Όλοι εκτός από εξωτερικούς χρήστες";
+                    break;
+                case 1037: // Hebrew
+                    userIdentity = "כולם פרט למשתמשים חיצוניים";
+                    break;
+                case 1081: // Hindi
+                    userIdentity = "बाह्य उपयोगकर्ताओं को छोड़कर सभी";
+                    break;
+                case 1038: // Hungarian
+                    userIdentity = "Mindenki, kivéve külső felhasználók";
+                    break;
+                case 1057: // Indonesian
+                    userIdentity = "Semua orang kecuali pengguna eksternal";
+                    break;
+                case 1040: // Italian
+                    userIdentity = "Tutti tranne gli utenti esterni";
+                    break;
+                case 1041: // Japanese
+                    userIdentity = "外部ユーザー以外のすべてのユーザー";
+                    break;
+                case 1087: // Kazakh
+                    userIdentity = "Сыртқы пайдаланушылардан басқасының барлығы";
+                    break;
+                case 1042: // Korean
+                    userIdentity = "외부 사용자를 제외한 모든 사람";
+                    break;
+                case 1062: // Latvian
+                    userIdentity = "Visi, izņemot ārējos lietotājus";
+                    break;
+                case 1063: // Lithuanian
+                    userIdentity = "Visi, išskyrus išorinius vartotojus";
+                    break;
+                case 1086: // Malay
+                    userIdentity = "Semua orang kecuali pengguna luaran";
+                    break;
+                case 1044: // Norwegian (Bokmål)
+                    userIdentity = "Alle bortsett fra eksterne brukere";
+                    break;
+                case 1045: // Polish
+                    userIdentity = "Wszyscy oprócz użytkowników zewnętrznych";
+                    break;
+                case 1046: // Portuguese (Brazil)
+                    userIdentity = "Todos exceto os usuários externos";
+                    break;
+                case 2070: // Portuguese (Portugal)
+                    userIdentity = "Todos exceto os utilizadores externos";
+                    break;
+                case 1048: // Romanian
+                    userIdentity = "Toată lumea, cu excepția utilizatorilor externi";
+                    break;
+                case 1049: // Russian
+                    userIdentity = "Все, кроме внешних пользователей";
+                    break;
+                case 10266: // Serbian (Cyrillic, Serbia)
+                    userIdentity = "Сви осим спољних корисника";
+                    break;
+                case 2074:// Serbian (Latin)
+                    userIdentity = "Svi osim spoljnih korisnika";
+                    break;
+                case 1051:// Slovak
+                    userIdentity = "Všetci okrem externých používateľov";
+                    break;
+                case 1060: // Slovenian
+                    userIdentity = "Vsi razen zunanji uporabniki";
+                    break;
+                case 3082: // Spanish
+                    userIdentity = "Todos excepto los usuarios externos";
+                    break;
+                case 1053: // Swedish
+                    userIdentity = "Alla utom externa användare";
+                    break;
+                case 1054: // Thai
+                    userIdentity = "ทุกคนยกเว้นผู้ใช้ภายนอก";
+                    break;
+                case 1055: // Turkish
+                    userIdentity = "Dış kullanıcılar hariç herkes";
+                    break;
+                case 1058: // Ukranian
+                    userIdentity = "Усі, крім зовнішніх користувачів";
+                    break;
+                case 1066: // Vietnamese
+                    userIdentity = "Tất cả mọi người trừ người dùng bên ngoài";
+                    break;
+            }
+
+            return userIdentity;
+        }
+
         #endregion
 
 #if !ONPREMISES
-#region External sharing management
+        #region External sharing management
         /// <summary>
         /// Get the external sharing settings for the provided site. Only works in Office 365 Multi-Tenant
         /// </summary>
@@ -446,10 +467,10 @@ namespace Microsoft.SharePoint.Client
             return externalUsers;
         }
 
-#endregion
+        #endregion
 #endif
 
-#region Group management
+        #region Group management
         /// <summary>
         /// Returns the integer ID for a given group name
         /// </summary>
@@ -510,7 +531,7 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Associate the provided groups as default owners, members or visitors groups. If a group is null then the 
+        /// Associate the provided groups as default owners, members or visitors groups. If a group is null then the
         /// association is not done
         /// </summary>
         /// <param name="web">Site to operate on</param>
@@ -762,7 +783,7 @@ namespace Microsoft.SharePoint.Client
             {
                 return;
             }
-            
+
             var roleAssignments = securableObject.RoleAssignments;
             securableObject.Context.Load(roleAssignments);
             securableObject.Context.ExecuteQueryRetry();
@@ -794,7 +815,7 @@ namespace Microsoft.SharePoint.Client
                 {
                     roleDefinitionBindings.Add(roleDefinition);
 
-                    //update                        
+                    //update
                     roleAssignment.ImportRoleDefinitionBindings(roleDefinitionBindings);
                     roleAssignment.Update();
                     securableObject.Context.ExecuteQueryRetry();
@@ -930,7 +951,7 @@ namespace Microsoft.SharePoint.Client
             {
                 return;
             }
-            
+
             var roleAssignments = securableObject.RoleAssignments;
             securableObject.Context.Load(roleAssignments);
             securableObject.Context.ExecuteQueryRetry();
@@ -955,7 +976,7 @@ namespace Microsoft.SharePoint.Client
                     rdc.Remove(roleDefinition);
                 }
 
-                //update                      
+                //update
                 roleAssignment.ImportRoleDefinitionBindings(rdc);
                 roleAssignment.Update();
                 securableObject.Context.ExecuteQueryRetry();
@@ -1096,7 +1117,7 @@ namespace Microsoft.SharePoint.Client
 
             if (users.AreItemsAvailable)
             {
-                result = users.Any(u => 
+                result = users.Any(u =>
                   u.LoginName.ToLowerInvariant().Contains(userLoginName.ToLowerInvariant())
                 );
             }
@@ -1161,9 +1182,10 @@ namespace Microsoft.SharePoint.Client
                 return false;
             }
         }
-#endregion
+        #endregion
 
-#region Authentication Realm
+
+        #region Authentication Realm
         /// <summary>
         /// Returns the authentication realm for the current web
         /// </summary>
@@ -1172,17 +1194,49 @@ namespace Microsoft.SharePoint.Client
         public static Guid GetAuthenticationRealm(this Web web)
         {
             web.EnsureProperty(w => w.Url);
+#if !NETSTANDARD2_0
+            Guid.TryParse(TokenHelper.GetRealmFromTargetUrl(new Uri(web.Url)), out var g);            
+            return g;
+#else
+            WebRequest request = WebRequest.Create(new Uri(web.Url) + "/_vti_bin/client.svc");
+            request.Headers.Add("Authorization: Bearer ");
 
-            var returnGuid = new Guid(TokenHelper.GetRealmFromTargetUrl(new Uri(web.Url)));
+            try
+            {
+                using (request.GetResponse())
+                {
+                }
+            }
+            catch (WebException e)
+            {
+                var bearerResponseHeader = e.Response.Headers["WWW-Authenticate"];
 
-            return returnGuid;
+                const string bearer = "Bearer realm=\"";
+                var bearerIndex = bearerResponseHeader.IndexOf(bearer, StringComparison.Ordinal);
 
+                var realmIndex = bearerIndex + bearer.Length;
+
+                if (bearerResponseHeader.Length >= realmIndex + 36)
+                {
+                    var targetRealm = bearerResponseHeader.Substring(realmIndex, 36);
+
+                    Guid realmGuid;
+
+                    if (Guid.TryParse(targetRealm, out realmGuid))
+                    {
+                        return realmGuid;
+                    }
+                }
+            }
+            return Guid.Empty;
+#endif
         }
-#endregion
+        #endregion
 
-#region SecurableObject traversal
 
-#region Helpers
+        #region SecurableObject traversal
+
+        #region Helpers
 
         /// <summary>
         /// Get URL path of a securable object
@@ -1271,6 +1325,7 @@ namespace Microsoft.SharePoint.Client
             else if (obj is ListItem)
             {
                 var item = obj as ListItem;
+                context.Load(item, i => i.HasUniqueRoleAssignments);
                 context.Load(item.RoleAssignments);
                 context.Load(item.RoleAssignments.Groups);
                 context.ExecuteQueryRetry();
@@ -1316,14 +1371,14 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-#endregion
+        #endregion
 
-#region Entity cache
+        #region Entity cache
 
         /// <summary>
         /// A dictionary to cache resolved user emails. key: user login name, value: user email.
-        /// *** 
-        /// Don't use this cache in a real world application. 
+        /// ***
+        /// Don't use this cache in a real world application.
         /// ***
         /// Instead it should be replaced by a real cache with ref object to clear up intermediate records periodically.
         /// </summary>
@@ -1345,13 +1400,13 @@ namespace Microsoft.SharePoint.Client
 
         /// <summary>
         /// A dictionary to cache all user entities of a given SharePoint group. key: group login name, value: an array of user entities belongs to the group.
-        /// *** 
-        /// Don't use this cache in a real world application. 
+        /// ***
+        /// Don't use this cache in a real world application.
         /// ***
         /// Instead it should be replaced by a real cache with ref object to clear up intermediate records periodically.
         /// </summary>
         private static Dictionary<string, UserEntity[]> MockupGroupCache = new Dictionary<string, UserEntity[]>();
-        
+
         /// <summary>
         /// Ensure all users of a given SharePoint group has been cached.
         /// </summary>
@@ -1362,18 +1417,18 @@ namespace Microsoft.SharePoint.Client
             var context = obj.Context;
             if (!MockupGroupCache.ContainsKey(groupLoginName))
             {
-                var users = context.LoadQuery(obj.RoleAssignments.Groups.First(g => g.LoginName == groupLoginName).Users);
+                var users = context.LoadQuery(obj.RoleAssignments.Groups.First(g => g.LoginName.Equals(groupLoginName, StringComparison.OrdinalIgnoreCase)).Users);
                 context.ExecuteQueryRetry();
                 MockupGroupCache[groupLoginName] = (from u in users select new UserEntity()
-                                              {
-                                                  Title = u.Title,
-                                                  Email = u.Email,
-                                                  LoginName = u.LoginName
-                                              }).ToArray();
+                                                    {
+                                                        Title = u.Title,
+                                                        Email = u.Email,
+                                                        LoginName = u.LoginName
+                                                    }).ToArray();
             }
         }
 
-#endregion
+        #endregion
 
         /// <summary>
         /// Get all unique role assignments for a web object and all its descendents down to document or list item level.
@@ -1438,6 +1493,93 @@ namespace Microsoft.SharePoint.Client
             return result;
         }
 
-#endregion
+        /// <summary>
+        /// Get all unique role assignments for a user or a group in a web object and all its descendents down to document or list item level.
+        /// </summary>
+        /// <param name="web">The current web object to be processed.</param>
+        /// <param name="principal">The current web object to be processed.</param>
+        /// <param name="leafBreadthLimit">Skip further visiting on this branch if the number of child items or documents with unique role assignments exceeded leafBreadthLimit. When setting to 0, the process will stop at list / document library level.</param>
+        /// <returns>Returns all role assignments</returns>
+        public static IEnumerable<RoleAssignmentEntity> GetPrincipalUniqueRoleAssignments(this Web web, Principal principal, int leafBreadthLimit = int.MaxValue)
+        {
+            var result = new List<RoleAssignmentEntity>();
+            web.Visit(leafBreadthLimit, (obj, path) =>
+            {
+                if (!obj.HasUniqueRoleAssignments)
+                {
+                    return;
+                }
+
+                RoleAssignment assignment;
+                try
+                {
+                    assignment = obj.RoleAssignments.GetByPrincipal(principal);
+                    web.Context.ExecuteQueryRetry();
+                }
+                catch (ServerException ex)
+                {
+                    if (ex.HResult == -2146233088)
+                    {
+                        // Can not find the principal so suppress the exception
+                        assignment = null;
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                if (assignment != null)
+                {
+                    var bindings = web.Context.LoadQuery(assignment.RoleDefinitionBindings.Where(b => b.Name != "Limited Access"));
+                    web.Context.Load(assignment.Member, m => m.LoginName, m => m.Title, m => m.PrincipalType, m => m.Id);
+                    web.Context.ExecuteQueryRetry();
+
+                    var bindingList = (from b in bindings select b.Name).ToList();
+                    if (bindingList.Count != 0)
+                    {
+                        if (assignment.Member.PrincipalType == Utilities.PrincipalType.SharePointGroup)
+                        {
+                            EnsureGroupCache(obj, assignment.Member.LoginName);
+                            foreach (var user in MockupGroupCache[assignment.Member.LoginName])
+                            {
+                                if (!MockupUserEmailCache.ContainsKey(user.LoginName))
+                                {
+                                    MockupUserEmailCache[user.LoginName] = user.Email;
+                                }
+                                result.Add(new RoleAssignmentEntity()
+                                {
+                                    Path = path,
+                                    User = user,
+                                    Role = assignment.Member.Title,
+                                    RoleDefinitionBindings = bindingList,
+                                });
+                            }
+                        }
+                        else
+                        {
+                            if (!MockupUserEmailCache.ContainsKey(assignment.Member.LoginName))
+                            {
+                                MockupUserEmailCache[assignment.Member.LoginName] = web.GetUserEmail(assignment.Member.Id);
+                            }
+                            result.Add(new RoleAssignmentEntity()
+                            {
+                                Path = path,
+                                User = new UserEntity()
+                                {
+                                    Title = assignment.Member.Title,
+                                    Email = MockupUserEmailCache[assignment.Member.LoginName],
+                                    LoginName = assignment.Member.LoginName
+                                },
+                                Role = "(Directly Assigned)",
+                                RoleDefinitionBindings = bindingList,
+                            });
+                        }
+                    }
+                }
+            });
+            return result;
+        }
+        #endregion
     }
 }

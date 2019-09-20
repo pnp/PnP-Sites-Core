@@ -9,6 +9,8 @@ using System.Security;
 using System.Configuration;
 using OfficeDevPnP.Core.Tests;
 using OfficeDevPnP.Core.Entities;
+using OfficeDevPnP.Core;
+
 namespace Microsoft.SharePoint.Client.Tests
 {
 	[TestClass()]
@@ -107,14 +109,16 @@ namespace Microsoft.SharePoint.Client.Tests
 			{
 				var listName = "Test_" + DateTime.Now.ToFileTime();
 				clientContext.Web.CreateList(ListTemplateType.GenericList, listName, enableContentTypes: true, enableVersioning: false);
-				clientContext.ExecuteQueryRetry();
+                var issueContentType = clientContext.Web.AvailableContentTypes.GetById(BuiltInContentTypeId.Issue);
+                clientContext.Load(issueContentType, ct => ct.Name);
+                clientContext.ExecuteQueryRetry();
 
-				clientContext.Web.AddContentTypeToListByName(listName, "Issue", defaultContent: true);
+                clientContext.Web.AddContentTypeToListByName(listName, issueContentType.Name, defaultContent: true);
 
 				var list = clientContext.Web.GetListByTitle(listName);
 				clientContext.Load(list.ContentTypes);
 				clientContext.ExecuteQueryRetry();
-				var issueContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals("Issue"));
+				var issueContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals(issueContentType.Name));
 
 				Assert.AreEqual(1, issueContentTypeCount, "Issue content type was not added.");
 			}
@@ -127,18 +131,27 @@ namespace Microsoft.SharePoint.Client.Tests
 			{
 				var listName = "Test_" + DateTime.Now.ToFileTime();
 				clientContext.Web.CreateList(ListTemplateType.GenericList, listName, enableContentTypes: true, enableVersioning: false);
-				clientContext.ExecuteQueryRetry();
 
-				clientContext.Web.AddContentTypeToListByName(listName, "Issue", defaultContent: true);
-				clientContext.Web.AddContentTypeToListByName(listName, "Task", defaultContent: true);
-				clientContext.Web.RemoveContentTypeFromListByName(listName, "Item");
+                var issueContentType = clientContext.Web.AvailableContentTypes.GetById(BuiltInContentTypeId.Issue);
+                var taskContentType = clientContext.Web.AvailableContentTypes.GetById(BuiltInContentTypeId.Task);
+                var itemContentType = clientContext.Web.AvailableContentTypes.GetById(BuiltInContentTypeId.Item);
+
+                clientContext.Load(issueContentType, ct => ct.Name);
+                clientContext.Load(taskContentType, ct => ct.Name);
+                clientContext.Load(itemContentType, ct => ct.Name);
+
+                clientContext.ExecuteQueryRetry();
+
+                clientContext.Web.AddContentTypeToListByName(listName, issueContentType.Name, defaultContent: true);
+				clientContext.Web.AddContentTypeToListByName(listName, taskContentType.Name, defaultContent: true);
+				clientContext.Web.RemoveContentTypeFromListByName(listName, itemContentType.Name);
 
 				var list = clientContext.Web.GetListByTitle(listName);
 				clientContext.Load(list.ContentTypes);
 				clientContext.ExecuteQueryRetry();
-				var issueContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals("Issue"));
-				var taskContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals("Task"));
-				var itemContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals("Item"));
+				var issueContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals(issueContentType.Name));
+				var taskContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals(taskContentType.Name));
+				var itemContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals(itemContentType.Name));
 
 				Assert.AreEqual(1, issueContentTypeCount, "Issue content type was not added. Test is invalid.");
 				Assert.AreEqual(1, taskContentTypeCount, "Task content type was not added. Test is invalid.");
@@ -153,18 +166,27 @@ namespace Microsoft.SharePoint.Client.Tests
 			{
 				var listName = "Test_" + DateTime.Now.ToFileTime();
 				clientContext.Web.CreateList(ListTemplateType.GenericList, listName, enableContentTypes: true, enableVersioning: false);
-				clientContext.ExecuteQueryRetry();
 
-				clientContext.Web.AddContentTypeToListByName(listName, "Issue", defaultContent: true);
-				clientContext.Web.AddContentTypeToListByName(listName, "Task", defaultContent: true);
+                var issueContentType = clientContext.Web.AvailableContentTypes.GetById(BuiltInContentTypeId.Issue);
+                var taskContentType = clientContext.Web.AvailableContentTypes.GetById(BuiltInContentTypeId.Task);
+                var itemContentType = clientContext.Web.AvailableContentTypes.GetById(BuiltInContentTypeId.Item);
+
+                clientContext.Load(issueContentType, ct => ct.Name);
+                clientContext.Load(taskContentType, ct => ct.Name);
+                clientContext.Load(itemContentType, ct => ct.Name);
+
+                clientContext.ExecuteQueryRetry();
+
+                clientContext.Web.AddContentTypeToListByName(listName, issueContentType.Name, defaultContent: true);
+				clientContext.Web.AddContentTypeToListByName(listName, taskContentType.Name, defaultContent: true);
 				clientContext.Web.RemoveContentTypeFromListById(listName, "0x01");
 
 				var list = clientContext.Web.GetListByTitle(listName);
 				clientContext.Load(list.ContentTypes);
 				clientContext.ExecuteQueryRetry();
-				var issueContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals("Issue"));
-				var taskContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals("Task"));
-				var itemContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals("Item"));
+				var issueContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals(issueContentType.Name));
+				var taskContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals(taskContentType.Name));
+				var itemContentTypeCount = list.ContentTypes.Count(x => x.Name.Equals(itemContentType.Name));
 
 				Assert.AreEqual(1, issueContentTypeCount, "Issue content type was not added. Test is invalid.");
 				Assert.AreEqual(1, taskContentTypeCount, "Task content type was not added. Test is invalid.");
@@ -289,7 +311,7 @@ namespace Microsoft.SharePoint.Client.Tests
 					clientContext.Load(subweb);
 					clientContext.ExecuteQueryRetry();
 
-					using (var clientContextSub = clientContext.Clone(String.Format("{0}\\{1}", ConfigurationManager.AppSettings["SPODevSiteUrl"], subsiteurl)))
+					using (var clientContextSub = clientContext.Clone(String.Format("{0}\\{1}", TestCommon.AppSetting("SPODevSiteUrl"), subsiteurl)))
 					{
 						Assert.IsFalse(clientContextSub.Web.ContentTypeExistsByName(TEST_CT_PNP));
 						Assert.IsTrue(clientContextSub.Web.ContentTypeExistsByName(TEST_CT_PNP, true));
@@ -327,7 +349,7 @@ namespace Microsoft.SharePoint.Client.Tests
 					clientContext.Load(subweb);
 					clientContext.ExecuteQueryRetry();
 
-					using (var clientContextSub = clientContext.Clone(String.Format("{0}\\{1}", ConfigurationManager.AppSettings["SPODevSiteUrl"], subsiteurl)))
+					using (var clientContextSub = clientContext.Clone(String.Format("{0}\\{1}", TestCommon.AppSetting("SPODevSiteUrl"), subsiteurl)))
 					{
 						Assert.IsFalse(clientContextSub.Web.ContentTypeExistsById(TEST_CT_PNP_ID));
 						Assert.IsTrue(clientContextSub.Web.ContentTypeExistsById(TEST_CT_PNP_ID, true));
@@ -452,51 +474,88 @@ namespace Microsoft.SharePoint.Client.Tests
 			}
 		}
 
-		[TestMethod]
-		public void SetDefaultContentTypeToListTest()
-		{
-			using (var clientContext = TestCommon.CreateClientContext())
-			{
-				var web = clientContext.Web;
+        [TestMethod]
+        public void SetDefaultContentTypeTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
 
-				var testList = web.CreateList(ListTemplateType.DocumentLibrary, "Test_SetDefaultContentTypeToListTestList", true, true, "", true);
+                var testList = web.CreateList(ListTemplateType.DocumentLibrary, "Test_SetDefaultContentTypeToListTestList", true, true, "", true);
 
-				var parentCt = web.GetContentTypeById("0x0101");
-				var ct = web.CreateContentType("Test_SetDefaultContentTypeToListCt", "Desc", "", "Test_Group", parentCt);
-				clientContext.Load(ct);
-				clientContext.Load(testList.RootFolder, f => f.ContentTypeOrder);
-				clientContext.ExecuteQueryRetry();
+                var parentCt = web.GetContentTypeById("0x0101");
+                var ct = web.CreateContentType("Test_SetDefaultContentTypeToListCt", "Desc", "", "Test_Group", parentCt);
+                clientContext.Load(ct);
+                clientContext.Load(testList.RootFolder, f => f.ContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
 
-				var prevUniqueContentTypeOrder = testList.RootFolder.ContentTypeOrder;
+                var prevUniqueContentTypeOrder = testList.RootFolder.ContentTypeOrder;
 
-				Assert.AreEqual(1, prevUniqueContentTypeOrder.Count());
+                Assert.AreEqual(1, prevUniqueContentTypeOrder.Count());
 
-				testList.AddContentTypeToList(ct);
+                var newContentType = testList.ContentTypes.AddExistingContentType(ct);
+                clientContext.Load(newContentType, nct => nct.Id);
+                clientContext.ExecuteQueryRetry();
 
-				testList.SetDefaultContentTypeToList(ct);
-				clientContext.Load(testList.RootFolder, f => f.ContentTypeOrder);
-				clientContext.ExecuteQueryRetry();
+                testList.SetDefaultContentType(newContentType.Id);
+                clientContext.Load(testList.RootFolder, f => f.ContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
 
-				Assert.AreEqual(2, testList.RootFolder.ContentTypeOrder.Count());
-				Assert.IsTrue(testList.RootFolder.ContentTypeOrder.First().StringValue.StartsWith(ct.Id.StringValue, StringComparison.OrdinalIgnoreCase));
+                Assert.AreEqual(2, testList.RootFolder.ContentTypeOrder.Count());
+                Assert.IsTrue(testList.RootFolder.ContentTypeOrder.First().StringValue.StartsWith(ct.Id.StringValue, StringComparison.OrdinalIgnoreCase));
 
-				testList.DeleteObject();
-				ct.DeleteObject();
-				clientContext.ExecuteQueryRetry();
-			}
-		}
+                testList.DeleteObject();
+                ct.DeleteObject();
+                clientContext.ExecuteQueryRetry();
+            }
+        }
 
-		[TestMethod()]
+        [TestMethod]
+        public void SetDefaultContentTypeToListTest()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                var testList = web.CreateList(ListTemplateType.DocumentLibrary, "Test_SetDefaultContentTypeToListTestList", true, true, "", true);
+
+                var parentCt = web.GetContentTypeById("0x0101");
+                var ct = web.CreateContentType("Test_SetDefaultContentTypeToListCt", "Desc", "", "Test_Group", parentCt);
+                clientContext.Load(ct);
+                clientContext.Load(testList.RootFolder, f => f.ContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                var prevUniqueContentTypeOrder = testList.RootFolder.ContentTypeOrder;
+
+                Assert.AreEqual(1, prevUniqueContentTypeOrder.Count());
+
+                testList.AddContentTypeToList(ct);
+
+                testList.SetDefaultContentTypeToList(ct);
+                clientContext.Load(testList.RootFolder, f => f.ContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                Assert.AreEqual(2, testList.RootFolder.ContentTypeOrder.Count());
+                Assert.IsTrue(testList.RootFolder.ContentTypeOrder.First().StringValue.StartsWith(ct.Id.StringValue, StringComparison.OrdinalIgnoreCase));
+
+                testList.DeleteObject();
+                ct.DeleteObject();
+                clientContext.ExecuteQueryRetry();
+            }
+        }
+
+        [TestMethod()]
 		public void ReorderContentTypesTest()
 		{
 			using (var clientContext = TestCommon.CreateClientContext())
 			{
 				var web = clientContext.Web;
-				clientContext.Load(web, w => w.ContentTypes);
-				clientContext.ExecuteQueryRetry();
+                var documentCtype = clientContext.Web.AvailableContentTypes.GetById(BuiltInContentTypeId.Document);
+                clientContext.Load(documentCtype, ct => ct.Name);
+                clientContext.ExecuteQueryRetry();
 
-				// create content types
-				var documentCtype = web.ContentTypes.FirstOrDefault(ct => ct.Name == "Document");
+                // create content types
+
 				var newCtypeInfo1 = new ContentTypeCreationInformation()
 				{
 					Name = "Test_ContentType1",
@@ -586,10 +645,601 @@ namespace Microsoft.SharePoint.Client.Tests
 			}
 
 		}
-		#endregion
 
-		#region Helper methods
-		void EmptyRecycleBin(ClientContext clientContext)
+        [TestMethod]
+        public void CanGetContentTypeIdIsChildOf()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+                ContentType itemContentType = web.AvailableContentTypes.GetById(BuiltInContentTypeId.Item); //0x01
+                ContentType documentContentType = web.AvailableContentTypes.GetById(BuiltInContentTypeId.Document); //0x0101
+                ContentType eventContentType = web.AvailableContentTypes.GetById(BuiltInContentTypeId.Event); ////0x0102
+                clientContext.Load(itemContentType, ct => ct.Id);
+                clientContext.Load(documentContentType, ct => ct.Id);
+                clientContext.Load(eventContentType, ct => ct.Id);
+                clientContext.ExecuteQueryRetry();
+                
+                //parent child
+                Assert.IsTrue(documentContentType.Id.IsChildOf(itemContentType.Id));
+                
+                //child parent
+                Assert.IsFalse(itemContentType.Id.IsChildOf(documentContentType.Id));
+                
+                //siblings
+                Assert.IsFalse(eventContentType.Id.IsChildOf(documentContentType.Id));
+            }
+        }
+
+        [TestMethod]
+
+        public void CanGetContentTypeIdIsParentOf()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+                ContentType itemContentType = web.AvailableContentTypes.GetById(BuiltInContentTypeId.Item); //0x01
+                ContentType documentContentType = web.AvailableContentTypes.GetById(BuiltInContentTypeId.Document); //0x0101
+                clientContext.Load(itemContentType, ct => ct.Id);
+                clientContext.Load(documentContentType, ct => ct.Id);
+                clientContext.ExecuteQueryRetry();
+                Assert.IsTrue(itemContentType.Id.IsParentOf(documentContentType.Id));
+            }
+        }
+
+        [TestMethod]
+
+        public void CanGetContentTypeIdParentIdValue()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+                ContentType itemContentType = web.AvailableContentTypes.GetById(BuiltInContentTypeId.Item); //0x01
+                ContentType documentContentType = web.AvailableContentTypes.GetById(BuiltInContentTypeId.Document); //0x0101
+                clientContext.Load(itemContentType, ct => ct.Id);
+                clientContext.Load(documentContentType, ct => ct.Id);
+                clientContext.ExecuteQueryRetry();
+                string documentContentTypeParentIdValue = documentContentType.Id.GetParentIdValue();
+                Assert.AreEqual(itemContentType.Id.StringValue, documentContentTypeParentIdValue);
+            }
+        }
+        #endregion
+
+        [TestMethod]
+        public void CanSetDefaultContentTypeWhenContentTypeIsVisibleInNewButtonAndContentTypeOrderIsSet()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // create content types
+                var documentCtype = web.ContentTypes.GetById(BuiltInContentTypeId.Document);
+                var newCtypeInfo1 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType1",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo2 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType2",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+
+                var newCtype1 = web.ContentTypes.Add(newCtypeInfo1);
+                var newCtype2 = web.ContentTypes.Add(newCtypeInfo2);
+                clientContext.Load(newCtype1);
+                clientContext.Load(newCtype2);
+                clientContext.ExecuteQueryRetry();
+
+                var newList = new ListCreationInformation()
+                {
+                    TemplateType = (int)ListTemplateType.DocumentLibrary,
+                    Title = DOC_LIB_TITLE,
+                    Url = "TestLibrary"
+                };
+
+                var doclib = clientContext.Web.Lists.Add(newList);
+                doclib.ContentTypesEnabled = true;
+                var listContentType1 = doclib.ContentTypes.AddExistingContentType(newCtype1);
+                clientContext.Load(listContentType1, ct => ct.Id);
+                doclib.Update();
+                clientContext.Load(doclib.RootFolder, rf => rf.ContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                doclib.RootFolder.UniqueContentTypeOrder = doclib.RootFolder.ContentTypeOrder;
+                doclib.RootFolder.Update();
+                clientContext.ExecuteQueryRetry();
+
+                var listContentType2 = doclib.ContentTypes.AddExistingContentType(newCtype2);
+                clientContext.Load(listContentType2, ct => ct.Id);
+                clientContext.ExecuteQueryRetry();
+
+                doclib.SetDefaultContentType(listContentType1.Id);
+
+                clientContext.Load(doclib.RootFolder, rf => rf.ContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                var contentTypeOrder = doclib.RootFolder.ContentTypeOrder;
+
+                var actualDefaultContentType = contentTypeOrder[0];
+
+                Assert.AreEqual(2, contentTypeOrder.Count);
+                Assert.AreEqual(listContentType1.Id.StringValue, actualDefaultContentType.StringValue);
+            }
+        }
+
+        [TestMethod]
+        public void CanSetDefaultContentTypeWhenNoUniqueOrderIsSet()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // create content types
+                var documentCtype = web.ContentTypes.GetById(BuiltInContentTypeId.Document);
+                var newCtypeInfo1 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType1",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+
+                var newCtype1 = web.ContentTypes.Add(newCtypeInfo1);
+                clientContext.Load(newCtype1);
+                clientContext.ExecuteQueryRetry();
+
+                var newList = new ListCreationInformation()
+                {
+                    TemplateType = (int)ListTemplateType.DocumentLibrary,
+                    Title = DOC_LIB_TITLE,
+                    Url = "TestLibrary"
+                };
+
+                var doclib = clientContext.Web.Lists.Add(newList);
+
+                var listContentType1 = doclib.ContentTypes.AddExistingContentType(newCtype1);
+                clientContext.Load(listContentType1, ct => ct.Id);
+                clientContext.ExecuteQueryRetry();
+
+                clientContext.Load(doclib.RootFolder, rf => rf.UniqueContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                Assert.IsNull(doclib.RootFolder.UniqueContentTypeOrder);
+
+                //Set default content type
+                doclib.SetDefaultContentType(listContentType1.Id);
+
+                clientContext.Load(doclib.RootFolder, rf => rf.UniqueContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+                var actualContentTypeOrder = doclib.RootFolder.UniqueContentTypeOrder;
+
+                Assert.AreEqual(listContentType1.Id.StringValue, actualContentTypeOrder[0].StringValue);
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentOutOfRangeException), "A nonexisting content type was incorrectly set as default.")]
+
+        public void ThrowsArgumentOutOfRangeExceptionWhenSettingDefaultContentThatDoesNotExistInList()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // create content types
+                var documentCtype = web.ContentTypes.GetById(BuiltInContentTypeId.Document);
+                var newCtypeInfo1 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType1",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+
+                var newCtype1 = web.ContentTypes.Add(newCtypeInfo1);
+                clientContext.Load(newCtype1);
+                clientContext.ExecuteQueryRetry();
+
+                var newList = new ListCreationInformation()
+                {
+                    TemplateType = (int)ListTemplateType.DocumentLibrary,
+                    Title = DOC_LIB_TITLE,
+                    Url = "TestLibrary"
+                };
+
+                var doclib = clientContext.Web.Lists.Add(newList);
+
+                var listContentType1 = doclib.ContentTypes.AddExistingContentType(newCtype1);
+                clientContext.Load(listContentType1, ct => ct.Id);
+                clientContext.ExecuteQueryRetry();
+
+                var listDocumentContentType = doclib.ContentTypes.BestMatch(BuiltInContentTypeId.Document);
+                Assert.AreEqual(BuiltInContentTypeId.Document, listDocumentContentType.GetParentIdValue(), true);
+                doclib.ContentTypes.GetById(listDocumentContentType.StringValue).DeleteObject();
+                clientContext.ExecuteQueryRetry();
+
+                //Set default content type
+                doclib.SetDefaultContentType(listDocumentContentType);
+            }
+        }
+
+        [TestMethod]
+        public void CanSetDefaultContentTypeWhenContentTypeIsHiddenInNewButton()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // create content types
+                var documentCtype = web.ContentTypes.GetById(BuiltInContentTypeId.Document);
+                var newCtypeInfo1 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType1",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo2 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType2",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+
+                var newCtype1 = web.ContentTypes.Add(newCtypeInfo1);
+                var newCtype2 = web.ContentTypes.Add(newCtypeInfo2);
+                clientContext.Load(newCtype1);
+                clientContext.Load(newCtype2);
+                clientContext.ExecuteQueryRetry();
+
+                var newList = new ListCreationInformation()
+                {
+                    TemplateType = (int)ListTemplateType.DocumentLibrary,
+                    Title = DOC_LIB_TITLE,
+                    Url = "TestLibrary"
+                };
+
+                var doclib = clientContext.Web.Lists.Add(newList);
+
+                var listContentType1 = doclib.ContentTypes.AddExistingContentType(newCtype1);
+
+                clientContext.Load(listContentType1, ct => ct.Id);
+                clientContext.ExecuteQueryRetry();
+
+                //Set default content type
+                doclib.SetDefaultContentType(listContentType1.Id);
+
+                clientContext.Load(doclib.RootFolder, rf => rf.UniqueContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+                var actualContentTypeOrder = doclib.RootFolder.UniqueContentTypeOrder;
+
+                Assert.AreEqual(listContentType1.Id.StringValue, actualContentTypeOrder[0].StringValue);
+
+                //Add content type hidden in the new button (new content types are not automatically added to new button if unique order is set)
+                var listContentType2 = doclib.ContentTypes.AddExistingContentType(newCtype2);
+                clientContext.Load(listContentType2, ct => ct.Id);
+                clientContext.Load(doclib.RootFolder, rf => rf.UniqueContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                actualContentTypeOrder = doclib.RootFolder.UniqueContentTypeOrder;
+                bool isContentType2VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.StringValue.Equals(listContentType2.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+
+                Assert.IsFalse(isContentType2VisibleInNewButton, "Content type 2 has incorrectly been made visible in the new button");
+
+                //Set default content type
+                doclib.SetDefaultContentType(listContentType2.Id);
+
+                clientContext.Load(doclib.RootFolder, rf => rf.UniqueContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                actualContentTypeOrder = doclib.RootFolder.UniqueContentTypeOrder;
+                isContentType2VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.StringValue.Equals(listContentType2.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+
+                Assert.IsTrue(isContentType2VisibleInNewButton, "Content type 2 has not been made visible in the new button");
+
+            }
+        }
+
+        [TestMethod]
+        public void CanUpdateDefaultContentTypeWithoutModifyingContentTypeNewButtonVisibility()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // create content types
+                var documentCtype = web.ContentTypes.GetById(BuiltInContentTypeId.Document);
+                var newCtypeInfo1 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType1",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo2 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType2",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo3 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType3",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+
+                var newCtype1 = web.ContentTypes.Add(newCtypeInfo1);
+                var newCtype2 = web.ContentTypes.Add(newCtypeInfo2);
+                var newCtype3 = web.ContentTypes.Add(newCtypeInfo3);
+                clientContext.Load(newCtype1);
+                clientContext.Load(newCtype2);
+                clientContext.Load(newCtype3);
+                clientContext.ExecuteQueryRetry();
+
+                var newList = new ListCreationInformation()
+                {
+                    TemplateType = (int)ListTemplateType.DocumentLibrary,
+                    Title = DOC_LIB_TITLE,
+                    Url = "TestLibrary"
+                };
+
+                var doclib = clientContext.Web.Lists.Add(newList);
+
+                var listContentType1 = doclib.ContentTypes.AddExistingContentType(newCtype1);
+                clientContext.Load(listContentType1, ct => ct.Id);
+                clientContext.ExecuteQueryRetry();
+
+                doclib.SetDefaultContentType(listContentType1.Id);
+
+
+                //These content types will not be visible unless added to RootFolder.UniqueContentTypeOrder
+                var listContentType2 = doclib.ContentTypes.AddExistingContentType(newCtype2);
+                var listContentType3 = doclib.ContentTypes.AddExistingContentType(newCtype3);
+                doclib.Update();
+
+                clientContext.Load(listContentType2, ct => ct.Id);
+                clientContext.Load(listContentType3, ct => ct.Id);
+                clientContext.ExecuteQueryRetry();
+
+                doclib.SetDefaultContentType(listContentType2.Id);
+
+                clientContext.Load(doclib.ContentTypes);
+                clientContext.Load(doclib.RootFolder, rf => rf.UniqueContentTypeOrder);
+                clientContext.ExecuteQueryRetry();
+
+                var actualContentTypeOrder = doclib.RootFolder.UniqueContentTypeOrder;
+                bool isContentType3VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.StringValue.Equals(listContentType3.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+
+                bool contentType3ExistsInList = doclib.ContentTypeExistsById(newCtype3.Id.StringValue);
+
+                Assert.IsFalse(isContentType3VisibleInNewButton, "Content type 3 has incorrectly been made visible in the new button");
+                Assert.IsTrue(contentType3ExistsInList, "Content type 3 should have been added to the list content types");
+            }
+        }
+
+        [TestMethod]
+        public void CanAddContentTypeAndMakeVisibleInNewButton()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // create content types
+                var documentCtype = web.ContentTypes.GetById(BuiltInContentTypeId.Document);
+                var newCtypeInfo1 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType1",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo2 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType2",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo3 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType3",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+
+                var newCtype1 = web.ContentTypes.Add(newCtypeInfo1);
+                var newCtype2 = web.ContentTypes.Add(newCtypeInfo2);
+                var newCtype3 = web.ContentTypes.Add(newCtypeInfo3);
+                clientContext.Load(newCtype1);
+                clientContext.Load(newCtype2);
+                clientContext.Load(newCtype3);
+                clientContext.ExecuteQueryRetry();
+
+                var newList = new ListCreationInformation()
+                {
+                    TemplateType = (int)ListTemplateType.DocumentLibrary,
+                    Title = DOC_LIB_TITLE,
+                    Url = "TestLibrary"
+                };
+
+                var doclib = clientContext.Web.Lists.Add(newList);
+                doclib.ContentTypesEnabled = true;
+                var libContentType1 = doclib.ContentTypes.AddExistingContentType(newCtype1);
+                var libContentType2 = doclib.ContentTypes.AddExistingContentType(newCtype2);
+                doclib.Update();
+                clientContext.Load(libContentType1, ct => ct.Id);
+                clientContext.Load(libContentType2, ct => ct.Id);
+                clientContext.ExecuteQueryRetry();
+
+                doclib.RootFolder.UniqueContentTypeOrder = new[] { libContentType1.Id };
+                doclib.RootFolder.Update();
+                clientContext.ExecuteQueryRetry();
+
+                doclib.AddContentTypeToList(newCtype3, false);
+
+                clientContext.Load(doclib.RootFolder, rf => rf.UniqueContentTypeOrder);
+                var actualContentTypeOrder = doclib.RootFolder.UniqueContentTypeOrder;
+                var isContentType1VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.StringValue.Equals(libContentType1.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+                var isContentType2VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.StringValue.Equals(libContentType2.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+                var isContentType3VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.GetParentIdValue().Equals(newCtype3.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+
+                Assert.AreEqual(2, doclib.RootFolder.UniqueContentTypeOrder.Count);
+                Assert.IsTrue(isContentType1VisibleInNewButton, "Content type 3 has not been made visible in the new button");
+                Assert.IsFalse(isContentType2VisibleInNewButton, "Content type 2 has incorrectly been made visible in the new button");
+                Assert.IsTrue(isContentType3VisibleInNewButton, "Content type 3 has not been made visible in the new button");
+            }
+        }
+
+        [TestMethod]
+        public void CanShowContentTypesInNewButton()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // create content types
+                var documentCtype = web.ContentTypes.GetById(BuiltInContentTypeId.Document);
+                var newCtypeInfo1 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType1",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo2 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType2",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo3 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType3",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+
+                var newCtype1 = web.ContentTypes.Add(newCtypeInfo1);
+                var newCtype2 = web.ContentTypes.Add(newCtypeInfo2);
+                var newCtype3 = web.ContentTypes.Add(newCtypeInfo3);
+                clientContext.Load(newCtype1);
+                clientContext.Load(newCtype2);
+                clientContext.Load(newCtype3);
+                clientContext.ExecuteQueryRetry();
+
+                var newList = new ListCreationInformation()
+                {
+                    TemplateType = (int)ListTemplateType.DocumentLibrary,
+                    Title = DOC_LIB_TITLE,
+                    Url = "TestLibrary"
+                };
+
+                var doclib = clientContext.Web.Lists.Add(newList);
+                doclib.ContentTypesEnabled = true;
+                var libContentType1 = doclib.ContentTypes.AddExistingContentType(newCtype1);
+                var libContentType2 = doclib.ContentTypes.AddExistingContentType(newCtype2);
+                doclib.Update();
+                clientContext.Load(libContentType1, ct => ct.Id);
+                clientContext.Load(libContentType2, ct => ct.Id);
+                clientContext.ExecuteQueryRetry();
+
+                doclib.ShowContentTypesInNewButton(new[] { libContentType1 });
+
+                //there are no unique order set so all buttons are visible
+                Assert.IsNull(doclib.RootFolder.UniqueContentTypeOrder, "UniqueContentTypeOrder should be null since all buttons are visible by default");
+
+                doclib.RootFolder.UniqueContentTypeOrder = new[] { libContentType1.Id };
+                doclib.RootFolder.Update();
+                clientContext.ExecuteQueryRetry();
+
+                doclib.ShowContentTypesInNewButton(new[] { libContentType2 });
+
+                clientContext.Load(doclib.RootFolder, rf => rf.UniqueContentTypeOrder);
+                var actualContentTypeOrder = doclib.RootFolder.UniqueContentTypeOrder;
+                var isContentType1VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.StringValue.Equals(libContentType1.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+                var isContentType2VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.StringValue.Equals(libContentType2.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+
+                Assert.AreEqual(2, doclib.RootFolder.UniqueContentTypeOrder.Count);
+                Assert.IsTrue(isContentType1VisibleInNewButton, "Content type 1 has not been made visible in the new button");
+                Assert.IsTrue(isContentType2VisibleInNewButton, "Content type 2 has not been made visible in the new button");
+            }
+        }
+
+        [TestMethod]
+        public void CanHideContentTypesInNewButton()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+                var web = clientContext.Web;
+
+                // create content types
+                var documentCtype = web.ContentTypes.GetById(BuiltInContentTypeId.Document);
+                var newCtypeInfo1 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType1",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+                var newCtypeInfo2 = new ContentTypeCreationInformation()
+                {
+                    Name = "Test_ContentType2",
+                    ParentContentType = documentCtype,
+                    Group = "Test content types",
+                    Description = "This is a test content type"
+                };
+
+                var newCtype1 = web.ContentTypes.Add(newCtypeInfo1);
+                var newCtype2 = web.ContentTypes.Add(newCtypeInfo2);
+                clientContext.Load(newCtype1);
+                clientContext.Load(newCtype2);
+                clientContext.ExecuteQueryRetry();
+
+                var newList = new ListCreationInformation()
+                {
+                    TemplateType = (int)ListTemplateType.DocumentLibrary,
+                    Title = DOC_LIB_TITLE,
+                    Url = "TestLibrary"
+                };
+
+                var doclib = clientContext.Web.Lists.Add(newList);
+                doclib.ContentTypesEnabled = true;
+                var libContentType1 = doclib.ContentTypes.AddExistingContentType(newCtype1);
+                var libContentType2 = doclib.ContentTypes.AddExistingContentType(newCtype2);
+                doclib.Update();
+                clientContext.Load(libContentType1, ct => ct.Id);
+                clientContext.Load(libContentType2, ct => ct.Id);
+                clientContext.ExecuteQueryRetry();
+
+                doclib.HideContentTypesInNewButton(new[] { libContentType1 });
+
+                clientContext.Load(doclib.RootFolder, rf => rf.UniqueContentTypeOrder);
+                var actualContentTypeOrder = doclib.RootFolder.UniqueContentTypeOrder;
+                var isDocumentContentTypeVisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.GetParentIdValue().Equals(BuiltInContentTypeId.Document, StringComparison.OrdinalIgnoreCase)) != null;
+                var isContentType1VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.StringValue.Equals(libContentType1.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+                var isContentType2VisibleInNewButton = actualContentTypeOrder.FirstOrDefault(ct => ct.StringValue.Equals(libContentType2.Id.StringValue, StringComparison.OrdinalIgnoreCase)) != null;
+
+                Assert.AreEqual(2, doclib.RootFolder.UniqueContentTypeOrder.Count);
+                Assert.IsTrue(isDocumentContentTypeVisibleInNewButton, "Document content type has not been made visible in the new button");
+                Assert.IsFalse(isContentType1VisibleInNewButton, "Content type 1 has incorrectly been made visible in the new button");
+                Assert.IsTrue(isContentType2VisibleInNewButton, "Content type 2 has not been made visible in the new button");
+            }
+        }
+
+        #region Helper methods
+        void EmptyRecycleBin(ClientContext clientContext)
 		{
 			var recycleBin = clientContext.Web.RecycleBin;
 			clientContext.Load(recycleBin);

@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
     {
         private string sitecollectionName = "TestPnPSC_123456789";
 
-        #region Test initialize and cleanup
+    #region Test initialize and cleanup
         [TestInitialize()]
         public void Initialize()
         {
@@ -37,9 +37,9 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 CleanupCreatedTestSiteCollections(tenantContext);
             }
         }
-        #endregion
+    #endregion
 
-        #region Site collection creation and deletion
+    #region Site collection creation and deletion
         [TestMethod]
         public void CreateDeleteSiteCollectionTest()
         {
@@ -59,9 +59,9 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             }
         }
 
-        #endregion
+    #endregion
 
-        #region Helper methods
+    #region Helper methods
         private string GetTestSiteCollectionName(string devSiteUrl, string siteCollection)
         {
             Uri u = new Uri(devSiteUrl);
@@ -79,7 +79,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         private void CleanupCreatedTestSiteCollections(ClientContext tenantContext)
         {
-            string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+            string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
             String testSiteCollection = GetTestSiteCollectionName(devSiteUrl, sitecollectionName);
 
             //Ensure the test site collection was deleted and removed from recyclebin
@@ -94,9 +94,9 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
 
         private string CreateTestSiteCollection(Tenant tenant, string sitecollectionName)
         {
-            string devSiteUrl = ConfigurationManager.AppSettings["SPODevSiteUrl"];
+            string devSiteUrl = TestCommon.AppSetting("SPODevSiteUrl");
 
-            string siteOwnerLogin = string.Format("{0}\\{1}", ConfigurationManager.AppSettings["OnPremDomain"], ConfigurationManager.AppSettings["OnPremUserName"]);
+            string siteOwnerLogin = string.Format("{0}\\{1}", TestCommon.AppSetting("OnPremDomain"), TestCommon.AppSetting("OnPremUserName"));
             if (TestCommon.AppOnlyTesting())
             {
                 using (var clientContext = TestCommon.CreateClientContext())
@@ -119,7 +119,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             tenant.CreateSiteCollection(siteToCreate);
             return siteToCreateUrl;
         }
-        #endregion
+    #endregion
 
     }
 #endif

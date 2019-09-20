@@ -8,6 +8,8 @@ using OfficeDevPnP.Core.Diagnostics;
 using Microsoft.SharePoint.Client.Utilities;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using RoleDefinition = Microsoft.SharePoint.Client.RoleDefinition;
+using OfficeDevPnP.Core.Utilities;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -17,6 +19,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return "Site Security"; }
         }
+
+        public override string InternalName => "SiteSecurity";
+
         public override TokenParser ProvisionObjects(Web web, ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -33,21 +38,212 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     web.BreakRoleInheritance(template.Security.CopyRoleAssignments, template.Security.ClearSubscopes);
                     web.Update();
+                    web.Context.Load(web, w => w.HasUniqueRoleAssignments);
                     web.Context.ExecuteQueryRetry();
                 }
 
                 var siteSecurity = template.Security;
 
+                if (web.EnsureProperty(w => w.HasUniqueRoleAssignments))
+                {
+                    string parsedAssociatedOwnerGroupName = parser.ParseString(template.Security.AssociatedOwnerGroup);
+                    string parsedAssociatedMemberGroupName = parser.ParseString(template.Security.AssociatedMemberGroup);
+                    string parsedAssociatedVisitorGroupName = parser.ParseString(template.Security.AssociatedVisitorGroup);
+
+                    bool setAssociatedOwnerGroup = parsedAssociatedOwnerGroupName != null;
+                    bool setAssociatedMemberGroup = parsedAssociatedMemberGroupName != null;
+                    bool setAssociatedVisitorGroup = parsedAssociatedVisitorGroupName != null;
+                    bool createNewAssociatedOwnerGroup = setAssociatedOwnerGroup && template.Security.SiteGroups.FirstOrDefault(g => g.Title == parsedAssociatedOwnerGroupName) != null;
+                    bool createNewAssociatedMemberGroup = setAssociatedMemberGroup && template.Security.SiteGroups.FirstOrDefault(g => g.Title == parsedAssociatedMemberGroupName) != null;
+                    bool createNewAssociatedVisitorGroup = setAssociatedVisitorGroup && template.Security.SiteGroups.FirstOrDefault(g => g.Title == parsedAssociatedVisitorGroupName) != null;
+
+                    if (!web.IsNoScriptSite())
+                    {
+                        if (createNewAssociatedOwnerGroup)
+                        {
+                            if (!web.GroupExists(parsedAssociatedOwnerGroupName))
+                            {
+                                // group does not exist? create!
+                                web.AssociatedOwnerGroup = EnsureGroup(web, parsedAssociatedOwnerGroupName);
+                                web.Update();
+                            }
+                        }
+
+                        if (setAssociatedOwnerGroup)
+                        {
+                            if (parsedAssociatedOwnerGroupName == string.Empty)
+                            {
+                                // does throw exception "Value cannot be null" - todo: how to clear the group?
+                                //web.AssociatedOwnerGroup = null;
+                                //web.Update();
+                            }
+                            else if (web.GroupExists(parsedAssociatedOwnerGroupName))
+                            {
+                                var ownerGroupCandidate = web.SiteGroups.GetByName(parsedAssociatedOwnerGroupName);
+                                web.Context.Load(ownerGroupCandidate,
+                                    g => g.Id);
+                                web.Context.Load(web.AssociatedOwnerGroup, 
+                                    g => g.Id);
+                                web.Context.ExecuteQueryRetry();
+                                // there is no associated group yet OR
+                                // there is a group with the desired associated group title that is currently not the associated group? make it the associated group
+                                if (web.AssociatedOwnerGroup.ServerObjectIsNull() || web.AssociatedOwnerGroup.Id != ownerGroupCandidate.Id)
+                                {
+                                    web.AssociatedOwnerGroup = ownerGroupCandidate;
+                                    web.Update();
+                                }
+                            } else
+                            {
+                                scope.LogWarning("Failed to assign '{0}' as associated owner group. Group does not exist.", parsedAssociatedOwnerGroupName);
+                            }
+                        }
+                        if (web.Context.HasPendingRequest)
+                        {
+                            web.Context.ExecuteQueryRetry();
+                        }
+
+                        if (createNewAssociatedMemberGroup)
+                        {
+                            if (!web.GroupExists(parsedAssociatedMemberGroupName))
+                            {
+                                // group does not exist? create!
+                                web.AssociatedMemberGroup = EnsureGroup(web, parsedAssociatedMemberGroupName);
+                                web.Update();
+                            }
+                        }
+
+                        if (setAssociatedMemberGroup)
+                        {
+                            if (parsedAssociatedMemberGroupName == string.Empty)
+                            {
+                                // does throw exception "Value cannot be null" - todo: how to clear the group?
+                                //web.AssociatedMemberGroup = null;
+                                //web.Update();
+                            } else if (web.GroupExists(parsedAssociatedMemberGroupName))
+                            {
+                                var memberGroupCandidate = web.SiteGroups.GetByName(parsedAssociatedMemberGroupName);
+                                web.Context.Load(memberGroupCandidate,
+                                    g => g.Id);
+                                web.Context.Load(web.AssociatedMemberGroup,
+                                    g => g.Id);
+                                web.Context.ExecuteQueryRetry();
+                                // there is no associated group yet OR
+                                // there is a group with the desired associated group title that is currently not the associated group? make it the associated group
+                                if (web.AssociatedMemberGroup.ServerObjectIsNull() || web.AssociatedMemberGroup.Id != memberGroupCandidate.Id)
+                                {
+                                    web.AssociatedMemberGroup = memberGroupCandidate;
+                                    web.Update();
+                                }
+                            }
+                            else
+                            {
+                                scope.LogWarning("Failed to assign '{0}' as associated member group. Group does not exist.", parsedAssociatedMemberGroupName);
+                            }
+                        }
+                        if (web.Context.HasPendingRequest)
+                        {
+                            web.Context.ExecuteQueryRetry();
+                        }
+
+                        if (createNewAssociatedVisitorGroup)
+                        {
+                            if (!web.GroupExists(parsedAssociatedVisitorGroupName))
+                            {
+                                // group does not exist? create!
+                                web.AssociatedVisitorGroup = EnsureGroup(web, parsedAssociatedVisitorGroupName);
+                                web.Update();
+                            }
+                        }
+
+                        if (setAssociatedVisitorGroup)
+                        {
+                            if (parsedAssociatedVisitorGroupName == string.Empty)
+                            {
+                                // does throw exception "Value cannot be null" - todo: how to clear the group?
+                                //web.AssociatedVisitorGroup = null;
+                                //web.Update();
+                            }
+                            else if (web.GroupExists(parsedAssociatedVisitorGroupName))
+                            {
+                                var visitorGroupCandidate = web.SiteGroups.GetByName(parsedAssociatedVisitorGroupName);
+                                web.Context.Load(visitorGroupCandidate,
+                                    g => g.Id);
+                                web.Context.Load(web.AssociatedVisitorGroup,
+                                    g => g.Id);
+                                web.Context.ExecuteQueryRetry();
+                                // there is no associated group yet OR
+                                // there is a group with the desired associated group title that is currently not the associated group? make it the associated group
+                                if (web.AssociatedVisitorGroup.ServerObjectIsNull() || web.AssociatedVisitorGroup.Id != visitorGroupCandidate.Id)
+                                {
+                                    web.AssociatedVisitorGroup = visitorGroupCandidate;
+                                    web.Update();
+                                }
+                            }
+                            else
+                            {
+                                scope.LogWarning("Failed to assign '{0}' as associated visitor group. Group does not exist.", parsedAssociatedVisitorGroupName);
+                            }
+                        }
+                        if (web.Context.HasPendingRequest)
+                        {
+                            web.Context.ExecuteQueryRetry();
+                        }
+                    } else
+                    {
+                        if (createNewAssociatedOwnerGroup || createNewAssociatedMemberGroup || createNewAssociatedVisitorGroup || setAssociatedOwnerGroup || setAssociatedMemberGroup|| setAssociatedVisitorGroup)
+                        {
+                            scope.LogWarning("Won't modify associated group configuration since the template is applied to a NoScript site.");
+                        }
+                    }
+                }
+
                 var ownerGroup = web.AssociatedOwnerGroup;
                 var memberGroup = web.AssociatedMemberGroup;
                 var visitorGroup = web.AssociatedVisitorGroup;
 
-                web.Context.Load(ownerGroup, o => o.Title, o => o.Users);
-                web.Context.Load(memberGroup, o => o.Title, o => o.Users);
-                web.Context.Load(visitorGroup, o => o.Title, o => o.Users);
+#if !ONPREMISES
+                // need to load the groups for the ServerObjectIsNull()-check to get correct results
+                web.Context.Load(ownerGroup);
+                web.Context.Load(memberGroup);
+                web.Context.Load(visitorGroup);
+                web.Context.ExecuteQueryRetry();
+#endif
+
+                if (!ownerGroup.ServerObjectIsNull())
+                {
+                    web.Context.Load(ownerGroup, o => o.Title, o => o.Users);
+                }
+                if (!memberGroup.ServerObjectIsNull())
+                {
+                    web.Context.Load(memberGroup, o => o.Title, o => o.Users);
+                }
+                if (!visitorGroup.ServerObjectIsNull())
+                {
+                    web.Context.Load(visitorGroup, o => o.Title, o => o.Users);
+                }
+
                 web.Context.Load(web.SiteUsers);
 
                 web.Context.ExecuteQueryRetry();
+
+                if (siteSecurity.ClearExistingOwners)
+                {
+                    ClearExistingUsers(web.AssociatedOwnerGroup);
+                }
+                if (siteSecurity.ClearExistingMembers)
+                {
+                    ClearExistingUsers(web.AssociatedMemberGroup);
+                }
+                if (siteSecurity.ClearExistingVisitors)
+                {
+                    ClearExistingUsers(web.AssociatedVisitorGroup);
+                }
+
+                IEnumerable<AssociatedGroupToken> associatedGroupTokens = parser.Tokens.Where(t => t.GetType() == typeof(AssociatedGroupToken)).Cast<AssociatedGroupToken>();
+                foreach (AssociatedGroupToken associatedGroupToken in associatedGroupTokens)
+                {
+                    associatedGroupToken.ClearCache();
+                }
 
                 if (!ownerGroup.ServerObjectIsNull())
                 {
@@ -62,45 +258,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors, scope, parser);
                 }
 
-                //sorting groups with respect to possible dependency through Owner property. Groups that are owners of other groups must be processed prior owned groups.
-                for (int i = 0; i < siteSecurity.SiteGroups.Count; i++)
-                {
-                    var currentGroup = siteSecurity.SiteGroups[i];
-                    string currentGroupOwner = currentGroup.Owner;
-                    string currentGroupTitle = parser.ParseString(currentGroup.Title);
-
-                    if (currentGroupOwner != "SHAREPOINT\\system" && currentGroupOwner != currentGroupTitle && !(currentGroupOwner.StartsWith("{{associated") && currentGroupOwner.EndsWith("group}}")))
-                    {
-                        for (int j = i + 1; j < siteSecurity.SiteGroups.Count; j++)
+                foreach (var siteGroup in siteSecurity.SiteGroups
+                    .Sort<SiteGroup>(
+                        _grp =>
                         {
-                            if (siteSecurity.SiteGroups[j].Title == currentGroupOwner)
+                            string groupOwner = _grp.Owner;
+                            if (string.IsNullOrWhiteSpace(groupOwner)
+                                || "SHAREPOINT\\system".Equals(groupOwner, StringComparison.OrdinalIgnoreCase)
+                                || _grp.Title.Equals(groupOwner, StringComparison.OrdinalIgnoreCase)
+                                || (groupOwner.StartsWith("{{associated") && groupOwner.EndsWith("group}}")))
                             {
-                                siteSecurity.SiteGroups.Insert(i, siteSecurity.SiteGroups[j]);
-                                siteSecurity.SiteGroups.RemoveAt(j);
-                                i--;
-                                break;
+                                return Enumerable.Empty<SiteGroup>();
                             }
+                            return siteSecurity.SiteGroups.Where(_item => _item.Title.Equals(groupOwner, StringComparison.OrdinalIgnoreCase));
                         }
-                    }
-                }
-
-                foreach (var siteGroup in siteSecurity.SiteGroups)
+                ))
                 {
                     Group group;
-                    var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName));
+                    var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName, gr => gr.Id));
                     web.Context.ExecuteQueryRetry();
 
                     string parsedGroupTitle = parser.ParseString(siteGroup.Title);
                     string parsedGroupOwner = parser.ParseString(siteGroup.Owner);
                     string parsedGroupDescription = parser.ParseString(siteGroup.Description);
-                    bool descriptionHasHtml = HttpUtility.HtmlEncode(parsedGroupDescription) != parsedGroupDescription;
 
                     if (!web.GroupExists(parsedGroupTitle))
                     {
                         scope.LogDebug("Creating group {0}", parsedGroupTitle);
                         group = web.AddGroup(
                             parsedGroupTitle,
-                            parsedGroupDescription,
+                            //If the description is more than 512 characters long a server exception will be thrown.
+                            PnPHttpUtility.ConvertSimpleHtmlToText(parsedGroupDescription, int.MaxValue),
                             parsedGroupTitle == parsedGroupOwner);
                         group.AllowMembersEditMembership = siteGroup.AllowMembersEditMembership;
                         group.AllowRequestToJoinLeave = siteGroup.AllowRequestToJoinLeave;
@@ -108,28 +296,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         group.OnlyAllowMembersViewMembership = siteGroup.OnlyAllowMembersViewMembership;
                         group.RequestToJoinLeaveEmailSetting = siteGroup.RequestToJoinLeaveEmailSetting;
 
-                        if (parsedGroupTitle != parsedGroupOwner)
+                        if (parsedGroupOwner != null && (parsedGroupTitle != parsedGroupOwner))
                         {
-                            Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName == parsedGroupOwner);
+                            Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName.Equals(parsedGroupOwner, StringComparison.OrdinalIgnoreCase));
+
+                            if (ownerPrincipal == null)
+                            {
+                                if (Int32.TryParse(parsedGroupOwner, out int roleAssignmentPrincipalId))
+                                {
+                                    ownerPrincipal = allGroups.FirstOrDefault(g => g.Id.Equals(roleAssignmentPrincipalId));
+                                }
+                            }
+
                             if (ownerPrincipal == null)
                             {
                                 ownerPrincipal = web.EnsureUser(parsedGroupOwner);
                             }
                             group.Owner = ownerPrincipal;
-
                         }
+
                         group.Update();
                         web.Context.Load(group, g => g.Id, g => g.Title);
                         web.Context.ExecuteQueryRetry();
-                        parser.AddToken(new GroupIdToken(web, group.Title, group.Id));
+                        parser.AddToken(new GroupIdToken(web, group.Title, group.Id.ToString()));
 
-                        if (descriptionHasHtml)
-                        {
-                            var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
-                            groupItem["Notes"] = parsedGroupDescription;
-                            groupItem.Update();
-                            web.Context.ExecuteQueryRetry();
-                        }
+                        var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
+                        groupItem["Notes"] = parsedGroupDescription;
+                        groupItem.Update();
+                        web.Context.ExecuteQueryRetry();
                     }
                     else
                     {
@@ -142,12 +336,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             g => g.AllowRequestToJoinLeave,
                             g => g.AutoAcceptRequestToJoinLeave,
                             g => g.OnlyAllowMembersViewMembership,
-                            g => g.RequestToJoinLeaveEmailSetting,                            
+                            g => g.RequestToJoinLeaveEmailSetting,
                             g => g.Owner.LoginName);
                         web.Context.ExecuteQueryRetry();
 
-                        var isDirty = false;
-                        if (descriptionHasHtml)
+                        var groupNeedsUpdate = false;
+                        var executeQuery = false;
+
+                        if (parsedGroupDescription != null)
                         {
                             var groupItem = web.SiteUserInfoList.GetItemById(group.Id);
                             web.Context.Load(groupItem, g => g["Notes"]);
@@ -158,47 +354,48 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 groupItem["Notes"] = parsedGroupDescription;
                                 groupItem.Update();
-                                isDirty = true;
+                                executeQuery = true;
                             }
-                        }
-                        else
-                        {
-                            if (!String.IsNullOrEmpty(group.Description) && group.Description != parsedGroupDescription)
+
+                            var plainTextDescription = PnPHttpUtility.ConvertSimpleHtmlToText(parsedGroupDescription, int.MaxValue);
+                            if (group.Description != plainTextDescription)
                             {
-                                group.Description = parsedGroupDescription;
-                                isDirty = true;
+                                //If the description is more than 512 characters long a server exception will be thrown.
+                                group.Description = plainTextDescription;
+                                groupNeedsUpdate = true;
                             }
                         }
+
                         if (group.AllowMembersEditMembership != siteGroup.AllowMembersEditMembership)
                         {
                             group.AllowMembersEditMembership = siteGroup.AllowMembersEditMembership;
-                            isDirty = true;
+                            groupNeedsUpdate = true;
                         }
                         if (group.AllowRequestToJoinLeave != siteGroup.AllowRequestToJoinLeave)
                         {
                             group.AllowRequestToJoinLeave = siteGroup.AllowRequestToJoinLeave;
-                            isDirty = true;
+                            groupNeedsUpdate = true;
                         }
                         if (group.AutoAcceptRequestToJoinLeave != siteGroup.AutoAcceptRequestToJoinLeave)
                         {
                             group.AutoAcceptRequestToJoinLeave = siteGroup.AutoAcceptRequestToJoinLeave;
-                            isDirty = true;
+                            groupNeedsUpdate = true;
                         }
-                        if(group.OnlyAllowMembersViewMembership != siteGroup.OnlyAllowMembersViewMembership)
+                        if (group.OnlyAllowMembersViewMembership != siteGroup.OnlyAllowMembersViewMembership)
                         {
                             group.OnlyAllowMembersViewMembership = siteGroup.OnlyAllowMembersViewMembership;
-                            isDirty = true;
+                            groupNeedsUpdate = true;
                         }
-                        if(!String.IsNullOrEmpty(group.RequestToJoinLeaveEmailSetting) && group.RequestToJoinLeaveEmailSetting != siteGroup.RequestToJoinLeaveEmailSetting)
-                        { 
+                        if (!String.IsNullOrEmpty(group.RequestToJoinLeaveEmailSetting) && group.RequestToJoinLeaveEmailSetting != siteGroup.RequestToJoinLeaveEmailSetting)
+                        {
                             group.RequestToJoinLeaveEmailSetting = siteGroup.RequestToJoinLeaveEmailSetting;
-                            isDirty = true;
+                            groupNeedsUpdate = true;
                         }
-                        if (group.Owner.LoginName != parsedGroupOwner)
+                        if (parsedGroupOwner != null && group.Owner.LoginName != parsedGroupOwner)
                         {
                             if (parsedGroupTitle != parsedGroupOwner)
                             {
-                                Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName == parsedGroupOwner);
+                                Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName.Equals(parsedGroupOwner, StringComparison.OrdinalIgnoreCase));
                                 if (ownerPrincipal == null)
                                 {
                                     ownerPrincipal = web.EnsureUser(parsedGroupOwner);
@@ -209,19 +406,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 group.Owner = group;
                             }
-                            isDirty = true;
+                            groupNeedsUpdate = true;
                         }
-                        if (isDirty)
+                        if (groupNeedsUpdate)
                         {
                             scope.LogDebug("Updating existing group {0}", group.Title);
                             group.Update();
+                            executeQuery = true;
+                        }
+                        if (executeQuery)
+                        {
                             web.Context.ExecuteQueryRetry();
                         }
+
                     }
                     if (group != null && siteGroup.Members.Any())
                     {
                         AddUserToGroup(web, group, siteGroup.Members, scope, parser);
                     }
+                }
+
+                if (siteSecurity.ClearExistingAdministrators)
+                {
+                    ClearExistingAdministrators(web);
                 }
 
                 foreach (var admin in siteSecurity.AdditionalAdministrators)
@@ -251,13 +458,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         foreach (var templateRoleDefinition in siteSecurity.SiteSecurityPermissions.RoleDefinitions)
                         {
                             var roleDefinitions = existingRoleDefinitions as RoleDefinition[] ?? existingRoleDefinitions.ToArray();
-                            var siteRoleDefinition = roleDefinitions.FirstOrDefault(erd => erd.Name == parser.ParseString(templateRoleDefinition.Name));
+                            var parsedRoleDefinitionName = parser.ParseString(templateRoleDefinition.Name);
+                            var parsedTemplateRoleDefinitionDesc = parser.ParseString(templateRoleDefinition.Description);
+                            var siteRoleDefinition = roleDefinitions.FirstOrDefault(erd => erd.Name == parsedRoleDefinitionName);
                             if (siteRoleDefinition == null)
                             {
-                                scope.LogDebug("Creating role definition {0}", parser.ParseString(templateRoleDefinition.Name));
+                                scope.LogDebug("Creating role definition {0}", parsedRoleDefinitionName);
                                 var roleDefinitionCI = new RoleDefinitionCreationInformation();
-                                roleDefinitionCI.Name = parser.ParseString(templateRoleDefinition.Name);
-                                roleDefinitionCI.Description = parser.ParseString(templateRoleDefinition.Description);
+                                roleDefinitionCI.Name = parsedRoleDefinitionName;
+                                roleDefinitionCI.Description = parsedTemplateRoleDefinitionDesc;
                                 BasePermissions basePermissions = new BasePermissions();
 
                                 foreach (var permission in templateRoleDefinition.Permissions)
@@ -275,24 +484,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             else
                             {
                                 var isDirty = false;
-                                if (siteRoleDefinition.Description != parser.ParseString(templateRoleDefinition.Description))
+                                if (siteRoleDefinition.Description != parsedTemplateRoleDefinitionDesc)
                                 {
-                                    siteRoleDefinition.Description = parser.ParseString(templateRoleDefinition.Description);
+                                    siteRoleDefinition.Description = parsedTemplateRoleDefinitionDesc;
                                     isDirty = true;
                                 }
                                 var templateBasePermissions = new BasePermissions();
+
+                                // iterate over all possible PermissionKind values and set them on the new object
+                                foreach (PermissionKind pk in Enum.GetValues(typeof(PermissionKind)))
+                                {
+                                    if (siteRoleDefinition.BasePermissions.Has(pk))
+                                    {
+                                        templateBasePermissions.Set(pk);
+                                    }
+                                }
+
+                                // add the permissions that were specified in the template
                                 templateRoleDefinition.Permissions.ForEach(p => templateBasePermissions.Set(p));
+
                                 if (siteRoleDefinition.BasePermissions != templateBasePermissions)
                                 {
                                     isDirty = true;
-                                    foreach (var permission in templateRoleDefinition.Permissions)
-                                    {
-                                        siteRoleDefinition.BasePermissions.Set(permission);
-                                    }
+                                    siteRoleDefinition.BasePermissions = templateBasePermissions;
                                 }
+
                                 if (isDirty)
                                 {
-                                    scope.LogDebug("Updating role definition {0}", parser.ParseString(templateRoleDefinition.Name));
+                                    scope.LogDebug("Updating role definition {0}", parsedRoleDefinitionName);
                                     siteRoleDefinition.Update();
                                     web.Context.ExecuteQueryRetry();
                                 }
@@ -302,16 +521,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     var webRoleDefinitions = web.Context.LoadQuery(web.RoleDefinitions);
                     var webRoleAssignments = web.Context.LoadQuery(web.RoleAssignments);
-                    var groups = web.Context.LoadQuery(web.SiteGroups.Include(g => g.LoginName));
+                    var groups = web.Context.LoadQuery(web.SiteGroups.Include(g => g.LoginName, g => g.Id));
                     web.Context.ExecuteQueryRetry();
 
                     if (siteSecurity.SiteSecurityPermissions.RoleAssignments.Any())
                     {
                         foreach (var roleAssignment in siteSecurity.SiteSecurityPermissions.RoleAssignments)
                         {
+
+                            var parsedRoleDefinition = parser.ParseString(roleAssignment.RoleDefinition);
                             if (!roleAssignment.Remove)
                             {
-                                var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == parser.ParseString(roleAssignment.RoleDefinition));
+                                var roleDefinition = webRoleDefinitions.FirstOrDefault(r => r.Name == parsedRoleDefinition);
                                 if (roleDefinition != null)
                                 {
                                     Principal principal = GetPrincipal(web, parser, scope, groups, roleAssignment);
@@ -332,15 +553,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             else
                             {
                                 var principal = GetPrincipal(web, parser, scope, groups, roleAssignment);
-                                var assignmentsForPrincipal = webRoleAssignments.Where(t => t.PrincipalId == principal.Id);
-                                foreach (var assignmentForPrincipal in assignmentsForPrincipal)
+
+                                if (principal != null)
                                 {
-                                    var binding = assignmentForPrincipal.EnsureProperty(r => r.RoleDefinitionBindings).FirstOrDefault(b => b.Name == roleAssignment.RoleDefinition);
-                                    if (binding != null)
+                                    var assignmentsForPrincipal = webRoleAssignments.Where(t => t.PrincipalId == principal.Id);
+                                    foreach (var assignmentForPrincipal in assignmentsForPrincipal)
                                     {
-                                        assignmentForPrincipal.DeleteObject();
-                                        web.Context.ExecuteQueryRetry();
-                                        break;
+                                        var binding = assignmentForPrincipal.EnsureProperty(r => r.RoleDefinitionBindings).FirstOrDefault(b => b.Name == parsedRoleDefinition);
+                                        if (binding != null)
+                                        {
+                                            assignmentForPrincipal.DeleteObject();
+                                            web.Context.ExecuteQueryRetry();
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -351,36 +576,80 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
+        private static void ClearExistingUsers(Group group)
+        {
+            group.EnsureProperties(g => g.Users);
+            while (group.Users.Count > 0)
+            {
+                var user = group.Users[0];
+                group.Users.Remove(user);
+            }
+            group.Update();
+            group.Context.ExecuteQueryRetry();
+        }
+
+        private static void ClearExistingAdministrators(Web web)
+        {
+            var admins = web.GetAdministrators();
+            foreach (var admin in admins)
+            {
+                web.RemoveAdministrator(admin);
+            }
+        }
+
+        private static Group EnsureGroup(Web web, string groupName)
+        {
+            ExceptionHandlingScope ensureGroupScope = new ExceptionHandlingScope(web.Context);
+
+            using (ensureGroupScope.StartScope())
+            {
+                using (ensureGroupScope.StartTry())
+                {
+                    web.SiteGroups.GetByName(groupName);
+                }
+
+                using (ensureGroupScope.StartCatch())
+                {
+                    GroupCreationInformation groupCreationInfo = new GroupCreationInformation();
+                    groupCreationInfo.Title = groupName;
+                    web.SiteGroups.Add(groupCreationInfo);
+                }
+            }
+            var group = web.SiteGroups.GetByName(groupName);
+            group.EnsureProperty(g => g.Title);
+            return group;
+        }
+
         private static Principal GetPrincipal(Web web, TokenParser parser, PnPMonitoredScope scope, IEnumerable<Group> groups, Model.RoleAssignment roleAssignment)
         {
-            Principal principal = groups.FirstOrDefault(g => g.LoginName == parser.ParseString(roleAssignment.Principal));
+            var parsedRoleDefinition = parser.ParseString(roleAssignment.Principal);
+            Principal principal = groups.FirstOrDefault(g => g.LoginName.Equals(parsedRoleDefinition, StringComparison.OrdinalIgnoreCase));
 
             if (principal == null)
             {
-                var parsedUser = parser.ParseString(roleAssignment.Principal);
-                if (parsedUser.Contains("#ext#"))
+                try
                 {
-                    principal = web.SiteUsers.FirstOrDefault(u => u.LoginName.Equals(parsedUser));
+                    // Principal can be resolved via it's ID if an associatedgroupid token was used
+                    if (Int32.TryParse(parsedRoleDefinition, out int roleAssignmentPrincipalId))
+                    {
+                        principal = groups.FirstOrDefault(g => g.Id.Equals(roleAssignmentPrincipalId));
+                    }
+                    else
+                    {
+                        principal = web.EnsureUser(parsedRoleDefinition);
+                    }
 
-                    if (principal == null)
-                    {
-                        scope.LogInfo($"Skipping external user {parsedUser}");
-                    }
+                    web.Context.Load(principal, p => p.Id);
+                    web.Context.ExecuteQueryRetry();
                 }
-                else
+                catch (Exception ex)
                 {
-                    try
-                    {
-                        principal = web.EnsureUser(parsedUser);
-                        web.Context.ExecuteQueryRetry();
-                    }
-                    catch (Exception ex)
-                    {
-                        scope.LogWarning(ex, "Failed to EnsureUser {0}", parsedUser);
-                    }
+                    scope.LogWarning(ex, "Failed to EnsureUser {0}", parsedRoleDefinition);
                 }
             }
-            principal.EnsureProperty(p => p.Id);
+
+            principal?.EnsureProperty(p => p.Id);
+
             return principal;
         }
 
@@ -389,6 +658,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (members.Any())
             {
                 scope.LogDebug("Adding users to group {0}", group.Title);
+
                 try
                 {
                     foreach (var user in members)
@@ -396,33 +666,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var parsedUserName = parser.ParseString(user.Name);
                         scope.LogDebug("Adding user {0}", parsedUserName);
 
-                        if (parsedUserName.Contains("#ext#"))
+                        try
                         {
-                            var externalUser = web.SiteUsers.FirstOrDefault(u => u.LoginName.Equals(parsedUserName));
-
-                            if (externalUser == null)
-                            {
-                                scope.LogInfo($"Skipping external user {parsedUserName}");
-                            }
-                            else
-                            {
-                                group.Users.AddUser(externalUser);
-                            }
+                            var existingUser = web.EnsureUser(parsedUserName);
+                            web.Context.ExecuteQueryRetry();
+                            group.Users.AddUser(existingUser);
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            try
-                            {
-                                var existingUser = web.EnsureUser(parsedUserName);
-                                web.Context.ExecuteQueryRetry();
-                                group.Users.AddUser(existingUser);
-                            }
-                            catch (Exception ex)
-                            {
-                                scope.LogWarning(ex, "Failed to EnsureUser {0}", parsedUserName);
-                            }
+                            scope.LogWarning(ex, "Failed to EnsureUser {0}", parsedUserName);
                         }
                     }
+
                     web.Context.ExecuteQueryRetry();
                 }
                 catch (Exception ex)
@@ -470,8 +725,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var owners = new List<User>();
                 var members = new List<User>();
                 var visitors = new List<User>();
+                var siteSecurity = new SiteSecurity();
+
                 if (!ownerGroup.ServerObjectIsNull.Value)
                 {
+                    siteSecurity.AssociatedOwnerGroup = ownerGroup.Title.Replace(web.Title, "{sitetitle}");
                     associatedGroupIds.Add(ownerGroup.Id);
                     foreach (var member in ownerGroup.Users)
                     {
@@ -480,6 +738,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (!memberGroup.ServerObjectIsNull.Value)
                 {
+                    siteSecurity.AssociatedMemberGroup = memberGroup.Title.Replace(web.Title, "{sitetitle}");
                     associatedGroupIds.Add(memberGroup.Id);
                     foreach (var member in memberGroup.Users)
                     {
@@ -488,13 +747,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (!visitorGroup.ServerObjectIsNull.Value)
                 {
+                    siteSecurity.AssociatedVisitorGroup = visitorGroup.Title.Replace(web.Title, "{sitetitle}");
                     associatedGroupIds.Add(visitorGroup.Id);
                     foreach (var member in visitorGroup.Users)
                     {
                         visitors.Add(new User() { Name = member.LoginName });
                     }
                 }
-                var siteSecurity = new SiteSecurity();
                 siteSecurity.AdditionalOwners.AddRange(owners);
                 siteSecurity.AdditionalMembers.AddRange(members);
                 siteSecurity.AdditionalVisitors.AddRange(visitors);
@@ -679,15 +938,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!web.AssociatedOwnerGroup.ServerObjectIsNull.Value)
             {
-                loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedownergroup}");
+                loginName = loginName.Replace(web.AssociatedOwnerGroup.Title, "{associatedownergroupid}");
             }
             if (!web.AssociatedMemberGroup.ServerObjectIsNull.Value)
             {
-                loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmembergroup}");
+                loginName = loginName.Replace(web.AssociatedMemberGroup.Title, "{associatedmembergroupid}");
             }
             if (!web.AssociatedVisitorGroup.ServerObjectIsNull.Value)
             {
-                loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroup}");
+                loginName = loginName.Replace(web.AssociatedVisitorGroup.Title, "{associatedvisitorgroupid}");
             }
             if (!string.IsNullOrEmpty(web.Title))
             {
@@ -782,12 +1041,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (!_willProvision.HasValue)
             {
                 _willProvision = template.Security != null && (template.Security.AdditionalAdministrators.Any() ||
+                                  template.Security.BreakRoleInheritance ||
                                   template.Security.AdditionalMembers.Any() ||
                                   template.Security.AdditionalOwners.Any() ||
                                   template.Security.AdditionalVisitors.Any() ||
                                   template.Security.SiteGroups.Any() ||
-                                  template.Security.SiteSecurityPermissions.RoleAssignments.Any() ||
-                                  template.Security.SiteSecurityPermissions.RoleDefinitions.Any());
+                                  (template.Security.SiteSecurityPermissions != null ? template.Security.SiteSecurityPermissions.RoleAssignments.Any() : true) ||
+                                  (template.Security.SiteSecurityPermissions != null ? template.Security.SiteSecurityPermissions.RoleDefinitions.Any() : true));
                 if (_willProvision == true)
                 {
                     // if subweb and site inheritance is not broken

@@ -664,14 +664,14 @@
       </pnp:AddIns>
 
       <pnp:Providers>
-        <pnp:Provider HandlerType="OfficeDev.PnP.Provisioning.Providers.FakeProvider, OfficeDev.PnP.Provisioning.Providers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" Enabled="true">
+        <pnp:Provider HandlerType="OfficeDev.PnP.Provisioning.Providers.FakeProvider, OfficeDev.PnP.Provisioning.Providers, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" Enabled="false">
           <pnp:Configuration>
             <MyProviderConfiguration id="SampleConfig" xmlns="http://schemas.somecompany.com/MyProviderConfiguration">
               <ChildNode Attribute="value">TextContent</ChildNode>
             </MyProviderConfiguration>
           </pnp:Configuration>
         </pnp:Provider>
-        <pnp:Provider HandlerType="MySampleProviderNode.js" Enabled="true">
+        <pnp:Provider HandlerType="MySampleProviderNode.js" Enabled="false">
           <pnp:Configuration>
             <AnotherConfiguration id="AnotherConfig" xmlns="http://schemas.othercompany.com/AnotherConfiguration" />
           </pnp:Configuration>

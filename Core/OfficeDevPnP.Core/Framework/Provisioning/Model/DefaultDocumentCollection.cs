@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public partial class DefaultDocumentCollection : ProvisioningTemplateCollection<DefaultDocument>
+    public partial class DefaultDocumentCollection : BaseProvisioningTemplateObjectCollection<DefaultDocument>
     {
         /// <summary>
         /// Constructor for DefaultDocumentCollection class.

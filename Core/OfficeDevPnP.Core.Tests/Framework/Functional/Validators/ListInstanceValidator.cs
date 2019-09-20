@@ -152,6 +152,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             {
                 DropAttribute(targetObject, "MaxVersionLimit");
                 DropAttribute(sourceObject, "MaxVersionLimit");
+                DropAttribute(targetObject, "ReadSecurity");
+                DropAttribute(sourceObject, "ReadSecurity");
             }
 #endif
             #endregion

@@ -24,7 +24,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
         }
 
-        #endregion 
+        #endregion
+
+        #region Private members
 
         private static ComposedLook _empty;
 
@@ -33,6 +35,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             private set { _empty = value; }
             get { return (_empty); }
         }
+
+        #endregion
 
         #region Properties
         /// <summary>
@@ -110,6 +114,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.FontFile == other.FontFile &&
                 this.Name == other.Name &&
                 this.Version == other.Version);
+        }
+
+        public bool IsEmptyOrBlank()
+        {
+            return string.IsNullOrWhiteSpace(this.BackgroundFile) &&
+                string.IsNullOrWhiteSpace(this.ColorFile) &&
+                string.IsNullOrWhiteSpace(this.FontFile) &&
+                string.IsNullOrWhiteSpace(this.Name) &&
+                Version == 0;
         }
 
         #endregion

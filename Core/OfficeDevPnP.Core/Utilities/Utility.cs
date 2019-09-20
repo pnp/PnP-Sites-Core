@@ -14,7 +14,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// <summary>
         /// Returns the healthscore for a SharePoint Server
         /// </summary>
-        /// <param name="url">SharePoint server url</param>
+        /// <param name="url">SharePoint server URL</param>
         /// <returns>Returns server health score integer value</returns>
         public static int GetHealthScore(string url)
         {

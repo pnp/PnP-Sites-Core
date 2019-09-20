@@ -28,15 +28,15 @@ Base template: Goal is to verify that all custom action properties work as expec
       <pnp:CustomAction Name="CA_1" Description="ca 1" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="CA 1 Title" Sequence="1000" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={sitename}" Rights="31" Enabled="true"/>
       <pnp:CustomAction Name="CA_2" Description="ca 2" Group="SiteActions" Location="Microsoft.SharePoint.StandardMenu" Title="CA 2 Title" Sequence="1100" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" Rights="31" Enabled="true"/>
       <pnp:CustomAction Name="CA_5" Description="ca 5" Group="SiteActions" Location="Microsoft.SharePoint.StandardMenu" Title="CA 5 Title" Sequence="1100" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" Rights="31" Enabled="false"/>
-      <pnp:CustomAction Name="CA_3" Description="ca 3" Title ="CA 3 Title" ImageUrl="~sitecollection/SiteAssets/icons/image.png" Location="CommandUI.Ribbon" RegistrationId="101" RegistrationType="List" Enabled="true">
+      <pnp:CustomAction Name="CA_3" Description="ca 3" Title ="CA 3 Title" ImageUrl="{site}/SiteAssets/icons/image.png" Location="CommandUI.Ribbon" RegistrationId="101" RegistrationType="List" Enabled="true">
         <pnp:CommandUIExtension>
           <CommandUIDefinitions>
             <CommandUIDefinition Location="Ribbon.Documents.Copies.Controls._children">
               <Button
                 Id="Ribbon.Documents.Copies.OfficeDevPnPDownloadAll"
                 Command="OfficeDevPnP.Cmd.DownloadAll"
-                Image16by16="~sitecollection/SiteAssets/icons/DownloadAll16x16.png"
-                Image32by32="~sitecollection/SiteAssets/icons/DownloadAll32x32.png"
+                Image16by16="{site}/SiteAssets/icons/DownloadAll16x16.png"
+                Image32by32="{site}/SiteAssets/icons/DownloadAll32x32.png"
                 LabelText="Download All"
                 Description="Download all files separately"
                 ToolTipTitle="Download All"
@@ -48,8 +48,8 @@ Base template: Goal is to verify that all custom action properties work as expec
               <Button
                 Id="Ribbon.Documents.Copies.OfficeDevPnPDownloadAllAsZip"
                 Command="OfficeDevPnP.Cmd.DownloadAllAsZip"
-                Image16by16="~sitecollection/SiteAssets/icons/DownloadAllAsZip16x16.png"
-                Image32by32="~sitecollection/SiteAssets/icons/DownloadAllAsZip32x32.png"
+                Image16by16="{site}/SiteAssets/icons/DownloadAllAsZip16x16.png"
+                Image32by32="{site}/SiteAssets/icons/DownloadAllAsZip32x32.png"
                 LabelText="Download All as Zip"
                 Description="Download all files as single Zip"
                 ToolTipTitle="Download All as Zip"

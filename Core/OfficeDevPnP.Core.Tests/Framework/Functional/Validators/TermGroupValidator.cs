@@ -136,6 +136,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                                 {
                                     DropAttribute(targetTerm, "CustomSortOrder");
                                 }
+                                if (sourceTerm.Attribute("Owner") == null)
+                                {
+                                    DropAttribute(targetTerm, "Owner");
+                                }
                                 if (sourceTerm.Attribute("SourceTermId") == null)
                                 {
                                     DropAttribute(targetTerm, "SourceTermId");
@@ -143,6 +147,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
                                 if (sourceTerm.Attribute("IsSourceTerm") == null)
                                 {
                                     DropAttribute(targetTerm, "IsSourceTerm");
+                                }
+                                if (sourceTerm.Attribute("Description") == null)
+                                {
+                                    DropAttribute(targetTerm, "Description");
                                 }
                                 if (sourceTerm.Attribute("IsReused") == null)
                                 {

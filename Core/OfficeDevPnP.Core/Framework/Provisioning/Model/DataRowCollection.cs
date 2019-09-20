@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of DataRow objects
     /// </summary>
-    public partial class DataRowCollection : ProvisioningTemplateCollection<DataRow>
+    public partial class DataRowCollection : BaseProvisioningTemplateObjectCollection<DataRow>
     {
         /// <summary>
         /// Optional attribute to declare the name of the Key Column, if any, used to identify any already existing DataRows.

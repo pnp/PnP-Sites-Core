@@ -6,6 +6,8 @@ using OfficeDevPnP.Core.Diagnostics;
 using Microsoft.SharePoint.Client.Publishing.Navigation;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
+using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -17,6 +19,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             get { return "Navigation"; }
         }
+
+        public override string InternalName => "Navigation";
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
@@ -77,13 +81,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         break;
                 }
 
+                var searchNavigation = GetStructuralNavigation(web, navigationSettings, Enums.NavigationType.SearchNav, template, creationInfo);
                 var navigationEntity = new Model.Navigation(new GlobalNavigation(globalNavigationType,
-                                                                globalNavigationType == GlobalNavigationType.Structural ? GetGlobalStructuralNavigation(web, navigationSettings) : null,
-                                                                globalNavigationType == GlobalNavigationType.Managed ? GetGlobalManagedNavigation(web, navigationSettings) : null),
+                                                                globalNavigationType == GlobalNavigationType.Structural ? GetGlobalStructuralNavigation(web, navigationSettings, template, creationInfo) : null,
+                                                                globalNavigationType == GlobalNavigationType.Managed ? GetGlobalManagedNavigation(web, navigationSettings, template, creationInfo) : null),
                                                             new CurrentNavigation(currentNavigationType,
-                                                                currentNavigationType == CurrentNavigationType.Structural | currentNavigationType == CurrentNavigationType.StructuralLocal ? GetCurrentStructuralNavigation(web, navigationSettings) : null,
-                                                                currentNavigationType == CurrentNavigationType.Managed ? GetCurrentManagedNavigation(web, navigationSettings) : null)
-                                                            );
+                                                                currentNavigationType == CurrentNavigationType.Structural | currentNavigationType == CurrentNavigationType.StructuralLocal ? GetCurrentStructuralNavigation(web, navigationSettings, template, creationInfo) : null,
+                                                                currentNavigationType == CurrentNavigationType.Managed ? GetCurrentManagedNavigation(web, navigationSettings, template, creationInfo) : null),
+                                                           (searchNavigation != null && searchNavigation.NavigationNodes.Any()) ? searchNavigation : null);
 
                 navigationEntity.AddNewPagesToNavigation = navigationSettings.AddNewPagesToNavigation;
                 navigationEntity.CreateFriendlyUrlsForNewPages = navigationSettings.CreateFriendlyUrlsForNewPages;
@@ -128,6 +133,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     navigationSettings.AddNewPagesToNavigation = template.Navigation.AddNewPagesToNavigation;
                     navigationSettings.CreateFriendlyUrlsForNewPages = template.Navigation.CreateFriendlyUrlsForNewPages;
 
+                    if (!isNoScriptSite)
+                    {
+                        navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
+                        web.Context.ExecuteQueryRetry();
+                    }
+
                     if (template.Navigation.GlobalNavigation != null)
                     {
                         switch (template.Navigation.GlobalNavigation.NavigationType)
@@ -144,6 +155,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 navigationSettings.GlobalNavigation.Source = StandardNavigationSource.TaxonomyProvider;
                                 navigationSettings.GlobalNavigation.TermStoreId = Guid.Parse(parser.ParseString(template.Navigation.GlobalNavigation.ManagedNavigation.TermStoreId));
                                 navigationSettings.GlobalNavigation.TermSetId = Guid.Parse(parser.ParseString(template.Navigation.GlobalNavigation.ManagedNavigation.TermSetId));
+                                web.Navigation.UseShared = false;
                                 break;
                             case GlobalNavigationType.Structural:
                             default:
@@ -152,16 +164,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     throw new ApplicationException(CoreResources.Provisioning_ObjectHandlers_Navigation_missing_global_structural_navigation);
                                 }
                                 navigationSettings.GlobalNavigation.Source = StandardNavigationSource.PortalProvider;
-
-                                ProvisionGlobalStructuralNavigation(web,
-                                    template.Navigation.GlobalNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
+                                web.Navigation.UseShared = false;
 
                                 break;
                         }
+
                         if (!isNoScriptSite)
                         {
                             navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
                             web.Context.ExecuteQueryRetry();
+                        }
+
+                        // Need to set navigation nodes after update navigation settings
+                        if (template.Navigation.GlobalNavigation.NavigationType == GlobalNavigationType.Structural)
+                        {
+                            ProvisionGlobalStructuralNavigation(web,
+                                    template.Navigation.GlobalNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
                         }
                     }
 
@@ -192,9 +210,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 navigationSettings.CurrentNavigation.Source = StandardNavigationSource.PortalProvider;
 
-                                ProvisionCurrentStructuralNavigation(web,
-                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
-
                                 break;
                             case CurrentNavigationType.Structural:
                             default:
@@ -208,9 +223,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 navigationSettings.CurrentNavigation.Source = StandardNavigationSource.PortalProvider;
 
-                                ProvisionCurrentStructuralNavigation(web,
-                                    template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
-
                                 break;
                         }
 
@@ -219,6 +231,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             navigationSettings.Update(TaxonomySession.GetTaxonomySession(web.Context));
                             web.Context.ExecuteQueryRetry();
                         }
+
+                        // Need to set navigation nodes after update navigation settings
+                        if (template.Navigation.CurrentNavigation.NavigationType == CurrentNavigationType.Structural ||
+                            template.Navigation.CurrentNavigation.NavigationType == CurrentNavigationType.StructuralLocal)
+                        {
+                            ProvisionCurrentStructuralNavigation(web,
+                                template.Navigation.CurrentNavigation.StructuralNavigation, parser, applyingInformation.ClearNavigation, scope);
+                        }
+                    }
+
+                    if (template.Navigation.SearchNavigation != null)
+                    {
+                        var structuralNavigation = new StructuralNavigation();
+                        structuralNavigation.NavigationNodes.AddRange(template.Navigation.SearchNavigation.NavigationNodes);
+                        structuralNavigation.RemoveExistingNodes = template.Navigation.SearchNavigation.RemoveExistingNodes;
+                        ProvisionSearchNavigation(web, structuralNavigation, parser, applyingInformation.ClearNavigation, scope);
                     }
                 }
             }
@@ -227,6 +255,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         #region Utility methods
+
+        private string ReplaceFileUniqueToken(Web web, string UrlValue)
+        {
+#if !SP2013 && !SP2016
+            if (!string.IsNullOrWhiteSpace(UrlValue))
+            {
+                Regex regex = new Regex("(?:=[{]{1,2})(?<tokenname>fileuniqueid|fileuniqueidencoded)(?::)(?<fileurl>[^}]*)", RegexOptions.Compiled | RegexOptions.Multiline);
+
+                Match match = regex.Match(UrlValue);
+                if (match.Success)
+                {
+                    if (match.Groups["fileurl"].Success)
+                    {
+                        try
+                        {
+                            var spFile = web.GetFileByUrl(match.Groups["fileurl"].Value);
+                            web.Context.Load(spFile, f => f.UniqueId);
+                            web.Context.ExecuteQuery();
+                            string fileId = spFile.UniqueId.ToString();
+                            if (match.Groups["tokenname"].Value.Equals("fileuniqueidencoded", StringComparison.InvariantCultureIgnoreCase))
+                            {
+                                fileId = fileId.Replace("-", "%2D");
+                            }
+                            UrlValue = Regex.Replace(UrlValue, $"{{{match.Groups["tokenname"].Value}:{match.Groups["fileurl"].Value}}}", fileId, RegexOptions.IgnoreCase);
+                        }
+                        catch (Exception ex)
+                        {
+                            //Test if fileuniqueid belongs to a folder
+                            try
+                            {
+                                web.EnsureProperties(w => w.ServerRelativeUrl);
+                                string folderUrl = $"{web.ServerRelativeUrl}/{ match.Groups["fileurl"].Value}";
+                                var spFolder = web.GetFolderByServerRelativeUrl(folderUrl);
+                                web.Context.Load(spFolder, f => f.UniqueId);
+                                web.Context.ExecuteQuery();
+                                string folderId = spFolder.UniqueId.ToString();
+                                if (match.Groups["tokenname"].Value.Equals("fileuniqueidencoded", StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    folderId = folderId.Replace("-", "%2D");
+                                }
+                                UrlValue = Regex.Replace(UrlValue, $"{{{match.Groups["tokenname"].Value}:{match.Groups["fileurl"].Value}}}", folderId, RegexOptions.IgnoreCase);
+                            }
+                            catch (Exception ex1)
+                            {
+
+                            }
+                        }
+                    }
+                }
+            }
+#endif
+            return UrlValue;
+        }
 
         private bool WebSupportsProvisionNavigation(Web web, ProvisioningTemplate template)
         {
@@ -286,20 +367,57 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private void ProvisionGlobalStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool clearNavigation, PnPMonitoredScope scope)
         {
-            ProvisionStructuralNavigation(web, structuralNavigation, parser, false, clearNavigation, scope);
+            ProvisionStructuralNavigation(web, structuralNavigation, parser, Enums.NavigationType.TopNavigationBar, clearNavigation, scope);
         }
 
         private void ProvisionCurrentStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool clearNavigation, PnPMonitoredScope scope)
         {
-            ProvisionStructuralNavigation(web, structuralNavigation, parser, true, clearNavigation, scope);
+            ProvisionStructuralNavigation(web, structuralNavigation, parser, Enums.NavigationType.QuickLaunch, clearNavigation, scope);
         }
 
-        private void ProvisionStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool currentNavigation, bool clearNavigation, PnPMonitoredScope scope)
+        private void ProvisionSearchNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, bool clearNavigation, PnPMonitoredScope scope)
+        {
+            if (structuralNavigation != null)
+            {
+                {
+                    if (!structuralNavigation.RemoveExistingNodes && !ClearWarningShown)
+                    {
+                        WriteMessage("You chose to override the template value RemoveExistingNodes=\"false\" by specifying ClearNavigation", ProvisioningMessageType.Warning);
+                        ClearWarningShown = true;
+                    }
+                    web.DeleteAllNavigationNodes(Enums.NavigationType.SearchNav);
+                }
+
+                if (structuralNavigation.NavigationNodes.Any())
+                {
+                    var searchNav = web.LoadSearchNavigation();
+                    foreach (var node in structuralNavigation.NavigationNodes)
+                    {
+                        var navNode = searchNav.Add(new NavigationNodeCreationInformation()
+                        {
+                            Title = parser.ParseString(node.Title),
+                            IsExternal = node.IsExternal,
+                            Url = parser.ParseString(node.Url),
+                        });
+
+                        if (node.Title.ContainsResourceToken())
+                        {
+                            navNode.LocalizeNavigationNode(web, node.Title, parser, scope);
+                        }
+
+                        web.Context.ExecuteQueryRetry();
+                    }
+                }
+            }
+            ProvisionStructuralNavigation(web, structuralNavigation, parser, Enums.NavigationType.SearchNav, clearNavigation, scope);
+        }
+
+        private void ProvisionStructuralNavigation(Web web, StructuralNavigation structuralNavigation, TokenParser parser, Enums.NavigationType navigationType, bool clearNavigation, PnPMonitoredScope scope)
         {
             // Determine the target structural navigation
-            var navigationType = currentNavigation ?
-                Enums.NavigationType.QuickLaunch :
-                Enums.NavigationType.TopNavigationBar;
+            //var navigationType = currentNavigation ?
+            //    Enums.NavigationType.QuickLaunch :
+            //    Enums.NavigationType.TopNavigationBar;
             if (structuralNavigation != null)
             {
                 // Remove existing nodes, if requested
@@ -327,16 +445,62 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private void ProvisionStructuralNavigationNodes(Web web, TokenParser parser, Enums.NavigationType navigationType, Model.NavigationNodeCollection nodes, PnPMonitoredScope scope, string parentNodeTitle = null)
+        private void ProvisionStructuralNavigationNodes(Web web, TokenParser parser, Enums.NavigationType navigationType, Model.NavigationNodeCollection nodes, PnPMonitoredScope scope, string parentNodeTitle = null, string l1ParentNodeTitle = null)
         {
             foreach (var node in nodes)
             {
-                var navNode = web.AddNavigationNode(
-                    parser.ParseString(node.Title),
-                    new Uri(parser.ParseString(node.Url), UriKind.RelativeOrAbsolute),
-                    parser.ParseString(parentNodeTitle),
-                    navigationType,
-                    node.IsExternal);
+                try
+                {
+                    string fileUrl = ReplaceFileUniqueToken(web, parser.ParseString(node.Url));
+
+                    var navNode = web.AddNavigationNode(
+                        parser.ParseString(node.Title),
+                        new Uri(fileUrl, UriKind.RelativeOrAbsolute),
+                        parser.ParseString(parentNodeTitle),
+                        navigationType,
+                        node.IsExternal,
+                        l1ParentNodeTitle: l1ParentNodeTitle
+                        );
+
+#if !SP2013
+                    if (node.Title.ContainsResourceToken())
+                    {
+                        navNode.LocalizeNavigationNode(web, node.Title, parser, scope);
+                    }
+#endif
+                }
+                catch (ServerException ex)
+                {
+                    // If the SharePoint link doesn't exist, provision it as external link
+                    // when we provision as external link, the server side URL validation won't kick-in
+                    // This handles the "no such file or url found" error
+
+                    WriteMessage(String.Format(CoreResources.Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed_Retry, node.Title), ProvisioningMessageType.Warning);
+
+                    if (ex.ServerErrorCode == -2130247147)
+                    {
+                        try
+                        {
+                            string fileUrl = ReplaceFileUniqueToken(web, parser.ParseString(node.Url));
+                            var navNode = web.AddNavigationNode(
+                                parser.ParseString(node.Title),
+                                new Uri(fileUrl, UriKind.RelativeOrAbsolute),
+                                parser.ParseString(parentNodeTitle),
+                                navigationType,
+                                true,
+                                l1ParentNodeTitle: l1ParentNodeTitle
+                                );
+                        }
+                        catch (Exception innerEx)
+                        {
+                            WriteMessage(String.Format(CoreResources.Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed, innerEx.Message), ProvisioningMessageType.Warning);
+                        }
+                    }
+                    else
+                    {
+                        WriteMessage(String.Format(CoreResources.Provisioning_ObjectHandlers_Navigation_Link_Provisioning_Failed, ex.Message), ProvisioningMessageType.Warning);
+                    }
+                }
 
                 ProvisionStructuralNavigationNodes(
                     web,
@@ -344,38 +508,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     navigationType,
                     node.NavigationNodes,
                     scope,
-                    parser.ParseString(node.Title));
-
-#if !SP2013
-                if (node.Title.ContainsResourceToken())
-                {
-                    navNode.LocalizeNavigationNode(web, node.Title, parser, scope);
-                }
-#endif
+                    parser.ParseString(node.Title),
+                    parentNodeTitle
+                );
             }
         }
 
-        private ManagedNavigation GetGlobalManagedNavigation(Web web, WebNavigationSettings navigationSettings)
+        private ManagedNavigation GetGlobalManagedNavigation(Web web, WebNavigationSettings navigationSettings, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return GetManagedNavigation(web, navigationSettings, false);
+            return GetManagedNavigation(web, navigationSettings, false, template, creationInfo);
         }
 
-        private StructuralNavigation GetGlobalStructuralNavigation(Web web, WebNavigationSettings navigationSettings)
+        private StructuralNavigation GetGlobalStructuralNavigation(Web web, WebNavigationSettings navigationSettings, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return GetStructuralNavigation(web, navigationSettings, false);
+            return GetStructuralNavigation(web, navigationSettings, Enums.NavigationType.TopNavigationBar, template, creationInfo);
         }
 
-        private ManagedNavigation GetCurrentManagedNavigation(Web web, WebNavigationSettings navigationSettings)
+        private ManagedNavigation GetCurrentManagedNavigation(Web web, WebNavigationSettings navigationSettings, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return GetManagedNavigation(web, navigationSettings, true);
+            return GetManagedNavigation(web, navigationSettings, true, template, creationInfo);
         }
 
-        private StructuralNavigation GetCurrentStructuralNavigation(Web web, WebNavigationSettings navigationSettings)
+        private StructuralNavigation GetCurrentStructuralNavigation(Web web, WebNavigationSettings navigationSettings, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            return GetStructuralNavigation(web, navigationSettings, true);
+            return GetStructuralNavigation(web, navigationSettings, Enums.NavigationType.QuickLaunch, template, creationInfo);
         }
 
-        private ManagedNavigation GetManagedNavigation(Web web, WebNavigationSettings navigationSettings, Boolean currentNavigation)
+        private ManagedNavigation GetManagedNavigation(Web web, WebNavigationSettings navigationSettings, Boolean currentNavigation, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             var result = new ManagedNavigation
             {
@@ -389,21 +548,53 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return (result);
         }
 
-        private StructuralNavigation GetStructuralNavigation(Web web, WebNavigationSettings navigationSettings, Boolean currentNavigation)
+        private StructuralNavigation GetStructuralNavigation(Web web, WebNavigationSettings navigationSettings, Enums.NavigationType navigationType, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             // By default avoid removing existing nodes
             var result = new StructuralNavigation { RemoveExistingNodes = false };
-            Microsoft.SharePoint.Client.NavigationNodeCollection sourceNodes = currentNavigation ?
-                web.Navigation.QuickLaunch : web.Navigation.TopNavigationBar;
 
-            web.Context.Load(web, w => w.ServerRelativeUrl);
-            web.Context.Load(sourceNodes);
-            web.Context.ExecuteQueryRetry();
+            Microsoft.SharePoint.Client.NavigationNodeCollection sourceNodes = navigationType == Enums.NavigationType.QuickLaunch ?
+                web.Navigation.QuickLaunch : navigationType == Enums.NavigationType.TopNavigationBar ? web.Navigation.TopNavigationBar : web.LoadSearchNavigation();
+
+            if (sourceNodes == null)
+            {
+                return result;
+            }
+
+            var clientContext = web.Context;
+            clientContext.Load(web, w => w.ServerRelativeUrl, w => w.Language);
+            clientContext.Load(sourceNodes);
+            clientContext.ExecuteQueryRetry();
+            var defaultCulture = new CultureInfo((int)web.Language);
 
             if (!sourceNodes.ServerObjectIsNull.Value)
             {
                 result.NavigationNodes.AddRange(from n in sourceNodes.AsEnumerable()
-                                                select n.ToDomainModelNavigationNode(web));
+                                                select n.ToDomainModelNavigationNode(web, creationInfo.PersistMultiLanguageResources, defaultCulture));
+
+                if (creationInfo.PersistMultiLanguageResources)
+                {
+
+                    //need to get nodes and children for any other then default language
+                    foreach (var language in template.SupportedUILanguages.Where(c => c.LCID != defaultCulture.LCID))
+                    {
+                        var currentCulture = new CultureInfo(language.LCID);
+                        clientContext.Load(web, w => w.ServerRelativeUrl);
+                        clientContext.Load(sourceNodes);
+                        var acceptLanguage = clientContext.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"];
+                        clientContext.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = currentCulture.Name;
+                        clientContext.ExecuteQueryRetry();
+
+                        if (!sourceNodes.ServerObjectIsNull.Value)
+                        {
+                            //we dont need to add to result - just extract Titles - to List as we need to 
+                            var alternateLang = (from n in sourceNodes.AsEnumerable()
+                                                 select n.ToDomainModelNavigationNode(web, creationInfo.PersistMultiLanguageResources, currentCulture)).ToList();
+                        }
+
+                        clientContext.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = acceptLanguage;
+                    }
+                }
             }
             return (result);
         }
@@ -467,7 +658,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        #endregion
+#endregion
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
@@ -483,22 +674,45 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
     internal static class NavigationNodeExtensions
     {
-        internal static Model.NavigationNode ToDomainModelNavigationNode(this Microsoft.SharePoint.Client.NavigationNode node, Web web)
+        internal static Model.NavigationNode ToDomainModelNavigationNode(this Microsoft.SharePoint.Client.NavigationNode node, Web web, bool PersistLanguage, CultureInfo currentCulture, int ParentNodeId = 0)
         {
 
+            string nodeTitle = node.Title;
+#if !SP2013
+            if (PersistLanguage && !string.IsNullOrWhiteSpace(nodeTitle))
+            {
+                if (UserResourceExtensions.PersistResourceValue($"NavigationNode_{ParentNodeId}_{node.Id}_Title", currentCulture.LCID, nodeTitle))
+                {
+                    nodeTitle = $"{{res:NavigationNode_{ParentNodeId}_{node.Id}_Title}}";
+                }
+            }
+#endif
             var result = new Model.NavigationNode
             {
-                Title = node.Title,
+                Title = nodeTitle,
                 IsExternal = node.IsExternal,
                 Url = web.ServerRelativeUrl != "/" ? node.Url.Replace(web.ServerRelativeUrl, "{site}") : $"{{site}}{node.Url}"
             };
 
             node.Context.Load(node.Children);
+#if !SP2013
+            var acceptLanguage = node.Context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"];
+            if (PersistLanguage)
+            {
+                node.Context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = currentCulture.Name;
+            }
+#endif
             node.Context.ExecuteQueryRetry();
 
             result.NavigationNodes.AddRange(from n in node.Children.AsEnumerable()
-                                            select n.ToDomainModelNavigationNode(web));
+                                            select n.ToDomainModelNavigationNode(web, PersistLanguage, currentCulture, node.Id));
 
+#if !SP2013
+            if (PersistLanguage)
+            {
+                node.Context.PendingRequest.RequestExecutor.WebRequest.Headers["Accept-Language"] = acceptLanguage;
+            }
+#endif
             return (result);
         }
     }

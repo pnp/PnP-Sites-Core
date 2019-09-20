@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     /// <summary>
     /// Collection of SiteGroup objects
     /// </summary>
-    public partial class SiteGroupCollection : ProvisioningTemplateCollection<SiteGroup>
+    public partial class SiteGroupCollection : BaseProvisioningTemplateObjectCollection<SiteGroup>
     {
         /// <summary>
         /// Constructor for SiteGroupCollection class

@@ -4,6 +4,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers;
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using OfficeDevPnP.Core.Extensions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
@@ -12,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
     /// </summary>
     [TemplateSchemaSerializer(SerializationSequence = 300, DeserializationSequence = 300,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201605,
-        Default = true)]
+        Scope = SerializerScope.ProvisioningTemplate)]
     internal class WebSettingsSerializer : PnPBaseSchemaSerializer<WebSettings>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
@@ -34,6 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 var target = Activator.CreateInstance(webSettingsType, true);
                 var expressions = new Dictionary<string, IResolver>();
                 expressions.Add($"{webSettingsType}.NoCrawlSpecified", new ExpressionValueResolver(() => true));
+                expressions.Add($"{webSettingsType}.QuickLaunchEnabledSpecified", new ExpressionValueResolver(() => true));
 
                 PnPObjectsMapper.MapProperties(template.WebSettings, target, expressions, recursive: true);
 

@@ -1,11 +1,17 @@
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Attributes;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
-    internal class SiteCollectionToken : TokenDefinition
+    [TokenDefinitionDescription(
+        Token = "{sitecollection}",
+        Description = "Returns the server relative url of the site collection",
+        Example = "{sitecollection}",
+        Returns = "/sites/mysitecollection")]
+    internal class SiteCollectionToken : VolatileTokenDefinition
     {
         public SiteCollectionToken(Web web)
-            : base(web, "~sitecollection", "{sitecollection}")
+            : base(web, "{sitecollection}")
         {
         }
 
@@ -13,14 +19,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             if (CacheValue == null)
             {
-                this.Web.EnsureProperty(w => w.Url);
-                using (ClientContext context = this.Web.Context.Clone(this.Web.Url))
-                {
-                    var site = context.Site;
-                    context.Load(site, s => s.RootWeb.ServerRelativeUrl);
-                    context.ExecuteQueryRetry();
-                    CacheValue = site.RootWeb.ServerRelativeUrl.TrimEnd('/');
-                }
+                var site = TokenContext.Site;
+                TokenContext.Load(site, s => s.RootWeb.ServerRelativeUrl);
+                TokenContext.ExecuteQueryRetry();
+                CacheValue = site.RootWeb.ServerRelativeUrl.TrimEnd('/');
             }
             return CacheValue;
         }

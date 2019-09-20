@@ -1,6 +1,7 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
 using System.Linq;
 
@@ -21,11 +22,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
 
                 // Add content types
                 var result = TestProvisioningTemplate(cc, "contenttype_add.xml", Handlers.ContentTypes | Handlers.Fields);
+
+                // Ensure the needed tokens are added to the target token parser, this is needed due to the tokenparser perf optimalizations
+                result.TargetTokenParser.Tokens.Add(new SiteToken(cc.Web));
+
                 ContentTypeValidator cv = new ContentTypeValidator(cc.Web);
                 Assert.IsTrue(cv.Validate(result.SourceTemplate.ContentTypes, result.TargetTemplate.ContentTypes, result.TargetTokenParser));
 
                 // change content types
                 var result2 = TestProvisioningTemplate(cc, "contenttype_delta_1.xml", Handlers.ContentTypes);
+
+                // Ensure the needed tokens are added to the target token parser, this is needed due to the tokenparser perf optimalizations
+                result2.TargetTokenParser.Tokens.Add(new SiteToken(cc.Web));
+
                 Assert.IsTrue(cv.Validate(result2.SourceTemplate.ContentTypes, result2.TargetTemplate.ContentTypes, result2.TargetTokenParser));
             }
         }

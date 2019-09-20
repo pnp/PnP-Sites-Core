@@ -1,4 +1,5 @@
-﻿using OfficeDevPnP.Core.IdentityModel.WSTrustBindings;
+﻿#if !NETSTANDARD2_0
+using OfficeDevPnP.Core.IdentityModel.WSTrustBindings;
 using System;
 using System.IdentityModel.Protocols.WSTrust;
 using System.IdentityModel.Tokens;
@@ -13,6 +14,7 @@ namespace OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS
     /// </summary>
     public class UsernameMixed : BaseProvider
     {
+
         /// <summary>
         /// Performs active authentication against ADFS using the trust/13/usernamemixed ADFS endpoint.
         /// </summary>
@@ -56,7 +58,6 @@ namespace OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS
 
             return cc;
         }
-
         private GenericXmlSecurityToken RequestToken(string userName, string passWord, Uri userNameMixed, string relyingPartyIdentifier)
         {
             GenericXmlSecurityToken genericToken = null;
@@ -83,3 +84,4 @@ namespace OfficeDevPnP.Core.IdentityModel.TokenProviders.ADFS
 
     }
 }
+#endif

@@ -60,7 +60,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             customColorFilePath = Path.Combine(Path.GetTempPath(), "custom.spcolor");
             System.IO.File.WriteAllBytes(customColorFilePath, OfficeDevPnP.Core.Tests.Properties.Resources.custom);
             customBackgroundFilePath = Path.Combine(Path.GetTempPath(), "custombg.jpg");
-            Properties.Resources.custombg.Save(customBackgroundFilePath);
+            //Properties.Resources.custombg.Save(customBackgroundFilePath);
 
             testWebName = string.Format("Test_CL{0:yyyyMMddTHHmmss}", DateTimeOffset.Now);
             pageLayoutTestWeb = Setup();
@@ -397,10 +397,13 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
         {
             using (var context = TestCommon.CreateClientContext())
             {
-                context.Web.UploadThemeFile(customColorFilePath);
-                context.Web.UploadThemeFile(customBackgroundFilePath);
-                context.Web.CreateComposedLookByName("Test_Theme", customColorFilePath, null, customBackgroundFilePath, null);
-                Assert.IsTrue(context.Web.ComposedLookExists("Test_Theme"));
+                if (System.IO.File.Exists(customColorFilePath) && System.IO.File.Exists(customBackgroundFilePath))
+                {
+                    context.Web.UploadThemeFile(customColorFilePath);
+                    context.Web.UploadThemeFile(customBackgroundFilePath);
+                    context.Web.CreateComposedLookByName("Test_Theme", customColorFilePath, null, customBackgroundFilePath, null);
+                    Assert.IsTrue(context.Web.ComposedLookExists("Test_Theme"));
+                }
             }
         }
 

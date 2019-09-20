@@ -155,7 +155,7 @@ If the operation requires a specific type of context, consider extending from so
 caller).
 
 ## Clarify the type of URL ##
-Clarify if a URL is a FullUrl, ServerRelativeUrl, SiteCollectionRelativeUrl, or LeafUrl.  This avoids ambiguity where users of the API have a different default understanding of what 'url' means.
+Clarify if a URL is a FullUrl, ServerRelativeUrl, SiteCollectionRelativeUrl, or LeafUrl.  This avoids ambiguity where users of the API have a different default understanding of what 'URL' means.
 
 Prefer using the Uri class for clarity, but generally provide overloads that use string.
 

@@ -15,6 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         private GlobalNavigation _globalNavigation;
         private CurrentNavigation _currentNavigation;
+        private StructuralNavigation _searchNavigation;
 
         #endregion
 
@@ -61,6 +62,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         /// <summary>
+        /// Defines the Search Navigation settings of the site
+        /// </summary>
+        public StructuralNavigation SearchNavigation
+        {
+            get { return (this._searchNavigation); }
+            private set
+            {
+                if (this._searchNavigation != null)
+                {
+                    this._searchNavigation.ParentTemplate = null;
+                }
+                this._searchNavigation = value;
+                if (this._searchNavigation != null)
+                {
+                    this._searchNavigation.ParentTemplate = this.ParentTemplate;
+                }
+            }
+        }
+        /// <summary>
         /// Declares whether the tree view has to be enabled at the site level or not, optional attribute.
         /// </summary>
         public Boolean EnableTreeView { get; set; }
@@ -91,10 +111,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         /// <param name="globalNavigation">GlobalNavigation object</param>
         /// <param name="currentNavigation">CurrentNavigation object</param>
-        public Navigation(GlobalNavigation globalNavigation = null, CurrentNavigation currentNavigation = null)
+        /// <param name="searchNavigation">SearchNavigation object</param>
+        public Navigation(GlobalNavigation globalNavigation = null, CurrentNavigation currentNavigation = null, StructuralNavigation searchNavigation = null)
         {
             this.GlobalNavigation = globalNavigation;
             this.CurrentNavigation = currentNavigation;
+            this.SearchNavigation = searchNavigation;
         }
 
         #endregion
@@ -106,9 +128,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|",
                 (this.GlobalNavigation != null ? this.GlobalNavigation.GetHashCode() : 0),
                 (this.CurrentNavigation != null ? this.CurrentNavigation.GetHashCode() : 0),
+                (this.SearchNavigation != null ? this.SearchNavigation.GetHashCode() : 0),
                 this.EnableTreeView.GetHashCode(),
                 this.AddNewPagesToNavigation.GetHashCode(),
                 this.CreateFriendlyUrlsForNewPages.GetHashCode()
@@ -143,6 +166,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             return (this.GlobalNavigation.Equals(other.GlobalNavigation) &&
                     this.CurrentNavigation.Equals(other.CurrentNavigation) &&
+                    (this.SearchNavigation != null && other.SearchNavigation != null ? this.SearchNavigation.Equals(other.SearchNavigation) : this.SearchNavigation == null && other.SearchNavigation == null ? true : false) &&
                     this.EnableTreeView == other.EnableTreeView &&
                     this.AddNewPagesToNavigation == other.AddNewPagesToNavigation &&
                     this.CreateFriendlyUrlsForNewPages == other.CreateFriendlyUrlsForNewPages

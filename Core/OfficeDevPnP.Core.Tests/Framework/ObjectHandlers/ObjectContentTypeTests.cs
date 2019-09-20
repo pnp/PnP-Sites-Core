@@ -77,7 +77,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 TokenParser parser = new TokenParser(ctx.Web, template);
-                new ObjectContentType().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectContentType(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 var ct = ctx.Web.GetContentTypeByName("Test Content Type");
 
@@ -122,7 +122,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 var applyingInformation = new ProvisioningTemplateApplyingInformation();
 
-                new ObjectContentType().ProvisionObjects(web, template, parser, applyingInformation);
+                new ObjectContentType(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(web, template, parser, applyingInformation);
 
                 var ct = web.GetContentTypeByName("Test Content Type");
 
@@ -130,7 +130,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 applyingInformation.ProvisionContentTypesToSubWebs = true;
 
-                new ObjectContentType().ProvisionObjects(web, template, parser, applyingInformation);
+                new ObjectContentType(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(web, template, parser, applyingInformation);
 
                 ct = web.GetContentTypeByName("Test Content Type");
 
@@ -176,8 +176,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 TokenParser parser = new TokenParser(ctx.Web, template);
-                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
-                new ObjectContentType().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectContentType(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
                 var ct = ctx.Web.GetContentTypeByName("Test Content Type");
                 ct.EnsureProperty(x => x.FieldLinks);
                 Assert.AreEqual(ct.FieldLinks[0].Id, template.ContentTypes.First().FieldRefs[0].Id);
@@ -215,14 +215,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     });
                     provisionTemplate.ContentTypes.Add(contentType);
                     TokenParser parser = new TokenParser(ctx.Web, provisionTemplate);
-                    new ObjectContentType().ProvisionObjects(ctx.Web, provisionTemplate, parser, new ProvisioningTemplateApplyingInformation());
+                    new ObjectContentType(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, provisionTemplate, parser, new ProvisioningTemplateApplyingInformation());
                 }
 
                 // Load the base template which will be used for the comparison work
                 var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
 
                 var template = new ProvisioningTemplate();
-                template = new ObjectContentType().ExtractObjects(ctx.Web, template, creationInfo);
+                template = new ObjectContentType(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ExtractObjects(ctx.Web, template, creationInfo);
 
                 Assert.IsTrue(template.ContentTypes.Any());
                 Assert.IsInstanceOfType(template.ContentTypes, typeof(Core.Framework.Provisioning.Model.ContentTypeCollection));
@@ -267,8 +267,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             using (var ctx = TestCommon.CreateClientContext())
             {
                 TokenParser parser = new TokenParser(ctx.Web, template);
-                new ObjectField().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
-                new ObjectContentType().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectField(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                new ObjectContentType(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
                 var ct = ctx.Web.GetContentTypeByName("Test Custom Outcome Workflow Task");
                 ct.EnsureProperty(x => x.Fields);
                 Assert.AreEqual(ct.Fields.Count(f => f.FieldTypeKind == FieldType.OutcomeChoice), 1);

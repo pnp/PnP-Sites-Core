@@ -78,6 +78,6 @@ Base template: Goal is to verify that delta handling of fields works. Field prop
     </Field>
     <!-- Lookup fields -->
     <!-- Updated attributes: List -->
-    <Field ID="{3a18fcce-7eab-45d7-b6b6-c61cec868057}" Type="LookupMulti" Name="FLD_60" DisplayName="Fld 60" Group="PnP Demo" Required="FALSE" EnforceUniqueValues="FALSE" List="{{listid:Style Library}}" WebId="{siteid}" ShowField="Title" Mult="TRUE" Sortable="FALSE" UnlimitedLengthInDocumentLibrary="TRUE" />
+    <!--<Field ID="{3a18fcce-7eab-45d7-b6b6-c61cec868057}" Type="LookupMulti" Name="FLD_60" DisplayName="Fld 60" Group="PnP Demo" Required="FALSE" EnforceUniqueValues="FALSE" List="{{listid:Style Library}}" WebId="{siteid}" ShowField="Title" Mult="TRUE" Sortable="FALSE" UnlimitedLengthInDocumentLibrary="TRUE" />-->
   </pnp:SiteFields>
 </pnp:ProvisioningTemplate>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NETSTANDARD2_0
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
@@ -13,13 +14,14 @@ using System.Threading;
 using System.Xml.Linq;
 using OfficeDevPnP.Core.Utilities;
 using System.Collections.Generic;
+using System.IO;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Providers
 {
     [TestClass]
     public class XMLProvidersTests
     {
-        #region Test variables
+#region Test variables
 
         static string testContainer = "pnptest";
         static string testContainerSecure = "pnptestsecure";
@@ -27,9 +29,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         private const string TEST_CATEGORY = "Framework Provisioning XML Providers";
 
-        #endregion=
+#endregion=
 
-        #region Test initialize and cleanup
+#region Test initialize and cleanup
         [ClassInitialize()]
         public static void ClassInit(TestContext context)
         {
@@ -149,9 +151,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 context.ExecuteQueryRetry();
             }
         }
-        #endregion
+#endregion
 
-        #region XML File System tests
+#region XML File System tests
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
@@ -233,9 +235,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(result.SiteFields.Count == 4);
         }
 
-        #endregion
+#endregion
 
-        #region XML SharePoint tests
+#region XML SharePoint tests
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
@@ -259,10 +261,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(result.SiteFields.Count == 4);
         }
 
-        #endregion
+#endregion
 
-        #region XML Azure Storage tests
-
+#region XML Azure Storage tests
+#if !NETSTANDARD2_0
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
         public void XMLAzureStorageGetTemplatesTest()
@@ -332,6 +334,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(result.Files.Count == 5);
             Assert.IsTrue(result.SiteFields.Count == 4);
         }
+#endif
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
@@ -394,9 +397,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(result.SiteFields.Count == 4);
         }
 
-        #endregion
+#endregion
 
-        #region XInclude Tests
+#region XInclude Tests
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
@@ -428,9 +431,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(result.PropertyBagEntries.Count == 0);
         }
 
-        #endregion
+#endregion
 
-        #region Provider Extensibility Tests
+#region Provider Extensibility Tests
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
@@ -495,9 +498,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             return cert;
         }
 
-        #endregion
+#endregion
 
-        #region Formatter Refactoring Tests
+#region Formatter Refactoring Tests
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
@@ -612,6 +615,187 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var template2 = provider.GetTemplate("ProvisioningSchema-2018-01-FullSample-01-OUT.xml", serializer);
             Assert.IsNotNull(template2);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_SerializeDeserialize_201805()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201805Serializer();
+            var template1 = provider.GetTemplate("ProvisioningSchema-2018-05-FullSample-01.xml", serializer);
+            Assert.IsNotNull(template1);
+
+            // Add stuff that is not supported anymore, to test the serialization behavior
+            template1.AddIns.Add(new AddIn { PackagePath = "test", Source = "test" });
+
+            provider.SaveAs(template1, "ProvisioningSchema-2018-05-FullSample-01-OUT.xml", serializer);
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningSchema-2018-05-FullSample-01-OUT.xml"));
+
+            var template2 = provider.GetTemplate("ProvisioningSchema-2018-05-FullSample-01-OUT.xml", serializer);
+            Assert.IsNotNull(template2);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_SerializeDeserialize_201807()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201807Serializer();
+            var template1 = provider.GetTemplate("ProvisioningSchema-2018-07-FullSample-01.xml", serializer);
+            Assert.IsNotNull(template1);
+
+            // Add stuff that is not supported anymore, to test the serialization behavior
+            template1.AddIns.Add(new AddIn { PackagePath = "test", Source = "test" });
+
+            provider.SaveAs(template1, "ProvisioningSchema-2018-07-FullSample-01-OUT.xml", serializer);
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningSchema-2018-07-FullSample-01-OUT.xml"));
+
+            var template2 = provider.GetTemplate("ProvisioningSchema-2018-07-FullSample-01-OUT.xml", serializer);
+            Assert.IsNotNull(template2);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_SerializeDeserialize_201903()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            var template1 = provider.GetTemplate("ProvisioningSchema-2019-03-FullSample-01.xml", serializer);
+            Assert.IsNotNull(template1);
+
+            provider.SaveAs(template1, "ProvisioningSchema-2019-03-FullSample-01-OUT.xml", serializer);
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\ProvisioningSchema-2019-03-FullSample-01-OUT.xml"));
+
+            var template2 = provider.GetTemplate("ProvisioningSchema-2019-03-FullSample-01-OUT.xml", serializer);
+            Assert.IsNotNull(template2);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_ProvisioningHierarchyIsValid_201807()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var serializer = new XMLPnPSchemaV201807Serializer();
+
+            // Test with a valid hierarchy file
+            var hierarchyStream = provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml");
+            var hierarchyIsValid = serializer.IsValid(hierarchyStream);
+            Assert.IsTrue(hierarchyIsValid);
+
+            // Test with a NOT valid hierarchy file
+            hierarchyStream = provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01-NOT-VALID.xml");            
+            hierarchyIsValid = serializer.IsValid(hierarchyStream);
+            Assert.IsFalse(hierarchyIsValid);            
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_ProvisioningHierarchy_Load_201807()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var hierarchy = provider.GetHierarchy("ProvisioningSchema-2018-07-FullSample-01.xml");
+            //var serializer = new XMLPnPSchemaV201807Serializer();
+            //serializer.Initialize(provider);
+
+            //var hierarchy = serializer.ToProvisioningHierarchy(provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml"));
+
+            Assert.IsNotNull(hierarchy);
+            Assert.IsNotNull(hierarchy.Templates);
+            // Assert.IsNotNull(hierarchy.Sequences);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_ProvisioningHierarchy_Save_201807()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var hierarchy = provider.GetHierarchy("ProvisioningSchema-2018-07-FullSample-01.xml");
+
+            //var serializer = new XMLPnPSchemaV201807Serializer();
+            //serializer.Initialize(provider);
+
+            //var hierarchy = serializer.ToProvisioningHierarchy(provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml"));
+
+            // Save the hierarchy
+            var outputFile = "ProvisioningSchema-2018-07-FullSample-01-OUT.xml";
+            //var mem = serializer.ToFormattedHierarchy(hierarchy);
+            //provider.Connector.SaveFileStream(outputFile, mem);
+
+            provider.SaveAs(hierarchy, outputFile);
+
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{outputFile}"));
+
+            var hierarchy2 = provider.GetHierarchy(outputFile);
+            Assert.IsNotNull(hierarchy2);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_ProvisioningHierarchy_Load_201903()
+        {
+            XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var hierarchy = provider.GetHierarchy("ProvisioningSchema-2019-03-FullSample-01.xml");
+
+            Assert.IsNotNull(hierarchy);
+            Assert.IsNotNull(hierarchy.Templates);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_ProvisioningHierarchy_Save_201903()
+        {
+           XMLTemplateProvider provider =
+                new XMLFileSystemTemplateProvider(
+                    String.Format(@"{0}\..\..\Resources",
+                    AppDomain.CurrentDomain.BaseDirectory),
+                    "Templates");
+
+            var hierarchy = provider.GetHierarchy("ProvisioningSchema-2019-03-FullSample-01.xml");
+
+            // Save the hierarchy
+            var outputFile = "ProvisioningSchema-2019-03-FullSample-01-OUT.xml";
+            provider.SaveAs(hierarchy, outputFile);
+
+            Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{outputFile}"));
+
+            var hierarchy2 = provider.GetHierarchy(outputFile);
+            Assert.IsNotNull(hierarchy2);
         }
 
         [TestMethod]
@@ -1619,7 +1803,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             termgroup.Managers.Add(new Core.Framework.Provisioning.Model.User() { Name = "manager1@termgroup1" });
             termgroup.Managers.Add(new Core.Framework.Provisioning.Model.User() { Name = "manager2@termgroup1" });
 
-            #region termset 1 group 1
+#region termset 1 group 1
             var termset = new TermSet()
             {
                 Id = new Guid("ce70be1b-1772-49e9-a08f-47192d88dd64"),
@@ -1690,8 +1874,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 Owner = "term2owner@termgroup1"
             });
             termgroup.TermSets.Add(termset);
-            #endregion
-            #region termset 2 group 1
+#endregion
+#region termset 2 group 1
             termset = new TermSet()
             {
                 Id = new Guid("d0610999-539c-4949-ba60-0375deea3023"),
@@ -1701,7 +1885,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 IsOpenForTermCreation = false,
             };
             termgroup.TermSets.Add(termset);
-            #endregion
+#endregion
             result.TermGroups.Add(termgroup);
             termgroup = new TermGroup()
             {
@@ -2413,6 +2597,37 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsFalse(handler.Enabled);
             Assert.IsNull(handler.Configuration);
         }
+
+        // We're not throwing an exception anymore for invalid handlers, so skip these tests
+        //[TestMethod]
+        //[ExpectedException(typeof(FileNotFoundException))]
+        //[TestCategory(TEST_CATEGORY)]
+        //public void XMLSerializer_Deserialize_UnavailableExtensibilityHandlersThrowsException_201605()
+        //{
+        //    XMLTemplateProvider provider =
+        //        new XMLFileSystemTemplateProvider(
+        //            String.Format(@"{0}\..\..\Resources\Templates",
+        //            AppDomain.CurrentDomain.BaseDirectory),
+        //            "UnavailableExtensibilityHandlerTemplates");
+
+        //    var serializer = new XMLPnPSchemaV201605Serializer();
+        //    provider.GetTemplate("ProvisioningTemplate-2016-05-Sample.xml", serializer);
+        //}
+
+        //[TestMethod]
+        //[ExpectedException(typeof(FileNotFoundException))]
+        //[TestCategory(TEST_CATEGORY)]
+        //public void XMLSerializer_Deserialize_UnavailableExtensibilityHandlersThrowsException_201512()
+        //{
+        //    XMLTemplateProvider provider =
+        //        new XMLFileSystemTemplateProvider(
+        //            String.Format(@"{0}\..\..\Resources\Templates",
+        //            AppDomain.CurrentDomain.BaseDirectory),
+        //            "UnavailableExtensibilityHandlerTemplates");
+
+        //    var serializer = new XMLPnPSchemaV201512Formatter();
+        //    provider.GetTemplate("ProvisioningSchema-2015-12-Sample.xml", serializer);
+        //}
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
@@ -3815,7 +4030,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             Assert.IsNotNull(l.DataRows);
             Assert.AreEqual(3, l.DataRows.Count);
-            #region data row 1 asserts
+#region data row 1 asserts
             var dr = l.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("Value01")));
             Assert.IsNotNull(dr);
             security = dr.Security;
@@ -3846,8 +4061,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             dv = dr.Values.FirstOrDefault(d => d.Key == "Field04");
             Assert.IsNotNull(dv);
             Assert.AreEqual("Value01-04", dv.Value);
-            #endregion
-            #region data row 2 asserts
+#endregion
+#region data row 2 asserts
             dr = l.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("Value02")));
             Assert.IsNotNull(dr);
             security = dr.Security;
@@ -3878,8 +4093,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             dv = dr.Values.FirstOrDefault(d => d.Key == "Field04");
             Assert.IsNotNull(dv);
             Assert.AreEqual("Value02-04", dv.Value);
-            #endregion
-            #region data row 3 asserts
+#endregion
+#region data row 3 asserts
             dr = l.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("Value03")));
             Assert.IsNotNull(dr);
             Assert.IsTrue(dr.Security == null || dr.Security.RoleAssignments == null || dr.Security.RoleAssignments.Count == 0);
@@ -3896,9 +4111,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             dv = dr.Values.FirstOrDefault(d => d.Key == "Field04");
             Assert.IsNotNull(dv);
             Assert.AreEqual("Value03-04", dv.Value);
-            #endregion
+#endregion
 
-            #region user custom action
+#region user custom action
             Assert.IsNotNull(l.UserCustomActions);
             Assert.AreEqual(1, l.UserCustomActions.Count);
             var ua = l.UserCustomActions.FirstOrDefault(a => a.Name == "SampleCustomAction");
@@ -3920,12 +4135,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(1, ua.CommandUIExtension.Nodes().Count());
             Assert.IsNotNull(ua.Rights);
             Assert.IsTrue(ua.Rights.Has(PermissionKind.AddListItems));
-            #endregion
+#endregion
 
             Assert.IsNotNull(l.Views);
             Assert.AreEqual(2, l.Views.Count);
 
-            #region field refs
+#region field refs
             Assert.IsNotNull(l.FieldRefs);
             Assert.AreEqual(3, l.FieldRefs.Count);
             var fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectID");
@@ -3946,9 +4161,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Project Manager", fr.DisplayName);
             Assert.IsFalse(fr.Hidden);
             Assert.IsTrue(fr.Required);
-            #endregion
+#endregion
 
-            #region folders
+#region folders
             Assert.IsNotNull(l.Folders);
             Assert.AreEqual(2, l.Folders.Count);
             var fl = l.Folders.FirstOrDefault(f => f.Name == "Folder02");
@@ -3977,7 +4192,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             ra = security.RoleAssignments.FirstOrDefault(r => r.Principal == "Principal03");
             Assert.IsNotNull(ra);
             Assert.AreEqual("FullControl", ra.RoleDefinition);
-            #endregion
+#endregion
 
             Assert.IsNotNull(l.Fields);
             Assert.AreEqual(2, l.Fields.Count);
@@ -4061,7 +4276,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             list.FieldDefaults.Add("Field03", "DefaultValue03");
             list.FieldDefaults.Add("Field04", "DefaultValue04");
 
-            #region data rows
+#region data rows
             list.DataRows.Add(new DataRow(new Dictionary<string, string>() {
                 { "Field01", "Value01-01" },
                 { "Field02", "Value01-02" },
@@ -4124,7 +4339,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 { "Field03", "Value03-03" },
                 { "Field04", "Value03-04" },
             }));
-            #endregion
+#endregion
 
             var ca = new CustomAction()
             {
@@ -4148,7 +4363,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             ca.Rights.Set(PermissionKind.AddListItems);
             list.UserCustomActions.Add(ca);
 
-            #region views
+#region views
             list.Views.Add(new Core.Framework.Provisioning.Model.View()
             {
                 SchemaXml = @"<View DisplayName=""View One"">
@@ -4181,9 +4396,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                   </ViewFields>
                 </View>"
             });
-            #endregion
+#endregion
 
-            #region fieldrefs
+#region fieldrefs
             list.FieldRefs.Add(new FieldRef("ProjectID")
             {
                 Id = new Guid("{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}"),
@@ -4205,9 +4420,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 Hidden = false,
                 Required = true
             });
-            #endregion
+#endregion
 
-            #region folders
+#region folders
             var folder01 = new Core.Framework.Provisioning.Model.Folder("Folder01");
             var folder02 = new Core.Framework.Provisioning.Model.Folder("Folder02");
             folder01.Folders.Add(new Core.Framework.Provisioning.Model.Folder("Folder01.01",
@@ -4235,7 +4450,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             folder01.Folders.Add(new Core.Framework.Provisioning.Model.Folder("Folder01.02"));
             list.Folders.Add(folder01);
             list.Folders.Add(folder02);
-            #endregion
+#endregion
 
             list.Fields.Add(new Core.Framework.Provisioning.Model.Field()
             {
@@ -4340,7 +4555,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             Assert.IsNotNull(l.DataRows);
             Assert.AreEqual(3, l.DataRows.Length);
-            #region data row 1 asserts
+#region data row 1 asserts
             var dr = l.DataRows.FirstOrDefault(r => r.DataValue.Any(d => d.Value.StartsWith("Value01")));
             Assert.IsNotNull(dr);
             Assert.IsNotNull(dr.Security);
@@ -4373,8 +4588,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field04");
             Assert.IsNotNull(dv);
             Assert.AreEqual("Value01-04", dv.Value);
-            #endregion
-            #region data row 2 asserts
+#endregion
+#region data row 2 asserts
             dr = l.DataRows.FirstOrDefault(r => r.DataValue.Any(d => d.Value.StartsWith("Value02")));
             Assert.IsNotNull(dr);
             Assert.IsNotNull(dr.Security);
@@ -4407,8 +4622,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field04");
             Assert.IsNotNull(dv);
             Assert.AreEqual("Value02-04", dv.Value);
-            #endregion
-            #region data row 3 asserts
+#endregion
+#region data row 3 asserts
             dr = l.DataRows.FirstOrDefault(r => r.DataValue.Any(d => d.Value.StartsWith("Value03")));
             Assert.IsNotNull(dr);
             Assert.IsNull(dr.Security);
@@ -4426,9 +4641,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             dv = dr.DataValue.FirstOrDefault(d => d.FieldName == "Field04");
             Assert.IsNotNull(dv);
             Assert.AreEqual("Value03-04", dv.Value);
-            #endregion
+#endregion
 
-            #region user custom action
+#region user custom action
             Assert.IsNotNull(l.UserCustomActions);
             Assert.AreEqual(1, l.UserCustomActions.Length);
             var ua = l.UserCustomActions.FirstOrDefault(a => a.Name == "SampleCustomAction");
@@ -4451,13 +4666,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(1, ua.CommandUIExtension.Any.Length);
             Assert.IsNotNull(ua.Rights);
             Assert.IsTrue(ua.Rights.Contains("AddListItems"));
-            #endregion
+#endregion
 
             Assert.IsNotNull(l.Views);
             Assert.IsNotNull(l.Views.Any);
             Assert.AreEqual(2, l.Views.Any.Length);
 
-            #region field refs
+#region field refs
             Assert.IsNotNull(l.FieldRefs);
             Assert.AreEqual(3, l.FieldRefs.Length);
             var fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectID");
@@ -4478,9 +4693,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Project Manager", fr.DisplayName);
             Assert.IsFalse(fr.Hidden);
             Assert.IsTrue(fr.Required);
-            #endregion
+#endregion
 
-            #region folders
+#region folders
             Assert.IsNotNull(l.Folders);
             Assert.AreEqual(2, l.Folders.Length);
             var fl = l.Folders.FirstOrDefault(f => f.Name == "Folder02");
@@ -4510,13 +4725,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal03");
             Assert.IsNotNull(ra);
             Assert.AreEqual("FullControl", ra.RoleDefinition);
-            #endregion
+#endregion
 
             Assert.IsNotNull(l.Fields);
             Assert.IsNotNull(l.Fields.Any);
             Assert.AreEqual(2, l.Fields.Any.Length);
             Assert.IsTrue(l.Fields.Any.All(x => x.OuterXml.StartsWith("<Field")));
         }
-        #endregion
+#endregion
     }
 }
+#endif

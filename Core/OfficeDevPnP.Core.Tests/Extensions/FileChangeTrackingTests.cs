@@ -1,4 +1,5 @@
-﻿using Microsoft.SharePoint.Client;
+﻿#if !NETSTANDARD2_0
+using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Utilities;
 using System;
@@ -254,3 +255,4 @@ GO
 
     //}
 }
+#endif
