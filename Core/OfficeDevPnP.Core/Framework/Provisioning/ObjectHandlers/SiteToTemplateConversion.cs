@@ -312,6 +312,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.AuditSettings)) objectHandlers.Add(new ObjectAuditSettings());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SitePolicy)) objectHandlers.Add(new ObjectSitePolicy());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SiteSecurity)) objectHandlers.Add(new ObjectSiteSecurity());
+#if !ONPREMISES
+                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ApplicationLifecycleManagement)) objectHandlers.Add(new ObjectApplicationLifecycleManagement());
+#endif
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Features)) objectHandlers.Add(new ObjectFeatures());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.TermGroups)) objectHandlers.Add(new ObjectTermGroups());
 
@@ -338,7 +341,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.PageContents)) objectHandlers.Add(new ObjectPageContents());
 #if !ONPREMISES
                 if (!calledFromHierarchy && provisioningInfo.HandlersToProcess.HasFlag(Handlers.Tenant)) objectHandlers.Add(new ObjectTenant());
-                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ApplicationLifecycleManagement)) objectHandlers.Add(new ObjectApplicationLifecycleManagement());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Pages)) objectHandlers.Add(new ObjectClientSidePages());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SiteHeader)) objectHandlers.Add(new ObjectSiteHeaderSettings());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SiteFooter)) objectHandlers.Add(new ObjectSiteFooterSettings());

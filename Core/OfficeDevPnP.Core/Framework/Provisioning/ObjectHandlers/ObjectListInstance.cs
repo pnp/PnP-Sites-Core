@@ -379,6 +379,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_, field.SchemaXml);
                         throw new Exception(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_, id));
                     }
+                    // Champs "_DisplayName" : Inconnu pour l'instant ...
+                    else if (fieldGuid == new Guid("1a53ab5a-11f9-4b92-a377-8cfaaf6ba7be"))
+                    {
+                        continue;
+                    }
                     else
                     {
                         var fieldFromList = listInfo.SiteList.GetFieldById<Field>(fieldGuid);

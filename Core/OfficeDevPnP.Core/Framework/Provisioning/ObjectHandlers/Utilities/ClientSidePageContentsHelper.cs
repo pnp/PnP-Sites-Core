@@ -53,11 +53,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         pageContentTypeId = GetParentIdValue(pageContentTypeId);
                     }
 
+                    var isNews = false;
+
+                    if (pageToExtract.PageListItem["PromotedState"] != null && int.TryParse(pageToExtract.PageListItem["PromotedState"].ToString(), out int promotedState))
+                    {
+                        isNews = promotedState == 2;
+                    }
+
                     // Create the page
                     var extractedPageInstance = new ClientSidePage()
                     {
                         PageName = pageName,
-                        PromoteAsNewsArticle = false,
+                        PromoteAsNewsArticle = isNews,
                         PromoteAsTemplate = isTemplate,
                         Overwrite = true,
                         Publish = true,
