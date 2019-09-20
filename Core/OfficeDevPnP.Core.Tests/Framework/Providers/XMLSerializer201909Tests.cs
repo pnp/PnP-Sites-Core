@@ -584,17 +584,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             // team common properties
             Assert.AreEqual("Sample Team 01", teams[0].DisplayName);
             Assert.AreEqual("This is just a sample Team 01", teams[0].Description);
-            Assert.AreEqual("{TeamId:GroupMailNickname}", teams[0].CloneFrom);
-            Assert.AreEqual("{groupid:DisplayName}", teams[1].GroupId);
+            Assert.AreEqual("{o365groupid:GroupMailNickname}", teams[0].CloneFrom);
+            Assert.AreEqual("{o365groupid:GroupMailNickname}", teams[1].GroupId);
             Assert.AreEqual("Private", teams[1].Classification);
             Assert.AreEqual(TeamSpecialization.EducationStandard, teams[1].Specialization);
             Assert.AreEqual(TeamVisibility.Public, teams[1].Visibility);
             Assert.AreEqual(false, teams[1].Archived);
-            Assert.AreEqual("sample.group", teams[1].MailNickname);
+            Assert.AreEqual("sample-team-02", teams[1].MailNickname);
             Assert.AreEqual("photo.jpg", teams[1].Photo);
 
             // team security
             var security = teams[0].Security;
+            Assert.AreEqual(true, security.AllowToAddGuests);
             Assert.AreEqual(false, security.ClearExistingMembers);
             Assert.AreEqual(true, security.ClearExistingOwners);
             Assert.AreEqual(2, security.Owners.Count);
@@ -626,13 +627,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, teams[1].MessagingSettings.AllowUserDeleteMessages);
             Assert.AreEqual(true, teams[1].MessagingSettings.AllowUserEditMessages);
 
+            // team discovery settings
+            Assert.AreEqual(false, teams[1].DiscoverySettings.ShowInTeamsSearchAndSuggestions);
+
             // team channels
             var channels = teams[1].Channels;
             Assert.AreEqual(3, channels.Count);
+            Assert.AreEqual("12345", channels[0].ID);
             Assert.AreEqual("This is just a Sample Channel", channels[0].Description);
             Assert.AreEqual("Sample Channel 01", channels[0].DisplayName);
             Assert.AreEqual(true, channels[0].IsFavoriteByDefault);
             Assert.AreEqual(1, channels[0].Tabs.Count);
+            Assert.AreEqual("67890", channels[0].Tabs[0].ID);
             Assert.AreEqual("My Tab 01", channels[0].Tabs[0].DisplayName);
             Assert.AreEqual("12345", channels[0].Tabs[0].TeamsAppId);
             Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView", channels[0].Tabs[0].Configuration.ContentUrl);
@@ -697,8 +703,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     AllowOwnerDeleteMessages = true,
                     AllowUserDeleteMessages = true
                 },
+                DiscoverySettings = new TeamDiscoverySettings
+                {
+                    ShowInTeamsSearchAndSuggestions = false,
+                },
                 Security = new Core.Framework.Provisioning.Model.Teams.TeamSecurity
                 {
+                    AllowToAddGuests = true,
                     ClearExistingMembers = true,
                     ClearExistingOwners = true,
                     Members = {
@@ -734,6 +745,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 {
                     new Core.Framework.Provisioning.Model.Teams.TeamChannel
                     {
+                        ID = "12345",
                         Description = "This is just a Sample Channel",
                         DisplayName = "Sample Channel 01",
                         IsFavoriteByDefault = true,
@@ -743,6 +755,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                             {
                                 DisplayName = "My Tab 01",
                                 TeamsAppId = "12345",
+                                ID = "67890",
                                 Configuration = new TeamTabConfiguration
                                 {
                                     ContentUrl = "https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView",
@@ -799,6 +812,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             // team security
             var security = team.Security;
+            Assert.AreEqual(true, security.AllowToAddGuests);
             Assert.AreEqual(true, security.Members.ClearExistingItems);
             Assert.AreEqual(true, security.Owners.ClearExistingItems);
             Assert.AreEqual(2, security.Owners.User.Count());
@@ -816,7 +830,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, team.GuestSettings.AllowCreateUpdateChannels);
             Assert.AreEqual(true, team.GuestSettings.AllowDeleteChannels);
 
-            // team memebers settings
+            // team members settings
             Assert.AreEqual(true, team.MembersSettings.AllowDeleteChannels);
             Assert.AreEqual(true, team.MembersSettings.AllowAddRemoveApps);
             Assert.AreEqual(true, team.MembersSettings.AllowCreateUpdateChannels);
@@ -830,13 +844,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, team.MessagingSettings.AllowUserDeleteMessages);
             Assert.AreEqual(true, team.MessagingSettings.AllowUserEditMessages);
 
+            // team discovery settings
+            Assert.AreEqual(false, team.DiscoverySettings.ShowInTeamsSearchAndSuggestions);
+
             // team channels
             var channels = team.Channels;
             Assert.AreEqual(1, channels.Count());
+            Assert.AreEqual("12345", channels[0].ID);
             Assert.AreEqual("This is just a Sample Channel", channels[0].Description);
             Assert.AreEqual("Sample Channel 01", channels[0].DisplayName);
             Assert.AreEqual(true, channels[0].IsFavoriteByDefault);
             Assert.AreEqual(1, channels[0].Tabs.Count());
+            Assert.AreEqual("67890", channels[0].Tabs[0].ID);
             Assert.AreEqual("My Tab 01", channels[0].Tabs[0].DisplayName);
             Assert.AreEqual("12345", channels[0].Tabs[0].TeamsAppId);
             Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView", channels[0].Tabs[0].Configuration.ContentUrl);

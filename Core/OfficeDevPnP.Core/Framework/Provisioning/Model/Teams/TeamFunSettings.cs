@@ -11,6 +11,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// </summary>
     public partial class TeamFunSettings : BaseModel, IEquatable<TeamFunSettings>
     {
+        #region Private Members
+
+        private string _giphyContentRating;
+
+        #endregion
+
         #region Public Members
 
         /// <summary>
@@ -21,7 +27,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// Defines the Content Rating for Giphys
         /// </summary>
-        public string GiphyContentRating { get; set; }
+        public string GiphyContentRating
+        {
+            get
+            {
+                return (_giphyContentRating);
+            }
+            set
+            {
+                _giphyContentRating = value?.ToLower();
+            }
+        }
 
         /// <summary>
         /// Defines whether Stickers and Memes are consented or not

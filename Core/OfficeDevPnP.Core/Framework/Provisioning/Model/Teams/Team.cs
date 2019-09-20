@@ -35,6 +35,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         public TeamMessagingSettings MessagingSettings { get; set; }
 
         /// <summary>
+        /// The Discovery Settings for the Team
+        /// </summary>
+        public TeamDiscoverySettings DiscoverySettings { get; set; }
+        
+        /// <summary>
         /// Defines the Security settings for the Team
         /// </summary>
         public TeamSecurity Security { get; set; }

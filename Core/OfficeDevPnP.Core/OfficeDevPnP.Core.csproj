@@ -710,8 +710,11 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveRootsFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\Office365GroupsSettingsFromModelToSchema.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\Office365GroupsSettingsFromSchemaToModel.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\DriveSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ListInstancesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\TeamsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\TenantSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\SiteSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201909Serializer.cs" />
