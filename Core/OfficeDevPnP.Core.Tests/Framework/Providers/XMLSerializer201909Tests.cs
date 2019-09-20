@@ -58,6 +58,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     ///     Header
     ///     Footer
     ///     ProvisioningTemplateWebhooks 
+    ///     SiteSettings
     /// Teams:
     ///     TeamTemplate
     ///     Team
@@ -78,7 +79,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     /// Drive
     /// 
     /// To Cover:
-    ///     SiteSettings
     ///     DataRow Attachments
     ///     Properties for Folders
     ///     Teamify/HideTeamify in TeamSite
@@ -1944,6 +1944,60 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("/sites/hubsite", webSettings.HubSiteUrl);
             Assert.AreEqual(false, webSettings.CommentsOnSitePagesDisabled);
             Assert.AreEqual(true, webSettings.QuickLaunchEnabled);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_SiteSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201909Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+            var siteSettings = template.SiteSettings;
+
+            Assert.AreEqual(true, siteSettings.AllowDesigner);
+            Assert.AreEqual(false, siteSettings.AllowCreateDeclarativeWorkflow);
+            Assert.AreEqual(false, siteSettings.AllowSaveDeclarativeWorkflowAsTemplate);
+            Assert.AreEqual(false, siteSettings.AllowSavePublishDeclarativeWorkflow);
+            Assert.AreEqual(true, siteSettings.SocialBarOnSitePagesDisabled);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_SiteSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate
+            {
+                SiteSettings = new Core.Framework.Provisioning.Model.SiteSettings
+                {
+                    AllowDesigner = true,
+                    AllowCreateDeclarativeWorkflow = false,
+                    AllowSaveDeclarativeWorkflowAsTemplate = false,
+                    AllowSavePublishDeclarativeWorkflow = false,
+                    SocialBarOnSitePagesDisabled = true,
+                }
+            };
+
+            var serializer = new XMLPnPSchemaV201909Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            var siteSettings = template.SiteSettings;
+
+            Assert.AreEqual(true, siteSettings.AllowDesigner);
+            Assert.AreEqual(false, siteSettings.AllowCreateDeclarativeWorkflow);
+            Assert.AreEqual(false, siteSettings.AllowSaveDeclarativeWorkflowAsTemplate);
+            Assert.AreEqual(false, siteSettings.AllowSavePublishDeclarativeWorkflow);
+            Assert.AreEqual(true, siteSettings.SocialBarOnSitePagesDisabled);
         }
 
         [TestMethod]
