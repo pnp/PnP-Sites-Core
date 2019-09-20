@@ -3040,9 +3040,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(2, list.DataRows.Count);
             Assert.AreEqual("ProjectID", list.DataRows.KeyColumn);
             Assert.AreEqual(UpdateBehavior.Overwrite, list.DataRows.UpdateBehavior);
+
             #region data row 1 asserts
+
             var dataRow = list.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("PRJ01")));
             Assert.IsNotNull(dataRow);
+
             security = dataRow.Security;
             Assert.IsNotNull(security);
             Assert.IsTrue(security.ClearSubscopes);
@@ -3071,10 +3074,24 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             dataValues = dataRow.Values.FirstOrDefault(d => d.Key == "ProjectDescription");
             Assert.IsNotNull(dataValues);
             Assert.AreEqual("This is a sample Project", dataValues.Value);
+
+            var attachments = dataRow.Attachments;
+            Assert.IsNotNull(attachments);
+            Assert.AreEqual(2, attachments.Count);
+            Assert.AreEqual("OneAttachment.docx", attachments[0].Name);
+            Assert.AreEqual("./Attachments/OneAttachment.docx", attachments[0].Src);
+            Assert.AreEqual(false, attachments[0].Overwrite);
+            Assert.AreEqual("AnotherAttachment.pptx", attachments[1].Name);
+            Assert.AreEqual("./Attachments/AnotherAttachment.pptx", attachments[1].Src);
+            Assert.AreEqual(true, attachments[1].Overwrite);
+
             #endregion
+
             #region data row 2 asserts
+
             dataRow = list.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("PRJ021")));
             Assert.IsNotNull(dataRow);
+
             security = dataRow.Security;
             Assert.IsNotNull(security);
             Assert.IsTrue(security.ClearSubscopes);
@@ -3103,6 +3120,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             dataValues = dataRow.Values.FirstOrDefault(d => d.Key == "ProjectDescription");
             Assert.IsNotNull(dataValues);
             Assert.AreEqual("This is another sample Project", dataValues.Value);
+
             #endregion
 
             #region user custom action
@@ -3121,8 +3139,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             #endregion
 
             #region folders
+
             Assert.IsNotNull(list.Folders);
-            Assert.AreEqual(3, list.Folders.Count);
+            Assert.AreEqual(4, list.Folders.Count);
             var fl = list.Folders.FirstOrDefault(f => f.Name == "SubFolder-01");
             Assert.IsNotNull(fl);
             Assert.IsTrue(fl.Folders.Count == 1);
@@ -3149,6 +3168,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             roleAssignment = security.RoleAssignments.FirstOrDefault(r => r.Principal == "user1@contoso.com");
             Assert.IsNotNull(roleAssignment);
             Assert.AreEqual("View Only", roleAssignment.RoleDefinition);
+
+            var flDocumentSet = list.Folders.FirstOrDefault(f => f.Name == "Sample-DocumentSet");
+            Assert.AreEqual("0x0120001234567890", flDocumentSet.ContentTypeID);
+            Assert.IsNotNull(flDocumentSet.Properties);
+            Assert.AreEqual(2, flDocumentSet.Properties.Count);
+            Assert.AreEqual("CustomValue01", flDocumentSet.Properties["CustomProperty01"]);
+            Assert.AreEqual("CustomValue02", flDocumentSet.Properties["CustomProperty02"]);
+
             #endregion
 
             #region IRM Settings
@@ -3440,8 +3467,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     ClearSubscopes = true
                 }));
             folder01.Folders.Add(new Core.Framework.Provisioning.Model.Folder("Folder01.02"));
+            var folder03 = new Core.Framework.Provisioning.Model.Folder("Folder03");
+            folder03.ContentTypeID = "0x0120001234567890";
+            folder03.Properties.Add("CustomProperty01", "CustomValue01");
+            folder03.Properties.Add("CustomProperty02", "CustomValue02");
+
             list.Folders.Add(folder01);
             list.Folders.Add(folder02);
+            list.Folders.Add(folder03);
             #endregion
 
             list.Fields.Add(new Core.Framework.Provisioning.Model.Field()
@@ -3685,7 +3718,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             #region folders
             Assert.IsNotNull(l.Folders);
-            Assert.AreEqual(2, l.Folders.Length);
+            Assert.AreEqual(3, l.Folders.Length);
             var fl = l.Folders.FirstOrDefault(f => f.Name == "Folder02");
             Assert.IsNotNull(fl);
             Assert.IsNull(fl.Folder1);
@@ -3713,6 +3746,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal03");
             Assert.IsNotNull(ra);
             Assert.AreEqual("FullControl", ra.RoleDefinition);
+            fl = l.Folders.FirstOrDefault(f => f.Name == "Folder03");
+            Assert.IsNotNull(fl);
+            Assert.AreEqual("0x0120001234567890", fl.ContentTypeID);
+            Assert.IsNotNull(fl.Properties);
+            Assert.AreEqual(2, fl.Properties.Length);
+            Assert.AreEqual("CustomProperty01", fl.Properties[0].Key);
+            Assert.AreEqual("CustomValue01", fl.Properties[0].Value);
+            Assert.AreEqual("CustomProperty02", fl.Properties[1].Key);
+            Assert.AreEqual("CustomValue02", fl.Properties[1].Value);
+
             #endregion
 
             #region IRM Settings
