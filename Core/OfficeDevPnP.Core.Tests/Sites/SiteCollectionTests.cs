@@ -66,6 +66,25 @@ namespace OfficeDevPnP.Core.Tests.Sites
             }
         }
 
+        [TestMethod]
+        public async Task CreateTeamNoGroupSiteTestAsync()
+        {
+            using (var clientContext = TestCommon.CreateClientContext())
+            {
+
+                var teamNoGroupSiteResult = await clientContext.CreateSiteAsync(new Core.Sites.TeamNoGroupSiteCollectionCreationInformation()
+                {
+                    Url = $"{baseUrl}/sites/site{teamSiteGuid}",
+                    Title = "Team no group Site Test",
+                    Description = "Site description",
+                    Lcid = 1033
+                });
+
+                Assert.IsNotNull(teamNoGroupSiteResult);
+            }
+        }
+
+
         //[TestMethod]
         //public async Task CreateTeamSiteTestAsync()
         //{

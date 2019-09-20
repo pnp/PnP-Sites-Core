@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Collection of Teams for Microsoft Teams
     /// </summary>
-    public class TeamCollection : BaseProvisioningTemplateObjectCollection<Team>
+    public partial class TeamCollection : BaseProvisioningTemplateObjectCollection<Team>
     {
         /// <summary>
         /// Constructor for TeamCollection class

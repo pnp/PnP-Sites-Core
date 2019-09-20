@@ -270,6 +270,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 case CanvasSectionType.TwoColumnRight:
                                     page.AddSection(Pages.CanvasSectionTemplate.TwoColumnRight, section.Order, (Int32)section.BackgroundEmphasis);
                                     break;
+                                case CanvasSectionType.OneColumnVerticalSection:
+                                    page.AddSection(Pages.CanvasSectionTemplate.OneColumnVerticalSection, section.Order, (Int32)section.VerticalSectionEmphasis);
+                                    break;
+                                case CanvasSectionType.TwoColumnVerticalSection:
+                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnVerticalSection, section.Order, (Int32)section.VerticalSectionEmphasis);
+                                    break;
+                                case CanvasSectionType.TwoColumnLeftVerticalSection:
+                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnLeftVerticalSection, section.Order, (Int32)section.VerticalSectionEmphasis);
+                                    break;
+                                case CanvasSectionType.TwoColumnRightVerticalSection:
+                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnRightVerticalSection, section.Order, (Int32)section.VerticalSectionEmphasis);
+                                    break;
+                                case CanvasSectionType.ThreeColumnVerticalSection:
+                                    page.AddSection(Pages.CanvasSectionTemplate.ThreeColumnVerticalSection, section.Order, (Int32)section.VerticalSectionEmphasis);
+                                    break;
                                 default:
                                     page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order, (Int32)section.BackgroundEmphasis);
                                     break;
@@ -352,6 +367,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 case WebPartType.BingMap:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.BingMap);
                                                     break;
+                                                case WebPartType.Button:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Button);
+                                                    break;
+                                                case WebPartType.CallToAction:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.CallToAction);
+                                                    break;
                                                 case WebPartType.ContentEmbed:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.ContentEmbed);
                                                     break;
@@ -379,6 +400,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 case WebPartType.List:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.List);
                                                     break;
+                                                case WebPartType.News:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.News);
+                                                    break;
                                                 case WebPartType.NewsFeed:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.NewsFeed);
                                                     break;
@@ -402,6 +426,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                     break;
                                                 case WebPartType.SiteActivity:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.SiteActivity);
+                                                    break;
+                                                case WebPartType.Sites:
+                                                    webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.Sites);
                                                     break;
                                                 case WebPartType.VideoEmbed:
                                                     webPartName = Pages.ClientSidePage.ClientSideWebPartEnumToName(Pages.DefaultClientSideWebParts.VideoEmbed);
@@ -518,7 +545,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (!string.IsNullOrEmpty(clientSidePage.ContentTypeID))
                     {
                         page.PageListItem[ContentTypeIdField] = clientSidePage.ContentTypeID;
-                        page.PageListItem.Update();
+                        page.PageListItem.UpdateOverwriteVersion();
+                        //page.PageListItem.Update();
                         web.Context.Load(page.PageListItem);
                         isDirty = true;
                     }
@@ -527,7 +555,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         // Choice field, currently there's only one value possible and that's Template
                         page.PageListItem[SPSitePageFlagsField] = ";#Template;#";
-                        page.PageListItem.Update();
+                        page.PageListItem.UpdateOverwriteVersion();
+                        //page.PageListItem.Update();
                         web.Context.Load(page.PageListItem);
                         isDirty = true;
                     }

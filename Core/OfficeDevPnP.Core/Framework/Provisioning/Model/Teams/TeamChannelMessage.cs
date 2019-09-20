@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Defines an TeamApp for automated provisiong of Microsoft Teams
     /// </summary>
-    public class TeamChannelMessage : BaseModel, IEquatable<TeamChannelMessage>
+    public partial class TeamChannelMessage : BaseModel, IEquatable<TeamChannelMessage>
     {
         #region Public Members
 

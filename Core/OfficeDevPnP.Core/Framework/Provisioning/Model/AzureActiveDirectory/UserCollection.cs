@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
     /// <summary>
     /// Collection of AAD Users
     /// </summary>
-    public class UserCollection : BaseProvisioningTemplateObjectCollection<User>
+    public partial class UserCollection : BaseProvisioningTemplateObjectCollection<User>
     {
         /// <summary>
         /// Constructor for UserCollection class

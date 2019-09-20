@@ -1127,7 +1127,7 @@
     <value>Provisioning of the navigation node failed : {0}</value>
   </data>
   <data name="ClientSidePageHeader_ImageInDifferentWeb" xml:space="preserve">
-    <value>The {0} image set as page header lives in a different web and will not be set.</value>
+    <value>The {0} image set as page header lives outside the current site collection and might not be set. Once provisioning is complete, please check if the header image path is correct or you have adequate permissions to view the image.</value>
   </data>
   <data name="Provisioning_ObjectHandlers_Teams_TeamTemplate_ProvisioningError" xml:space="preserve">
     <value>Provisioning a team based on a team template failed. Ensure that the JSON template markup is valid and contains all the required properties. {0}</value>

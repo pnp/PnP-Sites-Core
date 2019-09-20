@@ -114,7 +114,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 if (!exists)
                                 {
                                     messagesDelegate?.Invoke($"Processing solution {app.Src}", ProvisioningMessageType.Progress);
-                                    appMetadata = manager.Add(appBytes, appFilename, app.Overwrite, timeoutSeconds: 300);
+                                    appMetadata = manager.Add(appBytes, appFilename, app.Overwrite, timeoutSeconds: 500);
                                 }
                                 else
                                 {
@@ -511,47 +511,50 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         {
             if (provisioningTenant.ContentDeliveryNetwork != null)
             {
-                var publicCdnEnabled = tenant.GetTenantCdnEnabled(SPOTenantCdnType.Public);
-                var privateCdnEnabled = tenant.GetTenantCdnEnabled(SPOTenantCdnType.Private);
-                tenant.Context.ExecuteQueryRetry();
-                var publicCdn = provisioningTenant.ContentDeliveryNetwork.PublicCdn;
-                if (publicCdn != null)
+                if (provisioningTenant.ContentDeliveryNetwork.PublicCdn != null || provisioningTenant.ContentDeliveryNetwork.PrivateCdn != null)
                 {
-                    if (publicCdnEnabled.Value != publicCdn.Enabled)
+                    var publicCdnEnabled = tenant.GetTenantCdnEnabled(SPOTenantCdnType.Public);
+                    var privateCdnEnabled = tenant.GetTenantCdnEnabled(SPOTenantCdnType.Private);
+                    tenant.Context.ExecuteQueryRetry();
+                    var publicCdn = provisioningTenant.ContentDeliveryNetwork.PublicCdn;
+                    if (publicCdn != null)
                     {
-                        scope.LogInfo($"Public CDN is set to {(publicCdn.Enabled ? "Enabled" : "Disabled")}");
-                        tenant.SetTenantCdnEnabled(SPOTenantCdnType.Public, publicCdn.Enabled);
-                        tenant.Context.ExecuteQueryRetry();
-                    }
-                    if (publicCdn.Enabled)
-                    {
-                        if (!publicCdn.NoDefaultOrigins)
+                        if (publicCdnEnabled.Value != publicCdn.Enabled)
                         {
-                            tenant.CreateTenantCdnDefaultOrigins(SPOTenantCdnType.Public);
+                            scope.LogInfo($"Public CDN is set to {(publicCdn.Enabled ? "Enabled" : "Disabled")}");
+                            tenant.SetTenantCdnEnabled(SPOTenantCdnType.Public, publicCdn.Enabled);
                             tenant.Context.ExecuteQueryRetry();
                         }
-                        ProcessOrigins(tenant, publicCdn, SPOTenantCdnType.Public, parser, scope);
-                        ProcessPolicies(tenant, publicCdn, SPOTenantCdnType.Public, parser, scope);
-                    }
-                }
-                var privateCdn = provisioningTenant.ContentDeliveryNetwork.PrivateCdn;
-                if (privateCdn != null)
-                {
-                    if (privateCdnEnabled.Value != privateCdn.Enabled)
-                    {
-                        scope.LogInfo($"Private CDN is set to {(privateCdn.Enabled ? "Enabled" : "Disabled")}");
-                        tenant.SetTenantCdnEnabled(SPOTenantCdnType.Private, privateCdn.Enabled);
-                        tenant.Context.ExecuteQueryRetry();
-                    }
-                    if (privateCdn.Enabled)
-                    {
-                        if (!privateCdn.NoDefaultOrigins)
+                        if (publicCdn.Enabled)
                         {
-                            tenant.CreateTenantCdnDefaultOrigins(SPOTenantCdnType.Private);
+                            if (!publicCdn.NoDefaultOrigins)
+                            {
+                                tenant.CreateTenantCdnDefaultOrigins(SPOTenantCdnType.Public);
+                                tenant.Context.ExecuteQueryRetry();
+                            }
+                            ProcessOrigins(tenant, publicCdn, SPOTenantCdnType.Public, parser, scope);
+                            ProcessPolicies(tenant, publicCdn, SPOTenantCdnType.Public, parser, scope);
+                        }
+                    }
+                    var privateCdn = provisioningTenant.ContentDeliveryNetwork.PrivateCdn;
+                    if (privateCdn != null)
+                    {
+                        if (privateCdnEnabled.Value != privateCdn.Enabled)
+                        {
+                            scope.LogInfo($"Private CDN is set to {(privateCdn.Enabled ? "Enabled" : "Disabled")}");
+                            tenant.SetTenantCdnEnabled(SPOTenantCdnType.Private, privateCdn.Enabled);
                             tenant.Context.ExecuteQueryRetry();
                         }
-                        ProcessOrigins(tenant, privateCdn, SPOTenantCdnType.Private, parser, scope);
-                        ProcessPolicies(tenant, privateCdn, SPOTenantCdnType.Private, parser, scope);
+                        if (privateCdn.Enabled)
+                        {
+                            if (!privateCdn.NoDefaultOrigins)
+                            {
+                                tenant.CreateTenantCdnDefaultOrigins(SPOTenantCdnType.Private);
+                                tenant.Context.ExecuteQueryRetry();
+                            }
+                            ProcessOrigins(tenant, privateCdn, SPOTenantCdnType.Private, parser, scope);
+                            ProcessPolicies(tenant, privateCdn, SPOTenantCdnType.Private, parser, scope);
+                        }
                     }
                 }
             }

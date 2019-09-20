@@ -52,7 +52,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         IsPublic = t.IsPublic
                                     };
 
-                                    var groupSiteInfo = Sites.SiteCollection.GetGroupInfo(tenant.Context as ClientContext, siteInfo.Alias).GetAwaiter().GetResult();
+                                    var groupSiteInfo = Sites.SiteCollection.GetGroupInfoAsync(tenant.Context as ClientContext, siteInfo.Alias).GetAwaiter().GetResult();
                                     if (groupSiteInfo == null)
                                     {
                                         WriteMessage($"Creating Team Site {siteInfo.Alias}", ProvisioningMessageType.Progress);
@@ -158,16 +158,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             case TeamNoGroupSiteCollection t:
                                 {
                                     var siteUrl = tokenParser.ParseString(t.Url);
-                                    SiteEntity siteInfo = new SiteEntity()
+                                    TeamNoGroupSiteCollectionCreationInformation siteInfo = new TeamNoGroupSiteCollectionCreationInformation()
                                     {
                                         Lcid = (uint)t.Language,
-                                        Template = "STS#3",
-                                        TimeZoneId = t.TimeZoneId,
+                                        Url = siteUrl,
                                         Title = tokenParser.ParseString(t.Title),
-                                        Url = tokenParser.ParseString(t.Url),
-                                        SiteOwnerLogin = tokenParser.ParseString(t.Owner),
+                                        Description = tokenParser.ParseString(t.Description),
+                                        Owner = tokenParser.ParseString(t.Owner)
                                     };
-                                    WriteMessage($"Creating Team Site with no Office 365 group at {siteUrl}", ProvisioningMessageType.Progress);
                                     if (tenant.SiteExists(siteUrl))
                                     {
                                         WriteMessage($"Using existing Team Site at {siteUrl}", ProvisioningMessageType.Progress);
@@ -175,8 +173,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     }
                                     else
                                     {
-                                        tenant.CreateSiteCollection(siteInfo, false, true);
-                                        siteContext = tenant.Context.Clone(siteUrl, applyingInformation.AccessTokens);
+                                        WriteMessage($"Creating Team Site with no Office 365 group at {siteUrl}", ProvisioningMessageType.Progress);
+                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, applyingInformation.DelayAfterModernSiteCreation);
                                     }
                                     if (t.IsHubSite)
                                     {

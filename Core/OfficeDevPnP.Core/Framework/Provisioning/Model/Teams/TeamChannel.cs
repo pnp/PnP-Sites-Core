@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Defines a Channel for a Team
     /// </summary>
-    public class TeamChannel : BaseModel, IEquatable<TeamChannel>
+    public partial class TeamChannel : BaseModel, IEquatable<TeamChannel>
     {
         #region Public Members
 
@@ -44,6 +44,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// </summary>
         public Boolean IsFavoriteByDefault { get; set; }
 
+        /// <summary>
+        /// Declares the ID for the Channel
+        /// </summary>
+        public String ID { get; set; }        
+
         #endregion
 
         #region Constructors
@@ -68,13 +73,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
                 Tabs.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 TabResources.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 Messages.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                DisplayName.GetHashCode(),
-                Description.GetHashCode(),
-                IsFavoriteByDefault.GetHashCode()
+                DisplayName?.GetHashCode() ?? 0,
+                Description?.GetHashCode() ?? 0,
+                IsFavoriteByDefault.GetHashCode(),
+                ID?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 
@@ -109,7 +115,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
                 this.Messages.DeepEquals(other.Messages) &&
                 this.DisplayName == other.DisplayName &&
                 this.Description == other.Description &&
-                this.IsFavoriteByDefault == other.IsFavoriteByDefault
+                this.IsFavoriteByDefault == other.IsFavoriteByDefault &&
+                this.ID == other.ID
                 );
         }
 

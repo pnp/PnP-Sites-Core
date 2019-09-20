@@ -4,13 +4,14 @@ using OfficeDevPnP.Core.Framework.Graph;
 
 namespace OfficeDevPnP.Core.Tests.Utilities
 {
+#if !ONPREMISES
     [TestClass]
     public class UnifiedGroupsUtilityTests
     {
         private string _accessToken;
         private string _groupId;
 
-        #region Init and Cleanup code
+    #region Init and Cleanup code
 
         [TestInitialize]
         public void Initialize()
@@ -45,7 +46,7 @@ namespace OfficeDevPnP.Core.Tests.Utilities
                 // Group has already been permanently deleted
             }
         }
-        #endregion
+    #endregion
 
         [TestMethod]
         public void ListDeletedUnifiedGroups()
@@ -89,4 +90,5 @@ namespace OfficeDevPnP.Core.Tests.Utilities
             }
         }
     }
+#endif
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.9.1905.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.13.1909.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-OFFILE1template">
     <pnp:ProvisioningTemplate ID="OFFILE1template" Version="1" BaseSiteTemplate="OFFILE#1" Scope="RootSite">
       <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
@@ -48,7 +48,7 @@
         <pnp:PropertyBagEntry Key="vti_siteusagetotalvisits" Value="0" Overwrite="false" />
         <pnp:PropertyBagEntry Key="allowslistpolicy" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="8" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_routerjoblastrun" Value="5/9/2019 11:37:05 PM" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_routerjoblastrun" Value="9/8/2019 11:37:27 PM" Overwrite="false" />
         <pnp:PropertyBagEntry Key="docid_msft_hier_listcnt" Value="881724978" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_filedialogpostprocessorid" Value="{f68e6d4e-383a-4c8d-ba4d-d2139f164281}" Overwrite="false" />
         <pnp:PropertyBagEntry Key="NavigationPropertiesSet" Value="True" Overwrite="false" />

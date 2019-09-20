@@ -6,15 +6,59 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Added
+
+- Added additional modern web parts to our enums (CallToAction, Button, Sites)
+
+### Changed
+
+- Only load tenant CDN settings whenever there are public/private CDN settings defined in the template
+- Fix: Added retry logic to the appcatalog/AvailableApps/GetById ALM API calls to handle cases where this API is called too soon after an app has been installed in the appcatalog
+- Fix: Use UpdateOverwriteVersion instead of Update when creating a page using the client side page API, this will prevent unneeded intermediate versions showing up in the version history of the created page
+- Fix: CPU Load and Performance for ExtractClientSidePage #2395 [czullu]
+- Fix conversion of zoneEmphasis in EmphasisJsonConverter #2402 [czullu]
+
+## [3.13.1909.0 - September 2019 release]
+
+### Added
+
+- Vertical section support (read, update and create) for the modern page API
+- Add extension to create team site with no group using SPSiteManager #2364 [NicolajHedeager]
+- Improved image extraction when extracting modern pages: header image and images linked by quick links webparts are now included #2336 [heinrich-ulbricht]
+- Added support for page header images which reside outside current site collection #2360 [gautamdsheth]
+- Added support for additional teamify methods #2359 [gautamdsheth]
+- Added support for Teal theme #2376 [gautamdsheth]
+
+### Changed
+
+- Fix: Handle SPSiteManager/Create with SiteStatus = 1 (provisioning status)
+- Fix: Avoid 'object reference not found' error [kachihro]
+- Fix: Allow ZoneEmphasis in ClientSidePage to be undefined #2318 [KoenZomers]
+- Fix: Corrected AssociatedGroup Tokens documentation #2348 [pmatthews05]
+- Fix: Improve check for empty ComposedLook #2354 [heinrich-ulbricht]
+- Fix: Don't pass formatted string to logger #2368 [SchauDK]
+- Fix: Enabled custom action functionality for SharePoint 2019 that was incorrectly disabled. #2371 [jensotto]
+- Fix: use JsonConvert.ToString to handle special char in Title and Description #2372 [czullu]
+- Modified TeamNoGroup provisioning to use the new SPSiteManager API #2375 [gautamdsheth]
+- Fix: Modern page API now supports the two versions of News (older NewsreelWebPart vs newer NewsWebPart) #2389 [bogeorge]
+- Fix: Minor bugfixes for Channels and Tabs #2340 [PBLPointwork]
+- Fix: Additional null checks and content rating fix while creating team #2296 [gautamdsheth]
+
+### Deprecated
+
+- Deprecated GetGroupInfo in favor of GetGroupInfoAsync (OfficeDevPnP.Core.Sites.SiteCollection class)
+- Deprecated SetGroupImage in favor of SetGroupImageAsync (OfficeDevPnP.Core.Sites.SiteCollection class)
+
 ## [3.12.1908.0 - August 2019 release]
 
 ### Added
 
-
 ### Changed
 
 - Fix: Added Built in CT Html Page layout #2321 [SchauDK]
-- Fix: Handle CreateGroupEx with SiteStatus = 1 (provisioning status)
+- Fix: Handle GroupSiteManager/CreateGroupEx with SiteStatus = 1 (provisioning status)
 - Fix: Increase default timeout for ALM API calls
 
 ## [3.11.1907.0 - July 2019 release]

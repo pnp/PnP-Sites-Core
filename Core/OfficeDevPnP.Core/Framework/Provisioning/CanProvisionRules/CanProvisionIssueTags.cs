@@ -27,5 +27,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules
         /// Lack of Permissions, the user is not a Tenant Admin, which is required by the rule
         /// </summary>
         USER_IS_NOT_TENANT_ADMIN,
+        /// <summary>
+        /// The App Catalog needs a few hours to be fully provisioned
+        /// </summary>
+        APP_CATALOG_NOT_YEY_FULLY_PROVISIONED
     }
 }

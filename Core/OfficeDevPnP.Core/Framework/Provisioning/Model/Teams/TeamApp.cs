@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Defines an TeamApp for automated provisiong of Microsoft Teams
     /// </summary>
-    public class TeamApp : BaseModel, IEquatable<TeamApp>
+    public partial class TeamApp : BaseModel, IEquatable<TeamApp>
     {
         #region Public Members
 

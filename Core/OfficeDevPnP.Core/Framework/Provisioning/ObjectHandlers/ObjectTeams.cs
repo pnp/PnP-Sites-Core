@@ -73,7 +73,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 WaitForTeamToBeReady(accessToken, teamId);
 
                 // And now we configure security, channels, and apps
-                if (!SetGroupSecurity(scope, team, teamId, accessToken)) return null;
+                // Only configure Security, if Security is configured
+                if (team.Security != null) { 
+                    if (!SetGroupSecurity(scope, team, teamId, accessToken)) return null;
+                }
                 if (!SetTeamChannels(scope, parser, team, teamId, accessToken)) return null;
                 if (!SetTeamApps(scope, team, teamId, accessToken)) return null;
 
@@ -193,7 +196,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         .Distinct(StringComparer.OrdinalIgnoreCase)
                         .ToDictionary(k => k, k =>
                         {
-                            var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{k}?$select=id", accessToken);
+                            var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(k.Replace("'", "''"))}?$select=id", accessToken);
                             return JToken.Parse(jsonUser).Value<string>("id");
                         });
 
@@ -218,8 +221,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     mailNickname = parsedMailNickname,
                     securityEnabled = false,
                     visibility = team.Visibility.ToString(),
-                    owners_odata_bind = (from o in desideredOwnerIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{o}").ToArray(),
-                    members_odata_bind = (from m in desideredMemberIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{m}").ToArray()
+                    owners_odata_bind = (from o in desideredOwnerIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(o.Replace("'", "''"))}").ToArray(),
+                    members_odata_bind = (from m in desideredMemberIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(m.Replace("'", "''"))}").ToArray()
                 };
 
                 // Make the Graph request to create the Office 365 Group
@@ -340,7 +343,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 "Conflict",
                 CoreResources.Provisioning_ObjectHandlers_Teams_Team_AlreadyExists,
                 "id",
-                team.GroupId,
+                parser.ParseString(team.GroupId),
                 CoreResources.Provisioning_ObjectHandlers_Teams_Team_ProvisioningError,
                 canPatch: true);
 
@@ -366,31 +369,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 //team.Visibility,
                 funSettings = new
                 {
-                    team.FunSettings.AllowGiphy,
-                    team.FunSettings.GiphyContentRating,
-                    team.FunSettings.AllowStickersAndMemes,
-                    team.FunSettings.AllowCustomMemes,
+                    team.FunSettings?.AllowGiphy,
+                    team.FunSettings?.GiphyContentRating,
+                    team.FunSettings?.AllowStickersAndMemes,
+                    team.FunSettings?.AllowCustomMemes,
                 },
                 guestSettings = new
                 {
-                    team.GuestSettings.AllowCreateUpdateChannels,
-                    team.GuestSettings.AllowDeleteChannels,
+                    team.GuestSettings?.AllowCreateUpdateChannels,
+                    team.GuestSettings?.AllowDeleteChannels,
                 },
                 memberSettings = new
                 {
-                    team.MemberSettings.AllowCreateUpdateChannels,
-                    team.MemberSettings.AllowAddRemoveApps,
-                    team.MemberSettings.AllowDeleteChannels,
-                    team.MemberSettings.AllowCreateUpdateRemoveTabs,
-                    team.MemberSettings.AllowCreateUpdateRemoveConnectors
+                    team.MemberSettings?.AllowCreateUpdateChannels,
+                    team.MemberSettings?.AllowAddRemoveApps,
+                    team.MemberSettings?.AllowDeleteChannels,
+                    team.MemberSettings?.AllowCreateUpdateRemoveTabs,
+                    team.MemberSettings?.AllowCreateUpdateRemoveConnectors
                 },
                 messagingSettings = new
                 {
-                    team.MessagingSettings.AllowUserEditMessages,
-                    team.MessagingSettings.AllowUserDeleteMessages,
-                    team.MessagingSettings.AllowOwnerDeleteMessages,
-                    team.MessagingSettings.AllowTeamMentions,
-                    team.MessagingSettings.AllowChannelMentions
+                    team.MessagingSettings?.AllowUserEditMessages,
+                    team.MessagingSettings?.AllowUserDeleteMessages,
+                    team.MessagingSettings?.AllowOwnerDeleteMessages,
+                    team.MessagingSettings?.AllowTeamMentions,
+                    team.MessagingSettings?.AllowChannelMentions
                 }
             };
 
@@ -448,7 +451,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToDictionary(k => k, k =>
                     {
-                        var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{k}?$select=id", accessToken);
+                        var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(k.Replace("'", "''"))}?$select=id", accessToken);
                         return JToken.Parse(jsonUser).Value<string>("id");
                     });
 
@@ -610,7 +613,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (channel.Tabs != null && channel.Tabs.Any())
                 {
-                    if (!SetTeamTabs(scope, channel.Tabs, teamId, channelId, accessToken)) return false;
+                    if (!SetTeamTabs(scope, parser, channel.Tabs, teamId, channelId, accessToken)) return false;
                 }
 
                 // TODO: Handle TabResources
@@ -632,6 +635,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static string UpdateTeamChannel(TeamChannel channel, string teamId, JToken existingChannel, string accessToken)
         {
+            // Not supported to update 'General' Channel
+            if(channel.DisplayName.Equals("General", StringComparison.InvariantCultureIgnoreCase))
+                return existingChannel["id"].ToString();
+
             var channelId = existingChannel["id"].ToString();
             var channelDisplayName = existingChannel["displayName"].ToString();
             var identicalChannelName = channel.DisplayName == channelDisplayName;
@@ -675,15 +682,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return channelId;
         }
 
-        public static bool SetTeamTabs(PnPMonitoredScope scope, TeamTabCollection tabs, string teamId, string channelId, string accessToken)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="parser">The PnP Token Parser</param>
+        /// <param name="tabs">A collection of Tabs to be created or updated</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="channelId">the ID of the target Channel</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        /// <returns></returns>
+        public static bool SetTeamTabs(PnPMonitoredScope scope, TokenParser parser, TeamTabCollection tabs, string teamId, string channelId, string accessToken)
         {
             var existingTabs = GetExistingTeamChannelTabs(teamId, channelId, accessToken);
 
             foreach (var tab in tabs)
             {
+                // Avoid ActivityLimitReached 
+                System.Threading.Thread.Sleep(TimeSpan.FromSeconds(5));
+
                 var existingTab = existingTabs.FirstOrDefault(x => HttpUtility.UrlDecode(x["displayName"].ToString()) == tab.DisplayName && x["teamsAppId"].ToString() == tab.TeamsAppId);
 
-                var tabId = existingTab == null ? CreateTeamTab(scope, tab, teamId, channelId, accessToken) : UpdateTeamTab(tab, teamId, channelId, existingTab["id"].ToString(), accessToken);
+                var tabId = existingTab == null ? CreateTeamTab(scope, tab, parser, teamId, channelId, accessToken) : UpdateTeamTab(tab, parser, teamId, channelId, existingTab["id"].ToString(), accessToken);
 
                 if (tabId == null) return false;
             }
@@ -696,23 +716,34 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return JToken.Parse(HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs", accessToken))["value"];
         }
 
-        private static string UpdateTeamTab(TeamTab tab, string teamId, string channelId, string tabId, string accessToken)
+        private static string UpdateTeamTab(TeamTab tab, TokenParser parser, string teamId, string channelId, string tabId, string accessToken)
         {
+            var displayname = parser.ParseString(tab.DisplayName);
+
             // teamsAppId is not allowed in the request
-            var teamsAppId = tab.TeamsAppId;
+            var teamsAppId = parser.ParseString(tab.TeamsAppId);
             tab.TeamsAppId = null;
+
+            if (tab.Configuration != null)
+            {
+                tab.Configuration.EntityId = parser.ParseString(tab.Configuration.EntityId);
+                tab.Configuration.ContentUrl = parser.ParseString(tab.Configuration.ContentUrl);
+                tab.Configuration.RemoveUrl = parser.ParseString(tab.Configuration.RemoveUrl);
+                tab.Configuration.WebsiteUrl = parser.ParseString(tab.Configuration.WebsiteUrl);
+            }
+
 
             // Prepare the request body for the Tab update
             var tabToUpdate = new
             {
-                displayName = tab.DisplayName,
+                displayName = displayname,
                 configuration = tab.Configuration != null
                     ? new
                     {
-                        entityId = tab.Configuration.EntityId,
-                        contentUrl = tab.Configuration.ContentUrl,
-                        removeUrl = tab.Configuration.RemoveUrl,
-                        websiteUrl = tab.Configuration.WebsiteUrl,
+                        tab.Configuration.EntityId,
+                        tab.Configuration.ContentUrl,
+                        tab.Configuration.RemoveUrl,
+                        tab.Configuration.WebsiteUrl
                     } : null,
             };
 
@@ -724,12 +755,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return tabId;
         }
 
-        private static string CreateTeamTab(PnPMonitoredScope scope, TeamTab tab, string teamId, string channelId, string accessToken)
+        private static string CreateTeamTab(PnPMonitoredScope scope, TeamTab tab, TokenParser parser, string teamId, string channelId, string accessToken)
         {
+            var displayname = parser.ParseString(tab.DisplayName);
+            var teamsAppId = parser.ParseString(tab.TeamsAppId);
+
+            if (tab.Configuration != null)
+            {
+                tab.Configuration.EntityId = parser.ParseString(tab.Configuration.EntityId);
+                tab.Configuration.ContentUrl = parser.ParseString(tab.Configuration.ContentUrl);
+                tab.Configuration.RemoveUrl = parser.ParseString(tab.Configuration.RemoveUrl);
+                tab.Configuration.WebsiteUrl = parser.ParseString(tab.Configuration.WebsiteUrl);
+            }
+
             var tabToCreate = new
             {
-                tab.DisplayName,
-                tab.TeamsAppId,
+                displayname,
+                teamsAppId,
                 configuration = tab.Configuration != null
                     ? new
                     {
@@ -750,7 +792,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 "NameAlreadyExists",
                 CoreResources.Provisioning_ObjectHandlers_Teams_Team_TabAlreadyExists,
                 "displayName",
-                tab.DisplayName,
+                displayname,
                 CoreResources.Provisioning_ObjectHandlers_Teams_Team_ProvisioningError,
                 false);
 
@@ -771,7 +813,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private static string CreateTeamChannelMessage(PnPMonitoredScope scope, TokenParser parser, TeamChannelMessage message, string teamId, string channelId, string accessToken)
         {
             var messageString = parser.ParseString(message.Message);
-            var messageJson = JToken.Parse($"{{ \"body\": {{ \"content\": \"{messageString}\" }} }}");
+            var messageJson = default(JToken);
+
+            try
+            {
+                // If the message is already in JSON format, we just use it
+                messageJson = JToken.Parse(messageString);
+            }
+            catch
+            {
+                // Otherwise try to build the JSON message content from scratch
+                messageJson = JToken.Parse($"{{ \"body\": {{ \"content\": \"{messageString}\" }} }}");
+            }
 
             var messageId = GraphHelper.CreateOrUpdateGraphObject(scope,
                 HttpMethodVerb.POST,
@@ -913,18 +966,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-#if !ONPREMISES
             if (!_willProvision.HasValue)
             {
                 _willProvision = hierarchy.Teams?.TeamTemplates?.Any() |
                     hierarchy.Teams?.Teams?.Any();
             }
-#else
-            if (!_willProvision.HasValue)
-            {
-                _willProvision = false;
-            }
-#endif
             return _willProvision.Value;
         }
 
@@ -939,7 +985,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override TokenParser ProvisionObjects(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-#if !ONPREMISES
             using (var scope = new PnPMonitoredScope(Name))
             {
                 // Prepare a method global variable to store the Access Token
@@ -951,13 +996,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var teamTemplate in teamTemplates)
                     {
-                        // Get a fresh Access Token for every request
-                        accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All");
+                        if (PnPProvisioningContext.Current != null)
+                        {
+                            // Get a fresh Access Token for every request
+                            accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All");
 
-                        // Create the Team starting from the JSON template
-                        var team = CreateTeamFromJsonTemplate(scope, parser, teamTemplate, accessToken);
+                            if (accessToken != null)
+                            {
+                                // Create the Team starting from the JSON template
+                                var team = CreateTeamFromJsonTemplate(scope, parser, teamTemplate, accessToken);
 
-                        // TODO: possible further processing...
+                                // TODO: possible further processing...
+                            }
+
+                        }
+
                     }
                 }
 
@@ -979,7 +1032,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // - Apps
             }
-#endif
 
             return parser;
         }

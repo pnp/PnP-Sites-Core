@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
 {
-    public class TeamAppInstance : BaseModel, IEquatable<TeamAppInstance>
+    public partial class TeamAppInstance : BaseModel, IEquatable<TeamAppInstance>
     {
         #region Public Members
 

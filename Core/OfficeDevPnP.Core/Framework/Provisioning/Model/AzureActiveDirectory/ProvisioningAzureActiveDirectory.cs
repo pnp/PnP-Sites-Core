@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
     /// <summary>
     /// Defines a complex type declaring settings for provisioning Azure Active Directory objects
     /// </summary>
-    public class ProvisioningAzureActiveDirectory: BaseModel, IEquatable<ProvisioningAzureActiveDirectory>
+    public partial class ProvisioningAzureActiveDirectory : BaseModel, IEquatable<ProvisioningAzureActiveDirectory>
     {
         #region Public members
         /// <summary>

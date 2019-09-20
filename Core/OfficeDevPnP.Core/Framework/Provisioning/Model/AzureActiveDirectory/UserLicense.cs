@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
     /// <summary>
     /// Defines an AAD User
     /// </summary>
-    public class UserLicense : BaseModel, IEquatable<UserLicense>
+    public partial class UserLicense : BaseModel, IEquatable<UserLicense>
     {
         #region Public Members
 
