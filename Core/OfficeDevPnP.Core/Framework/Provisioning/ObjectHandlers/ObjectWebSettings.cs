@@ -25,7 +25,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 web.EnsureProperties(
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                     w => w.NoCrawl,
                     w => w.CommentsOnSitePagesDisabled,
 #endif
@@ -41,7 +41,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.Url);
 
                 var webSettings = new WebSettings();
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 webSettings.NoCrawl = web.NoCrawl;
                 webSettings.CommentsOnSitePagesDisabled = web.CommentsOnSitePagesDisabled;
 #endif
@@ -265,7 +265,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     bool isNoScriptSite = web.IsNoScriptSite();
 
                     web.EnsureProperties(
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                         w => w.CommentsOnSitePagesDisabled,
 #endif
                         w => w.WebTemplate,
@@ -290,7 +290,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                     if (!isNoScriptSite)
                     {
                         web.NoCrawl = webSettings.NoCrawl;

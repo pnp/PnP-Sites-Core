@@ -499,7 +499,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                 }
             }
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             switch (updateType)
             {
                 case ListItemUpdateType.Update:

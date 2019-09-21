@@ -2,7 +2,7 @@
 
 namespace OfficeDevPnP.Core.Utilities.CanvasControl
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     ///     Interface for WebPart Post Processing
     /// </summary>
