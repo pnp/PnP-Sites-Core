@@ -58,6 +58,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     ///     Header
     ///     Footer
     ///     ProvisioningTemplateWebhooks 
+    ///     SiteSettings
     /// Teams:
     ///     TeamTemplate
     ///     Team
@@ -78,7 +79,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     /// Drive
     /// 
     /// To Cover:
-    ///     SiteSettings
     ///     DataRow Attachments
     ///     Properties for Folders
     ///     Teamify/HideTeamify in TeamSite
@@ -584,17 +584,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             // team common properties
             Assert.AreEqual("Sample Team 01", teams[0].DisplayName);
             Assert.AreEqual("This is just a sample Team 01", teams[0].Description);
-            Assert.AreEqual("{TeamId:GroupMailNickname}", teams[0].CloneFrom);
-            Assert.AreEqual("{groupid:DisplayName}", teams[1].GroupId);
+            Assert.AreEqual("{o365groupid:GroupMailNickname}", teams[0].CloneFrom);
+            Assert.AreEqual("{o365groupid:GroupMailNickname}", teams[1].GroupId);
             Assert.AreEqual("Private", teams[1].Classification);
             Assert.AreEqual(TeamSpecialization.EducationStandard, teams[1].Specialization);
             Assert.AreEqual(TeamVisibility.Public, teams[1].Visibility);
             Assert.AreEqual(false, teams[1].Archived);
-            Assert.AreEqual("sample.group", teams[1].MailNickname);
+            Assert.AreEqual("sample-team-02", teams[1].MailNickname);
             Assert.AreEqual("photo.jpg", teams[1].Photo);
 
             // team security
             var security = teams[0].Security;
+            Assert.AreEqual(true, security.AllowToAddGuests);
             Assert.AreEqual(false, security.ClearExistingMembers);
             Assert.AreEqual(true, security.ClearExistingOwners);
             Assert.AreEqual(2, security.Owners.Count);
@@ -626,13 +627,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, teams[1].MessagingSettings.AllowUserDeleteMessages);
             Assert.AreEqual(true, teams[1].MessagingSettings.AllowUserEditMessages);
 
+            // team discovery settings
+            Assert.AreEqual(false, teams[1].DiscoverySettings.ShowInTeamsSearchAndSuggestions);
+
             // team channels
             var channels = teams[1].Channels;
             Assert.AreEqual(3, channels.Count);
+            Assert.AreEqual("12345", channels[0].ID);
             Assert.AreEqual("This is just a Sample Channel", channels[0].Description);
             Assert.AreEqual("Sample Channel 01", channels[0].DisplayName);
             Assert.AreEqual(true, channels[0].IsFavoriteByDefault);
             Assert.AreEqual(1, channels[0].Tabs.Count);
+            Assert.AreEqual("67890", channels[0].Tabs[0].ID);
             Assert.AreEqual("My Tab 01", channels[0].Tabs[0].DisplayName);
             Assert.AreEqual("12345", channels[0].Tabs[0].TeamsAppId);
             Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView", channels[0].Tabs[0].Configuration.ContentUrl);
@@ -697,8 +703,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     AllowOwnerDeleteMessages = true,
                     AllowUserDeleteMessages = true
                 },
+                DiscoverySettings = new TeamDiscoverySettings
+                {
+                    ShowInTeamsSearchAndSuggestions = false,
+                },
                 Security = new Core.Framework.Provisioning.Model.Teams.TeamSecurity
                 {
+                    AllowToAddGuests = true,
                     ClearExistingMembers = true,
                     ClearExistingOwners = true,
                     Members = {
@@ -734,6 +745,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 {
                     new Core.Framework.Provisioning.Model.Teams.TeamChannel
                     {
+                        ID = "12345",
                         Description = "This is just a Sample Channel",
                         DisplayName = "Sample Channel 01",
                         IsFavoriteByDefault = true,
@@ -743,6 +755,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                             {
                                 DisplayName = "My Tab 01",
                                 TeamsAppId = "12345",
+                                ID = "67890",
                                 Configuration = new TeamTabConfiguration
                                 {
                                     ContentUrl = "https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView",
@@ -799,6 +812,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             // team security
             var security = team.Security;
+            Assert.AreEqual(true, security.AllowToAddGuests);
             Assert.AreEqual(true, security.Members.ClearExistingItems);
             Assert.AreEqual(true, security.Owners.ClearExistingItems);
             Assert.AreEqual(2, security.Owners.User.Count());
@@ -816,7 +830,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, team.GuestSettings.AllowCreateUpdateChannels);
             Assert.AreEqual(true, team.GuestSettings.AllowDeleteChannels);
 
-            // team memebers settings
+            // team members settings
             Assert.AreEqual(true, team.MembersSettings.AllowDeleteChannels);
             Assert.AreEqual(true, team.MembersSettings.AllowAddRemoveApps);
             Assert.AreEqual(true, team.MembersSettings.AllowCreateUpdateChannels);
@@ -830,13 +844,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, team.MessagingSettings.AllowUserDeleteMessages);
             Assert.AreEqual(true, team.MessagingSettings.AllowUserEditMessages);
 
+            // team discovery settings
+            Assert.AreEqual(false, team.DiscoverySettings.ShowInTeamsSearchAndSuggestions);
+
             // team channels
             var channels = team.Channels;
             Assert.AreEqual(1, channels.Count());
+            Assert.AreEqual("12345", channels[0].ID);
             Assert.AreEqual("This is just a Sample Channel", channels[0].Description);
             Assert.AreEqual("Sample Channel 01", channels[0].DisplayName);
             Assert.AreEqual(true, channels[0].IsFavoriteByDefault);
             Assert.AreEqual(1, channels[0].Tabs.Count());
+            Assert.AreEqual("67890", channels[0].Tabs[0].ID);
             Assert.AreEqual("My Tab 01", channels[0].Tabs[0].DisplayName);
             Assert.AreEqual("12345", channels[0].Tabs[0].TeamsAppId);
             Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView", channels[0].Tabs[0].Configuration.ContentUrl);
@@ -1948,6 +1967,60 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_SiteSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201909Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+            var siteSettings = template.SiteSettings;
+
+            Assert.AreEqual(true, siteSettings.AllowDesigner);
+            Assert.AreEqual(false, siteSettings.AllowCreateDeclarativeWorkflow);
+            Assert.AreEqual(false, siteSettings.AllowSaveDeclarativeWorkflowAsTemplate);
+            Assert.AreEqual(false, siteSettings.AllowSavePublishDeclarativeWorkflow);
+            Assert.AreEqual(true, siteSettings.SocialBarOnSitePagesDisabled);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_SiteSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate
+            {
+                SiteSettings = new Core.Framework.Provisioning.Model.SiteSettings
+                {
+                    AllowDesigner = true,
+                    AllowCreateDeclarativeWorkflow = false,
+                    AllowSaveDeclarativeWorkflowAsTemplate = false,
+                    AllowSavePublishDeclarativeWorkflow = false,
+                    SocialBarOnSitePagesDisabled = true,
+                }
+            };
+
+            var serializer = new XMLPnPSchemaV201909Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            var siteSettings = template.SiteSettings;
+
+            Assert.AreEqual(true, siteSettings.AllowDesigner);
+            Assert.AreEqual(false, siteSettings.AllowCreateDeclarativeWorkflow);
+            Assert.AreEqual(false, siteSettings.AllowSaveDeclarativeWorkflowAsTemplate);
+            Assert.AreEqual(false, siteSettings.AllowSavePublishDeclarativeWorkflow);
+            Assert.AreEqual(true, siteSettings.SocialBarOnSitePagesDisabled);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
         public void XMLSerializer_Deserialize_RegionalSettings()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
@@ -2986,9 +3059,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(2, list.DataRows.Count);
             Assert.AreEqual("ProjectID", list.DataRows.KeyColumn);
             Assert.AreEqual(UpdateBehavior.Overwrite, list.DataRows.UpdateBehavior);
+
             #region data row 1 asserts
+
             var dataRow = list.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("PRJ01")));
             Assert.IsNotNull(dataRow);
+
             security = dataRow.Security;
             Assert.IsNotNull(security);
             Assert.IsTrue(security.ClearSubscopes);
@@ -3017,10 +3093,24 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             dataValues = dataRow.Values.FirstOrDefault(d => d.Key == "ProjectDescription");
             Assert.IsNotNull(dataValues);
             Assert.AreEqual("This is a sample Project", dataValues.Value);
+
+            var attachments = dataRow.Attachments;
+            Assert.IsNotNull(attachments);
+            Assert.AreEqual(2, attachments.Count);
+            Assert.AreEqual("OneAttachment.docx", attachments[0].Name);
+            Assert.AreEqual("./Attachments/OneAttachment.docx", attachments[0].Src);
+            Assert.AreEqual(false, attachments[0].Overwrite);
+            Assert.AreEqual("AnotherAttachment.pptx", attachments[1].Name);
+            Assert.AreEqual("./Attachments/AnotherAttachment.pptx", attachments[1].Src);
+            Assert.AreEqual(true, attachments[1].Overwrite);
+
             #endregion
+
             #region data row 2 asserts
+
             dataRow = list.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("PRJ021")));
             Assert.IsNotNull(dataRow);
+
             security = dataRow.Security;
             Assert.IsNotNull(security);
             Assert.IsTrue(security.ClearSubscopes);
@@ -3049,6 +3139,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             dataValues = dataRow.Values.FirstOrDefault(d => d.Key == "ProjectDescription");
             Assert.IsNotNull(dataValues);
             Assert.AreEqual("This is another sample Project", dataValues.Value);
+
             #endregion
 
             #region user custom action
@@ -3067,8 +3158,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             #endregion
 
             #region folders
+
             Assert.IsNotNull(list.Folders);
-            Assert.AreEqual(3, list.Folders.Count);
+            Assert.AreEqual(4, list.Folders.Count);
             var fl = list.Folders.FirstOrDefault(f => f.Name == "SubFolder-01");
             Assert.IsNotNull(fl);
             Assert.IsTrue(fl.Folders.Count == 1);
@@ -3095,6 +3187,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             roleAssignment = security.RoleAssignments.FirstOrDefault(r => r.Principal == "user1@contoso.com");
             Assert.IsNotNull(roleAssignment);
             Assert.AreEqual("View Only", roleAssignment.RoleDefinition);
+
+            var flDocumentSet = list.Folders.FirstOrDefault(f => f.Name == "Sample-DocumentSet");
+            Assert.AreEqual("0x0120001234567890", flDocumentSet.ContentTypeID);
+            Assert.IsNotNull(flDocumentSet.Properties);
+            Assert.AreEqual(2, flDocumentSet.Properties.Count);
+            Assert.AreEqual("CustomValue01", flDocumentSet.Properties["CustomProperty01"]);
+            Assert.AreEqual("CustomValue02", flDocumentSet.Properties["CustomProperty02"]);
+
             #endregion
 
             #region IRM Settings
@@ -3386,8 +3486,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     ClearSubscopes = true
                 }));
             folder01.Folders.Add(new Core.Framework.Provisioning.Model.Folder("Folder01.02"));
+            var folder03 = new Core.Framework.Provisioning.Model.Folder("Folder03");
+            folder03.ContentTypeID = "0x0120001234567890";
+            folder03.Properties.Add("CustomProperty01", "CustomValue01");
+            folder03.Properties.Add("CustomProperty02", "CustomValue02");
+
             list.Folders.Add(folder01);
             list.Folders.Add(folder02);
+            list.Folders.Add(folder03);
             #endregion
 
             list.Fields.Add(new Core.Framework.Provisioning.Model.Field()
@@ -3631,7 +3737,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             #region folders
             Assert.IsNotNull(l.Folders);
-            Assert.AreEqual(2, l.Folders.Length);
+            Assert.AreEqual(3, l.Folders.Length);
             var fl = l.Folders.FirstOrDefault(f => f.Name == "Folder02");
             Assert.IsNotNull(fl);
             Assert.IsNull(fl.Folder1);
@@ -3659,6 +3765,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal03");
             Assert.IsNotNull(ra);
             Assert.AreEqual("FullControl", ra.RoleDefinition);
+            fl = l.Folders.FirstOrDefault(f => f.Name == "Folder03");
+            Assert.IsNotNull(fl);
+            Assert.AreEqual("0x0120001234567890", fl.ContentTypeID);
+            Assert.IsNotNull(fl.Properties);
+            Assert.AreEqual(2, fl.Properties.Length);
+            Assert.AreEqual("CustomProperty01", fl.Properties[0].Key);
+            Assert.AreEqual("CustomValue01", fl.Properties[0].Value);
+            Assert.AreEqual("CustomProperty02", fl.Properties[1].Key);
+            Assert.AreEqual("CustomValue02", fl.Properties[1].Value);
+
             #endregion
 
             #region IRM Settings

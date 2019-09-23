@@ -340,6 +340,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (webSettings.SiteLogo != null)
                     {
                         var logoUrl = parser.ParseString(webSettings.SiteLogo);
+                        if (template.BaseSiteTemplate == "SITEPAGEPUBLISHING#0" && web.WebTemplate == "GROUP")
+                        {
+                            // logo provisioning throws when applying across base template IDs; provisioning fails in this case
+                            // this is the error that is already (rightly so) shown beforehand in the console: WARNING: The source site from which the template was generated had a base template ID value of SITEPAGEPUBLISHING#0, while the current target site has a base template ID value of GROUP#0. This could cause potential issues while applying the template.
+                            WriteMessage("Applying site logo across base template IDs is not possible. Skipping site logo provisioning.", ProvisioningMessageType.Warning);
+                        } else
                         // Modern site? Then we assume the SiteLogo is actually a filepath
                         if (web.WebTemplate == "GROUP")
                         {
