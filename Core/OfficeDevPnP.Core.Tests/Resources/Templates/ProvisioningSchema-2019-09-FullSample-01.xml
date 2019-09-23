@@ -213,7 +213,14 @@
         DisableAppViews="false"
         HorizontalQuickLaunch="true"
         SearchScope="Hub"
-        />
+        IsMultilingual="true"
+        OverwriteTranslationsOnChange="true">
+        <pnp:AlternateUICultures>
+          <pnp:AlternateUICulture LCID="1033"/>
+          <pnp:AlternateUICulture LCID="1040"/>
+          <pnp:AlternateUICulture LCID="1035"/>
+        </pnp:AlternateUICultures>
+      </pnp:WebSettings>
 
       <pnp:SiteSettings
         AllowDesigner="true"
@@ -967,7 +974,7 @@
       </pnp:SiteWebhooks>
 
       <pnp:ClientSidePages>
-        <pnp:ClientSidePage PageName="SamplePage" PromoteAsTemplate="true" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true" Title="Client Side Page Title" ContentTypeID="0x01010012345">
+        <pnp:ClientSidePage PageName="SamplePage" PromoteAsTemplate="true" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true" Title="Client Side Page Title" ContentTypeID="0x01010012345"  CreateTranslations="true">
           <pnp:Header Type="Custom"
               ServerRelativeImageUrl="./site%20assets/picture.png"
               TranslateX="10.56"
@@ -1015,7 +1022,7 @@
             <pnp:Property Key="Key03" Value="Value 03" />
           </pnp:Properties>
         </pnp:ClientSidePage>
-        <pnp:ClientSidePage PageName="SamplePageWithVerticalSection" PromoteAsTemplate="true" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true" Title="Client Side Page Title" ContentTypeID="0x01010012345">
+        <pnp:ClientSidePage PageName="SamplePageWithVerticalSection" PromoteAsTemplate="true" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true" Title="Client Side Page Title" ContentTypeID="0x01010012345" CreateTranslations="true">
           <pnp:Header Type="Custom"
               ServerRelativeImageUrl="./site%20assets/picture.png"
               TranslateX="10.56"
@@ -1301,8 +1308,8 @@
                              AllowOwnerDeleteMessages="false"
                              AllowTeamMentions="true"
                              AllowChannelMentions="true"/>
-      <pnp:DiscoverySettings ShowInTeamsSearchAndSuggestions="true" />
-      <pnp:Security>
+      <pnp:DiscoverySettings ShowInTeamsSearchAndSuggestions="false" />
+      <pnp:Security AllowToAddGuests="true">
         <pnp:Owners ClearExistingItems="true">
           <pnp:User UserPrincipalName="owner01@domain.onmicrosoft.com" />
           <pnp:User UserPrincipalName="owner02@domain.onmicrosoft.com" />
@@ -1316,9 +1323,9 @@
       <pnp:Channels>
         <pnp:Channel DisplayName="Sample Channel 01"
                      Description="This is just a Sample Channel"
-                     IsFavoriteByDefault="true">
+                     IsFavoriteByDefault="true" ID="12345">
           <pnp:Tabs>
-            <pnp:Tab DisplayName="My Tab 01" TeamsAppId="12345">
+            <pnp:Tab DisplayName="My Tab 01" TeamsAppId="12345" ID="67890">
               <pnp:Configuration EntityId="2DCA2E6C7A10415CAF6B8AB6661B3154"
                                  ContentUrl="https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView" 
                                  WebsiteUrl="https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154"

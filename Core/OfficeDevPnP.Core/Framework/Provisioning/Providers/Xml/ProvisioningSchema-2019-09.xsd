@@ -371,7 +371,7 @@
             </xsd:element>
           </xsd:sequence>
         </xsd:complexType>
-        
+
       </xsd:element>
 
     </xsd:all>
@@ -730,7 +730,7 @@
     </xsd:sequence>
 
   </xsd:complexType>
-  
+
   <xsd:complexType name="Theme" mixed="true">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -803,7 +803,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    
+
     <xsd:attribute name="TargetUser" type="pnp:ReplaceableString" use="optional">
       <xsd:annotation>
         <xsd:appinfo>Updated with schema version 201909</xsd:appinfo>
@@ -912,7 +912,7 @@
       </xsd:simpleType>
     </xsd:attribute>
   </xsd:complexType>
-  
+
   <xsd:complexType name="Templates">
     <xsd:annotation>
       <xsd:documentation xml:lang="en">
@@ -1241,7 +1241,7 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-      
+
       <xsd:element name="Header" type="pnp:Header" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -1397,6 +1397,41 @@
         Section of Settings for the current Web Site, optional element.
       </xsd:documentation>
     </xsd:annotation>
+
+    <xsd:sequence>
+      <xsd:element name="AlternateUICultures" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Defines the list of Alternate UI Cultures for the current web, optional element.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="AlternateUICulture" minOccurs="1" maxOccurs="unbounded">
+              <xsd:annotation>
+                <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+                <xsd:documentation xml:lang="en">
+                  Defines an Alternate UI Culture item for the current web, optional element.
+                </xsd:documentation>
+              </xsd:annotation>
+
+              <xsd:complexType>
+                <xsd:attribute name="LCID" type="xsd:int" use="required">
+                  <xsd:annotation>
+                    <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+                    <xsd:documentation xml:lang="en">
+                      Defines the Locale ID of an Alternate UI Culture for the current web, optional element.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
 
     <xsd:attribute name="RequestAccessEmail" type="xsd:string" use="optional">
       <xsd:annotation>
@@ -1587,7 +1622,25 @@
           </xsd:enumeration>
         </xsd:restriction>
       </xsd:simpleType>
-      
+
+    </xsd:attribute>
+
+    <xsd:attribute name="IsMultilingual" type="xsd:boolean" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines whether to enable Multilingual capabilities for the current web, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="OverwriteTranslationsOnChange" type="xsd:boolean" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines whether to OverwriteTranslationsOnChange on change for the current web, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
     </xsd:attribute>
 
   </xsd:complexType>
@@ -2413,7 +2466,7 @@
     <xsd:sequence>
       <xsd:element name="User" type="pnp:User" maxOccurs="unbounded" />
     </xsd:sequence>
-    
+
     <xsd:attribute name="ClearExistingItems" type="xsd:boolean" use="optional" default="false">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -2813,7 +2866,7 @@
             <xsd:element name="DataRow" maxOccurs="unbounded" minOccurs="0">
               <xsd:complexType>
                 <xsd:sequence>
-                  <xsd:element name="DataValue" maxOccurs="unbounded" minOccurs="1" type="pnp:DataValue">
+                  <xsd:element name="DataValue" maxOccurs="unbounded" minOccurs="0" type="pnp:DataValue">
                     <xsd:annotation>
                       <xsd:documentation xml:lang="en">
                         Defines a single field to provision within a row that will be added to the List Instance, collection of elements (field values).
@@ -4312,7 +4365,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    
+
   </xsd:complexType>
 
   <xsd:complexType name="SiteWebhook">
@@ -4743,6 +4796,15 @@
       </xsd:annotation>
     </xsd:attribute>
 
+    <xsd:attribute name="CreateTranslations" type="xsd:boolean" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Instructs the engine to create translations of the page while provisionig it, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
   </xsd:complexType>
 
   <xsd:complexType name="Header">
@@ -4760,7 +4822,7 @@
           Defines the Layout of the Header, required attribute.
         </xsd:documentation>
       </xsd:annotation>
-    
+
       <xsd:simpleType>
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="Standard">
@@ -4790,7 +4852,7 @@
           Defines the Menu Style, required attribute.
         </xsd:documentation>
       </xsd:annotation>
-    
+
       <xsd:simpleType>
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="MegaMenu">
@@ -4840,7 +4902,7 @@
             Defines the Footer Links for the target site.
           </xsd:documentation>
         </xsd:annotation>
-      
+
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="FooterLink" type="pnp:FooterLink" minOccurs="1" maxOccurs="unbounded">
@@ -4853,9 +4915,9 @@
             </xsd:element>
           </xsd:sequence>
         </xsd:complexType>
-      
+
       </xsd:element>
-        
+
     </xsd:sequence>
 
     <xsd:attribute name="Enabled" type="xsd:boolean" use="required">
@@ -4866,7 +4928,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    
+
     <xsd:attribute name="Logo" type="pnp:ReplaceableString" use="optional">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -4903,7 +4965,7 @@
         Defines a Footer Link for the target site.
       </xsd:documentation>
     </xsd:annotation>
-    
+
     <xsd:sequence>
       <xsd:element name="FooterLink" type="pnp:FooterLink" minOccurs="0" maxOccurs="unbounded">
         <xsd:annotation>
@@ -4914,7 +4976,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-            
+
     <xsd:attribute name="DisplayName" type="pnp:ReplaceableString" use="required">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -4932,7 +4994,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-        
+
   </xsd:complexType>
 
   <xsd:complexType name="ProvisioningTemplateWebhooks">
@@ -4951,7 +5013,7 @@
             Defines a single Provisioning Template Webhook
           </xsd:documentation>
         </xsd:annotation>
-      
+
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="Parameters" minOccurs="0" maxOccurs="1">
@@ -4975,7 +5037,7 @@
               </xsd:complexType>
             </xsd:element>
           </xsd:sequence>
-        
+
           <xsd:attribute name="Kind" use="required">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -5065,8 +5127,8 @@
                   </xsd:annotation>
                 </xsd:enumeration>
               </xsd:restriction>
-            </xsd:simpleType>  
-        
+            </xsd:simpleType>
+
           </xsd:attribute>
 
           <xsd:attribute name="BodyFormat" use="optional" default="Json">
@@ -5104,10 +5166,10 @@
                   </xsd:annotation>
                 </xsd:enumeration>
               </xsd:restriction>
-            </xsd:simpleType>  
-        
+            </xsd:simpleType>
+
           </xsd:attribute>
-        
+
           <xsd:attribute name="Async" type="xsd:boolean" use="optional" default="true">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -5115,14 +5177,14 @@
                 Defines whether the Provisioning Template Webhook should be executed asychronously or not, optional attribute.
               </xsd:documentation>
             </xsd:annotation>
-          </xsd:attribute> 
-      
+          </xsd:attribute>
+
         </xsd:complexType>
-      
+
       </xsd:element>
     </xsd:sequence>
   </xsd:complexType>
-  
+
   <xsd:complexType name="CanvasSection">
     <xsd:annotation>
       <xsd:documentation xml:lang="en">
@@ -5359,7 +5421,7 @@
                 News Client Side Web Part
               </xsd:documentation>
             </xsd:annotation>
-          </xsd:enumeration>          
+          </xsd:enumeration>
           <xsd:enumeration value="NewsFeed" />
           <xsd:enumeration value="NewsReel" />
           <xsd:enumeration value="PageFields" />
@@ -6535,7 +6597,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-          
+
   </xsd:complexType>
 
   <xsd:complexType name="Publishing">
@@ -7683,9 +7745,9 @@
         Entry point to manage Microsoft Teams provisioning.
       </xsd:documentation>
     </xsd:annotation>
-  
+
     <xsd:sequence>
-    
+
       <xsd:choice minOccurs="0" maxOccurs="unbounded">
         <xsd:element name="TeamTemplate" type="pnp:TeamTemplate">
           <xsd:annotation>
@@ -7704,7 +7766,7 @@
           </xsd:annotation>
         </xsd:element>
       </xsd:choice>
-    
+
       <xsd:element name="Apps" type="pnp:TeamsApps" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -7715,7 +7777,7 @@
       </xsd:element>
 
     </xsd:sequence>
-  
+
   </xsd:complexType>
 
   <xsd:complexType name="BaseTeam">
@@ -7794,13 +7856,13 @@
     </xsd:attribute>
 
   </xsd:complexType>
-                     
+
   <xsd:complexType name="TeamTemplate">
     <xsd:complexContent mixed="true">
       <xsd:extension base="pnp:BaseTeam"></xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  
+
   <xsd:complexType name="TeamWithSettings">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8062,7 +8124,7 @@
                   </xsd:documentation>
                 </xsd:annotation>
               </xsd:attribute>
-              
+
             </xsd:complexType>
 
           </xsd:element>
@@ -8215,7 +8277,7 @@
           </xsd:simpleType>
 
         </xsd:attribute>
-      
+
         <xsd:attribute name="CloneFrom" type="pnp:ReplaceableString" use="optional">
           <xsd:annotation>
             <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8243,11 +8305,11 @@
           </xsd:annotation>
         </xsd:attribute>
 
-      </xsd:extension>      
+      </xsd:extension>
     </xsd:complexContent>
 
   </xsd:complexType>
-    
+
   <xsd:complexType name="TeamSecurity">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8255,7 +8317,7 @@
         Defines the Security settings for the Team, optional element.
       </xsd:documentation>
     </xsd:annotation>
-  
+
     <xsd:sequence>
       <xsd:element name="Owners" type="pnp:TeamSecurityUsers" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
@@ -8264,7 +8326,7 @@
             Defines the Owners of the Team, optional element.
           </xsd:documentation>
         </xsd:annotation>
-      </xsd:element>    
+      </xsd:element>
       <xsd:element name="Members" type="pnp:TeamSecurityUsers" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8272,9 +8334,9 @@
             Defines the Members of the Team, optional element.
           </xsd:documentation>
         </xsd:annotation>
-      </xsd:element>    
+      </xsd:element>
     </xsd:sequence>
-    
+
     <xsd:attribute name="AllowToAddGuests" type="xsd:boolean" use="optional" default="false">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
@@ -8283,9 +8345,9 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-  
+
   </xsd:complexType>
-  
+
   <xsd:complexType name="TeamSecurityUsers">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8293,7 +8355,7 @@
         Defines a list of users for a the Team, optional element.
       </xsd:documentation>
     </xsd:annotation>
-  
+
     <xsd:sequence>
       <xsd:element name="User" minOccurs="1" maxOccurs="unbounded">
         <xsd:annotation>
@@ -8313,7 +8375,7 @@
             </xsd:annotation>
           </xsd:attribute>
         </xsd:complexType>
-    
+
       </xsd:element>
     </xsd:sequence>
 
@@ -8335,9 +8397,9 @@
         Defines a Channel for a Team, optional element.
       </xsd:documentation>
     </xsd:annotation>
-              
+
     <xsd:all>
-    
+
       <xsd:element name="Tabs" type="pnp:TeamChannelTabs" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8366,7 +8428,7 @@
       </xsd:element>
 
     </xsd:all>
-      
+
     <xsd:attribute name="DisplayName" type="pnp:ReplaceableString" use="required">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8374,7 +8436,7 @@
           Defines the Display Name of the Channel, required attribute.
         </xsd:documentation>
       </xsd:annotation>
-    </xsd:attribute>  
+    </xsd:attribute>
 
     <xsd:attribute name="Description" type="pnp:ReplaceableString" use="required">
       <xsd:annotation>
@@ -8383,7 +8445,7 @@
           Defines the Description of the Channel, required attribute.
         </xsd:documentation>
       </xsd:annotation>
-    </xsd:attribute>  
+    </xsd:attribute>
 
     <xsd:attribute name="IsFavoriteByDefault" type="xsd:boolean" use="optional" default="false">
       <xsd:annotation>
@@ -8404,7 +8466,7 @@
     </xsd:attribute>
 
   </xsd:complexType>
-  
+
   <xsd:complexType name="TeamChannelTabs">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8412,7 +8474,7 @@
         Defines a collection of Tabs for a Channel in a Team, optional element.
       </xsd:documentation>
     </xsd:annotation>
-  
+
     <xsd:sequence>
       <xsd:element name="Tab" minOccurs="1" maxOccurs="unbounded">
         <xsd:annotation>
@@ -8423,7 +8485,7 @@
         </xsd:annotation>
 
         <xsd:complexType>
-          
+
           <xsd:sequence>
             <xsd:element name="Configuration" minOccurs="0" maxOccurs="1">
               <xsd:annotation>
@@ -8432,15 +8494,15 @@
                   Defines the Configuration for the Tab, required element.
                 </xsd:documentation>
               </xsd:annotation>
-            
+
               <xsd:complexType>
-                
+
                 <xsd:annotation>
                   <xsd:documentation xml:lang="en">
                     Refer to this document: https://docs.microsoft.com/en-us/graph/teams-configuring-builtin-tabs
                   </xsd:documentation>
                 </xsd:annotation>
-                  
+
                 <xsd:attribute name="EntityId" type="pnp:ReplaceableString" use="required">
                   <xsd:annotation>
                     <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8448,7 +8510,7 @@
                       Identifier for the entity hosted by the Tab provider, required attribute.
                     </xsd:documentation>
                   </xsd:annotation>
-                </xsd:attribute>  
+                </xsd:attribute>
 
                 <xsd:attribute name="ContentUrl" type="pnp:ReplaceableString" use="required">
                   <xsd:annotation>
@@ -8457,7 +8519,7 @@
                       Url used for rendering Tab contents in Teams, required attribute.
                     </xsd:documentation>
                   </xsd:annotation>
-                </xsd:attribute>  
+                </xsd:attribute>
 
                 <xsd:attribute name="RemoveUrl" type="pnp:ReplaceableString" use="required">
                   <xsd:annotation>
@@ -8466,7 +8528,7 @@
                       Url called by Teams client when a Tab is removed using the Teams Client, required attribute.
                     </xsd:documentation>
                   </xsd:annotation>
-                </xsd:attribute>  
+                </xsd:attribute>
 
                 <xsd:attribute name="WebsiteUrl" type="pnp:ReplaceableString" use="required">
                   <xsd:annotation>
@@ -8478,7 +8540,7 @@
                 </xsd:attribute>
 
               </xsd:complexType>
-            
+
             </xsd:element>
           </xsd:sequence>
 
@@ -8489,8 +8551,8 @@
                 Defines the Display Name of the Channel, required attribute.
               </xsd:documentation>
             </xsd:annotation>
-          </xsd:attribute>  
-        
+          </xsd:attribute>
+
           <xsd:attribute name="TeamsAppId" type="pnp:ReplaceableString" use="required">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8511,8 +8573,8 @@
 
         </xsd:complexType>
       </xsd:element>
-    </xsd:sequence>  
-  
+    </xsd:sequence>
+
   </xsd:complexType>
 
   <xsd:complexType name="TeamTabResources">
@@ -8589,7 +8651,7 @@
                 </xsd:enumeration>
               </xsd:restriction>
             </xsd:simpleType>
-            
+
           </xsd:attribute>
 
           <xsd:attribute name="TargetTabId" type="pnp:ReplaceableString" use="required">
@@ -8625,9 +8687,9 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-  
+
   </xsd:complexType>
-    
+
   <xsd:complexType name="TeamsApps">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8635,7 +8697,7 @@
         Defines the Apps for Teams
       </xsd:documentation>
     </xsd:annotation>
-  
+
     <xsd:sequence>
       <xsd:element name="App" minOccurs="1" maxOccurs="unbounded">
         <xsd:annotation>
@@ -8668,9 +8730,9 @@
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
-  
+
   </xsd:complexType>
-  
+
   <xsd:complexType name="AzureActiveDirectory">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8689,9 +8751,9 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-  
+
   </xsd:complexType>
-  
+
   <xsd:complexType name="AADUsers">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8712,9 +8774,9 @@
                   The Password Profile for the user, required element.
                 </xsd:documentation>
               </xsd:annotation>
-            
+
               <xsd:complexType>
-                
+
                 <xsd:attribute name="ForceChangePasswordNextSignIn" type="xsd:boolean" use="optional" default="false">
                   <xsd:annotation>
                     <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8741,9 +8803,9 @@
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:attribute>
-              
+
               </xsd:complexType>
-          
+
             </xsd:element>
             <xsd:element name="Licenses" minOccurs="0" maxOccurs="1">
               <xsd:annotation>
@@ -8764,7 +8826,7 @@
                     </xsd:annotation>
 
                     <xsd:complexType>
-                      
+
                       <xsd:sequence>
                         <xsd:element name="DisabledPlans" minOccurs="0" maxOccurs="1">
                           <xsd:annotation>
@@ -8788,7 +8850,7 @@
                           </xsd:complexType>
                         </xsd:element>
                       </xsd:sequence>
-                          
+
                       <xsd:attribute name="SkuId" type="pnp:ReplaceableString" use="required">
                         <xsd:annotation>
                           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8800,11 +8862,11 @@
                     </xsd:complexType>
                   </xsd:element>
                 </xsd:sequence>
-              </xsd:complexType>  
-          
+              </xsd:complexType>
+
             </xsd:element>
           </xsd:sequence>
-              
+
           <xsd:attribute name="AccountEnabled" type="xsd:boolean" use="required">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8908,11 +8970,11 @@
                 Declares the Usage Location for licenses assigned to the user, required attribute.
               </xsd:documentation>
             </xsd:annotation>
-          </xsd:attribute>          
+          </xsd:attribute>
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
-  
+
   </xsd:complexType>
 
   <xsd:complexType name="Drive">
@@ -8933,7 +8995,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    
+
   </xsd:complexType>
 
   <xsd:complexType name="DriveRoot">
@@ -8964,7 +9026,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-  
+
   </xsd:complexType>
 
   <xsd:complexType name="DriveItems">
@@ -9112,7 +9174,7 @@
     </xsd:attribute>
 
   </xsd:complexType>
-  
+
   <xsd:simpleType name="GUID">
     <xsd:annotation>
       <xsd:documentation xml:lang="en">
