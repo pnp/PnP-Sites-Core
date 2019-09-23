@@ -129,6 +129,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public Dictionary<String, String> Properties { get; set; } = new Dictionary<string, string>();
 
+        /// <summary>
+        /// Instructs the engine to create translations of the page while provisionig it
+        /// </summary>
+        public bool CreateTranslations { get; set; }
+
         #endregion
 
         #region Constructors

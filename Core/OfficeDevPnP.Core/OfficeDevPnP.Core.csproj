@@ -575,6 +575,8 @@
     <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningTemplateWebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachment.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachmentCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\AlternateUICulture.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\AlternateUICultureCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\UserProfile\UserProfile.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\UserProfile\UserProfileCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\SiteFooter.cs" />
@@ -711,12 +713,14 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\Office365GroupsSettingsFromModelToSchema.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\Office365GroupsSettingsFromSchemaToModel.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\AlternateUICultureFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\DriveSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ListInstancesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\TeamsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\TenantSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\SiteSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\WebSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201909Serializer.cs" />
     <Compile Include="Utilities\Graph\GraphHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ListItemUtilities.cs" />

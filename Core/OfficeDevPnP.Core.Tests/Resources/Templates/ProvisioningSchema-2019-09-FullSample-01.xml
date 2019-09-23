@@ -213,7 +213,14 @@
         DisableAppViews="false"
         HorizontalQuickLaunch="true"
         SearchScope="Hub"
-        />
+        IsMultilingual="true"
+        OverwriteTranslationsOnChange="true">
+        <pnp:AlternateUICultures>
+          <pnp:AlternateUICulture LCID="1033"/>
+          <pnp:AlternateUICulture LCID="1040"/>
+          <pnp:AlternateUICulture LCID="1035"/>
+        </pnp:AlternateUICultures>
+      </pnp:WebSettings>
 
       <pnp:SiteSettings
         AllowDesigner="true"
@@ -967,7 +974,7 @@
       </pnp:SiteWebhooks>
 
       <pnp:ClientSidePages>
-        <pnp:ClientSidePage PageName="SamplePage" PromoteAsTemplate="true" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true" Title="Client Side Page Title" ContentTypeID="0x01010012345">
+        <pnp:ClientSidePage PageName="SamplePage" PromoteAsTemplate="true" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true" Title="Client Side Page Title" ContentTypeID="0x01010012345"  CreateTranslations="true">
           <pnp:Header Type="Custom"
               ServerRelativeImageUrl="./site%20assets/picture.png"
               TranslateX="10.56"
@@ -1015,7 +1022,7 @@
             <pnp:Property Key="Key03" Value="Value 03" />
           </pnp:Properties>
         </pnp:ClientSidePage>
-        <pnp:ClientSidePage PageName="SamplePageWithVerticalSection" PromoteAsTemplate="true" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true" Title="Client Side Page Title" ContentTypeID="0x01010012345">
+        <pnp:ClientSidePage PageName="SamplePageWithVerticalSection" PromoteAsTemplate="true" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true" Title="Client Side Page Title" ContentTypeID="0x01010012345" CreateTranslations="true">
           <pnp:Header Type="Custom"
               ServerRelativeImageUrl="./site%20assets/picture.png"
               TranslateX="10.56"

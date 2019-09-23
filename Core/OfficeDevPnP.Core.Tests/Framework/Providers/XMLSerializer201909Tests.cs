@@ -1912,6 +1912,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("/sites/hubsite", webSettings.HubSiteUrl);
             Assert.AreEqual(false, webSettings.CommentsOnSitePagesDisabled);
             Assert.AreEqual(true, webSettings.QuickLaunchEnabled);
+            Assert.AreEqual(true, webSettings.IsMultilingual);
+            Assert.AreEqual(true, webSettings.OverwriteTranslationsOnChange);
+            Assert.IsNotNull(webSettings.AlternateUICultures);
+            Assert.AreEqual(3, webSettings.AlternateUICultures.Count);
+            Assert.AreEqual(1033, webSettings.AlternateUICultures[0].LCID);
+            Assert.AreEqual(1040, webSettings.AlternateUICultures[1].LCID);
+            Assert.AreEqual(1035, webSettings.AlternateUICultures[2].LCID);
         }
 
         [TestMethod]
@@ -1935,9 +1942,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     CustomMasterPageUrl = "{sitecollection}/_catalogs/MasterPage/CustomMaster.master",
                     HubSiteUrl = "/sites/hubsite",
                     CommentsOnSitePagesDisabled = false,
-                    QuickLaunchEnabled = true
+                    QuickLaunchEnabled = true,
+                    IsMultilingual = true,
+                    OverwriteTranslationsOnChange = true,
                 }
             };
+
+            result.WebSettings.AlternateUICultures.AddRange(
+                new AlternateUICulture[]
+                {
+                    new AlternateUICulture { LCID = 1033 },
+                    new AlternateUICulture { LCID = 1040 },
+                    new AlternateUICulture { LCID = 1035 },
+                });
 
             var serializer = new XMLPnPSchemaV201909Serializer();
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
@@ -1963,6 +1980,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("/sites/hubsite", webSettings.HubSiteUrl);
             Assert.AreEqual(false, webSettings.CommentsOnSitePagesDisabled);
             Assert.AreEqual(true, webSettings.QuickLaunchEnabled);
+            Assert.AreEqual(true, webSettings.IsMultilingual);
+            Assert.AreEqual(true, webSettings.OverwriteTranslationsOnChange);
+            Assert.IsNotNull(webSettings.AlternateUICultures);
+            Assert.AreEqual(3, webSettings.AlternateUICultures.Length);
+            Assert.AreEqual(1033, webSettings.AlternateUICultures[0].LCID);
+            Assert.AreEqual(1040, webSettings.AlternateUICultures[1].LCID);
+            Assert.AreEqual(1035, webSettings.AlternateUICultures[2].LCID);
         }
 
         [TestMethod]
@@ -4728,6 +4752,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, clientSidePages[0].EnableComments);
             Assert.AreEqual("Client Side Page Title", clientSidePages[0].Title);
             Assert.AreEqual("0x01010012345", clientSidePages[0].ContentTypeID);
+            Assert.AreEqual(true, clientSidePages[0].CreateTranslations);
 
             var page = clientSidePages[0];
             // header
@@ -4794,6 +4819,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 EnableComments = true,
                 Title = "Client Side Page Title",
                 ContentTypeID = "0x01010012345",
+                CreateTranslations = true,
                 Header = new Core.Framework.Provisioning.Model.ClientSidePageHeader
                 {
                     Type = ClientSidePageHeaderType.Custom,
@@ -4876,6 +4902,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, clientSidePages[0].EnableComments);
             Assert.AreEqual("Client Side Page Title", clientSidePages[0].Title);
             Assert.AreEqual("0x01010012345", clientSidePages[0].ContentTypeID);
+            Assert.AreEqual(true, clientSidePages[0].CreateTranslations);
 
             var page = clientSidePages[0];
             // header
