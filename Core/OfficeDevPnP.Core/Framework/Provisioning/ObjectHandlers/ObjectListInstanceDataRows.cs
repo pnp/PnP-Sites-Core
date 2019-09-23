@@ -680,6 +680,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
+                var pnpDataRow= new PnPDataRow(dataRow);
+
                 if (listItem.AttachmentFiles.Count > 0)
                 {
                     Dictionary<string, string> AttachmentFiles = new Dictionary<string, string>();
@@ -687,13 +689,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         AttachmentFiles.Add(file.FileName, file.ServerRelativeUrl);
                     }
-                    var FilePaths = SaveAttachmentsToConnector(web, listInstance, listItem.Id, AttachmentFiles, scope);
-                    //Todo: complete when Schema Extension is here to store AttachmentFiles to DataRows
-                    //https://github.com/SharePoint/PnP-Provisioning-Schema/issues/409
+                    SaveAttachmentsToConnector(web, listInstance, listItem.Id, AttachmentFiles, pnpDataRow, scope);
                 }
 
 
-                return new PnPDataRow(dataRow);
+                return pnpDataRow;
             }
             catch (Exception ex)
             {
@@ -709,10 +709,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="listInstance"></param>
         /// <param name="ListItemId"></param>
         /// <param name="AttachmentFiles"></param>
+        /// <param name="dataRow"></param>
         /// <param name="scope"></param>
-        private List<string> SaveAttachmentsToConnector(Web web, ListInstance listInstance, int ListItemId, Dictionary<string, string> AttachmentFiles, PnPMonitoredScope scope)
+        private void SaveAttachmentsToConnector(Web web, ListInstance listInstance, int ListItemId, Dictionary<string, string> AttachmentFiles, PnPDataRow dataRow, PnPMonitoredScope scope)
         {
-            List<string> filePaths = new List<string>();
             foreach (var fileName in AttachmentFiles.Keys)
             {
                 string destfileFolder = $"{listInstance.Url.Remove(0, 6)}/{ListItemId}/";
@@ -725,14 +725,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var streamX = spFile.OpenBinaryStream();
                     web.Context.ExecuteQueryRetry();
                     listInstance.ParentTemplate.Connector.SaveFileStream(fileName, destfileFolder, streamX.Value);
-                    filePaths.Add($"{destfileFolder}{fileName}");
+                    dataRow.Attachments.Add(new Model.SharePoint.InformationArchitecture.DataRowAttachment() { Name=fileName, Src= $"{destfileFolder}{fileName}", Overwrite=true });
                 }
                 catch (Exception ex)
                 {
                     scope.LogError(ex, "Extract of ListAttachment {0} failed", destfileFolder);
                 }
             }
-            return filePaths;
         }
 
         /// <summary>
