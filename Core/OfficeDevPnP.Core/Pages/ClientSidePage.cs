@@ -1673,7 +1673,8 @@ namespace OfficeDevPnP.Core.Pages
 
             // Perform vertical section column matchup if that did not happen yet
             var verticalSectionColumn = this.sections.Where(p => p.VerticalSectionColumn != null).FirstOrDefault();
-            if (verticalSectionColumn != null)
+            // Only continue if the vertical section column we found was "standalone" and not yet matched with other columns
+            if (verticalSectionColumn != null && verticalSectionColumn.Columns.Count == 1)
             {
                 // find another, non vertical section, column with the same zoneindex
                 var matchedUpSection = this.sections.Where(p => p.VerticalSectionColumn == null && p.Order == verticalSectionColumn.Order).FirstOrDefault();
