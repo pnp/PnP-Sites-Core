@@ -701,6 +701,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUpdateValue.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FileUtilities.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.cs">
       <DependentUpon>ProvisioningSchema-2019-09.xsd</DependentUpon>
     </Compile>
