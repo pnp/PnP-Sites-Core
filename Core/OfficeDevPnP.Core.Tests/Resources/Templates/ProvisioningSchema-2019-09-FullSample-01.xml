@@ -145,12 +145,12 @@
         <pnp:Property Key="OfficeLocation" Value="Seattle, WS"/>
         <pnp:Property Key="PhoneNumber" Value="+1-321-123456"/>
       </pnp:SPUserProfile>
-      <pnp:SPUserProfile TargetUser="group01@contoso.com">
+      <pnp:SPUserProfile TargetGroup="group01@contoso.com">
         <pnp:Property Key="Department" Value="R&amp;D"/>
         <pnp:Property Key="OfficeLocation" Value="New York, NY"/>
         <pnp:Property Key="PhoneNumber" Value="+1-456-123456"/>
       </pnp:SPUserProfile>
-      <pnp:SPUserProfile TargetUser="group02@{parameter:O365TenantName}.onmicrosoft.com">
+      <pnp:SPUserProfile TargetGroup="group02@{parameter:O365TenantName}.onmicrosoft.com">
         <pnp:Property Key="Department" Value="Production"/>
         <pnp:Property Key="OfficeLocation" Value="Washington, DC"/>
         <pnp:Property Key="PhoneNumber" Value="+1-789-123456"/>
@@ -1301,8 +1301,8 @@
                              AllowOwnerDeleteMessages="false"
                              AllowTeamMentions="true"
                              AllowChannelMentions="true"/>
-      <pnp:DiscoverySettings ShowInTeamsSearchAndSuggestions="true" />
-      <pnp:Security>
+      <pnp:DiscoverySettings ShowInTeamsSearchAndSuggestions="false" />
+      <pnp:Security AllowToAddGuests="true">
         <pnp:Owners ClearExistingItems="true">
           <pnp:User UserPrincipalName="owner01@domain.onmicrosoft.com" />
           <pnp:User UserPrincipalName="owner02@domain.onmicrosoft.com" />
@@ -1316,9 +1316,9 @@
       <pnp:Channels>
         <pnp:Channel DisplayName="Sample Channel 01"
                      Description="This is just a Sample Channel"
-                     IsFavoriteByDefault="true">
+                     IsFavoriteByDefault="true" ID="12345">
           <pnp:Tabs>
-            <pnp:Tab DisplayName="My Tab 01" TeamsAppId="12345">
+            <pnp:Tab DisplayName="My Tab 01" TeamsAppId="12345" ID="67890">
               <pnp:Configuration EntityId="2DCA2E6C7A10415CAF6B8AB6661B3154"
                                  ContentUrl="https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView" 
                                  WebsiteUrl="https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154"

@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.SPUPS
         /// <summary>
         /// Properties of the UserProfile
         /// </summary>
-        public Dictionary<string, string> Properties { get; private set; }
+        public Dictionary<string, string> Properties { get; private set; } = new Dictionary<string, string>();
 
         /// <summary>
         /// The Target User of the target UserProfile
