@@ -1,11 +1,13 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Diagnostics;
+using PnPTemplate=OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningTemplate;
+using PnPDataRowAttachmentCollection = OfficeDevPnP.Core.Framework.Provisioning.Model.SharePoint.InformationArchitecture.DataRowAttachmentCollection;
 using OfficeDevPnP.Core.Utilities;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.IO;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 {
@@ -261,7 +263,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             UpdateOverwriteVersion
         }
 
-        public static void UpdateListItem(ListItem item, TokenParser parser, IDictionary<string, string> valuesToSet, ListItemUpdateType updateType)
+        public static void UpdateListItem(ListItem item, TokenParser parser, IDictionary<string, string> valuesToSet, ListItemUpdateType updateType, PnPTemplate template=null, PnPDataRowAttachmentCollection attachments =null)
         {
             var itemValues = new List<FieldUpdateValue>();
 
@@ -521,6 +523,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 #else
             item.Update();
 #endif
+            if (template!=null &&attachments != null && attachments.Any())
+            {
+                List<string> existingFiles = new List<string>();
+
+                foreach (var attachment in attachments)
+                {
+                    string fileName = Path.GetFileName(attachment.Src);
+                    if (!existingFiles.Any(f => f == fileName) || attachment.Overwrite)
+                    {
+                        var fileBytes = ConnectorFileHelper.GetFileBytes(template.Connector, attachment.Src);
+                        if (fileBytes != null && fileBytes.Length > 0)
+                        {
+                            AttachmentCreationInformation aci = new AttachmentCreationInformation()
+                            {
+                                FileName = fileName,
+                                ContentStream = new MemoryStream(fileBytes)
+                            };
+
+                            item.AttachmentFiles.Add(aci);
+                            item.Update();
+                        }
+                    }
+                }
+            }
+
             context.ExecuteQueryRetry();
         }
 

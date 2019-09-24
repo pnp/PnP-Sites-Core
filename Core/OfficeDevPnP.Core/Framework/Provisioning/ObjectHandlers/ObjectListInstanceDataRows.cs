@@ -135,7 +135,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         listitem = list.AddItem(listitemCI);
                                     }
 
-                                    ListItemUtilities.UpdateListItem(listitem, parser, dataRow.Values, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion);
+                                    ListItemUtilities.UpdateListItem(listitem, parser, dataRow.Values, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion, template, dataRow.Attachments);
 
                                     if (dataRow.Security != null && (dataRow.Security.ClearSubscopes || dataRow.Security.CopyRoleAssignments || dataRow.Security.RoleAssignments.Count > 0))
                                     {
@@ -667,13 +667,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             value = TokenizeValue(web, field, fieldValue, fieldValuesAsText);
                         }
 
-                        if (fieldValue.Key == "ContentTypeId")
+                        if (fieldValue.Key.Equals("ContentTypeId", StringComparison.CurrentCultureIgnoreCase))
                         {
                             value = null; //ignore here since already in dataRow
                         }
 
                         // We process real values only
-                        if (value != null && !String.IsNullOrEmpty(value) && value != "[]")
+                        if (!string.IsNullOrWhiteSpace(value) && value != "[]")
                         {
                             dataRow.Add(fieldValue.Key, value);
                         }
@@ -900,21 +900,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (!field.ReadOnlyField || WriteableReadOnlyField.Contains(field.InternalName.ToLower()))
                             {
                                 value = TokenizeValue(web, field, fieldValue, fieldValuesAsText);
-
-                                if (fieldValue.Key == "ContentTypeId")
-                                {
-                                    value = null; //ignore here since already in dataRow
-                                }
                             }
-                            //Todo: One Note Folder
+
+                            if (fieldValue.Key.Equals("ContentTypeId",StringComparison.CurrentCultureIgnoreCase))
+                            {
+                                value = null; //ignore here since already in dataRow
+                            }
+
                             if (fieldValue.Key.Equals("HTML_x0020_File_x0020_Type", StringComparison.CurrentCultureIgnoreCase) &&
                                 fieldValuesAsText["HTML_x0020_File_x0020_Type"] == "OneNote.Notebook")
                             {
-                                value = "OneNote.Notebook";
+                                pnpFolder.Properties.Add("File_x0020_Type", "OneNote.Notebook");
+                                pnpFolder.Properties.Add(fieldValue.Key, "OneNote.Notebook");
+                                value = null;
                             }
 
                             // We process real values only
-                            if (value != null && !String.IsNullOrEmpty(value) && value != "[]")
+                            if (!string.IsNullOrWhiteSpace(value) && value != "[]")
                             {
                                 pnpFolder.Properties.Add(fieldValue.Key, value);
                             }
