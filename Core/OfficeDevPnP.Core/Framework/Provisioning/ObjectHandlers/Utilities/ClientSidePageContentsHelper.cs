@@ -115,9 +115,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             Order = section.Order,
                             BackgroundEmphasis = (Emphasis)section.ZoneEmphasis,
                         };
-                        if(section.VerticalSectionColumn != null)
+                        if (section.VerticalSectionColumn != null)
                         {
-                            sectionInstance.VerticalSectionEmphasis = (Emphasis) section.VerticalSectionColumn.VerticalSectionEmphasis;
+                            sectionInstance.VerticalSectionEmphasis = (Emphasis)section.VerticalSectionColumn.VerticalSectionEmphasis;
                         }
                         // Set section type
                         switch (section.Type)
@@ -168,7 +168,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 // Create control
                                 CanvasControl controlInstance = new CanvasControl()
                                 {
-                                    Column = column.Order,
+                                    Column = column.IsVerticalSectionColumn ? section.Columns.IndexOf(column) + 1 : column.Order,
                                     ControlId = control.InstanceId,
                                     Order = control.Order,
                                 };
