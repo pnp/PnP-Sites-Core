@@ -137,7 +137,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         listitem = list.AddItem(listitemCI);
                                     }
 
-                                    ListItemUtilities.UpdateListItem(listitem, parser, dataRow.Values, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion, template, dataRow.Attachments);
+                                    ListItemUtilities.UpdateListItem(listitem, parser, dataRow.Values, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion);
 
                                     if (dataRow.Security != null && (dataRow.Security.ClearSubscopes || dataRow.Security.CopyRoleAssignments || dataRow.Security.RoleAssignments.Count > 0))
                                     {
