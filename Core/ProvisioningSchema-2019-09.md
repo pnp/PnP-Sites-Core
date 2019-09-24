@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 9/16/2019*
+* Topic automatically generated on 9/23/2019*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -786,10 +786,20 @@ Section of Settings for the current Web Site, optional element.
       DisableFlows="xsd:boolean"
       DisableAppViews="xsd:boolean"
       HorizontalQuickLaunch="xsd:boolean"
-      SearchScope="">
+      SearchScope=""
+      IsMultilingual="xsd:boolean"
+      OverwriteTranslationsOnChange="xsd:boolean">
+   <pnp:AlternateUICultures />
 </pnp:WebSettings>
 ```
 
+
+Here follow the available child elements for the WebSettings element.
+
+
+Element|Type|Description
+-------|----|-----------
+AlternateUICultures|[AlternateUICultures](#alternateuicultures)|Defines the list of Alternate UI Cultures for the current web, optional element.
 
 Here follow the available attributes for the WebSettings element.
 
@@ -814,6 +824,25 @@ DisableFlows|xsd:boolean|Defines whether disable flows for the current web, opti
 DisableAppViews|xsd:boolean|Defines whether disable PowerApps for the current web, optional attribute.
 HorizontalQuickLaunch|xsd:boolean|Defines whether to enable the Horizontal QuickLaunch for the current web, optional attribute.
 SearchScope||Defines the SearchScope for the site, optional attribute.
+IsMultilingual|xsd:boolean|Defines whether to enable Multilingual capabilities for the current web, optional attribute.
+OverwriteTranslationsOnChange|xsd:boolean|Defines whether to OverwriteTranslationsOnChange on change for the current web, optional attribute.
+<a name="alternateuicultures"></a>
+### AlternateUICultures
+Defines the list of Alternate UI Cultures for the current web, optional element.
+
+```xml
+<pnp:AlternateUICultures>
+   <pnp:AlternateUICulture />
+</pnp:AlternateUICultures>
+```
+
+
+Here follow the available child elements for the  element.
+
+
+Element|Type|Description
+-------|----|-----------
+AlternateUICulture|[AlternateUICulture](#alternateuiculture)|Defines an Alternate UI Culture item for the current web, optional element.
 <a name="sitesettings"></a>
 ### SiteSettings
 Section of Settings for the current Site Collection, optional element.
@@ -2430,7 +2459,8 @@ Defines a single element of type ClientSidePage.
       Publish="xsd:boolean"
       EnableComments="xsd:boolean"
       Title="xsd:string"
-      ContentTypeID="pnp:ReplaceableString">
+      ContentTypeID="pnp:ReplaceableString"
+      CreateTranslations="xsd:boolean">
    <pnp:Sections />
    <pnp:Header />
    <pnp:FieldValues />
@@ -2465,6 +2495,7 @@ Publish|xsd:boolean|Defines whether the page will be published or not, optional 
 EnableComments|xsd:boolean|Defines whether the page will have comments enabled or not, optional attribute (default: true).
 Title|xsd:string|Defines the Title of the page, optional attribute.
 ContentTypeID|ReplaceableString|Defines the Content Type ID for the page, optional attribute.
+CreateTranslations|xsd:boolean|Instructs the engine to create translations of the page while provisionig it, optional attribute.
 <a name="sections"></a>
 ### Sections
 Defines the Canvas sections for a single ClientSidePage.

@@ -4,6 +4,8 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using PnPFolder = OfficeDevPnP.Core.Framework.Provisioning.Model.Folder;
 using PnPSiteSecurity = OfficeDevPnP.Core.Framework.Provisioning.Model.SiteSecurity;
@@ -141,6 +143,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         listitem.SetSecurity(parser, dataRow.Security);
                                     }
+
+                                    if (dataRow.Attachments != null && dataRow.Attachments.Count > 0)
+                                    {
+                                        foreach (var attachment in dataRow.Attachments)
+                                        {
+                                            attachment.Name = parser.ParseString(attachment.Name);
+                                            attachment.Src = parser.ParseString(attachment.Src);
+                                            var overwrite = attachment.Overwrite;
+                                            listitem.EnsureProperty(l => l.AttachmentFiles);
+
+                                            Attachment existingItem = null;
+                                            if (listitem.AttachmentFiles.Count > 0)
+                                            {
+                                                existingItem = listitem.AttachmentFiles.FirstOrDefault(a => a.FileName.Equals(attachment.Name, StringComparison.OrdinalIgnoreCase));
+                                            }
+                                            if (existingItem != null)
+                                            {
+                                                if (overwrite)
+                                                {
+                                                    existingItem.DeleteObject();
+                                                    web.Context.ExecuteQueryRetry();
+                                                    AddAttachment(template, listitem, attachment);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                AddAttachment(template, listitem, attachment);
+                                            }
+                                        }
+                                    }
                                 }
                             }
                             catch (ServerException ex)
@@ -161,10 +193,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
+
                 #endregion DataRows
             }
 
+
             return parser;
+        }
+
+
+        private void AddAttachment(ProvisioningTemplate template, ListItem listitem, Model.SharePoint.InformationArchitecture.DataRowAttachment attachment)
+        {
+#if !SP2013 && !SP2016
+            listitem.AttachmentFiles.AddUsingPath(ResourcePath.FromDecodedUrl(attachment.Name), FileUtilities.GetFileStream(template, attachment.Src));
+#else
+            var attachmentCI = new AttachmentCreationInformation()
+            {
+                ContentStream = FileUtilities.GetFileStream(template, attachment.Src),
+                FileName = attachment.Name
+            };
+            listitem.AttachmentFiles.Add(attachmentCI);
+#endif
+            listitem.Context.ExecuteQueryRetry();
         }
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)

@@ -14,7 +14,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
     [TemplateSchemaSerializer(SerializationSequence = 350, DeserializationSequence = 350,
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201909,
         Scope = SerializerScope.ProvisioningTemplate)]
-    internal class SiteSettingsSerializer : PnPBaseSchemaSerializer<WebSettings>
+    internal class SiteSettingsSerializer : PnPBaseSchemaSerializer<SiteSettings>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {

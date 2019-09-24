@@ -3706,13 +3706,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         /// <remarks/>
         BingMap,
-
+        
         /// <remarks/>
         Button,
-
+        
         /// <remarks/>
         CallToAction,
-
+        
         /// <remarks/>
         ClientWebPart,
         
@@ -3805,10 +3805,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         /// <remarks/>
         SiteActivity,
-
+        
         /// <remarks/>
         Sites,
-
+        
         /// <remarks/>
         Spacer,
         
@@ -4020,10 +4020,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         private string contentTypeIDField;
         
+        private bool createTranslationsField;
+        
         public ClientSidePage() {
             this.layoutField = "Article";
             this.publishField = true;
             this.enableCommentsField = true;
+            this.createTranslationsField = false;
         }
         
         /// <remarks/>
@@ -4211,6 +4214,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
             }
             set {
                 this.contentTypeIDField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool CreateTranslations {
+            get {
+                return this.createTranslationsField;
+            }
+            set {
+                this.createTranslationsField = value;
             }
         }
     }
@@ -10765,6 +10780,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
     public partial class WebSettings {
         
+        private WebSettingsAlternateUICulture[] alternateUICulturesField;
+        
         private string requestAccessEmailField;
         
         private bool noCrawlField;
@@ -10809,12 +10826,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         private bool searchScopeFieldSpecified;
         
+        private bool isMultilingualField;
+        
+        private bool overwriteTranslationsOnChangeField;
+        
         public WebSettings() {
             this.excludeFromOfflineClientField = false;
             this.membersCanShareField = false;
             this.disableFlowsField = false;
             this.disableAppViewsField = false;
             this.horizontalQuickLaunchField = false;
+            this.isMultilingualField = false;
+            this.overwriteTranslationsOnChangeField = false;
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute("AlternateUICulture", IsNullable=false)]
+        public WebSettingsAlternateUICulture[] AlternateUICultures {
+            get {
+                return this.alternateUICulturesField;
+            }
+            set {
+                this.alternateUICulturesField = value;
+            }
         }
         
         /// <remarks/>
@@ -11061,6 +11095,52 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
             }
             set {
                 this.searchScopeFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool IsMultilingual {
+            get {
+                return this.isMultilingualField;
+            }
+            set {
+                this.isMultilingualField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool OverwriteTranslationsOnChange {
+            get {
+                return this.overwriteTranslationsOnChangeField;
+            }
+            set {
+                this.overwriteTranslationsOnChangeField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
+    public partial class WebSettingsAlternateUICulture {
+        
+        private int lCIDField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LCID {
+            get {
+                return this.lCIDField;
+            }
+            set {
+                this.lCIDField = value;
             }
         }
     }
