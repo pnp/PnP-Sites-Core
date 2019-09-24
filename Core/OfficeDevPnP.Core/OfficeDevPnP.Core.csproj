@@ -673,6 +673,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchySequenceTermGroups.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSiteSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\PnPProvisioningContext.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AssociatedGroupIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneToken.cs" />
@@ -993,7 +994,7 @@
     <Compile Include="Framework\Provisioning\Model\Hierarchy\IProvisioningTemplateDescendant.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\ListInstanceCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\Localization.cs" />
-    <Compile Include="Framework\Provisioning\Model\Extensibility\Handlers.cs" />
+    <Compile Include="Framework\Provisioning\Model\Handlers.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\LocalizationCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Navigation\ManagedNavigation.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Navigation\Navigation.cs" />
