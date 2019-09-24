@@ -993,7 +993,7 @@
     <Compile Include="Framework\Provisioning\Model\Hierarchy\IProvisioningTemplateDescendant.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\ListInstanceCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\Localization.cs" />
-    <Compile Include="Framework\Provisioning\Model\Extensibility\Handlers.cs" />
+    <Compile Include="Framework\Provisioning\Model\Handlers.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\LocalizationCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Navigation\ManagedNavigation.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Navigation\Navigation.cs" />
