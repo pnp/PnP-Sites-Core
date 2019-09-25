@@ -103,6 +103,14 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
+      <xsd:element name="ProvisioningWebhooks" type="pnp:ProvisioningWebhooks" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Entry point to manage global provisioning webhooks.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
     </xsd:sequence>
 
     <xsd:attribute name="Version" type="xsd:decimal" use="optional">
@@ -1260,13 +1268,34 @@
         </xsd:annotation>
       </xsd:element>
 
-      <xsd:element name="ProvisioningTemplateWebhooks" type="pnp:ProvisioningTemplateWebhooks" minOccurs="0" maxOccurs="1">
+      <xsd:element name="ProvisioningTemplateWebhooks" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
           <xsd:documentation xml:lang="en">
             The Webhooks for the Provisioning Template, optional element.
           </xsd:documentation>
         </xsd:annotation>
+
+        <xsd:complexType>
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Allows to define one or more webhooks that will be invoked by the engine, upon completion of specific actions
+            </xsd:documentation>
+          </xsd:annotation>
+
+          <xsd:sequence>
+            <xsd:element name="ProvisioningTemplateWebhook" minOccurs="0" maxOccurs="unbounded" type="pnp:ProvisioningWebhook">
+              <xsd:annotation>
+                <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+                <xsd:documentation xml:lang="en">
+                  Defines a single Provisioning Template Webhook
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+
       </xsd:element>
 
       <xsd:element name="Theme" type="pnp:Theme" minOccurs="0" maxOccurs="1">
@@ -4805,6 +4834,15 @@
       </xsd:annotation>
     </xsd:attribute>
 
+    <xsd:attribute name="ThumbnailUrl" type="pnp:ReplaceableString" use="optional">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines the URL of the thumbnail for the client side page, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
   </xsd:complexType>
 
   <xsd:complexType name="Header">
@@ -4997,192 +5035,187 @@
 
   </xsd:complexType>
 
-  <xsd:complexType name="ProvisioningTemplateWebhooks">
-    <xsd:annotation>
-      <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-      <xsd:documentation xml:lang="en">
-        Allows to define one or more webhooks that will be invoked by the engine, upon completion of specific actions
-      </xsd:documentation>
-    </xsd:annotation>
-
+  <xsd:complexType name="ProvisioningWebhook">
     <xsd:sequence>
-      <xsd:element name="ProvisioningTemplateWebhook" minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="Parameters" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
-          <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+          <xsd:appinfo>Updated with schema version 201909</xsd:appinfo>
           <xsd:documentation xml:lang="en">
-            Defines a single Provisioning Template Webhook
+            A collection of custom parameters that will be provided to the webhook request
           </xsd:documentation>
         </xsd:annotation>
-
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="Parameters" minOccurs="0" maxOccurs="1">
+            <xsd:element name="Parameter" type="pnp:StringDictionaryItem" minOccurs="0" maxOccurs="unbounded">
               <xsd:annotation>
                 <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
                 <xsd:documentation xml:lang="en">
-                  A collection of custom parameters that will be provided to the webhook request
+                  A custom parameter that will be provided to the webhook request
                 </xsd:documentation>
               </xsd:annotation>
-              <xsd:complexType>
-                <xsd:sequence>
-                  <xsd:element name="Parameter" type="pnp:StringDictionaryItem" minOccurs="0" maxOccurs="unbounded">
-                    <xsd:annotation>
-                      <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                      <xsd:documentation xml:lang="en">
-                        A custom parameter that will be provided to the webhook request
-                      </xsd:documentation>
-                    </xsd:annotation>
-                  </xsd:element>
-                </xsd:sequence>
-              </xsd:complexType>
             </xsd:element>
           </xsd:sequence>
-
-          <xsd:attribute name="Kind" use="required">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines the kind of a Provisioning Template Webhook, required attribute.
-              </xsd:documentation>
-            </xsd:annotation>
-            <xsd:simpleType>
-              <xsd:restriction base="xsd:string">
-                <xsd:enumeration value="ProvisioningStarted">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      Provisioning Started
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-                <xsd:enumeration value="ObjectHandlerProvisioningStarted">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      Object Handler Provisioning Started
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-                <xsd:enumeration value="ObjectHandlerProvisioningCompleted">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      Object Handler Provisioning Completed
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-                <xsd:enumeration value="ProvisioningCompleted">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      Provisioning Completed
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-                <xsd:enumeration value="ExceptionOccurred">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      An Exception Occurred
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-              </xsd:restriction>
-            </xsd:simpleType>
-          </xsd:attribute>
-
-          <xsd:attribute name="Url" type="pnp:ReplaceableString" use="required">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines the URL of a Provisioning Template Webhook, can be a replaceable string and it is a required attribute.
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:attribute>
-
-          <xsd:attribute name="Method" use="required">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines how to call the target Webhook URL, required attribute.
-              </xsd:documentation>
-            </xsd:annotation>
-
-            <xsd:simpleType>
-              <xsd:restriction base="xsd:string">
-                <xsd:enumeration value="GET">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      Invoke the Webhook with a HTTP GET request. Any Parameter optional will be in the querystring.
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-                <xsd:enumeration value="POST">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      Invoke the Webhook with a HTTP POST request. Any Parameter optional will be in the request body.
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-              </xsd:restriction>
-            </xsd:simpleType>
-
-          </xsd:attribute>
-
-          <xsd:attribute name="BodyFormat" use="optional" default="Json">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines how to format the request body for HTTP POST requests, optional attribute.
-              </xsd:documentation>
-            </xsd:annotation>
-
-            <xsd:simpleType>
-              <xsd:restriction base="xsd:string">
-                <xsd:enumeration value="Json">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      JSON format
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-                <xsd:enumeration value="Xml">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      XML format
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-                <xsd:enumeration value="FormUrlEncoded">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      x-www-form-urlencoded format
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-              </xsd:restriction>
-            </xsd:simpleType>
-
-          </xsd:attribute>
-
-          <xsd:attribute name="Async" type="xsd:boolean" use="optional" default="true">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines whether the Provisioning Template Webhook should be executed asychronously or not, optional attribute.
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:attribute>
-
         </xsd:complexType>
-
       </xsd:element>
     </xsd:sequence>
+
+    <xsd:attribute name="Kind" use="required">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines the kind of a Provisioning Template Webhook, required attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="ProvisioningStarted">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Whole Provisioning Job  Provisioning Started
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ObjectHandlerProvisioningStarted">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Object Handler Provisioning Started
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ObjectHandlerProvisioningCompleted">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Object Handler Provisioning Completed
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ProvisioningCompleted">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Whole Provisioning Job Completed
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ExceptionOccurred">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                An Exception Occurred
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ProvisioningTemplateStarted">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Provisioning Template Started
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ProvisioningTemplateCompleted">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Provisioning Template Completed
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+
+    <xsd:attribute name="Url" type="pnp:ReplaceableString" use="required">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines the URL of a Provisioning Template Webhook, can be a replaceable string and it is a required attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="Method" use="required">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines how to call the target Webhook URL, required attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="GET">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Invoke the Webhook with a HTTP GET request. Any Parameter optional will be in the querystring.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="POST">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Invoke the Webhook with a HTTP POST request. Any Parameter optional will be in the request body.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+        </xsd:restriction>
+      </xsd:simpleType>
+
+    </xsd:attribute>
+
+    <xsd:attribute name="BodyFormat" use="optional" default="Json">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines how to format the request body for HTTP POST requests, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Json">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                JSON format
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="Xml">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                XML format
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="FormUrlEncoded">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                x-www-form-urlencoded format
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+        </xsd:restriction>
+      </xsd:simpleType>
+
+    </xsd:attribute>
+
+    <xsd:attribute name="Async" type="xsd:boolean" use="optional" default="true">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines whether the Provisioning Template Webhook should be executed asychronously or not, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
   </xsd:complexType>
 
   <xsd:complexType name="CanvasSection">
@@ -9173,6 +9206,26 @@
       </xsd:annotation>
     </xsd:attribute>
 
+  </xsd:complexType>
+
+  <xsd:complexType name="ProvisioningWebhooks">
+    <xsd:annotation>
+      <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+      <xsd:documentation xml:lang="en">
+        Allows to define one or more webhooks that will be invoked by the engine, while applying the provisioning
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:sequence>
+      <xsd:element name="ProvisioningWebhook" minOccurs="0" maxOccurs="unbounded" type="pnp:ProvisioningWebhook">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Defines a single Provisioning Webhook
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
   </xsd:complexType>
 
   <xsd:simpleType name="GUID">

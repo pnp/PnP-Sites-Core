@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 {
-    public partial class ProvisioningTemplateWebhook : ProvisioningWebhookBase
+    public partial class ProvisioningWebhook : ProvisioningWebhookBase
     {
     }
 }

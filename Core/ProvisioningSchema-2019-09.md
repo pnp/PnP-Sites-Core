@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 9/23/2019*
+* Topic automatically generated on 9/25/2019*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -34,6 +34,7 @@ Here follows the list of root elements available in the PnP Provisioning Schema.
    <pnp:Teams />
    <pnp:AzureActiveDirectory />
    <pnp:Drive />
+   <pnp:ProvisioningWebhooks />
 </pnp:Provisioning>
 ```
 
@@ -51,6 +52,7 @@ Sequence|[Sequence](#sequence)|An optional section made of provisioning sequence
 Teams|[Teams](#teams)|Entry point to manage Microsoft Teams provisioning.
 AzureActiveDirectory|[AzureActiveDirectory](#azureactivedirectory)|Entry point to manage Microsoft Azure Active Directory provisioning.
 Drive|[Drive](#drive)|Entry point to manage OneDrive for Business provisioning.
+ProvisioningWebhooks|[ProvisioningWebhooks](#provisioningwebhooks)|Entry point to manage global provisioning webhooks.
 
 Here follow the available attributes for the Provisioning element.
 
@@ -746,6 +748,23 @@ Here follow the available child elements for the  element.
 Element|Type|Description
 -------|----|-----------
 Provider|[Provider](#provider)|
+<a name="provisioningtemplatewebhooks"></a>
+### ProvisioningTemplateWebhooks
+Allows to define one or more webhooks that will be invoked by the engine, upon completion of specific actions
+
+```xml
+<pnp:ProvisioningTemplateWebhooks>
+   <pnp:ProvisioningTemplateWebhook />
+</pnp:ProvisioningTemplateWebhooks>
+```
+
+
+Here follow the available child elements for the  element.
+
+
+Element|Type|Description
+-------|----|-----------
+ProvisioningTemplateWebhook|[ProvisioningWebhook](#provisioningwebhook)|Defines a single Provisioning Template Webhook
 <a name="provisioningtemplateproperties"></a>
 ### ProvisioningTemplateProperties
 A set of custom Properties for the Provisioning Template.
@@ -2460,7 +2479,8 @@ Defines a single element of type ClientSidePage.
       EnableComments="xsd:boolean"
       Title="xsd:string"
       ContentTypeID="pnp:ReplaceableString"
-      CreateTranslations="xsd:boolean">
+      CreateTranslations="xsd:boolean"
+      ThumbnailUrl="pnp:ReplaceableString">
    <pnp:Sections />
    <pnp:Header />
    <pnp:FieldValues />
@@ -2496,6 +2516,7 @@ EnableComments|xsd:boolean|Defines whether the page will have comments enabled o
 Title|xsd:string|Defines the Title of the page, optional attribute.
 ContentTypeID|ReplaceableString|Defines the Content Type ID for the page, optional attribute.
 CreateTranslations|xsd:boolean|Instructs the engine to create translations of the page while provisionig it, optional attribute.
+ThumbnailUrl|ReplaceableString|Defines the URL of the thumbnail for the client side page, optional attribute.
 <a name="sections"></a>
 ### Sections
 Defines the Canvas sections for a single ClientSidePage.
@@ -2684,47 +2705,30 @@ Attibute|Type|Description
 --------|----|-----------
 DisplayName|ReplaceableString|Defines the DisplayName for the Footer Link for the target site.
 Url|ReplaceableString|Defines the URL for the Footer Link for the target site.
-<a name="provisioningtemplatewebhooks"></a>
-### ProvisioningTemplateWebhooks
-Allows to define one or more webhooks that will be invoked by the engine, upon completion of specific actions
+<a name="provisioningwebhook"></a>
+### ProvisioningWebhook
+
 
 ```xml
-<pnp:ProvisioningTemplateWebhooks>
-   <pnp:ProvisioningTemplateWebhook />
-</pnp:ProvisioningTemplateWebhooks>
-```
-
-
-Here follow the available child elements for the ProvisioningTemplateWebhooks element.
-
-
-Element|Type|Description
--------|----|-----------
-ProvisioningTemplateWebhook|[ProvisioningTemplateWebhook](#provisioningtemplatewebhook)|Defines a single Provisioning Template Webhook
-<a name="provisioningtemplatewebhook"></a>
-### ProvisioningTemplateWebhook
-Defines a single Provisioning Template Webhook
-
-```xml
-<pnp:ProvisioningTemplateWebhook
+<pnp:ProvisioningWebhook
       Kind=""
       Url="pnp:ReplaceableString"
       Method=""
       BodyFormat=""
       Async="xsd:boolean">
    <pnp:Parameters />
-</pnp:ProvisioningTemplateWebhook>
+</pnp:ProvisioningWebhook>
 ```
 
 
-Here follow the available child elements for the  element.
+Here follow the available child elements for the ProvisioningWebhook element.
 
 
 Element|Type|Description
 -------|----|-----------
 Parameters|[Parameters](#parameters)|A collection of custom parameters that will be provided to the webhook request
 
-Here follow the available attributes for the  element.
+Here follow the available attributes for the ProvisioningWebhook element.
 
 
 Attibute|Type|Description
@@ -2734,6 +2738,23 @@ Url|ReplaceableString|Defines the URL of a Provisioning Template Webhook, can be
 Method||Defines how to call the target Webhook URL, required attribute.
 BodyFormat||Defines how to format the request body for HTTP POST requests, optional attribute.
 Async|xsd:boolean|Defines whether the Provisioning Template Webhook should be executed asychronously or not, optional attribute.
+<a name="parameters"></a>
+### Parameters
+A collection of custom parameters that will be provided to the webhook request
+
+```xml
+<pnp:Parameters>
+   <pnp:Parameter />
+</pnp:Parameters>
+```
+
+
+Here follow the available child elements for the  element.
+
+
+Element|Type|Description
+-------|----|-----------
+Parameter|[StringDictionaryItem](#stringdictionaryitem)|A custom parameter that will be provided to the webhook request
 <a name="canvassection"></a>
 ### CanvasSection
 A Canvas Section for a Client-side Page.
@@ -4518,3 +4539,20 @@ Attibute|Type|Description
 Name|ReplaceableString|Defines the Name of the DriveItem in OneDrive for Business.
 Src|ReplaceableString|Defines the Source path of the file in OneDrive for Business.
 Overwrite|xsd:boolean|The Overwrite flag for the File items in the Directory, optional attribute.
+<a name="provisioningwebhooks"></a>
+### ProvisioningWebhooks
+Allows to define one or more webhooks that will be invoked by the engine, while applying the provisioning
+
+```xml
+<pnp:ProvisioningWebhooks>
+   <pnp:ProvisioningWebhook />
+</pnp:ProvisioningWebhooks>
+```
+
+
+Here follow the available child elements for the ProvisioningWebhooks element.
+
+
+Element|Type|Description
+-------|----|-----------
+ProvisioningWebhook|[ProvisioningWebhook](#provisioningwebhook)|Defines a single Provisioning Webhook

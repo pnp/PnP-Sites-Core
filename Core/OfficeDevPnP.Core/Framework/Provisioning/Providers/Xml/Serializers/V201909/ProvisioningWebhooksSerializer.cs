@@ -8,24 +8,24 @@ using System.Text;
 using System.Threading.Tasks;
 using OfficeDevPnP.Core.Extensions;
 
-namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
+namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V201909
 {
     /// <summary>
     /// Class to serialize/deserialize the Provisioning Webhooks
     /// </summary>
     [TemplateSchemaSerializer(
-        MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201903,
+        MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201909,
         SerializationSequence = 2500, DeserializationSequence = 2500,
-        Scope = SerializerScope.ProvisioningTemplate)]
-    internal class ProvisioningTemplateWebhooksSerializer : PnPBaseSchemaSerializer<ProvisioningTemplateWebhook>
+        Scope = SerializerScope.Provisioning)]
+    internal class ProvisioningWebhooksSerializer : PnPBaseSchemaSerializer<ProvisioningWebhook>
     {
         public override void Deserialize(object persistence, ProvisioningTemplate template)
         {
-            var provisioningTemplateWebhooks = persistence.GetPublicInstancePropertyValue("ProvisioningTemplateWebhooks");
+            var provisioningTemplateWebhooks = persistence.GetPublicInstancePropertyValue("ProvisioningWebhooks");
 
-            if (provisioningTemplateWebhooks != null)
+            if (provisioningTemplateWebhooks != null && template.ParentHierarchy != null)
             {
-                var expressions = new Dictionary<Expression<Func<ProvisioningTemplateWebhook, Object>>, IResolver>();
+                var expressions = new Dictionary<Expression<Func<ProvisioningWebhook, Object>>, IResolver>();
                 
                 // Parameters
                 var parameterTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
@@ -36,19 +36,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     new FromArrayToDictionaryValueResolver<string, string>(
                         parameterType, parameterKeySelector, parameterValueSelector));
 
-                template.ProvisioningTemplateWebhooks.AddRange(
+                template.ParentHierarchy.ProvisioningWebhooks.AddRange(
                     PnPObjectsMapper.MapObjects(provisioningTemplateWebhooks,
-                            new CollectionFromSchemaToModelTypeResolver(typeof(ProvisioningTemplateWebhook)),
+                            new CollectionFromSchemaToModelTypeResolver(typeof(ProvisioningWebhook)),
                             expressions, recursive: true)
-                            as IEnumerable<ProvisioningTemplateWebhook>);
+                            as IEnumerable<ProvisioningWebhook>);
             }
         }
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            if (template.ProvisioningTemplateWebhooks != null && template.ProvisioningTemplateWebhooks.Count > 0)
+            if (template.ParentHierarchy?.ProvisioningWebhooks != null && template.ParentHierarchy?.ProvisioningWebhooks.Count > 0)
             {
-                var provisioningTemplateWebhookTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ProvisioningTemplateWebhooksProvisioningTemplateWebhook, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var provisioningTemplateWebhookTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ProvisioningWebhook, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var provisioningTemplateWebhookType = Type.GetType(provisioningTemplateWebhookTypeName, true);
 
                 var expressions = new Dictionary<string, IResolver>();
@@ -63,10 +63,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                     new FromDictionaryToArrayValueResolver<string, string>(
                         dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
 
-                persistence.GetPublicInstanceProperty("ProvisioningTemplateWebhooks")
+                persistence.GetPublicInstanceProperty("ProvisioningWebhooks")
                     .SetValue(
                         persistence,
-                        PnPObjectsMapper.MapObjects(template.ProvisioningTemplateWebhooks,
+                        PnPObjectsMapper.MapObjects(template.ParentHierarchy.ProvisioningWebhooks,
                             new CollectionFromModelToSchemaTypeResolver(provisioningTemplateWebhookType),
                             expressions,
                             recursive: true));

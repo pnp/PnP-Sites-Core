@@ -40,6 +40,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         private DriveRoot[] driveField;
         
+        private ProvisioningWebhook[] provisioningWebhooksField;
+        
         private decimal versionField;
         
         private bool versionFieldSpecified;
@@ -135,6 +137,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
             }
             set {
                 this.driveField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
+        public ProvisioningWebhook[] ProvisioningWebhooks {
+            get {
+                return this.provisioningWebhooksField;
+            }
+            set {
+                this.provisioningWebhooksField = value;
             }
         }
         
@@ -3364,6 +3377,157 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
+    public partial class ProvisioningWebhook {
+        
+        private StringDictionaryItem[] parametersField;
+        
+        private ProvisioningWebhookKind kindField;
+        
+        private string urlField;
+        
+        private ProvisioningWebhookMethod methodField;
+        
+        private ProvisioningWebhookBodyFormat bodyFormatField;
+        
+        private bool asyncField;
+        
+        public ProvisioningWebhook() {
+            this.bodyFormatField = ProvisioningWebhookBodyFormat.Json;
+            this.asyncField = true;
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute("Parameter", IsNullable=false)]
+        public StringDictionaryItem[] Parameters {
+            get {
+                return this.parametersField;
+            }
+            set {
+                this.parametersField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public ProvisioningWebhookKind Kind {
+            get {
+                return this.kindField;
+            }
+            set {
+                this.kindField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Url {
+            get {
+                return this.urlField;
+            }
+            set {
+                this.urlField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public ProvisioningWebhookMethod Method {
+            get {
+                return this.methodField;
+            }
+            set {
+                this.methodField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(ProvisioningWebhookBodyFormat.Json)]
+        public ProvisioningWebhookBodyFormat BodyFormat {
+            get {
+                return this.bodyFormatField;
+            }
+            set {
+                this.bodyFormatField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(true)]
+        public bool Async {
+            get {
+                return this.asyncField;
+            }
+            set {
+                this.asyncField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
+    public enum ProvisioningWebhookKind {
+        
+        /// <remarks/>
+        ProvisioningStarted,
+        
+        /// <remarks/>
+        ObjectHandlerProvisioningStarted,
+        
+        /// <remarks/>
+        ObjectHandlerProvisioningCompleted,
+        
+        /// <remarks/>
+        ProvisioningCompleted,
+        
+        /// <remarks/>
+        ExceptionOccurred,
+        
+        /// <remarks/>
+        ProvisioningTemplateStarted,
+        
+        /// <remarks/>
+        ProvisioningTemplateCompleted,
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
+    public enum ProvisioningWebhookMethod {
+        
+        /// <remarks/>
+        GET,
+        
+        /// <remarks/>
+        POST,
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
+    public enum ProvisioningWebhookBodyFormat {
+        
+        /// <remarks/>
+        Json,
+        
+        /// <remarks/>
+        Xml,
+        
+        /// <remarks/>
+        FormUrlEncoded,
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
     public partial class FooterLink {
         
         private FooterLink[] footerLink1Field;
@@ -4022,6 +4186,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         private bool createTranslationsField;
         
+        private string thumbnailUrlField;
+        
         public ClientSidePage() {
             this.layoutField = "Article";
             this.publishField = true;
@@ -4226,6 +4392,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
             }
             set {
                 this.createTranslationsField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ThumbnailUrl {
+            get {
+                return this.thumbnailUrlField;
+            }
+            set {
+                this.thumbnailUrlField = value;
             }
         }
     }
@@ -11325,7 +11502,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         private Footer footerField;
         
-        private ProvisioningTemplateWebhooksProvisioningTemplateWebhook[] provisioningTemplateWebhooksField;
+        private ProvisioningWebhook[] provisioningTemplateWebhooksField;
         
         private Theme themeField;
         
@@ -11641,7 +11818,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute("ProvisioningTemplateWebhook", IsNullable=false)]
-        public ProvisioningTemplateWebhooksProvisioningTemplateWebhook[] ProvisioningTemplateWebhooks {
+        public ProvisioningWebhook[] ProvisioningTemplateWebhooks {
             get {
                 return this.provisioningTemplateWebhooksField;
             }
@@ -11881,151 +12058,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
                 this.webSearchSettingsField = value;
             }
         }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
-    public partial class ProvisioningTemplateWebhooksProvisioningTemplateWebhook {
-        
-        private StringDictionaryItem[] parametersField;
-        
-        private ProvisioningTemplateWebhooksProvisioningTemplateWebhookKind kindField;
-        
-        private string urlField;
-        
-        private ProvisioningTemplateWebhooksProvisioningTemplateWebhookMethod methodField;
-        
-        private ProvisioningTemplateWebhooksProvisioningTemplateWebhookBodyFormat bodyFormatField;
-        
-        private bool asyncField;
-        
-        public ProvisioningTemplateWebhooksProvisioningTemplateWebhook() {
-            this.bodyFormatField = ProvisioningTemplateWebhooksProvisioningTemplateWebhookBodyFormat.Json;
-            this.asyncField = true;
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlArrayItemAttribute("Parameter", IsNullable=false)]
-        public StringDictionaryItem[] Parameters {
-            get {
-                return this.parametersField;
-            }
-            set {
-                this.parametersField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ProvisioningTemplateWebhooksProvisioningTemplateWebhookKind Kind {
-            get {
-                return this.kindField;
-            }
-            set {
-                this.kindField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Url {
-            get {
-                return this.urlField;
-            }
-            set {
-                this.urlField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ProvisioningTemplateWebhooksProvisioningTemplateWebhookMethod Method {
-            get {
-                return this.methodField;
-            }
-            set {
-                this.methodField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(ProvisioningTemplateWebhooksProvisioningTemplateWebhookBodyFormat.Json)]
-        public ProvisioningTemplateWebhooksProvisioningTemplateWebhookBodyFormat BodyFormat {
-            get {
-                return this.bodyFormatField;
-            }
-            set {
-                this.bodyFormatField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(true)]
-        public bool Async {
-            get {
-                return this.asyncField;
-            }
-            set {
-                this.asyncField = value;
-            }
-        }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
-    public enum ProvisioningTemplateWebhooksProvisioningTemplateWebhookKind {
-        
-        /// <remarks/>
-        ProvisioningStarted,
-        
-        /// <remarks/>
-        ObjectHandlerProvisioningStarted,
-        
-        /// <remarks/>
-        ObjectHandlerProvisioningCompleted,
-        
-        /// <remarks/>
-        ProvisioningCompleted,
-        
-        /// <remarks/>
-        ExceptionOccurred,
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
-    public enum ProvisioningTemplateWebhooksProvisioningTemplateWebhookMethod {
-        
-        /// <remarks/>
-        GET,
-        
-        /// <remarks/>
-        POST,
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
-    public enum ProvisioningTemplateWebhooksProvisioningTemplateWebhookBodyFormat {
-        
-        /// <remarks/>
-        Json,
-        
-        /// <remarks/>
-        Xml,
-        
-        /// <remarks/>
-        FormUrlEncoded,
     }
     
     /// <remarks/>

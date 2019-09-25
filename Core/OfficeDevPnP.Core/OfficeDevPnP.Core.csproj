@@ -555,6 +555,9 @@
     <Compile Include="Framework\Provisioning\Model\Base\BaseProvisioningTemplateObjectCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Drive\DriveRootFolder.cs" />
     <Compile Include="Framework\Provisioning\Model\Drive\DriveFolderBase.cs" />
+    <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningTemplateWebhook.cs" />
+    <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningTemplateWebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningWebhookBase.cs" />
     <Compile Include="Framework\Provisioning\Model\Hierarchy\CommunicationSiteCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Deprecated\NavigationNode.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Model\Drive\DriveFile.cs" />
@@ -571,8 +574,8 @@
     <Compile Include="Framework\Provisioning\Model\ProvisioningHierarchy.cs" />
     <Compile Include="Framework\Provisioning\Model\Base\BaseProvisioningHierarchyObjectCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Hierarchy\ProvisioningSequenceCollection.cs" />
-    <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningTemplateWebhook.cs" />
-    <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningTemplateWebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningWebhook.cs" />
+    <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningWebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachment.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachmentCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\AlternateUICulture.cs" />
@@ -718,6 +721,8 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\DriveSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ListInstancesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ProvisioningTemplateWebhooksSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ProvisioningWebhooksSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\TeamsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\TenantSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\SiteSettingsSerializer.cs" />

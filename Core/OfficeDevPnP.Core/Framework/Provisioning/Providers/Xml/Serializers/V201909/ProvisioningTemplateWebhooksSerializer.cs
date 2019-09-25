@@ -8,13 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using OfficeDevPnP.Core.Extensions;
 
-namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
+namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V201909
 {
     /// <summary>
     /// Class to serialize/deserialize the Provisioning Webhooks
     /// </summary>
     [TemplateSchemaSerializer(
-        MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201903,
+        MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201909,
         SerializationSequence = 2500, DeserializationSequence = 2500,
         Scope = SerializerScope.ProvisioningTemplate)]
     internal class ProvisioningTemplateWebhooksSerializer : PnPBaseSchemaSerializer<ProvisioningTemplateWebhook>
@@ -48,7 +48,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
         {
             if (template.ProvisioningTemplateWebhooks != null && template.ProvisioningTemplateWebhooks.Count > 0)
             {
-                var provisioningTemplateWebhookTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ProvisioningTemplateWebhooksProvisioningTemplateWebhook, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var provisioningTemplateWebhookTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.ProvisioningWebhook, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var provisioningTemplateWebhookType = Type.GetType(provisioningTemplateWebhookTypeName, true);
 
                 var expressions = new Dictionary<string, IResolver>();
