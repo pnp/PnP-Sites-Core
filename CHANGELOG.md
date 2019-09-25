@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Added a ThumbnailUrl property on Client Side Pages to set the page thumbnail
 - Added additional modern web parts to our enums (CallToAction, Button, Sites)
 
 ### Changed
