@@ -261,7 +261,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             UpdateOverwriteVersion
         }
 
-        public static void UpdateListItem(ListItem item, TokenParser parser, IDictionary<string, string> valuesToSet, ListItemUpdateType updateType)
+        public static void UpdateListItem(ListItem item, TokenParser parser, IDictionary<string, string> valuesToSet, ListItemUpdateType updateType, bool SkipExecuteQuery=false)
         {
             var itemValues = new List<FieldUpdateValue>();
 
@@ -521,7 +521,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 #else
             item.Update();
 #endif
-            context.ExecuteQueryRetry();
+            if(!SkipExecuteQuery)
+                context.ExecuteQueryRetry();
         }
 
         [Obsolete("Use UpdateListItem(ListItem item, TokenParser parser, IDictionary<string, string> valuesToSet, ListItemUpdateType updateType) instead")]
