@@ -388,9 +388,10 @@ namespace OfficeDevPnP.Core.Pages
         /// <param name="template">The <see cref="CanvasSectionTemplate"/> type of the section</param>
         /// <param name="order">Controls the order of the new section</param>
         /// <param name="zoneEmphasis">Zone emphasis (section background)</param>
-        public void AddSection(CanvasSectionTemplate template, float order, SPVariantThemeType zoneEmphasis)
+        /// <param name="verticalSectionZoneEmphasis">Vertical Section Zone emphasis (section background)</param>
+        public void AddSection(CanvasSectionTemplate template, float order, SPVariantThemeType zoneEmphasis, SPVariantThemeType verticalSectionZoneEmphasis = SPVariantThemeType.None)
         {
-            AddSection(template, order, (int)zoneEmphasis);
+            AddSection(template, order, (int)zoneEmphasis, (int)verticalSectionZoneEmphasis);
         }
 
         /// <summary>
@@ -399,12 +400,17 @@ namespace OfficeDevPnP.Core.Pages
         /// <param name="template">The <see cref="CanvasSectionTemplate"/> type of the section</param>
         /// <param name="order">Controls the order of the new section</param>
         /// <param name="zoneEmphasis">Zone emphasis (section background)</param>
-        public void AddSection(CanvasSectionTemplate template, float order, int zoneEmphasis)
+        /// <param name="verticalSectionZoneEmphasis">Vertical Section Zone emphasis (section background)</param>
+        public void AddSection(CanvasSectionTemplate template, float order, int zoneEmphasis, int? verticalSectionZoneEmphasis = null)
         {
             var section = new CanvasSection(this, template, order)
             {
-                ZoneEmphasis = zoneEmphasis
+                ZoneEmphasis = zoneEmphasis,
             };
+            if (section.VerticalSectionColumn != null && verticalSectionZoneEmphasis.HasValue)
+            {
+                section.VerticalSectionColumn.VerticalSectionEmphasis = verticalSectionZoneEmphasis;
+            }
             AddSection(section);
         }
 
