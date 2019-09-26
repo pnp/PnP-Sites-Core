@@ -10,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 {
-    internal static class FileUtilities
+    public static class FileUtilities
     {
 
-        internal static Stream GetFileStream(ProvisioningTemplate template, Model.File file)
+        public static Stream GetFileStream(ProvisioningTemplate template, Model.File file)
         {
             return GetFileStream(template, file.Src);
         }
 
-        internal static Stream GetFileStream(ProvisioningTemplate template, string fileName)
-    {
+        public static Stream GetFileStream(ProvisioningTemplate template, string fileName)
+        {
             // TODO: See if we can use ConnectorFileHelper instead
 
             var container = String.Empty;
@@ -77,7 +77,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             return stream;
         }
 
-        internal static List<Model.File> GetDirectoryFiles(this Model.Directory directory,
+        public static List<Model.File> GetDirectoryFiles(this Model.Directory directory,
         Dictionary<String, Dictionary<String, String>> metadataProperties = null)
         {
             var result = new List<Model.File>();
@@ -135,7 +135,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             return (result);
         }
 
-        internal static Dictionary<String, Dictionary<String, String>> GetMetadataProperties(this Model.Directory directory)
+        public static Dictionary<String, Dictionary<String, String>> GetMetadataProperties(this Model.Directory directory)
         {
             Dictionary<String, Dictionary<String, String>> result = null;
 
