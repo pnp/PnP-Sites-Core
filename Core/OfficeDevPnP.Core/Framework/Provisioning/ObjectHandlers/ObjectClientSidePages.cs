@@ -233,6 +233,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         page.LayoutType = (Pages.ClientSidePageLayoutType)Enum.Parse(typeof(Pages.ClientSidePageLayoutType), clientSidePage.Layout);
                     }
 
+                    if (!string.IsNullOrEmpty(clientSidePage.ThumbnailUrl))
+                    {
+                        page.ThumbnailUrl = parser.ParseString(clientSidePage.ThumbnailUrl);
+                    }
+
                     // Add content on the page, not needed for repost pages
                     if (page.LayoutType != Pages.ClientSidePageLayoutType.RepostPage)
                     {
