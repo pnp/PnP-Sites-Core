@@ -457,14 +457,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var webhooks = new List<ProvisioningWebhookBase>();
 
                 // Merge the webhooks at template level with those at global level
-                webhooks.AddRange(
-                    template.ProvisioningTemplateWebhooks != null && template.ProvisioningTemplateWebhooks.Any() ?
-                    template.ProvisioningTemplateWebhooks : Enumerable.Empty<ProvisioningWebhookBase>()
-                    );
-                webhooks.AddRange(
-                    template.ParentHierarchy?.ProvisioningWebhooks != null && template.ParentHierarchy.ProvisioningWebhooks.Any() ?
-                    template.ParentHierarchy?.ProvisioningWebhooks : Enumerable.Empty<ProvisioningWebhookBase>()
-                    );
+                if (template.ProvisioningTemplateWebhooks != null && template.ProvisioningTemplateWebhooks.Any())
+                {
+                    webhooks.AddRange(template.ProvisioningTemplateWebhooks);
+                }
+                if (template.ParentHierarchy?.ProvisioningWebhooks != null && template.ParentHierarchy.ProvisioningWebhooks.Any())
+                {
+                    webhooks.AddRange(template.ParentHierarchy.ProvisioningWebhooks);
+                }
 
                 // If there is any webhook
                 if (webhooks.Count > 0)

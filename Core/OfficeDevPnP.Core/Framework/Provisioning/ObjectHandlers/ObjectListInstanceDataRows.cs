@@ -117,13 +117,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 if (processItem)
                                 {
+                                    bool IsNewItem = false;
                                     if (listitem == null)
                                     {
                                         var listitemCI = new ListItemCreationInformation();
                                         listitem = list.AddItem(listitemCI);
+                                        IsNewItem = true;
                                     }
 
-                                    ListItemUtilities.UpdateListItem(listitem, parser, dataRow.Values, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion);
+                                    ListItemUtilities.UpdateListItem(listitem, parser, dataRow.Values, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion, IsNewItem);
 
                                     if (dataRow.Security != null && (dataRow.Security.ClearSubscopes || dataRow.Security.CopyRoleAssignments || dataRow.Security.RoleAssignments.Count > 0))
                                     {
@@ -136,28 +138,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         {
                                             attachment.Name = parser.ParseString(attachment.Name);
                                             attachment.Src = parser.ParseString(attachment.Src);
-                                            var overwrite = attachment.Overwrite;
-                                            listitem.EnsureProperty(l => l.AttachmentFiles);
+                                            if (!IsNewItem)
+                                            {
+                                                var overwrite = attachment.Overwrite;
+                                                listitem.EnsureProperty(l => l.AttachmentFiles);
 
-                                            Attachment existingItem = null;
-                                            if (listitem.AttachmentFiles.Count > 0)
-                                            {
-                                                existingItem = listitem.AttachmentFiles.FirstOrDefault(a => a.FileName.Equals(attachment.Name, StringComparison.OrdinalIgnoreCase));
-                                            }
-                                            if (existingItem != null)
-                                            {
-                                                if (overwrite)
+                                                Attachment existingItem = null;
+                                                if (listitem.AttachmentFiles.Count > 0)
                                                 {
-                                                    existingItem.DeleteObject();
-                                                    web.Context.ExecuteQueryRetry();
+                                                    existingItem = listitem.AttachmentFiles.FirstOrDefault(a => a.FileName.Equals(attachment.Name, StringComparison.OrdinalIgnoreCase));
+                                                }
+                                                if (existingItem != null)
+                                                {
+                                                    if (overwrite)
+                                                    {
+                                                        existingItem.DeleteObject();
+                                                        web.Context.ExecuteQueryRetry();
+                                                        AddAttachment(template, listitem, attachment);
+                                                    }
+                                                }
+                                                else
+                                                {
                                                     AddAttachment(template, listitem, attachment);
                                                 }
                                             }
                                             else
                                             {
-                                                AddAttachment(template, listitem, attachment);
+                                                AddAttachment(template, listitem, attachment, IsNewItem);
                                             }
                                         }
+                                        if (IsNewItem)
+                                            listitem.Context.ExecuteQueryRetry();
                                     }
                                 }
                             }
@@ -188,7 +199,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 
-        private void AddAttachment(ProvisioningTemplate template, ListItem listitem, Model.SharePoint.InformationArchitecture.DataRowAttachment attachment)
+        private void AddAttachment(ProvisioningTemplate template, ListItem listitem, Model.SharePoint.InformationArchitecture.DataRowAttachment attachment, bool SkipExecuteQuery=false)
         {
 #if !SP2013 && !SP2016
             listitem.AttachmentFiles.AddUsingPath(ResourcePath.FromDecodedUrl(attachment.Name), FileUtilities.GetFileStream(template, attachment.Src));
@@ -200,7 +211,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             };
             listitem.AttachmentFiles.Add(attachmentCI);
 #endif
-            listitem.Context.ExecuteQueryRetry();
+            if (!SkipExecuteQuery)
+                listitem.Context.ExecuteQueryRetry();
+            else
+                listitem.Update();
         }
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
