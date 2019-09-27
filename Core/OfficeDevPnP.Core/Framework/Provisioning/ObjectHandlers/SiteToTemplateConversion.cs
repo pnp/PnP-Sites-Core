@@ -459,11 +459,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Merge the webhooks at template level with those at global level
                 webhooks.AddRange(
                     template.ProvisioningTemplateWebhooks != null && template.ProvisioningTemplateWebhooks.Any() ?
-                    template.ProvisioningTemplateWebhooks : null
+                    template.ProvisioningTemplateWebhooks : Enumerable.Empty<ProvisioningWebhookBase>()
                     );
                 webhooks.AddRange(
                     template.ParentHierarchy?.ProvisioningWebhooks != null && template.ParentHierarchy.ProvisioningWebhooks.Any() ?
-                    template.ParentHierarchy?.ProvisioningWebhooks : null
+                    template.ParentHierarchy?.ProvisioningWebhooks : Enumerable.Empty<ProvisioningWebhookBase>()
                     );
 
                 // If there is any webhook
@@ -496,16 +496,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     url += $"&__webhookKind={kind.ToString()}"; // add the webhook kind to the REST request URL
 
+                                    foreach (var k in requestParameters.Keys)
+                                    {
+                                        url += $"&{HttpUtility.UrlEncode(k)}={HttpUtility.UrlEncode(requestParameters[k])}";
+                                    }
+
                                     if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted 
                                         || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted
                                         || kind == ProvisioningTemplateWebhookKind.ExceptionOccurred)
                                     {
                                         url += $"&__handler={HttpUtility.UrlEncode(objectHandler)}"; // add the handler name to the REST request URL
-
-                                        foreach (var k in requestParameters.Keys)
-                                        {
-                                            url += $"&{HttpUtility.UrlEncode(k)}={HttpUtility.UrlEncode(requestParameters[k])}";
-                                        }
                                     }
                                     try
                                     {
@@ -531,7 +531,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     requestParameters.Add("__webhookKind", kind.ToString()); // add the webhook kind to the parameters of the request body
 
-                                    if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted)
+                                    if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted
+                                        || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted
+                                        || kind == ProvisioningTemplateWebhookKind.ExceptionOccurred)
                                     {
                                         requestParameters.Add("__handler", objectHandler); // add the handler name to the parameters of the request body
                                     }
