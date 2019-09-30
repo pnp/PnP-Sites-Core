@@ -53,7 +53,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         pageContentTypeId = GetParentIdValue(pageContentTypeId);
                     }
 
-                    var isNews = int.Parse(pageToExtract.PageListItem[OfficeDevPnP.Core.Pages.ClientSidePage.PromotedStateField].ToString()) == (int)Pages.PromotedState.Promoted;
+                    var isNews = pageToExtract.LayoutType != Pages.ClientSidePageLayoutType.Home && int.Parse(pageToExtract.PageListItem[OfficeDevPnP.Core.Pages.ClientSidePage.PromotedStateField].ToString()) == (int)Pages.PromotedState.Promoted;
                     // Create the page
                     var extractedPageInstance = new ClientSidePage()
                     {
