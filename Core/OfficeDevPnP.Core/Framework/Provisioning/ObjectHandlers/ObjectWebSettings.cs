@@ -392,6 +392,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         web.AlternateCssUrl = parser.ParseString(webSettings.AlternateCSS);
                     }
+
+                    web.QuickLaunchEnabled = webSettings.QuickLaunchEnabled;
+
                     web.Update();
                     web.Context.ExecuteQueryRetry();
 
