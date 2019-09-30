@@ -2271,6 +2271,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         private string hubSiteLogoUrlField;
         
+        private string hubSiteTitleField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute(IsNullable=false)]
         public ProvisioningTemplateReference[] Templates {
@@ -2367,6 +2369,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
             }
             set {
                 this.hubSiteLogoUrlField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string HubSiteTitle {
+            get {
+                return this.hubSiteTitleField;
+            }
+            set {
+                this.hubSiteTitleField = value;
             }
         }
     }

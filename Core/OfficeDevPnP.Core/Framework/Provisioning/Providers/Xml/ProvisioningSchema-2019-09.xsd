@@ -7292,6 +7292,14 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
+    <xsd:attribute name="HubSiteTitle" type="pnp:ReplaceableString" use="optional">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Declares the Title for the Hub Site of a new Hub
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
   </xsd:attributeGroup>
 
   <xsd:attributeGroup name="SubSiteAttributes">
