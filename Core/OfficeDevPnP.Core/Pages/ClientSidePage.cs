@@ -889,7 +889,10 @@ namespace OfficeDevPnP.Core.Pages
                 item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.RepostPage;
                 item[ClientSidePage.CanvasField] = "";
                 item[ClientSidePage.PageLayoutContentField] = "";
-
+                if (!string.IsNullOrEmpty(this.thumbnailUrl))
+                {
+                    item[ClientSidePage.BannerImageUrl] = this.thumbnailUrl;
+                }
                 if (updatingExistingPage)
                 {
                     item.Update();
