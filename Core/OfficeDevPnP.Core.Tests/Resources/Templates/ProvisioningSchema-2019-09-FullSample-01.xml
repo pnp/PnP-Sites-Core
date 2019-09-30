@@ -1163,6 +1163,7 @@
                           AllowFileSharingForGuestUsers="true"
                           IsHubSite="true"
                           HubSiteLogoUrl="logo.png"
+                          HubSiteTitle="Hub Title"
                           Classification="HBI"
                           Theme="CustomOrange"
                           Description="{parameter:CompanyName} Intranet"

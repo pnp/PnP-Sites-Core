@@ -35,6 +35,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public string HubSiteLogoUrl { get; set; }
 
         /// <summary>
+        /// Defines the url to the logo if this site is a hubsite. Only applicable if IsHubSite is set to true.
+        /// </summary>
+        public string HubSiteTitle { get; set; }
+
+        /// <summary>
         /// Title of the site
         /// </summary>
         public String Title { get; set; }
@@ -83,7 +88,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|",
                 this.IsHubSite.GetHashCode(),
                 this.Title.GetHashCode(),
                 this.Description.GetHashCode(),
@@ -91,7 +96,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Sites.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Theme.GetHashCode(),
                 this.ProvisioningId.GetHashCode(),
-                this.GetInheritedHashCode()
+                this.GetInheritedHashCode(),
+                this.HubSiteLogoUrl?.GetHashCode(),
+                this.HubSiteTitle?.GetHashCode()
             ).GetHashCode());
         }
 
@@ -134,7 +141,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Sites.DeepEquals(other.Sites) &&
                 this.Theme == other.Theme &&
                 this.ProvisioningId == other.ProvisioningId &&
-                this.EqualsInherited(other)
+                this.EqualsInherited(other) &&
+                this.HubSiteLogoUrl == other.HubSiteLogoUrl &&
+                this.HubSiteTitle == other.HubSiteTitle
                 );
         }
 
