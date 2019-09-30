@@ -123,6 +123,15 @@ namespace OfficeDevPnP.Core.Pages
                 },
                 EditorType = "CKEditor"
             };
+
+            if (this.section.Type == CanvasSectionTemplate.OneColumnVerticalSection)
+            {
+                if (this.section.Columns.First().Equals(this.Column))
+                {
+                    controlData.Position.SectionFactor = 12;
+                }
+            }
+
             jsonControlData = JsonConvert.SerializeObject(controlData);
 
             try

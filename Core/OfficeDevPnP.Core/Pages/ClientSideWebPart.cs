@@ -356,6 +356,7 @@ namespace OfficeDevPnP.Core.Pages
 #endif
                 ControlIndex = controlIndex,
             };
+
             if (this.section.Type == CanvasSectionTemplate.OneColumnVerticalSection)
             {
                 if (this.section.Columns.First().Equals(this.Column))
@@ -363,6 +364,7 @@ namespace OfficeDevPnP.Core.Pages
                     controlData.Position.SectionFactor = 12;
                 }
             }
+
             controlData.Emphasis = new ClientSideSectionEmphasis()
             {
                 ZoneEmphasis = this.Column.VerticalSectionEmphasis.HasValue ? this.Column.VerticalSectionEmphasis.Value : this.Section.ZoneEmphasis,
