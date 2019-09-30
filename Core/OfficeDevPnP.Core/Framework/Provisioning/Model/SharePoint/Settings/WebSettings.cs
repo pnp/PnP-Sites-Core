@@ -89,6 +89,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public bool OverwriteTranslationsOnChange { get; set; }
 
+        /// <summary>
+        /// Defines whether to exclude the web from offline client
+        /// </summary>
+        public bool ExcludeFromOfflineClient { get; set; }
+
+        /// <summary>
+        /// Defines whether members can share content from the current web
+        /// </summary>
+        public bool MembersCanShare { get; set; }
+
+        /// <summary>
+        /// Defines whether disable flows for the current web
+        /// </summary>
+        public bool DisableFlows { get; set; }
+
+        /// <summary>
+        /// Defines whether disable PowerApps for the current web
+        /// </summary>
+        public bool DisableAppViews { get; set; }
+
+        /// <summary>
+        /// Defines whether to enable the Horizontal QuickLaunch for the current web
+        /// </summary>
+        public bool HorizontalQuickLaunch { get; set; }
+
+        /// <summary>
+        /// Defines the SearchScope for the site
+        /// </summary>
+        public SearchScopes SearchScope { get; set; }
+
         #endregion
 
         #region Constructors
@@ -155,7 +185,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.QuickLaunchEnabled.GetHashCode(),
                 AlternateUICultures.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.IsMultilingual.GetHashCode(),
-                this.OverwriteTranslationsOnChange.GetHashCode()
+                this.OverwriteTranslationsOnChange.GetHashCode(),
+                this.ExcludeFromOfflineClient.GetHashCode(),
+                this.MembersCanShare.GetHashCode(),
+                this.DisableFlows.GetHashCode(),
+                this.DisableAppViews.GetHashCode(),
+                this.HorizontalQuickLaunch.GetHashCode(),
+                this.SearchScope.GetHashCode()
             ).GetHashCode());
         }
 
@@ -197,10 +233,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this.QuickLaunchEnabled == other.QuickLaunchEnabled &&
                     this.AlternateUICultures.DeepEquals(other.AlternateUICultures) &&
                     this.IsMultilingual == other.IsMultilingual &&
-                    this.OverwriteTranslationsOnChange == other.OverwriteTranslationsOnChange
+                    this.OverwriteTranslationsOnChange == other.OverwriteTranslationsOnChange &&
+                    this.ExcludeFromOfflineClient == other.ExcludeFromOfflineClient &&
+                    this.MembersCanShare == other.MembersCanShare &&
+                    this.DisableFlows == other.DisableFlows &&
+                    this.DisableAppViews == other.DisableAppViews &&
+                    this.HorizontalQuickLaunch == other.HorizontalQuickLaunch &&
+                    this.SearchScope == other.SearchScope
                 );
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Defines the SearchScope for the site
+    /// </summary>
+    public enum SearchScopes
+    {
+        /// <summary>
+        /// Defines the DefaultScope for the SearchScope of the site
+        /// </summary>
+        DefaultScope,
+        /// <summary>
+        /// Defines the Tenant for the SearchScope of the site
+        /// </summary>
+        Tenant,
+        /// <summary>
+        /// Defines the Hub for the SearchScope of the site
+        /// </summary>
+        Hub,
+        /// <summary>
+        /// Defines the Site for the SearchScope of the site
+        /// </summary>
+        Site,
     }
 }

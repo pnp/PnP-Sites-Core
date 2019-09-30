@@ -78,15 +78,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     ///     Office365Group Lifecycle
     /// Drive
     /// 
-    /// To Cover:
-    ///     DataRow Attachments
-    ///     Properties for Folders
-    ///     Teamify/HideTeamify in TeamSite
-    ///     GroupLifecyclePolicyId in TeamSite
-    ///     DiscoverySettings in Teams
-    ///     IDs for Tabs and Channels
-    ///     AllowToAddGuests in TeamSecurity
-    /// 
     /// </summary>
     [TestClass]
     public class XMLSerializer201909Tests
@@ -1998,6 +1989,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(1033, webSettings.AlternateUICultures[0].LCID);
             Assert.AreEqual(1040, webSettings.AlternateUICultures[1].LCID);
             Assert.AreEqual(1035, webSettings.AlternateUICultures[2].LCID);
+            Assert.AreEqual(true, webSettings.ExcludeFromOfflineClient);
+            Assert.AreEqual(true, webSettings.MembersCanShare);
+            Assert.AreEqual(false, webSettings.DisableFlows);
+            Assert.AreEqual(false, webSettings.DisableAppViews);
+            Assert.AreEqual(true, webSettings.HorizontalQuickLaunch);
+            Assert.AreEqual(SearchScopes.Hub, webSettings.SearchScope);
         }
 
         [TestMethod]
@@ -2024,6 +2021,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     QuickLaunchEnabled = true,
                     IsMultilingual = true,
                     OverwriteTranslationsOnChange = true,
+                    ExcludeFromOfflineClient = true,
+                    MembersCanShare = true,
+                    DisableFlows = false,
+                    DisableAppViews = false,
+                    HorizontalQuickLaunch = true,
+                    SearchScope = SearchScopes.Hub,
                 }
             };
 
@@ -2066,6 +2069,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(1033, webSettings.AlternateUICultures[0].LCID);
             Assert.AreEqual(1040, webSettings.AlternateUICultures[1].LCID);
             Assert.AreEqual(1035, webSettings.AlternateUICultures[2].LCID);
+            Assert.AreEqual(true, webSettings.ExcludeFromOfflineClient);
+            Assert.AreEqual(true, webSettings.MembersCanShare);
+            Assert.AreEqual(false, webSettings.DisableFlows);
+            Assert.AreEqual(false, webSettings.DisableAppViews);
+            Assert.AreEqual(true, webSettings.HorizontalQuickLaunch);
+            Assert.AreEqual(WebSettingsSearchScope.Hub, webSettings.SearchScope);
         }
 
         [TestMethod]
