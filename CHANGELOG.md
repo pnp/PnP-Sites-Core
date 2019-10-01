@@ -16,6 +16,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Extracting a template will now persist the files referred to in page thumbnails to the Files collection of the template.
+- Extracting a template will now persist the footer logo to the Files collection of the template.
 - Only load tenant CDN settings whenever there are public/private CDN settings defined in the template
 - Fix: register as hubsite will not throw an exception anymore when creating a new hubsite through a tenant template and also setting the logo for the hubsite.
 - Fix: Added retry logic to the appcatalog/AvailableApps/GetById ALM API calls to handle cases where this API is called too soon after an app has been installed in the appcatalog
