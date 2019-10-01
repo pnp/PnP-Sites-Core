@@ -357,6 +357,7 @@ namespace OfficeDevPnP.Core.Pages
                 ControlIndex = controlIndex,
             };
 
+#if !SP2019
             if (this.section.Type == CanvasSectionTemplate.OneColumnVerticalSection)
             {
                 if (this.section.Columns.First().Equals(this.Column))
@@ -364,6 +365,7 @@ namespace OfficeDevPnP.Core.Pages
                     controlData.Position.SectionFactor = 12;
                 }
             }
+#endif
 
             controlData.Emphasis = new ClientSideSectionEmphasis()
             {
@@ -608,9 +610,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 #endif
-        #endregion
+#endregion
 
-        #region Internal and private methods
+            #region Internal and private methods
         internal override void FromHtml(IElement element)
         {
             base.FromHtml(element);
@@ -789,7 +791,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.dynamicDataValues = (JObject)parsedJson["dynamicDataValues"];
             }
         }
-        #endregion
+            #endregion
     }
 #endif
-}
+        }

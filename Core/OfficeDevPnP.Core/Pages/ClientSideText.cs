@@ -124,6 +124,8 @@ namespace OfficeDevPnP.Core.Pages
                 EditorType = "CKEditor"
             };
 
+
+#if !SP2019
             if (this.section.Type == CanvasSectionTemplate.OneColumnVerticalSection)
             {
                 if (this.section.Columns.First().Equals(this.Column))
@@ -131,6 +133,7 @@ namespace OfficeDevPnP.Core.Pages
                     controlData.Position.SectionFactor = 12;
                 }
             }
+#endif
 
             jsonControlData = JsonConvert.SerializeObject(controlData);
 
@@ -181,7 +184,7 @@ namespace OfficeDevPnP.Core.Pages
         }
 #endregion
 
-                    #region Internal and private methods
+            #region Internal and private methods
         internal override void FromHtml(IElement element)
         {
             base.FromHtml(element);
@@ -219,7 +222,7 @@ namespace OfficeDevPnP.Core.Pages
             this.spControlData = JsonConvert.DeserializeObject<ClientSideTextControlData>(element.GetAttribute(CanvasControl.ControlDataAttribute), jsonSerializerSettings);
             this.controlType = this.spControlData.ControlType;
         }
-                    #endregion
+            #endregion
     }
 #endif
-                }
+        }
