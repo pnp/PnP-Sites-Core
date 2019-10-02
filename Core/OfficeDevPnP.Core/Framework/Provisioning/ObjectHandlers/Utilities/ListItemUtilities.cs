@@ -439,6 +439,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 itemValues.Add(new FieldUpdateValue(key as string, newVals));
                                 break;
                             }
+                        case "Url":
+                            {
+                                
+                                if (value == null) goto default;
+                                if(value.Contains(",") || value.Contains(";"))
+                                {
+                                    var urlValue = new FieldUrlValue
+                                    {
+                                        Url = value.Split(new char[] { ',', ';' })[0],
+                                        Description = value.Split(new char[] { ',', ';' })[0]
+                                    };
+                                    itemValues.Add(new FieldUpdateValue(key as string, urlValue)); 
+                                } else
+                                {
+                                    var urlValue = new FieldUrlValue
+                                    {
+                                        Url = value,
+                                        Description = value
+                                    };
+                                    itemValues.Add(new FieldUpdateValue(key as string, urlValue));
+                                }
+
+                                break;
+                            }
                         default:
                             {
                                 itemValues.Add(new FieldUpdateValue(key as string, value));
