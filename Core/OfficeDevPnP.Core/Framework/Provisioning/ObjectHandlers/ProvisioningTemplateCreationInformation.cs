@@ -4,6 +4,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
 using System.Collections.Generic;
+using static OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.ExtractConfiguration;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -32,6 +33,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private bool includeContentTypesFromSyndication = true;
         private bool includeHiddenLists = false;
         private bool includeAllClientSidePages = false;
+        private bool excludeAuthorInformation = false;
+        private bool overwriteExistingNavigation = false;
+        private bool overwriteSiteFooterNavigation = false;
 
         /// <summary>
         /// Provisioning Progress Delegate
@@ -336,5 +340,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// Can contain the title or the ID of the lists to export
         /// </remarks>
         public List<String> ListsToExtract { get; set; } = new List<String>();
+
+        public List<ExtractListsListsConfiguration> ListsExtractionConfiguration { get; set; } = new List<ExtractListsListsConfiguration>();
+
+        internal bool ExcludeAuthorInformation
+        {
+            get { return excludeAuthorInformation; }
+            set { excludeAuthorInformation = value; }
+        }
+
+        internal bool OverwriteExistingNavigation
+        {
+            get { return overwriteExistingNavigation; }
+            set { overwriteExistingNavigation = value; }
+        }
+
+        internal bool OverwriteSiteFooterNavigation
+        {
+            get { return overwriteSiteFooterNavigation; }
+            set { overwriteSiteFooterNavigation = value; }
+        }
     }
 }

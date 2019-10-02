@@ -12,6 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     [Flags]
     public enum Handlers : int
     {
+        None = 0,
         /// <summary>
         /// Value 1, represents AuditSettings
         /// </summary>

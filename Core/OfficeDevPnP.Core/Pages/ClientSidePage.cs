@@ -889,7 +889,10 @@ namespace OfficeDevPnP.Core.Pages
                 item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.RepostPage;
                 item[ClientSidePage.CanvasField] = "";
                 item[ClientSidePage.PageLayoutContentField] = "";
-
+                if (!string.IsNullOrEmpty(this.thumbnailUrl))
+                {
+                    item[ClientSidePage.BannerImageUrl] = this.thumbnailUrl;
+                }
                 if (updatingExistingPage)
                 {
                     item.Update();
@@ -1421,9 +1424,9 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void PromoteAsNewsArticle()
         {
-            if (this.LayoutType != ClientSidePageLayoutType.Article)
+            if (this.LayoutType == ClientSidePageLayoutType.Home || this.layoutType == ClientSidePageLayoutType.SingleWebPartAppPage)
             {
-                throw new Exception("You can only promote article pages as news article");
+                throw new Exception("You can only promote article and repost pages as news article");
             }
 
             // ensure we do have the page list item loaded

@@ -70,7 +70,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         siteContext.Load(siteContext.Site, s => s.Id);
                                         siteContext.ExecuteQueryRetry();
-                                        RegisterAsHubSite(tenant, siteContext.Url, siteContext.Site.Id, t.HubSiteLogoUrl, tokenParser);
+                                        RegisterAsHubSite(tenant, siteContext.Url, siteContext.Site.Id, t.HubSiteLogoUrl, t.HubSiteTitle, tokenParser);
                                     }
                                     if (!string.IsNullOrEmpty(t.Theme))
                                     {
@@ -139,7 +139,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         siteContext.Load(siteContext.Site, s => s.Id);
                                         siteContext.ExecuteQueryRetry();
-                                        RegisterAsHubSite(tenant, siteInfo.Url, siteContext.Site.Id, c.HubSiteLogoUrl, tokenParser);
+                                        RegisterAsHubSite(tenant, siteInfo.Url, siteContext.Site.Id, c.HubSiteLogoUrl, c.HubSiteTitle, tokenParser);
                                     }
                                     if (!string.IsNullOrEmpty(c.Theme))
                                     {
@@ -184,7 +184,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         siteContext.Load(siteContext.Site, s => s.Id);
                                         siteContext.ExecuteQueryRetry();
-                                        RegisterAsHubSite(tenant, siteContext.Url, siteContext.Site.Id, t.HubSiteLogoUrl, tokenParser);
+                                        RegisterAsHubSite(tenant, siteContext.Url, siteContext.Site.Id, t.HubSiteLogoUrl, t.HubSiteTitle, tokenParser);
                                     }
                                     if (!string.IsNullOrEmpty(t.Theme))
                                     {
@@ -309,7 +309,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        private static void RegisterAsHubSite(Tenant tenant, string siteUrl, Guid siteId, string logoUrl, TokenParser parser)
+        private static void RegisterAsHubSite(Tenant tenant, string siteUrl, Guid siteId, string logoUrl, string hubsiteTitle, TokenParser parser)
         {
             siteUrl = parser.ParseString(siteUrl);
             var hubSiteProperties = tenant.GetHubSitePropertiesByUrl(siteUrl);
@@ -323,16 +323,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     ci.LogoUrl = parser.ParseString(logoUrl);
                 }
+                if (!string.IsNullOrEmpty(hubsiteTitle))
+                {
+                    ci.Title = parser.ParseString(hubsiteTitle);
+                }
                 tenant.RegisterHubSiteWithCreationInformation(siteUrl, ci);
                 //tenant.Context.Load(hubSiteProperties);
                 tenant.Context.ExecuteQueryRetry();
             }
             else
             {
+                bool isDirty = false;
                 if (!string.IsNullOrEmpty(logoUrl))
                 {
                     logoUrl = parser.ParseString(logoUrl);
                     hubSiteProperties.LogoUrl = logoUrl;
+                    isDirty = true;
+                }
+                if (!string.IsNullOrEmpty(hubsiteTitle))
+                {
+                    hubsiteTitle = parser.ParseString(hubsiteTitle);
+                    hubSiteProperties.Title = hubsiteTitle;
+                    isDirty = true;
+                }
+                if (isDirty)
+                {
                     hubSiteProperties.Update();
                     tenant.Context.ExecuteQueryRetry();
                 }
