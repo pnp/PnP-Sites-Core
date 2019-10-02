@@ -53,11 +53,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         pageContentTypeId = GetParentIdValue(pageContentTypeId);
                     }
 
+                    var isNews = pageToExtract.LayoutType != Pages.ClientSidePageLayoutType.Home && int.Parse(pageToExtract.PageListItem[OfficeDevPnP.Core.Pages.ClientSidePage.PromotedStateField].ToString()) == (int)Pages.PromotedState.Promoted;
                     // Create the page
                     var extractedPageInstance = new ClientSidePage()
                     {
                         PageName = pageName,
-                        PromoteAsNewsArticle = false,
+                        PromoteAsNewsArticle = isNews,
                         PromoteAsTemplate = isTemplate,
                         Overwrite = true,
                         Publish = true,
@@ -65,6 +66,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         EnableComments = !pageToExtract.CommentsDisabled,
                         Title = pageToExtract.PageTitle,
                         ContentTypeID = !pageContentTypeId.Equals(BuiltInContentTypeId.ModernArticlePage, StringComparison.InvariantCultureIgnoreCase) ? pageContentTypeId : null,
+                        ThumbnailUrl = pageToExtract.ThumbnailUrl != null ? TokenizeJsonControlData(web, pageToExtract.ThumbnailUrl) : ""
                     };
 
 
@@ -82,10 +84,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             ShowPublishDate = pageToExtract.PageHeader.ShowPublishDate,
                             TopicHeader = pageToExtract.PageHeader.TopicHeader,
                             AlternativeText = pageToExtract.PageHeader.AlternativeText,
-                            Authors = pageToExtract.PageHeader.Authors,
-                            AuthorByLine = pageToExtract.PageHeader.AuthorByLine,
-                            AuthorByLineId = pageToExtract.PageHeader.AuthorByLineId,
+                            Authors = !creationInfo.ExcludeAuthorInformation ? pageToExtract.PageHeader.Authors : "",
+                            AuthorByLine = !creationInfo.ExcludeAuthorInformation ? pageToExtract.PageHeader.AuthorByLine : "",
+                            AuthorByLineId = !creationInfo.ExcludeAuthorInformation ? pageToExtract.PageHeader.AuthorByLineId : -1
                         };
+
                         extractedPageInstance.Header = extractedHeader;
 
                         // Add the page header image to template if that was requested
@@ -96,15 +99,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
 
                     // define reusable RegEx pre-compiled objects
-                    string guidPattern = "\"[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}\"";
+                    string guidPattern = "\"{?[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}}?\"";
                     Regex regexGuidPattern = new Regex(guidPattern, RegexOptions.Compiled);
 
                     string guidPatternEncoded = "=[a-fA-F0-9]{8}(?:%2D|-)([a-fA-F0-9]{4}(?:%2D|-)){3}[a-fA-F0-9]{12}";
                     Regex regexGuidPatternEncoded = new Regex(guidPatternEncoded, RegexOptions.Compiled);
 
+                    string guidPatternNoDashes = "[a-fA-F0-9]{32}";
+                    Regex regexGuidPatternNoDashes = new Regex(guidPatternNoDashes, RegexOptions.Compiled);
+
                     string siteAssetUrlsPattern = "(?:\")(?<AssetUrl>[\\w|\\.|\\/|:|-]*\\/SiteAssets\\/SitePages\\/[\\w|\\.|\\/|:|-]*)(?:\")";
                     // OLD RegEx with Catastrophic Backtracking: @".*""(.*?/SiteAssets/SitePages/.+?)"".*";
                     Regex regexSiteAssetUrls = new Regex(siteAssetUrlsPattern, RegexOptions.Compiled);
+
+                    if (creationInfo.PersistBrandingFiles && !string.IsNullOrEmpty(extractedPageInstance.ThumbnailUrl))
+                    {
+                        var thumbnailFileIds = new List<Guid>();
+                        CollectImageFilesFromGenericGuids(regexGuidPatternNoDashes, null, extractedPageInstance.ThumbnailUrl, thumbnailFileIds);
+                        if (thumbnailFileIds.Count == 1)
+                        {
+                            var file = web.GetFileById(thumbnailFileIds[0]);
+                            web.Context.Load(file, f => f.Level, f => f.ServerRelativeUrl, f => f.UniqueId);
+                            web.Context.ExecuteQueryRetry();
+
+                            // Item1 = was file added to the template
+                            // Item2 = file name (if file found)
+                            var imageAddedTuple = LoadAndAddPageImage(web, file, template, creationInfo, scope);
+                            if (imageAddedTuple.Item1)
+                            {
+                                extractedPageInstance.ThumbnailUrl = Regex.Replace(extractedPageInstance.ThumbnailUrl, file.UniqueId.ToString("N"), $"{{fileuniqueid:{file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray())}}}");
+                            }
+
+                        }
+                    }
 
                     // Add the sections
                     foreach (var section in pageToExtract.Sections)
@@ -115,9 +142,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             Order = section.Order,
                             BackgroundEmphasis = (Emphasis)section.ZoneEmphasis,
                         };
-                        if(section.VerticalSectionColumn != null)
+                        if (section.VerticalSectionColumn != null)
                         {
-                            sectionInstance.VerticalSectionEmphasis = (Emphasis) section.VerticalSectionColumn.VerticalSectionEmphasis;
+                            sectionInstance.VerticalSectionEmphasis = (Emphasis)section.VerticalSectionColumn.VerticalSectionEmphasis;
                         }
                         // Set section type
                         switch (section.Type)
@@ -168,7 +195,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 // Create control
                                 CanvasControl controlInstance = new CanvasControl()
                                 {
-                                    Column = column.Order,
+                                    Column = column.IsVerticalSectionColumn ? section.Columns.IndexOf(column) + 1 : column.Order,
                                     ControlId = control.InstanceId,
                                     Order = control.Order,
                                 };
@@ -288,7 +315,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             controlInstance.Type = WebPartType.Custom;
                                             break;
                                     }
+                                    if (creationInfo.ExcludeAuthorInformation)
+                                    {
+                                        if (webPartType == Pages.DefaultClientSideWebParts.News)
+                                        {
+                                            var properties = (control as Pages.ClientSideWebPart).Properties;
+                                            var authorTokens = properties.SelectTokens("$..author").ToList();
+                                            foreach (var authorToken in authorTokens)
+                                            {
+                                                authorToken.Parent.Remove();
+                                            }
+                                            var authorAccountNameTokens = properties.SelectTokens("$..authorAccountName").ToList();
+                                            foreach (var authorAccountNameToken in authorAccountNameTokens)
+                                            {
+                                                authorAccountNameToken.Parent.Remove();
+                                            }
 
+                                            (control as Pages.ClientSideWebPart).PropertiesJson = properties.ToString();
+                                        }
+                                    }
                                     string jsonControlData = "\"id\": \"" + (control as Pages.ClientSideWebPart).WebPartId + "\", \"instanceId\": \"" + (control as Pages.ClientSideWebPart).InstanceId + "\", \"title\": " + JsonConvert.ToString((control as Pages.ClientSideWebPart).Title) + ", \"description\": " + JsonConvert.ToString((control as Pages.ClientSideWebPart).Description) + ", \"dataVersion\": \"" + (control as Pages.ClientSideWebPart).DataVersion + "\", \"properties\": " + (control as Pages.ClientSideWebPart).PropertiesJson + "";
 
                                     // set the control properties
@@ -327,7 +372,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         Dictionary<string, string> exportedPages = new Dictionary<string, string>();
 
                                         CollectSiteAssetImageFiles(regexSiteAssetUrls, web, untokenizedJsonControlData, fileGuids);
-                                        CollectImageFilesFromGenericGuids(regexGuidPattern, regexGuidPatternEncoded, controlInstance.JsonControlData, fileGuids);
+                                        CollectImageFilesFromGenericGuids(regexGuidPattern, regexGuidPatternEncoded, untokenizedJsonControlData, fileGuids);
 
                                         // Iterate over the found guids to see if they're exportable files
                                         foreach (var uniqueId in fileGuids)
@@ -385,7 +430,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         }
                                     }
                                 }
-
                                 // add control to section
                                 sectionInstance.Controls.Add(controlInstance);
                             }
@@ -434,26 +478,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         private static void CollectImageFilesFromGenericGuids(Regex regexGuidPattern, Regex regexGuidPatternEncoded, string jsonControlData, List<Guid> fileGuids)
         {
             // grab all the guids in the already tokenized json and check try to get them as a file
-            if (regexGuidPattern.IsMatch(jsonControlData))
+            if (regexGuidPattern != null)
             {
-                foreach (Match guidMatch in regexGuidPattern.Matches(jsonControlData))
+                if (regexGuidPattern.IsMatch(jsonControlData))
                 {
-                    Guid uniqueId;
-                    if (Guid.TryParse(guidMatch.Value.Trim("\"".ToCharArray()), out uniqueId))
+                    foreach (Match guidMatch in regexGuidPattern.Matches(jsonControlData))
                     {
-                        fileGuids.Add(uniqueId);
+                        Guid uniqueId;
+                        if (Guid.TryParse(guidMatch.Value.Trim("\"".ToCharArray()), out uniqueId))
+                        {
+                            fileGuids.Add(uniqueId);
+                        }
                     }
                 }
             }
             // grab potentially encoded guids in the already tokenized json and check try to get them as a file
-            if (regexGuidPatternEncoded.IsMatch(jsonControlData))
+            if (regexGuidPatternEncoded != null)
             {
-                foreach (Match guidMatch in regexGuidPatternEncoded.Matches(jsonControlData))
+                if (regexGuidPatternEncoded.IsMatch(jsonControlData))
                 {
-                    Guid uniqueId;
-                    if (Guid.TryParse(guidMatch.Value.TrimStart("=".ToCharArray()), out uniqueId))
+                    foreach (Match guidMatch in regexGuidPatternEncoded.Matches(jsonControlData))
                     {
-                        fileGuids.Add(uniqueId);
+                        Guid uniqueId;
+                        if (Guid.TryParse(guidMatch.Value.TrimStart("=".ToCharArray()), out uniqueId))
+                        {
+                            fileGuids.Add(uniqueId);
+                        }
                     }
                 }
             }
@@ -643,8 +693,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             // Site token replacement, also replace "encoded" guids
             json = Regex.Replace(json, site.Id.ToString(), "{sitecollectionid}", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, site.Id.ToString().Replace("-", "%2D"), "{sitecollectionidencoded}", RegexOptions.IgnoreCase);
+            json = Regex.Replace(json, site.Id.ToString("N"), "{sitecollectionid}", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, web.Id.ToString(), "{siteid}", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, web.Id.ToString().Replace("-", "%2D"), "{siteidencoded}", RegexOptions.IgnoreCase);
+            json = Regex.Replace(json, web.Id.ToString("N"), "{siteid}", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, "(\"" + web.ServerRelativeUrl + ")(?!&)", "\"{site}", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, "'" + web.ServerRelativeUrl, "'{site}", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, ">" + web.ServerRelativeUrl, ">{site}", RegexOptions.IgnoreCase);

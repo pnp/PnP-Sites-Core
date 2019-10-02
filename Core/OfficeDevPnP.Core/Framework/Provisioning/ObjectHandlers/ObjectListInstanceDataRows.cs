@@ -1,10 +1,14 @@
 ﻿using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Enums;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
+using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
@@ -116,17 +120,58 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 if (processItem)
                                 {
+                                    bool IsNewItem = false;
                                     if (listitem == null)
                                     {
                                         var listitemCI = new ListItemCreationInformation();
                                         listitem = list.AddItem(listitemCI);
+                                        IsNewItem = true;
                                     }
 
-                                    ListItemUtilities.UpdateListItem(listitem, parser, dataRow.Values, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion);
+                                    ListItemUtilities.UpdateListItem(listitem, parser, dataRow.Values, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion, IsNewItem);
 
                                     if (dataRow.Security != null && (dataRow.Security.ClearSubscopes || dataRow.Security.CopyRoleAssignments || dataRow.Security.RoleAssignments.Count > 0))
                                     {
                                         listitem.SetSecurity(parser, dataRow.Security);
+                                    }
+
+                                    if (dataRow.Attachments != null && dataRow.Attachments.Count > 0)
+                                    {
+                                        foreach (var attachment in dataRow.Attachments)
+                                        {
+                                            attachment.Name = parser.ParseString(attachment.Name);
+                                            attachment.Src = parser.ParseString(attachment.Src);
+                                            if (!IsNewItem)
+                                            {
+                                                var overwrite = attachment.Overwrite;
+                                                listitem.EnsureProperty(l => l.AttachmentFiles);
+
+                                                Attachment existingItem = null;
+                                                if (listitem.AttachmentFiles.Count > 0)
+                                                {
+                                                    existingItem = listitem.AttachmentFiles.FirstOrDefault(a => a.FileName.Equals(attachment.Name, StringComparison.OrdinalIgnoreCase));
+                                                }
+                                                if (existingItem != null)
+                                                {
+                                                    if (overwrite)
+                                                    {
+                                                        existingItem.DeleteObject();
+                                                        web.Context.ExecuteQueryRetry();
+                                                        AddAttachment(template, listitem, attachment);
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    AddAttachment(template, listitem, attachment);
+                                                }
+                                            }
+                                            else
+                                            {
+                                                AddAttachment(template, listitem, attachment, IsNewItem);
+                                            }
+                                        }
+                                        if (IsNewItem)
+                                            listitem.Context.ExecuteQueryRetry();
                                     }
                                 }
                             }
@@ -148,16 +193,137 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
+
                 #endregion DataRows
             }
+
 
             return parser;
         }
 
+
+        private void AddAttachment(ProvisioningTemplate template, ListItem listitem, Model.SharePoint.InformationArchitecture.DataRowAttachment attachment, bool SkipExecuteQuery = false)
+        {
+#if !SP2013 && !SP2016
+            listitem.AttachmentFiles.AddUsingPath(ResourcePath.FromDecodedUrl(attachment.Name), FileUtilities.GetFileStream(template, attachment.Src));
+#else
+            var attachmentCI = new AttachmentCreationInformation()
+            {
+                ContentStream = FileUtilities.GetFileStream(template, attachment.Src),
+                FileName = attachment.Name
+            };
+            listitem.AttachmentFiles.Add(attachmentCI);
+#endif
+            if (!SkipExecuteQuery)
+                listitem.Context.ExecuteQueryRetry();
+            else
+                listitem.Update();
+        }
+
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            //using (var scope = new PnPMonitoredScope(this.Name))
-            //{ }
+            using (var scope = new PnPMonitoredScope(this.Name))
+            {
+                var lists = web.Lists;
+                web.EnsureProperty(w => w.ServerRelativeUrl);
+                web.Context.Load(lists,
+                  lc => lc.IncludeWithDefaultProperties(
+                        l => l.RootFolder.ServerRelativeUrl,
+                        l => l.Fields.IncludeWithDefaultProperties(
+                          f => f.Id,
+                          f => f.Title,
+                          f => f.Hidden,
+                          f => f.InternalName,
+                          f => f.DefaultValue,
+                          f => f.Required))
+                  );
+                web.Context.ExecuteQueryRetry();
+
+                var allLists = new List<List>();
+
+                var listsToProcess = lists.AsEnumerable().Where(l => l.Hidden == false || l.Hidden == creationInfo.IncludeHiddenLists).ToArray();
+                var listCount = 0;
+                foreach (var siteList in listsToProcess)
+                {
+                    if (!creationInfo.ListsExtractionConfiguration.Any(i =>
+                      {
+                          Guid listId;
+                          if (Guid.TryParse(i.Title, out listId))
+                          {
+                              return (listId == siteList.Id);
+                          }
+                          else
+                          {
+                              return (false);
+                          }
+                      }) && creationInfo.ListsExtractionConfiguration.FirstOrDefault(i => i.Title.Equals(siteList.Title) && i.IncludeItems) == null)
+                    {
+                        continue;
+                    }
+                    var extractionInfo = creationInfo.ListsExtractionConfiguration.FirstOrDefault(e => e.Title.Equals(siteList.Title));
+                    CamlQuery camlQuery = CamlQuery.CreateAllItemsQuery();
+                    ExtractConfiguration.ExtractListsQueryConfiguration queryConfig = null;
+                    if (extractionInfo.Query != null)
+                    {
+                        queryConfig = extractionInfo.Query;
+
+                        camlQuery = new CamlQuery();
+
+                        string viewXml = $"<View><Query>{queryConfig.CamlQuery}</Query>";
+                        if (queryConfig.ViewFields != null && queryConfig.ViewFields.Count > 0)
+                        {
+                            viewXml += "<ViewFields>";
+                            foreach (var viewField in queryConfig.ViewFields)
+                            {
+                                viewXml += $"<FieldRef Name='{viewField}' />";
+                            }
+                            viewXml += "</ViewFields>";
+                        }
+                        if (queryConfig.RowLimit > 0)
+                        {
+                            viewXml += $"<RowLimit>{queryConfig.RowLimit}</RowLimit>";
+                        }
+                        viewXml += "</View>";
+                        camlQuery.ViewXml = viewXml;
+
+                    }
+                    var listInstance = template.Lists.FirstOrDefault(l => siteList.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(web.ServerRelativeUrl, l.Url)));
+                    if (listInstance != null)
+                    {
+
+                        var items = siteList.GetItems(camlQuery);
+                        siteList.Context.Load(items, i => i.Include(li => li.FieldValuesAsText));
+                        if(queryConfig != null && queryConfig.ViewFields.Any())
+                        {
+                            foreach (var viewField in queryConfig.ViewFields)
+                            {
+                                siteList.Context.Load(items, i => i.Include(li => li[viewField]));
+                            }
+                        }
+                        siteList.Context.ExecuteQueryRetry();
+                        foreach (var item in items)
+                        {
+                            var dataRow = new Model.DataRow();
+                            foreach (var fieldValue in item.FieldValues)
+                            {
+                                // var isInternal = false;
+                                //var listField = siteList.Fields.FirstOrDefault(f => f.InternalName.Equals(fieldValue.Key));
+                                //if (listField != null)
+                                //{
+                                //    isInternal = BuiltInFieldId.Contains(listField.Id);
+                                //}
+                                var value = item.FieldValuesAsText[fieldValue.Key];
+                                var skip = extractionInfo.SkipEmptyFields && string.IsNullOrEmpty(value);
+                                if (!skip)
+                                {
+                                    dataRow.Values.Add(fieldValue.Key, value);
+                                }
+                            }
+                            listInstance.DataRows.Add(dataRow);
+                        }
+                    }
+                }
+            }
             return template;
         }
 
@@ -174,7 +340,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (!_willExtract.HasValue)
             {
-                _willExtract = false;
+                _willExtract = creationInfo.ListsExtractionConfiguration != null && creationInfo.ListsExtractionConfiguration.Count > 0;
             }
             return _willExtract.Value;
         }

@@ -12,6 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     [Flags]
     public enum Handlers : int
     {
+        None = 0,
         /// <summary>
         /// Value 1, represents AuditSettings
         /// </summary>
@@ -129,8 +130,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         Theme = 268435456,
         /// <summary>
+        /// Value 536870912, represents SiteSettings
+        /// </summary>
+        SiteSettings = 536870912,
+        /// <summary>
         /// Takes all handlers
         /// </summary>
-        All = AuditSettings | ComposedLook | CustomActions | ExtensibilityProviders | Features | Fields | Files | Lists | Pages | Publishing | RegionalSettings | SearchSettings | SitePolicy | SupportedUILanguages | TermGroups | Workflows | SiteSecurity | ContentTypes | PropertyBagEntries | PageContents | WebSettings | Navigation | ImageRenditions | ApplicationLifecycleManagement | Tenant | WebApiPermissions | SiteHeader | SiteFooter | Theme
+        All = AuditSettings | ComposedLook | CustomActions | ExtensibilityProviders | Features | Fields | Files | Lists | Pages | Publishing | RegionalSettings | SearchSettings | SitePolicy | SupportedUILanguages | TermGroups | Workflows | SiteSecurity | ContentTypes | PropertyBagEntries | PageContents | WebSettings | Navigation | ImageRenditions | ApplicationLifecycleManagement | Tenant | WebApiPermissions | SiteHeader | SiteFooter | Theme | SiteSettings
     }
 }

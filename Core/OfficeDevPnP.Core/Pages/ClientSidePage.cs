@@ -25,6 +25,7 @@ namespace OfficeDevPnP.Core.Pages
     {
         #region variables
         // fields
+        public const string BannerImageUrlField = "BannerImageUrl";
         public const string CanvasField = "CanvasContent1";
         public const string PageLayoutContentField = "LayoutWebpartsContent";
         public const string PageLayoutType = "PageLayoutType";
@@ -67,6 +68,8 @@ namespace OfficeDevPnP.Core.Pages
         private ClientSidePageLayoutType layoutType;
         private bool keepDefaultWebParts;
         private string pageTitle;
+        private string thumbnailUrl;
+        private bool isDefaultDescription;
         private ClientSidePageHeader pageHeader;
         #endregion
 
@@ -167,6 +170,18 @@ namespace OfficeDevPnP.Core.Pages
             set
             {
                 this.layoutType = value;
+            }
+        }
+
+        public string ThumbnailUrl
+        {
+            get
+            {
+                return this.thumbnailUrl;
+            }
+            set
+            {
+                this.thumbnailUrl = value;
             }
         }
 
@@ -373,9 +388,10 @@ namespace OfficeDevPnP.Core.Pages
         /// <param name="template">The <see cref="CanvasSectionTemplate"/> type of the section</param>
         /// <param name="order">Controls the order of the new section</param>
         /// <param name="zoneEmphasis">Zone emphasis (section background)</param>
-        public void AddSection(CanvasSectionTemplate template, float order, SPVariantThemeType zoneEmphasis)
-        {            
-            AddSection(template, order, (int)zoneEmphasis);
+        /// <param name="verticalSectionZoneEmphasis">Vertical Section Zone emphasis (section background)</param>
+        public void AddSection(CanvasSectionTemplate template, float order, SPVariantThemeType zoneEmphasis, SPVariantThemeType verticalSectionZoneEmphasis = SPVariantThemeType.None)
+        {
+            AddSection(template, order, (int)zoneEmphasis, (int)verticalSectionZoneEmphasis);
         }
 
         /// <summary>
@@ -384,12 +400,17 @@ namespace OfficeDevPnP.Core.Pages
         /// <param name="template">The <see cref="CanvasSectionTemplate"/> type of the section</param>
         /// <param name="order">Controls the order of the new section</param>
         /// <param name="zoneEmphasis">Zone emphasis (section background)</param>
-        public void AddSection(CanvasSectionTemplate template, float order, int zoneEmphasis)
+        /// <param name="verticalSectionZoneEmphasis">Vertical Section Zone emphasis (section background)</param>
+        public void AddSection(CanvasSectionTemplate template, float order, int zoneEmphasis, int? verticalSectionZoneEmphasis = null)
         {
             var section = new CanvasSection(this, template, order)
             {
-                ZoneEmphasis = zoneEmphasis
+                ZoneEmphasis = zoneEmphasis,
             };
+            if (section.VerticalSectionColumn != null && verticalSectionZoneEmphasis.HasValue)
+            {
+                section.VerticalSectionColumn.VerticalSectionEmphasis = verticalSectionZoneEmphasis;
+            }
             AddSection(section);
         }
 
@@ -642,7 +663,14 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     htmlWriter.Write(section.ToHtml());
                 }
-
+                // thumbnail
+                var thumbnailData = new { controlType = 0, pageSettingsSlice = new { isDefaultDescription = this.isDefaultDescription, isDefaultThumbnail = string.IsNullOrEmpty(thumbnailUrl) } };
+                htmlWriter.AddAttribute("data-sp-canvascontrol", "");
+                htmlWriter.AddAttribute("data-sp-canvasdataversion", "1.0");
+                htmlWriter.AddAttribute("data-sp-controldata", JsonConvert.SerializeObject(thumbnailData));
+                htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
+                htmlWriter.RenderEndTag();
+                // end thumbnail
                 htmlWriter.RenderEndTag();
             }
 #endif
@@ -861,7 +889,10 @@ namespace OfficeDevPnP.Core.Pages
                 item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.RepostPage;
                 item[ClientSidePage.CanvasField] = "";
                 item[ClientSidePage.PageLayoutContentField] = "";
-
+                if (!string.IsNullOrEmpty(this.thumbnailUrl))
+                {
+                    item[ClientSidePage.BannerImageUrl] = this.thumbnailUrl;
+                }
                 if (updatingExistingPage)
                 {
                     item.Update();
@@ -885,6 +916,11 @@ namespace OfficeDevPnP.Core.Pages
                 else
                 {
                     item[ClientSidePage.CanvasField] = this.ToHtml();
+                }
+
+                if (!string.IsNullOrEmpty(this.thumbnailUrl))
+                {
+                    item[ClientSidePage.BannerImageUrl] = this.thumbnailUrl;
                 }
 
                 // The page must first be saved, otherwise the page contents gets erased
@@ -1388,9 +1424,9 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void PromoteAsNewsArticle()
         {
-            if (this.LayoutType != ClientSidePageLayoutType.Article)
+            if (this.LayoutType == ClientSidePageLayoutType.Home || this.layoutType == ClientSidePageLayoutType.SingleWebPartAppPage)
             {
-                throw new Exception("You can only promote article pages as news article");
+                throw new Exception("You can only promote article and repost pages as news article");
             }
 
             // ensure we do have the page list item loaded
@@ -1482,17 +1518,17 @@ namespace OfficeDevPnP.Core.Pages
             if (section.VerticalSectionColumn != null)
             {
                 // we're adding a section that has a vertical column. This can not be combined with either another section with a vertical column or a full width section
-                if (this.Sections.Where(p=>p.VerticalSectionColumn != null).Any())
+                if (this.Sections.Where(p => p.VerticalSectionColumn != null).Any())
                 {
                     throw new Exception("You can only have one section with a vertical column on a page");
                 }
-                
+
                 if (this.Sections.Where(p => p.Type == CanvasSectionTemplate.OneColumnFullWidth).Any())
                 {
                     throw new Exception("You already have a full width section on this page, you can't add a section with vertical column");
                 }
             }
-            
+
             if (section.Type == CanvasSectionTemplate.OneColumnFullWidth)
             {
                 // we're adding a full width section. This can not be combined with either a vertical column section
@@ -1665,6 +1701,21 @@ namespace OfficeDevPnP.Core.Pages
                                 currentColumn = currentSection.Columns.Where(p => p.Order == sectionData.Position.SectionIndex).First();
                             }
                         }
+
+                        if (sectionData.PageSettingsSlice != null)
+                        {
+                            if (sectionData.PageSettingsSlice.IsDefaultThumbnail.HasValue)
+                            {
+                                if (sectionData.PageSettingsSlice.IsDefaultThumbnail == false)
+                                {
+                                    this.thumbnailUrl = this.PageListItem[BannerImageUrlField] != null ? ((FieldUrlValue)this.PageListItem[BannerImageUrlField]).Url : string.Empty;
+                                }
+                            }
+                            if (sectionData.PageSettingsSlice.IsDefaultDescription.HasValue)
+                            {
+                                this.isDefaultDescription = sectionData.PageSettingsSlice.IsDefaultDescription.Value;
+                            }
+                        }
                     }
 
                     controlOrder++;
@@ -1673,7 +1724,8 @@ namespace OfficeDevPnP.Core.Pages
 
             // Perform vertical section column matchup if that did not happen yet
             var verticalSectionColumn = this.sections.Where(p => p.VerticalSectionColumn != null).FirstOrDefault();
-            if (verticalSectionColumn != null)
+            // Only continue if the vertical section column we found was "standalone" and not yet matched with other columns
+            if (verticalSectionColumn != null && verticalSectionColumn.Columns.Count == 1)
             {
                 // find another, non vertical section, column with the same zoneindex
                 var matchedUpSection = this.sections.Where(p => p.VerticalSectionColumn == null && p.Order == verticalSectionColumn.Order).FirstOrDefault();
@@ -1681,7 +1733,7 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     // matchup did not yet happen, so let's handle it now
                     // Get the top section
-                    var topSection = this.sections.Where(p=> p.VerticalSectionColumn == null).OrderBy(p => p.Order).FirstOrDefault();
+                    var topSection = this.sections.Where(p => p.VerticalSectionColumn == null).OrderBy(p => p.Order).FirstOrDefault();
                     if (topSection != null)
                     {
                         // Add the "standalone" vertical section column to this section
@@ -1691,7 +1743,7 @@ namespace OfficeDevPnP.Core.Pages
                         var controlsToMove = this.controls.Where(p => p.section == verticalSectionColumn);
                         if (controlsToMove.Any())
                         {
-                            foreach(var controlToMove in controlsToMove)
+                            foreach (var controlToMove in controlsToMove)
                             {
                                 controlToMove.MoveTo(topSection, topSection.VerticalSectionColumn);
                             }
@@ -1699,7 +1751,7 @@ namespace OfficeDevPnP.Core.Pages
 
                         // Remove the "standalone" vertical section column section
                         this.sections.Remove(verticalSectionColumn);
-                    }                    
+                    }
                 }
             }
 
@@ -1745,6 +1797,7 @@ namespace OfficeDevPnP.Core.Pages
                     if (section.Columns.Count == 2)
                     {
                         section.Type = CanvasSectionTemplate.OneColumnVerticalSection;
+                        section.Columns[0].ResetColumn(section.Columns[0].Order, section.Columns[0].ColumnFactor != 0 ? section.Columns[0].ColumnFactor : 12);
                     }
                     else if (section.Columns.Count == 3)
                     {
@@ -1831,7 +1884,7 @@ namespace OfficeDevPnP.Core.Pages
                     currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor));
                     currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).First();
 #if !SP2019
-                }                
+                }
 #endif
             }
 
@@ -1922,7 +1975,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
         }
-#endregion
+        #endregion
     }
 #endif
-            }
+}

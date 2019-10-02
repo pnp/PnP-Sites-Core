@@ -22,7 +22,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private WebApiPermissionCollection _webApiPermissions;
         private ThemeCollection _themes;
         private Office365Groups.Office365GroupLifecyclePolicyCollection _office365GroupLifecyclePolicies;
-        private SPUPS.UserProfileCollection _SPUserProfiles;
+        private SPUPS.UserProfileCollection _SPUsersProfiles;
 
         #endregion
 
@@ -223,7 +223,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
-        public Office365Groups.Office365GroupsSettings Office365GroupsSettings { get; set; }
+        public Office365Groups.Office365GroupsSettings Office365GroupsSettings { get; set; } = new Office365Groups.Office365GroupsSettings();
 
         /// <summary>
         /// Gets or sets Office365GroupLifecyclePolicies for the tenant
@@ -255,26 +255,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets SPUserProfiles for the tenant
         /// </summary>
-        public SPUPS.UserProfileCollection SPUserProfiles
+        public SPUPS.UserProfileCollection SPUsersProfiles
         {
             get
             {
-                if (this._SPUserProfiles == null)
+                if (this._SPUsersProfiles == null)
                 {
-                    this._SPUserProfiles = new SPUPS.UserProfileCollection(this.ParentTemplate);
+                    this._SPUsersProfiles = new SPUPS.UserProfileCollection(this.ParentTemplate);
                 }
-                return this._SPUserProfiles;
+                return this._SPUsersProfiles;
             }
             set
             {
-                if (this._SPUserProfiles != null)
+                if (this._SPUsersProfiles != null)
                 {
-                    this._SPUserProfiles.ParentTemplate = null;
+                    this._SPUsersProfiles.ParentTemplate = null;
                 }
-                this._SPUserProfiles = value;
-                if (this._SPUserProfiles != null)
+                this._SPUsersProfiles = value;
+                if (this._SPUsersProfiles != null)
                 {
-                    this._SPUserProfiles.ParentTemplate = this.ParentTemplate;
+                    this._SPUsersProfiles.ParentTemplate = this.ParentTemplate;
                 }
             }
         }
@@ -297,7 +297,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Themes.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
                 this.Office365GroupsSettings.GetHashCode(),
                 this.Office365GroupLifecyclePolicies.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
-                this.SPUserProfiles.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
+                this.SPUsersProfiles.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0))
             ).GetHashCode());
         }
 
@@ -338,7 +338,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Themes.DeepEquals(other.Themes) &&
                 this.Office365GroupsSettings.Equals(other.Office365GroupsSettings) &&
                 this.Office365GroupLifecyclePolicies.DeepEquals(other.Office365GroupLifecyclePolicies) &&
-                this.SPUserProfiles.DeepEquals(other.SPUserProfiles)
+                this.SPUsersProfiles.DeepEquals(other.SPUsersProfiles)
                 );
         }
 

@@ -58,6 +58,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     ///     Header
     ///     Footer
     ///     ProvisioningTemplateWebhooks 
+    ///     SiteSettings
     /// Teams:
     ///     TeamTemplate
     ///     Team
@@ -72,20 +73,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     ///     SiteScripts
     ///     StorageEntities
     ///     Themes
-    /// 
-    /// To Cover:
-    ///     Drive
     ///     SPUserProfile
     ///     Office365Group Settings
-    ///     SiteSettings
-    ///     DataRow Attachments
-    ///     Properties for Folders
-    ///     Vertical section in Client Side Pages + Vertical Emphasis
-    ///     Teamify/HideTeamify in TeamSite
-    ///     GroupLifecyclePolicyId in TeamSite
-    ///     DiscoverySettings in Teams
-    ///     IDs for Tabs and Channels
-    ///     AllowToAddGuests in TeamSecurity
+    ///     Office365Group Lifecycle
+    /// Drive
     /// 
     /// </summary>
     [TestClass]
@@ -447,7 +438,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(2, template.ProvisioningTemplateWebhooks.Count);
             Assert.IsTrue(template.ProvisioningTemplateWebhooks[0].Url.Contains("https://mywebhook.azurefunctions.net/function01"));
             Assert.AreEqual(ProvisioningTemplateWebhookMethod.GET, template.ProvisioningTemplateWebhooks[0].Method);
-            Assert.AreEqual(ProvisioningTemplateWebhookKind.ProvisioningStarted, template.ProvisioningTemplateWebhooks[0].Kind);
+            Assert.AreEqual(ProvisioningTemplateWebhookKind.ProvisioningTemplateStarted, template.ProvisioningTemplateWebhooks[0].Kind);
             Assert.AreEqual(ProvisioningTemplateWebhookBodyFormat.Json, template.ProvisioningTemplateWebhooks[1].BodyFormat);
             Assert.AreEqual(true, template.ProvisioningTemplateWebhooks[1].Async);
             Assert.AreEqual(3, template.ProvisioningTemplateWebhooks[0].Parameters.Count);
@@ -464,7 +455,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var result = new ProvisioningTemplate();
 
-            result.ProvisioningTemplateWebhooks.Add(new ProvisioningTemplateWebhook
+            result.ProvisioningTemplateWebhooks.Add(new Core.Framework.Provisioning.Model.ProvisioningTemplateWebhook
             {
                 Url = "https://my.url/func01",
                 Method = ProvisioningTemplateWebhookMethod.GET,
@@ -478,12 +469,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 }
             });
 
-            result.ProvisioningTemplateWebhooks.Add(new ProvisioningTemplateWebhook
+            result.ProvisioningTemplateWebhooks.Add(new Core.Framework.Provisioning.Model.ProvisioningTemplateWebhook
             {
                 Url = "https://my.url/func01",
                 Method = ProvisioningTemplateWebhookMethod.POST,
                 Async = true,
-                Kind = ProvisioningTemplateWebhookKind.ProvisioningCompleted,
+                Kind = ProvisioningTemplateWebhookKind.ProvisioningTemplateCompleted,
                 BodyFormat = ProvisioningTemplateWebhookBodyFormat.FormUrlEncoded,
                 Parameters = new Dictionary<string, string>
                 {
@@ -505,16 +496,95 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(2, template.ProvisioningTemplateWebhooks.Count());
             Assert.AreEqual("https://my.url/func01", template.ProvisioningTemplateWebhooks[0].Url);
             Assert.AreEqual(false, template.ProvisioningTemplateWebhooks[0].Async);
-            Assert.AreEqual(ProvisioningTemplateWebhooksProvisioningTemplateWebhookBodyFormat.Xml, template.ProvisioningTemplateWebhooks[0].BodyFormat);
-            Assert.AreEqual(ProvisioningTemplateWebhooksProvisioningTemplateWebhookMethod.GET, template.ProvisioningTemplateWebhooks[0].Method);
-            Assert.AreEqual(ProvisioningTemplateWebhooksProvisioningTemplateWebhookMethod.POST, template.ProvisioningTemplateWebhooks[1].Method);
-            Assert.AreEqual(ProvisioningTemplateWebhooksProvisioningTemplateWebhookKind.ProvisioningCompleted, template.ProvisioningTemplateWebhooks[1].Kind);
-            Assert.AreEqual(ProvisioningTemplateWebhooksProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted, template.ProvisioningTemplateWebhooks[0].Kind);
+            Assert.AreEqual(ProvisioningWebhookBodyFormat.Xml, template.ProvisioningTemplateWebhooks[0].BodyFormat);
+            Assert.AreEqual(ProvisioningWebhookMethod.GET, template.ProvisioningTemplateWebhooks[0].Method);
+            Assert.AreEqual(ProvisioningWebhookMethod.POST, template.ProvisioningTemplateWebhooks[1].Method);
+            Assert.AreEqual(ProvisioningWebhookKind.ProvisioningTemplateCompleted, template.ProvisioningTemplateWebhooks[1].Kind);
+            Assert.AreEqual(ProvisioningWebhookKind.ObjectHandlerProvisioningStarted, template.ProvisioningTemplateWebhooks[0].Kind);
             Assert.AreEqual(2, template.ProvisioningTemplateWebhooks[0].Parameters.Count());
             Assert.AreEqual("Param01", template.ProvisioningTemplateWebhooks[0].Parameters[0].Key);
             Assert.AreEqual("Value01", template.ProvisioningTemplateWebhooks[0].Parameters[0].Value);
             Assert.AreEqual("Param01", template.ProvisioningTemplateWebhooks[1].Parameters[0].Key);
             Assert.AreEqual("Value01", template.ProvisioningTemplateWebhooks[1].Parameters[0].Value);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_ProvisioningWebhook()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
+
+            Assert.AreEqual(2, hierarchy.ProvisioningWebhooks.Count);
+            Assert.IsTrue(hierarchy.ProvisioningWebhooks[0].Url.Contains("https://mywebhook.azurefunctions.net/function01"));
+            Assert.AreEqual(ProvisioningTemplateWebhookMethod.GET, hierarchy.ProvisioningWebhooks[0].Method);
+            Assert.AreEqual(ProvisioningTemplateWebhookKind.ProvisioningStarted, hierarchy.ProvisioningWebhooks[0].Kind);
+            Assert.AreEqual(ProvisioningTemplateWebhookBodyFormat.Json, hierarchy.ProvisioningWebhooks[1].BodyFormat);
+            Assert.AreEqual(true, hierarchy.ProvisioningWebhooks[1].Async);
+            Assert.AreEqual(2, hierarchy.ProvisioningWebhooks[0].Parameters.Count);
+            Assert.IsTrue(hierarchy.ProvisioningWebhooks[0].Parameters.ContainsKey("Param01"));
+            Assert.AreEqual("Value01", hierarchy.ProvisioningWebhooks[0].Parameters["Param01"]);
+            Assert.AreEqual("{sitecollection}", hierarchy.ProvisioningWebhooks[1].Parameters["Site"]);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_ProvisioningWebhook()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
+
+            result.ParentHierarchy.ProvisioningWebhooks.Add(new Core.Framework.Provisioning.Model.ProvisioningWebhook
+            {
+                Url = "https://my.url/func01",
+                Method = ProvisioningTemplateWebhookMethod.GET,
+                Async = false,
+                Kind = ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted,
+                BodyFormat = ProvisioningTemplateWebhookBodyFormat.Xml,
+                Parameters = new Dictionary<string, string>
+                {
+                    {"Param01", "Value01"},
+                    {"Param02", "Value01"},
+                }
+            });
+
+            result.ParentHierarchy.ProvisioningWebhooks.Add(new Core.Framework.Provisioning.Model.ProvisioningWebhook
+            {
+                Url = "https://my.url/func01",
+                Method = ProvisioningTemplateWebhookMethod.POST,
+                Async = true,
+                Kind = ProvisioningTemplateWebhookKind.ProvisioningCompleted,
+                BodyFormat = ProvisioningTemplateWebhookBodyFormat.FormUrlEncoded,
+                Parameters = new Dictionary<string, string>
+                {
+                    {"Param01", "Value01"},
+                    {"Param02", "Value01"},
+                }
+            });
+
+            var serializer = new XMLPnPSchemaV201909Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+
+            Assert.AreEqual(2, wrappedResult.ProvisioningWebhooks.Count());
+            Assert.AreEqual("https://my.url/func01", wrappedResult.ProvisioningWebhooks[0].Url);
+            Assert.AreEqual(false, wrappedResult.ProvisioningWebhooks[0].Async);
+            Assert.AreEqual(ProvisioningWebhookBodyFormat.Xml, wrappedResult.ProvisioningWebhooks[0].BodyFormat);
+            Assert.AreEqual(ProvisioningWebhookMethod.GET, wrappedResult.ProvisioningWebhooks[0].Method);
+            Assert.AreEqual(ProvisioningWebhookMethod.POST, wrappedResult.ProvisioningWebhooks[1].Method);
+            Assert.AreEqual(ProvisioningWebhookKind.ProvisioningCompleted, wrappedResult.ProvisioningWebhooks[1].Kind);
+            Assert.AreEqual(ProvisioningWebhookKind.ObjectHandlerProvisioningStarted, wrappedResult.ProvisioningWebhooks[0].Kind);
+            Assert.AreEqual(2, wrappedResult.ProvisioningWebhooks[0].Parameters.Count());
+            Assert.AreEqual("Param01", wrappedResult.ProvisioningWebhooks[0].Parameters[0].Key);
+            Assert.AreEqual("Value01", wrappedResult.ProvisioningWebhooks[0].Parameters[0].Value);
+            Assert.AreEqual("Param01", wrappedResult.ProvisioningWebhooks[1].Parameters[0].Key);
+            Assert.AreEqual("Value01", wrappedResult.ProvisioningWebhooks[1].Parameters[0].Value);
         }
 
         [TestMethod]
@@ -584,17 +654,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             // team common properties
             Assert.AreEqual("Sample Team 01", teams[0].DisplayName);
             Assert.AreEqual("This is just a sample Team 01", teams[0].Description);
-            Assert.AreEqual("{TeamId:GroupMailNickname}", teams[0].CloneFrom);
-            Assert.AreEqual("{groupid:DisplayName}", teams[1].GroupId);
+            Assert.AreEqual("{o365groupid:GroupMailNickname}", teams[0].CloneFrom);
+            Assert.AreEqual("{o365groupid:GroupMailNickname}", teams[1].GroupId);
             Assert.AreEqual("Private", teams[1].Classification);
             Assert.AreEqual(TeamSpecialization.EducationStandard, teams[1].Specialization);
             Assert.AreEqual(TeamVisibility.Public, teams[1].Visibility);
             Assert.AreEqual(false, teams[1].Archived);
-            Assert.AreEqual("sample.group", teams[1].MailNickname);
+            Assert.AreEqual("sample-team-02", teams[1].MailNickname);
             Assert.AreEqual("photo.jpg", teams[1].Photo);
 
             // team security
             var security = teams[0].Security;
+            Assert.AreEqual(true, security.AllowToAddGuests);
             Assert.AreEqual(false, security.ClearExistingMembers);
             Assert.AreEqual(true, security.ClearExistingOwners);
             Assert.AreEqual(2, security.Owners.Count);
@@ -626,13 +697,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, teams[1].MessagingSettings.AllowUserDeleteMessages);
             Assert.AreEqual(true, teams[1].MessagingSettings.AllowUserEditMessages);
 
+            // team discovery settings
+            Assert.AreEqual(false, teams[1].DiscoverySettings.ShowInTeamsSearchAndSuggestions);
+
             // team channels
             var channels = teams[1].Channels;
             Assert.AreEqual(3, channels.Count);
+            Assert.AreEqual("12345", channels[0].ID);
             Assert.AreEqual("This is just a Sample Channel", channels[0].Description);
             Assert.AreEqual("Sample Channel 01", channels[0].DisplayName);
             Assert.AreEqual(true, channels[0].IsFavoriteByDefault);
             Assert.AreEqual(1, channels[0].Tabs.Count);
+            Assert.AreEqual("67890", channels[0].Tabs[0].ID);
             Assert.AreEqual("My Tab 01", channels[0].Tabs[0].DisplayName);
             Assert.AreEqual("12345", channels[0].Tabs[0].TeamsAppId);
             Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView", channels[0].Tabs[0].Configuration.ContentUrl);
@@ -697,8 +773,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     AllowOwnerDeleteMessages = true,
                     AllowUserDeleteMessages = true
                 },
+                DiscoverySettings = new TeamDiscoverySettings
+                {
+                    ShowInTeamsSearchAndSuggestions = false,
+                },
                 Security = new Core.Framework.Provisioning.Model.Teams.TeamSecurity
                 {
+                    AllowToAddGuests = true,
                     ClearExistingMembers = true,
                     ClearExistingOwners = true,
                     Members = {
@@ -734,6 +815,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 {
                     new Core.Framework.Provisioning.Model.Teams.TeamChannel
                     {
+                        ID = "12345",
                         Description = "This is just a Sample Channel",
                         DisplayName = "Sample Channel 01",
                         IsFavoriteByDefault = true,
@@ -743,6 +825,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                             {
                                 DisplayName = "My Tab 01",
                                 TeamsAppId = "12345",
+                                ID = "67890",
                                 Configuration = new TeamTabConfiguration
                                 {
                                     ContentUrl = "https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView",
@@ -799,6 +882,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             // team security
             var security = team.Security;
+            Assert.AreEqual(true, security.AllowToAddGuests);
             Assert.AreEqual(true, security.Members.ClearExistingItems);
             Assert.AreEqual(true, security.Owners.ClearExistingItems);
             Assert.AreEqual(2, security.Owners.User.Count());
@@ -816,7 +900,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, team.GuestSettings.AllowCreateUpdateChannels);
             Assert.AreEqual(true, team.GuestSettings.AllowDeleteChannels);
 
-            // team memebers settings
+            // team members settings
             Assert.AreEqual(true, team.MembersSettings.AllowDeleteChannels);
             Assert.AreEqual(true, team.MembersSettings.AllowAddRemoveApps);
             Assert.AreEqual(true, team.MembersSettings.AllowCreateUpdateChannels);
@@ -830,13 +914,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, team.MessagingSettings.AllowUserDeleteMessages);
             Assert.AreEqual(true, team.MessagingSettings.AllowUserEditMessages);
 
+            // team discovery settings
+            Assert.AreEqual(false, team.DiscoverySettings.ShowInTeamsSearchAndSuggestions);
+
             // team channels
             var channels = team.Channels;
             Assert.AreEqual(1, channels.Count());
+            Assert.AreEqual("12345", channels[0].ID);
             Assert.AreEqual("This is just a Sample Channel", channels[0].Description);
             Assert.AreEqual("Sample Channel 01", channels[0].DisplayName);
             Assert.AreEqual(true, channels[0].IsFavoriteByDefault);
             Assert.AreEqual(1, channels[0].Tabs.Count());
+            Assert.AreEqual("67890", channels[0].Tabs[0].ID);
             Assert.AreEqual("My Tab 01", channels[0].Tabs[0].DisplayName);
             Assert.AreEqual("12345", channels[0].Tabs[0].TeamsAppId);
             Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView", channels[0].Tabs[0].Configuration.ContentUrl);
@@ -908,7 +997,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("John White", users[0].DisplayName);
             Assert.AreEqual(true, users[0].AccountEnabled);
             Assert.AreEqual("john.white", users[0].MailNickname);
-            Assert.AreEqual("john.white@{parameter:O365TenantName}.onmicrosoft.com", users[0].UserPrincipalName);
+            Assert.AreEqual("john.white@{parameter:domain}.onmicrosoft.com", users[0].UserPrincipalName);
             Assert.AreEqual("DisablePasswordExpiration,DisableStrongPassword", users[0].PasswordPolicies);
             Assert.AreEqual("photo.jpg", users[0].ProfilePhoto);
             Assert.AreEqual("John", users[0].GivenName);
@@ -1042,13 +1131,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
+            #region Prepare source model
+
             var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
-            var driveRoot = new Core.Framework.Provisioning.Model.Drive.DriveRoot
+            var driveRootOne = new Core.Framework.Provisioning.Model.Drive.DriveRoot
             {
                 DriveUrl = "/users/jim.black@contoso.onmicrosoft.com/drive",
                 RootFolder = new Core.Framework.Provisioning.Model.Drive.DriveRootFolder()
             };
-            driveRoot.RootFolder.DriveFiles.AddRange(new Core.Framework.Provisioning.Model.Drive.DriveFile[]
+            driveRootOne.RootFolder.DriveFiles.AddRange(new Core.Framework.Provisioning.Model.Drive.DriveFile[]
             {
                 new Core.Framework.Provisioning.Model.Drive.DriveFile
                 {
@@ -1063,7 +1154,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     Overwrite = false,
                 },
             });
-            driveRoot.RootFolder.DriveFolders.AddRange(new Core.Framework.Provisioning.Model.Drive.DriveFolder[]
+            driveRootOne.RootFolder.DriveFolders.AddRange(new Core.Framework.Provisioning.Model.Drive.DriveFolder[]
             {
                 new Core.Framework.Provisioning.Model.Drive.DriveFolder
                 {
@@ -1080,8 +1171,67 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     Overwrite = true,
                 },
             });
-            result.ParentHierarchy.Drive.DriveRoots.Add(driveRoot);
+            driveRootOne.RootFolder.DriveFolders[1].DriveFolders.Add(
+                new Core.Framework.Provisioning.Model.Drive.DriveFolder
+                {
+                    Name = "FY2018",
+                    Overwrite = true,
+                });
+            driveRootOne.RootFolder.DriveFolders[1].DriveFolders[0].DriveFiles.AddRange(
+                from f in Enumerable.Range(1, 12)
+                select new Core.Framework.Provisioning.Model.Drive.DriveFile
+                {
+                    Name = $"Expense-Report-{String.Format("{0:00}", f)}-2018.xlsx",
+                    Src = $"OneDrive/Jim.Black/ExpenseReports/FY2018/Expense-Report-{String.Format("{0:00}", f)}-2018.xlsx",
+                    Overwrite = false,
+                }
+                );
+            driveRootOne.RootFolder.DriveFolders[1].DriveFolders.Add(
+                new Core.Framework.Provisioning.Model.Drive.DriveFolder
+                {
+                    Name = "FY2019",
+                    Overwrite = true,
+                });
+            driveRootOne.RootFolder.DriveFolders[1].DriveFolders[1].DriveFiles.AddRange(
+                from f in Enumerable.Range(1, 9)
+                select new Core.Framework.Provisioning.Model.Drive.DriveFile
+                {
+                    Name = $"Expense-Report-{String.Format("{0:00}", f)}-2019.xlsx",
+                    Src = $"OneDrive/Jim.Black/ExpenseReports/FY2018/Expense-Report-{String.Format("{0:00}", f)}-2019.xlsx",
+                    Overwrite = true,
+                }
+                );
+            result.ParentHierarchy.Drive.DriveRoots.Add(driveRootOne);
 
+            var driveRootTwo = new Core.Framework.Provisioning.Model.Drive.DriveRoot
+            {
+                DriveUrl = "/users/john.white@{parameter:O365TenantName}.onmicrosoft.com/drive",
+                RootFolder = new Core.Framework.Provisioning.Model.Drive.DriveRootFolder()
+            };
+            driveRootTwo.RootFolder.DriveFiles.AddRange(new Core.Framework.Provisioning.Model.Drive.DriveFile[]
+            {
+                new Core.Framework.Provisioning.Model.Drive.DriveFile
+                {
+                    Name = "John-White-Resume.docx",
+                    Src = "OneDrive/John.White/JWResume.docx",
+                    Overwrite = true,
+                },
+            });
+            driveRootTwo.RootFolder.DriveFolders.AddRange(new Core.Framework.Provisioning.Model.Drive.DriveFolder[]
+            {
+                new Core.Framework.Provisioning.Model.Drive.DriveFolder
+                {
+                    Name = "Documents",
+                    Src = "OneDrive/John.White/Documents",
+                    Overwrite = false,
+                    IncludedExtensions = "*.pdf",
+                    ExcludedExtensions = "*.xlsx,*.pptx",
+                    Recursive = true
+                },
+            });
+            result.ParentHierarchy.Drive.DriveRoots.Add(driveRootTwo);
+
+            #endregion
 
             var serializer = new XMLPnPSchemaV201909Serializer();
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
@@ -1092,9 +1242,21 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
             var drives = wrappedResult.Drive;
 
-            Assert.AreEqual(1, drives.Count());
+            Assert.AreEqual(2, drives.Count());
             Assert.AreEqual("/users/jim.black@contoso.onmicrosoft.com/drive", drives[0].DriveUrl);
             Assert.AreEqual(4, drives[0].DriveItems.Length);
+            Assert.AreEqual("/users/john.white@{parameter:O365TenantName}.onmicrosoft.com/drive", drives[1].DriveUrl);
+            Assert.AreEqual(2, drives[1].DriveItems.Length);
+
+            Assert.AreEqual("ExpenseReports", ((DriveFolder)drives[0].DriveItems[1]).Name);
+            Assert.AreEqual(2, ((DriveFolder)drives[0].DriveItems[1]).Items.Length);
+            Assert.AreEqual("FY2018", ((DriveFolder)((DriveFolder)drives[0].DriveItems[1]).Items[0]).Name);
+            Assert.AreEqual(12, ((DriveFolder)((DriveFolder)drives[0].DriveItems[1]).Items[0]).Items.Length);
+            Assert.AreEqual("FY2019", ((DriveFolder)((DriveFolder)drives[0].DriveItems[1]).Items[1]).Name);
+            Assert.AreEqual(9, ((DriveFolder)((DriveFolder)drives[0].DriveItems[1]).Items[1]).Items.Length);
+            Assert.AreEqual("Expense-Report-01-2018.xlsx", ((DriveFile)((DriveFolder)((DriveFolder)drives[0].DriveItems[1]).Items[0]).Items[0]).Name);
+            Assert.AreEqual("Expense-Report-02-2018.xlsx", ((DriveFile)((DriveFolder)((DriveFolder)drives[0].DriveItems[1]).Items[0]).Items[1]).Name);
+            Assert.AreEqual("Expense-Report-12-2018.xlsx", ((DriveFile)((DriveFolder)((DriveFolder)drives[0].DriveItems[1]).Items[0]).Items[11]).Name);
         }
 
         [TestMethod]
@@ -1117,7 +1279,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_AppCatalog()
+        public void XMLSerializer_Serialize_Tenant_AppCatalog()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1175,7 +1337,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_WebApiPermissions()
+        public void XMLSerializer_Serialize_Tenant_WebApiPermissions()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1233,7 +1395,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_ContentDeliveryNetwork()
+        public void XMLSerializer_Serialize_Tenant_ContentDeliveryNetwork()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1309,7 +1471,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_SiteDesigns()
+        public void XMLSerializer_Serialize_Tenant_SiteDesigns()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1381,7 +1543,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_SiteScripts()
+        public void XMLSerializer_Serialize_Tenant_SiteScripts()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1442,7 +1604,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_StorageEntities()
+        public void XMLSerializer_Serialize_Tenant_StorageEntities()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1494,7 +1656,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_Themes()
+        public void XMLSerializer_Serialize_Tenant_Themes()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1525,6 +1687,200 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(false, themes[0].IsInverted);
             Assert.AreEqual("CustomOrange", themes[0].Name);
             Assert.IsTrue(themes[0].Text[0].Contains("\"neutralQuaternaryAlt\": \"#dadada\""));
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Tenant_SPUserProfiles()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
+            var ups = hierarchy.Tenant.SPUsersProfiles;
+
+            Assert.AreEqual(4, ups.Count);
+            Assert.AreEqual("user1@contoso.com", ups[0].TargetUser);
+            Assert.AreEqual("IT", ups[0].Properties["Department"]);
+            Assert.AreEqual("Milan, Italy", ups[0].Properties["OfficeLocation"]);
+            Assert.AreEqual("+39-030-123456", ups[0].Properties["PhoneNumber"]);
+
+            Assert.AreEqual("user2@{parameter:O365TenantName}.onmicrosoft.com", ups[1].TargetUser);
+            Assert.AreEqual("HR", ups[1].Properties["Department"]);
+            Assert.AreEqual("Seattle, WS", ups[1].Properties["OfficeLocation"]);
+            Assert.AreEqual("+1-321-123456", ups[1].Properties["PhoneNumber"]);
+
+            Assert.AreEqual("group01@contoso.com", ups[2].TargetGroup);
+            Assert.AreEqual("R&D", ups[2].Properties["Department"]);
+            Assert.AreEqual("New York, NY", ups[2].Properties["OfficeLocation"]);
+            Assert.AreEqual("+1-456-123456", ups[2].Properties["PhoneNumber"]);
+
+            Assert.AreEqual("group02@{parameter:O365TenantName}.onmicrosoft.com", ups[3].TargetGroup);
+            Assert.AreEqual("Production", ups[3].Properties["Department"]);
+            Assert.AreEqual("Washington, DC", ups[3].Properties["OfficeLocation"]);
+            Assert.AreEqual("+1-789-123456", ups[3].Properties["PhoneNumber"]);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Tenant_SPUserProfiles()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
+
+            result.ParentHierarchy.Tenant = new ProvisioningTenant(result.ApplicationLifecycleManagement.AppCatalog,
+                new Core.Framework.Provisioning.Model.ContentDeliveryNetwork());
+
+            result.Tenant.SPUsersProfiles.AddRange(new Core.Framework.Provisioning.Model.SPUPS.UserProfile[]
+            {
+                new Core.Framework.Provisioning.Model.SPUPS.UserProfile
+                {
+                    TargetUser = "user1@contoso.com",
+                },
+                new Core.Framework.Provisioning.Model.SPUPS.UserProfile
+                {
+                    TargetGroup = "group01@contoso.com",
+                },
+            });
+            result.Tenant.SPUsersProfiles[0].Properties.Add("Department", "IT");
+            result.Tenant.SPUsersProfiles[0].Properties.Add("OfficeLocation", "Milan, Italy");
+            result.Tenant.SPUsersProfiles[0].Properties.Add("PhoneNumber", "+39-030-123456");
+            result.Tenant.SPUsersProfiles[1].Properties.Add("Department", "R&D");
+            result.Tenant.SPUsersProfiles[1].Properties.Add("OfficeLocation", "New York, NY");
+            result.Tenant.SPUsersProfiles[1].Properties.Add("PhoneNumber", "+1-456-123456");
+
+            var serializer = new XMLPnPSchemaV201909Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+            var ups = wrappedResult.Tenant.SPUsersProfiles;
+
+            Assert.AreEqual(2, ups.Length);
+            Assert.AreEqual("user1@contoso.com", ups[0].TargetUser);
+            Assert.AreEqual("Department", ups[0].Property[0].Key);
+            Assert.AreEqual("IT", ups[0].Property[0].Value);
+            Assert.AreEqual("OfficeLocation", ups[0].Property[1].Key);
+            Assert.AreEqual("Milan, Italy", ups[0].Property[1].Value);
+            Assert.AreEqual("PhoneNumber", ups[0].Property[2].Key);
+            Assert.AreEqual("+39-030-123456", ups[0].Property[2].Value);
+            Assert.AreEqual("group01@contoso.com", ups[1].TargetGroup);
+            Assert.AreEqual("Department", ups[1].Property[0].Key);
+            Assert.AreEqual("R&D", ups[1].Property[0].Value);
+            Assert.AreEqual("OfficeLocation", ups[1].Property[1].Key);
+            Assert.AreEqual("New York, NY", ups[1].Property[1].Value);
+            Assert.AreEqual("PhoneNumber", ups[1].Property[2].Key);
+            Assert.AreEqual("+1-456-123456", ups[1].Property[2].Value);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Tenant_Office365GroupsLifecyclePolicies()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
+            var o365LifecyclePolicies = hierarchy.Tenant.Office365GroupLifecyclePolicies;
+
+            Assert.AreEqual(1, o365LifecyclePolicies.Count);
+            Assert.AreEqual("GROUP_LIFECYCLE_01", o365LifecyclePolicies[0].ID);
+            Assert.AreEqual(180, o365LifecyclePolicies[0].GroupLifetimeInDays);
+            Assert.AreEqual("admin01@contoso.com,admin02@{parameter:O365TenantName}.onmicrosoft.com", o365LifecyclePolicies[0].AlternateNotificationEmails);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.Office365Groups.ManagedGroupTypes.Selected, 
+                o365LifecyclePolicies[0].ManagedGroupTypes);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Tenant_Office365GroupsLifecyclePolicies()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
+
+            result.ParentHierarchy.Tenant = new ProvisioningTenant(result.ApplicationLifecycleManagement.AppCatalog,
+                new Core.Framework.Provisioning.Model.ContentDeliveryNetwork());
+
+            result.Tenant.Office365GroupLifecyclePolicies.Add(
+                new Core.Framework.Provisioning.Model.Office365Groups.Office365GroupLifecyclePolicy
+                {
+                    ID = "GROUP_LIFECYCLE_01",
+                    GroupLifetimeInDays = 180,
+                    AlternateNotificationEmails = "admin01@contoso.com,admin02@{parameter:O365TenantName}.onmicrosoft.com",
+                    ManagedGroupTypes = Core.Framework.Provisioning.Model.Office365Groups.ManagedGroupTypes.Selected,
+                }
+                );
+
+            var serializer = new XMLPnPSchemaV201909Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+            var o365LifecyclePolicies = wrappedResult.Tenant.Office365GroupLifecyclePolicies;
+
+            Assert.AreEqual(1, o365LifecyclePolicies.Length);
+            Assert.AreEqual("GROUP_LIFECYCLE_01", o365LifecyclePolicies[0].ID);
+            Assert.AreEqual(180, o365LifecyclePolicies[0].GroupLifetimeInDays);
+            Assert.AreEqual("admin01@contoso.com,admin02@{parameter:O365TenantName}.onmicrosoft.com", 
+                o365LifecyclePolicies[0].AlternateNotificationEmails);
+            Assert.AreEqual(Office365GroupLifecyclePolicyManagedGroupTypes.Selected,
+                o365LifecyclePolicies[0].ManagedGroupTypes);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_Tenant_Office365GroupsSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
+            var o365GroupsSettings = hierarchy.Tenant.Office365GroupsSettings;
+            
+            Assert.AreEqual(4, o365GroupsSettings.Properties.Count);
+            Assert.AreEqual("http://aka.ms/SharePointPnP", o365GroupsSettings.Properties["UsageGuidelinesUrl"]);
+            Assert.AreEqual("HBI,MBI,LBI,GDPR,TopSecret", o365GroupsSettings.Properties["ClassificationList"]);
+            Assert.AreEqual("true", o365GroupsSettings.Properties["EnableGroupCreation"]);
+            Assert.AreEqual("MBI", o365GroupsSettings.Properties["DefaultClassification"]);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_Tenant_Office365GroupsSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
+
+            result.ParentHierarchy.Tenant = new ProvisioningTenant(result.ApplicationLifecycleManagement.AppCatalog,
+                new Core.Framework.Provisioning.Model.ContentDeliveryNetwork());
+
+            result.Tenant.Office365GroupsSettings.Properties.Add("UsageGuidelinesUrl", "http://aka.ms/SharePointPnP");
+            result.Tenant.Office365GroupsSettings.Properties.Add("ClassificationList", "HBI,MBI,LBI,GDPR,TopSecret");
+            result.Tenant.Office365GroupsSettings.Properties.Add("EnableGroupCreation", "true");
+            result.Tenant.Office365GroupsSettings.Properties.Add("DefaultClassification", "MBI");
+
+            var serializer = new XMLPnPSchemaV201909Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+            var o365GroupsSettings = wrappedResult.Tenant.Office365GroupsSettings;
+
+            Assert.AreEqual(4, o365GroupsSettings.Length);
+            Assert.AreEqual("UsageGuidelinesUrl", o365GroupsSettings[0].Key);
+            Assert.AreEqual("http://aka.ms/SharePointPnP", o365GroupsSettings[0].Value);
+            Assert.AreEqual("ClassificationList", o365GroupsSettings[1].Key);
+            Assert.AreEqual("HBI,MBI,LBI,GDPR,TopSecret", o365GroupsSettings[1].Value);
+            Assert.AreEqual("EnableGroupCreation", o365GroupsSettings[2].Key);
+            Assert.AreEqual("true", o365GroupsSettings[2].Value);
+            Assert.AreEqual("DefaultClassification", o365GroupsSettings[3].Key);
+            Assert.AreEqual("MBI", o365GroupsSettings[3].Value);
         }
 
         [TestMethod]
@@ -1626,6 +1982,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("/sites/hubsite", webSettings.HubSiteUrl);
             Assert.AreEqual(false, webSettings.CommentsOnSitePagesDisabled);
             Assert.AreEqual(true, webSettings.QuickLaunchEnabled);
+            Assert.AreEqual(true, webSettings.IsMultilingual);
+            Assert.AreEqual(true, webSettings.OverwriteTranslationsOnChange);
+            Assert.IsNotNull(webSettings.AlternateUICultures);
+            Assert.AreEqual(3, webSettings.AlternateUICultures.Count);
+            Assert.AreEqual(1033, webSettings.AlternateUICultures[0].LCID);
+            Assert.AreEqual(1040, webSettings.AlternateUICultures[1].LCID);
+            Assert.AreEqual(1035, webSettings.AlternateUICultures[2].LCID);
+            Assert.AreEqual(true, webSettings.ExcludeFromOfflineClient);
+            Assert.AreEqual(true, webSettings.MembersCanShare);
+            Assert.AreEqual(false, webSettings.DisableFlows);
+            Assert.AreEqual(false, webSettings.DisableAppViews);
+            Assert.AreEqual(true, webSettings.HorizontalQuickLaunch);
+            Assert.AreEqual(SearchScopes.Hub, webSettings.SearchScope);
         }
 
         [TestMethod]
@@ -1649,9 +2018,25 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     CustomMasterPageUrl = "{sitecollection}/_catalogs/MasterPage/CustomMaster.master",
                     HubSiteUrl = "/sites/hubsite",
                     CommentsOnSitePagesDisabled = false,
-                    QuickLaunchEnabled = true
+                    QuickLaunchEnabled = true,
+                    IsMultilingual = true,
+                    OverwriteTranslationsOnChange = true,
+                    ExcludeFromOfflineClient = true,
+                    MembersCanShare = true,
+                    DisableFlows = false,
+                    DisableAppViews = false,
+                    HorizontalQuickLaunch = true,
+                    SearchScope = SearchScopes.Hub,
                 }
             };
+
+            result.WebSettings.AlternateUICultures.AddRange(
+                new AlternateUICulture[]
+                {
+                    new AlternateUICulture { LCID = 1033 },
+                    new AlternateUICulture { LCID = 1040 },
+                    new AlternateUICulture { LCID = 1035 },
+                });
 
             var serializer = new XMLPnPSchemaV201909Serializer();
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
@@ -1677,6 +2062,73 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("/sites/hubsite", webSettings.HubSiteUrl);
             Assert.AreEqual(false, webSettings.CommentsOnSitePagesDisabled);
             Assert.AreEqual(true, webSettings.QuickLaunchEnabled);
+            Assert.AreEqual(true, webSettings.IsMultilingual);
+            Assert.AreEqual(true, webSettings.OverwriteTranslationsOnChange);
+            Assert.IsNotNull(webSettings.AlternateUICultures);
+            Assert.AreEqual(3, webSettings.AlternateUICultures.Length);
+            Assert.AreEqual(1033, webSettings.AlternateUICultures[0].LCID);
+            Assert.AreEqual(1040, webSettings.AlternateUICultures[1].LCID);
+            Assert.AreEqual(1035, webSettings.AlternateUICultures[2].LCID);
+            Assert.AreEqual(true, webSettings.ExcludeFromOfflineClient);
+            Assert.AreEqual(true, webSettings.MembersCanShare);
+            Assert.AreEqual(false, webSettings.DisableFlows);
+            Assert.AreEqual(false, webSettings.DisableAppViews);
+            Assert.AreEqual(true, webSettings.HorizontalQuickLaunch);
+            Assert.AreEqual(WebSettingsSearchScope.Hub, webSettings.SearchScope);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_SiteSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var serializer = new XMLPnPSchemaV201909Serializer();
+            var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
+            var siteSettings = template.SiteSettings;
+
+            Assert.AreEqual(true, siteSettings.AllowDesigner);
+            Assert.AreEqual(false, siteSettings.AllowCreateDeclarativeWorkflow);
+            Assert.AreEqual(false, siteSettings.AllowSaveDeclarativeWorkflowAsTemplate);
+            Assert.AreEqual(false, siteSettings.AllowSavePublishDeclarativeWorkflow);
+            Assert.AreEqual(true, siteSettings.SocialBarOnSitePagesDisabled);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_SiteSettings()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate
+            {
+                SiteSettings = new Core.Framework.Provisioning.Model.SiteSettings
+                {
+                    AllowDesigner = true,
+                    AllowCreateDeclarativeWorkflow = false,
+                    AllowSaveDeclarativeWorkflowAsTemplate = false,
+                    AllowSavePublishDeclarativeWorkflow = false,
+                    SocialBarOnSitePagesDisabled = true,
+                }
+            };
+
+            var serializer = new XMLPnPSchemaV201909Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+
+            var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
+
+            var siteSettings = template.SiteSettings;
+
+            Assert.AreEqual(true, siteSettings.AllowDesigner);
+            Assert.AreEqual(false, siteSettings.AllowCreateDeclarativeWorkflow);
+            Assert.AreEqual(false, siteSettings.AllowSaveDeclarativeWorkflowAsTemplate);
+            Assert.AreEqual(false, siteSettings.AllowSavePublishDeclarativeWorkflow);
+            Assert.AreEqual(true, siteSettings.SocialBarOnSitePagesDisabled);
         }
 
         [TestMethod]
@@ -2719,9 +3171,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(2, list.DataRows.Count);
             Assert.AreEqual("ProjectID", list.DataRows.KeyColumn);
             Assert.AreEqual(UpdateBehavior.Overwrite, list.DataRows.UpdateBehavior);
+
             #region data row 1 asserts
+
             var dataRow = list.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("PRJ01")));
             Assert.IsNotNull(dataRow);
+
             security = dataRow.Security;
             Assert.IsNotNull(security);
             Assert.IsTrue(security.ClearSubscopes);
@@ -2750,10 +3205,24 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             dataValues = dataRow.Values.FirstOrDefault(d => d.Key == "ProjectDescription");
             Assert.IsNotNull(dataValues);
             Assert.AreEqual("This is a sample Project", dataValues.Value);
+
+            var attachments = dataRow.Attachments;
+            Assert.IsNotNull(attachments);
+            Assert.AreEqual(2, attachments.Count);
+            Assert.AreEqual("OneAttachment.docx", attachments[0].Name);
+            Assert.AreEqual("./Attachments/OneAttachment.docx", attachments[0].Src);
+            Assert.AreEqual(false, attachments[0].Overwrite);
+            Assert.AreEqual("AnotherAttachment.pptx", attachments[1].Name);
+            Assert.AreEqual("./Attachments/AnotherAttachment.pptx", attachments[1].Src);
+            Assert.AreEqual(true, attachments[1].Overwrite);
+
             #endregion
+
             #region data row 2 asserts
+
             dataRow = list.DataRows.FirstOrDefault(r => r.Values.Any(d => d.Value.StartsWith("PRJ021")));
             Assert.IsNotNull(dataRow);
+
             security = dataRow.Security;
             Assert.IsNotNull(security);
             Assert.IsTrue(security.ClearSubscopes);
@@ -2782,6 +3251,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             dataValues = dataRow.Values.FirstOrDefault(d => d.Key == "ProjectDescription");
             Assert.IsNotNull(dataValues);
             Assert.AreEqual("This is another sample Project", dataValues.Value);
+
             #endregion
 
             #region user custom action
@@ -2800,8 +3270,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             #endregion
 
             #region folders
+
             Assert.IsNotNull(list.Folders);
-            Assert.AreEqual(3, list.Folders.Count);
+            Assert.AreEqual(4, list.Folders.Count);
             var fl = list.Folders.FirstOrDefault(f => f.Name == "SubFolder-01");
             Assert.IsNotNull(fl);
             Assert.IsTrue(fl.Folders.Count == 1);
@@ -2828,6 +3299,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             roleAssignment = security.RoleAssignments.FirstOrDefault(r => r.Principal == "user1@contoso.com");
             Assert.IsNotNull(roleAssignment);
             Assert.AreEqual("View Only", roleAssignment.RoleDefinition);
+
+            var flDocumentSet = list.Folders.FirstOrDefault(f => f.Name == "Sample-DocumentSet");
+            Assert.AreEqual("0x0120001234567890", flDocumentSet.ContentTypeID);
+            Assert.IsNotNull(flDocumentSet.Properties);
+            Assert.AreEqual(2, flDocumentSet.Properties.Count);
+            Assert.AreEqual("CustomValue01", flDocumentSet.Properties["CustomProperty01"]);
+            Assert.AreEqual("CustomValue02", flDocumentSet.Properties["CustomProperty02"]);
+
             #endregion
 
             #region IRM Settings
@@ -3119,8 +3598,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     ClearSubscopes = true
                 }));
             folder01.Folders.Add(new Core.Framework.Provisioning.Model.Folder("Folder01.02"));
+            var folder03 = new Core.Framework.Provisioning.Model.Folder("Folder03");
+            folder03.ContentTypeID = "0x0120001234567890";
+            folder03.Properties.Add("CustomProperty01", "CustomValue01");
+            folder03.Properties.Add("CustomProperty02", "CustomValue02");
+
             list.Folders.Add(folder01);
             list.Folders.Add(folder02);
+            list.Folders.Add(folder03);
             #endregion
 
             list.Fields.Add(new Core.Framework.Provisioning.Model.Field()
@@ -3364,7 +3849,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             #region folders
             Assert.IsNotNull(l.Folders);
-            Assert.AreEqual(2, l.Folders.Length);
+            Assert.AreEqual(3, l.Folders.Length);
             var fl = l.Folders.FirstOrDefault(f => f.Name == "Folder02");
             Assert.IsNotNull(fl);
             Assert.IsNull(fl.Folder1);
@@ -3392,6 +3877,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             ra = security.RoleAssignment.FirstOrDefault(r => r.Principal == "Principal03");
             Assert.IsNotNull(ra);
             Assert.AreEqual("FullControl", ra.RoleDefinition);
+            fl = l.Folders.FirstOrDefault(f => f.Name == "Folder03");
+            Assert.IsNotNull(fl);
+            Assert.AreEqual("0x0120001234567890", fl.ContentTypeID);
+            Assert.IsNotNull(fl.Properties);
+            Assert.AreEqual(2, fl.Properties.Length);
+            Assert.AreEqual("CustomProperty01", fl.Properties[0].Key);
+            Assert.AreEqual("CustomValue01", fl.Properties[0].Value);
+            Assert.AreEqual("CustomProperty02", fl.Properties[1].Key);
+            Assert.AreEqual("CustomValue02", fl.Properties[1].Value);
+
             #endregion
 
             #region IRM Settings
@@ -4345,6 +4840,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, clientSidePages[0].EnableComments);
             Assert.AreEqual("Client Side Page Title", clientSidePages[0].Title);
             Assert.AreEqual("0x01010012345", clientSidePages[0].ContentTypeID);
+            Assert.AreEqual(true, clientSidePages[0].CreateTranslations);
+            Assert.AreEqual("images/pageThumbnail.png", clientSidePages[0].ThumbnailUrl);
 
             var page = clientSidePages[0];
             // header
@@ -4411,6 +4908,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 EnableComments = true,
                 Title = "Client Side Page Title",
                 ContentTypeID = "0x01010012345",
+                CreateTranslations = true,
+                ThumbnailUrl = "images/pageThumbnail.png",
                 Header = new Core.Framework.Provisioning.Model.ClientSidePageHeader
                 {
                     Type = ClientSidePageHeaderType.Custom,
@@ -4432,7 +4931,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     new Core.Framework.Provisioning.Model.CanvasSection
                     {
                         Order = 1,
-                        Type = CanvasSectionType.ThreeColumnVerticalSection,
+                        Type = CanvasSectionType.OneColumnVerticalSection,
                         BackgroundEmphasis = Core.Framework.Provisioning.Model.Emphasis.Soft,
                         VerticalSectionEmphasis = Core.Framework.Provisioning.Model.Emphasis.Strong,
                         Controls =
@@ -4493,6 +4992,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, clientSidePages[0].EnableComments);
             Assert.AreEqual("Client Side Page Title", clientSidePages[0].Title);
             Assert.AreEqual("0x01010012345", clientSidePages[0].ContentTypeID);
+            Assert.AreEqual(true, clientSidePages[0].CreateTranslations);
+            Assert.AreEqual("images/pageThumbnail.png", clientSidePages[0].ThumbnailUrl);            
 
             var page = clientSidePages[0];
             // header
@@ -4514,7 +5015,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             // sections
             Assert.AreEqual(1, section.Order);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.CanvasSectionType.ThreeColumnVerticalSection, section.Type);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.CanvasSectionType.OneColumnVerticalSection, section.Type);
             Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.Emphasis.Soft, section.BackgroundEmphasis);
             Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.Emphasis.Strong, section.VerticalSectionEmphasis);
 

@@ -44,20 +44,36 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 
         public override void Serialize(ProvisioningTemplate template, object persistence)
         {
-            //if (template.ParentHierarchy?.Drive?.DriveRoots != null)
-            //{
-            //    var driveRootTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DriveRoot, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-            //    var driveRootType = Type.GetType(driveRootTypeName, false);
+            if (template.ParentHierarchy?.Drive?.DriveRoots != null)
+            {
+                var driveRootTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DriveRoot, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var driveRootType = Type.GetType(driveRootTypeName, false);
+                var driveFolderTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DriveFolder, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var driveFolderType = Type.GetType(driveFolderTypeName, false);
 
-            //    if (driveRootType != null)
-            //    {
-            //        persistence.GetPublicInstanceProperty("Drive")
-            //            .SetValue(
-            //                persistence,
-            //                PnPObjectsMapper.MapObjects(template.ParentHierarchy.Drive.DriveRoots,
-            //                    new CollectionFromModelToSchemaTypeResolver(driveRootType)));
-            //    }
-            //}
+                if (driveRootType != null)
+                {
+                    var resolvers = new Dictionary<String, IResolver>();
+
+                    //// Handle DriveRoot objects
+                    //resolvers.Add($"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DriveRoot",
+                    //    new DriveRootFolderFromModelToSchemaTypeResolver());
+
+                    resolvers.Add($"{driveRootType}.DriveItems",
+                        new DriveItemsFromModelToSchemaTypeResolver()); // DriveRootsFromModelToSchemaTypeResolver());
+                    resolvers.Add($"{driveFolderType}.Items",
+                        new DriveItemsFromModelToSchemaTypeResolver());
+
+
+                    persistence.GetPublicInstanceProperty("Drive")
+                        .SetValue(
+                            persistence,
+                            PnPObjectsMapper.MapObjects(template.ParentHierarchy?.Drive?.DriveRoots,
+                                new CollectionFromModelToSchemaTypeResolver(driveRootType), 
+                                resolvers, 
+                                recursive: true));
+                }
+            }
         }
     }
 }

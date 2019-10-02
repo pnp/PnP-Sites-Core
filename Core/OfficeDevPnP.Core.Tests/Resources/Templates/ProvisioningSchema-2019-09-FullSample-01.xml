@@ -59,13 +59,14 @@
       <pnp:WebApiPermission Resource="MyCustomEnterpriseAPI" Scope="Invoke.Custom.Action"/>
     </pnp:WebApiPermissions>
     <pnp:ContentDeliveryNetwork>
-      <pnp:Public Enabled="true" NoDefaultOrigins="false">
+      <pnp:Public Enabled="true" NoDefaultOrigins="true">
         <pnp:Origins>
           <pnp:Origin Url="sites/CDN/CDNFiles" Action="Add"/>
           <pnp:Origin Url="sites/CDN/CDNFiles-Wrong" Action="Remove"/>
         </pnp:Origins>
         <pnp:IncludeFileExtensions>PDF,XML,JPG,JS,PNG</pnp:IncludeFileExtensions>
         <pnp:ExcludeRestrictedSiteClassifications>HBI,GDPR</pnp:ExcludeRestrictedSiteClassifications>
+        <pnp:ExcludeIfNoScriptDisabled>JS,CSS</pnp:ExcludeIfNoScriptDisabled>
       </pnp:Public>
       <pnp:Private Enabled="true" NoDefaultOrigins="false">
         <pnp:Origins>
@@ -145,12 +146,12 @@
         <pnp:Property Key="OfficeLocation" Value="Seattle, WS"/>
         <pnp:Property Key="PhoneNumber" Value="+1-321-123456"/>
       </pnp:SPUserProfile>
-      <pnp:SPUserProfile TargetUser="group01@contoso.com">
+      <pnp:SPUserProfile TargetGroup="group01@contoso.com">
         <pnp:Property Key="Department" Value="R&amp;D"/>
         <pnp:Property Key="OfficeLocation" Value="New York, NY"/>
         <pnp:Property Key="PhoneNumber" Value="+1-456-123456"/>
       </pnp:SPUserProfile>
-      <pnp:SPUserProfile TargetUser="group02@{parameter:O365TenantName}.onmicrosoft.com">
+      <pnp:SPUserProfile TargetGroup="group02@{parameter:O365TenantName}.onmicrosoft.com">
         <pnp:Property Key="Department" Value="Production"/>
         <pnp:Property Key="OfficeLocation" Value="Washington, DC"/>
         <pnp:Property Key="PhoneNumber" Value="+1-789-123456"/>
@@ -213,7 +214,14 @@
         DisableAppViews="false"
         HorizontalQuickLaunch="true"
         SearchScope="Hub"
-        />
+        IsMultilingual="true"
+        OverwriteTranslationsOnChange="true">
+        <pnp:AlternateUICultures>
+          <pnp:AlternateUICulture LCID="1033"/>
+          <pnp:AlternateUICulture LCID="1040"/>
+          <pnp:AlternateUICulture LCID="1035"/>
+        </pnp:AlternateUICultures>
+      </pnp:WebSettings>
 
       <pnp:SiteSettings
         AllowDesigner="true"
@@ -251,8 +259,35 @@
         "bodyText": "#020202"
         }
       </pnp:Theme>-->
-      
-      <pnp:Theme Name="Orange" IsInverted="false"></pnp:Theme>
+
+      <pnp:Theme Name="CustomOrange" IsInverted="false">
+        {
+        "themePrimary": "#ecb534",
+        "themeLighterAlt": "#fefcf6",
+        "themeLighter": "#fcf3dd",
+        "themeLight": "#fae8bf",
+        "themeTertiary": "#f4d282",
+        "themeSecondary": "#efbe4b",
+        "themeDarkAlt": "#d5a32f",
+        "themeDark": "#b48a28",
+        "themeDarker": "#85661d",
+        "neutralLighterAlt": "#f8f8f8",
+        "neutralLighter": "#f4f4f4",
+        "neutralLight": "#eaeaea",
+        "neutralQuaternaryAlt": "#dadada",
+        "neutralQuaternary": "#d0d0d0",
+        "neutralTertiaryAlt": "#c8c8c8",
+        "neutralTertiary": "#a9a9a9",
+        "neutralSecondary": "#8d8d8d",
+        "neutralPrimaryAlt": "#727272",
+        "neutralPrimary": "#020202",
+        "neutralDark": "#3a3a3a",
+        "black": "#1e1e1e",
+        "white": "#ffffff",
+        "bodyBackground": "#ffffff",
+        "bodyText": "#020202"
+        }
+      </pnp:Theme>
 
       <pnp:RegionalSettings
         AdjustHijriDays="1"
@@ -284,8 +319,8 @@
       </pnp:AuditSettings>
 
       <pnp:PropertyBagEntries>
-        <pnp:PropertyBagEntry Key="KEY1" Value ="value1" Overwrite="true" />
-        <pnp:PropertyBagEntry Key="KEY2" Value ="value2" />
+        <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="true" />
+        <pnp:PropertyBagEntry Key="KEY2" Value="value2" Indexed="true" />
       </pnp:PropertyBagEntries>
 
       <pnp:Security BreakRoleInheritance="true"
@@ -322,6 +357,20 @@
               <pnp:User Name="user1@contoso.com" />
               <pnp:User Name="user2@contoso.com" />
               <pnp:User Name="user3@contoso.com" />
+            </pnp:Members>
+          </pnp:SiteGroup>
+          <pnp:SiteGroup
+            AllowMembersEditMembership="true"
+            AllowRequestToJoinLeave="true"
+            AutoAcceptRequestToJoinLeave="true"
+            Description="Test Group 1"
+            OnlyAllowMembersViewMembership="true"
+            Owner="user1@contoso.com"
+            RequestToJoinLeaveEmailSetting="group1@contoso.com"
+            Title="TestGroup1">
+            <pnp:Members>
+              <pnp:User Name="user1@contoso.com"/>
+              <pnp:User Name="user2@contoso.com"/>
             </pnp:Members>
           </pnp:SiteGroup>
         </pnp:SiteGroups>
@@ -378,7 +427,10 @@
         <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E"
                      Name="General Project Document"
                      Group="Base Foundation Content Types"
-                     Description="General Project Document Content Type">
+                     Description="General Project Document Content Type"
+                     NewFormUrl="/Forms/NewForm.aspx" 
+                     EditFormUrl="/Forms/EditForm.aspx" 
+                     DisplayFormUrl="/Forms/DisplayForm.aspx">
           <pnp:FieldRefs>
             <!-- Project ID -->
             <pnp:FieldRef ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" />
@@ -389,6 +441,7 @@
             <!-- Project Description -->
             <pnp:FieldRef ID="{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}" UpdateChildren="true" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="DocumentTemplate.dotx" />
         </pnp:ContentType>
 
         <pnp:ContentType ID="0x0120D5200039D83CD2C9BA4A4499AEE6BE3562E023"
@@ -405,7 +458,7 @@
             <pnp:FieldRef ID="{A5DE9600-B7A6-42DD-A05E-10D4F1500208}" />
           </pnp:FieldRefs>
           <pnp:DocumentSetTemplate WelcomePage="{sitecollection}/_cts/ProjectDocumentSet/ProjectHomePage.aspx">
-            <pnp:AllowedContentTypes>
+            <pnp:AllowedContentTypes RemoveExistingContentTypes="true">
               <pnp:AllowedContentType ContentTypeID="0x0101" />
               <pnp:AllowedContentType ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" />
             </pnp:AllowedContentTypes>
@@ -935,7 +988,7 @@
 
       <pnp:ApplicationLifecycleManagement>
         <pnp:AppCatalog>
-          <pnp:Package Src="solution\spfx-discuss-now.sppkg" Action="UploadAndPublish" SkipFeatureDeployment="true" />
+          <pnp:Package Src="solution\spfx-discuss-now.sppkg" Action="UploadAndPublish" SkipFeatureDeployment="true" Overwrite="true" />
           <pnp:Package PackageId="d0816f0a-fda4-4a98-8e61-1bbe1f2b5b27" Action="Publish" />
           <pnp:Package PackageId="9672a07b-c111-4a12-bb5b-8d43c2ddd256" Action="Remove" />
         </pnp:AppCatalog>
@@ -967,7 +1020,7 @@
       </pnp:SiteWebhooks>
 
       <pnp:ClientSidePages>
-        <pnp:ClientSidePage PageName="SamplePage" PromoteAsTemplate="true" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true" Title="Client Side Page Title" ContentTypeID="0x01010012345">
+        <pnp:ClientSidePage PageName="SamplePage" PromoteAsTemplate="true" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true" Title="Client Side Page Title" ContentTypeID="0x01010012345"  CreateTranslations="true" ThumbnailUrl="images/pageThumbnail.png">
           <pnp:Header Type="Custom"
               ServerRelativeImageUrl="./site%20assets/picture.png"
               TranslateX="10.56"
@@ -1015,7 +1068,7 @@
             <pnp:Property Key="Key03" Value="Value 03" />
           </pnp:Properties>
         </pnp:ClientSidePage>
-        <pnp:ClientSidePage PageName="SamplePageWithVerticalSection" PromoteAsTemplate="true" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true" Title="Client Side Page Title" ContentTypeID="0x01010012345">
+        <pnp:ClientSidePage PageName="SamplePageWithVerticalSection" PromoteAsTemplate="true" PromoteAsNewsArticle="true" Overwrite="true" Publish="true" Layout="Article" EnableComments="true" Title="Client Side Page Title" ContentTypeID="0x01010012345" CreateTranslations="true">
           <pnp:Header Type="Custom"
               ServerRelativeImageUrl="./site%20assets/picture.png"
               TranslateX="10.56"
@@ -1077,7 +1130,7 @@
 
       <pnp:ProvisioningTemplateWebhooks>
         <pnp:ProvisioningTemplateWebhook Url="https://mywebhook.azurefunctions.net/function01?par1={WebhookParam:Param01}&amp;site={sitecollection}&amp;par2={WebhookParam:Param02}&amp;par3={WebhookParam:Param03}"
-                                         Method="GET" Kind="ProvisioningStarted">
+                                         Method="GET" Kind="ProvisioningTemplateStarted">
           <pnp:Parameters>
             <pnp:Parameter Key="Param01" Value="Value01"/>
             <pnp:Parameter Key="Param02" Value="Value02"/>
@@ -1085,7 +1138,7 @@
           </pnp:Parameters>
         </pnp:ProvisioningTemplateWebhook>
         <pnp:ProvisioningTemplateWebhook Url="https://mywebhook.azurefunctions.net/function01"
-                                         Method="POST" Kind="ProvisioningCompleted" BodyFormat="Json" Async="true">
+                                         Method="POST" Kind="ProvisioningTemplateCompleted" BodyFormat="Json" Async="true">
           <pnp:Parameters>
             <pnp:Parameter Key="Param01" Value="Value01"/>
             <pnp:Parameter Key="Site" Value="{sitecollection}"/>
@@ -1110,6 +1163,7 @@
                           AllowFileSharingForGuestUsers="true"
                           IsHubSite="true"
                           HubSiteLogoUrl="logo.png"
+                          HubSiteTitle="Hub Title"
                           Classification="HBI"
                           Theme="CustomOrange"
                           Description="{parameter:CompanyName} Intranet"
@@ -1301,8 +1355,8 @@
                              AllowOwnerDeleteMessages="false"
                              AllowTeamMentions="true"
                              AllowChannelMentions="true"/>
-      <pnp:DiscoverySettings ShowInTeamsSearchAndSuggestions="true" />
-      <pnp:Security>
+      <pnp:DiscoverySettings ShowInTeamsSearchAndSuggestions="false" />
+      <pnp:Security AllowToAddGuests="true">
         <pnp:Owners ClearExistingItems="true">
           <pnp:User UserPrincipalName="owner01@domain.onmicrosoft.com" />
           <pnp:User UserPrincipalName="owner02@domain.onmicrosoft.com" />
@@ -1316,9 +1370,9 @@
       <pnp:Channels>
         <pnp:Channel DisplayName="Sample Channel 01"
                      Description="This is just a Sample Channel"
-                     IsFavoriteByDefault="true">
+                     IsFavoriteByDefault="true" ID="12345">
           <pnp:Tabs>
-            <pnp:Tab DisplayName="My Tab 01" TeamsAppId="12345">
+            <pnp:Tab DisplayName="My Tab 01" TeamsAppId="12345" ID="67890">
               <pnp:Configuration EntityId="2DCA2E6C7A10415CAF6B8AB6661B3154"
                                  ContentUrl="https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView" 
                                  WebsiteUrl="https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154"
@@ -1392,11 +1446,11 @@
       <pnp:User AccountEnabled="true"
                 DisplayName="John White"
                 PasswordPolicies="DisablePasswordExpiration,DisableStrongPassword"
-                ProfilePhoto="JohnWhite.png"
+                ProfilePhoto="photo.jpg"
                 GivenName="John"
                 Surname="White"
                 JobTitle="Senior Partner"
-                OfficeLocation="Seattle, WS"
+                OfficeLocation="Seattle, WA"
                 PreferredLanguage="en-US"
                 MobilePhone="+1-601-123456"
                 MailNickname="john.white"
@@ -1476,5 +1530,22 @@
       </pnp:DriveItems>
     </pnp:DriveRoot>
   </pnp:Drive>
-  
+
+  <pnp:ProvisioningWebhooks>
+    <pnp:ProvisioningWebhook Url="https://mywebhook.azurefunctions.net/function01"
+                                     Method="GET" Kind="ProvisioningStarted" BodyFormat="Json" Async="true">
+      <pnp:Parameters>
+        <pnp:Parameter Key="Param01" Value="Value01"/>
+        <pnp:Parameter Key="Site" Value="{sitecollection}"/>
+      </pnp:Parameters>
+    </pnp:ProvisioningWebhook>
+    <pnp:ProvisioningWebhook Url="https://mywebhook.azurefunctions.net/function01"
+                                     Method="POST" Kind="ProvisioningCompleted" BodyFormat="Json" Async="true">
+      <pnp:Parameters>
+        <pnp:Parameter Key="Param01" Value="Value01"/>
+        <pnp:Parameter Key="Site" Value="{sitecollection}"/>
+      </pnp:Parameters>
+    </pnp:ProvisioningWebhook>
+  </pnp:ProvisioningWebhooks>
+
 </pnp:Provisioning>
