@@ -233,6 +233,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         page.LayoutType = (Pages.ClientSidePageLayoutType)Enum.Parse(typeof(Pages.ClientSidePageLayoutType), clientSidePage.Layout);
                     }
 
+                    if (!string.IsNullOrEmpty(clientSidePage.ThumbnailUrl))
+                    {
+                        page.ThumbnailUrl = parser.ParseString(clientSidePage.ThumbnailUrl);
+                    }
+
                     // Add content on the page, not needed for repost pages
                     if (page.LayoutType != Pages.ClientSidePageLayoutType.RepostPage)
                     {
@@ -271,19 +276,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     page.AddSection(Pages.CanvasSectionTemplate.TwoColumnRight, section.Order, (Int32)section.BackgroundEmphasis);
                                     break;
                                 case CanvasSectionType.OneColumnVerticalSection:
-                                    page.AddSection(Pages.CanvasSectionTemplate.OneColumnVerticalSection, section.Order, (Int32)section.VerticalSectionEmphasis);
+                                    page.AddSection(Pages.CanvasSectionTemplate.OneColumnVerticalSection, section.Order, (Int32)section.BackgroundEmphasis, (Int32)section.VerticalSectionEmphasis);
                                     break;
                                 case CanvasSectionType.TwoColumnVerticalSection:
-                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnVerticalSection, section.Order, (Int32)section.VerticalSectionEmphasis);
+                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnVerticalSection, section.Order, (Int32)section.BackgroundEmphasis, (Int32)section.VerticalSectionEmphasis);
                                     break;
                                 case CanvasSectionType.TwoColumnLeftVerticalSection:
-                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnLeftVerticalSection, section.Order, (Int32)section.VerticalSectionEmphasis);
+                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnLeftVerticalSection, section.Order, (Int32)section.BackgroundEmphasis, (Int32)section.VerticalSectionEmphasis);
                                     break;
                                 case CanvasSectionType.TwoColumnRightVerticalSection:
-                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnRightVerticalSection, section.Order, (Int32)section.VerticalSectionEmphasis);
+                                    page.AddSection(Pages.CanvasSectionTemplate.TwoColumnRightVerticalSection, section.Order, (Int32)section.BackgroundEmphasis, (Int32)section.VerticalSectionEmphasis);
                                     break;
                                 case CanvasSectionType.ThreeColumnVerticalSection:
-                                    page.AddSection(Pages.CanvasSectionTemplate.ThreeColumnVerticalSection, section.Order, (Int32)section.VerticalSectionEmphasis);
+                                    page.AddSection(Pages.CanvasSectionTemplate.ThreeColumnVerticalSection, section.Order, (Int32)section.BackgroundEmphasis, (Int32)section.VerticalSectionEmphasis);
                                     break;
                                 default:
                                     page.AddSection(Pages.CanvasSectionTemplate.OneColumn, section.Order, (Int32)section.BackgroundEmphasis);

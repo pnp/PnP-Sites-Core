@@ -63,7 +63,6 @@ namespace OfficeDevPnP.Core.Pages
 
             this.section = section;
             this.Order = order;
-            // if the sectionFactor was undefined is was not defined as there was no section in the original markup. Since we however provision back as one column page let's set the sectionFactor to 12.
             this.columnFactor = sectionFactor.HasValue ? sectionFactor.Value : 12;
             this.layoutIndex = 1;
         }
@@ -77,7 +76,6 @@ namespace OfficeDevPnP.Core.Pages
 
             this.section = section;
             this.Order = order;
-            // if the sectionFactor was undefined is was not defined as there was no section in the original markup. Since we however provision back as one column page let's set the sectionFactor to 12.
             this.columnFactor = sectionFactor.HasValue ? sectionFactor.Value : 12;
             this.layoutIndex = layoutIndex.HasValue ? layoutIndex.Value : 1;
         }

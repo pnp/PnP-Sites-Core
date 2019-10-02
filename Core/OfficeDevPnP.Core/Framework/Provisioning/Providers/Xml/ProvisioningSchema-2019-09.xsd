@@ -5,6 +5,22 @@
     xmlns:pnp="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema"
     xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
+  <!--
+  ****  WARNING ****
+
+  If you want to change this schema, please target the proper repository, which is the PnP-Provisioning-Schema one that is
+  available at the following URL:
+  
+  https://github.com/OfficeDev/PnP-Provisioning-Schema/
+  
+  Submit your Pull Requests against the experimental branch of the PnP-Provisioning-Schema repository and we will validate them.
+  We plan to update the master schema (the one used here) once every 2/3 months or more, depending on the number of changes and 
+  on the PnP Provisioning Engine roadmap.
+  
+  Thanks for your cooperation.
+  
+  -->
+
   <!-- The main element -->
   <xsd:element name="Provisioning" type="pnp:Provisioning">
     <xsd:annotation>
@@ -84,6 +100,14 @@
           <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
           <xsd:documentation xml:lang="en">
             Entry point to manage OneDrive for Business provisioning.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+      <xsd:element name="ProvisioningWebhooks" type="pnp:ProvisioningWebhooks" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Entry point to manage global provisioning webhooks.
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
@@ -355,7 +379,7 @@
             </xsd:element>
           </xsd:sequence>
         </xsd:complexType>
-        
+
       </xsd:element>
 
     </xsd:all>
@@ -714,7 +738,7 @@
     </xsd:sequence>
 
   </xsd:complexType>
-  
+
   <xsd:complexType name="Theme" mixed="true">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -787,7 +811,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    
+
     <xsd:attribute name="TargetUser" type="pnp:ReplaceableString" use="optional">
       <xsd:annotation>
         <xsd:appinfo>Updated with schema version 201909</xsd:appinfo>
@@ -896,7 +920,7 @@
       </xsd:simpleType>
     </xsd:attribute>
   </xsd:complexType>
-  
+
   <xsd:complexType name="Templates">
     <xsd:annotation>
       <xsd:documentation xml:lang="en">
@@ -1225,7 +1249,7 @@
           </xsd:documentation>
         </xsd:annotation>
       </xsd:element>
-      
+
       <xsd:element name="Header" type="pnp:Header" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -1244,13 +1268,34 @@
         </xsd:annotation>
       </xsd:element>
 
-      <xsd:element name="ProvisioningTemplateWebhooks" type="pnp:ProvisioningTemplateWebhooks" minOccurs="0" maxOccurs="1">
+      <xsd:element name="ProvisioningTemplateWebhooks" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
           <xsd:documentation xml:lang="en">
             The Webhooks for the Provisioning Template, optional element.
           </xsd:documentation>
         </xsd:annotation>
+
+        <xsd:complexType>
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Allows to define one or more webhooks that will be invoked by the engine, upon completion of specific actions
+            </xsd:documentation>
+          </xsd:annotation>
+
+          <xsd:sequence>
+            <xsd:element name="ProvisioningTemplateWebhook" minOccurs="0" maxOccurs="unbounded" type="pnp:ProvisioningWebhook">
+              <xsd:annotation>
+                <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+                <xsd:documentation xml:lang="en">
+                  Defines a single Provisioning Template Webhook
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+
       </xsd:element>
 
       <xsd:element name="Theme" type="pnp:Theme" minOccurs="0" maxOccurs="1">
@@ -1381,6 +1426,41 @@
         Section of Settings for the current Web Site, optional element.
       </xsd:documentation>
     </xsd:annotation>
+
+    <xsd:sequence>
+      <xsd:element name="AlternateUICultures" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Defines the list of Alternate UI Cultures for the current web, optional element.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="AlternateUICulture" minOccurs="1" maxOccurs="unbounded">
+              <xsd:annotation>
+                <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+                <xsd:documentation xml:lang="en">
+                  Defines an Alternate UI Culture item for the current web, optional element.
+                </xsd:documentation>
+              </xsd:annotation>
+
+              <xsd:complexType>
+                <xsd:attribute name="LCID" type="xsd:int" use="required">
+                  <xsd:annotation>
+                    <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+                    <xsd:documentation xml:lang="en">
+                      Defines the Locale ID of an Alternate UI Culture for the current web, optional element.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+              </xsd:complexType>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:sequence>
 
     <xsd:attribute name="RequestAccessEmail" type="xsd:string" use="optional">
       <xsd:annotation>
@@ -1571,7 +1651,25 @@
           </xsd:enumeration>
         </xsd:restriction>
       </xsd:simpleType>
-      
+
+    </xsd:attribute>
+
+    <xsd:attribute name="IsMultilingual" type="xsd:boolean" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines whether to enable Multilingual capabilities for the current web, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="OverwriteTranslationsOnChange" type="xsd:boolean" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines whether to OverwriteTranslationsOnChange on change for the current web, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
     </xsd:attribute>
 
   </xsd:complexType>
@@ -2397,7 +2495,7 @@
     <xsd:sequence>
       <xsd:element name="User" type="pnp:User" maxOccurs="unbounded" />
     </xsd:sequence>
-    
+
     <xsd:attribute name="ClearExistingItems" type="xsd:boolean" use="optional" default="false">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -2797,7 +2895,7 @@
             <xsd:element name="DataRow" maxOccurs="unbounded" minOccurs="0">
               <xsd:complexType>
                 <xsd:sequence>
-                  <xsd:element name="DataValue" maxOccurs="unbounded" minOccurs="1" type="pnp:DataValue">
+                  <xsd:element name="DataValue" maxOccurs="unbounded" minOccurs="0" type="pnp:DataValue">
                     <xsd:annotation>
                       <xsd:documentation xml:lang="en">
                         Defines a single field to provision within a row that will be added to the List Instance, collection of elements (field values).
@@ -4296,7 +4394,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    
+
   </xsd:complexType>
 
   <xsd:complexType name="SiteWebhook">
@@ -4727,6 +4825,24 @@
       </xsd:annotation>
     </xsd:attribute>
 
+    <xsd:attribute name="CreateTranslations" type="xsd:boolean" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Instructs the engine to create translations of the page while provisionig it, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="ThumbnailUrl" type="pnp:ReplaceableString" use="optional">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines the URL of the thumbnail for the client side page, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
   </xsd:complexType>
 
   <xsd:complexType name="Header">
@@ -4744,7 +4860,7 @@
           Defines the Layout of the Header, required attribute.
         </xsd:documentation>
       </xsd:annotation>
-    
+
       <xsd:simpleType>
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="Standard">
@@ -4774,7 +4890,7 @@
           Defines the Menu Style, required attribute.
         </xsd:documentation>
       </xsd:annotation>
-    
+
       <xsd:simpleType>
         <xsd:restriction base="xsd:string">
           <xsd:enumeration value="MegaMenu">
@@ -4824,7 +4940,7 @@
             Defines the Footer Links for the target site.
           </xsd:documentation>
         </xsd:annotation>
-      
+
         <xsd:complexType>
           <xsd:sequence>
             <xsd:element name="FooterLink" type="pnp:FooterLink" minOccurs="1" maxOccurs="unbounded">
@@ -4837,9 +4953,9 @@
             </xsd:element>
           </xsd:sequence>
         </xsd:complexType>
-      
+
       </xsd:element>
-        
+
     </xsd:sequence>
 
     <xsd:attribute name="Enabled" type="xsd:boolean" use="required">
@@ -4850,7 +4966,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    
+
     <xsd:attribute name="Logo" type="pnp:ReplaceableString" use="optional">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -4887,7 +5003,7 @@
         Defines a Footer Link for the target site.
       </xsd:documentation>
     </xsd:annotation>
-    
+
     <xsd:sequence>
       <xsd:element name="FooterLink" type="pnp:FooterLink" minOccurs="0" maxOccurs="unbounded">
         <xsd:annotation>
@@ -4898,7 +5014,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-            
+
     <xsd:attribute name="DisplayName" type="pnp:ReplaceableString" use="required">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -4916,197 +5032,200 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-        
+
   </xsd:complexType>
 
-  <xsd:complexType name="ProvisioningTemplateWebhooks">
-    <xsd:annotation>
-      <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-      <xsd:documentation xml:lang="en">
-        Allows to define one or more webhooks that will be invoked by the engine, upon completion of specific actions
-      </xsd:documentation>
-    </xsd:annotation>
-
+  <xsd:complexType name="ProvisioningWebhook">
     <xsd:sequence>
-      <xsd:element name="ProvisioningTemplateWebhook" minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="Parameters" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
-          <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+          <xsd:appinfo>Updated with schema version 201909</xsd:appinfo>
           <xsd:documentation xml:lang="en">
-            Defines a single Provisioning Template Webhook
+            A collection of custom parameters that will be provided to the webhook request
           </xsd:documentation>
         </xsd:annotation>
-      
         <xsd:complexType>
           <xsd:sequence>
-            <xsd:element name="Parameters" minOccurs="0" maxOccurs="1">
+            <xsd:element name="Parameter" type="pnp:StringDictionaryItem" minOccurs="0" maxOccurs="unbounded">
               <xsd:annotation>
                 <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
                 <xsd:documentation xml:lang="en">
-                  A collection of custom parameters that will be provided to the webhook request
+                  A custom parameter that will be provided to the webhook request
                 </xsd:documentation>
               </xsd:annotation>
-              <xsd:complexType>
-                <xsd:sequence>
-                  <xsd:element name="Parameter" type="pnp:StringDictionaryItem" minOccurs="0" maxOccurs="unbounded">
-                    <xsd:annotation>
-                      <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                      <xsd:documentation xml:lang="en">
-                        A custom parameter that will be provided to the webhook request
-                      </xsd:documentation>
-                    </xsd:annotation>
-                  </xsd:element>
-                </xsd:sequence>
-              </xsd:complexType>
             </xsd:element>
           </xsd:sequence>
-        
-          <xsd:attribute name="Kind" use="required">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines the kind of a Provisioning Template Webhook, required attribute.
-              </xsd:documentation>
-            </xsd:annotation>
-            <xsd:simpleType>
-              <xsd:restriction base="xsd:string">
-                <xsd:enumeration value="ProvisioningStarted">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      Provisioning Started
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-                <xsd:enumeration value="ObjectHandlerProvisioningStarted">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      Object Handler Provisioning Started
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-                <xsd:enumeration value="ObjectHandlerProvisioningCompleted">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      Object Handler Provisioning Completed
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-                <xsd:enumeration value="ProvisioningCompleted">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      Provisioning Completed
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-                <xsd:enumeration value="ExceptionOccurred">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      An Exception Occurred
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-              </xsd:restriction>
-            </xsd:simpleType>
-          </xsd:attribute>
-
-          <xsd:attribute name="Url" type="pnp:ReplaceableString" use="required">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines the URL of a Provisioning Template Webhook, can be a replaceable string and it is a required attribute.
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:attribute>
-
-          <xsd:attribute name="Method" use="required">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines how to call the target Webhook URL, required attribute.
-              </xsd:documentation>
-            </xsd:annotation>
-
-            <xsd:simpleType>
-              <xsd:restriction base="xsd:string">
-                <xsd:enumeration value="GET">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      Invoke the Webhook with a HTTP GET request. Any Parameter optional will be in the querystring.
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-                <xsd:enumeration value="POST">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      Invoke the Webhook with a HTTP POST request. Any Parameter optional will be in the request body.
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-              </xsd:restriction>
-            </xsd:simpleType>  
-        
-          </xsd:attribute>
-
-          <xsd:attribute name="BodyFormat" use="optional" default="Json">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines how to format the request body for HTTP POST requests, optional attribute.
-              </xsd:documentation>
-            </xsd:annotation>
-
-            <xsd:simpleType>
-              <xsd:restriction base="xsd:string">
-                <xsd:enumeration value="Json">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      JSON format
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-                <xsd:enumeration value="Xml">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      XML format
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-                <xsd:enumeration value="FormUrlEncoded">
-                  <xsd:annotation>
-                    <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-                    <xsd:documentation xml:lang="en">
-                      x-www-form-urlencoded format
-                    </xsd:documentation>
-                  </xsd:annotation>
-                </xsd:enumeration>
-              </xsd:restriction>
-            </xsd:simpleType>  
-        
-          </xsd:attribute>
-        
-          <xsd:attribute name="Async" type="xsd:boolean" use="optional" default="true">
-            <xsd:annotation>
-              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
-              <xsd:documentation xml:lang="en">
-                Defines whether the Provisioning Template Webhook should be executed asychronously or not, optional attribute.
-              </xsd:documentation>
-            </xsd:annotation>
-          </xsd:attribute> 
-      
         </xsd:complexType>
-      
       </xsd:element>
     </xsd:sequence>
+
+    <xsd:attribute name="Kind" use="required">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines the kind of a Provisioning Template Webhook, required attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="ProvisioningStarted">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Whole Provisioning Job  Provisioning Started
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ObjectHandlerProvisioningStarted">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Object Handler Provisioning Started
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ObjectHandlerProvisioningCompleted">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Object Handler Provisioning Completed
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ProvisioningCompleted">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Whole Provisioning Job Completed
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ExceptionOccurred">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                An Exception Occurred
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ProvisioningTemplateStarted">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Provisioning Template Started
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ProvisioningTemplateCompleted">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Provisioning Template Completed
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="ProvisioningExceptionOccurred">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Provisioning Exception Occurred
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+
+    <xsd:attribute name="Url" type="pnp:ReplaceableString" use="required">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines the URL of a Provisioning Template Webhook, can be a replaceable string and it is a required attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
+    <xsd:attribute name="Method" use="required">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines how to call the target Webhook URL, required attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="GET">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Invoke the Webhook with a HTTP GET request. Any Parameter optional will be in the querystring.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="POST">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Invoke the Webhook with a HTTP POST request. Any Parameter optional will be in the request body.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+        </xsd:restriction>
+      </xsd:simpleType>
+
+    </xsd:attribute>
+
+    <xsd:attribute name="BodyFormat" use="optional" default="Json">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines how to format the request body for HTTP POST requests, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="Json">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                JSON format
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="Xml">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                XML format
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="FormUrlEncoded">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                x-www-form-urlencoded format
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+        </xsd:restriction>
+      </xsd:simpleType>
+
+    </xsd:attribute>
+
+    <xsd:attribute name="Async" type="xsd:boolean" use="optional" default="true">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Defines whether the Provisioning Template Webhook should be executed asychronously or not, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+
   </xsd:complexType>
-  
+
   <xsd:complexType name="CanvasSection">
     <xsd:annotation>
       <xsd:documentation xml:lang="en">
@@ -5301,6 +5420,22 @@
           <xsd:enumeration value="Custom" />
           <xsd:enumeration value="Text" />
           <xsd:enumeration value="BingMap" />
+          <xsd:enumeration value="Button">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Button Client Side Web Part
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
+          <xsd:enumeration value="CallToAction">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                CallToAction Client Side Web Part
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
           <xsd:enumeration value="ClientWebPart" />
           <xsd:enumeration value="CodeSnippet" />
           <xsd:enumeration value="ContentEmbed" />
@@ -5327,7 +5462,7 @@
                 News Client Side Web Part
               </xsd:documentation>
             </xsd:annotation>
-          </xsd:enumeration>          
+          </xsd:enumeration>
           <xsd:enumeration value="NewsFeed" />
           <xsd:enumeration value="NewsReel" />
           <xsd:enumeration value="PageFields" />
@@ -5339,6 +5474,14 @@
           <xsd:enumeration value="QuickChart" />
           <xsd:enumeration value="QuickLinks" />
           <xsd:enumeration value="SiteActivity" />
+          <xsd:enumeration value="Sites">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Sites Client Side Web Part
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:enumeration>
           <xsd:enumeration value="Spacer" />
           <xsd:enumeration value="ThirdParty" />
           <xsd:enumeration value="VideoEmbed" />
@@ -6495,7 +6638,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-          
+
   </xsd:complexType>
 
   <xsd:complexType name="Publishing">
@@ -7157,6 +7300,14 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
+    <xsd:attribute name="HubSiteTitle" type="pnp:ReplaceableString" use="optional">
+      <xsd:annotation>
+        <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+        <xsd:documentation xml:lang="en">
+          Declares the Title for the Hub Site of a new Hub
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
   </xsd:attributeGroup>
 
   <xsd:attributeGroup name="SubSiteAttributes">
@@ -7643,9 +7794,9 @@
         Entry point to manage Microsoft Teams provisioning.
       </xsd:documentation>
     </xsd:annotation>
-  
+
     <xsd:sequence>
-    
+
       <xsd:choice minOccurs="0" maxOccurs="unbounded">
         <xsd:element name="TeamTemplate" type="pnp:TeamTemplate">
           <xsd:annotation>
@@ -7664,7 +7815,7 @@
           </xsd:annotation>
         </xsd:element>
       </xsd:choice>
-    
+
       <xsd:element name="Apps" type="pnp:TeamsApps" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -7675,7 +7826,7 @@
       </xsd:element>
 
     </xsd:sequence>
-  
+
   </xsd:complexType>
 
   <xsd:complexType name="BaseTeam">
@@ -7754,13 +7905,13 @@
     </xsd:attribute>
 
   </xsd:complexType>
-                     
+
   <xsd:complexType name="TeamTemplate">
     <xsd:complexContent mixed="true">
       <xsd:extension base="pnp:BaseTeam"></xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
-  
+
   <xsd:complexType name="TeamWithSettings">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8022,7 +8173,7 @@
                   </xsd:documentation>
                 </xsd:annotation>
               </xsd:attribute>
-              
+
             </xsd:complexType>
 
           </xsd:element>
@@ -8175,7 +8326,7 @@
           </xsd:simpleType>
 
         </xsd:attribute>
-      
+
         <xsd:attribute name="CloneFrom" type="pnp:ReplaceableString" use="optional">
           <xsd:annotation>
             <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8203,11 +8354,11 @@
           </xsd:annotation>
         </xsd:attribute>
 
-      </xsd:extension>      
+      </xsd:extension>
     </xsd:complexContent>
 
   </xsd:complexType>
-    
+
   <xsd:complexType name="TeamSecurity">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8215,7 +8366,7 @@
         Defines the Security settings for the Team, optional element.
       </xsd:documentation>
     </xsd:annotation>
-  
+
     <xsd:sequence>
       <xsd:element name="Owners" type="pnp:TeamSecurityUsers" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
@@ -8224,7 +8375,7 @@
             Defines the Owners of the Team, optional element.
           </xsd:documentation>
         </xsd:annotation>
-      </xsd:element>    
+      </xsd:element>
       <xsd:element name="Members" type="pnp:TeamSecurityUsers" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8232,9 +8383,9 @@
             Defines the Members of the Team, optional element.
           </xsd:documentation>
         </xsd:annotation>
-      </xsd:element>    
+      </xsd:element>
     </xsd:sequence>
-    
+
     <xsd:attribute name="AllowToAddGuests" type="xsd:boolean" use="optional" default="false">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
@@ -8243,9 +8394,9 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-  
+
   </xsd:complexType>
-  
+
   <xsd:complexType name="TeamSecurityUsers">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8253,7 +8404,7 @@
         Defines a list of users for a the Team, optional element.
       </xsd:documentation>
     </xsd:annotation>
-  
+
     <xsd:sequence>
       <xsd:element name="User" minOccurs="1" maxOccurs="unbounded">
         <xsd:annotation>
@@ -8273,7 +8424,7 @@
             </xsd:annotation>
           </xsd:attribute>
         </xsd:complexType>
-    
+
       </xsd:element>
     </xsd:sequence>
 
@@ -8295,9 +8446,9 @@
         Defines a Channel for a Team, optional element.
       </xsd:documentation>
     </xsd:annotation>
-              
+
     <xsd:all>
-    
+
       <xsd:element name="Tabs" type="pnp:TeamChannelTabs" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8326,7 +8477,7 @@
       </xsd:element>
 
     </xsd:all>
-      
+
     <xsd:attribute name="DisplayName" type="pnp:ReplaceableString" use="required">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8334,7 +8485,7 @@
           Defines the Display Name of the Channel, required attribute.
         </xsd:documentation>
       </xsd:annotation>
-    </xsd:attribute>  
+    </xsd:attribute>
 
     <xsd:attribute name="Description" type="pnp:ReplaceableString" use="required">
       <xsd:annotation>
@@ -8343,7 +8494,7 @@
           Defines the Description of the Channel, required attribute.
         </xsd:documentation>
       </xsd:annotation>
-    </xsd:attribute>  
+    </xsd:attribute>
 
     <xsd:attribute name="IsFavoriteByDefault" type="xsd:boolean" use="optional" default="false">
       <xsd:annotation>
@@ -8364,7 +8515,7 @@
     </xsd:attribute>
 
   </xsd:complexType>
-  
+
   <xsd:complexType name="TeamChannelTabs">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8372,7 +8523,7 @@
         Defines a collection of Tabs for a Channel in a Team, optional element.
       </xsd:documentation>
     </xsd:annotation>
-  
+
     <xsd:sequence>
       <xsd:element name="Tab" minOccurs="1" maxOccurs="unbounded">
         <xsd:annotation>
@@ -8383,7 +8534,7 @@
         </xsd:annotation>
 
         <xsd:complexType>
-          
+
           <xsd:sequence>
             <xsd:element name="Configuration" minOccurs="0" maxOccurs="1">
               <xsd:annotation>
@@ -8392,15 +8543,15 @@
                   Defines the Configuration for the Tab, required element.
                 </xsd:documentation>
               </xsd:annotation>
-            
+
               <xsd:complexType>
-                
+
                 <xsd:annotation>
                   <xsd:documentation xml:lang="en">
                     Refer to this document: https://docs.microsoft.com/en-us/graph/teams-configuring-builtin-tabs
                   </xsd:documentation>
                 </xsd:annotation>
-                  
+
                 <xsd:attribute name="EntityId" type="pnp:ReplaceableString" use="required">
                   <xsd:annotation>
                     <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8408,7 +8559,7 @@
                       Identifier for the entity hosted by the Tab provider, required attribute.
                     </xsd:documentation>
                   </xsd:annotation>
-                </xsd:attribute>  
+                </xsd:attribute>
 
                 <xsd:attribute name="ContentUrl" type="pnp:ReplaceableString" use="required">
                   <xsd:annotation>
@@ -8417,7 +8568,7 @@
                       Url used for rendering Tab contents in Teams, required attribute.
                     </xsd:documentation>
                   </xsd:annotation>
-                </xsd:attribute>  
+                </xsd:attribute>
 
                 <xsd:attribute name="RemoveUrl" type="pnp:ReplaceableString" use="required">
                   <xsd:annotation>
@@ -8426,7 +8577,7 @@
                       Url called by Teams client when a Tab is removed using the Teams Client, required attribute.
                     </xsd:documentation>
                   </xsd:annotation>
-                </xsd:attribute>  
+                </xsd:attribute>
 
                 <xsd:attribute name="WebsiteUrl" type="pnp:ReplaceableString" use="required">
                   <xsd:annotation>
@@ -8438,7 +8589,7 @@
                 </xsd:attribute>
 
               </xsd:complexType>
-            
+
             </xsd:element>
           </xsd:sequence>
 
@@ -8449,8 +8600,8 @@
                 Defines the Display Name of the Channel, required attribute.
               </xsd:documentation>
             </xsd:annotation>
-          </xsd:attribute>  
-        
+          </xsd:attribute>
+
           <xsd:attribute name="TeamsAppId" type="pnp:ReplaceableString" use="required">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8471,8 +8622,8 @@
 
         </xsd:complexType>
       </xsd:element>
-    </xsd:sequence>  
-  
+    </xsd:sequence>
+
   </xsd:complexType>
 
   <xsd:complexType name="TeamTabResources">
@@ -8549,7 +8700,7 @@
                 </xsd:enumeration>
               </xsd:restriction>
             </xsd:simpleType>
-            
+
           </xsd:attribute>
 
           <xsd:attribute name="TargetTabId" type="pnp:ReplaceableString" use="required">
@@ -8585,9 +8736,9 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-  
+
   </xsd:complexType>
-    
+
   <xsd:complexType name="TeamsApps">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8595,7 +8746,7 @@
         Defines the Apps for Teams
       </xsd:documentation>
     </xsd:annotation>
-  
+
     <xsd:sequence>
       <xsd:element name="App" minOccurs="1" maxOccurs="unbounded">
         <xsd:annotation>
@@ -8628,9 +8779,9 @@
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
-  
+
   </xsd:complexType>
-  
+
   <xsd:complexType name="AzureActiveDirectory">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8649,9 +8800,9 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-  
+
   </xsd:complexType>
-  
+
   <xsd:complexType name="AADUsers">
     <xsd:annotation>
       <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8672,9 +8823,9 @@
                   The Password Profile for the user, required element.
                 </xsd:documentation>
               </xsd:annotation>
-            
+
               <xsd:complexType>
-                
+
                 <xsd:attribute name="ForceChangePasswordNextSignIn" type="xsd:boolean" use="optional" default="false">
                   <xsd:annotation>
                     <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8701,9 +8852,9 @@
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:attribute>
-              
+
               </xsd:complexType>
-          
+
             </xsd:element>
             <xsd:element name="Licenses" minOccurs="0" maxOccurs="1">
               <xsd:annotation>
@@ -8724,7 +8875,7 @@
                     </xsd:annotation>
 
                     <xsd:complexType>
-                      
+
                       <xsd:sequence>
                         <xsd:element name="DisabledPlans" minOccurs="0" maxOccurs="1">
                           <xsd:annotation>
@@ -8748,7 +8899,7 @@
                           </xsd:complexType>
                         </xsd:element>
                       </xsd:sequence>
-                          
+
                       <xsd:attribute name="SkuId" type="pnp:ReplaceableString" use="required">
                         <xsd:annotation>
                           <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8760,11 +8911,11 @@
                     </xsd:complexType>
                   </xsd:element>
                 </xsd:sequence>
-              </xsd:complexType>  
-          
+              </xsd:complexType>
+
             </xsd:element>
           </xsd:sequence>
-              
+
           <xsd:attribute name="AccountEnabled" type="xsd:boolean" use="required">
             <xsd:annotation>
               <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
@@ -8868,11 +9019,11 @@
                 Declares the Usage Location for licenses assigned to the user, required attribute.
               </xsd:documentation>
             </xsd:annotation>
-          </xsd:attribute>          
+          </xsd:attribute>
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>
-  
+
   </xsd:complexType>
 
   <xsd:complexType name="Drive">
@@ -8893,7 +9044,7 @@
         </xsd:annotation>
       </xsd:element>
     </xsd:sequence>
-    
+
   </xsd:complexType>
 
   <xsd:complexType name="DriveRoot">
@@ -8924,7 +9075,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-  
+
   </xsd:complexType>
 
   <xsd:complexType name="DriveItems">
@@ -9072,7 +9223,27 @@
     </xsd:attribute>
 
   </xsd:complexType>
-  
+
+  <xsd:complexType name="ProvisioningWebhooks">
+    <xsd:annotation>
+      <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+      <xsd:documentation xml:lang="en">
+        Allows to define one or more webhooks that will be invoked by the engine, while applying the provisioning
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:sequence>
+      <xsd:element name="ProvisioningWebhook" minOccurs="0" maxOccurs="unbounded" type="pnp:ProvisioningWebhook">
+        <xsd:annotation>
+          <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+          <xsd:documentation xml:lang="en">
+            Defines a single Provisioning Webhook
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:element>
+    </xsd:sequence>
+  </xsd:complexType>
+
   <xsd:simpleType name="GUID">
     <xsd:annotation>
       <xsd:documentation xml:lang="en">

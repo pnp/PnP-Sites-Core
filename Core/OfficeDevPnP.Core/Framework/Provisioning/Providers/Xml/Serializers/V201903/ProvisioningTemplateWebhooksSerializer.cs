@@ -11,7 +11,7 @@ using OfficeDevPnP.Core.Extensions;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
 {
     /// <summary>
-    /// Class to serialize/deserialize the Provisioning Template Webhooks
+    /// Class to serialize/deserialize the Provisioning Webhooks
     /// </summary>
     [TemplateSchemaSerializer(
         MinimalSupportedSchemaVersion = XMLPnPSchemaVersion.V201903,

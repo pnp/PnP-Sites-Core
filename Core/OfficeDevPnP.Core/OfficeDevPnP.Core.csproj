@@ -553,8 +553,20 @@
     <Compile Include="Framework\Provisioning\Model\AzureActiveDirectory\UserLicenseCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Base\BaseHierarchyModel.cs" />
     <Compile Include="Framework\Provisioning\Model\Base\BaseProvisioningTemplateObjectCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\ConfigurationHandler.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractListsQueryConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractListsConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractListsListsConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractSiteFooterConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractNavigationConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractPagesConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractSiteSecurityConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractTaxonomyConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Drive\DriveRootFolder.cs" />
     <Compile Include="Framework\Provisioning\Model\Drive\DriveFolderBase.cs" />
+    <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningTemplateWebhook.cs" />
+    <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningTemplateWebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningWebhookBase.cs" />
     <Compile Include="Framework\Provisioning\Model\Hierarchy\CommunicationSiteCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Deprecated\NavigationNode.deprecated.cs" />
     <Compile Include="Framework\Provisioning\Model\Drive\DriveFile.cs" />
@@ -571,10 +583,12 @@
     <Compile Include="Framework\Provisioning\Model\ProvisioningHierarchy.cs" />
     <Compile Include="Framework\Provisioning\Model\Base\BaseProvisioningHierarchyObjectCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Hierarchy\ProvisioningSequenceCollection.cs" />
-    <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningTemplateWebhook.cs" />
-    <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningTemplateWebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningWebhook.cs" />
+    <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningWebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachment.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachmentCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\AlternateUICulture.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\AlternateUICultureCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\UserProfile\UserProfile.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\UserProfile\UserProfileCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\SiteFooter.cs" />
@@ -655,6 +669,7 @@
     <Compile Include="Framework\Provisioning\Model\SharePoint\Customizations\Webhook.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Customizations\WebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\SiteSettings.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractConfiguration.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\FieldAndListProvisioningStepHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\NoScriptTemplateCleaner.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectApplicationLifecycleManagement.cs" />
@@ -671,6 +686,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectClientSidePages.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectImageRenditions.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchySequenceTermGroups.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSiteSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\PnPProvisioningContext.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AssociatedGroupIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneToken.cs" />
@@ -701,14 +717,29 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\FileUniqueIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUpdateValue.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FileUtilities.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.cs">
       <DependentUpon>ProvisioningSchema-2019-09.xsd</DependentUpon>
     </Compile>
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveItemsFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveRootFolderFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveItemsFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveRootsFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\Office365GroupsSettingsFromModelToSchema.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\Office365GroupsSettingsFromSchemaToModel.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\AlternateUICultureFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\DriveSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ListInstancesSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ProvisioningTemplateWebhooksSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ProvisioningWebhooksSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\TeamsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\TenantSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\SiteSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\WebSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201909Serializer.cs" />
+    <Compile Include="Pages\ClientSidePageSettingsSlice.cs" />
     <Compile Include="Utilities\Graph\GraphHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ListItemUtilities.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ConnectorFileHelper.cs" />
@@ -979,7 +1010,7 @@
     <Compile Include="Framework\Provisioning\Model\Hierarchy\IProvisioningTemplateDescendant.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\ListInstanceCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\Localization.cs" />
-    <Compile Include="Framework\Provisioning\Model\Extensibility\Handlers.cs" />
+    <Compile Include="Framework\Provisioning\Model\Handlers.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\LocalizationCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Navigation\ManagedNavigation.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Navigation\Navigation.cs" />
@@ -1338,6 +1369,7 @@
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\extract-configuration.schema.json" />
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
