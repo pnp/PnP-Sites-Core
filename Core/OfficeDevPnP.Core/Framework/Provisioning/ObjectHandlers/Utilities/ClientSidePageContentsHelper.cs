@@ -84,10 +84,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             ShowPublishDate = pageToExtract.PageHeader.ShowPublishDate,
                             TopicHeader = pageToExtract.PageHeader.TopicHeader,
                             AlternativeText = pageToExtract.PageHeader.AlternativeText,
-                            Authors = pageToExtract.PageHeader.Authors,
-                            AuthorByLine = pageToExtract.PageHeader.AuthorByLine,
-                            AuthorByLineId = pageToExtract.PageHeader.AuthorByLineId,
+                            Authors = !creationInfo.ExcludeAuthorInformation ? pageToExtract.PageHeader.Authors : "",
+                            AuthorByLine = !creationInfo.ExcludeAuthorInformation ? pageToExtract.PageHeader.AuthorByLine : "",
+                            AuthorByLineId = !creationInfo.ExcludeAuthorInformation ? pageToExtract.PageHeader.AuthorByLineId : -1
                         };
+
                         extractedPageInstance.Header = extractedHeader;
 
                         // Add the page header image to template if that was requested
@@ -98,7 +99,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
 
                     // define reusable RegEx pre-compiled objects
-                    string guidPattern = "\"[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}\"";
+                    string guidPattern = "\"{?[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}}?\"";
                     Regex regexGuidPattern = new Regex(guidPattern, RegexOptions.Compiled);
 
                     string guidPatternEncoded = "=[a-fA-F0-9]{8}(?:%2D|-)([a-fA-F0-9]{4}(?:%2D|-)){3}[a-fA-F0-9]{12}";
@@ -314,7 +315,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             controlInstance.Type = WebPartType.Custom;
                                             break;
                                     }
+                                    if (creationInfo.ExcludeAuthorInformation)
+                                    {
+                                        if (webPartType == Pages.DefaultClientSideWebParts.News)
+                                        {
+                                            var properties = (control as Pages.ClientSideWebPart).Properties;
+                                            var authorTokens = properties.SelectTokens("$..author").ToList();
+                                            foreach (var authorToken in authorTokens)
+                                            {
+                                                authorToken.Parent.Remove();
+                                            }
+                                            var authorAccountNameTokens = properties.SelectTokens("$..authorAccountName").ToList();
+                                            foreach (var authorAccountNameToken in authorAccountNameTokens)
+                                            {
+                                                authorAccountNameToken.Parent.Remove();
+                                            }
 
+                                            (control as Pages.ClientSideWebPart).PropertiesJson = properties.ToString();
+                                        }
+                                    }
                                     string jsonControlData = "\"id\": \"" + (control as Pages.ClientSideWebPart).WebPartId + "\", \"instanceId\": \"" + (control as Pages.ClientSideWebPart).InstanceId + "\", \"title\": " + JsonConvert.ToString((control as Pages.ClientSideWebPart).Title) + ", \"description\": " + JsonConvert.ToString((control as Pages.ClientSideWebPart).Description) + ", \"dataVersion\": \"" + (control as Pages.ClientSideWebPart).DataVersion + "\", \"properties\": " + (control as Pages.ClientSideWebPart).PropertiesJson + "";
 
                                     // set the control properties
@@ -353,7 +372,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                         Dictionary<string, string> exportedPages = new Dictionary<string, string>();
 
                                         CollectSiteAssetImageFiles(regexSiteAssetUrls, web, untokenizedJsonControlData, fileGuids);
-                                        CollectImageFilesFromGenericGuids(regexGuidPattern, regexGuidPatternEncoded, controlInstance.JsonControlData, fileGuids);
+                                        CollectImageFilesFromGenericGuids(regexGuidPattern, regexGuidPatternEncoded, untokenizedJsonControlData, fileGuids);
 
                                         // Iterate over the found guids to see if they're exportable files
                                         foreach (var uniqueId in fileGuids)
