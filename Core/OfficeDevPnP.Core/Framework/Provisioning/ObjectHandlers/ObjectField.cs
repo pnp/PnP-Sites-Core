@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using System.Xml.XPath;
 using Field = OfficeDevPnP.Core.Framework.Provisioning.Model.Field;
 using SPField = Microsoft.SharePoint.Client.Field;
 
@@ -525,6 +526,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             web.Context.ExecuteQueryRetry();
                             taxTextFieldsToMoveUp.Add(taxField.TextField);
 
+#if (!ONPREMISES)
+                            //SharePoint Online creates the Note-Field to Taxonomie-Field automatic
+                            var xObject = ((IEnumerable<Object>)element.XPathEvaluate("/Customization/ArrayOfProperty/Property[Name='TextField']")).FirstOrDefault();
+                            if(xObject is XElement)
+                            {
+                                ((XElement)xObject).Remove();
+                            }
+#endif
                             fieldXml = TokenizeTaxonomyField(web, element);
                         }
 
@@ -582,7 +591,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var field = template.SiteFields.First(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(textFieldId));
                     template.SiteFields.RemoveAll(f => Guid.Parse(f.SchemaXml.ElementAttributeValue("ID")).Equals(textFieldId));
+#if ONPREMISES
+                    //SharePoint Online creates the Note-Field to Taxonomie-Field automatic - no need to add again
                     template.SiteFields.Insert(0, field);
+#endif
                 }
                 // move calculated fields to the bottom of the list
                 // this will not be sufficient in the case of a calculated field is referencing another calculated field
