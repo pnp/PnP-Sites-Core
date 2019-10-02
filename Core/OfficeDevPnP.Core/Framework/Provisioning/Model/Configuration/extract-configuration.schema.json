@@ -128,7 +128,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "removeExistingNodes" {
+        "removeExistingNodes": {
           "description": "set to true to mark the footer navigation to remove the existing nodes when applying the template",
           "type": "boolean"
         }
