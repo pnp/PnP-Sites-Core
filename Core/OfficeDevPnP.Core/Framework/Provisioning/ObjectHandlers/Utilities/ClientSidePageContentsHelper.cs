@@ -585,11 +585,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             }
                         }
 
-                        var file = web.GetFileByServerRelativeUrl(s);
-                        web.Context.Load(file, f => f.UniqueId);
-                        web.Context.ExecuteQueryRetry();
+                        try
+                        {
+                            var file = web.GetFileByServerRelativeUrl(s);
+                            web.Context.Load(file, f => f.UniqueId);
+                            web.Context.ExecuteQueryRetry();
+                            fileGuids.Add(file.UniqueId);
+                        }
+                        catch (Microsoft.SharePoint.Client.ServerException ex)
+                        {
+                            if (ex.ServerErrorTypeName != "System.IO.FileNotFoundException")
+                            {
+                                throw ex;
+                            }
+                        }
 
-                        fileGuids.Add(file.UniqueId);
                     }
                 }
             }
