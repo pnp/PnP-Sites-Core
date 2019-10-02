@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- The Promote as News state of a page will now be persisted in an exported template.
 - Extracting a template will now persist the files referred to in page thumbnails to the Files collection of the template.
 - Extracting a template will now persist the footer logo to the Files collection of the template.
 - Only load tenant CDN settings whenever there are public/private CDN settings defined in the template

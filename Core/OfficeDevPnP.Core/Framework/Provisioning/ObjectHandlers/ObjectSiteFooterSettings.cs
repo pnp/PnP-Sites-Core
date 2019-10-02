@@ -79,6 +79,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         footer.FooterLinks.Add(ParseNodes(innerMenuNode, template, web.ServerRelativeUrl));
                     }
                 }
+                if(creationInfo.OverwriteSiteFooterNavigation)
+                {
+                    footer.RemoveExistingNodes = true;
+                }
                 template.Footer = footer;
                 if (creationInfo.PersistBrandingFiles)
                 {

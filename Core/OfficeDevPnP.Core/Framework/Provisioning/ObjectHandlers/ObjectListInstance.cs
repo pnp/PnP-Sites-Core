@@ -2146,6 +2146,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // is not in that collection, just skip it
                         continue;
                     }
+                    if (creationInfo.ListsExtractionConfiguration != null && creationInfo.ListsExtractionConfiguration.Count > 0 &&
+                        (!creationInfo.ListsExtractionConfiguration.Any(i =>
+                        {
+                            Guid listId;
+                            if (Guid.TryParse(i.Title, out listId))
+                            {
+                                return (listId == siteList.Id);
+                            }
+                            else
+                            {
+                                return (false);
+                            }
+                        }) && creationInfo.ListsExtractionConfiguration.FirstOrDefault(i => i.Title.Equals(siteList.Title)) == null))
+                    {
+                        continue;
+                    }
 
                     listCount++;
                     WriteMessage($"List|{siteList.Title}|{listCount}|{listsToProcess.Length}", ProvisioningMessageType.Progress);
