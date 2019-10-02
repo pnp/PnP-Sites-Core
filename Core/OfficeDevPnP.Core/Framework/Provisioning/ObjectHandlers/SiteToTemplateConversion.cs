@@ -227,7 +227,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         catch (Exception ex)
                         {
                             CallWebHooks(hierarchy.Templates.FirstOrDefault(), sequenceTokenParser, 
-                                ProvisioningTemplateWebhookKind.ExceptionOccurred, handler.Name, ex);
+                                ProvisioningTemplateWebhookKind.ProvisioningExceptionOccurred, handler.Name, ex);
                             throw ex;
                         }
                     }

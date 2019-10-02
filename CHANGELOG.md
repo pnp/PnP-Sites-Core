@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added HubSiteTitle property on Site Sequences when provisioning a Tenant Template
 - Added a ThumbnailUrl property on Client Side Pages to set the page thumbnail
 - Added additional modern web parts to our enums (CallToAction, Button, Sites)
+- Added supporto for schema 201909
 
 ### Changed
 
@@ -25,6 +26,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Use UpdateOverwriteVersion instead of Update when creating a page using the client side page API, this will prevent unneeded intermediate versions showing up in the version history of the created page
 - Fix: CPU Load and Performance for ExtractClientSidePage #2395 [czullu]
 - Fix conversion of zoneEmphasis in EmphasisJsonConverter #2402 [czullu]
+- Fix to fields reference in lists #2163 [czullu]
 
 ## [3.13.1909.0 - September 2019 release]
 
