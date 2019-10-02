@@ -3504,6 +3504,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         /// <remarks/>
         ProvisioningTemplateCompleted,
+        
+        /// <remarks/>
+        ProvisioningExceptionOccurred,
     }
     
     /// <remarks/>

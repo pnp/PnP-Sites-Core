@@ -132,6 +132,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Provisioning Template Completed
         /// </summary>
         ProvisioningTemplateCompleted,
+        /// <summary>
+        /// Provisioning Exception Occurred
+        /// </summary>
+        ProvisioningExceptionOccurred,
     }
 
     /// <summary>
