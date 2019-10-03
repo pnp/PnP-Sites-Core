@@ -338,7 +338,7 @@ namespace Microsoft.SharePoint.Client
         /// <returns>True if noscript, false otherwise</returns>
         public static bool IsNoScriptSite(this Web web)
         {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             web.EnsureProperties(w => w.EffectiveBasePermissions);
 
             // Definition of no-script is not having the AddAndCustomizePages permission
