@@ -77,7 +77,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
                 expressions.Add($"{templateType}.ScopeSpecified", new ExpressionValueResolver(() => true));
             }
 
-            PnPObjectsMapper.MapProperties(template, persistence, expressions, true);
+            PnPObjectsMapper.MapProperties(template, persistence, expressions, false);
 
             // Search settings
             if(!string.IsNullOrEmpty(template.SiteSearchSettings)||!string.IsNullOrEmpty(template.WebSearchSettings))
