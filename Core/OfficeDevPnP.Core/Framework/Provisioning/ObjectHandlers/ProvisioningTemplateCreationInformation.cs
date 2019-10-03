@@ -341,7 +341,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// </remarks>
         public List<String> ListsToExtract { get; set; } = new List<String>();
 
-        public List<ExtractListsListsConfiguration> ListsExtractionConfiguration { get; set; } = new List<ExtractListsListsConfiguration>();
+        internal List<ExtractListsListsConfiguration> ListsExtractionConfiguration { get; set; } = new List<ExtractListsListsConfiguration>();
 
         internal bool ExcludeAuthorInformation
         {

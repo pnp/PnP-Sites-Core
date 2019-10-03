@@ -439,6 +439,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 itemValues.Add(new FieldUpdateValue(key as string, newVals));
                                 break;
                             }
+                        case "URL":
+                            {
+                                
+                                if (value == null) goto default;
+                                if(value.Contains(",") || value.Contains(";"))
+                                {
+                                    var urlValueArray = value.Split(new char[] { ',', ';' });
+                                    if (urlValueArray.Length == 2)
+                                    {
+                                        var urlValue = new FieldUrlValue
+                                        {
+                                            Url = value.Split(new char[] { ',', ';' })[0],
+                                            Description = value.Split(new char[] { ',', ';' })[1]
+                                        };
+                                        itemValues.Add(new FieldUpdateValue(key as string, urlValue));
+                                    } else
+                                    {
+                                        itemValues.Add(new FieldUpdateValue(key as string, value));
+                                    }
+                                } else
+                                {
+                                    var urlValue = new FieldUrlValue
+                                    {
+                                        Url = value,
+                                        Description = value
+                                    };
+                                    itemValues.Add(new FieldUpdateValue(key as string, urlValue));
+                                }
+
+                                break;
+                            }
                         default:
                             {
                                 itemValues.Add(new FieldUpdateValue(key as string, value));
