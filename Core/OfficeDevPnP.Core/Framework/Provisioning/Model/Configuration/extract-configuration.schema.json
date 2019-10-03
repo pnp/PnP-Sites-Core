@@ -77,8 +77,11 @@
               "query": {
                 "type": "object",
                 "additionalProperties": false,
-                "required": [ "camlQuery" ],
                 "properties": {
+                  "includeAttachments": {
+                    "description": "define if attachments should be included when exporting rowdata",
+                    "type": "boolean"
+                  },
                   "camlQuery": {
                     "description": "a CAML query used to limit the list items to export, e.g. <Where><Eq><FieldRef Name='FilterField' /><Value Type='Text'>ValueToFilterOn</Value></Eq></Where>",
                     "type": "string"
