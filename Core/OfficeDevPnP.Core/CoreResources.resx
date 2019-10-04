@@ -285,6 +285,9 @@
   <data name="Services_CookieWithCachKeyNotFound" xml:space="preserve">
     <value>The cookie with the cachekey was not found...nothing can be retrieved from cache, so no clientcontext can be created.</value>
   </data>
+  <data name="Services_CacheItemNotFound" xml:space="preserve">
+    <value>The WebAPI context cache item was not found...nothing can be retrieved from cache, so no clientcontext can be created.</value>
+  </data>
   <data name="Services_Registered" xml:space="preserve">
     <value>Service {0} has been registered for endpoint {1} using cachekey {2}.</value>
   </data>

@@ -2427,6 +2427,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The WebAPI context cache item was not found...nothing can be retrieved from cache, so no clientcontext can be created..
+        /// </summary>
+        internal static string Services_CacheItemNotFound {
+            get {
+                return ResourceManager.GetString("Services_CacheItemNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The cookie with the cachekey was not found...nothing can be retrieved from cache, so no clientcontext can be created..
         /// </summary>
         internal static string Services_CookieWithCachKeyNotFound {

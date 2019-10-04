@@ -85,6 +85,12 @@ namespace OfficeDevPnP.Core.WebAPI
             {
                 WebAPIContexCacheItem cacheItem = WebAPIContextCache.Instance.Get(cacheKey);
 
+                if (cacheItem == null)
+                {
+                    Log.Warning(Constants.LOGGING_SOURCE, CoreResources.Services_CacheItemNotFound);
+                    throw new Exception("A WebAPI context cache item was not found. Make sure to use RegisterWebAPIService to populate the cache before calling this method.");
+                }
+
                 //request a new access token from ACS whenever our current access token will expire in less than 1 hour
                 if (cacheItem.AccessToken.ExpiresOn.ToUniversalTime() < (DateTime.UtcNow.AddHours(1)))
                 {
