@@ -261,7 +261,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             UpdateOverwriteVersion
         }
 
-        public static void UpdateListItem(ListItem item, TokenParser parser, IDictionary<string, string> valuesToSet, ListItemUpdateType updateType)
+        public static void UpdateListItem(ListItem item, TokenParser parser, IDictionary<string, string> valuesToSet, ListItemUpdateType updateType, bool SkipExecuteQuery=false)
         {
             var itemValues = new List<FieldUpdateValue>();
 
@@ -439,6 +439,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 itemValues.Add(new FieldUpdateValue(key as string, newVals));
                                 break;
                             }
+                        case "URL":
+                            {
+                                
+                                if (value == null) goto default;
+                                if(value.Contains(",") || value.Contains(";"))
+                                {
+                                    var urlValueArray = value.Split(new char[] { ',', ';' });
+                                    if (urlValueArray.Length == 2)
+                                    {
+                                        var urlValue = new FieldUrlValue
+                                        {
+                                            Url = value.Split(new char[] { ',', ';' })[0],
+                                            Description = value.Split(new char[] { ',', ';' })[1]
+                                        };
+                                        itemValues.Add(new FieldUpdateValue(key as string, urlValue));
+                                    } else
+                                    {
+                                        itemValues.Add(new FieldUpdateValue(key as string, value));
+                                    }
+                                } else
+                                {
+                                    var urlValue = new FieldUrlValue
+                                    {
+                                        Url = value,
+                                        Description = value
+                                    };
+                                    itemValues.Add(new FieldUpdateValue(key as string, urlValue));
+                                }
+
+                                break;
+                            }
                         default:
                             {
                                 itemValues.Add(new FieldUpdateValue(key as string, value));
@@ -521,7 +552,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 #else
             item.Update();
 #endif
-            context.ExecuteQueryRetry();
+            if(!SkipExecuteQuery)
+                context.ExecuteQueryRetry();
         }
 
         [Obsolete("Use UpdateListItem(ListItem item, TokenParser parser, IDictionary<string, string> valuesToSet, ListItemUpdateType updateType) instead")]

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OfficeDevPnP.Core.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -72,24 +73,74 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Enables or disables the QuickLaunch for the site
         /// </summary>
         public Boolean QuickLaunchEnabled { get; set; }
-        
+
+        /// <summary>
+        /// Defines the list of Alternate UI Cultures for the current web
+        /// </summary>
+        public AlternateUICultureCollection AlternateUICultures { get; set; }
+
+        /// <summary>
+        /// Defines whether to enable Multilingual capabilities for the current web
+        /// </summary>
+        public bool IsMultilingual { get; set; }
+
+        /// <summary>
+        /// Defines whether to OverwriteTranslationsOnChange on change for the current web
+        /// </summary>
+        public bool OverwriteTranslationsOnChange { get; set; }
+
+        /// <summary>
+        /// Defines whether to exclude the web from offline client
+        /// </summary>
+        public bool ExcludeFromOfflineClient { get; set; }
+
+        /// <summary>
+        /// Defines whether members can share content from the current web
+        /// </summary>
+        public bool MembersCanShare { get; set; }
+
+        /// <summary>
+        /// Defines whether disable flows for the current web
+        /// </summary>
+        public bool DisableFlows { get; set; }
+
+        /// <summary>
+        /// Defines whether disable PowerApps for the current web
+        /// </summary>
+        public bool DisableAppViews { get; set; }
+
+        /// <summary>
+        /// Defines whether to enable the Horizontal QuickLaunch for the current web
+        /// </summary>
+        public bool HorizontalQuickLaunch { get; set; }
+
+        /// <summary>
+        /// Defines the SearchScope for the site
+        /// </summary>
+        public SearchScopes SearchScope { get; set; }
+
         #endregion
 
         #region Constructors
         /// <summary>
         /// Default Constructor
         /// </summary>
-        public WebSettings() { }
+        public WebSettings()
+        {
+            this.AlternateUICultures = new AlternateUICultureCollection(this.ParentTemplate);
+        }
+
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="noCrawl">Based on boolean values sets crawl to the site or subsite</param>
         /// <param name="requestAccessEmail">E-mail address for request access</param>
         /// <param name="welcomePage">Welcome page for site or subsite</param>
-        public WebSettings(Boolean noCrawl, String requestAccessEmail, String welcomePage):
+        public WebSettings(Boolean noCrawl, String requestAccessEmail, String welcomePage) :
             this(noCrawl, requestAccessEmail, welcomePage, null, null, null, null)
         {
         }
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -100,8 +151,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <param name="description">Description of site or subsite</param>
         /// <param name="siteLogo">Logo of site or subsite</param>
         /// <param name="alternateCSS">Alternate css file location of site or subsite</param>
-        public WebSettings(Boolean noCrawl, String requestAccessEmail, String welcomePage, 
-            String title, String description, String siteLogo, String alternateCSS)
+        public WebSettings(Boolean noCrawl, String requestAccessEmail, String welcomePage,
+            String title, String description, String siteLogo, String alternateCSS) : this()
         {
             this.NoCrawl = noCrawl;
             this.RequestAccessEmail = requestAccessEmail;
@@ -121,7 +172,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns hash code in integer</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|",
                 (this.NoCrawl.GetHashCode()),
                 (this.RequestAccessEmail != null ? this.RequestAccessEmail.GetHashCode() : 0),
                 (this.WelcomePage != null ? this.WelcomePage.GetHashCode() : 0),
@@ -131,7 +182,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 (this.AlternateCSS != null ? this.AlternateCSS.GetHashCode() : 0),
                 (this.HubSiteUrl != null ? this.HubSiteUrl.GetHashCode() : 0),
                 this.CommentsOnSitePagesDisabled.GetHashCode(),
-                this.QuickLaunchEnabled.GetHashCode()
+                this.QuickLaunchEnabled.GetHashCode(),
+                AlternateUICultures.Aggregate(0, (acc, next) => acc += (next != null ? next.GetHashCode() : 0)),
+                this.IsMultilingual.GetHashCode(),
+                this.OverwriteTranslationsOnChange.GetHashCode(),
+                this.ExcludeFromOfflineClient.GetHashCode(),
+                this.MembersCanShare.GetHashCode(),
+                this.DisableFlows.GetHashCode(),
+                this.DisableAppViews.GetHashCode(),
+                this.HorizontalQuickLaunch.GetHashCode(),
+                this.SearchScope.GetHashCode()
             ).GetHashCode());
         }
 
@@ -170,10 +230,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this.AlternateCSS == other.AlternateCSS &&
                     this.HubSiteUrl == other.HubSiteUrl &&
                     this.CommentsOnSitePagesDisabled == other.CommentsOnSitePagesDisabled &&
-                    this.QuickLaunchEnabled == other.QuickLaunchEnabled
+                    this.QuickLaunchEnabled == other.QuickLaunchEnabled &&
+                    this.AlternateUICultures.DeepEquals(other.AlternateUICultures) &&
+                    this.IsMultilingual == other.IsMultilingual &&
+                    this.OverwriteTranslationsOnChange == other.OverwriteTranslationsOnChange &&
+                    this.ExcludeFromOfflineClient == other.ExcludeFromOfflineClient &&
+                    this.MembersCanShare == other.MembersCanShare &&
+                    this.DisableFlows == other.DisableFlows &&
+                    this.DisableAppViews == other.DisableAppViews &&
+                    this.HorizontalQuickLaunch == other.HorizontalQuickLaunch &&
+                    this.SearchScope == other.SearchScope
                 );
         }
 
         #endregion
+    }
+
+    /// <summary>
+    /// Defines the SearchScope for the site
+    /// </summary>
+    public enum SearchScopes
+    {
+        /// <summary>
+        /// Defines the DefaultScope for the SearchScope of the site
+        /// </summary>
+        DefaultScope,
+        /// <summary>
+        /// Defines the Tenant for the SearchScope of the site
+        /// </summary>
+        Tenant,
+        /// <summary>
+        /// Defines the Hub for the SearchScope of the site
+        /// </summary>
+        Hub,
+        /// <summary>
+        /// Defines the Site for the SearchScope of the site
+        /// </summary>
+        Site,
     }
 }

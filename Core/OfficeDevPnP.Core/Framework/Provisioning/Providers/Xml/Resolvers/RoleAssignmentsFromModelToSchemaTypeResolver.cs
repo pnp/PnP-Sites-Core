@@ -30,20 +30,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
             var roleAssignmentTypeName = $"{baseNamespace}.RoleAssignment, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
             var roleAssignmentType = Type.GetType(roleAssignmentTypeName, true);
 
-
-            var breakRoleInheritance = Activator.CreateInstance(breakRoleInheritanceType, true);
-
-            PnPObjectsMapper.MapProperties(source, breakRoleInheritance, recursive:true);
-
             var security = (ObjectSecurity)source;
-            if (security.RoleAssignments != null)
-            {
-                var roleAssignment = PnPObjectsMapper.MapObjects(security.RoleAssignments, 
-                    new CollectionFromModelToSchemaTypeResolver(roleAssignmentType), null, true);
-                breakRoleInheritance.GetPublicInstanceProperty("RoleAssignment").SetValue(breakRoleInheritance, roleAssignment);
-            }
 
-            return breakRoleInheritance;
+            // If we have any of the flags configured, or any role assignment, then we process the item
+            if (security.ClearSubscopes || security.CopyRoleAssignments || 
+                (security.RoleAssignments != null && security.RoleAssignments.Count > 0))
+            {
+                var breakRoleInheritance = Activator.CreateInstance(breakRoleInheritanceType, true);
+
+                PnPObjectsMapper.MapProperties(source, breakRoleInheritance, recursive: true);
+
+                if (security.RoleAssignments != null)
+                {
+                    var roleAssignment = PnPObjectsMapper.MapObjects(security.RoleAssignments,
+                        new CollectionFromModelToSchemaTypeResolver(roleAssignmentType), null, true);
+                    breakRoleInheritance.GetPublicInstanceProperty("RoleAssignment").SetValue(breakRoleInheritance, roleAssignment);
+                }
+
+                return breakRoleInheritance;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

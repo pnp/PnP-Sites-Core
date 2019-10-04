@@ -93,6 +93,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Fields)) objectHandlers.Add(new ObjectField(FieldAndListProvisioningStepHelper.Step.Export));
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.ContentTypes)) objectHandlers.Add(new ObjectContentType(FieldAndListProvisioningStepHelper.Step.Export));
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Lists)) objectHandlers.Add(new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.Export));
+                if (creationInfo.HandlersToProcess.HasFlag(Handlers.Lists)) objectHandlers.Add(new ObjectListInstanceDataRows());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.CustomActions)) objectHandlers.Add(new ObjectCustomActions());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Features)) objectHandlers.Add(new ObjectFeatures());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.ComposedLook)) objectHandlers.Add(new ObjectComposedLook());
@@ -111,6 +112,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Publishing)) objectHandlers.Add(new ObjectPublishing());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Workflows)) objectHandlers.Add(new ObjectWorkflows());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
+                if (creationInfo.HandlersToProcess.HasFlag(Handlers.SiteSettings)) objectHandlers.Add(new ObjectSiteSettings());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Theme)) objectHandlers.Add(new ObjectTheme());
 
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Navigation)) objectHandlers.Add(new ObjectNavigation());
@@ -203,6 +205,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 int step = 2;
 
                 TokenParser sequenceTokenParser = new TokenParser(tenant, hierarchy);
+
+                CallWebHooks(hierarchy.Templates.FirstOrDefault(), sequenceTokenParser,
+                    ProvisioningTemplateWebhookKind.ProvisioningStarted);
+
                 foreach (var handler in objectHandlers)
                 {
                     if (handler.WillProvision(tenant, hierarchy, sequenceId, provisioningInfo))
@@ -216,9 +222,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             progressDelegate(handler.Name, step, count);
                             step++;
                         }
-                        sequenceTokenParser = handler.ProvisionObjects(tenant, hierarchy, sequenceId, sequenceTokenParser, provisioningInfo);
+                        try
+                        {
+                            sequenceTokenParser = handler.ProvisionObjects(tenant, hierarchy, sequenceId, sequenceTokenParser, provisioningInfo);
+                        }
+                        catch (Exception ex)
+                        {
+                            CallWebHooks(hierarchy.Templates.FirstOrDefault(), sequenceTokenParser, 
+                                ProvisioningTemplateWebhookKind.ProvisioningExceptionOccurred, handler.Name, ex);
+                            throw ex;
+                        }
                     }
                 }
+
+                CallWebHooks(hierarchy.Templates.FirstOrDefault(), sequenceTokenParser,
+                    ProvisioningTemplateWebhookKind.ProvisioningCompleted);
+
             }
         }
 #endif
@@ -355,6 +374,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SearchSettings)) objectHandlers.Add(new ObjectSearchSettings());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.PropertyBagEntries)) objectHandlers.Add(new ObjectPropertyBagEntry());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.WebSettings)) objectHandlers.Add(new ObjectWebSettings());
+                if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SiteSettings)) objectHandlers.Add(new ObjectSiteSettings());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Theme)) objectHandlers.Add(new ObjectTheme());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Navigation)) objectHandlers.Add(new ObjectNavigation());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ImageRenditions)) objectHandlers.Add(new ObjectImageRenditions());
@@ -391,7 +411,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 template = cleaner.CleanUpBeforeProvisioning(template);
 
-                CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ProvisioningStarted);
+                CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ProvisioningTemplateStarted);
 
                 foreach (var handler in objectHandlers)
                 {
@@ -406,7 +426,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             progressDelegate(handler.Name, step, count);
                             step++;
                         }
-                        CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted, handler);
+                        CallWebHooks(template, tokenParser, 
+                            ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted, 
+                            handler.InternalName);
 
                         try
                         {
@@ -414,10 +436,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         catch (Exception ex)
                         {
-                            CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ExceptionOccurred, handler, ex);
+                            CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ExceptionOccurred, 
+                                handler.InternalName, ex);
                             throw ex;
                         }
-                        CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted, handler);
+                        CallWebHooks(template, tokenParser, 
+                            ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted, 
+                            handler.InternalName);
                     }
                 }
 
@@ -425,20 +450,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.EnsureProperties(w => w.Title, w => w.Url);
                 siteProvisionedDelegate?.Invoke(web.Title, web.Url);
 
-                CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ProvisioningCompleted);
+                CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ProvisioningTemplateCompleted);
 
                 System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo(currentCultureInfoValue);
 
             }
         }
 
-        private void CallWebHooks(ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateWebhookKind kind, ObjectHandlerBase objectHandler = null, Exception exception = null)
+        private void CallWebHooks(ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateWebhookKind kind, String objectHandler = null, Exception exception = null)
         {
             using (var scope = new PnPMonitoredScope("ProvisioningTemplate WebHook Call"))
             {
+                var webhooks = new List<ProvisioningWebhookBase>();
+
+                // Merge the webhooks at template level with those at global level
                 if (template.ProvisioningTemplateWebhooks != null && template.ProvisioningTemplateWebhooks.Any())
                 {
-                    foreach (var webhook in template.ProvisioningTemplateWebhooks.Where(w => w.Kind == kind))
+                    webhooks.AddRange(template.ProvisioningTemplateWebhooks);
+                }
+                if (template.ParentHierarchy?.ProvisioningWebhooks != null && template.ParentHierarchy.ProvisioningWebhooks.Any())
+                {
+                    webhooks.AddRange(template.ParentHierarchy.ProvisioningWebhooks);
+                }
+
+                // If there is any webhook
+                if (webhooks.Count > 0)
+                {
+                    foreach (var webhook in webhooks.Where(w => w.Kind == kind))
                     {
                         var requestParameters = new Dictionary<String, String>();
 
@@ -463,17 +501,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             case ProvisioningTemplateWebhookMethod.GET:
                                 {
+                                    url += $"&__webhookKind={kind.ToString()}"; // add the webhook kind to the REST request URL
+
+                                    foreach (var k in requestParameters.Keys)
+                                    {
+                                        url += $"&{HttpUtility.UrlEncode(k)}={HttpUtility.UrlEncode(requestParameters[k])}";
+                                    }
+
                                     if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted 
                                         || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted
                                         || kind == ProvisioningTemplateWebhookKind.ExceptionOccurred)
                                     {
-                                        url += $"&__handler={objectHandler.InternalName}"; // add the handler name to the REST request URL
-                                        url += $"&__webhookKind={kind.ToString()}"; // add the webhook kind to the REST request URL
-
-                                        foreach (var k in requestParameters.Keys)
-                                        {
-                                            url += $"&{HttpUtility.UrlEncode(k)}={HttpUtility.UrlEncode(requestParameters[k])}";
-                                        }
+                                        url += $"&__handler={HttpUtility.UrlEncode(objectHandler)}"; // add the handler name to the REST request URL
                                     }
                                     try
                                     {
@@ -498,9 +537,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             case ProvisioningTemplateWebhookMethod.POST:
                                 {
                                     requestParameters.Add("__webhookKind", kind.ToString()); // add the webhook kind to the parameters of the request body
-                                    if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted)
+
+                                    if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted
+                                        || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted
+                                        || kind == ProvisioningTemplateWebhookKind.ExceptionOccurred)
                                     {
-                                        requestParameters.Add("__handler", objectHandler.InternalName); // add the handler name to the parameters of the request body
+                                        requestParameters.Add("__handler", objectHandler); // add the handler name to the parameters of the request body
                                     }
                                     try
                                     {

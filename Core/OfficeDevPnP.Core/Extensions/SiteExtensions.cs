@@ -95,6 +95,22 @@ namespace Microsoft.SharePoint.Client
 
             return (result);
         }
+
+        /// <summary>
+        /// Checks if the current Site Collection is a "modern" Team Site
+        /// </summary>
+        /// <param name="site">The target site</param>
+        /// <returns>Returns true if the site is a Team Site</returns>
+        public static Boolean IsModernTeamSite(this Site site)
+        {
+            // First of all check if the site is full Team Site
+            var templateId = site.RootWeb.GetBaseTemplateId();
+
+            var result = (templateId == "GROUP#0");
+
+            return (result);
+        }
+        
 #endif
     }
 }

@@ -78,15 +78,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     ///     Office365Group Lifecycle
     /// Drive
     /// 
-    /// To Cover:
-    ///     DataRow Attachments
-    ///     Properties for Folders
-    ///     Teamify/HideTeamify in TeamSite
-    ///     GroupLifecyclePolicyId in TeamSite
-    ///     DiscoverySettings in Teams
-    ///     IDs for Tabs and Channels
-    ///     AllowToAddGuests in TeamSecurity
-    /// 
     /// </summary>
     [TestClass]
     public class XMLSerializer201909Tests
@@ -447,7 +438,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(2, template.ProvisioningTemplateWebhooks.Count);
             Assert.IsTrue(template.ProvisioningTemplateWebhooks[0].Url.Contains("https://mywebhook.azurefunctions.net/function01"));
             Assert.AreEqual(ProvisioningTemplateWebhookMethod.GET, template.ProvisioningTemplateWebhooks[0].Method);
-            Assert.AreEqual(ProvisioningTemplateWebhookKind.ProvisioningStarted, template.ProvisioningTemplateWebhooks[0].Kind);
+            Assert.AreEqual(ProvisioningTemplateWebhookKind.ProvisioningTemplateStarted, template.ProvisioningTemplateWebhooks[0].Kind);
             Assert.AreEqual(ProvisioningTemplateWebhookBodyFormat.Json, template.ProvisioningTemplateWebhooks[1].BodyFormat);
             Assert.AreEqual(true, template.ProvisioningTemplateWebhooks[1].Async);
             Assert.AreEqual(3, template.ProvisioningTemplateWebhooks[0].Parameters.Count);
@@ -464,7 +455,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var result = new ProvisioningTemplate();
 
-            result.ProvisioningTemplateWebhooks.Add(new ProvisioningTemplateWebhook
+            result.ProvisioningTemplateWebhooks.Add(new Core.Framework.Provisioning.Model.ProvisioningTemplateWebhook
             {
                 Url = "https://my.url/func01",
                 Method = ProvisioningTemplateWebhookMethod.GET,
@@ -478,12 +469,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 }
             });
 
-            result.ProvisioningTemplateWebhooks.Add(new ProvisioningTemplateWebhook
+            result.ProvisioningTemplateWebhooks.Add(new Core.Framework.Provisioning.Model.ProvisioningTemplateWebhook
             {
                 Url = "https://my.url/func01",
                 Method = ProvisioningTemplateWebhookMethod.POST,
                 Async = true,
-                Kind = ProvisioningTemplateWebhookKind.ProvisioningCompleted,
+                Kind = ProvisioningTemplateWebhookKind.ProvisioningTemplateCompleted,
                 BodyFormat = ProvisioningTemplateWebhookBodyFormat.FormUrlEncoded,
                 Parameters = new Dictionary<string, string>
                 {
@@ -505,16 +496,95 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(2, template.ProvisioningTemplateWebhooks.Count());
             Assert.AreEqual("https://my.url/func01", template.ProvisioningTemplateWebhooks[0].Url);
             Assert.AreEqual(false, template.ProvisioningTemplateWebhooks[0].Async);
-            Assert.AreEqual(ProvisioningTemplateWebhooksProvisioningTemplateWebhookBodyFormat.Xml, template.ProvisioningTemplateWebhooks[0].BodyFormat);
-            Assert.AreEqual(ProvisioningTemplateWebhooksProvisioningTemplateWebhookMethod.GET, template.ProvisioningTemplateWebhooks[0].Method);
-            Assert.AreEqual(ProvisioningTemplateWebhooksProvisioningTemplateWebhookMethod.POST, template.ProvisioningTemplateWebhooks[1].Method);
-            Assert.AreEqual(ProvisioningTemplateWebhooksProvisioningTemplateWebhookKind.ProvisioningCompleted, template.ProvisioningTemplateWebhooks[1].Kind);
-            Assert.AreEqual(ProvisioningTemplateWebhooksProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted, template.ProvisioningTemplateWebhooks[0].Kind);
+            Assert.AreEqual(ProvisioningWebhookBodyFormat.Xml, template.ProvisioningTemplateWebhooks[0].BodyFormat);
+            Assert.AreEqual(ProvisioningWebhookMethod.GET, template.ProvisioningTemplateWebhooks[0].Method);
+            Assert.AreEqual(ProvisioningWebhookMethod.POST, template.ProvisioningTemplateWebhooks[1].Method);
+            Assert.AreEqual(ProvisioningWebhookKind.ProvisioningTemplateCompleted, template.ProvisioningTemplateWebhooks[1].Kind);
+            Assert.AreEqual(ProvisioningWebhookKind.ObjectHandlerProvisioningStarted, template.ProvisioningTemplateWebhooks[0].Kind);
             Assert.AreEqual(2, template.ProvisioningTemplateWebhooks[0].Parameters.Count());
             Assert.AreEqual("Param01", template.ProvisioningTemplateWebhooks[0].Parameters[0].Key);
             Assert.AreEqual("Value01", template.ProvisioningTemplateWebhooks[0].Parameters[0].Value);
             Assert.AreEqual("Param01", template.ProvisioningTemplateWebhooks[1].Parameters[0].Key);
             Assert.AreEqual("Value01", template.ProvisioningTemplateWebhooks[1].Parameters[0].Value);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Deserialize_ProvisioningWebhook()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
+
+            Assert.AreEqual(2, hierarchy.ProvisioningWebhooks.Count);
+            Assert.IsTrue(hierarchy.ProvisioningWebhooks[0].Url.Contains("https://mywebhook.azurefunctions.net/function01"));
+            Assert.AreEqual(ProvisioningTemplateWebhookMethod.GET, hierarchy.ProvisioningWebhooks[0].Method);
+            Assert.AreEqual(ProvisioningTemplateWebhookKind.ProvisioningStarted, hierarchy.ProvisioningWebhooks[0].Kind);
+            Assert.AreEqual(ProvisioningTemplateWebhookBodyFormat.Json, hierarchy.ProvisioningWebhooks[1].BodyFormat);
+            Assert.AreEqual(true, hierarchy.ProvisioningWebhooks[1].Async);
+            Assert.AreEqual(2, hierarchy.ProvisioningWebhooks[0].Parameters.Count);
+            Assert.IsTrue(hierarchy.ProvisioningWebhooks[0].Parameters.ContainsKey("Param01"));
+            Assert.AreEqual("Value01", hierarchy.ProvisioningWebhooks[0].Parameters["Param01"]);
+            Assert.AreEqual("{sitecollection}", hierarchy.ProvisioningWebhooks[1].Parameters["Site"]);
+        }
+
+        [TestMethod]
+        [TestCategory(TEST_CATEGORY)]
+        public void XMLSerializer_Serialize_ProvisioningWebhook()
+        {
+            var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
+
+            var result = new ProvisioningTemplate { ParentHierarchy = new ProvisioningHierarchy() };
+
+            result.ParentHierarchy.ProvisioningWebhooks.Add(new Core.Framework.Provisioning.Model.ProvisioningWebhook
+            {
+                Url = "https://my.url/func01",
+                Method = ProvisioningTemplateWebhookMethod.GET,
+                Async = false,
+                Kind = ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted,
+                BodyFormat = ProvisioningTemplateWebhookBodyFormat.Xml,
+                Parameters = new Dictionary<string, string>
+                {
+                    {"Param01", "Value01"},
+                    {"Param02", "Value01"},
+                }
+            });
+
+            result.ParentHierarchy.ProvisioningWebhooks.Add(new Core.Framework.Provisioning.Model.ProvisioningWebhook
+            {
+                Url = "https://my.url/func01",
+                Method = ProvisioningTemplateWebhookMethod.POST,
+                Async = true,
+                Kind = ProvisioningTemplateWebhookKind.ProvisioningCompleted,
+                BodyFormat = ProvisioningTemplateWebhookBodyFormat.FormUrlEncoded,
+                Parameters = new Dictionary<string, string>
+                {
+                    {"Param01", "Value01"},
+                    {"Param02", "Value01"},
+                }
+            });
+
+            var serializer = new XMLPnPSchemaV201909Serializer();
+            provider.SaveAs(result, TEST_OUT_FILE, serializer);
+
+            var path = $"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{TEST_OUT_FILE}";
+            Assert.IsTrue(File.Exists(path));
+            var xml = XDocument.Load(path);
+            var wrappedResult = XMLSerializer.Deserialize<Provisioning>(xml);
+
+            Assert.AreEqual(2, wrappedResult.ProvisioningWebhooks.Count());
+            Assert.AreEqual("https://my.url/func01", wrappedResult.ProvisioningWebhooks[0].Url);
+            Assert.AreEqual(false, wrappedResult.ProvisioningWebhooks[0].Async);
+            Assert.AreEqual(ProvisioningWebhookBodyFormat.Xml, wrappedResult.ProvisioningWebhooks[0].BodyFormat);
+            Assert.AreEqual(ProvisioningWebhookMethod.GET, wrappedResult.ProvisioningWebhooks[0].Method);
+            Assert.AreEqual(ProvisioningWebhookMethod.POST, wrappedResult.ProvisioningWebhooks[1].Method);
+            Assert.AreEqual(ProvisioningWebhookKind.ProvisioningCompleted, wrappedResult.ProvisioningWebhooks[1].Kind);
+            Assert.AreEqual(ProvisioningWebhookKind.ObjectHandlerProvisioningStarted, wrappedResult.ProvisioningWebhooks[0].Kind);
+            Assert.AreEqual(2, wrappedResult.ProvisioningWebhooks[0].Parameters.Count());
+            Assert.AreEqual("Param01", wrappedResult.ProvisioningWebhooks[0].Parameters[0].Key);
+            Assert.AreEqual("Value01", wrappedResult.ProvisioningWebhooks[0].Parameters[0].Value);
+            Assert.AreEqual("Param01", wrappedResult.ProvisioningWebhooks[1].Parameters[0].Key);
+            Assert.AreEqual("Value01", wrappedResult.ProvisioningWebhooks[1].Parameters[0].Value);
         }
 
         [TestMethod]
@@ -927,7 +997,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("John White", users[0].DisplayName);
             Assert.AreEqual(true, users[0].AccountEnabled);
             Assert.AreEqual("john.white", users[0].MailNickname);
-            Assert.AreEqual("john.white@{parameter:O365TenantName}.onmicrosoft.com", users[0].UserPrincipalName);
+            Assert.AreEqual("john.white@{parameter:domain}.onmicrosoft.com", users[0].UserPrincipalName);
             Assert.AreEqual("DisablePasswordExpiration,DisableStrongPassword", users[0].PasswordPolicies);
             Assert.AreEqual("photo.jpg", users[0].ProfilePhoto);
             Assert.AreEqual("John", users[0].GivenName);
@@ -1912,6 +1982,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("/sites/hubsite", webSettings.HubSiteUrl);
             Assert.AreEqual(false, webSettings.CommentsOnSitePagesDisabled);
             Assert.AreEqual(true, webSettings.QuickLaunchEnabled);
+            Assert.AreEqual(true, webSettings.IsMultilingual);
+            Assert.AreEqual(true, webSettings.OverwriteTranslationsOnChange);
+            Assert.IsNotNull(webSettings.AlternateUICultures);
+            Assert.AreEqual(3, webSettings.AlternateUICultures.Count);
+            Assert.AreEqual(1033, webSettings.AlternateUICultures[0].LCID);
+            Assert.AreEqual(1040, webSettings.AlternateUICultures[1].LCID);
+            Assert.AreEqual(1035, webSettings.AlternateUICultures[2].LCID);
+            Assert.AreEqual(true, webSettings.ExcludeFromOfflineClient);
+            Assert.AreEqual(true, webSettings.MembersCanShare);
+            Assert.AreEqual(false, webSettings.DisableFlows);
+            Assert.AreEqual(false, webSettings.DisableAppViews);
+            Assert.AreEqual(true, webSettings.HorizontalQuickLaunch);
+            Assert.AreEqual(SearchScopes.Hub, webSettings.SearchScope);
         }
 
         [TestMethod]
@@ -1935,9 +2018,25 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     CustomMasterPageUrl = "{sitecollection}/_catalogs/MasterPage/CustomMaster.master",
                     HubSiteUrl = "/sites/hubsite",
                     CommentsOnSitePagesDisabled = false,
-                    QuickLaunchEnabled = true
+                    QuickLaunchEnabled = true,
+                    IsMultilingual = true,
+                    OverwriteTranslationsOnChange = true,
+                    ExcludeFromOfflineClient = true,
+                    MembersCanShare = true,
+                    DisableFlows = false,
+                    DisableAppViews = false,
+                    HorizontalQuickLaunch = true,
+                    SearchScope = SearchScopes.Hub,
                 }
             };
+
+            result.WebSettings.AlternateUICultures.AddRange(
+                new AlternateUICulture[]
+                {
+                    new AlternateUICulture { LCID = 1033 },
+                    new AlternateUICulture { LCID = 1040 },
+                    new AlternateUICulture { LCID = 1035 },
+                });
 
             var serializer = new XMLPnPSchemaV201909Serializer();
             provider.SaveAs(result, TEST_OUT_FILE, serializer);
@@ -1963,6 +2062,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("/sites/hubsite", webSettings.HubSiteUrl);
             Assert.AreEqual(false, webSettings.CommentsOnSitePagesDisabled);
             Assert.AreEqual(true, webSettings.QuickLaunchEnabled);
+            Assert.AreEqual(true, webSettings.IsMultilingual);
+            Assert.AreEqual(true, webSettings.OverwriteTranslationsOnChange);
+            Assert.IsNotNull(webSettings.AlternateUICultures);
+            Assert.AreEqual(3, webSettings.AlternateUICultures.Length);
+            Assert.AreEqual(1033, webSettings.AlternateUICultures[0].LCID);
+            Assert.AreEqual(1040, webSettings.AlternateUICultures[1].LCID);
+            Assert.AreEqual(1035, webSettings.AlternateUICultures[2].LCID);
+            Assert.AreEqual(true, webSettings.ExcludeFromOfflineClient);
+            Assert.AreEqual(true, webSettings.MembersCanShare);
+            Assert.AreEqual(false, webSettings.DisableFlows);
+            Assert.AreEqual(false, webSettings.DisableAppViews);
+            Assert.AreEqual(true, webSettings.HorizontalQuickLaunch);
+            Assert.AreEqual(WebSettingsSearchScope.Hub, webSettings.SearchScope);
         }
 
         [TestMethod]
@@ -4728,6 +4840,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, clientSidePages[0].EnableComments);
             Assert.AreEqual("Client Side Page Title", clientSidePages[0].Title);
             Assert.AreEqual("0x01010012345", clientSidePages[0].ContentTypeID);
+            Assert.AreEqual(true, clientSidePages[0].CreateTranslations);
+            Assert.AreEqual("images/pageThumbnail.png", clientSidePages[0].ThumbnailUrl);
 
             var page = clientSidePages[0];
             // header
@@ -4794,6 +4908,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 EnableComments = true,
                 Title = "Client Side Page Title",
                 ContentTypeID = "0x01010012345",
+                CreateTranslations = true,
+                ThumbnailUrl = "images/pageThumbnail.png",
                 Header = new Core.Framework.Provisioning.Model.ClientSidePageHeader
                 {
                     Type = ClientSidePageHeaderType.Custom,
@@ -4876,6 +4992,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, clientSidePages[0].EnableComments);
             Assert.AreEqual("Client Side Page Title", clientSidePages[0].Title);
             Assert.AreEqual("0x01010012345", clientSidePages[0].ContentTypeID);
+            Assert.AreEqual(true, clientSidePages[0].CreateTranslations);
+            Assert.AreEqual("images/pageThumbnail.png", clientSidePages[0].ThumbnailUrl);            
 
             var page = clientSidePages[0];
             // header

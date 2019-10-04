@@ -455,11 +455,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var field = rootWeb.GetFieldById(fieldRef.Id);
                     if (field == null)
                     {
-                        // log missing referenced field
-                        this.WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference, listInfo.TemplateList.Title, fieldRef.Name, fieldRef.Id), ProvisioningMessageType.Error);
+                        // if the Field already exists on the List we can still update it and do not have to skip it
+                        if (listInfo.SiteList.FieldExistsById(fieldRef.Id))
+                        {
+                            field = listInfo.SiteList.GetFieldById(fieldRef.Id);
+                        }
+                        else
+                        {
+                            // log missing referenced field
+                            this.WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference, listInfo.TemplateList.Title, fieldRef.Name, fieldRef.Id), ProvisioningMessageType.Error);
 
-                        // move onto next field reference
-                        continue;
+                            // move onto next field reference
+                            continue;
+                        }
                     }
 
                     if (!listInfo.SiteList.FieldExistsById(fieldRef.Id))
@@ -476,6 +484,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     parser.AddToken(new FieldTitleToken(web, field.InternalName, field.Title));
                     parser.AddToken(new FieldIdToken(web, field.InternalName, field.Id));
 
+                    // check if it's FieldRef to Field on Template List Level
+                    if (listInfo.TemplateList.Fields.Any(f => f.GetFieldId(parser) == fieldRef.Id))
+                    {
+                        listInfo.SiteList.EnsureProperties(l => l.ContentTypesEnabled, l => l.ContentTypes.Include(c => c.Id, c => c.FieldLinks, c => c.Sealed));
+                        // check if the Field is linked to no ContentType on the List
+                        if (!listInfo.SiteList.ContentTypes.Any(c => c.FieldLinks.Any(f => f.Id == fieldRef.Id)))
+                        {
+                            // add Field to any ContentType on the List which is not sealed
+                            foreach (var ct in listInfo.SiteList.ContentTypes.Where(c => !c.Sealed))
+                            {
+                                ct.FieldLinks.Add(new FieldLinkCreationInformation { Field = field });
+                                ct.Update(false);
+                                listInfo.SiteList.Context.ExecuteQuery();
+                            }
+                        }
+                    }
 #if !SP2013
                     siteFields.TryGetValue(field.Id, out var siteField);
 
@@ -2144,6 +2168,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         // If we have a collection of lists to export and the current list
                         // is not in that collection, just skip it
+                        continue;
+                    }
+                    if (creationInfo.ListsExtractionConfiguration != null && creationInfo.ListsExtractionConfiguration.Count > 0 &&
+                        (!creationInfo.ListsExtractionConfiguration.Any(i =>
+                        {
+                            Guid listId;
+                            if (Guid.TryParse(i.Title, out listId))
+                            {
+                                return (listId == siteList.Id);
+                            }
+                            else
+                            {
+                                return (false);
+                            }
+                        }) && creationInfo.ListsExtractionConfiguration.FirstOrDefault(i => i.Title.Equals(siteList.Title)) == null))
+                    {
                         continue;
                     }
 

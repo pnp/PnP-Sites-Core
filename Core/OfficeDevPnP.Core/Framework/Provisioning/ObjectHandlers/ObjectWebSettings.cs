@@ -28,6 +28,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !SP2013 && !SP2016
                     w => w.NoCrawl,
                     w => w.CommentsOnSitePagesDisabled,
+                    w => w.ExcludeFromOfflineClient,
+                    w => w.MembersCanShare,
+                    w => w.DisableFlows,
+                    w => w.DisableAppViews,
+                    w => w.HorizontalQuickLaunch,
+                    w => w.SearchScope,
 #endif
                     //w => w.Title,
                     //w => w.Description,
@@ -38,12 +44,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.RootFolder,
                     w => w.AlternateCssUrl,
                     w => w.ServerRelativeUrl,
-                    w => w.Url);
+                    w => w.Url
+                    );
 
                 var webSettings = new WebSettings();
 #if !SP2013 && !SP2016
                 webSettings.NoCrawl = web.NoCrawl;
                 webSettings.CommentsOnSitePagesDisabled = web.CommentsOnSitePagesDisabled;
+                webSettings.ExcludeFromOfflineClient = web.ExcludeFromOfflineClient;
+                webSettings.MembersCanShare = web.MembersCanShare;
+                webSettings.DisableFlows = web.DisableFlows;
+                webSettings.DisableAppViews = web.DisableAppViews;
+                webSettings.HorizontalQuickLaunch = web.HorizontalQuickLaunch;
+                webSettings.SearchScope = (SearchScopes)Enum.Parse(typeof(SearchScopes), web.SearchScope.ToString(), true);
 #endif
                 // We're not extracting Title and Description
                 //webSettings.Title = Tokenize(web.Title, web.Url);
@@ -266,7 +279,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     web.EnsureProperties(
 #if !SP2013 && !SP2016
+                        w => w.NoCrawl,
                         w => w.CommentsOnSitePagesDisabled,
+                        w => w.ExcludeFromOfflineClient,
+                        w => w.MembersCanShare,
+                        w => w.DisableFlows,
+                        w => w.DisableAppViews,
+                        w => w.HorizontalQuickLaunch,
+                        w => w.SearchScope,
 #endif
                         w => w.WebTemplate,
                         w => w.HasUniqueRoleAssignments);
@@ -304,6 +324,37 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         web.CommentsOnSitePagesDisabled = webSettings.CommentsOnSitePagesDisabled;
                     }
+
+                    if (web.ExcludeFromOfflineClient != webSettings.ExcludeFromOfflineClient)
+                    {
+                        web.ExcludeFromOfflineClient = webSettings.ExcludeFromOfflineClient;
+                    }
+
+                    if (web.MembersCanShare != webSettings.MembersCanShare)
+                    {
+                        web.MembersCanShare = webSettings.MembersCanShare;
+                    }
+
+                    if (web.DisableFlows != webSettings.DisableFlows)
+                    {
+                        web.DisableFlows = webSettings.DisableFlows;
+                    }
+
+                    if (web.DisableAppViews != webSettings.DisableAppViews)
+                    {
+                        web.DisableAppViews = webSettings.DisableAppViews;
+                    }
+
+                    if (web.HorizontalQuickLaunch != webSettings.HorizontalQuickLaunch)
+                    {
+                        web.HorizontalQuickLaunch = webSettings.HorizontalQuickLaunch;
+                    }
+
+                    if (web.SearchScope.ToString() != webSettings.SearchScope.ToString())
+                    {
+                        web.SearchScope = (SearchScopeType)Enum.Parse(typeof(SearchScopeType), webSettings.SearchScope.ToString(), true);
+                    }
+
 #endif
                     var masterUrl = parser.ParseString(webSettings.MasterPageUrl);
                     if (!string.IsNullOrEmpty(masterUrl))

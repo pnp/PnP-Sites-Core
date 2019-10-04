@@ -10,15 +10,30 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Vertical section support for extracting and importing provisioning templates
+- Export of list items, based upon #2326 [czullu]
+- Added HubSiteTitle property on Site Sequences when provisioning a Tenant Template
+- Added a ThumbnailUrl property on Client Side Pages to set the page thumbnail
 - Added additional modern web parts to our enums (CallToAction, Button, Sites)
+- Added support for schema 201909, this schema is the default as of the October 2019 release
+- Option to configure the export of a site to a provisioning template via the ExtractConfiguration class
+- S2S user delegation in Hightrust app scenario #2363 [tmeckel]
 
 ### Changed
 
+- Fix: Regex based detection of assets used by modern web parts now correctly handles guid that where wrapped in curly brackets
+- The Promote as News state of a page will now be persisted in an exported template
+- Extracting a template will now persist the files referred to in page thumbnails to the Files collection of the template
+- Extracting a template will now persist the footer logo to the Files collection of the template
 - Only load tenant CDN settings whenever there are public/private CDN settings defined in the template
+- Fix: register as hubsite will not throw an exception anymore when creating a new hubsite through a tenant template and also setting the logo for the hubsite.
 - Fix: Added retry logic to the appcatalog/AvailableApps/GetById ALM API calls to handle cases where this API is called too soon after an app has been installed in the appcatalog
 - Fix: Use UpdateOverwriteVersion instead of Update when creating a page using the client side page API, this will prevent unneeded intermediate versions showing up in the version history of the created page
 - Fix: CPU Load and Performance for ExtractClientSidePage #2395 [czullu]
-- Fix conversion of zoneEmphasis in EmphasisJsonConverter #2402 [czullu]
+- Fix: conversion of zoneEmphasis in EmphasisJsonConverter #2402 [czullu]
+- Fix: fields reference in lists #2163 [czullu]
+- Fix: Localization only done when relevant (when destination single Language and PnP-Template Multilanguage) #2366 [czullu]
+- Fix: Localization token now handles the case where there are multiple resource files used in a single template #2367 [luismanez]
 
 ## [3.13.1909.0 - September 2019 release]
 

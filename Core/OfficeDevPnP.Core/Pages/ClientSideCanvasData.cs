@@ -16,6 +16,9 @@ namespace OfficeDevPnP.Core.Pages
 
         [JsonProperty(PropertyName = "emphasis", NullValueHandling = NullValueHandling.Ignore)]
         public ClientSideSectionEmphasis Emphasis { get; set; }
+
+        [JsonProperty(PropertyName = "pageSettingsSlice", NullValueHandling = NullValueHandling.Ignore)]
+        public ClientSidePageSettingsSlice PageSettingsSlice {get ;set;}
     }
 #endif
 }
