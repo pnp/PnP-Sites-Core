@@ -33,6 +33,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         /// <param name="isTemplate">Is this a template?</param>
         public void ExtractClientSidePage(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string pageUrl, string pageName, bool isHomePage, bool isTemplate = false)
         {
+            bool excludeAuthorInformation = false;
+            if(creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.Pages != null)
+            {
+                excludeAuthorInformation = creationInfo.ExtractConfiguration.Pages.ExcludeAuthorInformation;
+            }
             try
             {
                 List<string> errorneousOrNonImageFileGuids = new List<string>();
@@ -72,6 +77,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                     if (pageToExtract.PageHeader != null)
                     {
+                        
                         var extractedHeader = new ClientSidePageHeader()
                         {
                             Type = (ClientSidePageHeaderType)Enum.Parse(typeof(Pages.ClientSidePageHeaderType), pageToExtract.PageHeader.Type.ToString()),
@@ -84,9 +90,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             ShowPublishDate = pageToExtract.PageHeader.ShowPublishDate,
                             TopicHeader = pageToExtract.PageHeader.TopicHeader,
                             AlternativeText = pageToExtract.PageHeader.AlternativeText,
-                            Authors = !creationInfo.ExcludeAuthorInformation ? pageToExtract.PageHeader.Authors : "",
-                            AuthorByLine = !creationInfo.ExcludeAuthorInformation ? pageToExtract.PageHeader.AuthorByLine : "",
-                            AuthorByLineId = !creationInfo.ExcludeAuthorInformation ? pageToExtract.PageHeader.AuthorByLineId : -1
+                            Authors = !excludeAuthorInformation ? pageToExtract.PageHeader.Authors : "",
+                            AuthorByLine = !excludeAuthorInformation ? pageToExtract.PageHeader.AuthorByLine : "",
+                            AuthorByLineId = !excludeAuthorInformation ? pageToExtract.PageHeader.AuthorByLineId : -1
                         };
 
                         extractedPageInstance.Header = extractedHeader;
@@ -315,7 +321,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             controlInstance.Type = WebPartType.Custom;
                                             break;
                                     }
-                                    if (creationInfo.ExcludeAuthorInformation)
+                                    if (excludeAuthorInformation)
                                     {
                                         if (webPartType == Pages.DefaultClientSideWebParts.News)
                                         {

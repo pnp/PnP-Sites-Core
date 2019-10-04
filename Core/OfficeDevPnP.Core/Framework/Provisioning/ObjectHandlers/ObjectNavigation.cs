@@ -93,7 +93,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 navigationEntity.AddNewPagesToNavigation = navigationSettings.AddNewPagesToNavigation;
                 navigationEntity.CreateFriendlyUrlsForNewPages = navigationSettings.CreateFriendlyUrlsForNewPages;
 
-                if (creationInfo.OverwriteExistingNavigation)
+                if (creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.Navigation != null && creationInfo.ExtractConfiguration.Navigation.RemoveExistingNodes)
                 {
                     if (navigationEntity.SearchNavigation != null)
                     {
@@ -103,7 +103,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         navigationEntity.GlobalNavigation.StructuralNavigation.RemoveExistingNodes = true;
                     }
-                    if(navigationEntity.CurrentNavigation != null && navigationEntity.CurrentNavigation.StructuralNavigation != null)
+                    if (navigationEntity.CurrentNavigation != null && navigationEntity.CurrentNavigation.StructuralNavigation != null)
                     {
                         navigationEntity.CurrentNavigation.StructuralNavigation.RemoveExistingNodes = true;
                     }

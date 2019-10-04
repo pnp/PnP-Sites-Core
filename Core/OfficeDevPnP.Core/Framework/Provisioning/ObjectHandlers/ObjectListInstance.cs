@@ -2170,8 +2170,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // is not in that collection, just skip it
                         continue;
                     }
-                    if (creationInfo.ListsExtractionConfiguration != null && creationInfo.ListsExtractionConfiguration.Count > 0 &&
-                        (!creationInfo.ListsExtractionConfiguration.Any(i =>
+                    if (creationInfo.ExtractConfiguration.Lists != null
+                        && creationInfo.ExtractConfiguration.Lists.HasLists
+                        &&
+                        (!creationInfo.ExtractConfiguration.Lists.Lists.Any(i =>
                         {
                             Guid listId;
                             if (Guid.TryParse(i.Title, out listId))
@@ -2182,7 +2184,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 return (false);
                             }
-                        }) && creationInfo.ListsExtractionConfiguration.FirstOrDefault(i => i.Title.Equals(siteList.Title)) == null))
+                        }) && creationInfo.ExtractConfiguration.Lists.Lists.FirstOrDefault(i => i.Title.Equals(siteList.Title)) == null))
                     {
                         continue;
                     }
@@ -2245,6 +2247,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         DraftVersionVisibility = siteList.IsPropertyAvailable("DraftVersionVisibility") ? (int)siteList.DraftVersionVisibility : 0,
                     };
 
+                    if(creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.Lists != null && creationInfo.ExtractConfiguration.Lists.HasLists)
+                    {
+                        var listConfig = creationInfo.ExtractConfiguration.Lists.Lists.FirstOrDefault(l => l.Title == siteList.Title);
+                        if(listConfig != null)
+                        {
+                            if(listConfig.RemoveExistingContentTypes)
+                            {
+                                list.RemoveExistingContentTypes = listConfig.RemoveExistingContentTypes;
+                            }
+                        }
+                    }
                     if (siteList.BaseTemplate != (int)ListTemplateType.PictureLibrary)
                     {
                         siteList.EnsureProperties(l => l.InformationRightsManagementSettings);
