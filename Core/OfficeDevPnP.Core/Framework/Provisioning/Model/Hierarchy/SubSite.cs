@@ -71,7 +71,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|",
                 this.QuickLaunchEnabled.GetHashCode(),
                 this.UseSamePermissionsAsParentSite.GetHashCode(),
                 this.Title.GetHashCode(),

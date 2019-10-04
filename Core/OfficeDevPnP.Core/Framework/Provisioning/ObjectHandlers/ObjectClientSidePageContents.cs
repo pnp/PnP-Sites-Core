@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     internal class ObjectClientSidePageContents : ObjectContentHandlerBase
     {
         public override string Name

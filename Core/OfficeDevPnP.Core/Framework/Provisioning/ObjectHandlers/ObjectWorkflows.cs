@@ -339,7 +339,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     Enabled = subscription.Enabled,
                                     EventSourceId = (!String.IsNullOrEmpty(subscription.EventSourceId)) ? Guid.Parse(parser.ParseString(subscription.EventSourceId)) : web.Id,
                                     EventTypes = subscription.EventTypes,
-#if !ONPREMISES
+#if !SP2013
                                     ParentContentTypeId = subscription.ParentContentTypeId,
 #endif
                                     ManualStartBypassesActivationLimit =  subscription.ManualStartBypassesActivationLimit,

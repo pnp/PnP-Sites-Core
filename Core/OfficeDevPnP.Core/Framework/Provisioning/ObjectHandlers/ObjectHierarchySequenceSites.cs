@@ -78,6 +78,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         tenant.SetWebTheme(parsedTheme, siteContext.Url);
                                         tenant.Context.ExecuteQueryRetry();
                                     }
+                                    if (t.Teamify)
+                                    {
+                                        try
+                                        {
+                                            WriteMessage($"Teamifying the O365 group connected site at URL - {siteContext.Url}", ProvisioningMessageType.Progress);
+                                            siteContext.TeamifyAsync().GetAwaiter().GetResult();
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            WriteMessage($"Teamifying site at URL - {siteContext.Url} failed due to an exception:- {ex.Message}", ProvisioningMessageType.Warning);
+                                        }
+                                    }
+                                    if (t.HideTeamify)
+                                    {
+                                        try
+                                        {
+                                            WriteMessage($"Teamify prompt is now hidden for site at URL - {siteContext.Url}", ProvisioningMessageType.Progress);
+                                            siteContext.HideTeamifyPrompt().GetAwaiter().GetResult();
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            WriteMessage($"Teamify prompt couldn't be hidden for site at URL - {siteContext.Url} due to an exception:- {ex.Message}", ProvisioningMessageType.Warning);
+                                        }
+                                    }
                                     siteUrls.Add(t.Id, siteContext.Url);
                                     if (!string.IsNullOrEmpty(t.ProvisioningId))
                                     {
@@ -397,7 +421,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var subweb = web.Webs.FirstOrDefault(t => t.ServerRelativeUrl.Equals(UrlUtility.Combine(web.ServerRelativeUrl, "/", url.Trim(new char[] { '/' }))));
 
-            foreach (var templateRef in sitecollection.Templates)
+            foreach (var templateRef in subSiteObject.Templates)
             {
                 var provisioningTemplate = hierarchy.Templates.FirstOrDefault(t => t.Id == templateRef);
                 if (provisioningTemplate != null)

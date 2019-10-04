@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class CoreResources {
@@ -242,7 +242,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The {0} image set as page header lives in a different web and will not be set..
+        ///   Looks up a localized string similar to The {0} image set as page header lives outside the current site collection and might not be set. Once provisioning is complete, please check if the header image path is correct or you have adequate permissions to view the image..
         /// </summary>
         internal static string ClientSidePageHeader_ImageInDifferentWeb {
             get {
@@ -1020,11 +1020,56 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to No Navigation translation needed since web is single language.
+        /// </summary>
+        internal static string Provisioning_Extensions_NavigationLocalization_NoMUI_Skip {
+            get {
+                return ResourceManager.GetString("Provisioning_Extensions_NavigationLocalization_NoMUI_Skip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skipping navigation localization because we&apos;re running under a user context who has a preferred language set in it&apos;s profile. This setup will not allow to add the needed localized string versions..
+        /// </summary>
+        internal static string Provisioning_Extensions_NavigationLocalization_Skip {
+            get {
+                return ResourceManager.GetString("Provisioning_Extensions_NavigationLocalization_Skip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Translation for default language of site is missing.
+        /// </summary>
+        internal static string Provisioning_Extensions_ViewLocalization_DefaultLngMissing_Skip {
+            get {
+                return ResourceManager.GetString("Provisioning_Extensions_ViewLocalization_DefaultLngMissing_Skip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No Viewtranslation needed since web is single language.
+        /// </summary>
+        internal static string Provisioning_Extensions_ViewLocalization_NoMUI_Skip {
+            get {
+                return ResourceManager.GetString("Provisioning_Extensions_ViewLocalization_NoMUI_Skip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Skipping view localization because we&apos;re running under a user context who has a preferred language set in it&apos;s profile. This setup will not allow to add the needed localized string versions..
         /// </summary>
         internal static string Provisioning_Extensions_ViewLocalization_Skip {
             get {
                 return ResourceManager.GetString("Provisioning_Extensions_ViewLocalization_Skip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No WebPart translation needed since web is single language.
+        /// </summary>
+        internal static string Provisioning_Extensions_WebPartLocalization_NoMUI_Skip {
+            get {
+                return ResourceManager.GetString("Provisioning_Extensions_WebPartLocalization_NoMUI_Skip", resourceCulture);
             }
         }
         
@@ -1808,6 +1853,16 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Creating list items in document libraries is not supported. Please remove DataRow elements for library &apos;{0}&apos;..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_notsupported_0 {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_notsupported_" +
+                        "0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Processing data rows for {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_ {
@@ -2382,6 +2437,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The WebAPI context cache item was not found...nothing can be retrieved from cache, so no clientcontext can be created..
+        /// </summary>
+        internal static string Services_CacheItemNotFound {
+            get {
+                return ResourceManager.GetString("Services_CacheItemNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The cookie with the cachekey was not found...nothing can be retrieved from cache, so no clientcontext can be created..
         /// </summary>
         internal static string Services_CookieWithCachKeyNotFound {
@@ -2497,7 +2561,7 @@ namespace OfficeDevPnP.Core {
         /// * @see {@link http://usejsdoc.org/|JSDoc}
         /// */
         ///
-        /// /*
+        ////*
         /// * PnPResponsiveApp
         /// * @namespace
         /// */
@@ -2507,11 +2571,11 @@ namespace OfficeDevPnP.Core {
         ///    window.PnPResponsiveApp = window.PnPResponsiveApp || {};
         ///}
         ///
-        /// /**
+        ////**
         /// * PnP Responsive
         /// * @class
         /// */
-        /// PnPResponsiveApp.Main = (function ()  [rest of string was truncated]&quot;;.
+        ///PnPResponsiveApp.Main = (function ()  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI {
             get {
@@ -2536,7 +2600,7 @@ namespace OfficeDevPnP.Core {
         ///    min-width: auto;
         ///}
         ///
-        /// /* Make sure dialog windows don&apos;t break */
+        ////* Make sure dialog windows don&apos;t break */
         ///.ms-dialog #contentRow {
         ///    margin-left: 0;
         ///}

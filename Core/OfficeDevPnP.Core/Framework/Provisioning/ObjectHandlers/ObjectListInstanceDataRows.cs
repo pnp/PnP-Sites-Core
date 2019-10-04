@@ -183,6 +183,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_duplicate);
                                     continue;
                                 }
+                                if (ex.ServerErrorTypeName.Equals("Microsoft.SharePoint.SPException", StringComparison.InvariantCultureIgnoreCase)
+                                    && ex.Message.Equals("To add an item to a document library, use SPFileCollection.Add()", StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    // somebody tries to add new items to a document library
+                                    var warning = string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_notsupported_0, listInstance.Title);
+                                    scope.LogWarning(warning);
+                                    WriteMessage(warning, ProvisioningMessageType.Warning);
+                                    continue;
+                                }
                             }
                             catch (Exception ex)
                             {
