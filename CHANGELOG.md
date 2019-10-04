@@ -36,6 +36,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Localization only done when relevant (when destination single Language and PnP-Template Multilanguage) #2366 [czullu]
 - Fix: Localization token now handles the case where there are multiple resource files used in a single template #2367 [luismanez]
 - Enabled functionality (e.g. exporting and provisioning client side pages) for SP2019 that was disabled #2412 [jensotto]
+- Fix: Handle null reference exception in WebAPIHelper.GetClientContext #2426 [patrikhellgren]
 
 ## [3.13.1909.0 - September 2019 release]
 
