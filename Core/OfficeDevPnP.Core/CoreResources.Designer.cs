@@ -1853,6 +1853,16 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Creating list items in document libraries is not supported. Please remove DataRow elements for library &apos;{0}&apos;..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_notsupported_0 {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_notsupported_" +
+                        "0", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Processing data rows for {0}.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_ {

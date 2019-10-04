@@ -1222,4 +1222,7 @@
   <data name="Provisioning_Extensions_WebPartLocalization_NoMUI_Skip" xml:space="preserve">
     <value>No WebPart translation needed since web is single language</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_notsupported_0" xml:space="preserve">
+    <value>Creating list items in document libraries is not supported. Please remove DataRow elements for library '{0}'.</value>
+  </data>
 </root>

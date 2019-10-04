@@ -187,7 +187,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     && ex.Message.Equals("To add an item to a document library, use SPFileCollection.Add()", StringComparison.InvariantCultureIgnoreCase))
                                 {
                                     // somebody tries to add new items to a document library
-                                    WriteMessage(string.Format("Creating list items in document libraries is not supported. Please remove DataRow elements for library '{0}'.", listInstance.Title), ProvisioningMessageType.Warning);
+                                    var warning = string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_notsupported_0, listInstance.Title);
+                                    scope.LogWarning(warning);
+                                    WriteMessage(warning, ProvisioningMessageType.Warning);
                                     continue;
                                 }
                             }

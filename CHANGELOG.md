@@ -41,6 +41,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Don't process tenant hierarchy settings when template doesn't use them. #2300 [gautamdsheth]
 - Fix: Corrected issues reported by static analysis #2422 [jackpoz]
 - Additional overrides for UpdateTaxonomyFieldDefaultValue + doc updates #2328 [KoenZomers]
+- Fix: Better error handling when template contains DataRows for document libraries + improved Author/Editor handling #2341
 
 ## [3.13.1909.0 - September 2019 release]
 
