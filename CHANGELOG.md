@@ -39,6 +39,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Handle null reference exception in WebAPIHelper.GetClientContext #2426 [patrikhellgren]
 - Enable no script site detection for SP2019 #2428 [jensotto]
 - Fix: Don't process tenant hierarchy settings when template doesn't use them. #2300 [gautamdsheth]
+- Fix: Corrected issues reported by static analysis #2422 [jackpoz]
 
 ## [3.13.1909.0 - September 2019 release]
 
