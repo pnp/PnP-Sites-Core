@@ -90,17 +90,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|",
                 this.Type.GetHashCode(),
-                this?.ServerRelativeImageUrl.GetHashCode() ?? 0,
+                this.ServerRelativeImageUrl?.GetHashCode() ?? 0,
                 this.TranslateX.GetHashCode(),
                 this.TranslateY.GetHashCode(),
                 this.LayoutType.GetHashCode(),
                 this.TextAlignment.GetHashCode(),
                 this.ShowTopicHeader.GetHashCode(),
                 this.ShowPublishDate.GetHashCode(),
-                this?.TopicHeader.GetHashCode() ?? 0,
-                this?.AlternativeText.GetHashCode() ?? 0,
-                this?.Authors.GetHashCode() ?? 0,
-                this?.AuthorByLine.GetHashCode() ?? 0,
+                this.TopicHeader?.GetHashCode() ?? 0,
+                this.AlternativeText?.GetHashCode() ?? 0,
+                this.Authors?.GetHashCode() ?? 0,
+                this.AuthorByLine?.GetHashCode() ?? 0,
                 this.AuthorByLineId.GetHashCode()
            ).GetHashCode());
         }

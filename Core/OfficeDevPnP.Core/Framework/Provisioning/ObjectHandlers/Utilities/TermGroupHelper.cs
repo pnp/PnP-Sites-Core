@@ -57,8 +57,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                         group.Description = parsedDescription;
 
-#if !ONPREMISES
-
                         // Handle TermGroup Contributors, if any
                         if (modelTermGroup.Contributors != null && modelTermGroup.Contributors.Count > 0)
                         {
@@ -76,8 +74,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 group.AddGroupManager(m.Name);
                             }
                         }
-
-#endif
 
                         termStore.CommitAll();
                         context.Load(group);
