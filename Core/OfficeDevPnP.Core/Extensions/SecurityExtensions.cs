@@ -684,7 +684,7 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(userLoginName))
                 throw new ArgumentNullException("userLoginName");
 
-            if (string.IsNullOrEmpty(userLoginName))
+            if (string.IsNullOrEmpty(roleDefinitionName))
                 throw new ArgumentNullException("roleDefinitionName");
 
             Web web = securableObject.GetAssociatedWeb();
