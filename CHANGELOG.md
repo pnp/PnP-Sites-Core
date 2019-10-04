@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added support for schema 201909, this schema is the default as of the October 2019 release
 - Option to configure the export of a site to a provisioning template via the ExtractConfiguration class
 - S2S user delegation in Hightrust app scenario #2363 [tmeckel]
+- Added support to teamify and hide the teamify prompt via a tenant template #2423 [gautamdsheth]
 
 ### Changed
 
