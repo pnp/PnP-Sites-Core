@@ -544,7 +544,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="targetApplicationUri">Url of the target SharePoint site</param>
         /// <param name="identity">Name of the user (login name) on whose behalf to create the access token. Supported name formats are SID and User Principal Name (UPN)</param>
         /// <returns>An access token with an audience of the target principal</returns>
-        public static string GetS2SAccessTokenWithWindowsUserName(Uri targetApplicationUri, string identity)
+        public static string GetS2SAccessTokenWithUserName(Uri targetApplicationUri, string identity)
         {
             string realm = string.IsNullOrWhiteSpace(Realm)
                 ? GetRealmFromTargetUrl(targetApplicationUri)
@@ -552,7 +552,7 @@ namespace OfficeDevPnP.Core.Utilities
 
             JsonWebTokenClaim[] claims = string.IsNullOrWhiteSpace(identity)
                 ? null
-                : GetClaimsWithWindowsUserName(identity);
+                : GetClaimsWithUserName(identity);
 
             return GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
         }
@@ -605,9 +605,9 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="targetApplicationUri">Url of the target SharePoint site</param>
         /// <param name="identity">Name of the user (login name) on whose behalf to create the access token. Supported name formats are SID and User Principal Name (UPN)</param>
         /// <returns>A ClientContext using an access token with an audience of the target application</returns>
-        public static ClientContext GetS2SClientContextWithWindowsUserName(Uri targetApplicationUri, string identity)
+        public static ClientContext GetS2SClientContextWithUserName(Uri targetApplicationUri, string identity)
         {
-            string accessToken = GetS2SAccessTokenWithWindowsUserName(targetApplicationUri, identity);
+            string accessToken = GetS2SAccessTokenWithUserName(targetApplicationUri, identity);
 
             return GetClientContextWithAccessToken(targetApplicationUri.ToString(), accessToken);
         }
@@ -1103,10 +1103,10 @@ namespace OfficeDevPnP.Core.Utilities
                 throw new ArgumentNullException("identity");
             }
 #endif
-            return GetClaimsWithWindowsUserName(identity.User.Value);
+            return GetClaimsWithUserName(identity.User.Value);
         }
 
-        private static JsonWebTokenClaim[] GetClaimsWithWindowsUserName(string identity)
+        private static JsonWebTokenClaim[] GetClaimsWithUserName(string identity)
         {
 #if DEBUG
             if (string.IsNullOrWhiteSpace(identity))
