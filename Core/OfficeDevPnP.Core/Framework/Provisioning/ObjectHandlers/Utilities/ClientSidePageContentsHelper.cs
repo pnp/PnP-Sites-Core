@@ -323,6 +323,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                     }
                                     if (creationInfo.ExcludeAuthorInformation)
                                     {
+#if !SP2019
                                         if (webPartType == Pages.DefaultClientSideWebParts.News)
                                         {
                                             var properties = (control as Pages.ClientSideWebPart).Properties;
@@ -339,6 +340,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                                             (control as Pages.ClientSideWebPart).PropertiesJson = properties.ToString();
                                         }
+#endif
                                     }
                                     string jsonControlData = "\"id\": \"" + (control as Pages.ClientSideWebPart).WebPartId + "\", \"instanceId\": \"" + (control as Pages.ClientSideWebPart).InstanceId + "\", \"title\": " + JsonConvert.ToString((control as Pages.ClientSideWebPart).Title) + ", \"description\": " + JsonConvert.ToString((control as Pages.ClientSideWebPart).Description) + ", \"dataVersion\": \"" + (control as Pages.ClientSideWebPart).DataVersion + "\", \"properties\": " + (control as Pages.ClientSideWebPart).PropertiesJson + "";
 
@@ -480,7 +482,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             }
         }
 
-                                            #region Helper methods
+                                        #region Helper methods
         private static void CollectImageFilesFromGenericGuids(Regex regexGuidPattern, Regex regexGuidPatternEncoded, string jsonControlData, List<Guid> fileGuids)
         {
             // grab all the guids in the already tokenized json and check try to get them as a file
@@ -736,7 +738,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
             return json;
         }
-                                            #endregion
+                                        #endregion
     }
 #endif
                                     }

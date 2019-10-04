@@ -33,7 +33,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.DisableFlows,
                     w => w.DisableAppViews,
                     w => w.HorizontalQuickLaunch,
+#if !SP2019
                     w => w.SearchScope,
+#endif
 #endif
                     //w => w.Title,
                     //w => w.Description,
@@ -56,7 +58,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 webSettings.DisableFlows = web.DisableFlows;
                 webSettings.DisableAppViews = web.DisableAppViews;
                 webSettings.HorizontalQuickLaunch = web.HorizontalQuickLaunch;
+#if !SP2019
                 webSettings.SearchScope = (SearchScopes)Enum.Parse(typeof(SearchScopes), web.SearchScope.ToString(), true);
+#endif
 #endif
                 // We're not extracting Title and Description
                 //webSettings.Title = Tokenize(web.Title, web.Url);
@@ -286,7 +290,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         w => w.DisableFlows,
                         w => w.DisableAppViews,
                         w => w.HorizontalQuickLaunch,
+#if !SP2019
                         w => w.SearchScope,
+#endif
 #endif
                         w => w.WebTemplate,
                         w => w.HasUniqueRoleAssignments);
@@ -350,11 +356,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.HorizontalQuickLaunch = webSettings.HorizontalQuickLaunch;
                     }
 
+#if !SP2019
                     if (web.SearchScope.ToString() != webSettings.SearchScope.ToString())
                     {
                         web.SearchScope = (SearchScopeType)Enum.Parse(typeof(SearchScopeType), webSettings.SearchScope.ToString(), true);
                     }
-
+#endif
 #endif
                     var masterUrl = parser.ParseString(webSettings.MasterPageUrl);
                     if (!string.IsNullOrEmpty(masterUrl))
