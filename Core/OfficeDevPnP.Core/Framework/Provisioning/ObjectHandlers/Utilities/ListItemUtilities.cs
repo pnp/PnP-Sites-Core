@@ -482,17 +482,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             if (isDocLib)
             {
                 // check if we have both editor and author in the item.
-                if (itemValues.FirstOrDefault(v => v.Key.Equals("author", StringComparison.InvariantCultureIgnoreCase)) == null || itemValues.FirstOrDefault(v => v.Key.Equals("editor", StringComparison.InvariantCultureIgnoreCase)) == null)
+                var setAuthor = itemValues.FirstOrDefault(v => v.Key.Equals("author", StringComparison.InvariantCultureIgnoreCase)) != null;
+                var setEditor = itemValues.FirstOrDefault(v => v.Key.Equals("editor", StringComparison.InvariantCultureIgnoreCase)) != null;
+                if ((!setAuthor || !setEditor) && (setAuthor || setEditor))
                 {
-                    if (itemValues.FirstOrDefault(v => v.Key.Equals("author", StringComparison.InvariantCultureIgnoreCase)) == null)
+                    if (!setAuthor)
                     {
-                        // We only have the editor field, set the author to the old value
-                        itemValues.Add(new FieldUpdateValue("Author", item["Author"] as FieldUserValue));
+                        var currentAuthor = item["Author"];
+                        // the null check catches the case where somebody tries to add new list items to a doc lib and the server says No
+                        if (currentAuthor != null)
+                        {
+                            // We only have the editor field, set the author to the old value
+                            itemValues.Add(new FieldUpdateValue("Author", currentAuthor));
+                        }
                     }
-                    if (itemValues.FirstOrDefault(v => v.Key.Equals("editor", StringComparison.InvariantCultureIgnoreCase)) == null)
+                    if (!setEditor)
                     {
-                        // We opnly have the author field, set the editor to the old value
-                        itemValues.Add(new FieldUpdateValue("Editor", item["Editor"] as FieldUserValue));
+                        var currentEditor = item["Editor"];
+                        // the null check catches the case where somebody tries to add new list items to a doc lib and the server says No
+                        if (currentEditor != null)
+                        {
+                            // We opnly have the author field, set the editor to the old value
+                            itemValues.Add(new FieldUpdateValue("Editor", currentEditor));
+                        }
                     }
                 }
             }
