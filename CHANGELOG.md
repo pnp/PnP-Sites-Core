@@ -30,8 +30,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Added retry logic to the appcatalog/AvailableApps/GetById ALM API calls to handle cases where this API is called too soon after an app has been installed in the appcatalog
 - Fix: Use UpdateOverwriteVersion instead of Update when creating a page using the client side page API, this will prevent unneeded intermediate versions showing up in the version history of the created page
 - Fix: CPU Load and Performance for ExtractClientSidePage #2395 [czullu]
-- Fix conversion of zoneEmphasis in EmphasisJsonConverter #2402 [czullu]
-- Fix to fields reference in lists #2163 [czullu]
+- Fix: conversion of zoneEmphasis in EmphasisJsonConverter #2402 [czullu]
+- Fix: fields reference in lists #2163 [czullu]
+- Fix: Localization only done when relevant (when destination single Language and PnP-Template Multilanguage) #2366 [czullu]
 
 ## [3.13.1909.0 - September 2019 release]
 
