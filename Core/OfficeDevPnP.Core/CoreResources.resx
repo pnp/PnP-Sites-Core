@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -1203,5 +1203,11 @@
   </data>
   <data name="Provisioning_ObjectHandlers_AAD_User_ProvisioningError" xml:space="preserve">
     <value>Provisioning a user failed.</value>
+  </data>
+  <data name="Provisioning_Extensions_ViewLocalization_NoMUI_Skip" xml:space="preserve">
+    <value>No Viewtranslation needed since web is single language</value>
+  </data>
+  <data name="Provisioning_Extensions_ViewLocalization_DefaultLngMissing_Skip" xml:space="preserve">
+    <value>Translation for default language of site is missing</value>
   </data>
 </root>
