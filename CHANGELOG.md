@@ -37,6 +37,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Localization token now handles the case where there are multiple resource files used in a single template #2367 [luismanez]
 - Enabled functionality (e.g. exporting and provisioning client side pages) for SP2019 that was disabled #2412 [jensotto]
 - Fix: Handle null reference exception in WebAPIHelper.GetClientContext #2426 [patrikhellgren]
+- Enable no script site detection for SP2019 #2428 [jensotto]
 
 ## [3.13.1909.0 - September 2019 release]
 
