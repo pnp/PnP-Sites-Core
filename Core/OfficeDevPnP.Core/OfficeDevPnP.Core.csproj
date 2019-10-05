@@ -587,6 +587,9 @@
     <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningWebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachment.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachmentCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\BaseClientSidePage.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\TranslatedClientSidePageCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\TranslatedClientSidePage.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\AlternateUICulture.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\AlternateUICultureCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\UserProfile\UserProfile.cs" />
@@ -721,6 +724,8 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.cs">
       <DependentUpon>ProvisioningSchema-2019-09.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\ClientSidePageHeaderFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\ClientSidePageHeaderFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveItemsFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveRootFolderFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveItemsFromModelToSchemaTypeResolver.cs" />
@@ -730,6 +735,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\AlternateUICultureFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ClientSidePagesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\DriveSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ListInstancesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ProvisioningTemplateWebhooksSerializer.cs" />
