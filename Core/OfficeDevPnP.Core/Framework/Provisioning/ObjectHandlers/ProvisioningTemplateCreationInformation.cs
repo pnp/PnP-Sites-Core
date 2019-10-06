@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using System;
 using System.Collections.Generic;
 using static OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.ExtractConfiguration;
@@ -341,24 +342,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// </remarks>
         public List<String> ListsToExtract { get; set; } = new List<String>();
 
-        internal List<ExtractListsListsConfiguration> ListsExtractionConfiguration { get; set; } = new List<ExtractListsListsConfiguration>();
+        /// <summary>
+        /// Extraction configuration coming from JSON
+        /// </summary>
+        internal Model.Configuration.ExtractConfiguration ExtractConfiguration { get; set; }
 
-        internal bool ExcludeAuthorInformation
-        {
-            get { return excludeAuthorInformation; }
-            set { excludeAuthorInformation = value; }
-        }
-
-        internal bool OverwriteExistingNavigation
-        {
-            get { return overwriteExistingNavigation; }
-            set { overwriteExistingNavigation = value; }
-        }
-
-        internal bool OverwriteSiteFooterNavigation
-        {
-            get { return overwriteSiteFooterNavigation; }
-            set { overwriteSiteFooterNavigation = value; }
-        }
     }
 }
