@@ -696,7 +696,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     AppDomain.CurrentDomain.BaseDirectory),
                     "Templates");
 
-            var serializer = new XMLPnPSchemaV201903Serializer();
+            var serializer = new XMLPnPSchemaV201909Serializer();
             var template1 = provider.GetTemplate("ProvisioningSchema-2019-09-FullSample-01.xml", serializer);
             Assert.IsNotNull(template1);
 

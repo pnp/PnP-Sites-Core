@@ -4979,8 +4979,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 XMLSerializer.Deserialize<Provisioning>(xml);
 
             var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
-            var publishing = template.Publishing;
-
             var clientSidePages = template.ClientSidePages;
 
             Assert.AreEqual("SamplePage", clientSidePages[0].PageName);
@@ -4997,12 +4995,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var page = clientSidePages[0];
             // header
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.ClientSidePageHeaderType.Custom, page.Header.Type);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.BaseClientSidePageHeaderType.Custom, page.Header.Type);
             Assert.AreEqual("./site%20assets/picture.png", page.Header.ServerRelativeImageUrl);
             Assert.AreEqual(10.56, page.Header.TranslateX);
             Assert.AreEqual(15.12345, page.Header.TranslateY);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.ClientSidePageHeaderLayoutType.FullWidthImage, page.Header.LayoutType);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.ClientSidePageHeaderTextAlignment.Center, page.Header.TextAlignment);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.BaseClientSidePageHeaderLayoutType.FullWidthImage, page.Header.LayoutType);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.BaseClientSidePageHeaderTextAlignment.Center, page.Header.TextAlignment);
             Assert.AreEqual("Alternate text", page.Header.AlternativeText);
             Assert.AreEqual("John Black, Mike White", page.Header.Authors);
             Assert.AreEqual("Bill Green", page.Header.AuthorByLine);

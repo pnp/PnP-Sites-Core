@@ -4159,24 +4159,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
     }
     
     /// <remarks/>
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(TranslatedClientSidePage))]
+    [System.Xml.Serialization.XmlIncludeAttribute(typeof(ClientSidePage))]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
     [System.SerializableAttribute()]
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
-    public partial class ClientSidePage {
+    public partial class BaseClientSidePage {
+        
+        private BaseClientSidePageHeader headerField;
         
         private CanvasSection[] sectionsField;
-        
-        private ClientSidePageHeader headerField;
         
         private StringDictionaryItem[] fieldValuesField;
         
         private ObjectSecurity securityField;
         
         private StringDictionaryItem[] propertiesField;
-        
-        private string pageNameField;
         
         private bool promoteAsNewsArticleField;
         
@@ -4200,15 +4200,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         private string contentTypeIDField;
         
-        private bool createTranslationsField;
-        
         private string thumbnailUrlField;
         
-        public ClientSidePage() {
+        public BaseClientSidePage() {
             this.layoutField = "Article";
             this.publishField = true;
             this.enableCommentsField = true;
-            this.createTranslationsField = false;
+        }
+        
+        /// <remarks/>
+        public BaseClientSidePageHeader Header {
+            get {
+                return this.headerField;
+            }
+            set {
+                this.headerField = value;
+            }
         }
         
         /// <remarks/>
@@ -4219,16 +4226,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
             }
             set {
                 this.sectionsField = value;
-            }
-        }
-        
-        /// <remarks/>
-        public ClientSidePageHeader Header {
-            get {
-                return this.headerField;
-            }
-            set {
-                this.headerField = value;
             }
         }
         
@@ -4261,17 +4258,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
             }
             set {
                 this.propertiesField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string PageName {
-            get {
-                return this.pageNameField;
-            }
-            set {
-                this.pageNameField = value;
             }
         }
         
@@ -4401,18 +4387,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(false)]
-        public bool CreateTranslations {
-            get {
-                return this.createTranslationsField;
-            }
-            set {
-                this.createTranslationsField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
         public string ThumbnailUrl {
             get {
                 return this.thumbnailUrlField;
@@ -4429,9 +4403,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
-    public partial class ClientSidePageHeader {
+    public partial class BaseClientSidePageHeader {
         
-        private ClientSidePageHeaderType typeField;
+        private BaseClientSidePageHeaderType typeField;
         
         private string serverRelativeImageUrlField;
         
@@ -4443,11 +4417,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         private bool translateYFieldSpecified;
         
-        private ClientSidePageHeaderLayoutType layoutTypeField;
+        private BaseClientSidePageHeaderLayoutType layoutTypeField;
         
         private bool layoutTypeFieldSpecified;
         
-        private ClientSidePageHeaderTextAlignment textAlignmentField;
+        private BaseClientSidePageHeaderTextAlignment textAlignmentField;
         
         private bool showTopicHeaderField;
         
@@ -4469,13 +4443,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         private bool authorByLineIdFieldSpecified;
         
-        public ClientSidePageHeader() {
-            this.textAlignmentField = ClientSidePageHeaderTextAlignment.Left;
+        public BaseClientSidePageHeader() {
+            this.textAlignmentField = BaseClientSidePageHeaderTextAlignment.Left;
         }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ClientSidePageHeaderType Type {
+        public BaseClientSidePageHeaderType Type {
             get {
                 return this.typeField;
             }
@@ -4541,7 +4515,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public ClientSidePageHeaderLayoutType LayoutType {
+        public BaseClientSidePageHeaderLayoutType LayoutType {
             get {
                 return this.layoutTypeField;
             }
@@ -4563,8 +4537,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        [System.ComponentModel.DefaultValueAttribute(ClientSidePageHeaderTextAlignment.Left)]
-        public ClientSidePageHeaderTextAlignment TextAlignment {
+        [System.ComponentModel.DefaultValueAttribute(BaseClientSidePageHeaderTextAlignment.Left)]
+        public BaseClientSidePageHeaderTextAlignment TextAlignment {
             get {
                 return this.textAlignmentField;
             }
@@ -4688,7 +4662,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
-    public enum ClientSidePageHeaderType {
+    public enum BaseClientSidePageHeaderType {
         
         /// <remarks/>
         None,
@@ -4704,7 +4678,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
-    public enum ClientSidePageHeaderLayoutType {
+    public enum BaseClientSidePageHeaderLayoutType {
         
         /// <remarks/>
         FullWidthImage,
@@ -4723,7 +4697,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
     [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
     [System.SerializableAttribute()]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
-    public enum ClientSidePageHeaderTextAlignment {
+    public enum BaseClientSidePageHeaderTextAlignment {
         
         /// <remarks/>
         Left,
@@ -4850,6 +4824,133 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
             }
             set {
                 this.removeField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
+    public partial class TranslatedClientSidePage : BaseClientSidePage {
+        
+        private int lCIDField;
+        
+        private bool lCIDFieldSpecified;
+        
+        private string pageNameField;
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LCID {
+            get {
+                return this.lCIDField;
+            }
+            set {
+                this.lCIDField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool LCIDSpecified {
+            get {
+                return this.lCIDFieldSpecified;
+            }
+            set {
+                this.lCIDFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string PageName {
+            get {
+                return this.pageNameField;
+            }
+            set {
+                this.pageNameField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.6.1055.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema")]
+    public partial class ClientSidePage : BaseClientSidePage {
+        
+        private TranslatedClientSidePage[] translationsField;
+        
+        private string pageNameField;
+        
+        private int lCIDField;
+        
+        private bool lCIDFieldSpecified;
+        
+        private bool createTranslationsField;
+        
+        public ClientSidePage() {
+            this.createTranslationsField = false;
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlArrayItemAttribute("ClientSidePage", IsNullable=false)]
+        public TranslatedClientSidePage[] Translations {
+            get {
+                return this.translationsField;
+            }
+            set {
+                this.translationsField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string PageName {
+            get {
+                return this.pageNameField;
+            }
+            set {
+                this.pageNameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public int LCID {
+            get {
+                return this.lCIDField;
+            }
+            set {
+                this.lCIDField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool LCIDSpecified {
+            get {
+                return this.lCIDFieldSpecified;
+            }
+            set {
+                this.lCIDFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool CreateTranslations {
+            get {
+                return this.createTranslationsField;
+            }
+            set {
+                this.createTranslationsField = value;
             }
         }
     }
