@@ -2170,7 +2170,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // is not in that collection, just skip it
                         continue;
                     }
-                    if (creationInfo.ExtractConfiguration.Lists != null
+                    if (creationInfo.ExtractConfiguration!= null && creationInfo.ExtractConfiguration.Lists != null
                         && creationInfo.ExtractConfiguration.Lists.HasLists
                         &&
                         (!creationInfo.ExtractConfiguration.Lists.Lists.Any(i =>
