@@ -4840,6 +4840,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         
         private bool lCIDFieldSpecified;
         
+        private string pageNameField;
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public int LCID {
@@ -4859,6 +4861,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
             }
             set {
                 this.lCIDFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string PageName {
+            get {
+                return this.pageNameField;
+            }
+            set {
+                this.pageNameField = value;
             }
         }
     }

@@ -15,9 +15,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         #region Public Members
 
         /// <summary>
+        /// Defines the page name for a single ClientSidePage
+        /// </summary>
+        public String PageName { get; set; }
+
+        /// <summary>
         /// Defines the Locale ID of a Localization Language
         /// </summary>
-        public String LCID { get; set; }
+        public int LCID { get; set; }
 
         #endregion
 
@@ -40,13 +45,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns HashCode</returns>
         protected override int GetInheritedHashCode()
         {
-            return (String.Format("{0}|",
-                this.LCID.GetHashCode()
+            return (String.Format("{0}|{1}|",
+                this.LCID.GetHashCode(),
+                this.PageName?.GetHashCode() ?? 0
             ).GetHashCode());
         }
 
         /// <summary>
-        /// Compares TranslatedClientSidePage object based on LCID
+        /// Compares TranslatedClientSidePage object based on LCID, and PageName
         /// </summary>
         /// <param name="other">TranslatedClientSidePage Class object</param>
         /// <returns>true if the TranslatedClientSidePage object is equal to the current object; otherwise, false.</returns>
@@ -59,7 +65,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 return (false);
             }
 
-            return (this.LCID == otherTyped.LCID
+            return (this.LCID == otherTyped.LCID &&
+                this.PageName == otherTyped.PageName
                 );
         }
 

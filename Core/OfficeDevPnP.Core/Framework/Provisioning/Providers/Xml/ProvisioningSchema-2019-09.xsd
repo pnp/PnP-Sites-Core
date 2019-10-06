@@ -4898,6 +4898,7 @@
   <xsd:complexType name="TranslatedClientSidePage">
     <xsd:complexContent>
       <xsd:extension base="pnp:BaseClientSidePage">
+
         <xsd:attribute name="LCID" type="xsd:int" use="optional">
           <xsd:annotation>
             <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
@@ -4906,6 +4907,16 @@
             </xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
+
+        <xsd:attribute name="PageName" type="xsd:string" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Defines the page name for a single ClientSidePage, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
