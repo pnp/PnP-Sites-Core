@@ -399,6 +399,7 @@ namespace Microsoft.SharePoint.Client
             return ret;
         }
         #endregion
+#endif
 
         #region Site collection properties
         /// <summary>
@@ -441,16 +442,28 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Returns collection of SPTenantWebTemplate</returns>
         public static SPOTenantWebTemplateCollection GetWebTemplates(this Tenant tenant, uint lcid, int compatibilityLevel)
         {
-
             var templates = tenant.GetSPOTenantWebTemplates(lcid, compatibilityLevel);
-
             tenant.Context.Load(templates);
-
             tenant.Context.ExecuteQueryRetry();
-
             return templates;
         }
 
+#if !SP2013
+#if ONPREMISES
+        /// <summary>
+        /// Sets tenant site Properties
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
+        /// <param name="siteFullUrl">full URL of site</param>
+        /// <param name="title">site title</param>
+        /// <param name="allowSelfServiceUpgrade">Boolean value to allow serlf service upgrade</param>
+        /// <param name="noScriptSite">Boolean value which allows to customize the site using scripts</param>
+        public static void SetSiteProperties(this Tenant tenant, string siteFullUrl,
+            string title = null,
+            bool? allowSelfServiceUpgrade = null,
+            bool? noScriptSite = null
+        )
+#else
         /// <summary>
         /// Sets tenant site Properties
         /// </summary>
@@ -485,6 +498,7 @@ namespace Microsoft.SharePoint.Client
             SharingLinkType? defaultSharingLinkType = null,
             bool wait = true, Func<TenantOperationMessage, bool> timeoutFunction = null
             )
+#endif
         {
             var siteProps = tenant.GetSitePropertiesByUrl(siteFullUrl, true);
             tenant.Context.Load(siteProps);
@@ -493,6 +507,7 @@ namespace Microsoft.SharePoint.Client
             {
                 if (allowSelfServiceUpgrade != null)
                     siteProps.AllowSelfServiceUpgrade = allowSelfServiceUpgrade.Value;
+#if !ONPREMISES
                 if (sharingCapability != null)
                     siteProps.SharingCapability = sharingCapability.Value;
                 if (storageMaximumLevel != null)
@@ -507,18 +522,22 @@ namespace Microsoft.SharePoint.Client
                     siteProps.DefaultLinkPermission = defaultLinkPermission.Value;
                 if (defaultSharingLinkType != null)
                     siteProps.DefaultSharingLinkType = defaultSharingLinkType.Value;
+#endif
                 if (title != null)
                     siteProps.Title = title;
                 if (noScriptSite != null)
                     siteProps.DenyAddAndCustomizePages = (noScriptSite == true ? DenyAddAndCustomizePagesStatus.Enabled : DenyAddAndCustomizePagesStatus.Disabled);
+#if !ONPREMISES
                 if (commentsOnSitePagesDisabled != null)
                     siteProps.CommentsOnSitePagesDisabled = commentsOnSitePagesDisabled.Value;
                 if (socialBarOnSitePagesDisabled != null)
                     siteProps.SocialBarOnSitePagesDisabled = socialBarOnSitePagesDisabled.Value;
+#endif
 
                 var op = siteProps.Update();
                 tenant.Context.Load(op, i => i.IsComplete, i => i.PollingInterval);
                 tenant.Context.ExecuteQueryRetry();
+#if !ONPREMISES
                 if (timeoutFunction != null)
                 {
                     wait = true;
@@ -527,9 +546,12 @@ namespace Microsoft.SharePoint.Client
                 {
                     WaitForIsComplete(tenant, op, timeoutFunction, TenantOperationMessage.SettingSiteProperties);
                 }
+#endif
             }
         }
+#endif
 
+#if !ONPREMISES
         /// <summary>
         /// Sets a site to Unlock access or NoAccess. This operation may occur immediately, but the site lock may take a short while before it goes into effect.
         /// </summary>
@@ -560,9 +582,9 @@ namespace Microsoft.SharePoint.Client
                 {
                     WaitForIsComplete(tenant, op, timeoutFunction, TenantOperationMessage.SettingSiteLockState);
                 }
-
             }
         }
+#endif
         #endregion
 
         #region Site collection administrators
@@ -602,6 +624,53 @@ namespace Microsoft.SharePoint.Client
         #endregion
 
         #region Site enumeration
+
+#if ONPREMISES
+#if !SP2013
+        /// <summary>
+        /// Returns all site collections in the current Tenant based on a startIndex. IncludeDetail adds additional properties to the SPSite object. 
+        /// </summary>
+        /// <param name="tenant">Tenant object to operate against</param>
+        /// <param name="startIndex">Start getting site collections from this index. Defaults to 0</param>
+        /// <param name="includeDetail">Option to return a limited set of data</param>
+        /// <returns>An IList of SiteEntity objects</returns>
+        public static IList<SiteEntity> GetSiteCollections(this Tenant tenant, int startIndex = 0, bool includeDetail = true)
+        {
+            var sites = new List<SiteEntity>();
+
+            SPOSitePropertiesEnumerable props = tenant.GetSiteProperties(startIndex, includeDetail);
+            tenant.Context.Load(props);
+            tenant.Context.ExecuteQueryRetry();
+
+            foreach (var prop in props)
+            {
+                var siteEntity = new SiteEntity();
+                siteEntity.Lcid = prop.Lcid;
+                siteEntity.SiteOwnerLogin = prop.Owner;
+                siteEntity.StorageMaximumLevel = prop.StorageMaximumLevel;
+                siteEntity.StorageWarningLevel = prop.StorageWarningLevel;
+                siteEntity.Template = prop.Template;
+                siteEntity.TimeZoneId = prop.TimeZoneId;
+                siteEntity.Title = prop.Title;
+                siteEntity.Url = prop.Url;
+                siteEntity.UserCodeMaximumLevel = prop.UserCodeMaximumLevel;
+                siteEntity.UserCodeWarningLevel = prop.UserCodeWarningLevel;
+                siteEntity.CurrentResourceUsage = prop.CurrentResourceUsage;
+                siteEntity.LastContentModifiedDate = prop.LastContentModifiedDate;
+                siteEntity.StorageUsage = prop.StorageUsage;
+                siteEntity.WebsCount = prop.WebsCount;
+                SiteLockState lockState;
+                if (Enum.TryParse(prop.LockState, out lockState))
+                {
+                    siteEntity.LockState = lockState;
+                }
+                sites.Add(siteEntity);
+            }
+
+            return sites;
+        }
+#endif
+#else
         /// <summary>
         /// Returns all site collections in the current Tenant based on a startIndex. IncludeDetail adds additional properties to the SPSite object. 
         /// </summary>
@@ -728,9 +797,11 @@ namespace Microsoft.SharePoint.Client
             return client;
         }
 #endif
+#endif
 
         #endregion
 
+#if !ONPREMISES
         #region Private helper methods
         private static bool WaitForIsComplete(Tenant tenant, SpoOperation op, Func<TenantOperationMessage, bool> timeoutFunction = null, TenantOperationMessage operationMessage = TenantOperationMessage.None)
         {
@@ -1073,8 +1144,6 @@ namespace Microsoft.SharePoint.Client
         #endregion
 #endif
 
-#if !ONPREMISES || SP2019
-
         #region ClientSide Package Deployment
 
         /// <summary>
@@ -1095,8 +1164,7 @@ namespace Microsoft.SharePoint.Client
         }
         #endregion
 
-#endif
-        #region Utilities
+#region Utilities
 
 #if !ONPREMISES
         public static string GetTenantIdByUrl(string tenantUrl)
@@ -1136,7 +1204,7 @@ namespace Microsoft.SharePoint.Client
             return index != -1 ? originalString.Substring(prefix.Length, index - prefix.Length) : null;
         }
 
-        #endregion
+#endregion
 
     }
 }
