@@ -241,7 +241,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             this.SaveAs(template, this.Uri, formatter, extensions);
         }
 
-        public override void SaveAs(ProvisioningHierarchy hierarchy, string uri)
+        public override void SaveAs(ProvisioningHierarchy hierarchy, string uri, ITemplateFormatter formatter = null)
         {
             if (hierarchy == null)
             {
@@ -253,7 +253,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 throw new ArgumentNullException(nameof(uri));
             }
 
-            var formatter = XMLPnPSchemaFormatter.LatestFormatter;
+            if (formatter == null)
+            {
+                formatter = XMLPnPSchemaFormatter.LatestFormatter;
+            }
             formatter.Initialize(this);
 
             var stream = ((IProvisioningHierarchyFormatter)formatter).ToFormattedHierarchy(hierarchy);
