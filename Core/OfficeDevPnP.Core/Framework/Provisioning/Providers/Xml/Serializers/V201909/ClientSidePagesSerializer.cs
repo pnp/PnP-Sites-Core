@@ -138,7 +138,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                 }
 
                 // Manage Security for client side page
-                expressions.Add($"{baseClientSidePageType}.Security", new PropertyObjectTypeResolver(objectSecurityType, "Security"));
+                expressions.Add($"{baseClientSidePageType}.Security", new Resolvers.V201807.ClientSidePageSecurityFromModelToSchemaTypeResolver());
                 expressions.Add($"{objectSecurityType}.BreakRoleInheritance", new RoleAssignmentsFromModelToSchemaTypeResolver());
 
                 persistence.GetPublicInstanceProperty("ClientSidePages")
