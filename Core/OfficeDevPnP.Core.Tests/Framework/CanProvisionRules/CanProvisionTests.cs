@@ -33,7 +33,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.CanProvisionRules
             }
 
             Assert.IsNotNull(result);
+#if ONPREMISES
+            // Because the "apps" rule is verified here
+            Assert.IsFalse(result.CanProvision);
+#else
             Assert.IsTrue(result.CanProvision);
+#endif
         }
 
         [TestMethod]
