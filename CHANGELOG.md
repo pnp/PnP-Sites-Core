@@ -43,6 +43,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Additional overrides for UpdateTaxonomyFieldDefaultValue + doc updates #2328 [KoenZomers]
 - Fix: Better error handling when template contains DataRows for document libraries + improved Author/Editor handling #2341
 - Fix: Tenant Templates - sub sites now get the correct template applied. #2271 [SteveClements]
+- Enabled several functionalities in TenantExtensions for onpremises #2433 [jensotto]
 
 ## [3.13.1909.0 - September 2019 release]
 
