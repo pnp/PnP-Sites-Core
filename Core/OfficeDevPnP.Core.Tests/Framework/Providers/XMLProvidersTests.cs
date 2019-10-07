@@ -763,17 +763,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var hierarchy = provider.GetHierarchy("ProvisioningSchema-2018-07-FullSample-01.xml");
 
-            //var serializer = new XMLPnPSchemaV201807Serializer();
-            //serializer.Initialize(provider);
-
-            //var hierarchy = serializer.ToProvisioningHierarchy(provider.Connector.GetFileStream("ProvisioningSchema-2018-07-FullSample-01.xml"));
-
             // Save the hierarchy
             var outputFile = "ProvisioningSchema-2018-07-FullSample-01-OUT.xml";
-            //var mem = serializer.ToFormattedHierarchy(hierarchy);
-            //provider.Connector.SaveFileStream(outputFile, mem);
-
-            provider.SaveAs(hierarchy, outputFile);
+            var serializer = new XMLPnPSchemaV201807Serializer();
+            provider.SaveAs(hierarchy, outputFile, serializer);
 
             Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{outputFile}"));
 
@@ -811,7 +804,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             // Save the hierarchy
             var outputFile = "ProvisioningSchema-2019-03-FullSample-01-OUT.xml";
-            provider.SaveAs(hierarchy, outputFile);
+            var serializer = new XMLPnPSchemaV201903Serializer();
+            provider.SaveAs(hierarchy, outputFile, serializer);
 
             Assert.IsTrue(System.IO.File.Exists($"{provider.Connector.Parameters["ConnectionString"]}\\{provider.Connector.Parameters["Container"]}\\{outputFile}"));
 

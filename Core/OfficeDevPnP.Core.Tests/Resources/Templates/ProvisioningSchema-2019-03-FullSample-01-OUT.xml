@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning Author="John White" Generator="Human being" ImagePreviewUrl="https://sharepointpnp.com/ImagePreview.png" DisplayName="Sample Provisioning" Description="A sample Provisioning document" xmlns:pnp="http://schemas.dev.office.com/PnP/2019/03/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.9.1905.0, Culture=neutral, PublicKeyToken=null">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.13.1909.0, Culture=neutral, PublicKeyToken=null">
     <pnp:Parameters>
       <pnp:Parameter Key="O365TenantName">contoso</pnp:Parameter>
       <pnp:Parameter Key="CodeProvidedParam" />
@@ -124,7 +124,7 @@
         }</pnp:Theme>
     </pnp:Themes>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-DUMMY-6ff70b2f-0a69-4f50-b60d-f37c17a5d1fe">
+  <pnp:Templates ID="CONTAINER-DUMMY-4fcc888c-0983-4bce-b13b-85026d655557">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
@@ -225,13 +225,14 @@
         <Field ID="{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}" Type="Text" Name="DocumentDescription" DisplayName="{localization:core:Description}" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
       </pnp:SiteFields>
       <pnp:ContentTypes>
-        <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types">
+        <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types" NewFormUrl="/Forms/NewForm.aspx" EditFormUrl="/Forms/EditForm.aspx" DisplayFormUrl="/Forms/DisplayForm.aspx">
           <pnp:FieldRefs>
             <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" UpdateChildren="false" />
             <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" UpdateChildren="false" />
             <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" UpdateChildren="false" />
             <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" UpdateChildren="true" />
           </pnp:FieldRefs>
+          <pnp:DocumentTemplate TargetName="DocumentTemplate.dotx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0120D5200039D83CD2C9BA4A4499AEE6BE3562E023" Name="ProjectDocumentSet" Description="Document Set for a Project" Group="Document Sets Samples">
           <pnp:FieldRefs>
@@ -240,7 +241,7 @@
             <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" UpdateChildren="false" />
           </pnp:FieldRefs>
           <pnp:DocumentSetTemplate WelcomePage="{sitecollection}/_cts/ProjectDocumentSet/ProjectHomePage.aspx">
-            <pnp:AllowedContentTypes>
+            <pnp:AllowedContentTypes RemoveExistingContentTypes="true">
               <pnp:AllowedContentType ContentTypeID="0x0101" />
               <pnp:AllowedContentType ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" />
             </pnp:AllowedContentTypes>
@@ -631,7 +632,7 @@
               <pnp:Controls>
                 <pnp:CanvasControl WebPartType="Image" CustomWebPartName="..." JsonControlData="{}" ControlId="0eaba53f-55d8-44b5-9f7c-61301c7f1e0e" Order="1">
                   <pnp:CanvasControlProperties>
-                    <pnp:CanvasControlProperty Key="" Value="{token}" />
+                    <pnp:CanvasControlProperty Key="Key1" Value="{token}" />
                   </pnp:CanvasControlProperties>
                 </pnp:CanvasControl>
               </pnp:Controls>
@@ -1230,7 +1231,7 @@ function showAlert(){alert("Hello!")};
       </pnp:Security>
     </pnp:Team>
     <pnp:Team DisplayName="Sample Team 02" Description="This is just a sample Team 02" Classification="Private" Visibility="Public" Photo="photo.jpg" GroupId="{groupid:DisplayName}" Specialization="EducationStandard" MailNickname="sample.group">
-      <pnp:FunSettings GiphyContentRating="Strict" />
+      <pnp:FunSettings />
       <pnp:GuestSettings />
       <pnp:MembersSettings AllowDeleteChannels="false" AllowCreateUpdateRemoveTabs="false" />
       <pnp:MessagingSettings AllowOwnerDeleteMessages="false" />
