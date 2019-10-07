@@ -657,7 +657,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (members.Any())
             {
-                scope.LogDebug("Adding users to group {0}", group.Title);
+                scope.LogDebug("Adding users to group {0}", group.IsObjectPropertyInstantiated("Title") ? group.Title : "");
 
                 try
                 {
