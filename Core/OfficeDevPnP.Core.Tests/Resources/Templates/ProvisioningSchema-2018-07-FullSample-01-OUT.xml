@@ -1,6 +1,14 @@
 <?xml version="1.0"?>
-<pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.9.1905.0, Culture=neutral, PublicKeyToken=null" />
+<pnp:Provisioning Author="John White" Generator="Human being" ImagePreviewUrl="https://sharepointpnp.com/ImagePreview.png" DisplayName="Sample Provisioning" Description="A sample Provisioning document" xmlns:pnp="http://schemas.dev.office.com/PnP/2018/07/ProvisioningSchema">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.13.1909.0, Culture=neutral, PublicKeyToken=null">
+    <pnp:Parameters>
+      <pnp:Parameter Key="O365TenantName">contoso</pnp:Parameter>
+      <pnp:Parameter Key="CodeProvidedParam" />
+      <pnp:Parameter Key="YammerNetwork">contoso.com</pnp:Parameter>
+      <pnp:Parameter Key="lcid">1033</pnp:Parameter>
+      <pnp:Parameter Key="CompanyName">Contoso Inc.</pnp:Parameter>
+    </pnp:Parameters>
+  </pnp:Preferences>
   <pnp:Localizations>
     <pnp:Localization LCID="1033" Name="core" ResourceFile="resources-core.en-us.resx" />
     <pnp:Localization LCID="1040" Name="core" ResourceFile="resources-core.it-it.resx" />
@@ -115,8 +123,8 @@
         }</pnp:Theme>
     </pnp:Themes>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-SPECIALTEAM">
-    <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="1" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
+  <pnp:Templates ID="CONTAINER-DUMMY-c95d48b9-0e4e-4711-b9d4-f16039966673">
+    <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
         <pnp:Property Key="SomethingElse" Value="Another property ... Who knows ..." />
@@ -633,5 +641,494 @@
         </pnp:ClientSidePage>
       </pnp:ClientSidePages>
     </pnp:ProvisioningTemplate>
+    <pnp:ProvisioningTemplate ID="WORKFLOWSITE" Version="0" Scope="Undefined">
+      <pnp:SitePolicy>HBI</pnp:SitePolicy>
+      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
+      <pnp:PropertyBagEntries>
+        <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
+      </pnp:PropertyBagEntries>
+      <pnp:Security RemoveExistingUniqueRoleAssignments="false">
+        <pnp:AdditionalAdministrators>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalAdministrators>
+        <pnp:AdditionalOwners>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalOwners>
+        <pnp:AdditionalMembers>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalMembers>
+        <pnp:AdditionalVisitors>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalVisitors>
+        <pnp:Permissions />
+      </pnp:Security>
+      <pnp:SiteFields>
+        <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="ProjectName" DisplayName="Project Name" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{A5DE9600-B7A6-42DD-A05E-10D4F1500208}" Type="Text" Name="ProjectManager" DisplayName="Project Manager" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}" Type="Text" Name="DocumentDescription" DisplayName="Document Description" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
+      </pnp:SiteFields>
+      <pnp:ContentTypes>
+        <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types">
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" />
+            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" />
+            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" />
+            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" />
+          </pnp:FieldRefs>
+        </pnp:ContentType>
+      </pnp:ContentTypes>
+      <pnp:Lists>
+        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
+          </pnp:ContentTypeBindings>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
+          </pnp:ContentTypeBindings>
+        </pnp:ListInstance>
+      </pnp:Lists>
+      <pnp:Features>
+        <pnp:SiteFeatures>
+          <pnp:Feature ID="b50e3104-6812-424f-a011-cc90e6327318" />
+          <pnp:Feature ID="9c0834e1-ba47-4d49-812b-7d4fb6fea211" />
+          <pnp:Feature ID="0af5989a-3aea-4519-8ab0-85d91abe39ff" Deactivate="true" />
+        </pnp:SiteFeatures>
+        <pnp:WebFeatures>
+          <pnp:Feature ID="7201d6a4-a5d3-49a1-8c19-19c4bac6e668" />
+          <pnp:Feature ID="961d6a9c-4388-4cf2-9733-38ee8c89afd4" />
+          <pnp:Feature ID="e2f2bb18-891d-4812-97df-c265afdba297" />
+          <pnp:Feature ID="4aec7207-0d02-4f4f-aa07-b370199cd0c7" Deactivate="true" />
+        </pnp:WebFeatures>
+      </pnp:Features>
+      <pnp:CustomActions>
+        <pnp:SiteCustomActions>
+          <pnp:CustomAction Name="CA_SITE_SETTINGS_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="Site Classification" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None" ClientSideComponentId="00000000-0000-0000-0000-000000000000" />
+          <pnp:CustomAction Name="CA_STDMENU_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteActions" Location="Microsoft.SharePoint.StandardMenu" Title="Site Classification" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None" ClientSideComponentId="00000000-0000-0000-0000-000000000000" />
+        </pnp:SiteCustomActions>
+        <pnp:WebCustomActions>
+          <pnp:CustomAction Name="CA_SUBSITE_OVERRIDE" Description="Override new sub-site link" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="SubSite Overide" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None" ClientSideComponentId="00000000-0000-0000-0000-000000000000" />
+        </pnp:WebCustomActions>
+      </pnp:CustomActions>
+      <pnp:Files>
+        <pnp:File Src="Logo.png" Folder="SiteAssets" Overwrite="true" Level="Draft" />
+        <pnp:File Src="CustomPage.aspx" Folder="SitePages" Overwrite="true" Level="Draft" />
+        <pnp:File Src="CustomMaster.master" Folder="_catalogs/MasterPage" Overwrite="true" Level="Draft" />
+        <pnp:File Src="Custom.spcolor" Folder="_catalogs/Theme/15" Overwrite="true" Level="Draft" />
+        <pnp:File Src="Custom.spfont" Folder="_catalogs/Theme/15" Overwrite="true" Level="Draft" />
+      </pnp:Files>
+      <pnp:Pages>
+        <pnp:Page Url="~site/sitepages/demo.aspx" Overwrite="true" Layout="TwoColumns">
+          <pnp:WebParts>
+            <pnp:WebPart Title="Script Editor" Row="1" Column="1">
+              <pnp:Contents>
+                <webParts>
+                  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
+                    <metaData>
+                      <type name="Microsoft.SharePoint.WebPartPages.ScriptEditorWebPart, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
+                      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>
+                    </metaData>
+                    <data>
+                      <properties>
+                        <property name="ExportMode" type="exportmode">All</property>
+                        <property name="HelpUrl" type="string" />
+                        <property name="Hidden" type="bool">False</property>
+                        <property name="Description" type="string">Allows authors to insert HTML snippets or scripts.</property>
+                        <property name="Content" type="string">&lt;script type="text/javascript"&gt;
+function showAlert(){alert("Hello!")};
+&lt;/script&gt;&lt;input type="button" onclick="showAlert();" value="Click me"&gt;</property>
+                        <property name="CatalogIconImageUrl" type="string" />
+                        <property name="Title" type="string">Script Editor</property>
+                        <property name="AllowHide" type="bool">True</property>
+                        <property name="AllowMinimize" type="bool">True</property>
+                        <property name="AllowZoneChange" type="bool">True</property>
+                        <property name="TitleUrl" type="string" />
+                        <property name="ChromeType" type="chrometype">None</property>
+                        <property name="AllowConnect" type="bool">True</property>
+                        <property name="Width" type="unit" />
+                        <property name="Height" type="unit" />
+                        <property name="HelpMode" type="helpmode">Navigate</property>
+                        <property name="AllowEdit" type="bool">True</property>
+                        <property name="TitleIconImageUrl" type="string" />
+                        <property name="Direction" type="direction">NotSet</property>
+                        <property name="AllowClose" type="bool">True</property>
+                        <property name="ChromeState" type="chromestate">Normal</property>
+                      </properties>
+                    </data>
+                  </webPart>
+                </webParts>
+              </pnp:Contents>
+            </pnp:WebPart>
+          </pnp:WebParts>
+        </pnp:Page>
+      </pnp:Pages>
+      <pnp:ComposedLook Name="Custom Look" ColorFile="_catalogs/Theme/15/Custom.spcolor" FontFile="_catalogs/Theme/15/Custom.spfont" BackgroundFile="Resources/Themes/Contoso/contosobg.jpg" Version="1" />
+    </pnp:ProvisioningTemplate>
+    <pnp:ProvisioningTemplate ID="ProjectsTemplate" Version="0" Scope="Undefined">
+      <pnp:SitePolicy>HBI</pnp:SitePolicy>
+      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
+      <pnp:PropertyBagEntries>
+        <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
+      </pnp:PropertyBagEntries>
+      <pnp:Security RemoveExistingUniqueRoleAssignments="false">
+        <pnp:AdditionalAdministrators>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalAdministrators>
+        <pnp:AdditionalOwners>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalOwners>
+        <pnp:AdditionalMembers>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalMembers>
+        <pnp:AdditionalVisitors>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalVisitors>
+        <pnp:Permissions />
+      </pnp:Security>
+      <pnp:SiteFields>
+        <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="ProjectName" DisplayName="Project Name" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{A5DE9600-B7A6-42DD-A05E-10D4F1500208}" Type="Text" Name="ProjectManager" DisplayName="Project Manager" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}" Type="Text" Name="DocumentDescription" DisplayName="Document Description" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
+      </pnp:SiteFields>
+      <pnp:ContentTypes>
+        <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types">
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" />
+            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" />
+            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" />
+            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" />
+          </pnp:FieldRefs>
+        </pnp:ContentType>
+      </pnp:ContentTypes>
+      <pnp:Lists>
+        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
+          </pnp:ContentTypeBindings>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
+          </pnp:ContentTypeBindings>
+        </pnp:ListInstance>
+      </pnp:Lists>
+      <pnp:Features>
+        <pnp:SiteFeatures>
+          <pnp:Feature ID="b50e3104-6812-424f-a011-cc90e6327318" />
+          <pnp:Feature ID="9c0834e1-ba47-4d49-812b-7d4fb6fea211" />
+          <pnp:Feature ID="0af5989a-3aea-4519-8ab0-85d91abe39ff" Deactivate="true" />
+        </pnp:SiteFeatures>
+        <pnp:WebFeatures>
+          <pnp:Feature ID="7201d6a4-a5d3-49a1-8c19-19c4bac6e668" />
+          <pnp:Feature ID="961d6a9c-4388-4cf2-9733-38ee8c89afd4" />
+          <pnp:Feature ID="e2f2bb18-891d-4812-97df-c265afdba297" />
+          <pnp:Feature ID="4aec7207-0d02-4f4f-aa07-b370199cd0c7" Deactivate="true" />
+        </pnp:WebFeatures>
+      </pnp:Features>
+      <pnp:CustomActions>
+        <pnp:SiteCustomActions>
+          <pnp:CustomAction Name="CA_SITE_SETTINGS_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="Site Classification" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None" ClientSideComponentId="00000000-0000-0000-0000-000000000000" />
+          <pnp:CustomAction Name="CA_STDMENU_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteActions" Location="Microsoft.SharePoint.StandardMenu" Title="Site Classification" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None" ClientSideComponentId="00000000-0000-0000-0000-000000000000" />
+        </pnp:SiteCustomActions>
+        <pnp:WebCustomActions>
+          <pnp:CustomAction Name="CA_SUBSITE_OVERRIDE" Description="Override new sub-site link" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="SubSite Overide" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None" ClientSideComponentId="00000000-0000-0000-0000-000000000000" />
+        </pnp:WebCustomActions>
+      </pnp:CustomActions>
+      <pnp:Files>
+        <pnp:File Src="Logo.png" Folder="SiteAssets" Overwrite="true" Level="Draft" />
+        <pnp:File Src="CustomPage.aspx" Folder="SitePages" Overwrite="true" Level="Draft" />
+        <pnp:File Src="CustomMaster.master" Folder="_catalogs/MasterPage" Overwrite="true" Level="Draft" />
+        <pnp:File Src="Custom.spcolor" Folder="_catalogs/Theme/15" Overwrite="true" Level="Draft" />
+        <pnp:File Src="Custom.spfont" Folder="_catalogs/Theme/15" Overwrite="true" Level="Draft" />
+      </pnp:Files>
+      <pnp:Pages>
+        <pnp:Page Url="~site/sitepages/demo.aspx" Overwrite="true" Layout="TwoColumns">
+          <pnp:WebParts>
+            <pnp:WebPart Title="Script Editor" Row="1" Column="1">
+              <pnp:Contents>
+                <webParts>
+                  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
+                    <metaData>
+                      <type name="Microsoft.SharePoint.WebPartPages.ScriptEditorWebPart, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
+                      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>
+                    </metaData>
+                    <data>
+                      <properties>
+                        <property name="ExportMode" type="exportmode">All</property>
+                        <property name="HelpUrl" type="string" />
+                        <property name="Hidden" type="bool">False</property>
+                        <property name="Description" type="string">Allows authors to insert HTML snippets or scripts.</property>
+                        <property name="Content" type="string">
+                      &lt;script type="text/javascript"&gt;
+                      function showAlert(){alert("Hello!")};
+                      &lt;/script&gt;&lt;input type="button" onclick="showAlert();" value="Click me"&gt;
+                    </property>
+                        <property name="CatalogIconImageUrl" type="string" />
+                        <property name="Title" type="string">Script Editor</property>
+                        <property name="AllowHide" type="bool">True</property>
+                        <property name="AllowMinimize" type="bool">True</property>
+                        <property name="AllowZoneChange" type="bool">True</property>
+                        <property name="TitleUrl" type="string" />
+                        <property name="ChromeType" type="chrometype">None</property>
+                        <property name="AllowConnect" type="bool">True</property>
+                        <property name="Width" type="unit" />
+                        <property name="Height" type="unit" />
+                        <property name="HelpMode" type="helpmode">Navigate</property>
+                        <property name="AllowEdit" type="bool">True</property>
+                        <property name="TitleIconImageUrl" type="string" />
+                        <property name="Direction" type="direction">NotSet</property>
+                        <property name="AllowClose" type="bool">True</property>
+                        <property name="ChromeState" type="chromestate">Normal</property>
+                      </properties>
+                    </data>
+                  </webPart>
+                </webParts>
+              </pnp:Contents>
+            </pnp:WebPart>
+          </pnp:WebParts>
+        </pnp:Page>
+      </pnp:Pages>
+      <pnp:ComposedLook Name="Custom Look" ColorFile="_catalogs/Theme/15/Custom.spcolor" FontFile="_catalogs/Theme/15/Custom.spfont" BackgroundFile="Resources/Themes/Contoso/contosobg.jpg" Version="1" />
+    </pnp:ProvisioningTemplate>
+    <pnp:ProvisioningTemplate ID="MeetingsTemplate" Version="0" Scope="Undefined">
+      <pnp:SitePolicy>HBI</pnp:SitePolicy>
+      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
+      <pnp:PropertyBagEntries>
+        <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
+      </pnp:PropertyBagEntries>
+      <pnp:Security RemoveExistingUniqueRoleAssignments="false">
+        <pnp:AdditionalAdministrators>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalAdministrators>
+        <pnp:AdditionalOwners>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalOwners>
+        <pnp:AdditionalMembers>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalMembers>
+        <pnp:AdditionalVisitors>
+          <pnp:User Name="user@contoso.com" />
+          <pnp:User Name="U_SHAREPOINT_ADMINS" />
+        </pnp:AdditionalVisitors>
+        <pnp:Permissions />
+      </pnp:Security>
+      <pnp:SiteFields>
+        <Field ID="{23203E97-3BFE-40CB-AFB4-07AA2B86BF45}" Type="Text" Name="ProjectID" DisplayName="Project ID" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{B01B3DBC-4630-4ED1-B5BA-321BC7841E3D}" Type="Text" Name="ProjectName" DisplayName="Project Name" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{A5DE9600-B7A6-42DD-A05E-10D4F1500208}" Type="Text" Name="ProjectManager" DisplayName="Project Manager" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
+        <Field ID="{F1A1715E-6C52-40DE-8403-E9AAFD0470D0}" Type="Text" Name="DocumentDescription" DisplayName="Document Description" Group="Base.Foundation.Columns" MaxLength="255" AllowDeletion="TRUE" />
+      </pnp:SiteFields>
+      <pnp:ContentTypes>
+        <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types">
+          <pnp:FieldRefs>
+            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" />
+            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" />
+            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" />
+            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" />
+          </pnp:FieldRefs>
+        </pnp:ContentType>
+      </pnp:ContentTypes>
+      <pnp:Lists>
+        <pnp:ListInstance Title="Project Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/ProjectDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
+          </pnp:ContentTypeBindings>
+        </pnp:ListInstance>
+        <pnp:ListInstance Title="General Documents" Description="Project Documents are stored here" DocumentTemplate="" OnQuickLaunch="true" TemplateType="101" Url="Lists/GeneralDocuments" EnableVersioning="true" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" IrmExpire="false" IrmReject="false" IsApplicationList="false" ReadSecurity="0" WriteSecurity="0">
+          <pnp:ContentTypeBindings>
+            <pnp:ContentTypeBinding ContentTypeID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Default="true" />
+          </pnp:ContentTypeBindings>
+        </pnp:ListInstance>
+      </pnp:Lists>
+      <pnp:Features>
+        <pnp:SiteFeatures>
+          <pnp:Feature ID="b50e3104-6812-424f-a011-cc90e6327318" />
+          <pnp:Feature ID="9c0834e1-ba47-4d49-812b-7d4fb6fea211" />
+          <pnp:Feature ID="0af5989a-3aea-4519-8ab0-85d91abe39ff" Deactivate="true" />
+        </pnp:SiteFeatures>
+        <pnp:WebFeatures>
+          <pnp:Feature ID="7201d6a4-a5d3-49a1-8c19-19c4bac6e668" />
+          <pnp:Feature ID="961d6a9c-4388-4cf2-9733-38ee8c89afd4" />
+          <pnp:Feature ID="e2f2bb18-891d-4812-97df-c265afdba297" />
+          <pnp:Feature ID="4aec7207-0d02-4f4f-aa07-b370199cd0c7" Deactivate="true" />
+        </pnp:WebFeatures>
+      </pnp:Features>
+      <pnp:CustomActions>
+        <pnp:SiteCustomActions>
+          <pnp:CustomAction Name="CA_SITE_SETTINGS_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="Site Classification" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None" ClientSideComponentId="00000000-0000-0000-0000-000000000000" />
+          <pnp:CustomAction Name="CA_STDMENU_SITECLASSIFICATION" Description="Site Classification Application" Group="SiteActions" Location="Microsoft.SharePoint.StandardMenu" Title="Site Classification" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None" ClientSideComponentId="00000000-0000-0000-0000-000000000000" />
+        </pnp:SiteCustomActions>
+        <pnp:WebCustomActions>
+          <pnp:CustomAction Name="CA_SUBSITE_OVERRIDE" Description="Override new sub-site link" Group="SiteTasks" Location="Microsoft.SharePoint.SiteSettings" Title="SubSite Overide" Sequence="1000" Rights="ManageWeb" Url="https://spmanaged.azurewebsites.net/pages/index.aspx?SPHostUrl={0}" RegistrationType="None" ClientSideComponentId="00000000-0000-0000-0000-000000000000" />
+        </pnp:WebCustomActions>
+      </pnp:CustomActions>
+      <pnp:Files>
+        <pnp:File Src="Logo.png" Folder="SiteAssets" Overwrite="true" Level="Draft" />
+        <pnp:File Src="CustomPage.aspx" Folder="SitePages" Overwrite="true" Level="Draft" />
+        <pnp:File Src="CustomMaster.master" Folder="_catalogs/MasterPage" Overwrite="true" Level="Draft" />
+        <pnp:File Src="Custom.spcolor" Folder="_catalogs/Theme/15" Overwrite="true" Level="Draft" />
+        <pnp:File Src="Custom.spfont" Folder="_catalogs/Theme/15" Overwrite="true" Level="Draft" />
+      </pnp:Files>
+      <pnp:Pages>
+        <pnp:Page Url="~site/sitepages/demo.aspx" Overwrite="true" Layout="TwoColumns">
+          <pnp:WebParts>
+            <pnp:WebPart Title="Script Editor" Row="1" Column="1">
+              <pnp:Contents>
+                <webParts>
+                  <webPart xmlns="http://schemas.microsoft.com/WebPart/v3">
+                    <metaData>
+                      <type name="Microsoft.SharePoint.WebPartPages.ScriptEditorWebPart, Microsoft.SharePoint, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c" />
+                      <importErrorMessage>Cannot import this Web Part.</importErrorMessage>
+                    </metaData>
+                    <data>
+                      <properties>
+                        <property name="ExportMode" type="exportmode">All</property>
+                        <property name="HelpUrl" type="string" />
+                        <property name="Hidden" type="bool">False</property>
+                        <property name="Description" type="string">Allows authors to insert HTML snippets or scripts.</property>
+                        <property name="Content" type="string">
+                      &lt;script type="text/javascript"&gt;
+                      function showAlert(){alert("Hello!")};
+                      &lt;/script&gt;&lt;input type="button" onclick="showAlert();" value="Click me"&gt;
+                    </property>
+                        <property name="CatalogIconImageUrl" type="string" />
+                        <property name="Title" type="string">Script Editor</property>
+                        <property name="AllowHide" type="bool">True</property>
+                        <property name="AllowMinimize" type="bool">True</property>
+                        <property name="AllowZoneChange" type="bool">True</property>
+                        <property name="TitleUrl" type="string" />
+                        <property name="ChromeType" type="chrometype">None</property>
+                        <property name="AllowConnect" type="bool">True</property>
+                        <property name="Width" type="unit" />
+                        <property name="Height" type="unit" />
+                        <property name="HelpMode" type="helpmode">Navigate</property>
+                        <property name="AllowEdit" type="bool">True</property>
+                        <property name="TitleIconImageUrl" type="string" />
+                        <property name="Direction" type="direction">NotSet</property>
+                        <property name="AllowClose" type="bool">True</property>
+                        <property name="ChromeState" type="chromestate">Normal</property>
+                      </properties>
+                    </data>
+                  </webPart>
+                </webParts>
+              </pnp:Contents>
+            </pnp:WebPart>
+          </pnp:WebParts>
+        </pnp:Page>
+      </pnp:Pages>
+      <pnp:ComposedLook Name="Custom Look" ColorFile="_catalogs/Theme/15/Custom.spcolor" FontFile="_catalogs/Theme/15/Custom.spfont" BackgroundFile="Resources/Themes/Contoso/contosobg.jpg" Version="1" />
+    </pnp:ProvisioningTemplate>
   </pnp:Templates>
+  <pnp:Sequence ID="SAMPLE-SEQUENCE">
+    <pnp:SiteCollections>
+      <pnp:SiteCollection d4p1:type="pnp:CommunicationSite" Title="{parameter:CompanyName} Intranet" Description="{parameter:CompanyName} Intranet" Theme="CustomOrange" ProvisioningId="SITE.01" IsHubSite="true" Url="https://{parameter:O365TenantName}.sharepoint.com/sites/CommSite" Owner="{parameter:CommunicationSiteOwner}" SiteDesign="{SiteDesignId:PnP Site Design}" AllowFileSharingForGuestUsers="true" Classification="HBI" Language="1040" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
+        <pnp:Templates>
+          <pnp:ProvisioningTemplateReference ID="SPECIALTEAM" />
+        </pnp:Templates>
+        <pnp:Sites>
+          <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" QuickLaunchEnabled="true" Title="{parameter:CompanyName} Intranet Workflows" Description="{parameter:CompanyName} Intranet Workflows" Theme="CustomBlue" ProvisioningId="SITE.01.01" Url="{parameter:SitePrefix}-Workflows" TimeZoneId="4" Language="1040">
+            <pnp:Sites>
+              <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" QuickLaunchEnabled="true" Title="{parameter:CompanyName} Intranet Workflows Sub1" Description="{parameter:CompanyName} Intranet Workflows Sub1" Theme="CustomOrange" ProvisioningId="SITE.01.01.01" Url="{parameter:SitePrefix}-Workflows-Sub1" TimeZoneId="4" Language="1040">
+                <pnp:Sites>
+                  <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" QuickLaunchEnabled="true" Title="{parameter:CompanyName} Intranet Workflows Sub1.1" Description="{parameter:CompanyName} Intranet Workflows Sub1.1" ProvisioningId="SITE.01.01.01.01" Url="{parameter:SitePrefix}-Workflows-Sub1.1" TimeZoneId="4" Language="1040">
+                    <pnp:Templates>
+                      <pnp:ProvisioningTemplateReference ID="WORKFLOWSITE" />
+                    </pnp:Templates>
+                  </pnp:Site>
+                </pnp:Sites>
+                <pnp:Templates>
+                  <pnp:ProvisioningTemplateReference ID="WORKFLOWSITE" />
+                </pnp:Templates>
+              </pnp:Site>
+              <pnp:Site d4p1:type="pnp:TeamSubSiteNoGroup" UseSamePermissionsAsParentSite="true" QuickLaunchEnabled="true" Title="{parameter:CompanyName} Intranet Workflows Sub2" Description="{parameter:CompanyName} Intranet Workflows Sub2" Theme="CustomBlue" ProvisioningId="SITE.01.01.02" Url="{parameter:SitePrefix}-Workflows-Sub2" TimeZoneId="4" Language="1040">
+                <pnp:Templates>
+                  <pnp:ProvisioningTemplateReference ID="WORKFLOWSITE" />
+                </pnp:Templates>
+              </pnp:Site>
+            </pnp:Sites>
+            <pnp:Templates>
+              <pnp:ProvisioningTemplateReference ID="WORKFLOWSITE" />
+            </pnp:Templates>
+          </pnp:Site>
+        </pnp:Sites>
+      </pnp:SiteCollection>
+      <pnp:SiteCollection d4p1:type="pnp:TeamSite" Title="{parameter:CompanyName} Projects" Description="{parameter:CompanyName} Projects" ProvisioningId="SITE.02" IsHubSite="true" Alias="Projects" DisplayName="{parameter:CompanyName} Projects" IsPublic="true" Classification="MBI" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
+        <pnp:Templates>
+          <pnp:ProvisioningTemplateReference ID="ProjectsTemplate" />
+        </pnp:Templates>
+      </pnp:SiteCollection>
+      <pnp:SiteCollection d4p1:type="pnp:TeamSiteNoGroup" Title="{parameter:CompanyName} Meetings" Description="{parameter:CompanyName} Intranet Meetings" Theme="CustomOrange" ProvisioningId="SITE.03" IsHubSite="false" Url="https://{parameter:O365TenantName}.sharepoint.com/sites/Meetings" Owner="{parameter:TeamSiteNoGroupOwner}" TimeZoneId="4" Language="1040" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
+        <pnp:Templates>
+          <pnp:ProvisioningTemplateReference ID="MeetingsTemplate" />
+        </pnp:Templates>
+      </pnp:SiteCollection>
+    </pnp:SiteCollections>
+    <pnp:TermStore>
+      <pnp:TermGroup Name="{parameter:CompanyName} TermSets" ID="0e8f395e-ff58-4d45-9ff7-e331ab728beb">
+        <pnp:TermSets>
+          <pnp:TermSet Name="Projects" ID="5880b01b-5d6f-4606-a492-3b03a2fb4dd7">
+            <pnp:Terms>
+              <pnp:Term Name="IT Projects" ID="3d212fc2-f176-4621-aed1-128219666d95">
+                <pnp:Terms>
+                  <pnp:Term Name="Cloud" ID="87c55100-8316-4da0-97fd-feb5731880f6">
+                    <pnp:Terms />
+                    <pnp:Labels>
+                      <pnp:Label Language="1040" Value="Nuvola" />
+                    </pnp:Labels>
+                  </pnp:Term>
+                  <pnp:Term Name="New Farm" ID="c422bd0d-681d-448f-a41e-c71c473a95cc">
+                    <pnp:Terms />
+                    <pnp:Labels>
+                      <pnp:Label Language="1040" Value="Nuova Farm" />
+                    </pnp:Labels>
+                  </pnp:Term>
+                </pnp:Terms>
+                <pnp:CustomProperties>
+                  <pnp:Property Key="Property1" Value="Value1" />
+                  <pnp:Property Key="Property2" Value="Value2" />
+                </pnp:CustomProperties>
+                <pnp:LocalCustomProperties>
+                  <pnp:Property Key="LocalProperty1" Value="Value1" />
+                  <pnp:Property Key="LocalProperty2" Value="Value2" />
+                </pnp:LocalCustomProperties>
+              </pnp:Term>
+              <pnp:Term Name="HSE Projects" ID="1f1b9ee8-74ea-4d89-b502-feaa44340385">
+                <pnp:Terms>
+                  <pnp:Term Name="Security Assessment" ID="3279fe80-95db-4d35-b235-a9b2f0fb6f9e">
+                    <pnp:Terms />
+                    <pnp:Labels>
+                      <pnp:Label Language="1040" Value="Valutazione Sicurezza" />
+                    </pnp:Labels>
+                  </pnp:Term>
+                  <pnp:Term Name="Safety Program" ID="fbea36ea-a750-4a97-9667-5d51a6c895af">
+                    <pnp:Terms />
+                    <pnp:Labels>
+                      <pnp:Label Language="1040" Value="Programma Sicurezza" />
+                    </pnp:Labels>
+                  </pnp:Term>
+                </pnp:Terms>
+              </pnp:Term>
+            </pnp:Terms>
+          </pnp:TermSet>
+        </pnp:TermSets>
+      </pnp:TermGroup>
+    </pnp:TermStore>
+  </pnp:Sequence>
 </pnp:Provisioning>

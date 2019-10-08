@@ -148,12 +148,6 @@
     <pnp:Office365GroupLifecyclePolicies>
       <pnp:Office365GroupLifecyclePolicy ID="GROUP_LIFECYCLE_01" GroupLifetimeInDays="180" AlternateNotificationEmails="admin01@contoso.com,admin02@{parameter:O365TenantName}.onmicrosoft.com" ManagedGroupTypes="Selected " />
     </pnp:Office365GroupLifecyclePolicies>
-    <pnp:Office365GroupsSettings>
-      <pnp:Property Key="UsageGuidelinesUrl" Value="http://aka.ms/SharePointPnP" />
-      <pnp:Property Key="ClassificationList" Value="HBI,MBI,LBI,GDPR,TopSecret" />
-      <pnp:Property Key="EnableGroupCreation" Value="true" />
-      <pnp:Property Key="DefaultClassification" Value="MBI" />
-    </pnp:Office365GroupsSettings>
   </pnp:Tenant>
   <pnp:Templates ID="CONTAINER-SPECIALTEAM">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="1" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
