@@ -900,7 +900,7 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:enumeration>
-          <xsd:enumeration value="Selected ">
+          <xsd:enumeration value="Selected">
             <xsd:annotation>
               <xsd:appinfo>Updated with schema version 201909</xsd:appinfo>
               <xsd:documentation xml:lang="en">

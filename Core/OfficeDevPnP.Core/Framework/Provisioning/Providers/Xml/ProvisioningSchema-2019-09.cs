@@ -12332,7 +12332,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V201909 {
         All,
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlEnumAttribute("Selected ")]
         Selected,
         
         /// <remarks/>
