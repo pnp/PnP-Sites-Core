@@ -294,7 +294,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 queryConfig.ViewFields = new List<string>();
                             }
-                            if (!queryConfig.ViewFields.Contains("Attachments"))
+                            else if (!queryConfig.ViewFields.Contains("Attachments"))
                             {
                                 queryConfig.ViewFields.Add("Attachments");
                             }
