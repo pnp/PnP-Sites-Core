@@ -293,7 +293,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var rootFolder = list.SiteList.RootFolder;
                 foreach (var folder in list.TemplateList.Folders)
                 {
-                    CreateFolderInList(rootFolder, folder, parser, scope);
+                    CreateFolderInList(list,rootFolder, folder, parser, scope);
                 }
             }
         }
@@ -2006,7 +2006,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
 #endif
 
-        private void CreateFolderInList(Microsoft.SharePoint.Client.Folder parentFolder, Model.Folder folder, TokenParser parser, PnPMonitoredScope scope)
+        private void CreateFolderInList(ListInfo list,Microsoft.SharePoint.Client.Folder parentFolder, Model.Folder folder, TokenParser parser, PnPMonitoredScope scope)
         {
             // Determine the folder name, parsing any token
             String targetFolderName = parser.ParseString(folder.Name);
@@ -2030,8 +2030,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var childFolder in folder.Folders)
                     {
-                        CreateFolderInList(currentFolder, childFolder, parser, scope);
+                        CreateFolderInList(list,currentFolder, childFolder, parser, scope);
                     }
+                }
+
+                //Handle ContentType
+                if (!string.IsNullOrWhiteSpace(folder.ContentTypeID))
+                {
+                    list.SiteList.Context.Load(list.SiteList, p => p.ContentTypes.Include(c => c.StringId));
+                    list.SiteList.Context.ExecuteQueryRetry();
+                    var ct = list.SiteList.ContentTypes.OrderByDescending(p => p.StringId.Length).FirstOrDefault(c => c.StringId.StartsWith(folder.ContentTypeID));
+
+                    var currentFolderItem = currentFolder.ListItemAllFields;
+                    currentFolderItem["ContentTypeId"] = ct.StringId;
+
+                    if (folder.ContentTypeID.StartsWith(BuiltInContentTypeId.DocumentSet, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        currentFolderItem["HTML_x0020_File_x0020_Type"] = "Sharepoint.DocumentSet";
+                        currentFolder.Properties["docset_LastRefresh"] = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss");
+                        currentFolder.Properties["vti_contenttypeorder"] = string.Join(",", list.SiteList.ContentTypes.ToList().Where(c => c.StringId.StartsWith(BuiltInContentTypeId.Document + "00"))?.Select(c => c.StringId));
+                    }
+                    currentFolderItem.Update();
+                    currentFolder.Update();
+                    parentFolder.Context.ExecuteQueryRetry();
                 }
 
                 // Handle current folder security
