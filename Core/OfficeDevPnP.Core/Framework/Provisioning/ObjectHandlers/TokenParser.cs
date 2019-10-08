@@ -305,14 +305,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 foreach (DictionaryEntry entry in resxReader)
                                 {
+                                    // One can have multiple resource files in a single file, by adding tokens with resource file name and without we allow both scenarios to resolve
                                     resourceEntries.Add(new Tuple<string, uint, string>($"{localizationEntry.Name}:{entry.Key}", (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
-                                    // if there´s only one resource file name, we also add a token without the Name (backwards compatibility)
-                                    // this way, with only one resource file, you can use the token as:
-                                    // {localization:NavHome} and also as: {localization:core:NavHome}
-                                    if (resourcesFilesCount == 1)
-                                    {
-                                        resourceEntries.Add(new Tuple<string, uint, string>($"{entry.Key}", (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
-                                    }
+                                    resourceEntries.Add(new Tuple<string, uint, string>(entry.Key.ToString(), (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
                                 }
                             }
                         }
