@@ -461,8 +461,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (template != null)
             {
-
-
                 using (var scope = new PnPMonitoredScope("ProvisioningTemplate WebHook Call"))
                 {
                     var webhooks = new List<ProvisioningWebhookBase>();
