@@ -437,9 +437,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                 foreach (var theme in provisioningTenant.Themes)
                 {
-                    if (themes.FirstOrDefault(t => t.Name == theme.Name) != null)
-                    {
-                        var parsedName = parser.ParseString(theme.Name);
+                    var parsedName = parser.ParseString(theme.Name);
+                    if (themes.FirstOrDefault(t => t.Name == parsedName) != null)
+                    {                        
                         if (theme.Overwrite)
                         {
                             var parsedPalette = parser.ParseString(theme.Palette);
@@ -457,8 +457,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         }
                     }
                     else
-                    {
-                        var parsedName = parser.ParseString(theme.Name);
+                    {                        
                         var parsedPalette = parser.ParseString(theme.Palette);
 
                         messagesDelegate?.Invoke($"Processing theme {parsedName}", ProvisioningMessageType.Progress);
