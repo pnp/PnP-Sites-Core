@@ -49,6 +49,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         parser = TenantHelper.ProcessSiteDesigns(tenant, template.Tenant, parser, scope, MessagesDelegate);
                         parser = TenantHelper.ProcessStorageEntities(tenant, template.Tenant, parser, scope, applyingInformation, MessagesDelegate);
                         parser = TenantHelper.ProcessThemes(tenant, template.Tenant, parser, scope, MessagesDelegate);
+                        parser = TenantHelper.ProcessUserProfiles(tenant, template.Tenant, parser, scope, MessagesDelegate);
                     }
                 }
             }
