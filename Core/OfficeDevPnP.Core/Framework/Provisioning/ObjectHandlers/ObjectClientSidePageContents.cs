@@ -85,6 +85,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.Context.ExecuteQueryRetry();
                     if (pages.FirstOrDefault() != null)
                     {
+                        var currentPageIndex = 1;
                         foreach (var page in pages)
                         {
                             string pageUrl = null;
@@ -122,9 +123,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 if (FieldExistsAndUsed(page, ClientSideApplicationId) && page[ClientSideApplicationId].ToString().Equals(FeatureId_Web_ModernPage.ToString(), StringComparison.InvariantCultureIgnoreCase))
                                 {
                                     // extract the page using the OOB logic
+                                    WriteMessage($"ClientSidePage|{(!string.IsNullOrWhiteSpace(pageName) ? pageName : pageUrl)}|{currentPageIndex}|{pages.Count}", ProvisioningMessageType.Progress);
                                     clientSidePageContentsHelper.ExtractClientSidePage(web, template, creationInfo, scope, pageUrl, pageName, isHomePage, isTemplate);
                                 }
                             }
+                            currentPageIndex++;
                         }
                     }
                 }
