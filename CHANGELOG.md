@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - When you create a modern site and don't specify a wait time after site creation we'll now use the IsProvisioningComplete attribute to wait until all server side async provisioning processes are done
 - Fix: Make sure to load item when exporting datarows and no attachment exists [czullu]
 - Fix: provisioning a content type to a folder will now change the folder to a documentset if the contenttype is a documentset [czullu]
+- Fix: default document of a documentset will now be exported if PersistAssetFiles has been set to true in the extraction configuration [czullu]
 
 ## [3.14.1910.0 - October 2019 release]
 
