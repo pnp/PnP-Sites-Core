@@ -133,11 +133,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                     ListItemUtilities.UpdateListItem(listitem, parser, dataRow.Values, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion, IsNewItem);
 
-                                    if (dataRow.Security != null && (dataRow.Security.ClearSubscopes || dataRow.Security.CopyRoleAssignments || dataRow.Security.RoleAssignments.Count > 0))
-                                    {
-                                        listitem.SetSecurity(parser, dataRow.Security);
-                                    }
-
                                     if (dataRow.Attachments != null && dataRow.Attachments.Count > 0)
                                     {
                                         foreach (var attachment in dataRow.Attachments)
@@ -175,7 +170,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         }
                                     }
                                     if (IsNewItem)
+                                    {
+                                        listitem.Context.Load(listitem, i => i.Id);
                                         listitem.Context.ExecuteQueryRetry();
+                                    }
+                                    if (dataRow.Security != null && (dataRow.Security.ClearSubscopes || dataRow.Security.CopyRoleAssignments || dataRow.Security.RoleAssignments.Count > 0))
+                                    {
+                                        listitem.SetSecurity(parser, dataRow.Security);
+                                    }
                                 }
                             }
                             catch (ServerException ex)
