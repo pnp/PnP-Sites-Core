@@ -648,7 +648,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             ctDocumentTemplate = ct.DocumentTemplate;
                         }
                         //extract DocumentTemplate if it points to ContentType Ressource Folder
-                        if (creationInfo.ExtractConfiguration.PersistAssetFiles && !string.IsNullOrWhiteSpace(ct.DocumentTemplateUrl) && ct.DocumentTemplateUrl.Contains("_cts/"))
+                        if (creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.PersistAssetFiles && !string.IsNullOrWhiteSpace(ct.DocumentTemplateUrl) && ct.DocumentTemplateUrl.Contains("_cts/"))
                         {
                             try
                             {
