@@ -122,8 +122,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 // Is this a client side page?
                                 if (FieldExistsAndUsed(page, ClientSideApplicationId) && page[ClientSideApplicationId].ToString().Equals(FeatureId_Web_ModernPage.ToString(), StringComparison.InvariantCultureIgnoreCase))
                                 {
+                                    WriteSubProgress("ClientSidePage", !string.IsNullOrWhiteSpace(pageName) ? pageName : pageUrl, currentPageIndex, pages.Count);
                                     // extract the page using the OOB logic
-                                    WriteMessage($"ClientSidePage|{(!string.IsNullOrWhiteSpace(pageName) ? pageName : pageUrl)}|{currentPageIndex}|{pages.Count}", ProvisioningMessageType.Progress);
                                     clientSidePageContentsHelper.ExtractClientSidePage(web, template, creationInfo, scope, pageUrl, pageName, isHomePage, isTemplate);
                                 }
                             }

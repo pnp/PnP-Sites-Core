@@ -65,7 +65,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     foreach (var ct in template.ContentTypes.OrderBy(ct => ct.Id)) // ordering to handle references to parent content types that can be in the same template
                     {
                         currentCtIndex++;
-                        WriteMessage($"Content Type|{ct.Name}|{currentCtIndex}|{template.ContentTypes.Count}", ProvisioningMessageType.Progress);
+
+                        WriteSubProgress("Content Type", ct.Name, currentCtIndex, template.ContentTypes.Count);
                         var existingCT = existingCTs.FirstOrDefault(c => c.StringId.Equals(ct.Id, StringComparison.OrdinalIgnoreCase));
                         if (existingCT == null)
                         {
@@ -587,7 +588,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             foreach (var ct in cts)
             {
                 currentCtIndex++;
-                WriteMessage($"Content Type|{ct.Name}|{currentCtIndex}|{cts.Count()}", ProvisioningMessageType.Progress);
+                WriteSubProgress("Content Type", ct.Name, currentCtIndex, cts.Count);
 
                 if (!BuiltInContentTypeId.Contains(ct.StringId) &&
                     (creationInfo.ContentTypeGroupsToInclude.Count == 0 || creationInfo.ContentTypeGroupsToInclude.Contains(ct.Group)))

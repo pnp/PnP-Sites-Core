@@ -27,7 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         public ProvisioningMessagesDelegate MessagesDelegate { get; set; }
-
+        
         public abstract bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation);
 
         public abstract bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo);
@@ -41,6 +41,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (MessagesDelegate != null)
             {
                 MessagesDelegate(message, messageType);
+            }
+        }
+
+        internal void WriteSubProgress(string title, string message, int step, int total)
+        {
+            if(MessagesDelegate != null)
+            {
+                MessagesDelegate($"{title}|{message}|{step}|{total}", ProvisioningMessageType.Progress);
             }
         }
 

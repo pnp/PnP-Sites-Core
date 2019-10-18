@@ -438,7 +438,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
 
-            WriteMessage($"Library|{listInstance.Title} : {myFile.Name}|{itemCount}|{itemsCount}", ProvisioningMessageType.Progress);
+            WriteSubProgress("Library", $"{listInstance.Title} : {myFile.Name}", itemCount, itemsCount);
 
             // Avoid duplicate file entries
             Model.File newFile = null;
@@ -807,7 +807,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var itemCount = 1;
             foreach (var item in items)
             {
-                WriteMessage($"List|{listInstance.Title}|{itemCount}|{items.Count}", ProvisioningMessageType.Progress);
+                WriteSubProgress("List",listInstance.Title,itemCount,items.Count);
 
                 var dataRow = ProcessDataRow(web, siteList, item, listInstance, extractionConfig, queryConfig, baseUri, creationInfo, scope);
 
