@@ -640,7 +640,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     break;
                 case "ContentTypeIdFieldType":
                 default:
-                    value = Tokenize(fieldValue.Value.ToString(), web.Url, web);
+                    value = Tokenize(fieldValue.Value?.ToString(), web.Url, web);
                     break;
             }
 
