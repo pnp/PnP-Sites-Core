@@ -1379,6 +1379,7 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\extract-configuration.schema.json" />
+    <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\apply-configuration.schema.json" />
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
