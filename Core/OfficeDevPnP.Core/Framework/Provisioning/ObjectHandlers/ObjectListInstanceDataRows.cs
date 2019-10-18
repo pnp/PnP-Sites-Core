@@ -173,9 +173,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 AddAttachment(template, listitem, attachment, IsNewItem);
                                             }
                                         }
-                                        if (IsNewItem)
-                                            listitem.Context.ExecuteQueryRetry();
                                     }
+                                    if (IsNewItem)
+                                        listitem.Context.ExecuteQueryRetry();
                                 }
                             }
                             catch (ServerException ex)
