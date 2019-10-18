@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: default document of a documentset will now be exported if PersistAssetFiles has been set to true in the extraction configuration [czullu]
 - Fix: fixes issue when using configuration file for list extraction, includeAttachments=true, but no viewfields have been specified where only the attachments would have been extracted instead of all expected list field values. [czullu]
 - Fix: fixes issue where security is not set on new listitems when adding datarows from a provisioning template [czullu]
+- Fix: fixes issue where multichoice fields were not exported correctly to datarows when extracting a template.
 
 ## [3.14.1910.0 - October 2019 release]
 

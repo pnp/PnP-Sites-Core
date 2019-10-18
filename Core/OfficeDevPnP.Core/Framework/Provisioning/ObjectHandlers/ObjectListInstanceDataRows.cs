@@ -540,7 +540,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 value = TokenizeValue(web, field.TypeAsString, fieldValue, fieldValuesAsText[field.InternalName]);
 
-                                if (fieldValue.Key == "ContentTypeId")
+                                if (fieldValue.Key == "ContentTypeId" && fieldValue.Key == "Attachments")
                                 {
                                     value = null; //it's already in Properties - we can ignore here
                                 }
@@ -594,7 +594,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (userMultiFieldValue != null)
                     {
 #if !SP2013 && !SP2016
-                        value = string.Join(",", userMultiFieldValue.Select(u => u.Email).ToArray())?.TrimEnd(new char[] { ',' });
+                        value = string.Join(",", userMultiFieldValue.Select(u => u.Email).ToArray())?.TrimEnd(new char[] { ',' }).Trim(new char[] { ',' });
 #else
                         value = string.Join(",", userMultiFieldValue.Select(u => u.LookupValue).ToArray())?.TrimEnd(new char[] { ',' });
 #endif
@@ -638,6 +638,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (dateTimeFieldValue.HasValue)
                     {
                         value = dateTimeFieldValue.Value.ToString("yyyy-MM-ddTHH:mm:ssZ");
+                    }
+                    break;
+                case "MultiChoice":
+                    if (fieldValue.Value != null)
+                    {
+                        var multiChoiceArray = fieldValue.Value as string[];
+                        value = string.Join(";#", multiChoiceArray.Select(v => Tokenize(v, web.Url, web)).ToList());
                     }
                     break;
                 case "ContentTypeIdFieldType":
@@ -729,7 +736,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 value = TokenizeValue(web, field.TypeAsString, fieldValue, fieldValuesAsText[field.InternalName]);
                             }
 
-                            if (fieldValue.Key.Equals("ContentTypeId", StringComparison.CurrentCultureIgnoreCase))
+                            if (fieldValue.Key.Equals("ContentTypeId", StringComparison.InvariantCultureIgnoreCase) || fieldValue.Key.Equals("Attachments", StringComparison.InvariantCultureIgnoreCase))
                             {
                                 value = null; //ignore here since already in dataRow
                             }
@@ -809,7 +816,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var itemCount = 1;
             foreach (var item in items)
             {
-                WriteSubProgress("List",listInstance.Title,itemCount,items.Count);
+                WriteSubProgress("List", listInstance.Title, itemCount, items.Count);
 
                 var dataRow = ProcessDataRow(web, siteList, item, listInstance, extractionConfig, queryConfig, baseUri, creationInfo, scope);
 
@@ -826,6 +833,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (queryConfig != null && queryConfig.ViewFields != null && queryConfig.ViewFields.Count > 0)
             {
                 filteredFieldValues = item.FieldValues.Where(f => queryConfig.ViewFields.Contains(f.Key)).ToList();
+            }
+            if(queryConfig != null && queryConfig.IncludeAttachments)
+            {
+                filteredFieldValues = filteredFieldValues.Where(f => !f.Key.Equals("Attachments", StringComparison.InvariantCultureIgnoreCase)).ToList();
             }
             foreach (var fieldValue in filteredFieldValues)
             {
