@@ -33,6 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.DisableFlows,
                     w => w.DisableAppViews,
                     w => w.HorizontalQuickLaunch,
+                    w => w.QuickLaunchEnabled,
 #if !SP2019
                     w => w.SearchScope,
 #endif
@@ -58,6 +59,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 webSettings.DisableFlows = web.DisableFlows;
                 webSettings.DisableAppViews = web.DisableAppViews;
                 webSettings.HorizontalQuickLaunch = web.HorizontalQuickLaunch;
+                webSettings.QuickLaunchEnabled = web.QuickLaunchEnabled;
 #if !SP2019
                 webSettings.SearchScope = (SearchScopes)Enum.Parse(typeof(SearchScopes), web.SearchScope.ToString(), true);
 #endif
