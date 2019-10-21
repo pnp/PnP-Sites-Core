@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Collection of Resources for Tabs in a Team Channel
     /// </summary>
-    public class TeamTabResourceCollection : BaseProvisioningTemplateObjectCollection<TeamTabResource>
+    public partial class TeamTabResourceCollection : BaseProvisioningTemplateObjectCollection<TeamTabResource>
     {
         /// <summary>
         /// Constructor for TeamTabResourceCollection class

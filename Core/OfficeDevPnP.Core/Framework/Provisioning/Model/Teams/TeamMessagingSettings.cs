@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// The Messaging Settings for the Team
     /// </summary>
-    public class TeamMessagingSettings : BaseModel, IEquatable<TeamMessagingSettings>
+    public partial class TeamMessagingSettings : BaseModel, IEquatable<TeamMessagingSettings>
     {
         #region Public Members
 

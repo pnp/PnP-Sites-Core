@@ -36,6 +36,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
             var defaultColumnValueValueSelector = CreateSelectorLambda(defaultColumnValueType, "Value");
             resolvers.Add($"{typeof(Model.Folder).FullName}.DefaultColumnValues", new FromArrayToDictionaryValueResolver<string, string>(defaultColumnValueType, defaultColumnValueKeySelector, defaultColumnValueValueSelector));
 
+            // Folders' Properties
+            var folderPropertyTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+            var folderPropertyType = Type.GetType(folderPropertyTypeName, true);
+            var folderPropertyKeySelector = CreateSelectorLambda(folderPropertyType, "Key");
+            var folderPropertyValueSelector = CreateSelectorLambda(folderPropertyType, "Value");
+            resolvers.Add($"{typeof(Model.Folder).FullName}.Properties",
+                new FromArrayToDictionaryValueResolver<string, string>(
+                    folderPropertyType, folderPropertyKeySelector, folderPropertyValueSelector));
+
             if (null != folders)
             {
                 foreach (var f in ((IEnumerable)folders))

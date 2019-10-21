@@ -46,7 +46,7 @@ namespace OfficeDevPnP.Core.Utilities
 #region public methods
 
         /// <summary>
-        /// Retrieves the context token string from the specified request by looking for well-known parameter names in the 
+        /// Retrieves the context token string from the specified request by looking for well-known parameter names in the
         /// POSTed form parameters and the querystring. Returns null if no context token is found.
         /// </summary>
         /// <param name="request">HttpRequest in which to look for a context token</param>
@@ -57,7 +57,7 @@ namespace OfficeDevPnP.Core.Utilities
         }
 
         /// <summary>
-        /// Retrieves the context token string from the specified request by looking for well-known parameter names in the 
+        /// Retrieves the context token string from the specified request by looking for well-known parameter names in the
         /// POSTed form parameters and the querystring. Returns null if no context token is found.
         /// </summary>
         /// <param name="request">HttpRequest in which to look for a context token</param>
@@ -80,17 +80,17 @@ namespace OfficeDevPnP.Core.Utilities
         }
 
         /// <summary>
-        /// Validate that a specified context token string is intended for this application based on the parameters 
-        /// specified in web.config. Parameters used from web.config used for validation include ClientId, 
+        /// Validate that a specified context token string is intended for this application based on the parameters
+        /// specified in web.config. Parameters used from web.config used for validation include ClientId,
         /// HostedAppHostNameOverride, HostedAppHostName, ClientSecret, and Realm (if it is specified). If HostedAppHostNameOverride is present,
-        /// it will be used for validation. Otherwise, if the <paramref name="appHostName"/> is not 
-        /// null, it is used for validation instead of the web.config's HostedAppHostName. If the token is invalid, an 
+        /// it will be used for validation. Otherwise, if the <paramref name="appHostName"/> is not
+        /// null, it is used for validation instead of the web.config's HostedAppHostName. If the token is invalid, an
         /// exception is thrown. If the token is valid, TokenHelper's static STS metadata URL is updated based on the token contents
         /// and a JsonWebSecurityToken based on the context token is returned.
         /// </summary>
         /// <param name="contextTokenString">The context token to validate</param>
         /// <param name="appHostName">The URL authority, consisting of  Domain Name System (DNS) host name or IP address and the port number, to use for token audience validation.
-        /// If null, HostedAppHostName web.config setting is used instead. HostedAppHostNameOverride web.config setting, if present, will be used 
+        /// If null, HostedAppHostName web.config setting is used instead. HostedAppHostNameOverride web.config setting, if present, will be used
         /// for validation instead of <paramref name="appHostName"/> .</param>
         /// <returns>A JsonWebSecurityToken based on the context token.</returns>
         public static SharePointContextToken ReadAndValidateContextToken(string contextTokenString, string appHostName = null)
@@ -145,7 +145,7 @@ namespace OfficeDevPnP.Core.Utilities
         }
 
         /// <summary>
-        /// Retrieves an access token from ACS to call the source of the specified context token at the specified 
+        /// Retrieves an access token from ACS to call the source of the specified context token at the specified
         /// targetHost. The targetHost must be registered for the principal that sent the context token.
         /// </summary>
         /// <param name="contextToken">Context token issued by the intended access token audience</param>
@@ -172,8 +172,8 @@ namespace OfficeDevPnP.Core.Utilities
         }
 
         /// <summary>
-        /// Uses the specified authorization code to retrieve an access token from ACS to call the specified principal 
-        /// at the specified targetHost. The targetHost must be registered for target principal.  If specified realm is 
+        /// Uses the specified authorization code to retrieve an access token from ACS to call the specified principal
+        /// at the specified targetHost. The targetHost must be registered for target principal.  If specified realm is
         /// null, the "Realm" setting in web.config will be used instead.
         /// </summary>
         /// <param name="authorizationCode">Authorization code to exchange for access token</param>
@@ -227,8 +227,8 @@ namespace OfficeDevPnP.Core.Utilities
         }
 
         /// <summary>
-        /// Uses the specified refresh token to retrieve an access token from ACS to call the specified principal 
-        /// at the specified targetHost. The targetHost must be registered for target principal.  If specified realm is 
+        /// Uses the specified refresh token to retrieve an access token from ACS to call the specified principal
+        /// at the specified targetHost. The targetHost must be registered for target principal.  If specified realm is
         /// null, the "Realm" setting in web.config will be used instead.
         /// </summary>
         /// <param name="refreshToken">Refresh token to exchange for access token</param>
@@ -273,8 +273,8 @@ namespace OfficeDevPnP.Core.Utilities
         }
 
         /// <summary>
-        /// Retrieves an app-only access token from ACS to call the specified principal 
-        /// at the specified targetHost. The targetHost must be registered for target principal.  If specified realm is 
+        /// Retrieves an app-only access token from ACS to call the specified principal
+        /// at the specified targetHost. The targetHost must be registered for target principal.  If specified realm is
         /// null, the "Realm" setting in web.config will be used instead.
         /// </summary>
         /// <param name="targetPrincipalName">Name of the target principal to retrieve an access token for</param>
@@ -375,7 +375,7 @@ namespace OfficeDevPnP.Core.Utilities
         }
 
         /// <summary>
-        /// Retrieves an access token from ACS using the specified authorization code, and uses that access token to 
+        /// Retrieves an access token from ACS using the specified authorization code, and uses that access token to
         /// create a client context
         /// </summary>
         /// <param name="targetUrl">Url of the target SharePoint site</param>
@@ -391,7 +391,7 @@ namespace OfficeDevPnP.Core.Utilities
         }
 
         /// <summary>
-        /// Retrieves an access token from ACS using the specified authorization code, and uses that access token to 
+        /// Retrieves an access token from ACS using the specified authorization code, and uses that access token to
         /// create a client context
         /// </summary>
         /// <param name="targetUrl">Url of the target SharePoint site</param>
@@ -465,7 +465,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// an authorization code.
         /// </summary>
         /// <param name="contextUrl">Absolute Url of the SharePoint site</param>
-        /// <param name="scope">Space-delimited permissions to request from the SharePoint site in "shorthand" format 
+        /// <param name="scope">Space-delimited permissions to request from the SharePoint site in "shorthand" format
         /// (e.g. "Web.Read Site.Write")</param>
         /// <returns>Url of the SharePoint site's OAuth authorization page</returns>
         public static string GetAuthorizationUrl(string contextUrl, string scope)
@@ -485,7 +485,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="contextUrl">Absolute Url of the SharePoint site</param>
         /// <param name="scope">Space-delimited permissions to request from the SharePoint site in "shorthand" format
         /// (e.g. "Web.Read Site.Write")</param>
-        /// <param name="redirectUri">Uri to which SharePoint should redirect the browser to after consent is 
+        /// <param name="redirectUri">Uri to which SharePoint should redirect the browser to after consent is
         /// granted</param>
         /// <returns>Url of the SharePoint site's OAuth authorization page</returns>
         public static string GetAuthorizationUrl(string contextUrl, string scope, string redirectUri)
@@ -516,57 +516,113 @@ namespace OfficeDevPnP.Core.Utilities
         }
 
         /// <summary>
-        /// Retrieves an S2S access token signed by the application's private certificate on behalf of the specified 
-        /// WindowsIdentity and intended for the SharePoint at the targetApplicationUri. If no Realm is specified in 
+        /// Retrieves an S2S access token signed by the application's private certificate on behalf of the specified
+        /// WindowsIdentity and intended for the SharePoint at the targetApplicationUri. If no Realm is specified in
         /// web.config, an auth challenge will be issued to the targetApplicationUri to discover it.
         /// </summary>
         /// <param name="targetApplicationUri">Url of the target SharePoint site</param>
         /// <param name="identity">Windows identity of the user on whose behalf to create the access token</param>
         /// <returns>An access token with an audience of the target principal</returns>
-        public static string GetS2SAccessTokenWithWindowsIdentity(
-            Uri targetApplicationUri,
-            WindowsIdentity identity)
+        public static string GetS2SAccessTokenWithWindowsIdentity(Uri targetApplicationUri, WindowsIdentity identity)
         {
-            string realm = string.IsNullOrEmpty(Realm) ? GetRealmFromTargetUrl(targetApplicationUri) : Realm;
+            string realm = string.IsNullOrWhiteSpace(Realm)
+                ? GetRealmFromTargetUrl(targetApplicationUri)
+                : Realm;
 
-            JsonWebTokenClaim[] claims = identity != null ? GetClaimsWithWindowsIdentity(identity) : null;
+            JsonWebTokenClaim[] claims = identity != null
+                ? GetClaimsWithWindowsIdentity(identity)
+                : null;
 
             return GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
         }
 
         /// <summary>
-        /// Retrieves an S2S client context with an access token signed by the application's private certificate on 
-        /// behalf of the specified WindowsIdentity and intended for application at the targetApplicationUri using the 
-        /// targetRealm. If no Realm is specified in web.config, an auth challenge will be issued to the 
+        /// Retrieves an S2S access token signed by the application's private certificate on behalf of the specified
+        /// user name and intended for the SharePoint at the targetApplicationUri. If no Realm is specified in
+        /// web.config, an auth challenge will be issued to the targetApplicationUri to discover it.
+        /// </summary>
+        /// <param name="targetApplicationUri">Url of the target SharePoint site</param>
+        /// <param name="identity">Name of the user (login name) on whose behalf to create the access token. Supported name formats are SID and User Principal Name (UPN)</param>
+        /// <returns>An access token with an audience of the target principal</returns>
+        public static string GetS2SAccessTokenWithUserName(Uri targetApplicationUri, string identity)
+        {
+            string realm = string.IsNullOrWhiteSpace(Realm)
+                ? GetRealmFromTargetUrl(targetApplicationUri)
+                : Realm;
+
+            JsonWebTokenClaim[] claims = string.IsNullOrWhiteSpace(identity)
+                ? null
+                : GetClaimsWithUserName(identity);
+
+            return GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
+        }
+
+        /// <summary>
+        /// Retrieves an S2S access token signed by the application's private certificate on behalf of the specified
+        /// user name and intended for the SharePoint at the targetApplicationUri. If no Realm is specified in
+        /// web.config, an auth challenge will be issued to the targetApplicationUri to discover it.
+        /// </summary>
+        /// <param name="targetApplicationUri">Url of the target SharePoint site</param>
+        /// <param name="identity">Claims identity of the user on whose behalf to create the access token</param>
+        /// <returns>An access token with an audience of the target principal</returns>
+        public static string GetS2SAccessTokenWithClaimsIdentity(Uri targetApplicationUri, System.Security.Claims.ClaimsIdentity identity)
+        {
+            string realm = string.IsNullOrWhiteSpace(Realm)
+                ? GetRealmFromTargetUrl(targetApplicationUri)
+                : Realm;
+
+            JsonWebTokenClaim[] claims = identity != null
+                ? GetClaimsWithClaimsIdentity(identity, IdentityClaimType, TrustedIdentityTokenIssuerName)
+                : null;
+
+            string accessToken = GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
+
+            return GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
+        }
+
+        /// <summary>
+        /// Retrieves an S2S client context with an access token signed by the application's private certificate on
+        /// behalf of the specified WindowsIdentity and intended for application at the targetApplicationUri using the
+        /// targetRealm. If no Realm is specified in web.config, an auth challenge will be issued to the
         /// targetApplicationUri to discover it.
         /// </summary>
         /// <param name="targetApplicationUri">Url of the target SharePoint site</param>
         /// <param name="identity">Windows identity of the user on whose behalf to create the access token</param>
         /// <returns>A ClientContext using an access token with an audience of the target application</returns>
-        public static ClientContext GetS2SClientContextWithWindowsIdentity(
-            Uri targetApplicationUri,
-            WindowsIdentity identity)
+        public static ClientContext GetS2SClientContextWithWindowsIdentity(Uri targetApplicationUri, WindowsIdentity identity)
         {
-            string realm = string.IsNullOrEmpty(Realm) ? GetRealmFromTargetUrl(targetApplicationUri) : Realm;
-
-            JsonWebTokenClaim[] claims = identity != null ? GetClaimsWithWindowsIdentity(identity) : null;
-
-            string accessToken = GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
+            string accessToken = GetS2SAccessTokenWithWindowsIdentity(targetApplicationUri, identity);
 
             return GetClientContextWithAccessToken(targetApplicationUri.ToString(), accessToken);
 		}
 
+        /// <summary>
+        /// Retrieves an S2S client context with an access token signed by the application's private certificate on
+        /// behalf of the specified WindowsIdentity and intended for application at the targetApplicationUri using the
+        /// targetRealm. If no Realm is specified in web.config, an auth challenge will be issued to the
+        /// targetApplicationUri to discover it.
+        /// </summary>
+        /// <param name="targetApplicationUri">Url of the target SharePoint site</param>
+        /// <param name="identity">Name of the user (login name) on whose behalf to create the access token. Supported name formats are SID and User Principal Name (UPN)</param>
+        /// <returns>A ClientContext using an access token with an audience of the target application</returns>
+        public static ClientContext GetS2SClientContextWithUserName(Uri targetApplicationUri, string identity)
+        {
+            string accessToken = GetS2SAccessTokenWithUserName(targetApplicationUri, identity);
+
+            return GetClientContextWithAccessToken(targetApplicationUri.ToString(), accessToken);
+        }
+
 		/// <summary>
-		/// Retrieves an S2S client context with an access token signed by the application's private certificate on 
-		/// behalf of the specified ClaimsIdentity and intended for application at the targetApplicationUri using the 
-		/// targetRealm. If no Realm is specified in web.config, an auth challenge will be issued to the 
-		/// targetApplicationUri to discover it. Identity claim type and identity provider name (as registered in SharePoint) 
+		/// Retrieves an S2S client context with an access token signed by the application's private certificate on
+		/// behalf of the specified ClaimsIdentity and intended for application at the targetApplicationUri using the
+		/// targetRealm. If no Realm is specified in web.config, an auth challenge will be issued to the
+		/// targetApplicationUri to discover it. Identity claim type and identity provider name (as registered in SharePoint)
 		/// should be specified in configuration file e.g.:
 		///   <appSettings>
 		///	    <add key = "IdentityClaimType" value="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress" />
 		///	    <add key = "TrustedIdentityTokenIssuerName" value="sso" />
 		///	  </appSettings>
-		///	 To discover trusted identity token issuer name use following cmdlet: 
+		///	 To discover trusted identity token issuer name use following cmdlet:
 		///	 Get-SPTrustedIdentityTokenIssuer | select name
 		/// </summary>
 		/// <param name="targetApplicationUri">Url of the target SharePoint site</param>
@@ -574,11 +630,7 @@ namespace OfficeDevPnP.Core.Utilities
 		/// <returns>A ClientContext using an access token with an audience of the target application</returns>
 		public static ClientContext GetS2SClientContextWithClaimsIdentity(Uri targetApplicationUri, System.Security.Claims.ClaimsIdentity identity)
 		{
-			string realm = string.IsNullOrEmpty(Realm) ? GetRealmFromTargetUrl(targetApplicationUri) : Realm;
-
-			JsonWebTokenClaim[] claims = identity != null ? GetClaimsWithClaimsIdentity(identity, IdentityClaimType, TrustedIdentityTokenIssuerName) : null;
-
-			string accessToken = GetS2SAccessTokenWithClaims(targetApplicationUri.Authority, realm, claims);
+            string accessToken = GetS2SAccessTokenWithClaimsIdentity(targetApplicationUri, identity);
 
 			return GetClientContextWithAccessToken(targetApplicationUri.ToString(), accessToken);
 		}
@@ -666,7 +718,7 @@ namespace OfficeDevPnP.Core.Utilities
 
         //
         // Configuration Constants
-        //        
+        //
 
         private const string AuthorizationPage = "_layouts/15/OAuthAuthorize.aspx";
         private const string RedirectPage = "_layouts/15/AppRedirect.aspx";
@@ -1045,15 +1097,37 @@ namespace OfficeDevPnP.Core.Utilities
 
         private static JsonWebTokenClaim[] GetClaimsWithWindowsIdentity(WindowsIdentity identity)
         {
+#if DEBUG
+            if (null == identity)
+            {
+                throw new ArgumentNullException("identity");
+            }
+#endif
+            return GetClaimsWithUserName(identity.User.Value);
+        }
+
+        private static JsonWebTokenClaim[] GetClaimsWithUserName(string identity)
+        {
+#if DEBUG
+            if (string.IsNullOrWhiteSpace(identity))
+            {
+                throw new ArgumentOutOfRangeException("identity");
+            }
+#endif
+            string claimType = NameIdentifierClaimType;
+            if (identity.Contains('@'))
+            {
+                claimType = "upn";
+            }
             JsonWebTokenClaim[] claims = new JsonWebTokenClaim[]
             {
-                new JsonWebTokenClaim(NameIdentifierClaimType, identity.User.Value.ToLower()),
+                new JsonWebTokenClaim(claimType, identity.ToLower()),
                 new JsonWebTokenClaim("nii", "urn:office:idp:activedirectory")
             };
             return claims;
         }
 
-		private static JsonWebTokenClaim[] GetClaimsWithClaimsIdentity(System.Security.Claims.ClaimsIdentity identity, string identityClaimType, string trustedProviderName)
+        private static JsonWebTokenClaim[] GetClaimsWithClaimsIdentity(System.Security.Claims.ClaimsIdentity identity, string identityClaimType, string trustedProviderName)
 		{
 			var identityClaim = identity.Claims.Where(c => string.Equals(c.Type, identityClaimType, StringComparison.InvariantCultureIgnoreCase)).First();
 			JsonWebTokenClaim[] claims = new JsonWebTokenClaim[]
@@ -1585,7 +1659,7 @@ namespace OfficeDevPnP.Core.Utilities
 
         //
         // Configuration Constants
-        //        
+        //
 
         private const string AuthorizationPage = "_layouts/15/OAuthAuthorize.aspx";
         private const string RedirectPage = "_layouts/15/AppRedirect.aspx";
@@ -1989,8 +2063,8 @@ namespace OfficeDevPnP.Core.Utilities
         }
 
         /// <summary>
-        /// Retrieves an app-only access token from ACS to call the specified principal 
-        /// at the specified targetHost. The targetHost must be registered for target principal.  If specified realm is 
+        /// Retrieves an app-only access token from ACS to call the specified principal
+        /// at the specified targetHost. The targetHost must be registered for target principal.  If specified realm is
         /// null, the "Realm" setting in web.config will be used instead.
         /// </summary>
         /// <param name="targetPrincipalName">Name of the target principal to retrieve an access token for</param>

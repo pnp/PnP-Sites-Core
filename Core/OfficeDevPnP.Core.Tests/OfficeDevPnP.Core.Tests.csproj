@@ -523,6 +523,7 @@
     <Compile Include="Framework\Providers\Extensibility\SecureXml.cs" />
     <Compile Include="Framework\Providers\Extensibility\XMLEncryptionTemplateProviderExtension.cs" />
     <Compile Include="Framework\Providers\XMLProvidersTests.cs" />
+    <Compile Include="Framework\Providers\XMLSerializer201909Tests.cs" />
     <Compile Include="Framework\Providers\XMLSerializer201903Tests.cs" />
     <Compile Include="Framework\ProvisioningTemplates\DomainModelTests.cs" />
     <Compile Include="Framework\ProvisioningTemplates\ClientSidePageProvisioningTests.cs" />
@@ -774,6 +775,8 @@
     <Content Include="Resources\Templates\ProvisioningSchema-2018-07-FullSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2019-03-FullSample-01-OUT.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2019-03-FullSample-01.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2019-09-FullSample-01-OUT.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2019-09-FullSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-03-Sample-01.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

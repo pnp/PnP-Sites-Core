@@ -813,7 +813,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private static string CreateTeamChannelMessage(PnPMonitoredScope scope, TokenParser parser, TeamChannelMessage message, string teamId, string channelId, string accessToken)
         {
             var messageString = parser.ParseString(message.Message);
-            var messageJson = JToken.Parse($"{{ \"body\": {{ \"content\": \"{messageString}\" }} }}");
+            var messageJson = default(JToken);
+
+            try
+            {
+                // If the message is already in JSON format, we just use it
+                messageJson = JToken.Parse(messageString);
+            }
+            catch
+            {
+                // Otherwise try to build the JSON message content from scratch
+                messageJson = JToken.Parse($"{{ \"body\": {{ \"content\": \"{messageString}\" }} }}");
+            }
 
             var messageId = GraphHelper.CreateOrUpdateGraphObject(scope,
                 HttpMethodVerb.POST,

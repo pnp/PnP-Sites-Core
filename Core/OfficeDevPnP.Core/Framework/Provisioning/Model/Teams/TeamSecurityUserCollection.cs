@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
 {
-    public class TeamSecurityUserCollection : BaseProvisioningTemplateObjectCollection<TeamSecurityUser>
+    public partial class TeamSecurityUserCollection : BaseProvisioningTemplateObjectCollection<TeamSecurityUser>
     {
         /// <summary>
         /// Constructor for TeamSecurityUserCollection class

@@ -10,6 +10,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using System.Linq;
 using OfficeDevPnP.Core.Utilities;
 using Microsoft.SharePoint.Client;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
 {

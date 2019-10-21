@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Defines a complex type declaring settings for provisioning Microsoft Teams objects
     /// </summary>
-    public class ProvisioningTeams: BaseModel, IEquatable<ProvisioningTeams>
+    public partial class ProvisioningTeams : BaseModel, IEquatable<ProvisioningTeams>
     {
         #region Public Members
 

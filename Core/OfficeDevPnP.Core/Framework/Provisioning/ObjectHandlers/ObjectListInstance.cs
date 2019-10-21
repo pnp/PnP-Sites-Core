@@ -460,11 +460,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var field = rootWeb.GetFieldById(fieldRef.Id);
                     if (field == null)
                     {
-                        // log missing referenced field
-                        this.WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference, listInfo.TemplateList.Title, fieldRef.Name, fieldRef.Id), ProvisioningMessageType.Error);
+                        // if the Field already exists on the List we can still update it and do not have to skip it
+                        if (listInfo.SiteList.FieldExistsById(fieldRef.Id))
+                        {
+                            field = listInfo.SiteList.GetFieldById(fieldRef.Id);
+                        }
+                        else
+                        {
+                            // log missing referenced field
+                            this.WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_ListInstances_InvalidFieldReference, listInfo.TemplateList.Title, fieldRef.Name, fieldRef.Id), ProvisioningMessageType.Error);
 
-                        // move onto next field reference
-                        continue;
+                            // move onto next field reference
+                            continue;
+                        }
                     }
 
                     if (!listInfo.SiteList.FieldExistsById(fieldRef.Id))
@@ -481,6 +489,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     parser.AddToken(new FieldTitleToken(web, field.InternalName, field.Title));
                     parser.AddToken(new FieldIdToken(web, field.InternalName, field.Id));
 
+                    // check if it's FieldRef to Field on Template List Level
+                    if (listInfo.TemplateList.Fields.Any(f => f.GetFieldId(parser) == fieldRef.Id))
+                    {
+                        listInfo.SiteList.EnsureProperties(l => l.ContentTypesEnabled, l => l.ContentTypes.Include(c => c.Id, c => c.FieldLinks, c => c.Sealed));
+                        // check if the Field is linked to no ContentType on the List
+                        if (!listInfo.SiteList.ContentTypes.Any(c => c.FieldLinks.Any(f => f.Id == fieldRef.Id)))
+                        {
+                            // add Field to any ContentType on the List which is not sealed
+                            foreach (var ct in listInfo.SiteList.ContentTypes.Where(c => !c.Sealed))
+                            {
+                                ct.FieldLinks.Add(new FieldLinkCreationInformation { Field = field });
+                                ct.Update(false);
+                                listInfo.SiteList.Context.ExecuteQuery();
+                            }
+                        }
+                    }
 #if !SP2013
                     siteFields.TryGetValue(field.Id, out var siteField);
 
@@ -1192,7 +1216,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 l => l.BaseTemplate,
                 l => l.MajorWithMinorVersionsLimit,
                 l => l.MajorVersionLimit
-#if !ONPREMISES
+#if !SP2013 && !SP2016
 , l => l.ListExperienceOptions
 , l => l.ReadSecurity
 , l => l.WriteSecurity
@@ -1256,7 +1280,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 isDirty |= existingList.Set(x => x.ImageUrl, parser.ParseString(templateList.ImageUrl), false);
                 isDirty |= existingList.Set(x => x.IsApplicationList, templateList.IsApplicationList);
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 if (existingList.ReadSecurity != (templateList.ReadSecurity == 0 ? 1 : templateList.ReadSecurity))
                 {
                     // 0 or 1 [Default] = Read all items
@@ -1306,7 +1330,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     existingList.ContentTypesEnabled = templateList.ContentTypesEnabled;
                     isDirty = true;
                 }
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 isDirty |= existingList.Set(x => x.ListExperienceOptions, (Microsoft.SharePoint.Client.ListExperience)Enum.Parse(typeof(Microsoft.SharePoint.Client.ListExperience), templateList.ListExperience.ToString()));
 
 #endif
@@ -1608,7 +1632,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             newUserCustomAction.Title = userCustomAction.Title;
             newUserCustomAction.Description = userCustomAction.Description;
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             if (!string.IsNullOrEmpty(userCustomAction.Title) && userCustomAction.Title.ContainsResourceToken())
             {
                 newUserCustomAction.TitleResource.SetUserResourceValue(userCustomAction.Title, parser);
@@ -1690,7 +1714,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // the OnQuickLaunch property is re-set on the Created List object
                         QuickLaunchOption = templateList.OnQuickLaunch ? QuickLaunchOptions.On : QuickLaunchOptions.Off
                     };
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 if (templateList.TemplateFeatureID != Guid.Empty)
                 {
                     Site site = ((ClientContext)web.Context).Site;
@@ -1764,7 +1788,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             createdList.IrmExpire = templateList.IrmExpire;
             createdList.IrmReject = templateList.IrmReject;
             createdList.IsApplicationList = templateList.IsApplicationList;
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             if (templateList.ReadSecurity != default(int))
             {
                 createdList.ReadSecurity = templateList.ReadSecurity;
@@ -1808,7 +1832,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     createdList.InformationRightsManagementSettings.PolicyTitle = parser.ParseString(templateList.IRMSettings.PolicyTitle);
                 }
             }
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             createdList.ListExperienceOptions = (Microsoft.SharePoint.Client.ListExperience)Enum.Parse(typeof(Microsoft.SharePoint.Client.ListExperience), templateList.ListExperience.ToString());
 #endif
 
@@ -2082,7 +2106,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         l => l.ValidationMessage,
                         l => l.DocumentTemplateUrl,
                         l => l.NoCrawl,
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                         l => l.ListExperienceOptions,
                         l => l.ReadSecurity,
                         l => l.WriteSecurity,
@@ -2151,6 +2175,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         // is not in that collection, just skip it
                         continue;
                     }
+                    if (creationInfo.ExtractConfiguration!= null && creationInfo.ExtractConfiguration.Lists != null
+                        && creationInfo.ExtractConfiguration.Lists.HasLists
+                        &&
+                        (!creationInfo.ExtractConfiguration.Lists.Lists.Any(i =>
+                        {
+                            Guid listId;
+                            if (Guid.TryParse(i.Title, out listId))
+                            {
+                                return (listId == siteList.Id);
+                            }
+                            else
+                            {
+                                return (false);
+                            }
+                        }) && creationInfo.ExtractConfiguration.Lists.Lists.FirstOrDefault(i => i.Title.Equals(siteList.Title)) == null))
+                    {
+                        continue;
+                    }
 
                     listCount++;
                     WriteMessage($"List|{siteList.Title}|{listCount}|{listsToProcess.Length}", ProvisioningMessageType.Progress);
@@ -2193,7 +2235,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         ValidationMessage = siteList.ValidationMessage,
                         EnableModeration = siteList.EnableModeration,
                         NoCrawl = siteList.NoCrawl,
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                         ListExperience = (Model.ListExperience)Enum.Parse(typeof(Model.ListExperience), siteList.ListExperienceOptions.ToString()),
                         ReadSecurity = siteList.ReadSecurity,
                         WriteSecurity = siteList.WriteSecurity,
@@ -2210,6 +2252,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         DraftVersionVisibility = siteList.IsPropertyAvailable("DraftVersionVisibility") ? (int)siteList.DraftVersionVisibility : 0,
                     };
 
+                    if(creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.Lists != null && creationInfo.ExtractConfiguration.Lists.HasLists)
+                    {
+                        var listConfig = creationInfo.ExtractConfiguration.Lists.Lists.FirstOrDefault(l => l.Title == siteList.Title);
+                        if(listConfig != null)
+                        {
+                            if(listConfig.RemoveExistingContentTypes)
+                            {
+                                list.RemoveExistingContentTypes = listConfig.RemoveExistingContentTypes;
+                            }
+                        }
+                    }
                     if (siteList.BaseTemplate != (int)ListTemplateType.PictureLibrary)
                     {
                         siteList.EnsureProperties(l => l.InformationRightsManagementSettings);
@@ -2665,7 +2718,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     Location = userCustomAction.Location,
                 };
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 customAction.ClientSideComponentId = userCustomAction.ClientSideComponentId;
                 customAction.ClientSideComponentProperties = userCustomAction.ClientSideComponentProperties;
                 if (creationInfo.PersistMultiLanguageResources)

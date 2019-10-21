@@ -37,7 +37,12 @@ namespace OfficeDevPnP.Core.Utilities.JsonConverters
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            writer.WriteValue(value.ToString());
+            if (value!=null)
+            {
+                int zoneEmphasis = 0;
+                int.TryParse(value.ToString(), out zoneEmphasis);
+                writer.WriteValue(zoneEmphasis);
+            }
         }
     }
 }

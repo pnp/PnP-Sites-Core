@@ -1,0 +1,224 @@
+{
+  "title": "Provisioning Engine Template Extraction Configuration",
+  "description": "Defines the configuration to use when extracting a template from a site",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "description": "The version number.",
+      "type": "string",
+      "enum": [
+        "1.0"
+      ]
+    },
+    "persistAssetFiles": {
+      "description": "set to true to persist asset files like logos, thumbnail images, images contained in modern pages, etc.",
+      "type": "boolean"
+    },
+    "pages": {
+      "description": "define client side page settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "includeAllClientSidePages": {
+          "description": "set to true to include all client side pages in the template",
+          "type": "boolean"
+        },
+        "excludeAuthorInformation": {
+          "description": "set to true to remove author information from webparts and modern clientside pages",
+          "type": "boolean"
+        }
+      }
+    },
+    "siteSecurity": {
+      "description": "define site security extraction settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "includeSiteGroups": {
+          "description": "set to true to include the site groups when extracting site security",
+          "type": "boolean"
+        }
+      }
+    },
+    "contentTypes": {
+      "description": "define content type extraction settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "groups": {
+          "description": "set to only extract contents in these groups",
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "excludeFromSyndication": {
+          "description": "Specify whether or not content types issued from a content hub should be exported. By default all content types are included.",
+          "type": "boolean"
+        }
+      }
+    },
+    "lists": {
+      "description": "define list settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "includeHiddenLists": {
+          "description": "set to true to include all hidden lists when extracting a template",
+          "type": "boolean"
+        },
+        "lists": {
+          "description": "set to define which lists to export",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [ "title" ],
+            "properties": {
+              "title": {
+                "description": "the title of the list to export",
+                "type": "string"
+              },
+              "includeItems": {
+                "description": "if set to true list items will be included as datarows in the template",
+                "type": "boolean"
+              },
+              "skipEmptyFields": {
+                "description": "if set to true fields with no value will be not be included in the template",
+                "type": "boolean"
+              },
+              "removeExistingContentTypes": {
+                "description": "if set the 'RemoveExistingContentTypes' attribute on the list instance in the template will be set to true",
+                "type": "boolean"
+              },
+              "query": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "includeAttachments": {
+                    "description": "define if attachments should be included when exporting rowdata. This property will be ignored with Document libraries. Files will automatically be exported when you specify the persistAssetFiles.",
+                    "type": "boolean"
+                  },
+                  "camlQuery": {
+                    "description": "a CAML query used to limit the list items to export, e.g. <Where><Eq><FieldRef Name='FilterField' /><Value Type='Text'>ValueToFilterOn</Value></Eq></Where>",
+                    "type": "string"
+                  },
+                  "rowlimit": {
+                    "description": "the max numbers of rows to return",
+                    "type": "integer"
+                  },
+                  "viewFields": {
+                    "description": "the fields to return in the query",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "pageSize": {
+                    "description": "retrieve the items in a paged manner. Setting this value will override the rowlimit property.",
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "taxonomy": {
+      "description": "define taxonomy / management metadata termstore extraction settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "includeSecurity": {
+          "description": "set to true to include security",
+          "type": "boolean"
+        },
+        "includeSiteCollectionTermGroup": {
+          "description": "set to true to include security",
+          "type": "boolean"
+        }
+      }
+    },
+    "navigation": {
+      "description": "define navigation extraction settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "removeExistingNodes": {
+          "description": "set to true to mark the navigation to remove the existing nodes when applying the template",
+          "type": "boolean"
+        }
+      }
+    },
+    "siteFooter": {
+      "description": "define site footer extraction settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "removeExistingNodes": {
+          "description": "set to true to mark the footer navigation to remove the existing nodes when applying the template",
+          "type": "boolean"
+        }
+      }
+    },
+    "searchSettings": {
+      "descrtipion": "define search settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "include": {
+          "description": "set to true to include the search configuration in the template",
+          "type": "boolean"
+        }
+      }
+    },
+    "handlers": {
+      "description": "set to define which handels to run. If not specified all handlers will be run",
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": [
+          "AuditSettings",
+          "ComposedLook",
+          "CustomActions",
+          "ExtensibilityProviders",
+          "Features",
+          "Fields",
+          "Files",
+          "Lists",
+          "Pages",
+          "Publishing",
+          "RegionalSettings",
+          "SearchSettings",
+          "SitePolicy",
+          "SupportedUILanguages",
+          "Taxonomy",
+          "Workflows",
+          "SiteSecurity",
+          "ContentTypes",
+          "PropertyBagEntries",
+          "WebSettings",
+          "Navigation",
+          "ImageRenditions",
+          "ApplicationLifecycleManagement",
+          "Tenant",
+          "WebApiPermissions",
+          "SiteHeader",
+          "SiteFooter",
+          "Theme",
+          "SiteSettings"
+        ]
+      }
+    }
+  }
+}

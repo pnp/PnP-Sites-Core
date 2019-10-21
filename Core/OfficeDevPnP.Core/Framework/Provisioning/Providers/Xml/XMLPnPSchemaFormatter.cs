@@ -29,7 +29,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         {
             get
             {
-                return (new XMLPnPSchemaV201903Serializer());
+                return (new XMLPnPSchemaV201909Serializer());
             }
         }
 
@@ -53,16 +53,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     return (new XMLPnPSchemaV201512Formatter());
                 case XMLPnPSchemaVersion.V201605:
                     return (new XMLPnPSchemaV201605Formatter());
-#pragma warning restore CS0618 // Type or member is obsolete
                 case XMLPnPSchemaVersion.V201705:
                     return (new XMLPnPSchemaV201705Serializer());
                 case XMLPnPSchemaVersion.V201801:
                     return (new XMLPnPSchemaV201801Serializer());
+#pragma warning restore CS0618 // Type or member is obsolete
                 case XMLPnPSchemaVersion.V201805:
                     return (new XMLPnPSchemaV201805Serializer());
                 case XMLPnPSchemaVersion.V201807:
-                default:
                     return (new XMLPnPSchemaV201807Serializer());
+                case XMLPnPSchemaVersion.V201903:
+                    return (new XMLPnPSchemaV201903Serializer());
+                case XMLPnPSchemaVersion.V201909:
+                default:
+                    return (new XMLPnPSchemaV201909Serializer());
             }
         }
 
@@ -97,8 +101,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     return new XMLPnPSchemaV201807Serializer();
                 case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2019_03:
                     return new XMLPnPSchemaV201903Serializer();
+                case XMLConstants.PROVISIONING_SCHEMA_NAMESPACE_2019_09:
                 default:
-                    return new XMLPnPSchemaV201807Serializer();
+                    return new XMLPnPSchemaV201909Serializer();
             }
         }
 

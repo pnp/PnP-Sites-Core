@@ -25,9 +25,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 web.EnsureProperties(
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                     w => w.NoCrawl,
                     w => w.CommentsOnSitePagesDisabled,
+                    w => w.ExcludeFromOfflineClient,
+                    w => w.MembersCanShare,
+                    w => w.DisableFlows,
+                    w => w.DisableAppViews,
+                    w => w.HorizontalQuickLaunch,
+#if !SP2019
+                    w => w.SearchScope,
+#endif
 #endif
                     //w => w.Title,
                     //w => w.Description,
@@ -38,12 +46,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.RootFolder,
                     w => w.AlternateCssUrl,
                     w => w.ServerRelativeUrl,
-                    w => w.Url);
+                    w => w.Url
+                    );
 
                 var webSettings = new WebSettings();
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 webSettings.NoCrawl = web.NoCrawl;
                 webSettings.CommentsOnSitePagesDisabled = web.CommentsOnSitePagesDisabled;
+                webSettings.ExcludeFromOfflineClient = web.ExcludeFromOfflineClient;
+                webSettings.MembersCanShare = web.MembersCanShare;
+                webSettings.DisableFlows = web.DisableFlows;
+                webSettings.DisableAppViews = web.DisableAppViews;
+                webSettings.HorizontalQuickLaunch = web.HorizontalQuickLaunch;
+#if !SP2019
+                webSettings.SearchScope = (SearchScopes)Enum.Parse(typeof(SearchScopes), web.SearchScope.ToString(), true);
+#endif
 #endif
                 // We're not extracting Title and Description
                 //webSettings.Title = Tokenize(web.Title, web.Url);
@@ -265,8 +282,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     bool isNoScriptSite = web.IsNoScriptSite();
 
                     web.EnsureProperties(
-#if !ONPREMISES
+#if !SP2013 && !SP2016
+                        w => w.NoCrawl,
                         w => w.CommentsOnSitePagesDisabled,
+                        w => w.ExcludeFromOfflineClient,
+                        w => w.MembersCanShare,
+                        w => w.DisableFlows,
+                        w => w.DisableAppViews,
+                        w => w.HorizontalQuickLaunch,
+#if !SP2019
+                        w => w.SearchScope,
+#endif
 #endif
                         w => w.WebTemplate,
                         w => w.HasUniqueRoleAssignments);
@@ -290,7 +316,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                     if (!isNoScriptSite)
                     {
                         web.NoCrawl = webSettings.NoCrawl;
@@ -304,6 +330,38 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         web.CommentsOnSitePagesDisabled = webSettings.CommentsOnSitePagesDisabled;
                     }
+
+                    if (web.ExcludeFromOfflineClient != webSettings.ExcludeFromOfflineClient)
+                    {
+                        web.ExcludeFromOfflineClient = webSettings.ExcludeFromOfflineClient;
+                    }
+
+                    if (web.MembersCanShare != webSettings.MembersCanShare)
+                    {
+                        web.MembersCanShare = webSettings.MembersCanShare;
+                    }
+
+                    if (web.DisableFlows != webSettings.DisableFlows)
+                    {
+                        web.DisableFlows = webSettings.DisableFlows;
+                    }
+
+                    if (web.DisableAppViews != webSettings.DisableAppViews)
+                    {
+                        web.DisableAppViews = webSettings.DisableAppViews;
+                    }
+
+                    if (web.HorizontalQuickLaunch != webSettings.HorizontalQuickLaunch)
+                    {
+                        web.HorizontalQuickLaunch = webSettings.HorizontalQuickLaunch;
+                    }
+
+#if !SP2019
+                    if (web.SearchScope.ToString() != webSettings.SearchScope.ToString())
+                    {
+                        web.SearchScope = (SearchScopeType)Enum.Parse(typeof(SearchScopeType), webSettings.SearchScope.ToString(), true);
+                    }
+#endif
 #endif
                     var masterUrl = parser.ParseString(webSettings.MasterPageUrl);
                     if (!string.IsNullOrEmpty(masterUrl))
@@ -340,6 +398,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (webSettings.SiteLogo != null)
                     {
                         var logoUrl = parser.ParseString(webSettings.SiteLogo);
+                        if (template.BaseSiteTemplate == "SITEPAGEPUBLISHING#0" && web.WebTemplate == "GROUP")
+                        {
+                            // logo provisioning throws when applying across base template IDs; provisioning fails in this case
+                            // this is the error that is already (rightly so) shown beforehand in the console: WARNING: The source site from which the template was generated had a base template ID value of SITEPAGEPUBLISHING#0, while the current target site has a base template ID value of GROUP#0. This could cause potential issues while applying the template.
+                            WriteMessage("Applying site logo across base template IDs is not possible. Skipping site logo provisioning.", ProvisioningMessageType.Warning);
+                        } else
                         // Modern site? Then we assume the SiteLogo is actually a filepath
                         if (web.WebTemplate == "GROUP")
                         {

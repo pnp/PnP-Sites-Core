@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Defines the Configuration for a Team Tab
     /// </summary>
-    public class TeamTabConfiguration : BaseModel, IEquatable<TeamTabConfiguration>
+    public partial class TeamTabConfiguration : BaseModel, IEquatable<TeamTabConfiguration>
     {
         #region Public Members
 

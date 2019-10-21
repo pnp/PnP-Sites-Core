@@ -10,6 +10,9 @@ using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using System.Text.RegularExpressions;
+using System.IO;
+using System.Web;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -30,7 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                web.EnsureProperties(w => w.FooterEnabled, w => w.ServerRelativeUrl);
+                web.EnsureProperties(w => w.FooterEnabled, w => w.ServerRelativeUrl, w => w.Url);
 
                 var footer = new SiteFooter();
 
@@ -38,7 +41,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
                 var menuState = JsonConvert.DeserializeObject<MenuState>(structureString);
 
-                if (menuState.Nodes.Count > 1)
+                if (menuState.Nodes.Count > 0)
                 {
                     // Find the title node
                     var titleNode = menuState.Nodes.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_TITLENODEKEY);
@@ -76,11 +79,160 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         footer.FooterLinks.Add(ParseNodes(innerMenuNode, template, web.ServerRelativeUrl));
                     }
                 }
+                if (creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.SiteFooter != null && creationInfo.ExtractConfiguration.SiteFooter.RemoveExistingNodes)
+                {
+                    footer.RemoveExistingNodes = true;
+                }
                 template.Footer = footer;
+                if (creationInfo.PersistBrandingFiles)
+                {
+                    // Extract site logo if property has been set and it's not dynamic image from _api URL
+                    if (!string.IsNullOrEmpty(template.Footer.Logo) && (!template.Footer.Logo.ToLowerInvariant().Contains("_api/")))
+                    {
+                        // Convert to server relative URL if needed (can be set to FQDN URL of a file hosted in the site (e.g. for communication sites))
+                        Uri webUri = new Uri(web.Url);
+                        string webUrl = $"{webUri.Scheme}://{webUri.DnsSafeHost}";
+                        string footerLogoServerRelativeUrl = template.Footer.Logo.Replace(webUrl, "");
+
+                        if (PersistFile(web, creationInfo, scope, footerLogoServerRelativeUrl))
+                        {
+                            template.Files.Add(GetTemplateFile(web, footerLogoServerRelativeUrl));
+                        }
+                    }
+                    template.Footer.Logo = Tokenize(template.Footer.Logo, web.Url, web);
+                    var files = template.Files.Distinct().ToList();
+                    template.Files.Clear();
+                    template.Files.AddRange(files);
+                }
             }
             return template;
         }
 
+        private string TokenizeHost(Web web, string json)
+        {
+            // HostUrl token replacement
+            var uri = new Uri(web.Url);
+            json = Regex.Replace(json, $"{uri.Scheme}://{uri.DnsSafeHost}:{uri.Port}", "{hosturl}", RegexOptions.IgnoreCase);
+            json = Regex.Replace(json, $"{uri.Scheme}://{uri.DnsSafeHost}", "{hosturl}", RegexOptions.IgnoreCase);
+            return json;
+        }
+
+        //TODO: Candidate for cleanup
+        private Model.File GetTemplateFile(Web web, string serverRelativeUrl)
+        {
+
+            var webServerUrl = web.EnsureProperty(w => w.Url);
+            var serverUri = new Uri(webServerUrl);
+            var serverUrl = $"{serverUri.Scheme}://{serverUri.Authority}";
+            var fullUri = new Uri(UrlUtility.Combine(serverUrl, serverRelativeUrl));
+
+            var folderPath = fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/');
+            var fileName = fullUri.Segments[fullUri.Segments.Count() - 1];
+
+            // store as site relative path
+            folderPath = folderPath.Replace(web.ServerRelativeUrl, "").Trim('/');
+            var templateFile = new Model.File()
+            {
+                Folder = Tokenize(folderPath, web.Url),
+                Src = !string.IsNullOrEmpty(folderPath) ? $"{folderPath}/{fileName}" : fileName,
+                Overwrite = true,
+            };
+
+            return templateFile;
+        }
+
+        private bool PersistFile(Web web, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string serverRelativeUrl)
+        {
+            var success = false;
+            if (creationInfo.PersistBrandingFiles)
+            {
+                if (creationInfo.FileConnector != null)
+                {
+                    if (UrlUtility.IsIisVirtualDirectory(serverRelativeUrl))
+                    {
+                        scope.LogWarning("File is not located in the content database. Not retrieving {0}", serverRelativeUrl);
+                        return success;
+                    }
+
+                    try
+                    {
+                        var file = web.GetFileByServerRelativeUrl(serverRelativeUrl);
+                        string fileName = string.Empty;
+                        if (serverRelativeUrl.IndexOf("/") > -1)
+                        {
+                            fileName = serverRelativeUrl.Substring(serverRelativeUrl.LastIndexOf("/") + 1);
+                        }
+                        else
+                        {
+                            fileName = serverRelativeUrl;
+                        }
+                        web.Context.Load(file);
+                        web.Context.ExecuteQueryRetry();
+                        ClientResult<Stream> stream = file.OpenBinaryStream();
+                        web.Context.ExecuteQueryRetry();
+
+                        var baseUri = new Uri(web.Url);
+                        var fullUri = new Uri(baseUri, file.ServerRelativeUrl);
+                        var folderPath = HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
+
+                        // Configure the filename to use 
+                        fileName = HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
+
+                        // Build up a site relative container URL...might end up empty as well
+                        String container = HttpUtility.UrlDecode(folderPath.Replace(web.ServerRelativeUrl, "")).Trim('/').Replace("/", "\\");
+
+                        using (Stream memStream = new MemoryStream())
+                        {
+                            CopyStream(stream.Value, memStream);
+                            memStream.Position = 0;
+                            if (!string.IsNullOrEmpty(container))
+                            {
+                                creationInfo.FileConnector.SaveFileStream(fileName, container, memStream);
+                            }
+                            else
+                            {
+                                creationInfo.FileConnector.SaveFileStream(fileName, memStream);
+                            }
+                        }
+                        success = true;
+                    }
+                    catch (ServerException ex1)
+                    {
+                        // If we are referring a file from a location outside of the current web or at a location where we cannot retrieve the file an exception is thrown. We swallow this exception.
+                        if (ex1.ServerErrorCode != -2147024809)
+                        {
+                            throw;
+                        }
+                        else
+                        {
+                            scope.LogWarning("File is not necessarily located in the current web. Not retrieving {0}", serverRelativeUrl);
+                        }
+                    }
+                }
+                else
+                {
+                    WriteMessage("No connector present to persist homepage.", ProvisioningMessageType.Error);
+                    scope.LogError("No connector present to persist homepage");
+                }
+            }
+            else
+            {
+                success = true;
+            }
+            return success;
+        }
+
+        private void CopyStream(Stream source, Stream destination)
+        {
+            byte[] buffer = new byte[32768];
+            int bytesRead;
+
+            do
+            {
+                bytesRead = source.Read(buffer, 0, buffer.Length);
+                destination.Write(buffer, 0, bytesRead);
+            } while (bytesRead != 0);
+        }
         private SiteFooterLink ParseNodes(MenuNode node, ProvisioningTemplate template, string webServerRelativeUrl)
         {
             var link = new SiteFooterLink();
@@ -113,7 +265,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
                         var menuState = JsonConvert.DeserializeObject<MenuState>(structureString);
-                        if(menuState.StartingNodeKey == null)
+                        if (menuState.StartingNodeKey == null)
                         {
 
                             var now = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss:Z");

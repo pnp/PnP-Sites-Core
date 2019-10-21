@@ -2,8 +2,10 @@
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using System;
 using System.Collections.Generic;
+using static OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.ExtractConfiguration;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -32,6 +34,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private bool includeContentTypesFromSyndication = true;
         private bool includeHiddenLists = false;
         private bool includeAllClientSidePages = false;
+        private bool excludeAuthorInformation = false;
+        private bool overwriteExistingNavigation = false;
+        private bool overwriteSiteFooterNavigation = false;
 
         /// <summary>
         /// Provisioning Progress Delegate
@@ -336,5 +341,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// Can contain the title or the ID of the lists to export
         /// </remarks>
         public List<String> ListsToExtract { get; set; } = new List<String>();
+
+        /// <summary>
+        /// Extraction configuration coming from JSON
+        /// </summary>
+        internal Model.Configuration.ExtractConfiguration ExtractConfiguration { get; set; }
+
     }
 }

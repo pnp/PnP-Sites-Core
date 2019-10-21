@@ -76,7 +76,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             }
             #endregion
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             #region Custom Action
             if (!isNoScriptSite)
             {

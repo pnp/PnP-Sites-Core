@@ -8,7 +8,7 @@ using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     internal class ObjectClientSidePageContents : ObjectContentHandlerBase
     {
         public override string Name
@@ -54,9 +54,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var homePageUrl = web.RootFolder.WelcomePage;
 
                 // Get pages library
-                ListCollection listCollection = web.Lists;
-                listCollection.EnsureProperties(coll => coll.Include(li => li.BaseTemplate, li => li.RootFolder));
-                var sitePagesLibrary = listCollection.Where(p => p.BaseTemplate == (int)ListTemplateType.WebPageLibrary).FirstOrDefault();
+                List sitePagesLibrary = null;
+                try
+                {
+                    ListCollection listCollection = web.Lists;
+                    listCollection.EnsureProperties(coll => coll.Include(li => li.BaseTemplate, li => li.RootFolder));
+                    sitePagesLibrary = listCollection.Where(p => p.BaseTemplate == (int)ListTemplateType.WebPageLibrary).FirstOrDefault();
+                } catch
+                {
+                    // fall back in case of exception when the site has been incorrectly provisioned which can cause access issues on lists/libraries.
+                    sitePagesLibrary = web.Lists.GetByTitle("Site Pages");
+                    sitePagesLibrary.EnsureProperties(l => l.BaseTemplate, l => l.RootFolder);
+                }
                 if (sitePagesLibrary != null)
                 {
                     var templateFolderName = string.Empty;
