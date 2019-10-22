@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
@@ -203,6 +204,112 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Assert.AreEqual(termName, value[0].Label, "Term label not set correctly");
                 Assert.AreEqual(termId.ToString(), value[0].TermGuid, "Term GUID not set correctly");
 
+            }
+        }
+
+        [TestMethod]
+        public void CanProvisionObjectsWithSecurity()
+        {
+            if (TestCommon.AppOnlyTesting())
+            {
+                Assert.Inconclusive("Not supported when testing using app-only");
+            }
+
+            var template = new ProvisioningTemplate();
+            var listInstance = new ListInstance
+            {
+                Url = string.Format("lists/{0}", listName), 
+                Title = listName, 
+                TemplateType = (int) ListTemplateType.GenericList
+            };
+
+            using (var ctx = TestCommon.CreateClientContext())
+            {
+                Microsoft.SharePoint.Client.Group ownerGroup = ctx.Web.AssociatedOwnerGroup;
+                Microsoft.SharePoint.Client.Group visitorGroup = ctx.Web.AssociatedVisitorGroup;
+                ctx.Load(ownerGroup, g => g.Id);
+                ctx.Load(visitorGroup, g => g.Id);
+                ctx.Load(ctx.Web.CurrentUser, u => u.Id);
+                ctx.ExecuteQueryRetry();
+
+                // Data Row without Security
+                var dataValues = new Dictionary<string, string>();
+                const string item1Title = "Test 1";
+                dataValues.Add("Title", item1Title);
+                listInstance.DataRows.Add(new DataRow(dataValues));
+
+                // Data Row with Security
+                var security2 = new ObjectSecurity { CopyRoleAssignments = false };
+                security2.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment { Remove = false, Principal = "{associatedownergroup}", RoleDefinition = "{roledefinition:Administrator}" });
+                security2.RoleAssignments.Add(new Core.Framework.Provisioning.Model.RoleAssignment { Remove = false, Principal = "{associatedvisitorgroup}", RoleDefinition = "{roledefinition:Reader}" });
+
+                var dataValues2 = new Dictionary<string, string>();
+                const string item2Title = "Test 2";
+                dataValues2.Add("Title", item2Title);
+                
+                listInstance.DataRows.Add(new DataRow(dataValues2, security2));
+
+                template.Lists.Add(listInstance);
+
+                var parser = new TokenParser(ctx.Web, template);
+
+                // Create the List
+                parser = new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListAndStandardFields).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+                parser = new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.ListSettings).ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                // Load DataRows
+                new ObjectListInstanceDataRows().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+
+                var list = ctx.Web.GetListByUrl(listInstance.Url);
+                Assert.IsNotNull(list);
+
+                var query = new CamlQuery
+                {
+                    ViewXml = @"<View Scope=""RecursiveAll""><Query><OrderBy><FieldRef Name=""Title"" Ascending=""TRUE"" /></OrderBy></Query></View>"
+                };
+
+                ListItemCollection items = list.GetItems(query);
+                ctx.Load(items, itms => itms.Include(
+                    item => item["Title"],
+                    i => i.HasUniqueRoleAssignments,
+                    i => i.RoleAssignments.IncludeWithDefaultProperties(ra => ra.PrincipalId, ra => ra.RoleDefinitionBindings)));
+                ctx.ExecuteQueryRetry();
+
+                Assert.AreEqual(2, items.Count);
+                StringAssert.Matches(Convert.ToString(items[0]["Title"]), new Regex(Regex.Escape(item1Title)));
+                StringAssert.Matches(Convert.ToString(items[1]["Title"]), new Regex(Regex.Escape(item2Title)));
+
+                // Validate security
+                ListItem item1 = items[0];
+                Assert.IsFalse(item1.HasUniqueRoleAssignments);
+
+                ListItem item2 = items[1];
+                Assert.IsTrue(item2.HasUniqueRoleAssignments);
+                Assert.AreEqual(3, item2.RoleAssignments.Count);
+
+                foreach (Microsoft.SharePoint.Client.RoleAssignment assignment in item2.RoleAssignments)
+                {
+                    if (assignment.PrincipalId == ownerGroup.Id)
+                    {
+                        Assert.AreEqual(1, assignment.RoleDefinitionBindings.Count);
+                        Assert.AreEqual(RoleType.Administrator, assignment.RoleDefinitionBindings[0].RoleTypeKind);
+                        continue;
+                    }
+
+                    if (assignment.PrincipalId == visitorGroup.Id)
+                    {
+                        Assert.AreEqual(1, assignment.RoleDefinitionBindings.Count);
+                        Assert.AreEqual(RoleType.Reader, assignment.RoleDefinitionBindings[0].RoleTypeKind);
+                        continue;
+                    }
+
+                    if (assignment.PrincipalId == ctx.Web.CurrentUser.Id)
+                    {
+                        continue;
+                    }
+
+                    Assert.Fail("Unexpected role assignment for principal {0}.", assignment.PrincipalId);
+                }
             }
         }
 
