@@ -22,6 +22,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Utilities;
 using Newtonsoft.Json.Linq;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 #endif
 
 namespace Microsoft.SharePoint.Client
@@ -40,6 +41,47 @@ namespace Microsoft.SharePoint.Client
         {
             SiteToTemplateConversion engine = new SiteToTemplateConversion();
             engine.ApplyProvisioningHierarchy(tenant, hierarchy, sequenceId, applyingInformation);
+        }
+
+        /// <summary>
+        /// Returns the urls of sites connected to the hubsite specified
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
+        /// <param name="hubSiteUrl">The fully qualified url of the hubsite</param>
+        /// <returns></returns>
+        public static List<string> GetHubSiteChildUrls(this Tenant tenant, string hubSiteUrl)
+        {
+            var properties = tenant.GetHubSitePropertiesByUrl(hubSiteUrl);
+            tenant.Context.Load(properties);
+            tenant.Context.ExecuteQueryRetry();
+            return GetHubSiteChildUrls(tenant, properties.ID);
+        }
+
+        /// <summary>
+        /// Returns the urls of sites connected to the hubsite specified
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
+        /// <param name="hubsiteId">The id of the hubsite</param>
+        /// <returns></returns>
+        public static List<string> GetHubSiteChildUrls(this Tenant tenant, Guid hubsiteId)
+        {
+            List<string> urls = new List<string>();
+            using (var tenantContext = tenant.Context.Clone((tenant.Context as ClientContext).Web.GetTenantAdministrationUrl()))
+            {
+                var siteList = tenantContext.Web.Lists.GetByTitle("DO_NOT_DELETE_SPLIST_TENANTADMIN_AGGREGATED_SITECOLLECTIONS");
+                var query = new CamlQuery()
+                {
+                    ViewXml = $"<View><Query><Where><And><Eq><FieldRef Name='HubSiteId' /><Value Type='Guid'>{hubsiteId}</Value></Eq><Neq><FieldRef Name='SiteId' /><Value Type='Guid'>{hubsiteId}</Value></Neq></And></Where></Query><ViewFields><FieldRef Name='SiteUrl'/></ViewFields></View>"
+                };
+                var items = siteList.GetItems(query);
+                tenantContext.Load(items);
+                tenantContext.ExecuteQueryRetry();
+                foreach (var item in items)
+                {
+                    urls.Add(item["SiteUrl"].ToString());
+                }
+            }
+            return urls;
         }
         #endregion
 
@@ -1164,7 +1206,7 @@ namespace Microsoft.SharePoint.Client
         }
         #endregion
 
-#region Utilities
+        #region Utilities
 
 #if !ONPREMISES
         public static string GetTenantIdByUrl(string tenantUrl)
@@ -1204,7 +1246,7 @@ namespace Microsoft.SharePoint.Client
             return index != -1 ? originalString.Substring(prefix.Length, index - prefix.Length) : null;
         }
 
-#endregion
+        #endregion
 
     }
 }
