@@ -131,7 +131,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         IsNewItem = true;
                                     }
 
-                                    ListItemUtilities.UpdateListItem(listitem, parser, dataRow.Values, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion, IsNewItem);
+                                    ListItemUtilities.ListItemUpdateType updateMode = IsNewItem ? ListItemUtilities.ListItemUpdateType.Update : ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion;
+                                    ListItemUtilities.UpdateListItem(listitem, parser, dataRow.Values, updateMode, IsNewItem);
 
                                     if (dataRow.Attachments != null && dataRow.Attachments.Count > 0)
                                     {
