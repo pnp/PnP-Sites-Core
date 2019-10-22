@@ -755,7 +755,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                              {
                                  ContentTypeId = defaultDocument.ContentTypeId.StringValue,
                                  Name = defaultDocument.Name,
-                                 FileSourcePath = creationInfo.ExtractConfiguration.PersistAssetFiles ? $"_cts/{ct.Name}/{defaultDocument.DocumentPath.DecodedUrl}" : string.Empty,
+#if SP2013 || SP2016
+                                 FileSourcePath = string.Empty
+#else
+                                 FileSourcePath = creationInfo.PersistBrandingFiles ? $"_cts/{ct.Name}/{defaultDocument.DocumentPath.DecodedUrl}" : string.Empty
+#endif
                              }).ToList(),
                             (from sharedField in documentSetTemplate.SharedFields.AsEnumerable()
                              select sharedField.Id).ToList(),
