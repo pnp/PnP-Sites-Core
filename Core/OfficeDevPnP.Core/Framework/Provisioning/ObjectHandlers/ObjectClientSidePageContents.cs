@@ -85,6 +85,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.Context.ExecuteQueryRetry();
                     if (pages.FirstOrDefault() != null)
                     {
+                        var currentPageIndex = 1;
                         foreach (var page in pages)
                         {
                             string pageUrl = null;
@@ -121,10 +122,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 // Is this a client side page?
                                 if (FieldExistsAndUsed(page, ClientSideApplicationId) && page[ClientSideApplicationId].ToString().Equals(FeatureId_Web_ModernPage.ToString(), StringComparison.InvariantCultureIgnoreCase))
                                 {
+                                    WriteSubProgress("ClientSidePage", !string.IsNullOrWhiteSpace(pageName) ? pageName : pageUrl, currentPageIndex, pages.Count);
                                     // extract the page using the OOB logic
                                     clientSidePageContentsHelper.ExtractClientSidePage(web, template, creationInfo, scope, pageUrl, pageName, isHomePage, isTemplate);
                                 }
                             }
+                            currentPageIndex++;
                         }
                     }
                 }

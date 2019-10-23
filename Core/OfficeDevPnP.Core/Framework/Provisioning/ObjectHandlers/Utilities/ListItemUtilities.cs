@@ -261,7 +261,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             UpdateOverwriteVersion
         }
 
-        public static void UpdateListItem(ListItem item, TokenParser parser, IDictionary<string, string> valuesToSet, ListItemUpdateType updateType, bool SkipExecuteQuery=false)
+        public static void UpdateListItem(ListItem item, TokenParser parser, IDictionary<string, string> valuesToSet, ListItemUpdateType updateType, bool SkipExecuteQuery = false)
         {
             var itemValues = new List<FieldUpdateValue>();
 
@@ -329,6 +329,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                     {
                                         itemValues.Add(new FieldUpdateValue(key as string, new FieldUserValue() { LookupId = userId }));
                                     }
+                                }
+                                break;
+                            }
+                        case "MultiChoice":
+                            {
+                                if (value != null)
+                                {
+                                    var array = value.Split(";#");
+                                    itemValues.Add(new FieldUpdateValue(key as string, array));
                                 }
                                 break;
                             }
@@ -441,9 +450,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             }
                         case "URL":
                             {
-                                
+
                                 if (value == null) goto default;
-                                if(value.Contains(",") || value.Contains(";"))
+                                if (value.Contains(",") || value.Contains(";"))
                                 {
                                     var urlValueArray = value.Split(new char[] { ',', ';' });
                                     if (urlValueArray.Length == 2)
@@ -454,11 +463,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             Description = value.Split(new char[] { ',', ';' })[1]
                                         };
                                         itemValues.Add(new FieldUpdateValue(key as string, urlValue));
-                                    } else
+                                    }
+                                    else
                                     {
                                         itemValues.Add(new FieldUpdateValue(key as string, value));
                                     }
-                                } else
+                                }
+                                else
                                 {
                                     var urlValue = new FieldUrlValue
                                     {
@@ -525,11 +536,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 if (itemValue.Value is TaxonomyFieldValueCollection)
                                 {
                                     taxField.SetFieldValueByValueCollection(item, itemValue.Value as TaxonomyFieldValueCollection);
-                                } else
+                                }
+                                else
                                 {
                                     taxField.SetFieldValueByValue(item, itemValue.Value as TaxonomyFieldValue);
                                 }
-                                 
+
                                 break;
                             }
                         case "TaxonomyFieldType":
@@ -564,7 +576,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 #else
             item.Update();
 #endif
-            if(!SkipExecuteQuery)
+            if (!SkipExecuteQuery)
                 context.ExecuteQueryRetry();
         }
 

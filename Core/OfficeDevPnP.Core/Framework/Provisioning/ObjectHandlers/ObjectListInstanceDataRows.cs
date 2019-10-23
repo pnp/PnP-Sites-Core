@@ -133,11 +133,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                     ListItemUtilities.UpdateListItem(listitem, parser, dataRow.Values, ListItemUtilities.ListItemUpdateType.UpdateOverwriteVersion, IsNewItem);
 
-                                    if (dataRow.Security != null && (dataRow.Security.ClearSubscopes || dataRow.Security.CopyRoleAssignments || dataRow.Security.RoleAssignments.Count > 0))
-                                    {
-                                        listitem.SetSecurity(parser, dataRow.Security);
-                                    }
-
                                     if (dataRow.Attachments != null && dataRow.Attachments.Count > 0)
                                     {
                                         foreach (var attachment in dataRow.Attachments)
@@ -173,8 +168,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                                 AddAttachment(template, listitem, attachment, IsNewItem);
                                             }
                                         }
-                                        if (IsNewItem)
-                                            listitem.Context.ExecuteQueryRetry();
+                                    }
+                                    if (IsNewItem)
+                                    {
+                                        listitem.Context.Load(listitem, i => i.Id);
+                                        listitem.Context.ExecuteQueryRetry();
+                                    }
+                                    if (dataRow.Security != null && (dataRow.Security.ClearSubscopes || dataRow.Security.CopyRoleAssignments || dataRow.Security.RoleAssignments.Count > 0))
+                                    {
+                                        listitem.SetSecurity(parser, dataRow.Security);
                                     }
                                 }
                             }
@@ -294,7 +296,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 queryConfig.ViewFields = new List<string>();
                             }
-                            if (!queryConfig.ViewFields.Contains("Attachments"))
+                            else if (!queryConfig.ViewFields.Contains("Attachments"))
                             {
                                 queryConfig.ViewFields.Add("Attachments");
                             }
@@ -438,7 +440,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
 
-            WriteMessage($"Library|{listInstance.Title} : {myFile.Name}|{itemCount}|{itemsCount}", ProvisioningMessageType.Progress);
+            WriteSubProgress("Library", $"{listInstance.Title} : {myFile.Name}", itemCount, itemsCount);
 
             // Avoid duplicate file entries
             Model.File newFile = null;
@@ -538,7 +540,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 value = TokenizeValue(web, field.TypeAsString, fieldValue, fieldValuesAsText[field.InternalName]);
 
-                                if (fieldValue.Key == "ContentTypeId")
+                                if (fieldValue.Key == "ContentTypeId" && fieldValue.Key == "Attachments")
                                 {
                                     value = null; //it's already in Properties - we can ignore here
                                 }
@@ -592,7 +594,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (userMultiFieldValue != null)
                     {
 #if !SP2013 && !SP2016
-                        value = string.Join(",", userMultiFieldValue.Select(u => u.Email).ToArray())?.TrimEnd(new char[] { ',' });
+                        value = string.Join(",", userMultiFieldValue.Select(u => u.Email).ToArray())?.TrimEnd(new char[] { ',' }).Trim(new char[] { ',' });
 #else
                         value = string.Join(",", userMultiFieldValue.Select(u => u.LookupValue).ToArray())?.TrimEnd(new char[] { ',' });
 #endif
@@ -638,9 +640,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         value = dateTimeFieldValue.Value.ToString("yyyy-MM-ddTHH:mm:ssZ");
                     }
                     break;
+                case "MultiChoice":
+                    if (fieldValue.Value != null)
+                    {
+                        var multiChoiceArray = fieldValue.Value as string[];
+                        value = string.Join(";#", multiChoiceArray.Select(v => Tokenize(v, web.Url, web)).ToList());
+                    }
+                    break;
                 case "ContentTypeIdFieldType":
                 default:
-                    value = Tokenize(fieldValue.Value.ToString(), web.Url, web);
+                    value = Tokenize(fieldValue.Value?.ToString(), web.Url, web);
                     break;
             }
 
@@ -727,7 +736,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 value = TokenizeValue(web, field.TypeAsString, fieldValue, fieldValuesAsText[field.InternalName]);
                             }
 
-                            if (fieldValue.Key.Equals("ContentTypeId", StringComparison.CurrentCultureIgnoreCase))
+                            if (fieldValue.Key.Equals("ContentTypeId", StringComparison.InvariantCultureIgnoreCase) || fieldValue.Key.Equals("Attachments", StringComparison.InvariantCultureIgnoreCase))
                             {
                                 value = null; //ignore here since already in dataRow
                             }
@@ -807,7 +816,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var itemCount = 1;
             foreach (var item in items)
             {
-                WriteMessage($"List|{listInstance.Title}|{itemCount}|{items.Count}", ProvisioningMessageType.Progress);
+                WriteSubProgress("List", listInstance.Title, itemCount, items.Count);
 
                 var dataRow = ProcessDataRow(web, siteList, item, listInstance, extractionConfig, queryConfig, baseUri, creationInfo, scope);
 
@@ -824,6 +833,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (queryConfig != null && queryConfig.ViewFields != null && queryConfig.ViewFields.Count > 0)
             {
                 filteredFieldValues = item.FieldValues.Where(f => queryConfig.ViewFields.Contains(f.Key)).ToList();
+            }
+            if(queryConfig != null && queryConfig.IncludeAttachments)
+            {
+                filteredFieldValues = filteredFieldValues.Where(f => !f.Key.Equals("Attachments", StringComparison.InvariantCultureIgnoreCase)).ToList();
             }
             foreach (var fieldValue in filteredFieldValues)
             {

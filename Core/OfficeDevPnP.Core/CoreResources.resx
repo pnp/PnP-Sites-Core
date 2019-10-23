@@ -1225,4 +1225,16 @@
   <data name="Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_notsupported_0" xml:space="preserve">
     <value>Creating list items in document libraries is not supported. Please remove DataRow elements for library '{0}'.</value>
   </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_ErrorDocumentTemplate" xml:space="preserve">
+    <value>Failed to add '{1}' as DocumentTemplate to ContentType '{0}'</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_ErrorExtractDocumentSetTemplate" xml:space="preserve">
+    <value>Failed to extract DefaultDocument '{0}' from DocumentSet</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_ErrorSaveDocumentTemplateToConnector" xml:space="preserve">
+    <value>Failed to extract DocumentTemplate '{1}' from ContentType '{0}'</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_SkipDocumentTemplate" xml:space="preserve">
+    <value>Skipping adding DocumentTemplate to ContentType '{0}' because we can't upload them on 'noscript' sites.</value>
+  </data>
 </root>
