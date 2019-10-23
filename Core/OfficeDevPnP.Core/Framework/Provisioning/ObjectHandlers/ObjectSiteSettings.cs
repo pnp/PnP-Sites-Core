@@ -47,6 +47,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     siteSettings.AllowSaveDeclarativeWorkflowAsTemplate = site.AllowSaveDeclarativeWorkflowAsTemplate;
                     siteSettings.AllowSavePublishDeclarativeWorkflow = site.AllowSavePublishDeclarativeWorkflow;
                     siteSettings.SocialBarOnSitePagesDisabled = site.SocialBarOnSitePagesDisabled;
+                    siteSettings.SearchBoxInNavBar = (SearchBoxInNavBar)Enum.Parse(typeof(SearchBoxInNavBar), site.SearchBoxInNavBar.ToString());
 
                     // Update the provisioning template accordingly
                     template.SiteSettings = siteSettings;
