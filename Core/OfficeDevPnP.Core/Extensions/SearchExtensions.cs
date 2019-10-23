@@ -249,31 +249,36 @@ namespace Microsoft.SharePoint.Client
             }
             #endregion
 
-            // if another value was set then respect that
-            if (String.IsNullOrEmpty(web.GetPropertyBagValueString("SRCH_SB_SET_SITE", string.Empty)))
+            try
             {
-                web.SetPropertyBagValue("SRCH_SB_SET_SITE", "{'Inherit':false,'ResultsPageAddress':null,'ShowNavigation':true}");
-            }
+                // if another value was set then respect that
+                if (String.IsNullOrEmpty(web.GetPropertyBagValueString("SRCH_SB_SET_SITE", string.Empty)))
+                {
+                    web.SetPropertyBagValue("SRCH_SB_SET_SITE", "{'Inherit':false,'ResultsPageAddress':null,'ShowNavigation':true}");
+                }
 
-            if (!string.IsNullOrEmpty(searchCenterUrl))
-            {
-                // Set search center URL
-                web.SetPropertyBagValue("SRCH_ENH_FTR_URL_SITE", searchCenterUrl);
+                if (!string.IsNullOrEmpty(searchCenterUrl))
+                {
+                    // Set search center URL
+                    web.SetPropertyBagValue("SRCH_ENH_FTR_URL_SITE", searchCenterUrl);
+                }
+                else
+                {
+                    // When search center URL is blank remove the property (like the SharePoint UI does)
+                    web.RemovePropertyBagValue("SRCH_ENH_FTR_URL_SITE");
+                }
             }
-            else
+            finally
             {
-                // When search center URL is blank remove the property (like the SharePoint UI does)
-                web.RemovePropertyBagValue("SRCH_ENH_FTR_URL_SITE");
+                #region Disable scripting if previously enabled
+                if (adminContext != null)
+                {
+                    // Reset disabling setting the property bag if needed
+                    tenant.SetSiteProperties(site.Url, noScriptSite: true);
+                    adminContext.Dispose();
+                }
+                #endregion
             }
-
-            #region Disable scripting if previously enabled
-            if (adminContext != null)
-            {
-                // Reset disabling setting the property bag if needed
-                tenant.SetSiteProperties(site.Url, noScriptSite: true);
-                adminContext.Dispose();
-            }
-            #endregion
         }
 
         /// <summary>
@@ -319,25 +324,30 @@ namespace Microsoft.SharePoint.Client
             }
             #endregion
 
-            if (!string.IsNullOrEmpty(searchCenterUrl))
+            try
             {
-                // Set search results page URL
-                web.SetPropertyBagValue("SRCH_SB_SET_WEB", "{\"Inherit\":false,\"ResultsPageAddress\":\"" + searchCenterUrl + "\",\"ShowNavigation\":false}");
+                if (!string.IsNullOrEmpty(searchCenterUrl))
+                {
+                    // Set search results page URL
+                    web.SetPropertyBagValue("SRCH_SB_SET_WEB", "{\"Inherit\":false,\"ResultsPageAddress\":\"" + searchCenterUrl + "\",\"ShowNavigation\":false}");
+                }
+                else
+                {
+                    // When search results page URL is blank remove the property (like the SharePoint UI does)
+                    web.RemovePropertyBagValue("SRCH_SB_SET_WEB");
+                }
             }
-            else
+            finally
             {
-                // When search results page URL is blank remove the property (like the SharePoint UI does)
-                web.RemovePropertyBagValue("SRCH_SB_SET_WEB");
+                #region Disable scripting if previously enabled
+                if (adminContext != null)
+                {
+                    // Reset disabling setting the property bag if needed
+                    tenant.SetSiteProperties(site.Url, noScriptSite: true);
+                    adminContext.Dispose();
+                }
+                #endregion
             }
-
-            #region Disable scripting if previously enabled
-            if (adminContext != null)
-            {
-                // Reset disabling setting the property bag if needed
-                tenant.SetSiteProperties(site.Url, noScriptSite: true);
-                adminContext.Dispose();
-            }
-            #endregion
         }
 
         /// <summary>
