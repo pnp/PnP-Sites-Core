@@ -35,6 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.HorizontalQuickLaunch,
 #if !SP2019
                     w => w.SearchScope,
+                    w => w.SearchBoxInNavBar,
 #endif
 #endif
                     //w => w.Title,
@@ -60,6 +61,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 webSettings.HorizontalQuickLaunch = web.HorizontalQuickLaunch;
 #if !SP2019
                 webSettings.SearchScope = (SearchScopes)Enum.Parse(typeof(SearchScopes), web.SearchScope.ToString(), true);
+                webSettings.SearchBoxInNavBar = (SearchBoxInNavBar)Enum.Parse(typeof(SearchBoxInNavBar), web.SearchBoxInNavBar.ToString(), true);
 #endif
 #endif
                 // We're not extracting Title and Description
@@ -292,6 +294,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         w => w.HorizontalQuickLaunch,
 #if !SP2019
                         w => w.SearchScope,
+                        w => w.SearchBoxInNavBar,
 #endif
 #endif
                         w => w.WebTemplate,
@@ -360,6 +363,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (web.SearchScope.ToString() != webSettings.SearchScope.ToString())
                     {
                         web.SearchScope = (SearchScopeType)Enum.Parse(typeof(SearchScopeType), webSettings.SearchScope.ToString(), true);
+                    }
+
+                    if(web.SearchBoxInNavBar.ToString() != webSettings.SearchBoxInNavBar.ToString())
+                    {
+                        web.SearchBoxInNavBar = (SearchBoxInNavBarType)Enum.Parse(typeof(SearchBoxInNavBarType), webSettings.SearchBoxInNavBar.ToString(), true);
                     }
 #endif
 #endif

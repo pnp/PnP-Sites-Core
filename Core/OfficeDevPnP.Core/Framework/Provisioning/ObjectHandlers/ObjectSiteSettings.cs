@@ -36,6 +36,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         s => s.AllowSaveDeclarativeWorkflowAsTemplate,
                         s => s.AllowSavePublishDeclarativeWorkflow,
                         s => s.SocialBarOnSitePagesDisabled
+#if !SP2019
+                        ,
+                        s => s.SearchBoxInNavBar
+#endif
                         );
 
                     // Configure the output SiteSettings object
@@ -86,6 +90,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             isDirty = true;
                         }
 
+#if !SP2019
+                        if (site.SearchBoxInNavBar.ToString() != template.SiteSettings.SearchBoxInNavBar.ToString())
+                        {
+                            site.SearchBoxInNavBar = (SearchBoxInNavBarType)Enum.Parse(typeof(SearchBoxInNavBarType), template.SiteSettings.SearchBoxInNavBar.ToString(), true);
+                            isDirty = true;
+                        }
+#endif
                         // And save on SharePoint, if really needed
                         if (isDirty)
                         {
