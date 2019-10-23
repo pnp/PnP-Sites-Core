@@ -35,11 +35,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         s => s.AllowCreateDeclarativeWorkflow,
                         s => s.AllowSaveDeclarativeWorkflowAsTemplate,
                         s => s.AllowSavePublishDeclarativeWorkflow,
-                        s => s.SocialBarOnSitePagesDisabled
-#if !SP2019
-                        ,
+                        s => s.SocialBarOnSitePagesDisabled,
                         s => s.SearchBoxInNavBar
-#endif
                         );
 
                     // Configure the output SiteSettings object
