@@ -1,7 +1,8 @@
-﻿using Microsoft.SharePoint.Client.Search.Administration;
+﻿using Microsoft.Online.SharePoint.TenantAdministration;
+using Microsoft.SharePoint.Client.Search.Administration;
 using Microsoft.SharePoint.Client.Search.Portability;
+using OfficeDevPnP.Core.Utilities;
 using System;
-using System.IO;
 using System.Text;
 
 namespace Microsoft.SharePoint.Client
@@ -230,7 +231,23 @@ namespace Microsoft.SharePoint.Client
             }
 
             // Currently there is no direct API available to set the search center URL on web.
-            // Set search setting at web level   
+            // Set search setting at site level   
+
+            #region Enable scripting if needed and context has access
+            Tenant tenant = null;
+            Site site = null;
+            ClientContext adminContext = null;
+            if (web.IsNoScriptSite() && TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext))
+            {
+                site = ((ClientContext)web.Context).Site;
+                site.EnsureProperty(s => s.Url);
+
+                var adminSiteUrl = web.GetTenantAdministrationUrl();
+                adminContext = web.Context.Clone(adminSiteUrl);
+                tenant = new Tenant(adminContext);
+                tenant.SetSiteProperties(site.Url, noScriptSite: false);
+            }
+            #endregion
 
             // if another value was set then respect that
             if (String.IsNullOrEmpty(web.GetPropertyBagValueString("SRCH_SB_SET_SITE", string.Empty)))
@@ -248,6 +265,15 @@ namespace Microsoft.SharePoint.Client
                 // When search center URL is blank remove the property (like the SharePoint UI does)
                 web.RemovePropertyBagValue("SRCH_ENH_FTR_URL_SITE");
             }
+
+            #region Disable scripting if previously enabled
+            if (adminContext != null)
+            {
+                // Reset disabling setting the property bag if needed
+                tenant.SetSiteProperties(site.Url, noScriptSite: true);
+                adminContext.Dispose();
+            }
+            #endregion
         }
 
         /// <summary>
@@ -274,6 +300,25 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentNullException(nameof(searchCenterUrl));
             }
 
+            // Currently there is no direct API available to set the search center URL on web.
+            // Set search setting at web level   
+
+            #region Enable scripting if needed and context has access
+            Tenant tenant = null;
+            Site site = null;
+            ClientContext adminContext = null;
+            if (web.IsNoScriptSite() && TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext))
+            {
+                site = ((ClientContext)web.Context).Site;
+                site.EnsureProperty(s => s.Url);
+
+                var adminSiteUrl = web.GetTenantAdministrationUrl();
+                adminContext = web.Context.Clone(adminSiteUrl);
+                tenant = new Tenant(adminContext);
+                tenant.SetSiteProperties(site.Url, noScriptSite: false);
+            }
+            #endregion
+
             if (!string.IsNullOrEmpty(searchCenterUrl))
             {
                 // Set search results page URL
@@ -284,6 +329,15 @@ namespace Microsoft.SharePoint.Client
                 // When search results page URL is blank remove the property (like the SharePoint UI does)
                 web.RemovePropertyBagValue("SRCH_SB_SET_WEB");
             }
+
+            #region Disable scripting if previously enabled
+            if (adminContext != null)
+            {
+                // Reset disabling setting the property bag if needed
+                tenant.SetSiteProperties(site.Url, noScriptSite: true);
+                adminContext.Dispose();
+            }
+            #endregion
         }
 
         /// <summary>
@@ -296,7 +350,5 @@ namespace Microsoft.SharePoint.Client
             // Get search results page URL of the current web
             return web.GetPropertyBagValueString("SRCH_SB_SET_WEB", string.Empty);
         }
-
-
     }
 }
