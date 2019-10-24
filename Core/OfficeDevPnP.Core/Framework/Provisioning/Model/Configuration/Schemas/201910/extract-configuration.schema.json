@@ -6,6 +6,13 @@
   "type": "object",
   "additionalProperties": false,
   "required": [],
+  "definitions":{
+    "siteUrl":{
+      "type":"string",
+      "description": "A value in the shape of https://[yourtenant].sharepoint.com/sites/yoursite",
+      "pattern": "https:\/\/[a-zA-Z]*.sharepoint\\.[a-zA-Z].*"
+    }
+  },
   "properties": {
     "$schema": {
       "type": "string"
@@ -37,7 +44,7 @@
               "type":"array",
               "minItems":1,
               "items":{
-                "type":"string"
+                "$ref": "#/definitions/siteUrl"
               }
             },
             "includedJoinedSites":
@@ -65,17 +72,17 @@
               "type": "boolean",
               "description": "If specified all teams in this tenant will be exported. This can take a long time."
             },
-            "includeMessages": {
-              "type": "boolean",
-              "description": "If specified messages will be extracted from the teams"
-            },
             "teamSiteUrls": {
               "description": "Specify the fully qualified site urls of the SharePoint sites for which you want extract the teams",
               "type": "array",
               "minItems": 0,
               "items": {
-                "type": "string"
+                "$ref":"#/definitions/siteUrl"
               }
+            },
+            "includeMessages": {
+              "type": "boolean",
+              "description": "If specified messages will be extracted from the teams"
             }
           }
         }
