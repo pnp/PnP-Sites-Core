@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Tenant.Se
     public class ExtractSequenceConfiguration
     {
         [JsonProperty("siteUrls")]
-        internal List<string> SiteUrls { get; set; } = new List<string>();
+        public List<string> SiteUrls { get; set; } = new List<string>();
 
         [JsonProperty("maxSubsiteDepth")]
         public int MaxSubsiteDepth { get; set; }

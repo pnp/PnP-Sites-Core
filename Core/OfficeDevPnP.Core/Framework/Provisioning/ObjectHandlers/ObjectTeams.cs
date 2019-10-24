@@ -1186,7 +1186,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     break;
                                 }
                         }
-                        configuration.FileConnector.SaveFileStream($"photo_{groupId}_{teamPhotoId}{extension}", "TeamData/{, s);
+                        configuration.FileConnector.SaveFileStream($"photo_{groupId}_{teamPhotoId}{extension}", $"TeamData/TEAM_{groupId}", teamPhotoStream);
+                        team.Photo = $"TeamData/TEAM_{groupId}/photo_{groupId}_{teamPhotoId}{extension}";
                     }
                 }
             }

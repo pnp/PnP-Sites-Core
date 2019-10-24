@@ -278,8 +278,7 @@
           "SiteHeader",
           "SiteFooter",
           "Theme",
-          "SiteSettings",
-          "Teams"
+          "SiteSettings"
         ]
       }
     }
