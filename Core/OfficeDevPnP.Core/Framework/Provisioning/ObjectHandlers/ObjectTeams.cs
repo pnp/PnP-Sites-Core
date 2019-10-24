@@ -440,6 +440,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>Whether the Security settings have been provisioned or not</returns>
         private static bool SetGroupSecurity(PnPMonitoredScope scope, Team team, string teamId, string accessToken)
         {
+            SetAllowToAddGuestsSetting(scope, teamId, team.Security.AllowToAddGuests, accessToken);
+
             String[] desideredOwnerIds;
             String[] desideredMemberIds;
             String[] finalOwnerIds;
@@ -586,6 +588,72 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             return true;
+        }
+        
+        private static void SetAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, bool allowToAddGuests, string accessToken)
+        {
+            if (GetAllowToAddGuestsSetting(scope, teamId, accessToken) != null)
+            {
+                UpdateAllowToAddGuestsSetting(scope, teamId, allowToAddGuests, accessToken);
+            }
+            else {
+                CreateAllowToAddGuestsSetting(scope, teamId, allowToAddGuests, accessToken);
+            }
+        }
+
+        public static JToken GetAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, string accessToken)
+        {
+            try
+            {
+                var groupGuestSettings = GetGroupUnifiedGuestSettings(scope, teamId, accessToken);
+                return groupGuestSettings["values"]?.FirstOrDefault(x => x["name"].ToString() == "AllowToAddGuests");
+            }
+            catch (Exception e)
+            {
+                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError, e.Message);
+                return null;
+            }
+        }
+
+        private static JToken GetGroupUnifiedGuestSettings(PnPMonitoredScope scope, string teamId, string accessToken)
+        {
+            try
+            {
+                var response = JToken.Parse(HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/settings", accessToken));
+                return response["value"]?.FirstOrDefault(x => x["templateId"].ToString() == "08d542b9-071f-4e16-94b0-74abb372e3d9");
+            }
+            catch (Exception e)
+            {
+                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError, e.Message);
+                return null;
+            }
+        }
+
+        private static void CreateAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, bool allowToAddGuests, string accessToken)
+        {
+            try
+            {
+                var body = $"{{'displayName': 'Group.Unified.Guest', 'templateId': '08d542b9-071f-4e16-94b0-74abb372e3d9', 'values': [{{'name': 'AllowToAddGuests','value': '{allowToAddGuests}'}}] }}";
+                HttpHelper.MakePostRequest($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/settings", body, "application/json", accessToken);
+            }
+            catch (Exception e)
+            {
+                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError, e.Message);
+            }
+        }
+
+        private static void UpdateAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, bool allowToAddGuests, string accessToken) {
+            try
+            {
+                var groupGuestSettings = GetGroupUnifiedGuestSettings(scope, teamId, accessToken);
+                groupGuestSettings["values"].FirstOrDefault(x => x["name"].ToString() == "AllowToAddGuests")["value"] = allowToAddGuests.ToString();
+
+                HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/settings/{groupGuestSettings["id"]}", groupGuestSettings, "application/json", accessToken);
+            }
+            catch (Exception e)
+            {
+                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError, e.Message);
+            }
         }
 
         /// <summary>
