@@ -43,6 +43,11 @@ namespace Microsoft.SharePoint.Client
             engine.ApplyProvisioningHierarchy(tenant, hierarchy, sequenceId, applyingInformation);
         }
 
+        public static ProvisioningHierarchy GetTenantTemplate(this Tenant tenant, ExtractConfiguration configuration)
+        {
+            return new SiteToTemplateConversion().GetTenantTemplate(tenant, configuration);
+        }
+
         /// <summary>
         /// Returns the urls of sites connected to the hubsite specified
         /// </summary>

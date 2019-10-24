@@ -73,6 +73,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 webSettings.AlternateCSS = Tokenize(web.AlternateCssUrl, web.Url);
                 webSettings.RequestAccessEmail = web.RequestAccessEmail;
 
+                // Can we get the hubsite url? This requires Tenant Admin rights
+                try
+                {
+                    var site = ((ClientContext)web.Context).Site;
+                    site.EnsureProperties(s => s.HubSiteId, s => s.Id);
+                    if (site.HubSiteId != Guid.Empty && site.HubSiteId != site.Id)
+                    {
+                        using (var tenantContext = web.Context.Clone((web.Context as ClientContext).Web.GetTenantAdministrationUrl()))
+                        {
+                            var tenant = new Tenant(tenantContext);
+                            var hubsiteProperties = tenant.GetHubSitePropertiesById(site.HubSiteId);
+                            tenantContext.Load(hubsiteProperties);
+                            tenantContext.ExecuteQueryRetry();
+                            webSettings.HubSiteUrl = hubsiteProperties.SiteUrl;
+                        }
+                    }
+                }
+                catch { }
+
+
                 if (creationInfo.PersistBrandingFiles)
                 {
                     if (!string.IsNullOrEmpty(web.MasterUrl))
@@ -403,7 +423,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             // logo provisioning throws when applying across base template IDs; provisioning fails in this case
                             // this is the error that is already (rightly so) shown beforehand in the console: WARNING: The source site from which the template was generated had a base template ID value of SITEPAGEPUBLISHING#0, while the current target site has a base template ID value of GROUP#0. This could cause potential issues while applying the template.
                             WriteMessage("Applying site logo across base template IDs is not possible. Skipping site logo provisioning.", ProvisioningMessageType.Warning);
-                        } else
+                        }
+                        else
                         // Modern site? Then we assume the SiteLogo is actually a filepath
                         if (web.WebTemplate == "GROUP")
                         {
@@ -440,7 +461,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                             }
 #endif
-                                }
+                        }
                         else
                         {
                             web.SiteLogoUrl = logoUrl;

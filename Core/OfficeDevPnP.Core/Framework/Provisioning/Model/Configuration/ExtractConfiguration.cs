@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
+using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using System;
 using System.Collections.Generic;
@@ -13,41 +14,53 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
 {
-
     public partial class ExtractConfiguration
     {
+        [JsonIgnore]
+        public FileConnectorBase FileConnector { get; set; }
+
+        [JsonIgnore]
+        public Action<string, int, int> ProgressAction { get; set; }
+
+        [JsonIgnore]
+        public Action<string, ProvisioningMessageType> MessageAction { get; set; }
+
         [JsonProperty("persistAssetFiles")]
         public bool PersistAssetFiles { get; set; }
 
         [JsonProperty("handlers")]
-        public List<ConfigurationHandler> Handlers { get; set; }
+        public List<ConfigurationHandler> Handlers { get; set; } = new List<ConfigurationHandler>();
 
         [JsonProperty("lists")]
-        public Lists.ExtractConfiguration Lists { get; set; }
+        public Lists.ExtractConfiguration Lists { get; set; } = new Lists.ExtractConfiguration();
 
         [JsonProperty("pages")]
-        public Pages.ExtractConfiguration Pages { get; set; }
+        public Pages.ExtractConfiguration Pages { get; set; } = new Pages.ExtractConfiguration();
 
         [JsonProperty("siteSecurity")]
-        public SiteSecurity.ExtractConfiguration SiteSecurity { get; set; }
+        public SiteSecurity.ExtractConfiguration SiteSecurity { get; set; } = new SiteSecurity.ExtractConfiguration();
 
         [JsonProperty("taxonomy")]
-        public Taxonomy.ExtractConfiguration Taxonomy { get; set; }
+        public Taxonomy.ExtractConfiguration Taxonomy { get; set; } = new Taxonomy.ExtractConfiguration();
 
         [JsonProperty("navigation")]
-        public Navigation.ExtractConfiguration Navigation { get; set; }
+        public Navigation.ExtractConfiguration Navigation { get; set; } = new Navigation.ExtractConfiguration();
 
         [JsonProperty("siteFooter")]
-        public SiteFooter.ExtractConfiguration SiteFooter { get; set; }
+        public SiteFooter.ExtractConfiguration SiteFooter { get; set; } = new SiteFooter.ExtractConfiguration();
 
         [JsonProperty("contentTypes")]
-        public ContentTypes.ExtractConfiguration ContentTypes { get; set; }
+        public ContentTypes.ExtractConfiguration ContentTypes { get; set; } = new ContentTypes.ExtractConfiguration();
 
         [JsonProperty("searchSettings")]
-        public SearchSettings.ExtractConfiguration SearchSettings
-        {
-            get; set;
-        }
+        public SearchSettings.ExtractConfiguration SearchSettings { get; set; } = new SearchSettings.ExtractConfiguration();
+
+        /// <summary>
+        /// Defines Tenant Extraction Settings
+        /// </summary>
+        [JsonProperty("tenant")]
+        public Tenant.ExtractTenantConfiguration Tenant { get; set; } = new Tenant.ExtractTenantConfiguration();
+
         public ProvisioningTemplateCreationInformation ToCreationInformation(Web web)
         {
 
@@ -82,33 +95,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
             {
                 ci.HandlersToProcess = Model.Handlers.All;
             }
+            ci.FileConnector = this.FileConnector;
+            ci.IncludeAllClientSidePages = this.Pages.IncludeAllClientSidePages;
+            ci.IncludeHiddenLists = this.Lists.IncludeHiddenLists;
+            ci.IncludeSiteGroups = this.SiteSecurity.IncludeSiteGroups;
+            ci.ContentTypeGroupsToInclude = this.ContentTypes.Groups;
+            ci.IncludeContentTypesFromSyndication = !this.ContentTypes.ExcludeFromSyndication;
+            ci.IncludeTermGroupsSecurity = this.Taxonomy.IncludeSecurity;
+            ci.IncludeSiteCollectionTermGroup = this.Taxonomy.IncludeSiteCollectionTermGroup;
+            ci.IncludeSearchConfiguration = this.SearchSettings.Include;
 
-            if (this.Pages != null)
+            if (this.ProgressAction != null)
             {
-                ci.IncludeAllClientSidePages = this.Pages.IncludeAllClientSidePages;
+                ci.ProgressDelegate = (message, step, total) =>
+                {
+                    ProgressAction(message, step, total);
+                };
             }
-            if (this.Lists != null)
+            if (this.MessageAction != null)
             {
-                ci.IncludeHiddenLists = this.Lists.IncludeHiddenLists;
+                ci.MessagesDelegate = (message, type) =>
+                {
+                    MessageAction(message, type);
+                };
             }
-            if (this.SiteSecurity != null)
-            {
-                ci.IncludeSiteGroups = this.SiteSecurity.IncludeSiteGroups;
-            }
-            if (this.ContentTypes != null)
-            {
-                ci.ContentTypeGroupsToInclude = this.ContentTypes.Groups;
-                ci.IncludeContentTypesFromSyndication = !this.ContentTypes.ExcludeFromSyndication;
-            }
-            if (this.Taxonomy != null)
-            {
-                ci.IncludeTermGroupsSecurity = this.Taxonomy.IncludeSecurity;
-                ci.IncludeSiteCollectionTermGroup = this.Taxonomy.IncludeSiteCollectionTermGroup;
-            }
-            if (this.SearchSettings != null)
-            {
-                ci.IncludeSearchConfiguration = this.SearchSettings.Include;
-            }
+
             return ci;
         }
         public static ExtractConfiguration FromString(string input)

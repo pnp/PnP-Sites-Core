@@ -14,7 +14,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Lists.Lis
         public bool SkipEmptyFields { get; set; }
 
         [JsonProperty("query")]
-        public ExtractQueryConfiguration Query { get; set; }
+        public ExtractQueryConfiguration Query { get; set; } = new ExtractQueryConfiguration();
 
         [JsonProperty("removeExistingContentTypes")]
         public bool RemoveExistingContentTypes { get; set; }

@@ -4,6 +4,7 @@ using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using System;
 using System.Collections.Generic;
@@ -74,7 +75,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             public TokenParser UpdatedParser { get; set; }
         }
 
-        public override ProvisioningHierarchy ExtractObjects(Tenant tenant, ProvisioningHierarchy hierarchy, ProvisioningTemplateCreationInformation creationInfo)
+        public override ProvisioningHierarchy ExtractObjects(Tenant tenant, ProvisioningHierarchy hierarchy, ExtractConfiguration configuration)
         {
             throw new NotImplementedException();
         }
@@ -187,7 +188,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return hierarchy.Sequences.Where(s => s.TermStore != null && s.TermStore.TermGroups != null && s.TermStore.TermGroups.Any()).Any();
         }
 
-        public override bool WillExtract(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateCreationInformation creationInfo)
+        public override bool WillExtract(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, ExtractConfiguration configuration)
         {
             return false;
         }

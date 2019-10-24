@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     /// <param name="resource">The Resource to access</param>
     /// <param name="scope">The required Permission Scope</param>
     /// <returns>The Access Token to access the target resource</returns>
-    public delegate Task<String> AcquireTokenAsyncDelegate(String resource, String scope);
+    public delegate Task<String> AcquireTokenAsyncDelegate(String resource, string scope);
 
     /// <summary>
     /// Asynchronous delegate to get a cookie to access a target resource
@@ -34,6 +34,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
     {
         private readonly PnPProvisioningContext _previous;
 
+        internal List<string> ParsedSiteUrls { get; private set; } = new List<string>();
         /// <summary>
         /// Asynchronous delegate to acquire an access token for a specific resource and with a specific scope
         /// </summary>
@@ -89,9 +90,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="resource">The target resource</param>
         /// <param name="scope">The scope for the target resource</param>
         /// <returns>The Access Token for the requested resource, with the requested scope</returns>
-        public String AcquireToken(String resource, String scope)
+        public String AcquireToken(String resource, string scope)
         {
             return(this.AcquireTokenAsync(resource, scope).GetAwaiter().GetResult());
+        }
+
+        public string AcquireTokenWithMultipleScopes(string resource, params string[] scope)
+        {
+            return this.AcquireTokenAsync(resource, string.Join(" ", scope)).GetAwaiter().GetResult();
         }
 
         /// <summary>

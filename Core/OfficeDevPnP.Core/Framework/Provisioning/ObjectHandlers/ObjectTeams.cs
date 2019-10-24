@@ -1,14 +1,18 @@
 ﻿#if !ONPREMISES
 using Microsoft.Online.SharePoint.TenantAdministration;
+using Microsoft.SharePoint.Client;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using OfficeDevPnP.Core.Framework.Provisioning.Model.Teams;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Utilities.Graph;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
@@ -74,7 +78,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // And now we configure security, channels, and apps
                 // Only configure Security, if Security is configured
-                if (team.Security != null) { 
+                if (team.Security != null)
+                {
                     if (!SetGroupSecurity(scope, team, teamId, accessToken)) return null;
                 }
                 if (!SetTeamChannels(scope, parser, team, teamId, accessToken)) return null;
@@ -129,6 +134,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     wait = false;
                 }
             }
+        }
+
+        private static string[] GetAllIdsForAllGroupsWithTeams(string accessToken)
+        {
+            var groupids = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')&$select=Id", accessToken);
+            var value = JObject.Parse(groupids).Value<JArray>("value");
+            return value.Select(t => t.Value<string>("id")).ToArray();
         }
 
         /// <summary>
@@ -633,10 +645,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return JToken.Parse(HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels", accessToken))["value"];
         }
 
-        private static string UpdateTeamChannel(TeamChannel channel, string teamId, JToken existingChannel, string accessToken)
+        private static string UpdateTeamChannel(Model.Teams.TeamChannel channel, string teamId, JToken existingChannel, string accessToken)
         {
             // Not supported to update 'General' Channel
-            if(channel.DisplayName.Equals("General", StringComparison.InvariantCultureIgnoreCase))
+            if (channel.DisplayName.Equals("General", StringComparison.InvariantCultureIgnoreCase))
                 return existingChannel["id"].ToString();
 
             var channelId = existingChannel["id"].ToString();
@@ -657,7 +669,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return channelId;
         }
 
-        private static string CreateTeamChannel(PnPMonitoredScope scope, TeamChannel channel, string teamId, string accessToken)
+        private static string CreateTeamChannel(PnPMonitoredScope scope, Model.Teams.TeamChannel channel, string teamId, string accessToken)
         {
             var channelToCreate = new
             {
@@ -974,11 +986,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return _willProvision.Value;
         }
 
-        public override bool WillExtract(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateCreationInformation creationInfo)
+        public override bool WillExtract(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ExtractConfiguration configuration)
         {
             if (!_willExtract.HasValue)
             {
-                _willExtract = false;
+                _willExtract = true;
             }
             return _willExtract.Value;
         }
@@ -1036,10 +1048,167 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        public override ProvisioningHierarchy ExtractObjects(Tenant tenant, ProvisioningHierarchy hierarchy, ProvisioningTemplateCreationInformation creationInfo)
+        public override ProvisioningHierarchy ExtractObjects(Tenant tenant, ProvisioningHierarchy hierarchy, ExtractConfiguration configuration)
         {
-            // So far, no extraction
+            var accessToken = PnPProvisioningContext.Current.AcquireTokenWithMultipleScopes(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All", "User.Read.All");
+
+            if (accessToken != null)
+            {
+
+                if (configuration.Tenant.Teams.IncludeAllTeams)
+                {
+                    // Retrieve all groups with teams
+
+                    var groupIds = GetAllIdsForAllGroupsWithTeams(accessToken);
+                    foreach (var groupId in groupIds)
+                    {
+                        Team team = ParseTeamJson(configuration, accessToken, groupId);
+                        if (team != null)
+                        {
+                            hierarchy.Teams.Teams.Add(team);
+                        }
+                    }
+                }
+                if (configuration.Tenant.Teams.TeamSiteUrls.Any())
+                {
+                    foreach (var siteUrl in configuration.Tenant.Teams.TeamSiteUrls)
+                    {
+                        using (var siteContext = tenant.Context.Clone(siteUrl))
+                        {
+                            var groupId = siteContext.Web.GetPropertyBagValueString("GroupId", null);
+                            if (groupId != null)
+                            {
+                                Team team = ParseTeamJson(configuration, accessToken, groupId);
+                                if (team != null)
+                                {
+                                    hierarchy.Teams.Teams.Add(team);
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var siteUrl in PnPProvisioningContext.Current.ParsedSiteUrls)
+                    {
+                        using (var siteContext = tenant.Context.Clone(siteUrl))
+                        {
+                            var groupId = siteContext.Web.GetPropertyBagValueString("GroupId", null);
+                            if (groupId != null)
+                            {
+                                Team team = ParseTeamJson(configuration, accessToken, groupId);
+                                if (team != null)
+                                {
+                                    hierarchy.Teams.Teams.Add(team);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             return hierarchy;
+        }
+
+        private static Team ParseTeamJson(ExtractConfiguration configuration, string accessToken, string groupId)
+        {
+            var team = new Team();
+
+            // Get Settings
+            try
+            {
+                var teamString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}", accessToken);
+                team = JsonConvert.DeserializeObject<Team>(teamString);
+
+                var teamChannelsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/channels", accessToken);
+                team.Channels.AddRange(JsonConvert.DeserializeObject<List<Model.Teams.TeamChannel>>(JObject.Parse(teamChannelsString)["value"].ToString()));
+
+                foreach (var channel in team.Channels)
+                {
+                    var teamTabsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/channels/{channel.ID}/tabs", accessToken);
+                    channel.Tabs.AddRange(JsonConvert.DeserializeObject<List<TeamTab>>(JObject.Parse(teamTabsString)["value"].ToString()));
+                    if (configuration.Tenant.Teams.IncludeMessages)
+                    {
+                        var channelMessagesString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/channels/{channel.ID}/messages", accessToken);
+                        foreach (var message in JObject.Parse(channelMessagesString)["value"] as JArray)
+                        {
+                            channel.Messages.Add(new TeamChannelMessage() { Message = message.ToString() });
+                        }
+                    }
+                }
+                var teamsAppsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/installedApps", accessToken);
+                foreach (var app in JObject.Parse(teamsAppsString)["value"] as JArray)
+                {
+                    team.Apps.Add(new TeamAppInstance() { AppId = app["id"].Value<string>() });
+                }
+                team.Security = new TeamSecurity();
+                var teamOwnersString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/groups/{groupId}/owners", accessToken);
+                foreach (var user in JObject.Parse(teamOwnersString)["value"] as JArray)
+                {
+                    team.Security.Owners.Add(user.ToObject<TeamSecurityUser>());
+                }
+
+                var teamMembersString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/groups/{groupId}/members", accessToken);
+                foreach (var user in JObject.Parse(teamMembersString)["value"] as JArray)
+                {
+                    team.Security.Members.Add(user.ToObject<TeamSecurityUser>());
+                }
+
+                if (configuration.PersistAssetFiles)
+                {
+                    // get the photo stream
+                    var teamPhotoIdString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{groupId}/photo", accessToken);
+                    var teamPhotoId = JObject.Parse(teamPhotoIdString)["id"].Value<string>();
+                    var groupPhotoString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{groupId}/photos/{teamPhotoId}");
+                    var mediaType = JObject.Parse(groupPhotoString)["@odata.mediaContentType"].Value<string>();
+                    using (var teamPhotoStream = HttpHelper.MakeGetRequestForStream($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{groupId}/photos/{teamPhotoId}/$value", null, accessToken))
+                    {
+                        var extension = string.Empty;
+                        switch (mediaType)
+                        {
+                            case "image/jpeg":
+                                {
+                                    extension = ".jpg";
+                                    break;
+                                }
+                            case "image/gif":
+                                {
+                                    extension = ".gif";
+                                    break;
+                                }
+                            case "image/png":
+                                {
+                                    extension = ".png";
+                                    break;
+                                }
+                            case "image/bmp":
+                                {
+                                    extension = ".bmp";
+                                    break;
+                                }
+                        }
+                        configuration.FileConnector.SaveFileStream($"photo_{groupId}_{teamPhotoId}{extension}", "TeamData/{, s);
+                    }
+                }
+            }
+            catch (ApplicationException ex)
+            {
+                if (ex.InnerException is HttpException)
+                {
+                    if (((HttpException)ex.InnerException).GetHttpCode() == 404)
+                    {
+                        // no team, swallow
+                    }
+                    else
+                    {
+                        throw ex;
+                    }
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
+            return team;
         }
         #endregion
 

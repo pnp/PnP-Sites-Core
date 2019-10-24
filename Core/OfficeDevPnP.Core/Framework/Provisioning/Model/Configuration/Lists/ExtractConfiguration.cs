@@ -10,7 +10,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Lists
         public bool IncludeHiddenLists { get; set; }
 
         [JsonProperty("lists")]
-        public List<Lists.ExtractConfiguration> Lists { get; set; }
+        public List<Lists.ExtractConfiguration> Lists { get; set; } = new List<Lists.ExtractConfiguration>();
 
         public bool HasLists
         {
