@@ -589,7 +589,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             return true;
         }
-        
+
+        /// <summary>
+        /// Checks if the AllowToAddGuest setting already exists for the team connected unified group, and based on the outcome either creates or updates the setting.
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="allowToAddGuests">Boolean value indicating whether external sharing should be allowed or not.</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
         private static void SetAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, bool allowToAddGuests, string accessToken)
         {
             if (GetAllowToAddGuestsSetting(scope, teamId, accessToken) != null)
@@ -601,6 +608,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        /// <summary>
+        /// Gets the AllowToAddGuests setting JSON (name and value) of the team connected unified group.
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        /// <returns>JSON object with name and value properties</returns>
         public static JToken GetAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, string accessToken)
         {
             try
@@ -615,6 +629,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        /// <summary>
+        /// Gets the Group.Unified.Guest settings for the unified group that is connected to the team.
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        /// <returns>All guest related settings for the team connected unified group (not just external sharing)</returns>
         private static JToken GetGroupUnifiedGuestSettings(PnPMonitoredScope scope, string teamId, string accessToken)
         {
             try
@@ -629,6 +650,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        /// <summary>
+        /// Creates the AllowToAddGuests setting for the team connected unified group, and sets its value.
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="allowToAddGuests">Boolean value indicating whether external sharing should be allowed or not.</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
         private static void CreateAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, bool allowToAddGuests, string accessToken)
         {
             try
@@ -642,6 +670,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        /// <summary>
+        /// Updates an existing AllowToAddGuests setting for the team connected unified group.
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="allowToAddGuests">Boolean value indicating whether external sharing should be allowed or not.</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
         private static void UpdateAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, bool allowToAddGuests, string accessToken) {
             try
             {
