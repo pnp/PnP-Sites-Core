@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Utilities
     /// </summary>
     public static class HttpHelper
     {
-        public const String JsonContentType = "application/json";
+        public const string JsonContentType = "application/json";
 
         /// <summary>
         /// Static readonly instance of HttpClient to improve performances
@@ -34,8 +34,8 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="requestUrl">The URL of the request</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token for the request, if authorization is required</param>
         /// <returns>The String value of the result</returns>
-        public static String MakeGetRequestForString(String requestUrl,
-            String accessToken = null)
+        public static string MakeGetRequestForString(string requestUrl,
+            string accessToken = null)
         {
             return (MakeHttpRequest<String>("GET",
                 requestUrl,
@@ -51,10 +51,10 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="accept">The accept header for the response</param>
         /// <param name="referer">The URL Referer for the request</param>
         /// <returns>The Stream  of the result</returns>
-        public static System.IO.Stream MakeGetRequestForStream(String requestUrl,
-            String accept,
-            String accessToken = null,
-            String referer = null)
+        public static System.IO.Stream MakeGetRequestForStream(string requestUrl,
+            string accept,
+            string accessToken = null,
+            string referer = null)
         {
             return (MakeHttpRequest<System.IO.Stream>("GET",
                 requestUrl,
@@ -72,15 +72,16 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="accessToken">The OAuth 2.0 Access Token for the request, if authorization is required</param>
         /// <param name="accept">The accept header for the response</param>
         /// <returns>The Stream  of the result</returns>
-        public static System.IO.Stream MakeGetRequestForStreamWithResponseHeaders(String requestUrl,
-            String accept,
+        public static System.IO.Stream MakeGetRequestForStreamWithResponseHeaders(string requestUrl,
+            string accept,
             out HttpResponseHeaders responseHeaders,
-            String accessToken = null)
+            string accessToken = null)
         {
             return (MakeHttpRequest<System.IO.Stream>("GET",
                 requestUrl,
                 out responseHeaders,
                 accessToken,
+                accept: accept,
                 resultPredicate: r => r.Content.ReadAsStreamAsync().Result));
         }
 
@@ -91,12 +92,12 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="accessToken">The OAuth 2.0 Access Token for the request, if authorization is required</param>
         /// <param name="content">The content of the request</param>
         /// <param name="contentType">The content/type of the request</param>
-        public static void MakePostRequest(String requestUrl,
-            Object content = null,
-            String contentType = null,
-            String accessToken = null)
+        public static void MakePostRequest(string requestUrl,
+            object content = null,
+            string contentType = null,
+            string accessToken = null)
         {
-            MakeHttpRequest<String>("POST",
+            MakeHttpRequest<string>("POST",
                 requestUrl,
                 accessToken: accessToken,
                 content: content,
@@ -111,10 +112,10 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="content">The content of the request</param>
         /// <param name="contentType">The content/type of the request</param>
         /// <returns>The String value of the result</returns>
-        public static String MakePostRequestForString(String requestUrl,
-            Object content = null,
-            String contentType = null,
-            String accessToken = null)
+        public static string MakePostRequestForString(string requestUrl,
+            object content = null,
+            string contentType = null,
+            string accessToken = null)
         {
             return (MakeHttpRequest<String>("POST",
                 requestUrl,
@@ -141,12 +142,12 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="accessToken">The OAuth 2.0 Access Token for the request, if authorization is required</param>
         /// <param name="content">The content of the request</param>
         /// <param name="contentType">The content/type of the request</param>
-        public static void MakePutRequest(String requestUrl,
-            Object content = null,
-            String contentType = null,
-            String accessToken = null)
+        public static void MakePutRequest(string requestUrl,
+            object content = null,
+            string contentType = null,
+            string accessToken = null)
         {
-            MakeHttpRequest<String>("PUT",
+            MakeHttpRequest<string>("PUT",
                 requestUrl,
                 accessToken: accessToken,
                 content: content,
@@ -161,10 +162,10 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="content">The content of the request</param>
         /// <param name="contentType">The content/type of the request</param>
         /// <returns>The String value of the result</returns>
-        public static String MakePutRequestForString(String requestUrl,
-            Object content = null,
-            String contentType = null,
-            String accessToken = null)
+        public static string MakePutRequestForString(string requestUrl,
+            object content = null,
+            string contentType = null,
+            string accessToken = null)
         {
             return (MakeHttpRequest<String>("PUT",
                 requestUrl,
@@ -182,10 +183,10 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="content">The content of the request</param>
         /// <param name="contentType">The content/type of the request</param>
         /// <returns>The String value of the result</returns>
-        public static String MakePatchRequestForString(String requestUrl,
-            Object content = null,
-            String contentType = null,
-            String accessToken = null)
+        public static string MakePatchRequestForString(string requestUrl,
+            object content = null,
+            string contentType = null,
+            string accessToken = null)
         {
             return (MakeHttpRequest<String>("PATCH",
                 requestUrl,
@@ -201,10 +202,10 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="requestUrl">The URL of the request</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token for the request, if authorization is required</param>
         /// <returns>The String value of the result</returns>
-        public static void MakeDeleteRequest(String requestUrl,
-            String accessToken = null)
+        public static void MakeDeleteRequest(string requestUrl,
+            string accessToken = null)
         {
-            MakeHttpRequest<String>("DELETE", requestUrl, accessToken);
+            MakeHttpRequest<string>("DELETE", requestUrl, accessToken);
         }
 
         /// <summary>
@@ -221,13 +222,13 @@ namespace OfficeDevPnP.Core.Utilities
         /// <typeparam name="TResult">The type of the result, if any</typeparam>
         /// <returns>The value of the result, if any</returns>
         private static TResult MakeHttpRequest<TResult>(
-            String httpMethod,
-            String requestUrl,
-            String accessToken = null,
-            String accept = null,
-            Object content = null,
-            String contentType = null,
-            String referer = null,
+            string httpMethod,
+            string requestUrl,
+            string accessToken = null,
+            string accept = null,
+            object content = null,
+            string contentType = null,
+            string referer = null,
             Func<HttpResponseMessage, TResult> resultPredicate = null)
         {
             HttpResponseHeaders responseHeaders;
@@ -257,14 +258,14 @@ namespace OfficeDevPnP.Core.Utilities
         /// <typeparam name="TResult">The type of the result, if any</typeparam>
         /// <returns>The value of the result, if any</returns>
         private static TResult MakeHttpRequest<TResult>(
-            String httpMethod,
-            String requestUrl,
+            string httpMethod,
+            string requestUrl,
             out HttpResponseHeaders responseHeaders,
-            String accessToken = null,
-            String accept = null,
-            Object content = null,
-            String contentType = null,
-            String referer = null,
+            string accessToken = null,
+            string accept = null,
+            object content = null,
+            string contentType = null,
+            string referer = null,
             Func<HttpResponseMessage, TResult> resultPredicate = null)
         {
             // Prepare the variable to hold the result, if any
@@ -276,19 +277,19 @@ namespace OfficeDevPnP.Core.Utilities
             // If we have the token, then handle the HTTP request
 
             // Set the Authorization Bearer token
-            if (!String.IsNullOrEmpty(accessToken))
+            if (!string.IsNullOrEmpty(accessToken))
             {
                 httpClient.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", accessToken);
             }
 
-            if (!String.IsNullOrEmpty(referer))
+            if (!string.IsNullOrEmpty(referer))
             {
                 httpClient.DefaultRequestHeaders.Referrer = new Uri(referer);
             }
 
             // If there is an accept argument, set the corresponding HTTP header
-            if (!String.IsNullOrEmpty(accept))
+            if (!string.IsNullOrEmpty(accept))
             {
                 httpClient.DefaultRequestHeaders.Accept.Clear();
                 httpClient.DefaultRequestHeaders.Accept.Add(
@@ -344,9 +345,9 @@ namespace OfficeDevPnP.Core.Utilities
             else
             {
                 throw new ApplicationException(
-                    String.Format("Exception while invoking endpoint {0}.", requestUrl),
+                    string.Format("Exception while invoking endpoint {0}.", requestUrl),
                     new HttpException(
-                        (Int32)response.StatusCode,
+                        (int)response.StatusCode,
                         response.Content.ReadAsStringAsync().Result));
             }
 
