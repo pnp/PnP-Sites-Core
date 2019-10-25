@@ -17,6 +17,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Web;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
@@ -86,7 +87,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (!SetTeamApps(scope, team, teamId, accessToken)) return null;
 
                 // So far the Team's photo cannot be set if we don't have an already existing mailbox
-                // if (!SetTeamPhoto(scope, parser, connector, team, teamId, accessToken)) return null;
+                if (!SetTeamPhoto(scope, parser, connector, team, teamId, accessToken)) return null;
 
                 // Call Archive or Unarchive for the current Team
                 ArchiveTeam(scope, teamId, team.Archived, accessToken);
@@ -822,26 +823,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return true;
         }
 
+        private static JObject CleanUpMessage(JObject message)
+        {
+            List<string> propertiesToRemove = new List<string> { "createdDateTime", "id", "webUrl" };
+            foreach (var property in propertiesToRemove)
+            {
+                message.Remove(property);
+            }
+            return message;
+        }
+
         private static string CreateTeamChannelMessage(PnPMonitoredScope scope, TokenParser parser, TeamChannelMessage message, string teamId, string channelId, string accessToken)
         {
             var messageString = parser.ParseString(message.Message);
-            var messageJson = default(JToken);
+            var messageObject = default(JObject);
 
             try
             {
                 // If the message is already in JSON format, we just use it
-                messageJson = JToken.Parse(messageString);
+                messageObject = JObject.Parse(messageString);
             }
             catch
             {
                 // Otherwise try to build the JSON message content from scratch
-                messageJson = JToken.Parse($"{{ \"body\": {{ \"content\": \"{messageString}\" }} }}");
+                messageObject = JObject.Parse($"{{ \"body\": {{ \"content\": \"{messageString}\" }} }}");
             }
+
+            // We cannot set the createdDateTime value when posting a message.
+            messageObject = CleanUpMessage(messageObject);
 
             var messageId = GraphHelper.CreateOrUpdateGraphObject(scope,
                 HttpMethodVerb.POST,
                 $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/messages",
-                messageJson,
+                messageObject,
                 HttpHelper.JsonContentType,
                 accessToken,
                 null,
@@ -900,22 +914,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>Whether the Apps have been provisioned or not</returns>
         private static bool SetTeamPhoto(PnPMonitoredScope scope, TokenParser parser, FileConnectorBase connector, Team team, string teamId, string accessToken)
         {
-            if (!String.IsNullOrEmpty(team.Photo) && connector != null)
+            if (!string.IsNullOrEmpty(team.Photo) && connector != null)
             {
                 var photoPath = parser.ParseString(team.Photo);
                 var photoBytes = ConnectorFileHelper.GetFileBytes(connector, team.Photo);
 
-                using (var mem = new MemoryStream())
+                using (var photoStream = new MemoryStream(photoBytes))
                 {
-                    mem.Write(photoBytes, 0, photoBytes.Length);
-                    mem.Position = 0;
-
-                    HttpHelper.MakePostRequest(
-                        $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/photo/$value",
-                        mem, "image/jpeg", accessToken);
+                    var contentType = MimeMapping.GetMimeMapping(photoPath);
+                    int maxRetries = 10;
+                    int retry = 0;
+                    while (retry < maxRetries)
+                        try
+                        {
+                            HttpHelper.MakePutRequest(
+                                $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/photo/$value",
+                                photoStream, contentType, accessToken);
+                            break;
+                        }
+                        catch(Exception ex)
+                        {
+                            Thread.Sleep(5000); // wait half a second
+                            retry++;
+                        }
                 }
             }
-
             return true;
         }
 
@@ -1119,76 +1142,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var teamString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}", accessToken);
                 team = JsonConvert.DeserializeObject<Team>(teamString);
 
-                var teamChannelsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/channels", accessToken);
-                team.Channels.AddRange(JsonConvert.DeserializeObject<List<Model.Teams.TeamChannel>>(JObject.Parse(teamChannelsString)["value"].ToString()));
-
-                foreach (var channel in team.Channels)
-                {
-                    var teamTabsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/channels/{channel.ID}/tabs", accessToken);
-                    channel.Tabs.AddRange(JsonConvert.DeserializeObject<List<TeamTab>>(JObject.Parse(teamTabsString)["value"].ToString()));
-                    if (configuration.Tenant.Teams.IncludeMessages)
-                    {
-                        var channelMessagesString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/channels/{channel.ID}/messages", accessToken);
-                        foreach (var message in JObject.Parse(channelMessagesString)["value"] as JArray)
-                        {
-                            channel.Messages.Add(new TeamChannelMessage() { Message = message.ToString() });
-                        }
-                    }
-                }
-                var teamsAppsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/installedApps", accessToken);
-                foreach (var app in JObject.Parse(teamsAppsString)["value"] as JArray)
-                {
-                    team.Apps.Add(new TeamAppInstance() { AppId = app["id"].Value<string>() });
-                }
-                team.Security = new TeamSecurity();
-                var teamOwnersString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/groups/{groupId}/owners", accessToken);
-                foreach (var user in JObject.Parse(teamOwnersString)["value"] as JArray)
-                {
-                    team.Security.Owners.Add(user.ToObject<TeamSecurityUser>());
-                }
-
-                var teamMembersString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/groups/{groupId}/members", accessToken);
-                foreach (var user in JObject.Parse(teamMembersString)["value"] as JArray)
-                {
-                    team.Security.Members.Add(user.ToObject<TeamSecurityUser>());
-                }
-
+                team = GetTeamChannels(configuration, accessToken, groupId, team);
+                team = GetTeamApps(accessToken, groupId, team);
+                team = GetTeamSecurity(accessToken, groupId, team);
                 if (configuration.PersistAssetFiles)
                 {
-                    // get the photo stream
-                    var teamPhotoIdString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{groupId}/photo", accessToken);
-                    var teamPhotoId = JObject.Parse(teamPhotoIdString)["id"].Value<string>();
-                    var groupPhotoString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{groupId}/photos/{teamPhotoId}");
-                    var mediaType = JObject.Parse(groupPhotoString)["@odata.mediaContentType"].Value<string>();
-                    using (var teamPhotoStream = HttpHelper.MakeGetRequestForStream($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{groupId}/photos/{teamPhotoId}/$value", null, accessToken))
-                    {
-                        var extension = string.Empty;
-                        switch (mediaType)
-                        {
-                            case "image/jpeg":
-                                {
-                                    extension = ".jpg";
-                                    break;
-                                }
-                            case "image/gif":
-                                {
-                                    extension = ".gif";
-                                    break;
-                                }
-                            case "image/png":
-                                {
-                                    extension = ".png";
-                                    break;
-                                }
-                            case "image/bmp":
-                                {
-                                    extension = ".bmp";
-                                    break;
-                                }
-                        }
-                        configuration.FileConnector.SaveFileStream($"photo_{groupId}_{teamPhotoId}{extension}", $"TeamData/TEAM_{groupId}", teamPhotoStream);
-                        team.Photo = $"TeamData/TEAM_{groupId}/photo_{groupId}_{teamPhotoId}{extension}";
-                    }
+                    GetTeamPhoto(configuration, accessToken, groupId, team);
                 }
             }
             catch (ApplicationException ex)
@@ -1207,6 +1166,93 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 else
                 {
                     throw ex;
+                }
+            }
+            return team;
+        }
+
+        private static void GetTeamPhoto(ExtractConfiguration configuration, string accessToken, string groupId, Team team)
+        {
+            // get the photo stream
+            var teamPhotoIdString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{groupId}/photo", accessToken);
+            var teamPhotoId = JObject.Parse(teamPhotoIdString)["id"].Value<string>();
+            var groupPhotoString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{groupId}/photos/{teamPhotoId}");
+            var mediaType = JObject.Parse(groupPhotoString)["@odata.mediaContentType"].Value<string>();
+            using (var teamPhotoStream = HttpHelper.MakeGetRequestForStream($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{groupId}/photos/{teamPhotoId}/$value", null, accessToken))
+            {
+                var extension = string.Empty;
+                switch (mediaType)
+                {
+                    case "image/jpeg":
+                        {
+                            extension = ".jpg";
+                            break;
+                        }
+                    case "image/gif":
+                        {
+                            extension = ".gif";
+                            break;
+                        }
+                    case "image/png":
+                        {
+                            extension = ".png";
+                            break;
+                        }
+                    case "image/bmp":
+                        {
+                            extension = ".bmp";
+                            break;
+                        }
+                }
+                configuration.FileConnector.SaveFileStream($"photo_{groupId}_{teamPhotoId}{extension}", $"TeamData/TEAM_{groupId}", teamPhotoStream);
+                team.Photo = $"TeamData/TEAM_{groupId}/photo_{groupId}_{teamPhotoId}{extension}";
+            }
+        }
+
+        private static Team GetTeamSecurity(string accessToken, string groupId, Team team)
+        {
+            team.Security = new TeamSecurity();
+            var teamOwnersString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/groups/{groupId}/owners", accessToken);
+            foreach (var user in JObject.Parse(teamOwnersString)["value"] as JArray)
+            {
+                team.Security.Owners.Add(user.ToObject<TeamSecurityUser>());
+            }
+            var teamMembersString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/groups/{groupId}/members", accessToken);
+            foreach (var user in JObject.Parse(teamMembersString)["value"] as JArray)
+            {
+                team.Security.Members.Add(user.ToObject<TeamSecurityUser>());
+            }
+            return team;
+        }
+
+        private static Team GetTeamApps(string accessToken, string groupId, Team team)
+        {
+            var teamsAppsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/installedApps", accessToken);
+            foreach (var app in JObject.Parse(teamsAppsString)["value"] as JArray)
+            {
+                team.Apps.Add(new TeamAppInstance() { AppId = app["id"].Value<string>() });
+            }
+            return team;
+        }
+
+        private static Team GetTeamChannels(ExtractConfiguration configuration, string accessToken, string groupId, Team team)
+        {
+            var teamChannelsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/channels", accessToken);
+            team.Channels.AddRange(JsonConvert.DeserializeObject<List<Model.Teams.TeamChannel>>(JObject.Parse(teamChannelsString)["value"].ToString()));
+
+            foreach (var channel in team.Channels)
+            {
+                var teamTabsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/channels/{channel.ID}/tabs", accessToken);
+                channel.Tabs.AddRange(JsonConvert.DeserializeObject<List<TeamTab>>(JObject.Parse(teamTabsString)["value"].ToString()));
+                if (configuration.Tenant.Teams.IncludeMessages)
+                {
+                    var channelMessagesString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/channels/{channel.ID}/messages", accessToken);
+                    foreach (var message in JObject.Parse(channelMessagesString)["value"] as JArray)
+                    {
+                        // We cannot set the createdDateTime value while posting messages, so remove it from the export.
+                        var messageObject = CleanUpMessage((JObject)message);
+                        channel.Messages.Add(new TeamChannelMessage() { Message = messageObject.ToString() });
+                    }
                 }
             }
             return team;
