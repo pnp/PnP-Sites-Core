@@ -42,7 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// Defines whether the Channel is Favorite by default for all members of the Team
         /// </summary>
-        public Boolean IsFavoriteByDefault { get; set; }
+        public Boolean? IsFavoriteByDefault { get; set; }
 
         /// <summary>
         /// Declares the ID for the Channel

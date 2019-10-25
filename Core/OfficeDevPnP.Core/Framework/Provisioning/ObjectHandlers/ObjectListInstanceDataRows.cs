@@ -239,7 +239,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 var lists = web.Lists;
-                web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url);
+                web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url, w => w.Id);
                 web.Context.Load(lists,
                   lc => lc.IncludeWithDefaultProperties(
                         l => l.RootFolder.ServerRelativeUrl,
@@ -343,7 +343,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 foreach (var viewField in queryConfig.ViewFields)
                 {
-                    siteList.Context.Load(items, i => i.Include(li => li[viewField]));
+                    if (siteList.Fields.FirstOrDefault(f => f.InternalName == viewField) != null)
+                    {
+                        siteList.Context.Load(items, i => i.Include(li => li[viewField]));
+                    }
                 }
             }
             siteList.Context.ExecuteQueryRetry();
@@ -864,7 +867,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var fullUri = new Uri(baseUri, attachmentFile.ServerRelativeUrl);
 #endif
                     var folderPath = HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
-                    var targetFolder = $"Attachments/{item.Id}";
+                    var targetFolder = $"ListData/SITE_{web.Id.ToString("N")}/LIST_{siteList.Id.ToString("N")}/Attachments/{item.Id}";
                     dataRow.Attachments.Add(new Model.SharePoint.InformationArchitecture.DataRowAttachment()
                     {
 #if !SP2013 && !SP2016

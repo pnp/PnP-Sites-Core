@@ -564,6 +564,9 @@
     <Compile Include="Framework\Provisioning\Model\Configuration\Pages\ExtractPagesConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\SiteSecurity\ExtractSiteSecurityConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Taxonomy\ExtractConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Tenant\ExtractTenantConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Tenant\Sequence\ExtractSequenceConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Tenant\Teams\ExtractTeamsConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Drive\DriveRootFolder.cs" />
     <Compile Include="Framework\Provisioning\Model\Drive\DriveFolderBase.cs" />
     <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningTemplateWebhook.cs" />
@@ -1378,8 +1381,10 @@
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\extract-configuration.schema.json" />
-    <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\apply-configuration.schema.json" />
+    <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\Schemas\201909\extract-configuration.schema.json" />
+    <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\Schemas\201909\apply-configuration.schema.json" />
+    <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\Schemas\201910\apply-configuration.schema.json" />
+    <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\Schemas\201910\extract-configuration.schema.json" />
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />
     <None Include="packages.config">
       <SubType>Designer</SubType>

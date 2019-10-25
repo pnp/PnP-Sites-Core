@@ -2,6 +2,7 @@
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System;
 using System.Collections.Generic;
@@ -240,7 +241,56 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             }
         }
+
+        internal ProvisioningHierarchy GetTenantTemplate(Tenant tenant, ExtractConfiguration configuration = null)
+        {
+            if (configuration == null)
+            {
+                configuration = new ExtractConfiguration();
+            }
+
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Extraction))
+            {
+
+                ProvisioningHierarchy tenantTemplate = new ProvisioningHierarchy();
+
+                tenantTemplate.Connector = configuration.FileConnector;
+
+                List<ObjectHierarchyHandlerBase> objectHandlers = new List<ObjectHierarchyHandlerBase>();
+
+                if(configuration.Tenant.Sequence != null) objectHandlers.Add(new ObjectHierarchySequenceSites()); // always build up the sequence
+                if(configuration.Tenant.Teams != null) objectHandlers.Add(new ObjectTeams());
+
+                int step = 1;
+
+                var count = objectHandlers.Count(o => o.ReportProgress && o.WillExtract(tenant, tenantTemplate, null, configuration));
+
+                foreach (var handler in objectHandlers)
+                {
+                    if (handler.WillExtract(tenant, tenantTemplate, null, null))
+                    {
+                        if (configuration.MessageAction != null)
+                        {
+                            handler.MessagesDelegate = (message, type) =>
+                            {
+                                configuration.MessageAction(message, type);
+                            };
+                        }
+                        if (handler.ReportProgress && configuration.ProgressAction != null)
+                        {
+                            configuration.ProgressAction(handler.Name, step, count);
+                            step++;
+                        }
+
+                        tenantTemplate = handler.ExtractObjects(tenant, tenantTemplate, configuration);
+                    }
+                }
+
+                return tenantTemplate;
+            }
+        }
 #endif
+
         /// <summary>
         /// Actual implementation of the apply templates
         /// </summary>

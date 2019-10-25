@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using OfficeDevPnP.Core.Extensions;
+using System.Web;
+using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V201909
 {
@@ -32,16 +34,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
 
                 // Manage Team Templates
                 expressions.Add(t => t.TeamTemplates, new TeamTemplatesFromSchemaToModelTypeResolver());
-                expressions.Add(t => t.TeamTemplates[0].JsonTemplate, new ExpressionValueResolver((s, v) => {
+                expressions.Add(t => t.TeamTemplates[0].JsonTemplate, new ExpressionValueResolver((s, v) =>
+                {
                     // Concatenate all the string values in the Text array of strings and return as the content of the JSON template
                     return ((s.GetPublicInstancePropertyValue("Text") as String[])?.Aggregate(String.Empty, (acc, next) => acc += (next != null ? next : String.Empty)));
                 }));
 
                 // Manage Teams
                 expressions.Add(t => t.Teams, new TeamsFromSchemaToModelTypeResolver());
-                expressions.Add(t => t.Teams[0].FunSettings, 
+                expressions.Add(t => t.Teams[0].FunSettings,
                     new ComplexTypeFromSchemaToModelTypeResolver<TeamFunSettings>("FunSettings"));
-                expressions.Add(t => t.Teams[0].GuestSettings, 
+                expressions.Add(t => t.Teams[0].GuestSettings,
                     new ComplexTypeFromSchemaToModelTypeResolver<TeamGuestSettings>("GuestSettings"));
                 expressions.Add(t => t.Teams[0].MemberSettings,
                     new ComplexTypeFromSchemaToModelTypeResolver<TeamMemberSettings>("MembersSettings"));
@@ -56,7 +59,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                     new ComplexTypeFromSchemaToModelTypeResolver<TeamTabConfiguration>("Configuration"));
 
                 // Handle the JSON content of the Message to send to the channel
-                expressions.Add(t => t.Teams[0].Channels[0].Messages[0].Message, new ExpressionValueResolver((s, v) => s));
+                expressions.Add(t => t.Teams[0].Channels[0].Messages[0].Message, new ExpressionValueResolver((s, v) =>
+                {
+                    var message = s as string;
+                    return HttpUtility.HtmlDecode(message);
+                }));
 
                 PnPObjectsMapper.MapProperties(teams, template.ParentHierarchy.Teams, expressions, true);
             }
@@ -94,7 +101,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                     var teamChannelTabTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamChannelTabsTab, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                     var teamChannelTabType = Type.GetType(teamChannelTabTypeName, true);
                     var teamChannelTabConfigurationTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.TeamChannelTabsTabConfiguration, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-                    var teamChannelTabConfigurationType = Type.GetType(teamChannelTabConfigurationTypeName, true);                    
+                    var teamChannelTabConfigurationType = Type.GetType(teamChannelTabConfigurationTypeName, true);
 
                     var target = Activator.CreateInstance(teamsType, true);
 
@@ -105,7 +112,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                         new TeamsItemsFromModelToSchemaTypeResolver());
 
                     // Handle JSON template for the TeamTemplate objects
-                    resolvers.Add($"{teamTemplateType}.Text", new ExpressionValueResolver((s, v) => {
+                    resolvers.Add($"{teamTemplateType}.Text", new ExpressionValueResolver((s, v) =>
+                    {
                         // Return the JSON template as text for the node content
                         return (new String[1] { (s as TeamTemplate)?.JsonTemplate });
                     }));
@@ -127,9 +135,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                         new ComplexTypeFromModelToSchemaTypeResolver(teamDiscoverySettingsType, "DiscoverySettings"));
 
                     // Handle channel Messages for TeamsWithSettings objects
-                    resolvers.Add($"{teamChannelType}.Messages", new ExpressionValueResolver((s, v) => {
+                    resolvers.Add($"{teamChannelType}.Messages", new ExpressionValueResolver((s, v) =>
+                    {
                         // Return the JSON messages as an array of Strings
-                        return ((s as TeamChannel)?.Messages.Count > 0 ? (s as TeamChannel)?.Messages.Select(m => m.Message).ToArray() : null);
+                        return ((s as TeamChannel)?.Messages.Count > 0 ? (s as TeamChannel)?.Messages.Select(m => HttpUtility.HtmlEncode(m.Message)).ToArray() : null);
                     }));
 
                     // Handle channel Tab Configuration for TeamsWithSettings objects
