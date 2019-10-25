@@ -82,6 +82,10 @@
             "includeMessages": {
               "type": "boolean",
               "description": "If specified messages will be extracted from the teams"
+            },
+            "includeGroupId": {
+              "type": "boolean",
+              "description": "If specified the group id will be set for teams allowing you to update existing teams"
             }
           }
         }
