@@ -284,7 +284,18 @@ namespace OfficeDevPnP.Core.Sites
                         else
                         {
                             // Let's wait for the async provisioning of features, site scripts and content types to be done before we allow API's to further update the created site
-                            WaitForProvisioningIsComplete(responseContext.Web);
+                            if (responseContext == null)
+                            {
+                                try
+                                {
+                                    WaitForProvisioningIsComplete(responseContext.Web);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw ex;
+                                }
+                            }
+
                         }
                     }
                     else
@@ -471,7 +482,18 @@ namespace OfficeDevPnP.Core.Sites
                         else
                         {
                             // Let's wait for the async provisioning of features, site scripts and content types to be done before we allow API's to further update the created site
-                            WaitForProvisioningIsComplete(responseContext.Web);
+                            try
+                            {
+                                if (responseContext == null)
+                                {
+                                    WaitForProvisioningIsComplete(responseContext.Web);
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                throw ex;
+                            }
+
                         }
                     }
                     else
@@ -514,7 +536,7 @@ namespace OfficeDevPnP.Core.Sites
                 }
                 while (!isProvisioningComplete && retryAttempt <= maxRetryCount);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // Eat the exception for now as not all tenants already have this feature
                 // TODO: remove try/catch once IsProvisioningComplete is globally deployed
