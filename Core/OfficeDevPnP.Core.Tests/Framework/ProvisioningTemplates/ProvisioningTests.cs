@@ -26,44 +26,44 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
             }
         }
 
-        [TestMethod]
-        public void GetTenantTemplateTest()
-        {
-            using (new PnPProvisioningContext((resource, scope) => Task.FromResult(TestCommon.AcquireTokenAsync(resource, string.Join(" ", scope)))))
-            {
-                using (var context = TestCommon.CreateTenantClientContext())
-                {
-                    var tenant = new Tenant(context);
-                    var configuration = new ExtractConfiguration();
-                    //configuration.Tenant.Sequence = new Configuration.Tenant.Sequence.ExtractSequenceConfiguration()
-                    //{
-                    //    IncludeJoinedSites = true,
-                    //    IncludeSubsites = true,
-                    //    MaxSubsiteDepth = 2,
-                    //    SiteUrls = { "https://erwinmcm.sharepoint.com/sites/demo1" }
-                    //};
+        //[TestMethod]
+        //public void GetTenantTemplateTest()
+        //{
+        //    using (new PnPProvisioningContext((resource, scope) => Task.FromResult(TestCommon.AcquireTokenAsync(resource, string.Join(" ", scope)))))
+        //    {
+        //        using (var context = TestCommon.CreateTenantClientContext())
+        //        {
+        //            var tenant = new Tenant(context);
+        //            var configuration = new ExtractConfiguration();
+        //            //configuration.Tenant.Sequence = new Configuration.Tenant.Sequence.ExtractSequenceConfiguration()
+        //            //{
+        //            //    IncludeJoinedSites = true,
+        //            //    IncludeSubsites = true,
+        //            //    MaxSubsiteDepth = 2,
+        //            //    SiteUrls = { "https://erwinmcm.sharepoint.com/sites/demo1" }
+        //            //};
 
-                    configuration.Tenant.Teams = new Configuration.Tenant.Teams.ExtractTeamsConfiguration()
-                    {
-                        TeamSiteUrls = { "https://erwinmcm.sharepoint.com/sites/teamchild" },
-                        IncludeMessages = true
-                    };
+        //            configuration.Tenant.Teams = new Configuration.Tenant.Teams.ExtractTeamsConfiguration()
+        //            {
+        //                TeamSiteUrls = { "https://erwinmcm.sharepoint.com/sites/teamchild" },
+        //                IncludeMessages = true
+        //            };
                     
-                    //      configuration.Handlers.Add(ConfigurationHandler.Lists);
-                    configuration.Handlers.Add(ConfigurationHandler.WebSettings);
+        //            //      configuration.Handlers.Add(ConfigurationHandler.Lists);
+        //            //configuration.Handlers.Add(ConfigurationHandler.WebSettings);
 
-                    //configuration.Lists.Lists.Add(new Core.Framework.Provisioning.Model.Configuration.Lists.Lists.ExtractConfiguration()
-                    //{
-                    //    Title = "Test"
-                    //});
-                    //configuration.ProgressAction = (message, step, total) =>
-                    //{
-                    //    Trace.Write($"{step}|{total}|{message}");
-                    //};
-                    var tenantTemplate = new SiteToTemplateConversion().GetTenantTemplate(tenant, configuration);
-                }
-            }
-        }
+        //            //configuration.Lists.Lists.Add(new Core.Framework.Provisioning.Model.Configuration.Lists.Lists.ExtractConfiguration()
+        //            //{
+        //            //    Title = "Test"
+        //            //});
+        //            //configuration.ProgressAction = (message, step, total) =>
+        //            //{
+        //            //    Trace.Write($"{step}|{total}|{message}");
+        //            //};
+        //            var tenantTemplate = new SiteToTemplateConversion().GetTenantTemplate(tenant, configuration);
+        //        }
+        //    }
+        //}
 
         [TestMethod]
         public void ProvisionTenantTemplate()
