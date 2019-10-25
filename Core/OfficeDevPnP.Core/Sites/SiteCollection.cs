@@ -197,7 +197,7 @@ namespace OfficeDevPnP.Core.Sites
                         if (responseJson["SiteStatus"].Value<int>() == 2)
 #endif
                         {
-                            responseContext = clientContext.Clone(responseJson["SiteUrl"].ToString());
+                            return responseContext = clientContext.Clone(responseJson["SiteUrl"].ToString());
                         }
                         else
                         {
@@ -284,16 +284,13 @@ namespace OfficeDevPnP.Core.Sites
                         else
                         {
                             // Let's wait for the async provisioning of features, site scripts and content types to be done before we allow API's to further update the created site
-                            if (responseContext == null)
+                            try
                             {
-                                try
-                                {
-                                    WaitForProvisioningIsComplete(responseContext.Web);
-                                }
-                                catch (Exception ex)
-                                {
-                                    throw ex;
-                                }
+                                WaitForProvisioningIsComplete(responseContext.Web);
+                            }
+                            catch (Exception ex)
+                            {
+                                throw ex;
                             }
 
                         }
@@ -388,7 +385,7 @@ namespace OfficeDevPnP.Core.Sites
                                 if(responseJson["SiteStatus"].Value<int>() == 2)
 #endif
                                 {
-                                    responseContext = clientContext.Clone(responseJson["SiteUrl"].ToString());
+                                    return responseContext = clientContext.Clone(responseJson["SiteUrl"].ToString());
                                 }
                                 else
                                 {
@@ -484,10 +481,7 @@ namespace OfficeDevPnP.Core.Sites
                             // Let's wait for the async provisioning of features, site scripts and content types to be done before we allow API's to further update the created site
                             try
                             {
-                                if (responseContext == null)
-                                {
-                                    WaitForProvisioningIsComplete(responseContext.Web);
-                                }
+                                WaitForProvisioningIsComplete(responseContext.Web);
                             }
                             catch (Exception ex)
                             {
