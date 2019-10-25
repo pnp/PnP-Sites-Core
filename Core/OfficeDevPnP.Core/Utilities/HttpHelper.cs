@@ -25,8 +25,8 @@ namespace OfficeDevPnP.Core.Utilities
         /// <remarks>
         /// See https://docs.microsoft.com/en-us/azure/architecture/antipatterns/improper-instantiation/
         /// </remarks>
-        private static readonly HttpClient httpClient = 
-            new HttpClient(new HttpClientHandler { AllowAutoRedirect = true }, true );
+        private static readonly HttpClient httpClient =
+            new HttpClient(new HttpClientHandler { AllowAutoRedirect = true }, true);
 
         /// <summary>
         /// This helper method makes an HTTP GET request and returns the result as a String
@@ -312,11 +312,11 @@ namespace OfficeDevPnP.Core.Utilities
                     {
                         NullValueHandling = NullValueHandling.Ignore,
                         ContractResolver = new ODataBindJsonResolver(),
-                        
+
                     });
                 requestContent = new StringContent(jsonString, Encoding.UTF8, contentType);
             }
-            
+
             // Prepare the HTTP request message with the proper HTTP method
             HttpRequestMessage request = new HttpRequestMessage(
                 new HttpMethod(httpMethod), requestUrl);

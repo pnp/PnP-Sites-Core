@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Lists
 {
-    public class ExtractConfiguration
+    public class ExtractListsConfiguration
     {
         [JsonProperty("includeHiddenLists")]
         public bool IncludeHiddenLists { get; set; }
 
         [JsonProperty("lists")]
-        public List<Lists.ExtractConfiguration> Lists { get; set; }
+        public List<Lists.ExtractListsListsConfiguration> Lists { get; set; } = new List<Lists.ExtractListsListsConfiguration>();
 
         public bool HasLists
         {
