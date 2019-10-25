@@ -518,6 +518,7 @@ namespace OfficeDevPnP.Core.Sites
             {
                 // Eat the exception for now as not all tenants already have this feature
                 // TODO: remove try/catch once IsProvisioningComplete is globally deployed
+                isProvisioningComplete = true;
             }
 
             if (!isProvisioningComplete)
