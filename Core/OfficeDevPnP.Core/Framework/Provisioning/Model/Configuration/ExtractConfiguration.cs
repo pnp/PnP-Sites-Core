@@ -32,7 +32,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
         public List<ConfigurationHandler> Handlers { get; set; } = new List<ConfigurationHandler>();
 
         [JsonProperty("lists")]
-        public Lists.ExtractConfiguration Lists { get; set; } = new Lists.ExtractConfiguration();
+        public Lists.ExtractListsConfiguration Lists { get; set; } = new Lists.ExtractListsConfiguration();
 
         [JsonProperty("pages")]
         public Pages.ExtractConfiguration Pages { get; set; } = new Pages.ExtractConfiguration();

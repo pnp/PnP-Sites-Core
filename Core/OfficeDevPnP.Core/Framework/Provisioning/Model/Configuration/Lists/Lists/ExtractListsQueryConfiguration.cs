@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Lists.Lists
 {
 
-    public class ExtractQueryConfiguration
+    public class ExtractListsQueryConfiguration
     {
         [JsonProperty("camlQuery")]
         public string CamlQuery { get; set; }

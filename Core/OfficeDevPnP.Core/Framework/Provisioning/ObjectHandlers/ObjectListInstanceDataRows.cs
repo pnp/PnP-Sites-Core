@@ -279,7 +279,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     var extractionConfig = creationInfo.ExtractConfiguration.Lists.Lists.FirstOrDefault(e => e.Title.Equals(siteList.Title));
                     CamlQuery camlQuery = CamlQuery.CreateAllItemsQuery();
-                    Model.Configuration.Lists.Lists.ExtractQueryConfiguration queryConfig = null;
+                    Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig = null;
                     if (extractionConfig.Query != null)
                     {
                         queryConfig = extractionConfig.Query;
@@ -335,7 +335,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return template;
         }
 
-        private ListItemCollectionPosition RetrieveItems(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, List siteList, Model.Configuration.Lists.Lists.ExtractConfiguration extractionConfiguration, CamlQuery camlQuery, Model.Configuration.Lists.Lists.ExtractQueryConfiguration queryConfig, ListInstance listInstance, string defaultContentTypeId)
+        private ListItemCollectionPosition RetrieveItems(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, List siteList, Model.Configuration.Lists.Lists.ExtractListsListsConfiguration extractionConfiguration, CamlQuery camlQuery, Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig, ListInstance listInstance, string defaultContentTypeId)
         {
             var items = siteList.GetItems(camlQuery);
             siteList.Context.Load(items, i => i.IncludeWithDefaultProperties(li => li.FieldValuesAsText), i => i.ListItemCollectionPosition);
@@ -384,8 +384,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             List siteList,
             ProvisioningTemplate template,
             ListInstance listInstance,
-            Model.Configuration.Lists.Lists.ExtractConfiguration extractionConfig,
-            Model.Configuration.Lists.Lists.ExtractQueryConfiguration queryConfig,
+            Model.Configuration.Lists.Lists.ExtractListsListsConfiguration extractionConfig,
+            Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig,
             ProvisioningTemplateCreationInformation creationInfo,
             PnPMonitoredScope scope,
             ListItemCollection items,
@@ -660,7 +660,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return value;
         }
 
-        public Model.Folder ExtractFolderSettings(Web web, List siteList, string serverRelativePathToFolder, PnPMonitoredScope scope, Model.Configuration.Lists.Lists.ExtractQueryConfiguration queryConfig)
+        public Model.Folder ExtractFolderSettings(Web web, List siteList, string serverRelativePathToFolder, PnPMonitoredScope scope, Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig)
         {
             Model.Folder pnpFolder = null;
             try
@@ -769,7 +769,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return pnpFolder;
         }
 
-        private void ProcessFolderRow(Web web, ListItem listItem, List siteList, ListInstance listInstance, Model.Configuration.Lists.Lists.ExtractQueryConfiguration queryConfig, ProvisioningTemplate template, PnPMonitoredScope scope)
+        private void ProcessFolderRow(Web web, ListItem listItem, List siteList, ListInstance listInstance, Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig, ProvisioningTemplate template, PnPMonitoredScope scope)
         {
             listItem.EnsureProperties(it => it.ParentList.RootFolder.ServerRelativeUrl);
             string serverRelativeListUrl = listItem.ParentList.RootFolder.ServerRelativeUrl;
@@ -811,12 +811,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             List siteList,
             ListInstance listInstance,
             ProvisioningTemplateCreationInformation creationInfo,
-            Model.Configuration.Lists.Lists.ExtractConfiguration extractionConfig,
-            Model.Configuration.Lists.Lists.ExtractQueryConfiguration queryConfig,
+            Model.Configuration.Lists.Lists.ExtractListsListsConfiguration extractionConfig,
+            Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig,
             Uri baseUri,
             ListItemCollection items,
             PnPMonitoredScope scope)
         {
+            if(!string.IsNullOrEmpty(extractionConfig.KeyColumn))
+            {
+                listInstance.DataRows.KeyColumn = extractionConfig.KeyColumn;
+                listInstance.DataRows.UpdateBehavior = extractionConfig.UpdateBehavior;
+            }
+            
             var itemCount = 1;
             foreach (var item in items)
             {
@@ -830,7 +836,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return listInstance;
         }
 
-        private Model.DataRow ProcessDataRow(Web web, List siteList, ListItem item, ListInstance listInstance, Model.Configuration.Lists.Lists.ExtractConfiguration extractionConfig, Model.Configuration.Lists.Lists.ExtractQueryConfiguration queryConfig, Uri baseUri, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope)
+        private Model.DataRow ProcessDataRow(Web web, List siteList, ListItem item, ListInstance listInstance, Model.Configuration.Lists.Lists.ExtractListsListsConfiguration extractionConfig, Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig, Uri baseUri, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope)
         {
             var dataRow = new Model.DataRow();
             var filteredFieldValues = item.FieldValues.ToList();

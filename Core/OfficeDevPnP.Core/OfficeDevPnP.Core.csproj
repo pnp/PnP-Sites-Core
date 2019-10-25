@@ -555,9 +555,9 @@
     <Compile Include="Framework\Provisioning\Model\Base\BaseProvisioningTemplateObjectCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\ConfigurationHandler.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\ContentTypes\ExtractConfiguration.cs" />
-    <Compile Include="Framework\Provisioning\Model\Configuration\Lists\Lists\ExtractQueryConfiguration.cs" />
-    <Compile Include="Framework\Provisioning\Model\Configuration\Lists\ExtractConfiguration.cs" />
-    <Compile Include="Framework\Provisioning\Model\Configuration\Lists\Lists\ExtractConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Lists\Lists\ExtractListsQueryConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Lists\ExtractListsConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Lists\Lists\ExtractListsListsConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Search\ExtractConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\SiteFooter\ExtractConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Navigation\ExtractConfiguration.cs" />
