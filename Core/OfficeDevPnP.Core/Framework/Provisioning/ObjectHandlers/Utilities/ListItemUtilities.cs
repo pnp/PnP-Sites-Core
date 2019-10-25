@@ -448,6 +448,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 itemValues.Add(new FieldUpdateValue(key as string, newVals));
                                 break;
                             }
+                        case "DateTime":
+                            {
+                                if (value == null) goto default;
+                                if(DateTime.TryParse(value, out DateTime dateTimeValue))
+                                {
+                                    itemValues.Add(new FieldUpdateValue(key as string, dateTimeValue));
+                                }
+                                break;
+                            }
                         case "URL":
                             {
 
