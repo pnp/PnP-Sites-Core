@@ -17,5 +17,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Tenant.Te
 
         [JsonProperty("teamSiteUrls")]
         public List<string> TeamSiteUrls { get; set; } = new List<string>();
+
+        [JsonProperty("includeGroupId")]
+        public bool IncludeGroupId { get; set; }
     }
 }

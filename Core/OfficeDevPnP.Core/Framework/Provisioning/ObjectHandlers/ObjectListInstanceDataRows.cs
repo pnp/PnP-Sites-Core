@@ -234,6 +234,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 listitem.Update();
         }
 
+        private static bool ShouldNotExtractList(ProvisioningTemplateCreationInformation creationInfo, List siteList)
+        {
+            if (creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.Lists != null
+                && creationInfo.ExtractConfiguration.Lists.HasLists
+                &&
+                !creationInfo.ExtractConfiguration.Lists.Lists.Any(i =>
+                {
+                    if (Guid.TryParse(i.Title, out Guid listId))
+                    {
+                        return (listId == siteList.Id) && i.IncludeItems;
+                    }
+                    else
+                    {
+                        return (false);
+                    }
+                })
+                && !creationInfo.ExtractConfiguration.Lists.Lists.Any(i => i.Title.Equals(siteList.Title) && i.IncludeItems)
+                && !creationInfo.ExtractConfiguration.Lists.Lists.Any(i => siteList.RootFolder.ServerRelativeUrl.EndsWith(i.Title, StringComparison.InvariantCultureIgnoreCase) && i.IncludeItems))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
@@ -262,22 +287,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var listsToProcess = lists.AsEnumerable().Where(l => l.Hidden == false || l.Hidden == creationInfo.IncludeHiddenLists).ToArray();
                 foreach (var siteList in listsToProcess)
                 {
-                    if (!creationInfo.ExtractConfiguration.Lists.Lists.Any(i =>
-                      {
-                          Guid listId;
-                          if (Guid.TryParse(i.Title, out listId))
-                          {
-                              return (listId == siteList.Id);
-                          }
-                          else
-                          {
-                              return false;
-                          }
-                      }) && creationInfo.ExtractConfiguration.Lists.Lists.FirstOrDefault(i => i.Title.Equals(siteList.Title) && i.IncludeItems) == null)
+                    if (ShouldNotExtractList(creationInfo, siteList))
                     {
                         continue;
                     }
-                    var extractionConfig = creationInfo.ExtractConfiguration.Lists.Lists.FirstOrDefault(e => e.Title.Equals(siteList.Title));
+                    var extractionConfig = creationInfo.ExtractConfiguration.Lists.Lists.FirstOrDefault(e => e.Title.Equals(siteList.Title) || siteList.RootFolder.ServerRelativeUrl.EndsWith(e.Title, StringComparison.InvariantCultureIgnoreCase));
                     CamlQuery camlQuery = CamlQuery.CreateAllItemsQuery();
                     Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig = null;
                     if (extractionConfig.Query != null)
@@ -817,12 +831,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             ListItemCollection items,
             PnPMonitoredScope scope)
         {
-            if(!string.IsNullOrEmpty(extractionConfig.KeyColumn))
+            if (!string.IsNullOrEmpty(extractionConfig.KeyColumn))
             {
                 listInstance.DataRows.KeyColumn = extractionConfig.KeyColumn;
                 listInstance.DataRows.UpdateBehavior = extractionConfig.UpdateBehavior;
             }
-            
+
             var itemCount = 1;
             foreach (var item in items)
             {

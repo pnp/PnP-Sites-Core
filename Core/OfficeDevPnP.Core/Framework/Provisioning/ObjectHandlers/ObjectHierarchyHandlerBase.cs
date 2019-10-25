@@ -38,6 +38,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 MessagesDelegate(message, messageType);
             }
         }
+
+        internal void WriteSubProgress(string title, string message, int step, int total)
+        {
+            if (MessagesDelegate != null)
+            {
+                MessagesDelegate($"{title}|{message}|{step}|{total}", ProvisioningMessageType.Progress);
+            }
+        }
     }
 }
 #endif
