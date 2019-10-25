@@ -453,6 +453,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>Whether the Security settings have been provisioned or not</returns>
         private static bool SetGroupSecurity(PnPMonitoredScope scope, Team team, string teamId, string accessToken)
         {
+            SetAllowToAddGuestsSetting(scope, teamId, team.Security.AllowToAddGuests, accessToken);
+
             String[] desideredOwnerIds;
             String[] desideredMemberIds;
             String[] finalOwnerIds;
@@ -599,6 +601,107 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Checks if the AllowToAddGuest setting already exists for the team connected unified group, and based on the outcome either creates or updates the setting.
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="allowToAddGuests">Boolean value indicating whether external sharing should be allowed or not.</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        private static void SetAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, bool allowToAddGuests, string accessToken)
+        {
+            if (GetAllowToAddGuestsSetting(scope, teamId, accessToken) != null)
+            {
+                UpdateAllowToAddGuestsSetting(scope, teamId, allowToAddGuests, accessToken);
+            }
+            else {
+                CreateAllowToAddGuestsSetting(scope, teamId, allowToAddGuests, accessToken);
+            }
+        }
+
+        /// <summary>
+        /// Gets the AllowToAddGuests setting JSON (name and value) of the team connected unified group.
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        /// <returns>JSON object with name and value properties</returns>
+        public static JToken GetAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, string accessToken)
+        {
+            try
+            {
+                var groupGuestSettings = GetGroupUnifiedGuestSettings(scope, teamId, accessToken);
+                return groupGuestSettings["values"]?.FirstOrDefault(x => x["name"].ToString() == "AllowToAddGuests");
+            }
+            catch (Exception e)
+            {
+                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError, e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets the Group.Unified.Guest settings for the unified group that is connected to the team.
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        /// <returns>All guest related settings for the team connected unified group (not just external sharing)</returns>
+        private static JToken GetGroupUnifiedGuestSettings(PnPMonitoredScope scope, string teamId, string accessToken)
+        {
+            try
+            {
+                var response = JToken.Parse(HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/settings", accessToken));
+                return response["value"]?.FirstOrDefault(x => x["templateId"].ToString() == "08d542b9-071f-4e16-94b0-74abb372e3d9");
+            }
+            catch (Exception e)
+            {
+                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError, e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Creates the AllowToAddGuests setting for the team connected unified group, and sets its value.
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="allowToAddGuests">Boolean value indicating whether external sharing should be allowed or not.</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        private static void CreateAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, bool allowToAddGuests, string accessToken)
+        {
+            try
+            {
+                var body = $"{{'displayName': 'Group.Unified.Guest', 'templateId': '08d542b9-071f-4e16-94b0-74abb372e3d9', 'values': [{{'name': 'AllowToAddGuests','value': '{allowToAddGuests}'}}] }}";
+                HttpHelper.MakePostRequest($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/settings", body, "application/json", accessToken);
+            }
+            catch (Exception e)
+            {
+                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError, e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Updates an existing AllowToAddGuests setting for the team connected unified group.
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="allowToAddGuests">Boolean value indicating whether external sharing should be allowed or not.</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        private static void UpdateAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, bool allowToAddGuests, string accessToken) {
+            try
+            {
+                var groupGuestSettings = GetGroupUnifiedGuestSettings(scope, teamId, accessToken);
+                groupGuestSettings["values"].FirstOrDefault(x => x["name"].ToString() == "AllowToAddGuests")["value"] = allowToAddGuests.ToString();
+
+                HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/settings/{groupGuestSettings["id"]}", groupGuestSettings, "application/json", accessToken);
+            }
+            catch (Exception e)
+            {
+                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError, e.Message);
+            }
         }
 
         /// <summary>
@@ -1276,25 +1379,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static string ReplaceAccentedCharactersWithLatin(string str)
         {
-            const string a = "[äåàáâã]";
+            const string a = "[äåàáâãæ]";
             var regex = new Regex(a, RegexOptions.IgnoreCase);
             str = regex.Replace(str, "a");
 
-            const string e = "[èéêë]";
+            const string e = "[èéêëēĕėęě]";
             regex = new Regex(e, RegexOptions.IgnoreCase);
             str = regex.Replace(str, "e");
 
-            const string i = "[ìíîï]";
+            const string i = "[ìíîïĩīĭįı]";
             regex = new Regex(i, RegexOptions.IgnoreCase);
             str = regex.Replace(str, "i");
 
-            const string o = "[öòóôõ]";
+            const string o = "[öòóôõø]";
             regex = new Regex(o, RegexOptions.IgnoreCase);
             str = regex.Replace(str, "o");
 
             const string u = "[üùúû]";
             regex = new Regex(u, RegexOptions.IgnoreCase);
             str = regex.Replace(str, "u");
+
+            const string c = "[çċčćĉ]";
+            regex = new Regex(c, RegexOptions.IgnoreCase);
+            str = regex.Replace(str, "c");
+
+            const string d = "[ðďđđ]";
+            regex = new Regex(d, RegexOptions.IgnoreCase);
+            str = regex.Replace(str, "d");
 
             return str;
         }
