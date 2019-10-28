@@ -75,6 +75,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 webSettings.AlternateCSS = Tokenize(web.AlternateCssUrl, web.Url);
                 webSettings.RequestAccessEmail = web.RequestAccessEmail;
 
+#if !ONPREMISES
                 // Can we get the hubsite url? This requires Tenant Admin rights
                 try
                 {
@@ -93,7 +94,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
                 catch { }
-
+#endif
 
                 if (creationInfo.PersistBrandingFiles)
                 {

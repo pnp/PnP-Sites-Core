@@ -233,6 +233,7 @@ namespace Microsoft.SharePoint.Client
             // Currently there is no direct API available to set the search center URL on web.
             // Set search setting at site level   
 
+#if !ONPREMISES
             #region Enable scripting if needed and context has access
             Tenant tenant = null;
             Site site = null;
@@ -248,6 +249,7 @@ namespace Microsoft.SharePoint.Client
                 tenant.SetSiteProperties(site.Url, noScriptSite: false);
             }
             #endregion
+#endif
 
             try
             {
@@ -270,14 +272,16 @@ namespace Microsoft.SharePoint.Client
             }
             finally
             {
-                #region Disable scripting if previously enabled
+#if !ONPREMISES
+#region Disable scripting if previously enabled
                 if (adminContext != null)
                 {
                     // Reset disabling setting the property bag if needed
                     tenant.SetSiteProperties(site.Url, noScriptSite: true);
                     adminContext.Dispose();
                 }
-                #endregion
+#endregion
+#endif
             }
         }
 
@@ -308,6 +312,7 @@ namespace Microsoft.SharePoint.Client
             // Currently there is no direct API available to set the search center URL on web.
             // Set search setting at web level   
 
+#if !ONPREMISES
             #region Enable scripting if needed and context has access
             Tenant tenant = null;
             Site site = null;
@@ -323,6 +328,7 @@ namespace Microsoft.SharePoint.Client
                 tenant.SetSiteProperties(site.Url, noScriptSite: false);
             }
             #endregion
+#endif
 
             try
             {
@@ -339,6 +345,8 @@ namespace Microsoft.SharePoint.Client
             }
             finally
             {
+#if !ONPREMISES
+
                 #region Disable scripting if previously enabled
                 if (adminContext != null)
                 {
@@ -347,6 +355,7 @@ namespace Microsoft.SharePoint.Client
                     adminContext.Dispose();
                 }
                 #endregion
+#endif
             }
         }
 
