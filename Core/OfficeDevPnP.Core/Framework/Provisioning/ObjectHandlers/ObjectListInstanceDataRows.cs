@@ -482,7 +482,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !SP2013 && !SP2016
             ExtractFileSettings(web, siteList, myFile.UniqueId, ref newFile, defaultContentTypeId, scope);
 #else
-            ExtractFileSettings(web, siteList, myFile.ServerRelativeUrl, ref newFile, scope);
+            ExtractFileSettings(web, siteList, myFile.ServerRelativeUrl, ref newFile, defaultContentTypeId, scope);
 #endif
 
             if (addFile && creationInfo.PersistBrandingFiles)
@@ -503,7 +503,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !SP2013 && !SP2016
         private void ExtractFileSettings(Web web, List siteList, Guid fileUniqueId, ref Model.File pnpFile, string defaultContentTypeId, PnPMonitoredScope scope)
 #else
-        private void ExtractFileSettings(Web web, List siteList, string fileServerRelativeUrl, ref Model.File pnpFile, PnPMonitoredScope scope)
+        private void ExtractFileSettings(Web web, List siteList, string fileServerRelativeUrl, ref Model.File pnpFile, string defaultContentTypeId, PnPMonitoredScope scope)
 #endif
         {
             try

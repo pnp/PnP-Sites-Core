@@ -504,12 +504,22 @@ namespace OfficeDevPnP.Core.Sites
             bool isProvisioningComplete = true;
             try
             {
-                isProvisioningComplete = web.EnsureProperty(p => p.IsProvisioningComplete);
-
-                if (isProvisioningComplete)
+                // Load property
+                try
                 {
-                    // Things went really smooth :-)
-                    return;
+                    web.Context.Load(web, p => p.IsProvisioningComplete);
+                    web.Context.ExecuteQueryRetry();
+                    isProvisioningComplete = web.IsProvisioningComplete;
+
+                    if (isProvisioningComplete)
+                    {
+                        // Things went really smooth :-)
+                        return;
+                    }
+                }
+                catch(Exception ex)
+                {
+                    // Catch this...sometimes there's that "sharepoint push feature has not been ..." error
                 }
 
                 // Let's start polling for completion. We'll wait maximum 10 minutes for completion.               
