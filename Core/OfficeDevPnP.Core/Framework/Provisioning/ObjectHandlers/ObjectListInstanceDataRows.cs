@@ -352,7 +352,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private ListItemCollectionPosition RetrieveItems(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, List siteList, Model.Configuration.Lists.Lists.ExtractListsListsConfiguration extractionConfiguration, CamlQuery camlQuery, Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig, ListInstance listInstance, string defaultContentTypeId)
         {
             var items = siteList.GetItems(camlQuery);
-            siteList.Context.Load(items, i => i.IncludeWithDefaultProperties(li => li.FieldValuesAsText), i => i.ListItemCollectionPosition);
+            siteList.Context.Load(items, i => i.IncludeWithDefaultProperties(li => li.FieldValuesAsText, li => li.HasUniqueRoleAssignments), i => i.ListItemCollectionPosition);
             if (queryConfig != null && queryConfig.ViewFields != null && queryConfig.ViewFields.Count > 0)
             {
                 foreach (var viewField in queryConfig.ViewFields)
@@ -521,7 +521,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
                     f => f.ListItemAllFields,
                     f => f.ListItemAllFields.RoleAssignments,
-                    f => f.ListItemAllFields.RoleAssignments.Include(r => r.Member, r => r.RoleDefinitionBindings),
+                    f => f.ListItemAllFields.RoleAssignments.Include(r => r.PrincipalId, r => r.RoleDefinitionBindings.Include(rb => rb.Name, rb => rb.Order)),
                     f => f.ListItemAllFields.HasUniqueRoleAssignments,
                     f => f.ListItemAllFields.ParentList,
                     f => f.ListItemAllFields.ContentType.StringId);
@@ -570,6 +570,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 pnpFile.Properties.Add(fieldValue.Key, value);
                             }
                         }
+                    }
+                    if (file.ListItemAllFields.HasUniqueRoleAssignments)
+                    {
+                        GetObjectSecurity(web, file.ListItemAllFields.RoleAssignments, pnpFile.Security);
                     }
                 }
             }
@@ -686,7 +690,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     f => f.Properties,
                     f => f.ListItemAllFields,
                     f => f.ListItemAllFields.RoleAssignments,
-                    f => f.ListItemAllFields.RoleAssignments.Include(r => r.Member, r => r.RoleDefinitionBindings),
+                    f => f.ListItemAllFields.RoleAssignments.Include(r => r.PrincipalId, r => r.RoleDefinitionBindings.Include(rb => rb.Name, rb => rb.Order)),
                     f => f.ListItemAllFields.HasUniqueRoleAssignments,
                     f => f.ListItemAllFields.ParentList,
                     f => f.ListItemAllFields.ContentType.StringId);
@@ -774,6 +778,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         }
                     }
+                }
+                if (spFolder.ListItemAllFields.HasUniqueRoleAssignments)
+                {
+                    GetObjectSecurity(web, spFolder.ListItemAllFields.RoleAssignments, pnpFolder.Security);
                 }
             }
             catch (Exception ex)
@@ -908,6 +916,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
+            if (item.HasUniqueRoleAssignments)
+            {
+                item.Context.Load(item, i => i.RoleAssignments.Include(r => r.PrincipalId, r => r.RoleDefinitionBindings.Include(rb => rb.Name, rb => rb.Order)));
+                item.Context.ExecuteQueryRetry();
+
+                GetObjectSecurity(web, item.RoleAssignments, dataRow.Security);
+            }
             return dataRow;
         }
 
@@ -958,6 +973,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 throw ex;
             }
             return null;
+        }
+
+        //currently limit to associated Groups - in future we could limit to groups/user previous exported in template
+        private void GetObjectSecurity(Web web, Microsoft.SharePoint.Client.RoleAssignmentCollection RoleAssignments, ObjectSecurity objectSecurity)
+        {
+            web.EnsureProperties(w => w.AssociatedOwnerGroup.Id, w => w.AssociatedMemberGroup.Id, w => w.AssociatedVisitorGroup.Id);
+            objectSecurity.ClearSubscopes = true;
+            objectSecurity.CopyRoleAssignments = false;
+
+            foreach (var ra in RoleAssignments)
+            {
+                foreach (var rb in ra.RoleDefinitionBindings.OrderBy(d => d.Order))
+                {
+                    if (ra.PrincipalId == web.AssociatedOwnerGroup.Id)
+                    {
+                        objectSecurity.RoleAssignments.Add(new Model.RoleAssignment() { Principal = "{associatedownergroup}", RoleDefinition = rb.Name });
+                    }
+                    else if (ra.PrincipalId == web.AssociatedMemberGroup.Id)
+                    {
+                        objectSecurity.RoleAssignments.Add(new Model.RoleAssignment() { Principal = "{associatedmembergroup}", RoleDefinition = rb.Name });
+                    }
+                    else if (ra.PrincipalId == web.AssociatedVisitorGroup.Id)
+                    {
+                        objectSecurity.RoleAssignments.Add(new Model.RoleAssignment() { Principal = "{associatedvisitorgroup}", RoleDefinition = rb.Name });
+                    }
+                }
+            }
         }
     }
 }
