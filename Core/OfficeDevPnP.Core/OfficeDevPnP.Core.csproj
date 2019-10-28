@@ -557,13 +557,17 @@
     <Compile Include="Framework\Provisioning\Model\Configuration\ContentTypes\ApplyContentTypeConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\ContentTypes\ExtractContentTypeConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\ApplyConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Extensibility\ExtractExtensibilityConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Fields\ApplyFieldsConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Lists\ApplyListsConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Lists\Lists\ExtractListsQueryConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Lists\ExtractListsConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Lists\Lists\ExtractListsListsConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\MultiLanguage\ExtractMultiLanguageConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Navigation\ApplyNavigationConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\PropertyBag\ApplyPropertyBagConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\PropertyBag\ExtractPropertyBagConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Publishing\ExtractPublishingConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Search\ExtractConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\SiteFooter\ExtractConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Navigation\ExtractNavigationConfiguration.cs" />

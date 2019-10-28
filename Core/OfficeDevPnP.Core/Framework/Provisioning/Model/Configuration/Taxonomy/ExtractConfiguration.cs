@@ -14,5 +14,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Taxonomy
 
         [JsonProperty("includeSiteCollectionTermGroup")]
         public bool IncludeSiteCollectionTermGroup { get; set; }
+
+        [JsonProperty("includeAllTermGroups")]
+        public bool IncludeAllTermGroups { get; set; }
     }
 }
