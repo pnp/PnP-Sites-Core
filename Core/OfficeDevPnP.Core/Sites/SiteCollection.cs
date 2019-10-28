@@ -28,10 +28,11 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static ClientContext Create(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
+        public static ClientContext Create(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false)
         {
-            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation).GetAwaiter().GetResult();
+            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation, noWait: noWait).GetAwaiter().GetResult();
             return context;
         }
 
@@ -41,10 +42,11 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static ClientContext Create(ClientContext clientContext, TeamNoGroupSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
+        public static ClientContext Create(ClientContext clientContext, TeamNoGroupSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false)
         {
-            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation).GetAwaiter().GetResult();
+            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation, noWait: noWait).GetAwaiter().GetResult();
             return context;
         }
 
@@ -54,10 +56,11 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static ClientContext Create(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
+        public static ClientContext Create(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false)
         {
-            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation).GetAwaiter().GetResult();
+            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation, noWait: noWait).GetAwaiter().GetResult();
             return context;
         }
 
@@ -67,8 +70,9 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>        
         /// <returns>ClientContext object for the created site collection</returns>
-        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
+        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, CommunicationSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false)
         {
             Dictionary<string, object> payload = GetRequestPayload(siteCollectionCreationInformation);
 
@@ -79,7 +83,7 @@ namespace OfficeDevPnP.Core.Sites
             }
             payload.Add("HubSiteId", siteCollectionCreationInformation.HubSiteId);
 
-            return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation);
+            return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation, noWait: noWait);
         }
 
         /// <summary>
@@ -88,11 +92,12 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="clientContext">ClientContext object of a regular site</param>
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamNoGroupSiteCollectionCreationInformation siteCollectionCreationInformation, Int32 delayAfterCreation = 0)
+        public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamNoGroupSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false)
         {
             Dictionary<string, object> payload = GetRequestPayload(siteCollectionCreationInformation);
-            return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation);
+            return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation, noWait: noWait);
         }
 
         /// <summary>
@@ -103,11 +108,13 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <param name="maxRetryCount">Maximum number of retries for a pending site provisioning. Default 12 retries.</param>
         /// <param name="retryDelay">Delay between retries for a pending site provisioning. Default 10 seconds.</param>
+        /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
         public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation,
-            Int32 delayAfterCreation = 0,
-            Int32 maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
-            Int32 retryDelay = 1000 * 10 // Wait time default to 10sec
+            int delayAfterCreation = 0,
+            int maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
+            int retryDelay = 1000 * 10, // Wait time default to 10sec,
+            bool noWait = false
             )
         {
             if (siteCollectionCreationInformation.Alias.Contains(" "))
@@ -130,14 +137,14 @@ namespace OfficeDevPnP.Core.Sites
             {
                 clientContext.Web.EnsureProperty(w => w.Url);
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
-                if (String.IsNullOrEmpty(accessToken))
+                if (string.IsNullOrEmpty(accessToken))
                 {
                     handler.SetAuthenticationCookies(clientContext);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
-                    string requestUrl = String.Format("{0}/_api/GroupSiteManager/CreateGroupEx", clientContext.Web.Url);
+                    string requestUrl = string.Format("{0}/_api/GroupSiteManager/CreateGroupEx", clientContext.Web.Url);
 
                     Dictionary<string, object> payload = new Dictionary<string, object>();
                     payload.Add("displayName", siteCollectionCreationInformation.DisplayName);
@@ -283,8 +290,11 @@ namespace OfficeDevPnP.Core.Sites
                         }
                         else
                         {
-                            // Let's wait for the async provisioning of features, site scripts and content types to be done before we allow API's to further update the created site
-                            WaitForProvisioningIsComplete(responseContext.Web);
+                            if (!noWait)
+                            {
+                                // Let's wait for the async provisioning of features, site scripts and content types to be done before we allow API's to further update the created site
+                                WaitForProvisioningIsComplete(responseContext.Web);
+                            }
                         }
                     }
                     else
@@ -306,11 +316,13 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <param name="maxRetryCount">Maximum number of retries for a pending site provisioning. Default 12 retries.</param>
         /// <param name="retryDelay">Delay between retries for a pending site provisioning. Default 10 seconds.</param>
+        /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
         private static async Task<ClientContext> CreateAsync(ClientContext clientContext, string owner, Dictionary<string, object> payload,
-            Int32 delayAfterCreation = 0,
-            Int32 maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
-            Int32 retryDelay = 1000 * 10 // Wait time default to 10sec
+            int delayAfterCreation = 0,
+            int maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
+            int retryDelay = 1000 * 10, // Wait time default to 10sec
+            bool noWait = false
             )
         {
             await new SynchronizationContextRemover();
@@ -328,7 +340,7 @@ namespace OfficeDevPnP.Core.Sites
             {
                 clientContext.Web.EnsureProperty(w => w.Url);
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
-                if (String.IsNullOrEmpty(accessToken))
+                if (string.IsNullOrEmpty(accessToken))
                 {
                     handler.SetAuthenticationCookies(clientContext);
                 }
@@ -470,8 +482,11 @@ namespace OfficeDevPnP.Core.Sites
                         }
                         else
                         {
-                            // Let's wait for the async provisioning of features, site scripts and content types to be done before we allow API's to further update the created site
-                            WaitForProvisioningIsComplete(responseContext.Web);
+                            if (!noWait)
+                            {
+                                // Let's wait for the async provisioning of features, site scripts and content types to be done before we allow API's to further update the created site
+                                WaitForProvisioningIsComplete(responseContext.Web);
+                            }
                         }
                     }
                     else
@@ -484,7 +499,7 @@ namespace OfficeDevPnP.Core.Sites
             }
         }
 
-        private static void WaitForProvisioningIsComplete(Web web, Int32 maxRetryCount = 60, Int32 retryDelay = 1000 * 10)
+        private static void WaitForProvisioningIsComplete(Web web, int maxRetryCount = 60, int retryDelay = 1000 * 10)
         {
             bool isProvisioningComplete = true;
             try
@@ -583,14 +598,14 @@ namespace OfficeDevPnP.Core.Sites
             {
                 clientContext.Web.EnsureProperty(w => w.Url);
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
-                if (String.IsNullOrEmpty(accessToken))
+                if (string.IsNullOrEmpty(accessToken))
                 {
                     handler.SetAuthenticationCookies(clientContext);
                 }
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
-                    string requestUrl = String.Format("{0}/_api/GroupSiteManager/CreateGroupForSite", clientContext.Web.Url);
+                    string requestUrl = string.Format("{0}/_api/GroupSiteManager/CreateGroupForSite", clientContext.Web.Url);
 
                     Dictionary<string, object> payload = new Dictionary<string, object>();
                     payload.Add("displayName", siteCollectionGroupifyInformation.DisplayName);
@@ -717,14 +732,14 @@ namespace OfficeDevPnP.Core.Sites
             {
                 context.Web.EnsureProperty(w => w.Url);
 
-                if (String.IsNullOrEmpty(accessToken))
+                if (string.IsNullOrEmpty(accessToken))
                 {
                     handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new HttpClient(handler))
                 {
-                    string requestUrl = String.Format("{0}/_api/SP.Directory.DirectorySession/Group(alias='{1}')", context.Web.Url, alias);
+                    string requestUrl = string.Format("{0}/_api/SP.Directory.DirectorySession/Group(alias='{1}')", context.Web.Url, alias);
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
                     request.Headers.Add("accept", "application/json;odata.metadata=none");
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -787,14 +802,14 @@ namespace OfficeDevPnP.Core.Sites
             {
                 context.Web.EnsureProperty(w => w.Url);
 
-                if (String.IsNullOrEmpty(accessToken))
+                if (string.IsNullOrEmpty(accessToken))
                 {
                     handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new HttpClient(handler))
                 {
-                    string requestUrl = String.Format("{0}/_api/SP.Directory.DirectorySession/Group(alias='{1}')", context.Web.Url, alias);
+                    string requestUrl = string.Format("{0}/_api/SP.Directory.DirectorySession/Group(alias='{1}')", context.Web.Url, alias);
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
                     request.Headers.Add("accept", "application/json;odata.metadata=none");
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
@@ -849,7 +864,7 @@ namespace OfficeDevPnP.Core.Sites
                 context.Web.EnsureProperty(w => w.Url);
 
                 // we're not in app-only or user + app context, so let's fall back to cookie based auth
-                if (String.IsNullOrEmpty(accessToken))
+                if (string.IsNullOrEmpty(accessToken))
                 {
                     handler.SetAuthenticationCookies(context);
                 }
@@ -890,14 +905,14 @@ namespace OfficeDevPnP.Core.Sites
             {
                 context.Web.EnsureProperty(w => w.Url);
 
-                if (String.IsNullOrEmpty(accessToken))
+                if (string.IsNullOrEmpty(accessToken))
                 {
                     handler.SetAuthenticationCookies(context);
                 }
 
                 using (var httpClient = new HttpClient(handler))
                 {
-                    string requestUrl = String.Format("{0}/_api/GroupSiteManager/GetValidSiteUrlFromAlias?alias='{1}'", context.Web.Url, alias);
+                    string requestUrl = string.Format("{0}/_api/GroupSiteManager/GetValidSiteUrlFromAlias?alias='{1}'", context.Web.Url, alias);
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
                     request.Headers.Add("accept", "application/json;odata.metadata=none");
                     httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
