@@ -37,7 +37,9 @@
           "description": "If specified will extract site collections as defined in the siteUrls array",
           "type": "object",
           "additionalProperties": false,
-          "required": [ "siteUrls" ],
+          "required": [
+            "siteUrls"
+          ],
           "properties": {
             "siteUrls": {
               "description": "Defines the one or more sitecollections to extract.",
@@ -52,19 +54,19 @@
               "type": "boolean"
             },
             "includeSubsites": {
-              "description": "Set to true to include subsites in the tenant template to extract.",
+              "description": "If set to true to subsites will be included in the tenant template to extract.",
               "type": "boolean"
             },
             "maxSubsiteDepth": {
               "minimum": 0,
               "type": "integer",
-              "description": "defines the maximum depth to traverse when extracting a tenant template. If set to 0 all subsites will be included."
+              "description": "Defines the maximum depth to traverse when extracting a tenant template. If set to 0 all subsites will be included."
             }
           }
         },
         "teams": {
           "type": "object",
-          "description": "defines Microsoft Teams extraction settings",
+          "description": "Defines Microsoft Teams extraction settings.",
           "additionalProperties": false,
           "properties": {
             "includeAllTeams": {
@@ -72,7 +74,7 @@
               "description": "If specified all teams in this tenant will be exported. This can take a long time."
             },
             "teamSiteUrls": {
-              "description": "Specify the fully qualified site urls of the SharePoint sites for which you want extract the teams",
+              "description": "Specify the fully qualified site urls of the SharePoint sites for which you want extract the teams.",
               "type": "array",
               "minItems": 0,
               "items": {
@@ -81,49 +83,49 @@
             },
             "includeMessages": {
               "type": "boolean",
-              "description": "If specified messages will be extracted from the teams"
+              "description": "If specified messages will be extracted from the teams."
             },
             "includeGroupId": {
               "type": "boolean",
-              "description": "If specified the group id will be set for teams allowing you to update existing teams"
+              "description": "If specified the group id will be set for teams allowing you to update existing teams."
             }
           }
         }
       }
     },
     "pages": {
-      "description": "define client side page settings",
+      "description": "Defines client side page settings.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "includeAllClientSidePages": {
-          "description": "set to true to include all client side pages in the template",
+          "description": "If set to true to all client side pages will be included in the template.",
           "type": "boolean"
         },
         "excludeAuthorInformation": {
-          "description": "set to true to remove author information from webparts and modern clientside pages",
+          "description": "If set to true to author information will be removed from webparts and modern clientside pages.",
           "type": "boolean"
         }
       }
     },
     "siteSecurity": {
-      "description": "define site security extraction settings",
+      "description": "Defines site security extraction settings.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "includeSiteGroups": {
-          "description": "set to true to include the site groups when extracting site security",
+          "description": "If set to true to site groups will be included when extracting site security.",
           "type": "boolean"
         }
       }
     },
     "contentTypes": {
-      "description": "define content type extraction settings",
+      "description": "Defines content type extraction settings",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "groups": {
-          "description": "set to only extract content types in these groups",
+          "description": "If set only content types in these groups will be included in the template.",
           "type": "array",
           "uniqueItems": true,
           "minItems": 1,
@@ -138,48 +140,55 @@
       }
     },
     "lists": {
-      "description": "define list settings",
+      "description": "Defines list settings.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "includeHiddenLists": {
-          "description": "set to true to include all hidden lists when extracting a template",
+          "description": "If set to true to hidden lists will be included in the template.",
           "type": "boolean"
         },
         "lists": {
-          "description": "set to define which lists to export",
+          "description": "If set to only the define lists will be included in the template.",
           "type": "array",
           "items": {
             "type": "object",
             "additionalProperties": false,
-            "required": [ "title" ],
+            "required": [
+              "title"
+            ],
             "dependencies": {
-              "updateBehavior": [ "keyColumn" ]
+              "updateBehavior": [
+                "keyColumn"
+              ]
             },
             "properties": {
               "title": {
-                "description": "the title of the list to export",
+                "description": "The title or URL (lists/mylist) of the list to export.",
                 "type": "string"
               },
               "includeItems": {
-                "description": "if set to true list items will be included as datarows in the template",
+                "description": "If set to true list items will be included as datarows in the template",
                 "type": "boolean"
               },
               "keyColumn": {
-                "description": "if set a keycolumn value will be added to the datarow data",
+                "description": "If set a keycolumn value will be added to the datarow data with the column name specified.",
                 "type": "string"
               },
               "updateBehavior": {
-                "description": "if set the updatebehavior of datarows will be defined",
+                "description": "If set the updatebehavior of datarows will be defined accordingly.",
                 "type": "string",
-                "enum": [ "Overwrite", "Skip" ]
+                "enum": [
+                  "Overwrite",
+                  "Skip"
+                ]
               },
               "skipEmptyFields": {
-                "description": "if set to true fields with no value will be not be included in the template",
+                "description": "If set to true fields with no value will be not be included in the template.",
                 "type": "boolean"
               },
               "removeExistingContentTypes": {
-                "description": "if set the 'RemoveExistingContentTypes' attribute on the list instance in the template will be set to true",
+                "description": "If set the 'RemoveExistingContentTypes' attribute on the list instance in the template will be set to true",
                 "type": "boolean"
               },
               "query": {
@@ -217,7 +226,7 @@
       }
     },
     "taxonomy": {
-      "description": "define taxonomy / management metadata termstore extraction settings",
+      "description": "Defines taxonomy / management metadata termstore extraction settings.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -232,7 +241,7 @@
       }
     },
     "navigation": {
-      "description": "define navigation extraction settings",
+      "description": "Defines navigation extraction settings.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -243,7 +252,7 @@
       }
     },
     "siteFooter": {
-      "description": "define site footer extraction settings",
+      "description": "Defines site footer extraction settings.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -254,7 +263,7 @@
       }
     },
     "searchSettings": {
-      "descrtipion": "define search settings",
+      "descrtipion": "Defines search settings.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -265,7 +274,7 @@
       }
     },
     "handlers": {
-      "description": "set to define which handels to run. If not specified all handlers will be run",
+      "description": "Set to define which handlers to execute during extraction. If not specified all handlers will execute.",
       "type": "array",
       "uniqueItems": true,
       "minItems": 1,

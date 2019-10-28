@@ -17,27 +17,29 @@
       ]
     },
     "tenant": {
-      "description": "define tenant settings",
+      "description": "Define Tenant provisioning settings.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "DoNotWaitForSitesToBeFullyCreated": {
+          "description": "By default the engine will wait for sites to be completely created. You can select to no wait for this, while sites are being created by the server asynchronously in the background."
           "type": "boolean"
         }
       }
     },
     "contentTypes": {
-      "description": "define content type settings",
+      "description": "Defines content type provisioning settings.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "provisionContentTypesToSubWebs": {
+          "description": "If set to true content types will be provisioned to existing subwebs.",
           "type": "boolean"
         }
       }
     },
     "propertyBag": {
-      "description": "define property bag settings",
+      "description": "Define property bag provisioning settings.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -48,7 +50,7 @@
       }
     },
     "fields": {
-      "description": "define field settings",
+      "description": "Defines field provisioning settings.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -59,7 +61,7 @@
       }
     },
     "handlers": {
-      "description": "set to define which handels to run. If not specified all handlers will be run",
+      "description": "Set to define which handlers to execute during provisioning. If not specified all handlers will execute.",
       "type": "array",
       "uniqueItems": true,
       "minItems": 1,
@@ -99,15 +101,18 @@
       }
     },
     "lists": {
+      "description": "Defines list provisioning settings.",
       "type": "object",
       "properties": {
         "ignoreDuplicateDataRowErrors": {
+          "description": "If set to true duplicate data row errors will be ignored",
           "type": "boolean"
         }
       }
     },
     "parameters": {
       "type": "object",
+      "description": "Override or add parameters as set in the template.",
       "patternProperties": {
         ".*": {
           "type": "string"
@@ -115,6 +120,7 @@
       }
     },
     "navigation": {
+      "description": "If set an existing navigation will be cleared out when provisioning a template with a navigation structure in it.",
       "type": "object",
       "properties": {
         "clearNavigation": {
