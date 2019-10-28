@@ -264,7 +264,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 var lists = web.Lists;
-                web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url, w => w.Id);
+                web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url, w => w.Id, w => w.AssociatedOwnerGroup, w => w.AssociatedMemberGroup, w => w.AssociatedVisitorGroup);
                 web.Context.Load(lists,
                   lc => lc.IncludeWithDefaultProperties(
                         l => l.RootFolder.ServerRelativeUrl,
@@ -978,7 +978,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         //currently limit to associated Groups - in future we could limit to groups/user previous exported in template
         private void GetObjectSecurity(Web web, Microsoft.SharePoint.Client.RoleAssignmentCollection RoleAssignments, ObjectSecurity objectSecurity)
         {
-            web.EnsureProperties(w => w.AssociatedOwnerGroup.Id, w => w.AssociatedMemberGroup.Id, w => w.AssociatedVisitorGroup.Id);
             objectSecurity.ClearSubscopes = true;
             objectSecurity.CopyRoleAssignments = false;
 
