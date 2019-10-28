@@ -1,6 +1,7 @@
 {
   "title": "Provisioning Engine Template Apply Configuration",
   "description": "Defines the configuration to use when applying a template to a site",
+  "version": "201910",
   "type": "object",
   "additionalProperties": false,
   "required": [],
@@ -14,6 +15,48 @@
       "enum": [
         "1.0"
       ]
+    },
+    "tenant": {
+      "description": "define tenant settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "DoNotWaitForSitesToBeFullyCreated": {
+          "type": "boolean"
+        }
+      }
+    },
+    "contentTypes": {
+      "description": "define content type settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provisionContentTypesToSubWebs": {
+          "type": "boolean"
+        }
+      }
+    },
+    "propertyBag": {
+      "description": "define property bag settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "overwriteSystemValues": {
+          "description": "By default system settings will not be overwritten, even if specified in template. Specify true to overwrite them with the values from the template.",
+          "type": "boolean"
+        }
+      }
+    },
+    "fields": {
+      "description": "define field settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provisionFieldsToSubWebs": {
+          "description": "Specify true provisiong fields defined in the template to existing subwebs.",
+          "type": "boolean"
+        }
+      }
     },
     "handlers": {
       "description": "set to define which handels to run. If not specified all handlers will be run",
@@ -68,22 +111,6 @@
       "patternProperties": {
         ".*": {
           "type": "string"
-        }
-      }
-    },
-    "contentTypes": {
-      "type": "object",
-      "properties": {
-        "provisionContentTypesToSubWebs": {
-          "type": "boolean"
-        }
-      }
-    },
-    "fields": {
-      "type": "object",
-      "properties": {
-        "provisionFieldsToSubWebs": {
-          "type": "boolean"
         }
       }
     },

@@ -44,13 +44,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
         public Taxonomy.ExtractConfiguration Taxonomy { get; set; } = new Taxonomy.ExtractConfiguration();
 
         [JsonProperty("navigation")]
-        public Navigation.ExtractConfiguration Navigation { get; set; } = new Navigation.ExtractConfiguration();
+        public Navigation.ExtractNavigationConfiguration Navigation { get; set; } = new Navigation.ExtractNavigationConfiguration();
 
         [JsonProperty("siteFooter")]
         public SiteFooter.ExtractConfiguration SiteFooter { get; set; } = new SiteFooter.ExtractConfiguration();
 
         [JsonProperty("contentTypes")]
-        public ContentTypes.ExtractConfiguration ContentTypes { get; set; } = new ContentTypes.ExtractConfiguration();
+        public ContentTypes.ExtractContentTypeConfiguration ContentTypes { get; set; } = new ContentTypes.ExtractContentTypeConfiguration();
 
         [JsonProperty("searchSettings")]
         public SearchSettings.ExtractConfiguration SearchSettings { get; set; } = new SearchSettings.ExtractConfiguration();
