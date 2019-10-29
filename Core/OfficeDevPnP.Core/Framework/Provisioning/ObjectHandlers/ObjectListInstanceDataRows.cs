@@ -98,7 +98,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     // if it is empty, skip the check
                                     if (dataRowValues.Any())
                                     {
-                                        var query = $@"<View><Query><Where><Eq><FieldRef Name=""{parsedKeyColumn}""/><Value Type=""{keyColumnType}"">{parser.ParseString(dataRowValues.FirstOrDefault().Value)}</Value></Eq></Where></Query><RowLimit>1</RowLimit></View>";
+                                        var keyColumnValue = parser.ParseString(dataRowValues.FirstOrDefault().Value);
+                                        if(keyColumnType == "DateTime")
+                                        {
+                                            keyColumnValue = DateTime.Parse(keyColumnValue).ToString("s") + "Z";
+                                        }
+                                        var query = $@"<View><Query><Where><Eq><FieldRef Name=""{parsedKeyColumn}""/><Value Type=""{keyColumnType}"">{keyColumnValue}</Value></Eq></Where></Query><RowLimit>1</RowLimit></View>";
                                         var camlQuery = new CamlQuery()
                                         {
                                             ViewXml = query

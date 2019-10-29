@@ -452,7 +452,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         applyingInformation.ProgressDelegate?.Invoke($"{currentSite} : {message}", step, total);
                     };
                     provisioningTemplateApplyingInformation.SiteProvisionedDelegate = applyingInformation.SiteProvisionedDelegate;
-
+                    provisioningTemplateApplyingInformation.HandlersToProcess = applyingInformation.HandlersToProcess;
+                    provisioningTemplateApplyingInformation.IgnoreDuplicateDataRowErrors = applyingInformation.IgnoreDuplicateDataRowErrors;
+                    provisioningTemplateApplyingInformation.AccessTokens = applyingInformation.AccessTokens;
+                    provisioningTemplateApplyingInformation.ClearNavigation = applyingInformation.ClearNavigation;
+                    provisioningTemplateApplyingInformation.DelayAfterModernSiteCreation = applyingInformation.DelayAfterModernSiteCreation;
+                    provisioningTemplateApplyingInformation.ExtensibilityHandlers = applyingInformation.ExtensibilityHandlers;
+                    provisioningTemplateApplyingInformation.OverwriteSystemPropertyBagValues = applyingInformation.OverwriteSystemPropertyBagValues;
+                    provisioningTemplateApplyingInformation.PersistTemplateInfo = applyingInformation.PersistTemplateInfo;
+                    provisioningTemplateApplyingInformation.ProvisionContentTypesToSubWebs = applyingInformation.ProvisionContentTypesToSubWebs;
+                    provisioningTemplateApplyingInformation.ProvisionFieldsToSubWebs = applyingInformation.ProvisionFieldsToSubWebs;
+                    
                     foreach (var sitecollection in sequence.SiteCollections)
                     {
                         currentSite = sitecollection.ProvisioningId != null ? sitecollection.ProvisioningId : sitecollection.Title;
