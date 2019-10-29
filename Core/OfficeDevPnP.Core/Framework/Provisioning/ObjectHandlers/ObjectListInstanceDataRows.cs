@@ -371,7 +371,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             else
             {
-                ProcessListItems(web, siteList, listInstance, creationInfo, extractionConfiguration, queryConfig, baseUri, items, scope);
+                ProcessListItems(web, siteList,template, listInstance, creationInfo, extractionConfiguration, queryConfig, baseUri, items, scope);
             }
             return items.ListItemCollectionPosition;
         }
@@ -426,7 +426,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     default:
                         {
                             //PnP:DataRow
-                            ProcessDataRow(web, siteList, item, listInstance, extractionConfig, queryConfig, baseUri, creationInfo, scope);
+                            ProcessDataRow(web, siteList, item, listInstance, extractionConfig, queryConfig, baseUri, creationInfo,template.Security, scope);
                             break;
                         }
                 }
@@ -480,9 +480,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
 #if !SP2013 && !SP2016
-            ExtractFileSettings(web, siteList, myFile.UniqueId, ref newFile, defaultContentTypeId, scope);
+            ExtractFileSettings(web, siteList, myFile.UniqueId, ref newFile, defaultContentTypeId, template.Security, scope);
 #else
-            ExtractFileSettings(web, siteList, myFile.ServerRelativeUrl, ref newFile, defaultContentTypeId, scope);
+            ExtractFileSettings(web, siteList, myFile.ServerRelativeUrl, ref newFile, defaultContentTypeId, template.Security, scope);
 #endif
 
             if (addFile && creationInfo.PersistBrandingFiles)
@@ -501,7 +501,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 #if !SP2013 && !SP2016
-        private void ExtractFileSettings(Web web, List siteList, Guid fileUniqueId, ref Model.File pnpFile, string defaultContentTypeId, PnPMonitoredScope scope)
+        private void ExtractFileSettings(Web web, List siteList, Guid fileUniqueId, ref Model.File pnpFile, string defaultContentTypeId, SiteSecurity siteSecurity, PnPMonitoredScope scope)
 #else
         private void ExtractFileSettings(Web web, List siteList, string fileServerRelativeUrl, ref Model.File pnpFile, string defaultContentTypeId, PnPMonitoredScope scope)
 #endif
@@ -521,7 +521,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
                     f => f.ListItemAllFields,
                     f => f.ListItemAllFields.RoleAssignments,
-                    f => f.ListItemAllFields.RoleAssignments.Include(r => r.PrincipalId, r => r.RoleDefinitionBindings.Include(rb => rb.Name, rb => rb.Order)),
+                    f => f.ListItemAllFields.RoleAssignments.Include(r => r.PrincipalId, r=>r.Member.LoginName, r => r.RoleDefinitionBindings.Include(rb => rb.Name, rb => rb.Order)),
                     f => f.ListItemAllFields.HasUniqueRoleAssignments,
                     f => f.ListItemAllFields.ParentList,
                     f => f.ListItemAllFields.ContentType.StringId);
@@ -573,7 +573,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     if (file.ListItemAllFields.HasUniqueRoleAssignments)
                     {
-                        GetObjectSecurity(web, file.ListItemAllFields.RoleAssignments, pnpFile.Security);
+                        GetObjectSecurity(web, file.ListItemAllFields.RoleAssignments, pnpFile.Security, siteSecurity);
                     }
                 }
             }
@@ -678,7 +678,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return value;
         }
 
-        public Model.Folder ExtractFolderSettings(Web web, List siteList, string serverRelativePathToFolder, PnPMonitoredScope scope, Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig)
+        public Model.Folder ExtractFolderSettings(Web web, List siteList, string serverRelativePathToFolder, SiteSecurity siteSecurity, PnPMonitoredScope scope, Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig)
         {
             Model.Folder pnpFolder = null;
             try
@@ -690,7 +690,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     f => f.Properties,
                     f => f.ListItemAllFields,
                     f => f.ListItemAllFields.RoleAssignments,
-                    f => f.ListItemAllFields.RoleAssignments.Include(r => r.PrincipalId, r => r.RoleDefinitionBindings.Include(rb => rb.Name, rb => rb.Order)),
+                    f => f.ListItemAllFields.RoleAssignments.Include(r => r.PrincipalId, r => r.Member.LoginName, r => r.RoleDefinitionBindings.Include(rb => rb.Name, rb => rb.Order)),
                     f => f.ListItemAllFields.HasUniqueRoleAssignments,
                     f => f.ListItemAllFields.ParentList,
                     f => f.ListItemAllFields.ContentType.StringId);
@@ -781,7 +781,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 if (spFolder.ListItemAllFields.HasUniqueRoleAssignments)
                 {
-                    GetObjectSecurity(web, spFolder.ListItemAllFields.RoleAssignments, pnpFolder.Security);
+                    GetObjectSecurity(web, spFolder.ListItemAllFields.RoleAssignments, pnpFolder.Security, siteSecurity);
                 }
             }
             catch (Exception ex)
@@ -791,7 +791,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return pnpFolder;
         }
 
-        private void ProcessFolderRow(Web web, ListItem listItem, List siteList, ListInstance listInstance, Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig, ProvisioningTemplate template, PnPMonitoredScope scope)
+        private void ProcessFolderRow(
+            Web web, 
+            ListItem listItem, 
+            List siteList, 
+            ListInstance listInstance, 
+            Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig, 
+            ProvisioningTemplate template, 
+            PnPMonitoredScope scope)
         {
             listItem.EnsureProperties(it => it.ParentList.RootFolder.ServerRelativeUrl);
             string serverRelativeListUrl = listItem.ParentList.RootFolder.ServerRelativeUrl;
@@ -810,7 +817,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (pnpFolder == null)
                         {
                             string pathToCurrentFolder = string.Format("{0}/{1}", serverRelativeListUrl, string.Join("/", folderSegments.Take(i + 1)));
-                            pnpFolder = ExtractFolderSettings(web, siteList, pathToCurrentFolder, scope, queryConfig);
+                            pnpFolder = ExtractFolderSettings(web, siteList, pathToCurrentFolder,template.Security, scope, queryConfig);
                             listInstance.Folders.Add(pnpFolder);
                         }
                     }
@@ -820,7 +827,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         if (childFolder == null)
                         {
                             string pathToCurrentFolder = string.Format("{0}/{1}", serverRelativeListUrl, string.Join("/", folderSegments.Take(i + 1)));
-                            childFolder = ExtractFolderSettings(web, siteList, pathToCurrentFolder, scope, queryConfig);
+                            childFolder = ExtractFolderSettings(web, siteList, pathToCurrentFolder, template.Security, scope, queryConfig);
                             pnpFolder.Folders.Add(childFolder);
                         }
                         pnpFolder = childFolder;
@@ -831,6 +838,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private ListInstance ProcessListItems(Web web,
             List siteList,
+            ProvisioningTemplate template,
             ListInstance listInstance,
             ProvisioningTemplateCreationInformation creationInfo,
             Model.Configuration.Lists.Lists.ExtractListsListsConfiguration extractionConfig,
@@ -850,7 +858,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 WriteSubProgress("List", listInstance.Title, itemCount, items.Count);
 
-                var dataRow = ProcessDataRow(web, siteList, item, listInstance, extractionConfig, queryConfig, baseUri, creationInfo, scope);
+                var dataRow = ProcessDataRow(web, siteList, item, listInstance, extractionConfig, queryConfig, baseUri, creationInfo,template.Security, scope);
 
                 listInstance.DataRows.Add(dataRow);
                 itemCount++;
@@ -858,7 +866,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return listInstance;
         }
 
-        private Model.DataRow ProcessDataRow(Web web, List siteList, ListItem item, ListInstance listInstance, Model.Configuration.Lists.Lists.ExtractListsListsConfiguration extractionConfig, Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig, Uri baseUri, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope)
+        private Model.DataRow ProcessDataRow(Web web, List siteList, ListItem item, ListInstance listInstance, Model.Configuration.Lists.Lists.ExtractListsListsConfiguration extractionConfig, Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig, Uri baseUri, ProvisioningTemplateCreationInformation creationInfo, SiteSecurity siteSecurity, PnPMonitoredScope scope)
         {
             var dataRow = new Model.DataRow();
             var filteredFieldValues = item.FieldValues.ToList();
@@ -918,10 +926,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             if (item.HasUniqueRoleAssignments)
             {
-                item.Context.Load(item, i => i.RoleAssignments.Include(r => r.PrincipalId, r => r.RoleDefinitionBindings.Include(rb => rb.Name, rb => rb.Order)));
+                item.Context.Load(item, i => i.RoleAssignments.Include(r => r.PrincipalId, r => r.Member.LoginName, r => r.RoleDefinitionBindings.Include(rb => rb.Name, rb => rb.Order)));
                 item.Context.ExecuteQueryRetry();
 
-                GetObjectSecurity(web, item.RoleAssignments, dataRow.Security);
+                GetObjectSecurity(web, item.RoleAssignments, dataRow.Security, siteSecurity);
             }
             return dataRow;
         }
@@ -975,8 +983,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return null;
         }
 
-        //currently limit to associated Groups - in future we could limit to groups/user previous exported in template
-        private void GetObjectSecurity(Web web, Microsoft.SharePoint.Client.RoleAssignmentCollection RoleAssignments, ObjectSecurity objectSecurity)
+        //currently limit to Groups/Members within template.sitesecurity. if nothing in SiteSecurity minimal associatedGroups exported
+        private void GetObjectSecurity(Web web, Microsoft.SharePoint.Client.RoleAssignmentCollection RoleAssignments, ObjectSecurity objectSecurity, SiteSecurity siteSecurity)
         {
             objectSecurity.ClearSubscopes = true;
             objectSecurity.CopyRoleAssignments = false;
@@ -997,6 +1005,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         objectSecurity.RoleAssignments.Add(new Model.RoleAssignment() { Principal = "{associatedvisitorgroup}", RoleDefinition = rb.Name });
                     }
+                    else if(siteSecurity!=null && siteSecurity.AdditionalAdministrators.Any(u=>u.Equals(ra.Member.LoginName)))
+                    {
+                        objectSecurity.RoleAssignments.Add(new Model.RoleAssignment() { Principal = ra.Member.LoginName, RoleDefinition = rb.Name });
+                    }
+                    else if (siteSecurity != null && siteSecurity.AdditionalOwners.Any(u => u.Equals(ra.Member.LoginName)))
+                    {
+                        objectSecurity.RoleAssignments.Add(new Model.RoleAssignment() { Principal = ra.Member.LoginName, RoleDefinition = rb.Name });
+                    }
+                    else if (siteSecurity != null && siteSecurity.AdditionalMembers.Any(u => u.Equals(ra.Member.LoginName)))
+                    {
+                        objectSecurity.RoleAssignments.Add(new Model.RoleAssignment() { Principal = ra.Member.LoginName, RoleDefinition = rb.Name });
+                    }
+                    else if (siteSecurity != null && siteSecurity.AdditionalVisitors.Any(u => u.Equals(ra.Member.LoginName)))
+                    {
+                        objectSecurity.RoleAssignments.Add(new Model.RoleAssignment() { Principal = ra.Member.LoginName, RoleDefinition = rb.Name });
+                    }
+                    else if (siteSecurity != null && siteSecurity.SiteGroups.Any(u => u.Equals(ra.Member.LoginName)))
+                    {
+                        objectSecurity.RoleAssignments.Add(new Model.RoleAssignment() { Principal = ra.Member.LoginName, RoleDefinition = rb.Name });
+                    }
+
                 }
             }
         }
