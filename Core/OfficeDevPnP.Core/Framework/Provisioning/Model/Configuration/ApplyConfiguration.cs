@@ -22,10 +22,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
         public FileConnectorBase FileConnector { get; set; }
 
         [JsonIgnore]
-        public Action<string, int, int> ProgressAction { get; set; }
+        public ProvisioningProgressDelegate ProgressDelegate { get; set; }
 
         [JsonIgnore]
-        public Action<string, ProvisioningMessageType> MessageAction { get; set; }
+        public ProvisioningMessagesDelegate MessagesDelegate { get; set; }
 
         [JsonIgnore]
         public Dictionary<String, String> AccessTokens
@@ -113,18 +113,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
                 ai.HandlersToProcess = Model.Handlers.All;
             }
 
-            if (this.ProgressAction != null)
+            if (this.ProgressDelegate != null)
             {
                 ai.ProgressDelegate = (message, step, total) =>
                 {
-                    ProgressAction(message, step, total);
+                    ProgressDelegate(message, step, total);
                 };
             }
-            if (this.MessageAction != null)
+            if (this.MessagesDelegate != null)
             {
                 ai.MessagesDelegate = (message, type) =>
                 {
-                    MessageAction(message, type);
+                    MessagesDelegate(message, type);
                 };
             }
 

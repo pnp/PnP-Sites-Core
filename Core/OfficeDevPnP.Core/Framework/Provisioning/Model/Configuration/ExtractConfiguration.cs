@@ -24,10 +24,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
         public FileConnectorBase FileConnector { get; set; }
 
         [JsonIgnore]
-        public Action<string, int, int> ProgressAction { get; set; }
+        public ProvisioningProgressDelegate ProgressDelegate { get; set; }
 
         [JsonIgnore]
-        public Action<string, ProvisioningMessageType> MessageAction { get; set; }
+        public ProvisioningMessagesDelegate MessagesDelegate { get; set; }
 
         [JsonProperty("persistAssetFiles")]
         public bool PersistAssetFiles { get; set; }
@@ -39,25 +39,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
         public Lists.ExtractListsConfiguration Lists { get; set; } = new Lists.ExtractListsConfiguration();
 
         [JsonProperty("pages")]
-        public Pages.ExtractConfiguration Pages { get; set; } = new Pages.ExtractConfiguration();
+        public Pages.ExtractPagesConfiguration Pages { get; set; } = new Pages.ExtractPagesConfiguration();
 
         [JsonProperty("siteSecurity")]
         public SiteSecurity.ExtractConfiguration SiteSecurity { get; set; } = new SiteSecurity.ExtractConfiguration();
 
         [JsonProperty("taxonomy")]
-        public Taxonomy.ExtractConfiguration Taxonomy { get; set; } = new Taxonomy.ExtractConfiguration();
+        public Taxonomy.ExtractTaxonomyConfiguration Taxonomy { get; set; } = new Taxonomy.ExtractTaxonomyConfiguration();
 
         [JsonProperty("navigation")]
         public Navigation.ExtractNavigationConfiguration Navigation { get; set; } = new Navigation.ExtractNavigationConfiguration();
 
         [JsonProperty("siteFooter")]
-        public SiteFooter.ExtractConfiguration SiteFooter { get; set; } = new SiteFooter.ExtractConfiguration();
+        public SiteFooter.ExtractSiteFooterConfiguration SiteFooter { get; set; } = new SiteFooter.ExtractSiteFooterConfiguration();
 
         [JsonProperty("contentTypes")]
         public ContentTypes.ExtractContentTypeConfiguration ContentTypes { get; set; } = new ContentTypes.ExtractContentTypeConfiguration();
 
         [JsonProperty("searchSettings")]
-        public SearchSettings.ExtractConfiguration SearchSettings { get; set; } = new SearchSettings.ExtractConfiguration();
+        public SearchSettings.ExtractSearchConfiguration SearchSettings { get; set; } = new SearchSettings.ExtractSearchConfiguration();
 
         [JsonProperty("extensibility")]
         public Extensibility.ExtractExtensibilityConfiguration Extensibility { get; set; } = new Extensibility.ExtractExtensibilityConfiguration();
@@ -120,7 +120,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
             }
             if (information.MessagesDelegate != null)
             {
-                config.MessageAction = (message, type) =>
+                config.MessagesDelegate = (message, type) =>
                 {
                     information.MessagesDelegate(message, type);
                 };
@@ -129,7 +129,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
             config.MultiLanguage.PersistResources = information.PersistMultiLanguageResources;
             if(information.ProgressDelegate != null)
             {
-                config.ProgressAction = (message, step, total) =>
+                config.ProgressDelegate = (message, step, total) =>
                 {
                     information.ProgressDelegate(message, step, total);
                 };
@@ -194,18 +194,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
             ci.IncludeSearchConfiguration = this.SearchSettings.Include;
             ci.IncludeAllTermGroups = this.Taxonomy.IncludeAllTermGroups;
             
-            if (this.ProgressAction != null)
+            if (this.ProgressDelegate != null)
             {
                 ci.ProgressDelegate = (message, step, total) =>
                 {
-                    ProgressAction(message, step, total);
+                    ProgressDelegate(message, step, total);
                 };
             }
-            if (this.MessageAction != null)
+            if (this.MessagesDelegate != null)
             {
                 ci.MessagesDelegate = (message, type) =>
                 {
-                    MessageAction(message, type);
+                    MessagesDelegate(message, type);
                 };
             }
             ci.BaseTemplate = this.BaseTemplate;

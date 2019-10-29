@@ -9,10 +9,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Publishin
 {
     public class ExtractPublishingConfiguration
     {
-        [JsonProperty("IncludeNativePublishingFiles")]
+        [JsonProperty("includeNativePublishingFiles")]
         public bool IncludeNativePublishingFiles { get; set; }
 
-        [JsonProperty("Persist")]
+        [JsonProperty("persist")]
         public bool Persist { get; set; }
     }
 }

@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Tenant
 {
     public class ApplyTenantConfiguration
     {
-        [JsonProperty("DoNotWaitForSitesToBeFullyCreated")]
+        [JsonProperty("doNotWaitForSitesToBeFullyCreated")]
         public bool DoNotWaitForSitesToBeFullyCreated { get; set; }
     }
 }

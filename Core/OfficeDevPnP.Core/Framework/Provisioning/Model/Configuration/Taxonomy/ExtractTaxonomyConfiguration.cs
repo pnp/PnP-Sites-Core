@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Taxonomy
 {
-    public class ExtractConfiguration
+    public class ExtractTaxonomyConfiguration
     {
         [JsonProperty("includeSecurity")]
         public bool IncludeSecurity { get; set; }
