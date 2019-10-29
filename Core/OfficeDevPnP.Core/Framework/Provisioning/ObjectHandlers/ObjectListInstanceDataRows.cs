@@ -1005,23 +1005,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         objectSecurity.RoleAssignments.Add(new Model.RoleAssignment() { Principal = "{associatedvisitorgroup}", RoleDefinition = rb.Name });
                     }
-                    else if(siteSecurity!=null && siteSecurity.AdditionalAdministrators.Any(u=>u.Equals(ra.Member.LoginName)))
+                    else if (siteSecurity != null && siteSecurity.AdditionalAdministrators.Any(u => u.Name.Equals(ra.Member.LoginName)))
                     {
                         objectSecurity.RoleAssignments.Add(new Model.RoleAssignment() { Principal = ra.Member.LoginName, RoleDefinition = rb.Name });
                     }
-                    else if (siteSecurity != null && siteSecurity.AdditionalOwners.Any(u => u.Equals(ra.Member.LoginName)))
+                    else if (siteSecurity != null && siteSecurity.AdditionalOwners.Any(u => u.Name.Equals(ra.Member.LoginName)))
                     {
                         objectSecurity.RoleAssignments.Add(new Model.RoleAssignment() { Principal = ra.Member.LoginName, RoleDefinition = rb.Name });
                     }
-                    else if (siteSecurity != null && siteSecurity.AdditionalMembers.Any(u => u.Equals(ra.Member.LoginName)))
+                    else if (siteSecurity != null && siteSecurity.AdditionalMembers.Any(u => u.Name.Equals(ra.Member.LoginName)))
                     {
                         objectSecurity.RoleAssignments.Add(new Model.RoleAssignment() { Principal = ra.Member.LoginName, RoleDefinition = rb.Name });
                     }
-                    else if (siteSecurity != null && siteSecurity.AdditionalVisitors.Any(u => u.Equals(ra.Member.LoginName)))
+                    else if (siteSecurity != null && siteSecurity.AdditionalVisitors.Any(u => u.Name.Equals(ra.Member.LoginName)))
                     {
                         objectSecurity.RoleAssignments.Add(new Model.RoleAssignment() { Principal = ra.Member.LoginName, RoleDefinition = rb.Name });
                     }
-                    else if (siteSecurity != null && siteSecurity.SiteGroups.Any(u => u.Equals(ra.Member.LoginName)))
+                    else if (siteSecurity != null && siteSecurity.SiteGroups.Any(u => u.Title.Equals(ra.Member.LoginName)))
                     {
                         objectSecurity.RoleAssignments.Add(new Model.RoleAssignment() { Principal = ra.Member.LoginName, RoleDefinition = rb.Name });
                     }
