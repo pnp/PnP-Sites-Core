@@ -568,12 +568,12 @@
     <Compile Include="Framework\Provisioning\Model\Configuration\PropertyBag\ApplyPropertyBagConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\PropertyBag\ExtractPropertyBagConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Publishing\ExtractPublishingConfiguration.cs" />
-    <Compile Include="Framework\Provisioning\Model\Configuration\Search\ExtractConfiguration.cs" />
-    <Compile Include="Framework\Provisioning\Model\Configuration\SiteFooter\ExtractConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Search\ExtractSearchConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\SiteFooter\ExtractSiteFooterConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Navigation\ExtractNavigationConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Pages\ExtractPagesConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\SiteSecurity\ExtractSiteSecurityConfiguration.cs" />
-    <Compile Include="Framework\Provisioning\Model\Configuration\Taxonomy\ExtractConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Taxonomy\ExtractTaxonomyConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Tenant\ApplyTenantConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Tenant\ExtractTenantConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Tenant\Sequence\ExtractSequenceConfiguration.cs" />

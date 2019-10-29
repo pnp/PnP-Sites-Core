@@ -269,16 +269,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     if (handler.WillExtract(tenant, tenantTemplate, null, null))
                     {
-                        if (configuration.MessageAction != null)
+                        if (configuration.MessagesDelegate != null)
                         {
                             handler.MessagesDelegate = (message, type) =>
                             {
-                                configuration.MessageAction(message, type);
+                                configuration.MessagesDelegate(message, type);
                             };
                         }
-                        if (handler.ReportProgress && configuration.ProgressAction != null)
+                        if (handler.ReportProgress && configuration.ProgressDelegate != null)
                         {
-                            configuration.ProgressAction(handler.Name, step, count);
+                            configuration.ProgressDelegate(handler.Name, step, count);
                             step++;
                         }
 
