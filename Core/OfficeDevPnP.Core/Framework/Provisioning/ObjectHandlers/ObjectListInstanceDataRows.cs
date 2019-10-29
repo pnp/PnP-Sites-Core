@@ -103,7 +103,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         {
                                             keyColumnValue = DateTime.Parse(keyColumnValue).ToString("s") + "Z";
                                         }
-                                        var query = $@"<View><Query><Where><Eq><FieldRef Name=""{parsedKeyColumn}""/><Value Type=""{keyColumnType}"">{keyColumnValue}</Value></Eq></Where></Query><RowLimit>1</RowLimit></View>";
+                                        var query = $@"<View><Query><Where><Eq><FieldRef Name=""{parsedKeyColumn}""/><Value {(keyColumnType == "DateTime" ? "IncludeTimeValue='TRUE'": "")} Type=""{keyColumnType}"">{keyColumnValue}</Value></Eq></Where></Query><RowLimit>1</RowLimit></View>";
                                         var camlQuery = new CamlQuery()
                                         {
                                             ViewXml = query
