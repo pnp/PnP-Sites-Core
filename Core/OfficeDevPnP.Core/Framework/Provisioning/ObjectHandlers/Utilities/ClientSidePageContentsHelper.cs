@@ -676,7 +676,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             }
             else
             {
-                scope.LogError("No connector present to persist homepage");
+                scope.LogError($"No connector present to persist {fileName}.");
             }
         }
 
