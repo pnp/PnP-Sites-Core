@@ -2500,6 +2500,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             Required = field.Required,
                             Hidden = field.Hidden,
                         });
+#if ONPREMISES
                         if (field.TypeAsString.StartsWith("TaxonomyField"))
                         {
                             // find the corresponding taxonomy field and include it anyway
@@ -2518,6 +2519,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 Hidden = noteField.Hidden
                             });
                         }
+#endif
                     }
                 }
                 else
@@ -2586,7 +2588,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         list.Fields.Add(new Model.Field { SchemaXml = ParseFieldSchema(fieldSchema, web, lists) });
                     }
-
+#if ONPREMISES
                     if (field.TypeAsString.StartsWith("TaxonomyField"))
                     {
                         // find the corresponding taxonomy container text field and include it too
@@ -2600,6 +2602,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         noteSchemaXml.Attribute("SourceID")?.Remove();
                         list.Fields.Insert(0, new Model.Field { SchemaXml = ParseFieldSchema(noteSchemaXml.ToString(), web, lists) });
                     }
+#endif
                 }
             }
             return list;
