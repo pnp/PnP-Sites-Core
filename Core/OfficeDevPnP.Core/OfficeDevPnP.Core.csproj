@@ -557,6 +557,7 @@
     <Compile Include="Framework\Provisioning\Model\Configuration\ContentTypes\ApplyContentTypeConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\ContentTypes\ExtractContentTypeConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\ApplyConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Extensibility\ApplyExtensibilityConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Extensibility\ExtractExtensibilityConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Fields\ApplyFieldsConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\Lists\ApplyListsConfiguration.cs" />
@@ -737,6 +738,8 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUpdateValue.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FileUtilities.cs" />
+    <Compile Include="Framework\Provisioning\Providers\ITemplateFormatterWithValidation.cs" />
+    <Compile Include="Framework\Provisioning\Providers\ValidationResult.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.cs">
       <DependentUpon>ProvisioningSchema-2019-09.xsd</DependentUpon>
     </Compile>
@@ -1351,11 +1354,11 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CoreResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include=".editorconfig" />
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>

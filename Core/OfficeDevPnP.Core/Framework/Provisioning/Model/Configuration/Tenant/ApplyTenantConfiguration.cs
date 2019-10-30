@@ -11,5 +11,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Tenant
     {
         [JsonProperty("doNotWaitForSitesToBeFullyCreated")]
         public bool DoNotWaitForSitesToBeFullyCreated { get; set; }
+
+        [JsonIgnore]
+        [Obsolete("Use DoNotWaitForSitesToBeFullyCreated")]
+        public int DelayAfterModernSiteCreation { get; set; }
     }
 }

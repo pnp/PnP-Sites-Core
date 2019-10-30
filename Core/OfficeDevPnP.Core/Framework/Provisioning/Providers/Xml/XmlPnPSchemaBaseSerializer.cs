@@ -23,7 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
     /// with the new schema serializer
     /// </summary>
     /// <typeparam name="TSchemaTemplate"></typeparam>
-    internal abstract class XmlPnPSchemaBaseSerializer<TSchemaTemplate> : IXMLSchemaFormatter, ITemplateFormatter, IProvisioningHierarchyFormatter
+    internal abstract class XmlPnPSchemaBaseSerializer<TSchemaTemplate> : IXMLSchemaFormatter, ITemplateFormatterWithValidation, IProvisioningHierarchyFormatter
         where TSchemaTemplate: new()
     {
         private TemplateProviderBase _provider;
@@ -52,6 +52,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
         /// <returns>Whether the XML template is valid or not</returns>
         public bool IsValid(Stream template)
         {
+            return GetValidationResults(template).IsValid;
+        }
+
+        /// <summary>
+        /// Checks if the provided source Stream (the XML) is valid against the current XSD schema
+        /// </summary>
+        /// <param name="template">The source Stream (the XML)</param>
+        /// <returns>Whether the XML template is valid or not</returns>
+        public ValidationResult GetValidationResults(Stream template)
+        {
+            var exceptions = new List<Exception>();
             if (template == null)
             {
                 throw new ArgumentNullException(nameof(template));
@@ -69,13 +80,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             Boolean result = true;
             xml.Validate(schemas, (o, e) =>
             {
+                exceptions.Add(e.Exception);
                 Diagnostics.Log.Error(e.Exception, "SchemaFormatter", "Template is not valid: {0}", e.Message);
                 result = false;
             });
 
-            return (result);
+            return new ValidationResult { IsValid = result, Exceptions = exceptions };
         }
 
+        //public bool IsValid(Stream template, Action<Exception,string> validationErrorMessageAction)
+        //{
+        //    if(template == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(template));
+        //    }
+        //    if(validationErrorMessageAction == null)
+        //    {
+        //        throw new ArgumentNullException(nameof(validationErrorMessageAction));
+        //    }
+
+        //    // Load the template into an XDocument
+        //    var xml = XDocument.Load(template);
+
+        //    // Prepare the XML Schema Set
+        //    var schemas = new XmlSchemaSet();
+        //    this._referenceSchema.Seek(0, SeekOrigin.Begin);
+        //    schemas.Add(((IXMLSchemaFormatter)this).NamespaceUri, new XmlTextReader(this._referenceSchema));
+
+        //    bool result = true;
+        //    xml.Validate(schemas, (o, e) =>
+        //    {
+        //        Diagnostics.Log.Error(e.Exception, "SchemaFormatter", "Template is not valid: {0}", e.Message);
+        //        validationErrorMessageAction(e.Exception, e.Message);
+        //        result = false;
+        //    });
+        //    return result;
+        //}
         /// <summary>
         /// Converts a Stream of bytes (the XML) into a XML-based object created using XmlSerializer
         /// </summary>
@@ -95,11 +135,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             template.CopyTo(sourceStream);
             sourceStream.Position = 0;
 
+
             // Check the provided template against the XML schema
-            if (!this.IsValid(sourceStream))
+            var validationResult = this.GetValidationResults(sourceStream);
+            if (!validationResult.IsValid)
             {
-                // TODO: Use resource file
-                throw new ApplicationException("The provided template is not valid!");
+                throw new ApplicationException("Template is not valid", new AggregateException(validationResult.Exceptions));
             }
 
             sourceStream.Position = 0;
@@ -513,10 +554,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             sourceStream.Position = 0;
 
             // Check the provided template against the XML schema
-            if (!this.IsValid(sourceStream))
+            var validationResult = this.GetValidationResults(sourceStream);
+            if (!validationResult.IsValid)
             {
                 // TODO: Use resource file
-                throw new ApplicationException("The provided provisioning file is not valid!");
+                throw new ApplicationException("Template is not valid", new AggregateException(validationResult.Exceptions));
             }
 
             // Prepare the output variable

@@ -11,7 +11,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
     /// <summary>
     /// Helper class that abstracts from any specific version of XMLPnPSchemaFormatter
     /// </summary>
-    public class XMLPnPSchemaFormatter : ITemplateFormatter
+    public class XMLPnPSchemaFormatter : ITemplateFormatterWithValidation
     {
         private TemplateProviderBase _provider;
 
@@ -118,6 +118,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             return (formatter.IsValid(template));
         }
 
+        public ValidationResult GetValidationResults(Stream template)
+        {
+            var formatter = this.GetSpecificFormatterInternal(ref template);
+            formatter.Initialize(this._provider);
+            if (formatter is ITemplateFormatterWithValidation)
+            {
+                return ((ITemplateFormatterWithValidation)formatter).GetValidationResults(template);
+            }
+            return null;
+        }
+
+
         public System.IO.Stream ToFormattedTemplate(Model.ProvisioningTemplate template)
         {
             ITemplateFormatter formatter = XMLPnPSchemaFormatter.LatestFormatter;
@@ -169,7 +181,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 return (XMLPnPSchemaFormatter.LatestFormatter);
             }
         }
-
         #endregion
     }
 }

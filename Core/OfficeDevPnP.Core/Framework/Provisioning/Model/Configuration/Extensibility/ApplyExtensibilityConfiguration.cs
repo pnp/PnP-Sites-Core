@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Extensibility
 {
-    public class ExtractExtensibilityConfiguration
+    public class ApplyExtensibilityConfiguration
     {
         [JsonProperty("handlers")]
         public List<ExtensibilityHandler> Handlers { get; set; } = new List<ExtensibilityHandler>();
