@@ -179,10 +179,10 @@ namespace OfficeDevPnP.Core.Sites
                     request.Content = requestBody;
                     request.Headers.Add("accept", "application/json;odata.metadata=none");
                     request.Headers.Add("odata-version", "4.0");
-                    MediaTypeHeaderValue sharePointJsonMediaType = null;
-                    MediaTypeHeaderValue.TryParse("application/json;odata.metadata=none;charset=utf-8", out sharePointJsonMediaType);
-                    requestBody.Headers.ContentType = sharePointJsonMediaType;
-
+                    if (MediaTypeHeaderValue.TryParse("application/json;odata.metadata=none;charset=utf-8", out MediaTypeHeaderValue sharePointJsonMediaType))
+                    {
+                        requestBody.Headers.ContentType = sharePointJsonMediaType;
+                    }
                     if (!string.IsNullOrEmpty(accessToken))
                     {
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
@@ -360,10 +360,10 @@ namespace OfficeDevPnP.Core.Sites
                     request.Content = requestBody;
                     request.Headers.Add("accept", "application/json;odata.metadata=none");
                     request.Headers.Add("odata-version", "4.0");
-                    MediaTypeHeaderValue sharePointJsonMediaType = null;
-                    MediaTypeHeaderValue.TryParse("application/json;odata.metadata=none;charset=utf-8", out sharePointJsonMediaType);
-                    requestBody.Headers.ContentType = sharePointJsonMediaType;
-
+                    if(MediaTypeHeaderValue.TryParse("application/json;odata.metadata=none;charset=utf-8", out MediaTypeHeaderValue sharePointJsonMediaType))
+                    {
+                        requestBody.Headers.ContentType = sharePointJsonMediaType;
+                    }
                     if (!string.IsNullOrEmpty(accessToken))
                     {
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
@@ -539,7 +539,7 @@ namespace OfficeDevPnP.Core.Sites
                 }
                 while (!isProvisioningComplete && retryAttempt <= maxRetryCount);
             }
-            catch(Exception ex)
+            catch(Exception)
             {
                 // Eat the exception for now as not all tenants already have this feature
                 // TODO: remove try/catch once IsProvisioningComplete is globally deployed
@@ -651,10 +651,10 @@ namespace OfficeDevPnP.Core.Sites
                     request.Content = requestBody;
                     request.Headers.Add("accept", "application/json;odata.metadata=none");
                     request.Headers.Add("odata-version", "4.0");
-                    MediaTypeHeaderValue sharePointJsonMediaType = null;
-                    MediaTypeHeaderValue.TryParse("application/json;odata.metadata=none;charset=utf-8", out sharePointJsonMediaType);
-                    requestBody.Headers.ContentType = sharePointJsonMediaType;
-
+                    if (MediaTypeHeaderValue.TryParse("application/json;odata.metadata=none;charset=utf-8", out MediaTypeHeaderValue sharePointJsonMediaType))
+                    {
+                        requestBody.Headers.ContentType = sharePointJsonMediaType;
+                    }
                     if (!string.IsNullOrEmpty(accessToken))
                     {
                         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
