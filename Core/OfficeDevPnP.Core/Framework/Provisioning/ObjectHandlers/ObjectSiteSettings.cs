@@ -88,6 +88,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             isDirty = true;
                         }
 
+                        site.EnsureProperty(s => s.SearchBoxInNavBar);
                         if (site.SearchBoxInNavBar.ToString() != template.SiteSettings.SearchBoxInNavBar.ToString())
                         {
                             site.SearchBoxInNavBar = (SearchBoxInNavBarType)Enum.Parse(typeof(SearchBoxInNavBarType), template.SiteSettings.SearchBoxInNavBar.ToString(), true);
