@@ -98,6 +98,10 @@ namespace OfficeDevPnP.Core.Utilities.Graph
                             id = ItemAlreadyExists(uri, matchingFieldName, matchingFieldValue, accessToken);
                             uri = $"{uri}/{id}";
                         }
+                        else
+                        {
+                            id = matchingFieldValue;
+                        }
 
                         // Patch the item, if supported
                         if (canPatch)
