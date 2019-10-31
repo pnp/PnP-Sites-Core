@@ -1182,7 +1182,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         catch (Exception)
                         {
                             retry++;
-                            Thread.Sleep(5000 * retry); // wait
+                            Thread.Sleep(5000*retry); // wait
                         }
                 }
             }
