@@ -1342,7 +1342,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Skipping adding DocumentTemplate to ContentType &apos;{0}&apos; because we can&apos;t upload them on &apos;noscript&apos; sites..
+        ///   Looks up a localized string similar to Skipping uploading template as set in DocumentTemplate for ContentType &apos;{0}&apos; because we can&apos;t upload them on &apos;noscript&apos; sites..
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ContentTypes_SkipDocumentTemplate {
             get {

@@ -420,17 +420,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             using (var fsstream = template.Connector.GetFileStream($"_cts/{name}/{documentTemplate}"))
                             {
-                                Microsoft.SharePoint.Client.Folder ctFolder = web.GetFolderByServerRelativeUrl($"{web.ServerRelativeUrl}/_cts/{name}");
-                                web.Context.Load(ctFolder, fl => fl.Files.Include(f => f.Name, f => f.ServerRelativeUrl));
-                                web.Context.ExecuteQuery();
+                                if (fsstream != null)
+                                {
+                                    Microsoft.SharePoint.Client.Folder ctFolder = web.GetFolderByServerRelativeUrl($"{web.ServerRelativeUrl}/_cts/{name}");
+                                    web.Context.Load(ctFolder, fl => fl.Files.Include(f => f.Name, f => f.ServerRelativeUrl));
+                                    web.Context.ExecuteQuery();
 
-                                FileCreationInformation newFile = new FileCreationInformation();
-                                newFile.ContentStream = fsstream;
-                                newFile.Url = $"{web.ServerRelativeUrl}/_cts/{name}/{documentTemplate}";
+                                    FileCreationInformation newFile = new FileCreationInformation();
+                                    newFile.ContentStream = fsstream;
+                                    newFile.Url = $"{web.ServerRelativeUrl}/_cts/{name}/{documentTemplate}";
 
-                                Microsoft.SharePoint.Client.File uploadedFile = ctFolder.Files.Add(newFile);
-                                web.Context.Load(uploadedFile);
-                                web.Context.ExecuteQuery();
+                                    Microsoft.SharePoint.Client.File uploadedFile = ctFolder.Files.Add(newFile);
+                                    web.Context.Load(uploadedFile);
+                                    web.Context.ExecuteQuery();
+                                }
                             }
                             createdCT.DocumentTemplate = documentTemplate;
                         }
@@ -442,10 +445,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 else
                 {
-                    createdCT.DocumentTemplate = parser.ParseString(templateContentType.DocumentTemplate);
-                    if (!string.IsNullOrEmpty(parser.ParseString(templateContentType.DocumentTemplate)))
+                    var parsedDocumentTemplate = parser.ParseString(templateContentType.DocumentTemplate);
+                    if (!string.IsNullOrEmpty(parsedDocumentTemplate))
                     {
-                        // log message
+                        createdCT.DocumentTemplate = parsedDocumentTemplate;
+                        // log message that's we are skipping uploads
                         scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_SkipDocumentTemplate, name);
                     }
                 }
