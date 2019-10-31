@@ -575,9 +575,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private IEnumerable<ContentType> GetEntities(Web web, PnPMonitoredScope scope, ProvisioningTemplateCreationInformation creationInfo, ProvisioningTemplate template)
         {
             var cts = web.ContentTypes;
+            var fields = web.Fields;
             web.Context.Load(cts, ctCollection => ctCollection.IncludeWithDefaultProperties(ct => ct.FieldLinks, ct => ct.SchemaXmlWithResourceTokens));
+            web.Context.Load(fields, fld => fld.Include(f => f.TypeAsString, f => f.Id, f => f.SchemaXml));
             web.Context.ExecuteQueryRetry();
 
+#if (!ONPREMISES)
+            List<Guid> IngnoreNoteFields = new List<Guid>();
+            foreach(var spField in fields.Where(f=>f.TypeAsString.StartsWith("TaxonomyField")))
+            {
+                var element = XElement.Parse(spField.SchemaXml);
+                var xObject = ((IEnumerable<Object>)element.XPathEvaluate("/Customization/ArrayOfProperty/Property[Name='TextField']")).FirstOrDefault();
+                Guid noteFieldId = Guid.Empty;
+                if(Guid.TryParse(xObject.ToString(), out noteFieldId))
+                {
+                    IngnoreNoteFields.Add(noteFieldId);
+                }
+            }
+#endif
             if (cts.Count > 0 && web.IsSubSite())
             {
                 WriteMessage("We discovered content types in this subweb. While technically possible, we recommend moving these content types to the root site collection. Consider excluding them from this template.", ProvisioningMessageType.Warning);
@@ -633,6 +648,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         NewFormUrl = ct.NewFormUrl,
                     };
 
+#if (!ONPREMISES)
+                    //remove if FieldRef point to Note Filed belonging to TaxonomieField
+                    newCT.FieldRefs.RemoveAll(f => IngnoreNoteFields.Contains(f.Id));
+#endif
                     if (creationInfo.PersistMultiLanguageResources)
                     {
 #if !SP2013
