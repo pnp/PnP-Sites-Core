@@ -84,7 +84,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (!SetGroupSecurity(scope, team, teamId, accessToken)) return null;
                 }
                 if (!SetTeamChannels(scope, parser, team, teamId, accessToken)) return null;
-                if (!SetTeamApps(scope, team, teamId, accessToken)) return null;
+                if (!SetTeamApps(scope, parser, team, teamId, accessToken)) return null;
 
                 // So far the Team's photo cannot be set if we don't have an already existing mailbox
                 if (!SetTeamPhoto(scope, parser, connector, team, teamId, accessToken)) return null;
@@ -1117,11 +1117,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// Synchronizes Team Apps settings
         /// </summary>
         /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="parser">Token parser</param>
         /// <param name="team">The Team settings, including security settings</param>
         /// <param name="teamId">The ID of the target Team</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token</param>
         /// <returns>Whether the Apps have been provisioned or not</returns>
-        private static bool SetTeamApps(PnPMonitoredScope scope, Team team, string teamId, string accessToken)
+        private static bool SetTeamApps(PnPMonitoredScope scope, TokenParser parser, Team team, string teamId, string accessToken)
         {
             foreach (var app in team.Apps)
             {
