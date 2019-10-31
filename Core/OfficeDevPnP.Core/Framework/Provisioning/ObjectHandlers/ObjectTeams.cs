@@ -81,7 +81,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Only configure Security, if Security is configured
                 if (team.Security != null)
                 {
-                    if (!SetGroupSecurity(scope, team, teamId, accessToken)) return null;
+                    if (!SetGroupSecurity(scope, parser, team, teamId, accessToken)) return null;
                 }
                 if (!SetTeamChannels(scope, parser, team, teamId, accessToken)) return null;
                 if (!SetTeamApps(scope, parser, team, teamId, accessToken)) return null;
@@ -489,11 +489,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// Synchronizes Owners and Members with Team settings
         /// </summary>
         /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="parser">Token parser</param>
         /// <param name="team">The Team settings, including security settings</param>
         /// <param name="teamId">The ID of the target Team</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token</param>
         /// <returns>Whether the Security settings have been provisioned or not</returns>
-        private static bool SetGroupSecurity(PnPMonitoredScope scope, Team team, string teamId, string accessToken)
+        private static bool SetGroupSecurity(PnPMonitoredScope scope, TokenParser parser, Team team, string teamId, string accessToken)
         {
             SetAllowToAddGuestsSetting(scope, teamId, team.Security.AllowToAddGuests, accessToken);
 
@@ -508,7 +509,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     .Distinct(StringComparer.OrdinalIgnoreCase)
                     .ToDictionary(k => k, k =>
                     {
-                        var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(k.Replace("'", "''"))}?$select=id", accessToken);
+                        var user = parser.ParseString(k);
+                        var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(user.Replace("'", "''"))}?$select=id", accessToken);
                         return JToken.Parse(jsonUser).Value<string>("id");
                     });
 
