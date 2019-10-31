@@ -2,6 +2,7 @@
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Utilities.Async;
 using System;
@@ -499,7 +500,7 @@ namespace OfficeDevPnP.Core.Sites
             }
         }
 
-        private static void WaitForProvisioningIsComplete(Web web, int maxRetryCount = 60, int retryDelay = 1000 * 10)
+        private static void WaitForProvisioningIsComplete(Web web, int maxRetryCount = 80, int retryDelay = 1000 * 15)
         {
             bool isProvisioningComplete = true;
             try
@@ -522,7 +523,7 @@ namespace OfficeDevPnP.Core.Sites
                     // Catch this...sometimes there's that "sharepoint push feature has not been ..." error
                 }
 
-                // Let's start polling for completion. We'll wait maximum 10 minutes for completion.               
+                // Let's start polling for completion. We'll wait maximum 20 minutes for completion.               
                 var retryAttempt = 1;
                 do
                 {
@@ -548,8 +549,9 @@ namespace OfficeDevPnP.Core.Sites
 
             if (!isProvisioningComplete)
             {
-                // Bummer, sites seems to be still not ready...throwing an exception
-                throw new Exception($"Server side provisioning of this web did not finish after waiting for {maxRetryCount * retryDelay} milliseconds.");
+                // Bummer, sites seems to be still not ready...log a warning but let's not fail
+                Log.Warning(Constants.LOGGING_SOURCE,  string.Format(CoreResources.SiteCollection_WaitForIsProvisioningComplete, maxRetryCount * retryDelay));
+                //throw new Exception($"Server side provisioning of this web did not finish after waiting for {maxRetryCount * retryDelay} milliseconds.");
             }
         }
 

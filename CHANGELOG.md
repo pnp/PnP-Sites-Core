@@ -8,12 +8,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
 - Added initial TenantTemplate extraction, supporting Sequences and Teams
 - Limiting lists to extract now supports besides filtering on title also filtering on list url
+
+### Changed
+
+- IsProvisioningComplete waits for max 20 minutes and logs a warning instead of throwing an exception when a longer wait is needed
 
 ## [3.14.1910.1 - October 2019 intermediate release]
 
 ### Added
+
 - You can now specify to overwrite a tenant theme if already present when using the 201909 schema of the provisioning engine [gautamdsheth]
 
 ### Changed

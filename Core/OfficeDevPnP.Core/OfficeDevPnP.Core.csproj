@@ -1354,11 +1354,11 @@
     </EmbeddedResource>
     <EmbeddedResource Include="CoreResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>CoreResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include=".editorconfig" />
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
