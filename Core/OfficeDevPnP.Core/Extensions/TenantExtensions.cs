@@ -37,12 +37,25 @@ namespace Microsoft.SharePoint.Client
 #if !ONPREMISES
         #region Provisioning
 
-        public static void ApplyProvisionHierarchy(this Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation = null)
+        /// <summary>
+        /// Applies a template to a tenant
+        /// </summary>
+        /// <param name="tenant"></param>
+        /// <param name="tenantTemplate"></param>
+        /// <param name="sequenceId"></param>
+        /// <param name="configuration"></param>
+        public static void ApplyTenantTemplate(this Tenant tenant, ProvisioningHierarchy tenantTemplate, string sequenceId, ApplyConfiguration configuration = null)
         {
             SiteToTemplateConversion engine = new SiteToTemplateConversion();
-            engine.ApplyProvisioningHierarchy(tenant, hierarchy, sequenceId, applyingInformation);
+            engine.ApplyTenantTemplate(tenant, tenantTemplate, sequenceId, configuration);
         }
 
+        /// <summary>
+        /// Extracts a template from a tenant
+        /// </summary>
+        /// <param name="tenant"></param>
+        /// <param name="configuration"></param>
+        /// <returns></returns>
         public static ProvisioningHierarchy GetTenantTemplate(this Tenant tenant, ExtractConfiguration configuration)
         {
             return new SiteToTemplateConversion().GetTenantTemplate(tenant, configuration);

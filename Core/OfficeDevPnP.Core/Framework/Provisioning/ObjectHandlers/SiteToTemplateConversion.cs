@@ -159,35 +159,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 #if !ONPREMISES
-        internal void ApplyProvisioningHierarchy(Tenant tenant, OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation provisioningInfo)
+        internal void ApplyTenantTemplate(Tenant tenant, OfficeDevPnP.Core.Framework.Provisioning.Model.ProvisioningHierarchy hierarchy, string sequenceId, ApplyConfiguration configuration)
         {
             using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Provisioning))
             {
                 ProvisioningProgressDelegate progressDelegate = null;
                 ProvisioningMessagesDelegate messagesDelegate = null;
-                if (provisioningInfo == null)
+                if (configuration == null)
                 {
                     // When no provisioning info was passed then we want to execute all handlers
-                    provisioningInfo = new ProvisioningTemplateApplyingInformation();
-                    provisioningInfo.HandlersToProcess = Handlers.All;
+                    configuration = new ApplyConfiguration();
                 }
                 else
                 {
-                    progressDelegate = provisioningInfo.ProgressDelegate;
-                    if (provisioningInfo.ProgressDelegate != null)
+                    progressDelegate = configuration.ProgressDelegate;
+                    if (configuration.ProgressDelegate != null)
                     {
                         scope.LogInfo(CoreResources.SiteToTemplateConversion_ProgressDelegate_registered);
                     }
-                    messagesDelegate = provisioningInfo.MessagesDelegate;
-                    if (provisioningInfo.MessagesDelegate != null)
+                    messagesDelegate = configuration.MessagesDelegate;
+                    if (configuration.MessagesDelegate != null)
                     {
                         scope.LogInfo(CoreResources.SiteToTemplateConversion_MessagesDelegate_registered);
                     }
-                    if (provisioningInfo.HandlersToProcess == default(Handlers))
-                    {
-                        provisioningInfo.HandlersToProcess = Handlers.All;
-                    }
-
                 }
 
                 List<ObjectHierarchyHandlerBase> objectHandlers = new List<ObjectHierarchyHandlerBase>
@@ -199,7 +193,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     new ObjectAzureActiveDirectory(),
                 };
 
-                var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(tenant, hierarchy, sequenceId, provisioningInfo)) + 1;
+                var count = objectHandlers.Count(o => o.ReportProgress && o.WillProvision(tenant, hierarchy, sequenceId, configuration)) + 1;
 
                 progressDelegate?.Invoke("Initializing engine", 1, count); // handlers + initializing message)
 
@@ -212,7 +206,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var handler in objectHandlers)
                 {
-                    if (handler.WillProvision(tenant, hierarchy, sequenceId, provisioningInfo))
+                    if (handler.WillProvision(tenant, hierarchy, sequenceId, configuration))
                     {
                         if (messagesDelegate != null)
                         {
@@ -225,7 +219,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         try
                         {
-                            sequenceTokenParser = handler.ProvisionObjects(tenant, hierarchy, sequenceId, sequenceTokenParser, provisioningInfo);
+                            sequenceTokenParser = handler.ProvisionObjects(tenant, hierarchy, sequenceId, sequenceTokenParser, configuration);
                         }
                         catch (Exception ex)
                         {

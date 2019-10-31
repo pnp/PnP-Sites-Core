@@ -184,7 +184,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         #region PnP Provisioning Engine infrastructural code
 
-        public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ApplyConfiguration configuration)
         {
 #if !ONPREMISES
             if (!_willProvision.HasValue)
@@ -209,7 +209,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return _willExtract.Value;
         }
 
-        public override TokenParser ProvisionObjects(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, TokenParser parser, ApplyConfiguration configuration)
         {
 #if !ONPREMISES
             using (var scope = new PnPMonitoredScope(Name))

@@ -312,9 +312,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 UrlValue = Regex.Replace(UrlValue, $"{{{match.Groups["tokenname"].Value}:{match.Groups["fileurl"].Value}}}", folderId, RegexOptions.IgnoreCase);
                             }
-                            catch (Exception ex1)
+                            catch (Exception)
                             {
-
+                                // swallow exception
                             }
                         }
                     }

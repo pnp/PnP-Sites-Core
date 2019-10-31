@@ -206,14 +206,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return subSiteCollection;
         }
 
-        public override TokenParser ProvisionObjects(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, TokenParser tokenParser, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, TokenParser tokenParser, ApplyConfiguration configuration)
         {
             using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Provisioning))
             {
                 bool nowait = false;
-                if (applyingInformation.ApplyConfiguration != null)
+                if (configuration != null)
                 {
-                    nowait = applyingInformation.ApplyConfiguration.Tenant.DoNotWaitForSitesToBeFullyCreated;
+                    nowait = configuration.Tenant.DoNotWaitForSitesToBeFullyCreated;
                 }
                 var sequence = hierarchy.Sequences.FirstOrDefault(s => s.ID == sequenceId);
                 if (sequence != null)
@@ -244,14 +244,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (groupSiteInfo == null)
                                     {
                                         WriteMessage($"Creating Team Site {siteInfo.Alias}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, applyingInformation.DelayAfterModernSiteCreation, noWait: nowait);
+                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait);
                                     }
                                     else
                                     {
                                         if (groupSiteInfo.ContainsKey("siteUrl"))
                                         {
                                             WriteMessage($"Using existing Team Site {siteInfo.Alias}", ProvisioningMessageType.Progress);
-                                            siteContext = (tenant.Context as ClientContext).Clone(groupSiteInfo["siteUrl"], applyingInformation.AccessTokens);
+                                            siteContext = (tenant.Context as ClientContext).Clone(groupSiteInfo["siteUrl"], configuration.AccessTokens);
                                         }
                                     }
                                     if (t.IsHubSite)
@@ -340,12 +340,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (tenant.SiteExists(siteInfo.Url))
                                     {
                                         WriteMessage($"Using existing Communications Site at {siteInfo.Url}", ProvisioningMessageType.Progress);
-                                        siteContext = (tenant.Context as ClientContext).Clone(siteInfo.Url, applyingInformation.AccessTokens);
+                                        siteContext = (tenant.Context as ClientContext).Clone(siteInfo.Url, configuration.AccessTokens);
                                     }
                                     else
                                     {
                                         WriteMessage($"Creating Communications Site at {siteInfo.Url}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, applyingInformation.DelayAfterModernSiteCreation, noWait: nowait);
+                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait);
                                     }
                                     if (c.IsHubSite)
                                     {
@@ -385,12 +385,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (tenant.SiteExists(siteUrl))
                                     {
                                         WriteMessage($"Using existing Team Site at {siteUrl}", ProvisioningMessageType.Progress);
-                                        siteContext = (tenant.Context as ClientContext).Clone(siteUrl, applyingInformation.AccessTokens);
+                                        siteContext = (tenant.Context as ClientContext).Clone(siteUrl, configuration.AccessTokens);
                                     }
                                     else
                                     {
                                         WriteMessage($"Creating Team Site with no Office 365 group at {siteUrl}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, applyingInformation.DelayAfterModernSiteCreation, noWait: nowait);
+                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait);
                                     }
                                     if (t.IsHubSite)
                                     {
@@ -422,7 +422,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (siteTokenParser == null)
                         {
-                            siteTokenParser = new TokenParser(tenant, hierarchy, applyingInformation);
+                            siteTokenParser = new TokenParser(tenant, hierarchy, configuration.ToApplyingInformation());
                             foreach (var token in _additionalTokens)
                             {
                                 siteTokenParser.AddToken(token);
@@ -444,24 +444,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     WriteMessage("Applying templates", ProvisioningMessageType.Progress);
                     var currentSite = "";
 
-                    var provisioningTemplateApplyingInformation = new ProvisioningTemplateApplyingInformation();
-                    provisioningTemplateApplyingInformation.AccessTokens = applyingInformation.AccessTokens;
-                    provisioningTemplateApplyingInformation.MessagesDelegate = applyingInformation.MessagesDelegate;
+                    var provisioningTemplateApplyingInformation = configuration.ToApplyingInformation();
                     provisioningTemplateApplyingInformation.ProgressDelegate = (string message, int step, int total) =>
                     {
-                        applyingInformation.ProgressDelegate?.Invoke($"{currentSite} : {message}", step, total);
+                        configuration.ProgressDelegate?.Invoke($"{currentSite} : {message}", step, total);
                     };
-                    provisioningTemplateApplyingInformation.SiteProvisionedDelegate = applyingInformation.SiteProvisionedDelegate;
-                    provisioningTemplateApplyingInformation.HandlersToProcess = applyingInformation.HandlersToProcess;
-                    provisioningTemplateApplyingInformation.IgnoreDuplicateDataRowErrors = applyingInformation.IgnoreDuplicateDataRowErrors;
-                    provisioningTemplateApplyingInformation.AccessTokens = applyingInformation.AccessTokens;
-                    provisioningTemplateApplyingInformation.ClearNavigation = applyingInformation.ClearNavigation;
-                    provisioningTemplateApplyingInformation.DelayAfterModernSiteCreation = applyingInformation.DelayAfterModernSiteCreation;
-                    provisioningTemplateApplyingInformation.ExtensibilityHandlers = applyingInformation.ExtensibilityHandlers;
-                    provisioningTemplateApplyingInformation.OverwriteSystemPropertyBagValues = applyingInformation.OverwriteSystemPropertyBagValues;
-                    provisioningTemplateApplyingInformation.PersistTemplateInfo = applyingInformation.PersistTemplateInfo;
-                    provisioningTemplateApplyingInformation.ProvisionContentTypesToSubWebs = applyingInformation.ProvisionContentTypesToSubWebs;
-                    provisioningTemplateApplyingInformation.ProvisionFieldsToSubWebs = applyingInformation.ProvisionFieldsToSubWebs;
                     
                     foreach (var sitecollection in sequence.SiteCollections)
                     {
@@ -470,7 +457,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         siteUrls.TryGetValue(sitecollection.Id, out string siteUrl);
                         if (siteUrl != null)
                         {
-                            using (var clonedContext = tenant.Context.Clone(siteUrl, applyingInformation.AccessTokens))
+                            using (var clonedContext = tenant.Context.Clone(siteUrl, configuration.AccessTokens))
                             {
                                 var web = clonedContext.Web;
                                 foreach (var templateRef in sitecollection.Templates)
@@ -481,7 +468,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         provisioningTemplate.Connector = hierarchy.Connector;
                                         //if (siteTokenParser == null)
                                         //{
-                                        siteTokenParser = new TokenParser(web, provisioningTemplate, applyingInformation);
+                                        siteTokenParser = new TokenParser(web, provisioningTemplate, configuration.ToApplyingInformation());
                                         foreach (var token in _additionalTokens)
                                         {
                                             siteTokenParser.AddToken(token);
@@ -503,7 +490,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                 if (siteTokenParser == null)
                                 {
-                                    siteTokenParser = new TokenParser(tenant, hierarchy, applyingInformation);
+                                    siteTokenParser = new TokenParser(tenant, hierarchy, configuration.ToApplyingInformation());
                                     foreach (var token in _additionalTokens)
                                     {
                                         siteTokenParser.AddToken(token);
@@ -659,7 +646,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return true;
         }
 
-        public override bool WillProvision(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override bool WillProvision(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, ApplyConfiguration configuration)
         {
             return hierarchy.Sequences.Count > 0;
         }

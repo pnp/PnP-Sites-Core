@@ -183,7 +183,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 {
                     var tenant = new Tenant(ctx);
                     var parser = new TokenParser(ctx.Web, template);
-                    new ObjectTeams().ProvisionObjects(tenant, template.ParentHierarchy, null, parser, new ProvisioningTemplateApplyingInformation());
+                    new ObjectTeams().ProvisionObjects(tenant, template.ParentHierarchy, null, parser, new Core.Framework.Provisioning.Model.Configuration.ApplyConfiguration());
                 }
             }
         }

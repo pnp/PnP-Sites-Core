@@ -20,14 +20,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return hierarchy;
         }
 
-        public override TokenParser ProvisionObjects(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, TokenParser parser, ApplyConfiguration configuration)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 if (hierarchy.Tenant != null)
                 {
                     TenantHelper.ProcessCdns(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
-                    parser = TenantHelper.ProcessApps(tenant, hierarchy.Tenant, hierarchy.Connector, parser, scope, applyingInformation, MessagesDelegate);
+                    parser = TenantHelper.ProcessApps(tenant, hierarchy.Tenant, hierarchy.Connector, parser, scope, configuration, MessagesDelegate);
 
                     try
                     {
@@ -40,7 +40,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     parser = TenantHelper.ProcessSiteScripts(tenant, hierarchy.Tenant, hierarchy.Connector, parser, scope, MessagesDelegate);
                     parser = TenantHelper.ProcessSiteDesigns(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
-                    parser = TenantHelper.ProcessStorageEntities(tenant, hierarchy.Tenant, parser, scope, applyingInformation, MessagesDelegate);
+                    parser = TenantHelper.ProcessStorageEntities(tenant, hierarchy.Tenant, parser, scope, configuration, MessagesDelegate);
                     parser = TenantHelper.ProcessThemes(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
                     // So far we do not provision CDN settings
                     // It will come in the near future
@@ -56,7 +56,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return false;
         }
 
-        public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ApplyConfiguration configuration)
         {
             if (!_willProvision.HasValue && hierarchy.Tenant != null)
             {
