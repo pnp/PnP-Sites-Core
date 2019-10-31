@@ -623,9 +623,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             foreach(var spField in fields.Where(f=>f.TypeAsString.StartsWith("TaxonomyField")))
             {
                 var element = XElement.Parse(spField.SchemaXml);
-                var xObject = ((IEnumerable<Object>)element.XPathEvaluate("/Customization/ArrayOfProperty/Property[Name='TextField']")).FirstOrDefault();
+                var xObject = ((IEnumerable<Object>)element.XPathEvaluate("/Customization/ArrayOfProperty/Property[Name='TextField']/Value")).FirstOrDefault();
                 Guid noteFieldId = Guid.Empty;
-                if(Guid.TryParse(xObject.ToString(), out noteFieldId))
+                if(Guid.TryParse(((XElement)xObject).Value.ToString(), out noteFieldId))
                 {
                     IngnoreNoteFields.Add(noteFieldId);
                 }
