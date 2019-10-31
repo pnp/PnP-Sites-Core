@@ -1181,7 +1181,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         catch (Exception)
                         {
-                            Thread.Sleep(5000 * retry); // wait half a second                            
+                            retry++;
+                            Thread.Sleep(5000 * retry); // wait
                         }
                 }
             }
