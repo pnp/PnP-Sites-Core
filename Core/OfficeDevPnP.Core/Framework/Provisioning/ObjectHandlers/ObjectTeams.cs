@@ -1028,25 +1028,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             }
 
-            var tabToCreate = new
-            {
-                displayname,
-                teamsAppId,
-                configuration = tab.Configuration != null
-                    ? new
-                    {
-                        tab.Configuration.EntityId,
-                        tab.Configuration.ContentUrl,
-                        tab.Configuration.RemoveUrl,
-                        tab.Configuration.WebsiteUrl
-                    }
-                    : null
-            };
+            Dictionary<string, object> tabToCreate = new Dictionary<string, object>();
+            tabToCreate.Add("displayName", displayname);
+            tabToCreate.Add("configuration", tab.Configuration != null
+                                        ? new
+                                        {
+                                            tab.Configuration.EntityId,
+                                            tab.Configuration.ContentUrl,
+                                            tab.Configuration.RemoveUrl,
+                                            tab.Configuration.WebsiteUrl
+                                        }
+                                        : null);
+            tabToCreate.Add("teamsApp@odata.bind", "https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/" + teamsAppId);
 
             var tabId = GraphHelper.CreateOrUpdateGraphObject(scope,
                 HttpMethodVerb.POST,
-                $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs",
-                tabToCreate,
+                $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{teamId}/channels/{channelId}/tabs",
+                JsonConvert.SerializeObject(tabToCreate),
                 HttpHelper.JsonContentType,
                 accessToken,
                 "NameAlreadyExists",
@@ -1129,12 +1127,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 object appToCreate = new JObject
                 {
-                    ["teamsApp@odata.bind"] = app.AppId
+                    ["teamsApp@odata.bind"] = "https://graph.microsoft.com/v1.0/appCatalogs/teamsApps/" + parser.ParseString(app.AppId)
                 };
 
                 var id = GraphHelper.CreateOrUpdateGraphObject(scope,
                     HttpMethodVerb.POST,
-                    $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/installedApps",
+                    $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{teamId}/installedApps",
                     appToCreate,
                     HttpHelper.JsonContentType,
                     accessToken,
