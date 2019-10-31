@@ -68,7 +68,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         );
 
                     currentFileIndex++;
-                    WriteMessage($"File|{targetFileName}|{currentFileIndex}|{filesToProcess.Length}", ProvisioningMessageType.Progress);
+                    WriteSubProgress("File", targetFileName, currentFileIndex, filesToProcess.Length);
                     var folderName = parser.ParseString(file.Folder);
 
                     if (folderName.ToLower().Contains("/_catalogs/"))

@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 9/30/2019*
+* Topic automatically generated on 10/6/2019*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -2464,13 +2464,12 @@ Here follow the available child elements for the ClientSidePages element.
 Element|Type|Description
 -------|----|-----------
 ClientSidePage|[ClientSidePage](#clientsidepage)|
-<a name="clientsidepage"></a>
-### ClientSidePage
-Defines a single element of type ClientSidePage.
+<a name="baseclientsidepage"></a>
+### BaseClientSidePage
+Defines a base Client Side Page.
 
 ```xml
-<pnp:ClientSidePage
-      PageName="xsd:string"
+<pnp:BaseClientSidePage
       PromoteAsNewsArticle="xsd:boolean"
       PromoteAsTemplate="xsd:boolean"
       Overwrite="xsd:boolean"
@@ -2479,34 +2478,32 @@ Defines a single element of type ClientSidePage.
       EnableComments="xsd:boolean"
       Title="xsd:string"
       ContentTypeID="pnp:ReplaceableString"
-      CreateTranslations="xsd:boolean"
       ThumbnailUrl="pnp:ReplaceableString">
-   <pnp:Sections />
    <pnp:Header />
+   <pnp:Sections />
    <pnp:FieldValues />
    <pnp:Security />
    <pnp:Properties />
-</pnp:ClientSidePage>
+</pnp:BaseClientSidePage>
 ```
 
 
-Here follow the available child elements for the ClientSidePage element.
+Here follow the available child elements for the BaseClientSidePage element.
 
 
 Element|Type|Description
 -------|----|-----------
-Sections|[Sections](#sections)|Defines the Canvas sections for a single ClientSidePage.
 Header|[Header](#header)|Defines the layout of the Header for the current client side page
+Sections|[Sections](#sections)|Defines the Canvas sections for a single ClientSidePage.
 FieldValues|[FieldValues](#fieldvalues)|Defines the page fields values, if any.
 Security|[ObjectSecurity](#objectsecurity)|
 Properties|[Properties](#properties)|Defines property bag properties for the client side page, optional element.
 
-Here follow the available attributes for the ClientSidePage element.
+Here follow the available attributes for the BaseClientSidePage element.
 
 
 Attibute|Type|Description
 --------|----|-----------
-PageName|xsd:string|Defines the page name for a single ClientSidePage.
 PromoteAsNewsArticle|xsd:boolean|Declares to promote the page as a news article.
 PromoteAsTemplate|xsd:boolean|Declares to promote the page as a page template.
 Overwrite|xsd:boolean|Can the page be overwritten if it exists.
@@ -2515,25 +2512,7 @@ Publish|xsd:boolean|Defines whether the page will be published or not, optional 
 EnableComments|xsd:boolean|Defines whether the page will have comments enabled or not, optional attribute (default: true).
 Title|xsd:string|Defines the Title of the page, optional attribute.
 ContentTypeID|ReplaceableString|Defines the Content Type ID for the page, optional attribute.
-CreateTranslations|xsd:boolean|Instructs the engine to create translations of the page while provisionig it, optional attribute.
 ThumbnailUrl|ReplaceableString|Defines the URL of the thumbnail for the client side page, optional attribute.
-<a name="sections"></a>
-### Sections
-Defines the Canvas sections for a single ClientSidePage.
-
-```xml
-<pnp:Sections>
-   <pnp:Section />
-</pnp:Sections>
-```
-
-
-Here follow the available child elements for the  element.
-
-
-Element|Type|Description
--------|----|-----------
-Section|[CanvasSection](#canvassection)|Defines a Canvas section for a single ClientSidePage.
 <a name="header"></a>
 ### Header
 Defines the layout of the Header for the current client side page
@@ -2575,6 +2554,23 @@ AlternativeText|xsd:string|Defines the alternative text for the header image of 
 Authors|xsd:string|Defines the page author(s) to be displayed of the current client side page.
 AuthorByLine|xsd:string|Defines the page author by line of the current client side page.
 AuthorByLineId|xsd:int|Defines the ID of the page author by line of the current client side page.
+<a name="sections"></a>
+### Sections
+Defines the Canvas sections for a single ClientSidePage.
+
+```xml
+<pnp:Sections>
+   <pnp:Section />
+</pnp:Sections>
+```
+
+
+Here follow the available child elements for the  element.
+
+
+Element|Type|Description
+-------|----|-----------
+Section|[CanvasSection](#canvassection)|Defines a Canvas section for a single ClientSidePage.
 <a name="fieldvalues"></a>
 ### FieldValues
 Defines the page fields values, if any.
@@ -2609,6 +2605,46 @@ Here follow the available child elements for the  element.
 Element|Type|Description
 -------|----|-----------
 Property|[StringDictionaryItem](#stringdictionaryitem)|A custom property for the current Client Page
+<a name="clientsidepage"></a>
+### ClientSidePage
+Defines a single element of type ClientSidePage.
+
+```xml
+<pnp:ClientSidePage
+      PageName="xsd:string"
+      LCID="xsd:int"
+      CreateTranslations="xsd:boolean">
+</pnp:ClientSidePage>
+```
+
+
+Here follow the available attributes for the ClientSidePage element.
+
+
+Attibute|Type|Description
+--------|----|-----------
+PageName|xsd:string|Defines the page name for a single ClientSidePage.
+LCID|xsd:int|The Locale ID of a Localization Language, optional attribute.
+CreateTranslations|xsd:boolean|Defines whether to create translations of the current Client Side Page, optional attribute.
+<a name="translatedclientsidepage"></a>
+### TranslatedClientSidePage
+
+
+```xml
+<pnp:TranslatedClientSidePage
+      LCID="xsd:int"
+      PageName="xsd:string">
+</pnp:TranslatedClientSidePage>
+```
+
+
+Here follow the available attributes for the TranslatedClientSidePage element.
+
+
+Attibute|Type|Description
+--------|----|-----------
+LCID|xsd:int|The Locale ID of a Localization Language, optional attribute.
+PageName|xsd:string|Defines the page name for a single ClientSidePage, optional attribute.
 <a name="header"></a>
 ### Header
 Defines the Header settings for the target site.

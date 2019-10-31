@@ -129,7 +129,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             this.Hidden = hidden;
             this.Sealed = contenttypeSealed;
             this.Overwrite = overwrite;
-            this.ReadOnly = ReadOnly;
+            this.ReadOnly = readyonly;
             this.DocumentTemplate = documentTemplate;
             this.FieldRefs.AddRange(fieldRefs);
         }

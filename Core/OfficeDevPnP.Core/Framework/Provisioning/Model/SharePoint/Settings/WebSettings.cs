@@ -119,6 +119,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public SearchScopes SearchScope { get; set; }
 
+        /// <summary>
+        /// Define if the suitebar search box should show or not 
+        /// </summary>
+        public SearchBoxInNavBar SearchBoxInNavBar { get; set; }
+
         #endregion
 
         #region Constructors
@@ -172,7 +177,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns hash code in integer</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}",
                 (this.NoCrawl.GetHashCode()),
                 (this.RequestAccessEmail != null ? this.RequestAccessEmail.GetHashCode() : 0),
                 (this.WelcomePage != null ? this.WelcomePage.GetHashCode() : 0),
@@ -191,7 +196,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.DisableFlows.GetHashCode(),
                 this.DisableAppViews.GetHashCode(),
                 this.HorizontalQuickLaunch.GetHashCode(),
-                this.SearchScope.GetHashCode()
+                this.SearchScope.GetHashCode(),
+                this.SearchBoxInNavBar.GetHashCode()
             ).GetHashCode());
         }
 
@@ -239,7 +245,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this.DisableFlows == other.DisableFlows &&
                     this.DisableAppViews == other.DisableAppViews &&
                     this.HorizontalQuickLaunch == other.HorizontalQuickLaunch &&
-                    this.SearchScope == other.SearchScope
+                    this.SearchScope == other.SearchScope &&
+                    this.SearchBoxInNavBar == other.SearchBoxInNavBar
                 );
         }
 
@@ -267,5 +274,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// Defines the Site for the SearchScope of the site
         /// </summary>
         Site,
+    }
+
+    public enum SearchBoxInNavBar
+    {
+        Inherit = 0,
+        AllPages = 1,
+        ModernOnly = 2,
+        Hidden = 3
     }
 }

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using OfficeDevPnP.Core.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.Model.Drive;
 
-namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers
+namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V201909
 {
     /// <summary>
     /// Class to serialize/deserialize the AAD settings

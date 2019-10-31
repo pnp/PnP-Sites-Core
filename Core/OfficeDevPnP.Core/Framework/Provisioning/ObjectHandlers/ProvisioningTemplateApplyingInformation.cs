@@ -1,6 +1,7 @@
 ﻿using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +43,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public ProvisioningProgressDelegate ProgressDelegate { get; set; }
         public ProvisioningMessagesDelegate MessagesDelegate { get; set; }
         public ProvisioningSiteProvisionedDelegate SiteProvisionedDelegate { get; set; }
-        
+
+        internal ApplyConfiguration ApplyConfiguration {get;set;}
         /// <summary>
         /// If true then persists template information
         /// </summary>

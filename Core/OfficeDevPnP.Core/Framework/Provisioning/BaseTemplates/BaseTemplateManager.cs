@@ -90,11 +90,39 @@ namespace Microsoft.SharePoint.Client
                 FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(asm.Location);
                 string version = fvi.FileVersion;
 
-                if (Version.TryParse(version, out Version v19))
+                if (Version.TryParse(version, out Version v))
                 {
-                    if (v19.Build > 10000)
+                    if (v.Major == 14)
                     {
-                        return "_2019";
+                        return "_2010";
+                    }
+                    else if (v.Major == 15)
+                    {
+                        return "_2013";
+
+                    }
+                    else if (v.Major == 16)
+                    {
+                        if (v.Build < 6000)
+                        {
+                            //if(v.MinorRevision < 4690)
+                            //{
+                            //    // Pre May 2018 CU
+                            //    CacheManager.Instance.SharepointVersions.TryAdd(urlUri, SPVersion.SP2016Legacy);
+                            //    return SPVersion.SP2016Legacy;
+                            //}
+
+                            return "_2016";
+                        }
+                        else if (v.Build > 10300 && v.Build < 19000)
+                        {
+                            
+                            return "_2019";
+                        }
+                        else
+                        {
+                            return "SPO";
+                        }
                     }
                 }
             }
@@ -102,18 +130,7 @@ namespace Microsoft.SharePoint.Client
             {
                 // catch errors here...if it goes wrong we'll fall back to the default logic, 2019 will return as 2016 at that point.
             }
-
-            if (name.Version.Major == 15)
-            {
-                return "_2013";
-            }
-            else if (name.Version.Major == 16 && name.Version.Minor == 1)
-            {
-                return "SPO";
-            }
-
-            return "_2016";
-
+            return "SPO";
         }
 
     }

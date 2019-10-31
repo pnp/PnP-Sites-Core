@@ -141,7 +141,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                         target.GetPublicInstancePropertyValue("SiteDesigns") != null ||
                         target.GetPublicInstancePropertyValue("StorageEntities") != null ||
                         target.GetPublicInstancePropertyValue("Themes") != null ||
-                        target.GetPublicInstancePropertyValue("WebApiPermissions") != null))
+                        target.GetPublicInstancePropertyValue("WebApiPermissions") != null ||
+                        target.GetPublicInstancePropertyValue("SPUsersProfiles") != null ||
+                        target.GetPublicInstancePropertyValue("Office365GroupLifecyclePolicies") != null ||
+                        target.GetPublicInstancePropertyValue("Office365GroupsSettings") != null))
                     {
                         persistence.GetPublicInstanceProperty("Tenant").SetValue(persistence, target);
                     }

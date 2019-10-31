@@ -25,9 +25,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             using (var scope = new PnPMonitoredScope(this.Name))
             {
                 web.EnsureProperties(
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                     w => w.NoCrawl,
                     w => w.CommentsOnSitePagesDisabled,
+                    w => w.ExcludeFromOfflineClient,
+                    w => w.MembersCanShare,
+                    w => w.DisableFlows,
+                    w => w.DisableAppViews,
+                    w => w.HorizontalQuickLaunch,
+    #if !SP2019
+                    w => w.SearchScope,
+                    w => w.SearchBoxInNavBar,
+    #endif
 #endif
                     //w => w.Title,
                     //w => w.Description,
@@ -38,12 +47,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.RootFolder,
                     w => w.AlternateCssUrl,
                     w => w.ServerRelativeUrl,
-                    w => w.Url);
+                    w => w.Url
+                    );
 
                 var webSettings = new WebSettings();
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 webSettings.NoCrawl = web.NoCrawl;
                 webSettings.CommentsOnSitePagesDisabled = web.CommentsOnSitePagesDisabled;
+                webSettings.ExcludeFromOfflineClient = web.ExcludeFromOfflineClient;
+                webSettings.MembersCanShare = web.MembersCanShare;
+                webSettings.DisableFlows = web.DisableFlows;
+                webSettings.DisableAppViews = web.DisableAppViews;
+                webSettings.HorizontalQuickLaunch = web.HorizontalQuickLaunch;
+    #if !SP2019
+                webSettings.SearchScope = (SearchScopes)Enum.Parse(typeof(SearchScopes), web.SearchScope.ToString(), true);
+                webSettings.SearchBoxInNavBar = (SearchBoxInNavBar)Enum.Parse(typeof(SearchBoxInNavBar), web.SearchBoxInNavBar.ToString(), true);
+    #endif
 #endif
                 // We're not extracting Title and Description
                 //webSettings.Title = Tokenize(web.Title, web.Url);
@@ -55,6 +74,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 webSettings.WelcomePage = web.RootFolder.WelcomePage;
                 webSettings.AlternateCSS = Tokenize(web.AlternateCssUrl, web.Url);
                 webSettings.RequestAccessEmail = web.RequestAccessEmail;
+
+#if !ONPREMISES
+                // Can we get the hubsite url? This requires Tenant Admin rights
+                try
+                {
+                    var site = ((ClientContext)web.Context).Site;
+                    site.EnsureProperties(s => s.HubSiteId, s => s.Id);
+                    if (site.HubSiteId != Guid.Empty && site.HubSiteId != site.Id)
+                    {
+                        using (var tenantContext = web.Context.Clone((web.Context as ClientContext).Web.GetTenantAdministrationUrl()))
+                        {
+                            var tenant = new Tenant(tenantContext);
+                            var hubsiteProperties = tenant.GetHubSitePropertiesById(site.HubSiteId);
+                            tenantContext.Load(hubsiteProperties);
+                            tenantContext.ExecuteQueryRetry();
+                            webSettings.HubSiteUrl = hubsiteProperties.SiteUrl;
+                        }
+                    }
+                }
+                catch { }
+#endif
 
                 if (creationInfo.PersistBrandingFiles)
                 {
@@ -222,8 +262,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 else
                 {
-                    WriteMessage("No connector present to persist homepage.", ProvisioningMessageType.Error);
-                    scope.LogError("No connector present to persist homepage");
+                    WriteMessage("No connector present to persist site logo.", ProvisioningMessageType.Error);
+                    scope.LogError("No connector present to persist site logo");
                 }
             }
             else
@@ -265,8 +305,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     bool isNoScriptSite = web.IsNoScriptSite();
 
                     web.EnsureProperties(
-#if !ONPREMISES
+#if !SP2013 && !SP2016
+                        w => w.NoCrawl,
                         w => w.CommentsOnSitePagesDisabled,
+                        w => w.ExcludeFromOfflineClient,
+                        w => w.MembersCanShare,
+                        w => w.DisableFlows,
+                        w => w.DisableAppViews,
+                        w => w.HorizontalQuickLaunch,
+#if !SP2019
+                        w => w.SearchScope,
+                        w => w.SearchBoxInNavBar,
+#endif
 #endif
                         w => w.WebTemplate,
                         w => w.HasUniqueRoleAssignments);
@@ -290,7 +340,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                     }
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                     if (!isNoScriptSite)
                     {
                         web.NoCrawl = webSettings.NoCrawl;
@@ -304,6 +354,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         web.CommentsOnSitePagesDisabled = webSettings.CommentsOnSitePagesDisabled;
                     }
+
+                    if (web.ExcludeFromOfflineClient != webSettings.ExcludeFromOfflineClient)
+                    {
+                        web.ExcludeFromOfflineClient = webSettings.ExcludeFromOfflineClient;
+                    }
+
+                    if (web.MembersCanShare != webSettings.MembersCanShare)
+                    {
+                        web.MembersCanShare = webSettings.MembersCanShare;
+                    }
+
+                    if (web.DisableFlows != webSettings.DisableFlows)
+                    {
+                        web.DisableFlows = webSettings.DisableFlows;
+                    }
+
+                    if (web.DisableAppViews != webSettings.DisableAppViews)
+                    {
+                        web.DisableAppViews = webSettings.DisableAppViews;
+                    }
+
+                    if (web.HorizontalQuickLaunch != webSettings.HorizontalQuickLaunch)
+                    {
+                        web.HorizontalQuickLaunch = webSettings.HorizontalQuickLaunch;
+                    }
+
+#if !SP2019
+                    if (web.SearchScope.ToString() != webSettings.SearchScope.ToString())
+                    {
+                        web.SearchScope = (SearchScopeType)Enum.Parse(typeof(SearchScopeType), webSettings.SearchScope.ToString(), true);
+                    }
+
+                    if(web.SearchBoxInNavBar.ToString() != webSettings.SearchBoxInNavBar.ToString())
+                    {
+                        web.SearchBoxInNavBar = (SearchBoxInNavBarType)Enum.Parse(typeof(SearchBoxInNavBarType), webSettings.SearchBoxInNavBar.ToString(), true);
+                    }
+#endif
 #endif
                     var masterUrl = parser.ParseString(webSettings.MasterPageUrl);
                     if (!string.IsNullOrEmpty(masterUrl))
@@ -345,7 +432,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             // logo provisioning throws when applying across base template IDs; provisioning fails in this case
                             // this is the error that is already (rightly so) shown beforehand in the console: WARNING: The source site from which the template was generated had a base template ID value of SITEPAGEPUBLISHING#0, while the current target site has a base template ID value of GROUP#0. This could cause potential issues while applying the template.
                             WriteMessage("Applying site logo across base template IDs is not possible. Skipping site logo provisioning.", ProvisioningMessageType.Warning);
-                        } else
+                        }
+                        else
                         // Modern site? Then we assume the SiteLogo is actually a filepath
                         if (web.WebTemplate == "GROUP")
                         {
@@ -382,7 +470,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                             }
 #endif
-                                }
+                        }
                         else
                         {
                             web.SiteLogoUrl = logoUrl;

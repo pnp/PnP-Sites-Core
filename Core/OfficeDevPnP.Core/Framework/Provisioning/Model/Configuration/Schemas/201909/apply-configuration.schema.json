@@ -1,0 +1,99 @@
+{
+  "title": "Provisioning Engine Template Apply Configuration",
+  "description": "Defines the configuration to use when applying a template to a site",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "description": "The version number.",
+      "type": "string",
+      "enum": [
+        "1.0"
+      ]
+    },
+    "handlers": {
+      "description": "set to define which handels to run. If not specified all handlers will be run",
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": [
+          "AuditSettings",
+          "ComposedLook",
+          "CustomActions",
+          "ExtensibilityProviders",
+          "Features",
+          "Fields",
+          "Files",
+          "Lists",
+          "Pages",
+          "Publishing",
+          "RegionalSettings",
+          "SearchSettings",
+          "SitePolicy",
+          "SupportedUILanguages",
+          "Taxonomy",
+          "Workflows",
+          "SiteSecurity",
+          "ContentTypes",
+          "PropertyBagEntries",
+          "WebSettings",
+          "Navigation",
+          "ImageRenditions",
+          "ApplicationLifecycleManagement",
+          "Tenant",
+          "WebApiPermissions",
+          "SiteHeader",
+          "SiteFooter",
+          "Theme",
+          "SiteSettings"
+        ]
+      }
+    },
+    "lists": {
+      "type": "object",
+      "properties": {
+        "ignoreDuplicateDataRowErrors": {
+          "type": "boolean"
+        }
+      }
+    },
+    "parameters": {
+      "type": "object",
+      "patternProperties": {
+        ".*": {
+          "type": "string"
+        }
+      }
+    },
+    "contentTypes": {
+      "type": "object",
+      "properties": {
+        "provisionContentTypesToSubWebs": {
+          "type": "boolean"
+        }
+      }
+    },
+    "fields": {
+      "type": "object",
+      "properties": {
+        "provisionFieldsToSubWebs": {
+          "type": "boolean"
+        }
+      }
+    },
+    "navigation": {
+      "type": "object",
+      "properties": {
+        "clearNavigation": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

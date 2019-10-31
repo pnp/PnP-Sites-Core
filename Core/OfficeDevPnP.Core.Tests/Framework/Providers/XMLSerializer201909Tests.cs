@@ -222,6 +222,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var template = provider.GetTemplate(TEST_TEMPLATE, serializer);
 
             Assert.AreEqual(false, template.Theme.IsInverted);
+            Assert.AreEqual(false, template.Theme.Overwrite);
             Assert.AreEqual("CustomOrange", template.Theme.Name);
             Assert.IsTrue(template.Theme.Palette.Contains("\"neutralQuaternaryAlt\": \"#dadada\""));
         }
@@ -238,7 +239,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 {
                     Name = "CustomOrange",
                     IsInverted = false,
-                    Palette = "{\"neutralQuaternaryAlt\": \"#dadada\"}"
+                    Palette = "{\"neutralQuaternaryAlt\": \"#dadada\"}",
+                    Overwrite = false
                 }
             };
 
@@ -254,6 +256,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
 
             Assert.AreEqual(false, template.Theme.IsInverted);
+            Assert.AreEqual(false, template.Theme.Overwrite);
             Assert.AreEqual("CustomOrange", template.Theme.Name);
             Assert.IsTrue(template.Theme.Text[0].Contains("\"neutralQuaternaryAlt\": \"#dadada\""));
         }
@@ -1649,6 +1652,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var themes = hierarchy.Tenant.Themes;
 
             Assert.AreEqual(false, themes[0].IsInverted);
+            Assert.AreEqual(false, themes[0].Overwrite);
             Assert.AreEqual("CustomOrange", themes[0].Name);
             Assert.IsTrue(themes[0].Palette.Contains("\"neutralQuaternaryAlt\": \"#dadada\""));
 
@@ -1672,7 +1676,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             {
                 Name = "CustomOrange",
                 IsInverted = false,
-                Palette = "{\"neutralQuaternaryAlt\": \"#dadada\"}"
+                Palette = "{\"neutralQuaternaryAlt\": \"#dadada\"}",
+                Overwrite = false
             });
 
             var serializer = new XMLPnPSchemaV201909Serializer();
@@ -1685,6 +1690,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var themes = wrappedResult.Tenant.Themes;
 
             Assert.AreEqual(false, themes[0].IsInverted);
+            Assert.AreEqual(false, themes[0].Overwrite);
             Assert.AreEqual("CustomOrange", themes[0].Name);
             Assert.IsTrue(themes[0].Text[0].Contains("\"neutralQuaternaryAlt\": \"#dadada\""));
         }
@@ -1788,7 +1794,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("GROUP_LIFECYCLE_01", o365LifecyclePolicies[0].ID);
             Assert.AreEqual(180, o365LifecyclePolicies[0].GroupLifetimeInDays);
             Assert.AreEqual("admin01@contoso.com,admin02@{parameter:O365TenantName}.onmicrosoft.com", o365LifecyclePolicies[0].AlternateNotificationEmails);
-            Assert.AreEqual(Core.Framework.Provisioning.Model.Office365Groups.ManagedGroupTypes.Selected, 
+            Assert.AreEqual(Core.Framework.Provisioning.Model.Office365Groups.ManagedGroupTypes.Selected,
                 o365LifecyclePolicies[0].ManagedGroupTypes);
         }
 
@@ -1825,7 +1831,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(1, o365LifecyclePolicies.Length);
             Assert.AreEqual("GROUP_LIFECYCLE_01", o365LifecyclePolicies[0].ID);
             Assert.AreEqual(180, o365LifecyclePolicies[0].GroupLifetimeInDays);
-            Assert.AreEqual("admin01@contoso.com,admin02@{parameter:O365TenantName}.onmicrosoft.com", 
+            Assert.AreEqual("admin01@contoso.com,admin02@{parameter:O365TenantName}.onmicrosoft.com",
                 o365LifecyclePolicies[0].AlternateNotificationEmails);
             Assert.AreEqual(Office365GroupLifecyclePolicyManagedGroupTypes.Selected,
                 o365LifecyclePolicies[0].ManagedGroupTypes);
@@ -1839,7 +1845,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var hierarchy = provider.GetHierarchy(TEST_TEMPLATE);
             var o365GroupsSettings = hierarchy.Tenant.Office365GroupsSettings;
-            
+
             Assert.AreEqual(4, o365GroupsSettings.Properties.Count);
             Assert.AreEqual("http://aka.ms/SharePointPnP", o365GroupsSettings.Properties["UsageGuidelinesUrl"]);
             Assert.AreEqual("HBI,MBI,LBI,GDPR,TopSecret", o365GroupsSettings.Properties["ClassificationList"]);
@@ -4979,8 +4985,6 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 XMLSerializer.Deserialize<Provisioning>(xml);
 
             var template = wrappedResult.Templates[0].ProvisioningTemplate.First();
-            var publishing = template.Publishing;
-
             var clientSidePages = template.ClientSidePages;
 
             Assert.AreEqual("SamplePage", clientSidePages[0].PageName);
@@ -4993,16 +4997,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Client Side Page Title", clientSidePages[0].Title);
             Assert.AreEqual("0x01010012345", clientSidePages[0].ContentTypeID);
             Assert.AreEqual(true, clientSidePages[0].CreateTranslations);
-            Assert.AreEqual("images/pageThumbnail.png", clientSidePages[0].ThumbnailUrl);            
+            Assert.AreEqual("images/pageThumbnail.png", clientSidePages[0].ThumbnailUrl);
 
             var page = clientSidePages[0];
             // header
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.ClientSidePageHeaderType.Custom, page.Header.Type);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.BaseClientSidePageHeaderType.Custom, page.Header.Type);
             Assert.AreEqual("./site%20assets/picture.png", page.Header.ServerRelativeImageUrl);
             Assert.AreEqual(10.56, page.Header.TranslateX);
             Assert.AreEqual(15.12345, page.Header.TranslateY);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.ClientSidePageHeaderLayoutType.FullWidthImage, page.Header.LayoutType);
-            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.ClientSidePageHeaderTextAlignment.Center, page.Header.TextAlignment);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.BaseClientSidePageHeaderLayoutType.FullWidthImage, page.Header.LayoutType);
+            Assert.AreEqual(Core.Framework.Provisioning.Providers.Xml.V201909.BaseClientSidePageHeaderTextAlignment.Center, page.Header.TextAlignment);
             Assert.AreEqual("Alternate text", page.Header.AlternativeText);
             Assert.AreEqual("John Black, Mike White", page.Header.Authors);
             Assert.AreEqual("Bill Green", page.Header.AuthorByLine);

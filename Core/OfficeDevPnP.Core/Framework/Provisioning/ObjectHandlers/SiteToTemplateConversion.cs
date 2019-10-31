@@ -2,6 +2,7 @@
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System;
 using System.Collections.Generic;
@@ -93,6 +94,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Fields)) objectHandlers.Add(new ObjectField(FieldAndListProvisioningStepHelper.Step.Export));
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.ContentTypes)) objectHandlers.Add(new ObjectContentType(FieldAndListProvisioningStepHelper.Step.Export));
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Lists)) objectHandlers.Add(new ObjectListInstance(FieldAndListProvisioningStepHelper.Step.Export));
+                if (creationInfo.HandlersToProcess.HasFlag(Handlers.Lists)) objectHandlers.Add(new ObjectListInstanceDataRows());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.CustomActions)) objectHandlers.Add(new ObjectCustomActions());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Features)) objectHandlers.Add(new ObjectFeatures());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.ComposedLook)) objectHandlers.Add(new ObjectComposedLook());
@@ -100,8 +102,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Files)) objectHandlers.Add(new ObjectFiles());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.Pages)) objectHandlers.Add(new ObjectPages());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.PageContents)) objectHandlers.Add(new ObjectPageContents());
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.PageContents)) objectHandlers.Add(new ObjectClientSidePageContents());
+#endif
+#if !ONPREMISES
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.SiteHeader)) objectHandlers.Add(new ObjectSiteHeaderSettings());
                 if (creationInfo.HandlersToProcess.HasFlag(Handlers.SiteFooter)) objectHandlers.Add(new ObjectSiteFooterSettings());
 #endif
@@ -225,8 +229,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         catch (Exception ex)
                         {
-                            CallWebHooks(hierarchy.Templates.FirstOrDefault(), sequenceTokenParser, 
-                                ProvisioningTemplateWebhookKind.ExceptionOccurred, handler.Name, ex);
+                            CallWebHooks(hierarchy.Templates.FirstOrDefault(), sequenceTokenParser,
+                                ProvisioningTemplateWebhookKind.ProvisioningExceptionOccurred, handler.Name, ex);
                             throw ex;
                         }
                     }
@@ -237,7 +241,56 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             }
         }
+
+        internal ProvisioningHierarchy GetTenantTemplate(Tenant tenant, ExtractConfiguration configuration = null)
+        {
+            if (configuration == null)
+            {
+                configuration = new ExtractConfiguration();
+            }
+
+            using (var scope = new PnPMonitoredScope(CoreResources.Provisioning_ObjectHandlers_Extraction))
+            {
+
+                ProvisioningHierarchy tenantTemplate = new ProvisioningHierarchy();
+
+                tenantTemplate.Connector = configuration.FileConnector;
+
+                List<ObjectHierarchyHandlerBase> objectHandlers = new List<ObjectHierarchyHandlerBase>();
+
+                if(configuration.Tenant.Sequence != null) objectHandlers.Add(new ObjectHierarchySequenceSites()); // always build up the sequence
+                if(configuration.Tenant.Teams != null) objectHandlers.Add(new ObjectTeams());
+
+                int step = 1;
+
+                var count = objectHandlers.Count(o => o.ReportProgress && o.WillExtract(tenant, tenantTemplate, null, configuration));
+
+                foreach (var handler in objectHandlers)
+                {
+                    if (handler.WillExtract(tenant, tenantTemplate, null, null))
+                    {
+                        if (configuration.MessagesDelegate != null)
+                        {
+                            handler.MessagesDelegate = (message, type) =>
+                            {
+                                configuration.MessagesDelegate(message, type);
+                            };
+                        }
+                        if (handler.ReportProgress && configuration.ProgressDelegate != null)
+                        {
+                            configuration.ProgressDelegate(handler.Name, step, count);
+                            step++;
+                        }
+
+                        tenantTemplate = handler.ExtractObjects(tenant, tenantTemplate, configuration);
+                    }
+                }
+
+                return tenantTemplate;
+            }
+        }
 #endif
+
         /// <summary>
         /// Actual implementation of the apply templates
         /// </summary>
@@ -357,7 +410,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
                 if (!calledFromHierarchy && provisioningInfo.HandlersToProcess.HasFlag(Handlers.Tenant)) objectHandlers.Add(new ObjectTenant());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.ApplicationLifecycleManagement)) objectHandlers.Add(new ObjectApplicationLifecycleManagement());
+#endif
+#if !SP2013 && !SP2016
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.Pages)) objectHandlers.Add(new ObjectClientSidePages());
+#endif
+#if !ONPREMISES
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SiteHeader)) objectHandlers.Add(new ObjectSiteHeaderSettings());
                 if (provisioningInfo.HandlersToProcess.HasFlag(Handlers.SiteFooter)) objectHandlers.Add(new ObjectSiteFooterSettings());
 #endif
@@ -419,8 +476,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             progressDelegate(handler.Name, step, count);
                             step++;
                         }
-                        CallWebHooks(template, tokenParser, 
-                            ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted, 
+                        CallWebHooks(template, tokenParser,
+                            ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted,
                             handler.InternalName);
 
                         try
@@ -429,12 +486,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         catch (Exception ex)
                         {
-                            CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ExceptionOccurred, 
+                            CallWebHooks(template, tokenParser, ProvisioningTemplateWebhookKind.ExceptionOccurred,
                                 handler.InternalName, ex);
                             throw ex;
                         }
-                        CallWebHooks(template, tokenParser, 
-                            ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted, 
+                        CallWebHooks(template, tokenParser,
+                            ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted,
                             handler.InternalName);
                     }
                 }
@@ -452,135 +509,138 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private void CallWebHooks(ProvisioningTemplate template, TokenParser parser, ProvisioningTemplateWebhookKind kind, String objectHandler = null, Exception exception = null)
         {
-            using (var scope = new PnPMonitoredScope("ProvisioningTemplate WebHook Call"))
+            if (template != null)
             {
-                var webhooks = new List<ProvisioningWebhookBase>();
+                using (var scope = new PnPMonitoredScope("ProvisioningTemplate WebHook Call"))
+                {
+                    var webhooks = new List<ProvisioningWebhookBase>();
 
-                // Merge the webhooks at template level with those at global level
-                if (template.ProvisioningTemplateWebhooks != null && template.ProvisioningTemplateWebhooks.Any())
-                {
-                    webhooks.AddRange(template.ProvisioningTemplateWebhooks);
-                }
-                if (template.ParentHierarchy?.ProvisioningWebhooks != null && template.ParentHierarchy.ProvisioningWebhooks.Any())
-                {
-                    webhooks.AddRange(template.ParentHierarchy.ProvisioningWebhooks);
-                }
-
-                // If there is any webhook
-                if (webhooks.Count > 0)
-                {
-                    foreach (var webhook in webhooks.Where(w => w.Kind == kind))
+                    // Merge the webhooks at template level with those at global level
+                    if (template.ProvisioningTemplateWebhooks != null && template.ProvisioningTemplateWebhooks.Any())
                     {
-                        var requestParameters = new Dictionary<String, String>();
+                        webhooks.AddRange(template.ProvisioningTemplateWebhooks);
+                    }
+                    if (template.ParentHierarchy?.ProvisioningWebhooks != null && template.ParentHierarchy.ProvisioningWebhooks.Any())
+                    {
+                        webhooks.AddRange(template.ParentHierarchy.ProvisioningWebhooks);
+                    }
 
-                        if (exception != null)
+                    // If there is any webhook
+                    if (webhooks.Count > 0)
+                    {
+                        foreach (var webhook in webhooks.Where(w => w.Kind == kind))
                         {
-                            // For GET requests we limit the size of the exception to avoid issues
-                            requestParameters["__exception"] =
-                                webhook.Method == ProvisioningTemplateWebhookMethod.GET ?
-                                exception.Message : exception.ToString();
-                        }
+                            var requestParameters = new Dictionary<String, String>();
 
-                        SimpleTokenParser internalParser = new SimpleTokenParser();
-                        foreach (var webhookparam in webhook.Parameters)
-                        {
-                            requestParameters.Add(webhookparam.Key, parser.ParseString(webhookparam.Value));
-                            internalParser.AddToken(new WebhookParameter(webhookparam.Key, requestParameters[webhookparam.Key]));
-                        }
-                        var url = parser.ParseString(webhook.Url); // parse for template scoped parameters
-                        url = internalParser.ParseString(url); // parse for webhook scoped parameters
+                            if (exception != null)
+                            {
+                                // For GET requests we limit the size of the exception to avoid issues
+                                requestParameters["__exception"] =
+                                    webhook.Method == ProvisioningTemplateWebhookMethod.GET ?
+                                    exception.Message : exception.ToString();
+                            }
 
-                        switch (webhook.Method)
-                        {
-                            case ProvisioningTemplateWebhookMethod.GET:
-                                {
-                                    url += $"&__webhookKind={kind.ToString()}"; // add the webhook kind to the REST request URL
+                            SimpleTokenParser internalParser = new SimpleTokenParser();
+                            foreach (var webhookparam in webhook.Parameters)
+                            {
+                                requestParameters.Add(webhookparam.Key, parser.ParseString(webhookparam.Value));
+                                internalParser.AddToken(new WebhookParameter(webhookparam.Key, requestParameters[webhookparam.Key]));
+                            }
+                            var url = parser.ParseString(webhook.Url); // parse for template scoped parameters
+                            url = internalParser.ParseString(url); // parse for webhook scoped parameters
 
-                                    foreach (var k in requestParameters.Keys)
+                            switch (webhook.Method)
+                            {
+                                case ProvisioningTemplateWebhookMethod.GET:
                                     {
-                                        url += $"&{HttpUtility.UrlEncode(k)}={HttpUtility.UrlEncode(requestParameters[k])}";
-                                    }
+                                        url += $"&__webhookKind={kind.ToString()}"; // add the webhook kind to the REST request URL
 
-                                    if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted 
-                                        || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted
-                                        || kind == ProvisioningTemplateWebhookKind.ExceptionOccurred)
-                                    {
-                                        url += $"&__handler={HttpUtility.UrlEncode(objectHandler)}"; // add the handler name to the REST request URL
-                                    }
-                                    try
-                                    {
-                                        if (webhook.Async)
+                                        foreach (var k in requestParameters.Keys)
                                         {
-                                            Task.Factory.StartNew(async () =>
+                                            url += $"&{HttpUtility.UrlEncode(k)}={HttpUtility.UrlEncode(requestParameters[k])}";
+                                        }
+
+                                        if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted
+                                            || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted
+                                            || kind == ProvisioningTemplateWebhookKind.ExceptionOccurred)
+                                        {
+                                            url += $"&__handler={HttpUtility.UrlEncode(objectHandler)}"; // add the handler name to the REST request URL
+                                        }
+                                        try
+                                        {
+                                            if (webhook.Async)
                                             {
-                                                await httpClient.GetAsync(url);
-                                            });
+                                                Task.Factory.StartNew(async () =>
+                                                {
+                                                    await httpClient.GetAsync(url);
+                                                });
+                                            }
+                                            else
+                                            {
+                                                httpClient.GetAsync(url).GetAwaiter().GetResult();
+                                            }
                                         }
-                                        else
+                                        catch (HttpRequestException ex)
                                         {
-                                            httpClient.GetAsync(url).GetAwaiter().GetResult();
+                                            scope.LogError(ex, "Error calling provisioning template webhook");
                                         }
+                                        break;
                                     }
-                                    catch (HttpRequestException ex)
+                                case ProvisioningTemplateWebhookMethod.POST:
                                     {
-                                        scope.LogError(ex, "Error calling provisioning template webhook");
-                                    }
-                                    break;
-                                }
-                            case ProvisioningTemplateWebhookMethod.POST:
-                                {
-                                    requestParameters.Add("__webhookKind", kind.ToString()); // add the webhook kind to the parameters of the request body
+                                        requestParameters.Add("__webhookKind", kind.ToString()); // add the webhook kind to the parameters of the request body
 
-                                    if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted
-                                        || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted
-                                        || kind == ProvisioningTemplateWebhookKind.ExceptionOccurred)
-                                    {
-                                        requestParameters.Add("__handler", objectHandler); // add the handler name to the parameters of the request body
-                                    }
-                                    try
-                                    {
-                                        if (webhook.Async)
+                                        if (kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningCompleted
+                                            || kind == ProvisioningTemplateWebhookKind.ObjectHandlerProvisioningStarted
+                                            || kind == ProvisioningTemplateWebhookKind.ExceptionOccurred)
                                         {
-                                            Task.Factory.StartNew(async () =>
+                                            requestParameters.Add("__handler", objectHandler); // add the handler name to the parameters of the request body
+                                        }
+                                        try
+                                        {
+                                            if (webhook.Async)
+                                            {
+                                                Task.Factory.StartNew(async () =>
+                                                {
+                                                    switch (webhook.BodyFormat)
+                                                    {
+                                                        case ProvisioningTemplateWebhookBodyFormat.Json:
+                                                            await httpClient.PostAsJsonAsync(url, requestParameters);
+                                                            break;
+                                                        case ProvisioningTemplateWebhookBodyFormat.Xml:
+                                                            await httpClient.PostAsXmlAsync(url, requestParameters);
+                                                            break;
+                                                        case ProvisioningTemplateWebhookBodyFormat.FormUrlEncoded:
+                                                            var content = new FormUrlEncodedContent(requestParameters);
+                                                            await httpClient.PostAsync(url, content);
+                                                            break;
+                                                    }
+                                                });
+                                            }
+                                            else
                                             {
                                                 switch (webhook.BodyFormat)
                                                 {
                                                     case ProvisioningTemplateWebhookBodyFormat.Json:
-                                                        await httpClient.PostAsJsonAsync(url, requestParameters);
+                                                        httpClient.PostAsJsonAsync(url, requestParameters).GetAwaiter().GetResult();
                                                         break;
                                                     case ProvisioningTemplateWebhookBodyFormat.Xml:
-                                                        await httpClient.PostAsXmlAsync(url, requestParameters);
+                                                        httpClient.PostAsXmlAsync(url, requestParameters).GetAwaiter().GetResult();
                                                         break;
                                                     case ProvisioningTemplateWebhookBodyFormat.FormUrlEncoded:
                                                         var content = new FormUrlEncodedContent(requestParameters);
-                                                        await httpClient.PostAsync(url, content);
+                                                        httpClient.PostAsync(url, content).GetAwaiter().GetResult();
                                                         break;
                                                 }
-                                            });
-                                        }
-                                        else
-                                        {
-                                            switch (webhook.BodyFormat)
-                                            {
-                                                case ProvisioningTemplateWebhookBodyFormat.Json:
-                                                    httpClient.PostAsJsonAsync(url, requestParameters).GetAwaiter().GetResult();
-                                                    break;
-                                                case ProvisioningTemplateWebhookBodyFormat.Xml:
-                                                    httpClient.PostAsXmlAsync(url, requestParameters).GetAwaiter().GetResult();
-                                                    break;
-                                                case ProvisioningTemplateWebhookBodyFormat.FormUrlEncoded:
-                                                    var content = new FormUrlEncodedContent(requestParameters);
-                                                    httpClient.PostAsync(url, content).GetAwaiter().GetResult();
-                                                    break;
                                             }
                                         }
+                                        catch (HttpRequestException ex)
+                                        {
+                                            scope.LogError(ex, "Error calling provisioning template webhook");
+                                        }
+                                        break;
                                     }
-                                    catch (HttpRequestException ex)
-                                    {
-                                        scope.LogError(ex, "Error calling provisioning template webhook");
-                                    }
-                                    break;
-                                }
+                            }
                         }
                     }
                 }

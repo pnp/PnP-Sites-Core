@@ -9,13 +9,13 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using System.Threading.Tasks;
-#if !ONPREMISES
+#if !SP2013 && !SP2016
 using OfficeDevPnP.Core.Pages;
 #endif
 
 namespace OfficeDevPnP.Core.Tests.Authentication
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     [TestClass]
     public class ClientSidePagesTests
     {

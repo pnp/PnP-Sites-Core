@@ -91,7 +91,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var fieldSchemaElement = XElement.Parse(parser.ParseXmlString(field.SchemaXml));
                     var fieldId = fieldSchemaElement.Attribute("ID").Value;
                     var fieldInternalName = fieldSchemaElement.Attribute("InternalName")?.Value ?? fieldSchemaElement.Attribute("Name")?.Value;
-                    WriteMessage($"Field|{(!string.IsNullOrWhiteSpace(fieldInternalName) ? fieldInternalName : fieldId)}|{currentFieldIndex}|{fields.Count}", ProvisioningMessageType.Progress);
+                    WriteSubProgress("Field",!string.IsNullOrWhiteSpace(fieldInternalName) ? fieldInternalName : fieldId,currentFieldIndex,fields.Count);
                     if (!existingFieldIds.Contains(Guid.Parse(fieldId)))
                     {
                         try
@@ -503,7 +503,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var field in existingFields)
                 {
                     currentFieldIndex++;
-                    WriteMessage($"Field|{field.InternalName}|{currentFieldIndex}|{fieldsToProcessCount}", ProvisioningMessageType.Progress);
+                    WriteSubProgress("Field", field.InternalName, currentFieldIndex, fieldsToProcessCount);
                     if (!BuiltInFieldId.Contains(field.Id))
                     {
                         var fieldXml = field.SchemaXml;
