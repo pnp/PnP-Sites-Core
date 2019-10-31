@@ -5,15 +5,18 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
+
 ## [Unreleased]
 
 ### Added
 
+- Added ApplyTenantTemplate and GetTenantTemplate methods
+- Added new configuration support for extraction and applying of site and tenant templates. See https://docs.microsoft.com/en-us/sharepoint/dev/solution-guidance/configuring-the-pnp-provisioning-engine
 - Added initial TenantTemplate extraction, supporting Sequences and Teams
 - Limiting lists to extract now supports besides filtering on title also filtering on list url
 
 ### Changed
-
+- Deprecated ApplyProvisioningHierarchy and replaced with ApplyTenantTemplate
 - IsProvisioningComplete waits for max 20 minutes and logs a warning instead of throwing an exception when a longer wait is needed
 
 ## [3.14.1910.1 - October 2019 intermediate release]
