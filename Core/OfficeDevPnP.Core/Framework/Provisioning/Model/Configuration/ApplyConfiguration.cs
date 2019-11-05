@@ -135,6 +135,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
                     MessagesDelegate(message, type);
                 };
             }
+            if (this.SiteProvisionedDelegate != null)
+            {
+                ai.SiteProvisionedDelegate = (title, siteUrl) =>
+                {
+                    SiteProvisionedDelegate(title, siteUrl);
+                };
+            }
 
             return ai;
         }
