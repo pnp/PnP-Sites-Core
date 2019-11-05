@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 - Deprecated ApplyProvisioningHierarchy and replaced with ApplyTenantTemplate
 - IsProvisioningComplete waits for max 20 minutes and logs a warning instead of throwing an exception when a longer wait is needed
+- Fix for reading/setting search redirect URL on a root site
 
 ## [3.14.1910.1 - October 2019 intermediate release]
 
