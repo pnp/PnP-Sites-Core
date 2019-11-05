@@ -57,7 +57,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     // Write page level status messages, needed in case many pages are provisioned
                     currentPageIndex++;
-                    WriteMessage($"ClientSidePage|Create {pageName}|{currentPageIndex}|{template.ClientSidePages.Count}", ProvisioningMessageType.Progress);
+                    WriteSubProgress("ClientSidePage",$"Create {pageName} stub",currentPageIndex,template.ClientSidePages.Count);
 
                     url = UrlUtility.Combine(web.ServerRelativeUrl, url);
 
@@ -129,7 +129,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     // Write page level status messages, needed in case many pages are provisioned
                     currentPageIndex++;
-                    WriteMessage($"ClientSidePage|{pageName}|{currentPageIndex}|{template.ClientSidePages.Count}", ProvisioningMessageType.Progress);
+
+                    WriteSubProgress("Provision ClientSidePage", pageName, currentPageIndex, template.ClientSidePages.Count);
 
                     url = UrlUtility.Combine(web.ServerRelativeUrl, url);
 

@@ -27,7 +27,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2019
 
             var settings = ((Model.ProvisioningTenant)source).Office365GroupsSettings;
 
-            if (null != settings)
+            if (null != settings &&
+                settings.Properties != null && 
+                settings.Properties.Count > 0)
             {
                 var resultArray = Array.CreateInstance(propertiesType, settings.Properties.Count);
 

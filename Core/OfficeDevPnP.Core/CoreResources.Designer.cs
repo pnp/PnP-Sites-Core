@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class CoreResources {
@@ -1269,6 +1269,33 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to add &apos;{1}&apos; as DocumentTemplate to ContentType &apos;{0}&apos;.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ContentTypes_ErrorDocumentTemplate {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_ErrorDocumentTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to extract DefaultDocument &apos;{0}&apos; from DocumentSet.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ContentTypes_ErrorExtractDocumentSetTemplate {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_ErrorExtractDocumentSetTemplate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed to extract DocumentTemplate &apos;{1}&apos; from ContentType &apos;{0}&apos;.
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ContentTypes_ErrorSaveDocumentTemplateToConnector {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_ErrorSaveDocumentTemplateToConnector", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Field {0} exists in content type.
         /// </summary>
         internal static string Provisioning_ObjectHandlers_ContentTypes_Field__0__exists_in_content_type {
@@ -1311,6 +1338,15 @@ namespace OfficeDevPnP.Core {
         internal static string Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments {
             get {
                 return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Skipping adding DocumentTemplate to ContentType &apos;{0}&apos; because we can&apos;t upload them on &apos;noscript&apos; sites..
+        /// </summary>
+        internal static string Provisioning_ObjectHandlers_ContentTypes_SkipDocumentTemplate {
+            get {
+                return ResourceManager.GetString("Provisioning_ObjectHandlers_ContentTypes_SkipDocumentTemplate", resourceCulture);
             }
         }
         

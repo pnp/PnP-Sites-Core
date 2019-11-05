@@ -6,6 +6,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.14.1910.1 - October 2019 intermediate release]
+
+### Added
+- You can now specify to overwrite a tenant theme if already present when using the 201909 schema of the provisioning engine [gautamdsheth]
+
+### Changed
+
+- When you create a modern site and don't specify a wait time after site creation we'll now use the IsProvisioningComplete attribute to wait until all server side async provisioning processes are done
+- Fix: Make sure to load item when exporting datarows and no attachment exists [czullu]
+- Fix: provisioning a content type to a folder will now change the folder to a documentset if the contenttype is a documentset [czullu]
+- Fix: default document of a documentset will now be exported if PersistAssetFiles has been set to true in the extraction configuration [czullu]
+- Fix: fixes issue when using configuration file for list extraction, includeAttachments=true, but no viewfields have been specified where only the attachments would have been extracted instead of all expected list field values. [czullu]
+- Fix: fixes issue where security is not set on new listitems when adding datarows from a provisioning template [czullu]
+- Fix: fixes issue where multichoice fields were not exported correctly to datarows when extracting a template.
+- Fix: fixes issue with null templates while invoking provisioning webhooks [gautamdsheth]
+
 ## [3.14.1910.0 - October 2019 release]
 
 ### Added

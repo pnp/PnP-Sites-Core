@@ -1,5 +1,4 @@
 ﻿using Microsoft.SharePoint.Client;
-using Newtonsoft.Json;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
@@ -34,20 +33,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private bool includeContentTypesFromSyndication = true;
         private bool includeHiddenLists = false;
         private bool includeAllClientSidePages = false;
-        private bool excludeAuthorInformation = false;
-        private bool overwriteExistingNavigation = false;
-        private bool overwriteSiteFooterNavigation = false;
 
         /// <summary>
         /// Provisioning Progress Delegate
         /// </summary>
-        [JsonIgnore]
         public ProvisioningProgressDelegate ProgressDelegate { get; set; }
 
         /// <summary>
         /// Provisioning Messages Delegate
         /// </summary>
-        [JsonIgnore]
         public ProvisioningMessagesDelegate MessagesDelegate { get; set; }
 
         /// <summary>
@@ -64,7 +58,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <summary>
         /// Base template used to compare against when we're "getting" a template
         /// </summary>
-        [JsonIgnore]
         public ProvisioningTemplate BaseTemplate
         {
             get
@@ -80,7 +73,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <summary>
         /// Connector used to persist files when needed
         /// </summary>
-        [JsonIgnore]
         public FileConnectorBase FileConnector
         {
             get
@@ -128,7 +120,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// we're "getting" a template
         /// </summary>
         [Obsolete("Use PersistBrandingFiles instead")]
-        [JsonIgnore]
         public bool PersistComposedLookFiles
         {
             get

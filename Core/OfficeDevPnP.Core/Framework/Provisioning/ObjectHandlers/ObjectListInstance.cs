@@ -71,7 +71,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         templateList.Url = parser.ParseString(templateList.Url);
                         currentListIndex++;
-                        WriteMessage($"List|{templateList.Title}|{currentListIndex}|{total}", ProvisioningMessageType.Progress);
+                        WriteSubProgress("List", templateList.Title, currentListIndex, total);
                         CheckContentTypes(web, template, scope, templateList);
                         // check if the List exists by url or by title
                         var index = existingLists.FindIndex(x => x.Title.Equals(parser.ParseString(templateList.Title), StringComparison.OrdinalIgnoreCase) || x.RootFolder.ServerRelativeUrl.Equals(UrlUtility.Combine(serverRelativeUrl, templateList.Url), StringComparison.OrdinalIgnoreCase));
@@ -293,7 +293,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var rootFolder = list.SiteList.RootFolder;
                 foreach (var folder in list.TemplateList.Folders)
                 {
-                    CreateFolderInList(rootFolder, folder, parser, scope);
+                    CreateFolderInList(list,rootFolder, folder, parser, scope);
                 }
             }
         }
@@ -373,7 +373,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var internalName = fieldElement.Attribute("InternalName")?.Value ?? fieldElement.Attribute("Name")?.Value;
 
                     currentFieldIndex++;
-                    WriteMessage($"List Columns for list {listInfo.TemplateList.Title}|{internalName ?? id}|{currentFieldIndex}|{fieldsToProcess.Length}", ProvisioningMessageType.Progress);
+                    WriteSubProgress($"List Columns for list {listInfo.TemplateList.Title}", $"{internalName ?? id}", currentFieldIndex, fieldsToProcess.Length);
                     if (!Guid.TryParse(id, out var fieldGuid))
                     {
                         scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstances_ID_for_field_is_not_a_valid_Guid___0_, field.SchemaXml);
@@ -456,7 +456,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     currentListIndex++;
 
-                    WriteMessage($"Site Columns for list {listInfo.TemplateList.Title}|{fieldRef.Name}|{currentListIndex}|{total}", ProvisioningMessageType.Progress);
+                    WriteSubProgress($"Site Columns for list {listInfo.TemplateList.Title}", fieldRef.Name, currentListIndex, total);
                     var field = rootWeb.GetFieldById(fieldRef.Id);
                     if (field == null)
                     {
@@ -609,7 +609,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 //for all other functions need Parsed SchemaXML
                 var viewElement = XElement.Parse(parser.ParseString(view.SchemaXml));
 
-                WriteMessage($"Views for list {createdList.Title}|{displayNameElement.Value}|{currentViewIndex}|{total}", ProvisioningMessageType.Progress);
+                WriteSubProgress($"Views for list {createdList.Title}", displayNameElement.Value, currentViewIndex, total);
                 monitoredScope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Creating_view__0_, displayNameElement.Value);
 
                 //get from resource file
@@ -2011,7 +2011,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
 #endif
 
-        private void CreateFolderInList(Microsoft.SharePoint.Client.Folder parentFolder, Model.Folder folder, TokenParser parser, PnPMonitoredScope scope)
+        private void CreateFolderInList(ListInfo list,Microsoft.SharePoint.Client.Folder parentFolder, Model.Folder folder, TokenParser parser, PnPMonitoredScope scope)
         {
             // Determine the folder name, parsing any token
             String targetFolderName = parser.ParseString(folder.Name);
@@ -2035,8 +2035,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var childFolder in folder.Folders)
                     {
-                        CreateFolderInList(currentFolder, childFolder, parser, scope);
+                        CreateFolderInList(list,currentFolder, childFolder, parser, scope);
                     }
+                }
+
+                //Handle ContentType
+                if (!string.IsNullOrWhiteSpace(folder.ContentTypeID))
+                {
+                    list.SiteList.Context.Load(list.SiteList, p => p.ContentTypes.Include(c => c.StringId));
+                    list.SiteList.Context.ExecuteQueryRetry();
+                    var ct = list.SiteList.ContentTypes.OrderByDescending(p => p.StringId.Length).FirstOrDefault(c => c.StringId.StartsWith(folder.ContentTypeID));
+
+                    var currentFolderItem = currentFolder.ListItemAllFields;
+                    currentFolderItem["ContentTypeId"] = ct.StringId;
+
+                    if (folder.ContentTypeID.StartsWith(BuiltInContentTypeId.DocumentSet, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        currentFolderItem["HTML_x0020_File_x0020_Type"] = "Sharepoint.DocumentSet";
+                        currentFolder.Properties["docset_LastRefresh"] = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss");
+                        currentFolder.Properties["vti_contenttypeorder"] = string.Join(",", list.SiteList.ContentTypes.ToList().Where(c => c.StringId.StartsWith(BuiltInContentTypeId.Document + "00"))?.Select(c => c.StringId));
+                    }
+                    currentFolderItem.Update();
+                    currentFolder.Update();
+                    parentFolder.Context.ExecuteQueryRetry();
                 }
 
                 // Handle current folder security
@@ -2155,6 +2176,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Retrieve all not hidden lists and the Workflow History Lists, just in case there are active workflow subscriptions
                 var listsToProcess = lists.AsEnumerable().Where(l => (l.Hidden == false || l.Hidden == creationInfo.IncludeHiddenLists || ((workflowSubscriptions != null && workflowSubscriptions.Length > 0) && l.BaseTemplate == 140))).ToArray();
                 var listCount = 0;
+                var totalListsCount = listsToProcess.Length;
+                if(creationInfo.ListsToExtract != null && creationInfo.ListsToExtract.Count > 0)
+                {
+                    totalListsCount = creationInfo.ListsToExtract.Count;
+                }
+                if (creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.Lists != null
+                      && creationInfo.ExtractConfiguration.Lists.HasLists)
+                {
+                    totalListsCount = creationInfo.ExtractConfiguration.Lists.Lists.Count;
+                }
                 foreach (var siteList in listsToProcess)
                 {
                     if (creationInfo.ListsToExtract != null && creationInfo.ListsToExtract.Count > 0 &&
@@ -2195,7 +2226,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     listCount++;
-                    WriteMessage($"List|{siteList.Title}|{listCount}|{listsToProcess.Length}", ProvisioningMessageType.Progress);
+                    WriteSubProgress("List", siteList.Title, listCount, totalListsCount);
                     ListInstance baseTemplateList = null;
                     if (creationInfo.BaseTemplate != null)
                     {

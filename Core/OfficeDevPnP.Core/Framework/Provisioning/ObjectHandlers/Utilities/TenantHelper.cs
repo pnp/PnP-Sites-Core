@@ -431,17 +431,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         {
             if (provisioningTenant.Themes != null && provisioningTenant.Themes.Any())
             {
+                var themes = tenant.GetAllTenantThemes();
+                tenant.Context.Load(themes);
+                tenant.Context.ExecuteQueryRetry();
+
                 foreach (var theme in provisioningTenant.Themes)
                 {
                     var parsedName = parser.ParseString(theme.Name);
-                    var parsedPalette = parser.ParseString(theme.Palette);
+                    if (themes.FirstOrDefault(t => t.Name == parsedName) != null)
+                    {                        
+                        if (theme.Overwrite)
+                        {
+                            var parsedPalette = parser.ParseString(theme.Palette);
 
-                    messagesDelegate?.Invoke($"Processing theme {parsedName}", ProvisioningMessageType.Progress);
+                            messagesDelegate?.Invoke($"Overwriting existing theme {parsedName}", ProvisioningMessageType.Progress);
 
-                    var palette = JsonConvert.DeserializeObject<Dictionary<string, string>>(parsedPalette);
-                    var tenantTheme = new TenantTheme() { Name = parsedName, Palette = palette, IsInverted = theme.IsInverted };
-                    tenant.UpdateTenantTheme(parsedName, JsonConvert.SerializeObject(tenantTheme));
-                    tenant.Context.ExecuteQueryRetry();
+                            var palette = JsonConvert.DeserializeObject<Dictionary<string, string>>(parsedPalette);
+                            var tenantTheme = new TenantTheme() { Name = parsedName, Palette = palette, IsInverted = theme.IsInverted };
+                            tenant.UpdateTenantTheme(parsedName, JsonConvert.SerializeObject(tenantTheme));
+                            tenant.Context.ExecuteQueryRetry();
+                        }
+                        else
+                        {
+                            messagesDelegate?.Invoke($"Skipped processing theme {parsedName} as it already exists and Overwrite is set to false", ProvisioningMessageType.Progress);
+                        }
+                    }
+                    else
+                    {                        
+                        var parsedPalette = parser.ParseString(theme.Palette);
+
+                        messagesDelegate?.Invoke($"Processing theme {parsedName}", ProvisioningMessageType.Progress);
+
+                        var palette = JsonConvert.DeserializeObject<Dictionary<string, string>>(parsedPalette);
+                        var tenantTheme = new TenantTheme() { Name = parsedName, Palette = palette, IsInverted = theme.IsInverted };
+                        tenant.AddTenantTheme(parsedName, JsonConvert.SerializeObject(tenantTheme));
+                        tenant.Context.ExecuteQueryRetry();
+                    }
+
                 }
             }
             return parser;
