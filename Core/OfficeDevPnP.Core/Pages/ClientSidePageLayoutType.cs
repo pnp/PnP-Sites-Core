@@ -9,21 +9,25 @@
         /// <summary>
         /// Custom article page, used for user created pages
         /// </summary>
-        Article,
+        Article = 0,
         /// <summary>
         /// Home page of modern team sites
         /// </summary>
-        Home,
+        Home = 1,
 #if !SP2019
         /// <summary>
         /// Page is an app page, hosting a single SPFX web part full screen
         /// </summary>
-        SingleWebPartAppPage,
+        SingleWebPartAppPage = 2,
+        /// <summary>
+        /// Page is a custom search result page
+        /// </summary>
+        HeaderlessSearchResults = 4,
 #endif
         /// <summary>
         /// Page is a repost / link page
         /// </summary>
-        RepostPage
+        RepostPage = 3,
     }
 #endif
-    }
+}
