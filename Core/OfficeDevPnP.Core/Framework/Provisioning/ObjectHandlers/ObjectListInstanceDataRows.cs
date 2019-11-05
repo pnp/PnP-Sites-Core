@@ -43,7 +43,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Processing_data_rows_for__0_, listInstance.Title);
                         // Retrieve the target list                        
-                        var list = web.GetListByUrl(parser.ParseString(listInstance.Url));
+                        var list = web.Lists.GetByTitle(parser.ParseString(listInstance.Title));
+                        web.Context.Load(list);
 
                         // Retrieve the fields' types from the list
                         Microsoft.SharePoint.Client.FieldCollection fields = list.Fields;
@@ -114,97 +115,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         {
                                             if (listInstance.DataRows.UpdateBehavior == UpdateBehavior.Skip)
                                             {
-                                        //         var userValues = new List<FieldUserValue>();
-                                        //         fieldValue.Split(',').All(value =>
-                                        //         {
-                                        //             try
-                                        //             {
-                                        //                 var user = web.EnsureUser(value);
-                                        //                 web.Context.Load(user);
-                                        //                 web.Context.ExecuteQueryRetry();
-                                        //                 if (user != null)
-                                        //                 {
-                                        //                     userValues.Add(new FieldUserValue
-                                        //                     {
-                                        //                         LookupId = user.Id,
-                                        //                     }); ;
-                                        //                 }
-                                        //             }
-                                        //             catch (Exception ex)
-                                        //             {
-                                        //                 scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_, ex.Message, ex.StackTrace);
-                                        //             }
-
-                                        //             return true;
-                                        //         });
-                                        //         updateValues.Add(new FieldUpdateValue(dataValue.Key, userValues.ToArray()));
-                                        //     }
-                                        //     else
-                                        //     {
-                                        //         try
-                                        //         {
-                                        //             var user = web.EnsureUser(fieldValue);
-                                        //             web.Context.Load(user);
-                                        //             web.Context.ExecuteQueryRetry();
-                                        //             if (user != null)
-                                        //             {
-                                        //                 var userValue = new FieldUserValue
-                                        //                 {
-                                        //                     LookupId = user.Id,
-                                        //                 };
-                                        //                 updateValues.Add(new FieldUpdateValue(dataValue.Key, userValue));
-                                        //             }
-                                        //             else
-                                        //             {
-                                        //                 updateValues.Add(new FieldUpdateValue(dataValue.Key, fieldValue));
-                                        //             }
-                                        //         }
-                                        //         catch (Exception ex)
-                                        //         {
-                                        //             scope.LogError(CoreResources.Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_failed___0_____1_, ex.Message, ex.StackTrace);
-                                        //         }
-                                        //     }
-                                        //     break;
-                                        // case FieldType.DateTime:
-                                        //     var dateTime = DateTime.MinValue;
-                                        //     if (DateTime.TryParse(fieldValue, out dateTime))
-                                        //     {
-                                        //         updateValues.Add(new FieldUpdateValue(dataValue.Key, dateTime));
-                                        //     }
-                                        //     break;
-                                        // case FieldType.Invalid:
-                                        //     switch (dataField.TypeAsString)
-                                        //     {
-                                        //         case "TaxonomyFieldType":
-                                        //         // Single value field - Expected format: term label|term GUID
-                                        //         case "TaxonomyFieldTypeMulti":
-                                        //             // Multi value field - Expected format: term label|term GUID;term label|term GUID;term label|term GUID;...
-                                        //             {
-                                        //                 if (fieldValue != null)
-                                        //                 {
-                                        //                     var termStrings = new List<string>();
-
-                                        //                     var termsArray = fieldValue.Split(new char[] { ';' });
-                                        //                     foreach (var term in termsArray)
-                                        //                     {
-                                        //                         termStrings.Add($"-1;#{term}");
-                                        //                     }
-                                        //                     updateValues.Add(new FieldUpdateValue(dataValue.Key, termStrings, dataField.TypeAsString));
-                                        //                 }
-                                        //                 break;
-                                        //             }
-                                        //         default:
-                                        //             {
-                                        //                 //Publishing image case, but can be others too
-                                        //                 updateValues.Add(new FieldUpdateValue(dataValue.Key, fieldValue));
-                                        //                 break;
-                                        //             }
-                                        //     }
-                                        //     break;
-
-                                        // default:
-                                        //     updateValues.Add(new FieldUpdateValue(dataValue.Key, fieldValue));
-                                        //     break;
                                                 processItem = false;
                                             }
                                             else

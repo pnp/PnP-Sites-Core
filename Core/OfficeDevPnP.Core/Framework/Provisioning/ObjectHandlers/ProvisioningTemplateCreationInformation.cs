@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private bool persistMultiLanguageResourceFiles = false;
         private string resourceFilePrefix = "PnP_Resources";
         private bool includeAllTermGroups = false;
-        private bool includeSiteCollectionTermGroup = true;
+        private bool includeSiteCollectionTermGroup = false;
         private bool includeSiteGroups = false;
         private bool includeTermGroupsSecurity = false;
         private bool includeSearchConfiguration = false;
