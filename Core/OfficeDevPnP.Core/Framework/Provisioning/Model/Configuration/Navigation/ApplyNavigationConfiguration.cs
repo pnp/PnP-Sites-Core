@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Navigation
 {
-    public class ExtractConfiguration
+    public class ApplyNavigationConfiguration
     {
-        [JsonProperty("RemoveExistingNodes")]
-        public bool RemoveExistingNodes { get; set; }
+        [JsonProperty("clearNavigation")]
+        public bool ClearNavigation { get; set; }
     }
 }

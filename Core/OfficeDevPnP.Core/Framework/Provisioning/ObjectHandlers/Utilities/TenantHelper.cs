@@ -7,6 +7,7 @@ using OfficeDevPnP.Core.ALM;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System;
 using System.Collections.Generic;
@@ -30,13 +31,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
    </Where>
 </Query>
 </View>";
-        public static TokenParser ProcessApps(Tenant tenant, ProvisioningTenant provisioningTenant, FileConnectorBase connector, TokenParser parser, PnPMonitoredScope scope, ProvisioningTemplateApplyingInformation applyingInformation, ProvisioningMessagesDelegate messagesDelegate)
+        public static TokenParser ProcessApps(Tenant tenant, ProvisioningTenant provisioningTenant, FileConnectorBase connector, TokenParser parser, PnPMonitoredScope scope, ApplyConfiguration configuration, ProvisioningMessagesDelegate messagesDelegate)
         {
             if (provisioningTenant.AppCatalog != null && provisioningTenant.AppCatalog.Packages.Count > 0)
             {
                 var rootSiteUrl = tenant.GetRootSiteUrl();
                 tenant.Context.ExecuteQueryRetry();
-                using (var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl.Value, applyingInformation.AccessTokens))
+                using (var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl.Value, configuration.AccessTokens))
                 {
 
                     var web = context.Web;
@@ -91,7 +92,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 var exists = false;
                                 var appId = Guid.Empty;
 
-                                using (var appCatalogContext = ((ClientContext)tenant.Context).Clone(appCatalogUri, applyingInformation.AccessTokens))
+                                using (var appCatalogContext = ((ClientContext)tenant.Context).Clone(appCatalogUri, configuration.AccessTokens))
                                 {
                                     // check if the app already is present
                                     var appList = appCatalogContext.Web.GetListByUrl("AppCatalog");
@@ -182,14 +183,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             return hashString;
         }
 
-        internal static TokenParser ProcessStorageEntities(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningTemplateApplyingInformation applyingInformation, ProvisioningMessagesDelegate messagesDelegate)
+        internal static TokenParser ProcessStorageEntities(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ApplyConfiguration configuration, ProvisioningMessagesDelegate messagesDelegate)
         {
             if (provisioningTenant.StorageEntities != null && provisioningTenant.StorageEntities.Any())
             {
                 var rootSiteUrl = tenant.GetRootSiteUrl();
                 tenant.Context.ExecuteQueryRetry();
 
-                using (var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl.Value, applyingInformation.AccessTokens))
+                using (var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl.Value, configuration.AccessTokens))
                 {
                     var web = context.Web;
 
@@ -222,7 +223,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                     if (appCatalogUri != null)
                     {
-                        using (var appCatalogContext = context.Clone(appCatalogUri, applyingInformation.AccessTokens))
+                        using (var appCatalogContext = context.Clone(appCatalogUri, configuration.AccessTokens))
                         {
                             foreach (var entity in provisioningTenant.StorageEntities)
                             {

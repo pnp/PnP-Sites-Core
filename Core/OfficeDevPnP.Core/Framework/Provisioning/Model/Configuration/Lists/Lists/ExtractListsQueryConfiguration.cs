@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Lists.Lists
 {
 
-    public class ExtractQueryConfiguration
+    public class ExtractListsQueryConfiguration
     {
         [JsonProperty("camlQuery")]
         public string CamlQuery { get; set; }
@@ -13,7 +13,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Lists.Lis
         public int RowLimit { get; set; }
 
         [JsonProperty("viewFields")]
-        public List<string> ViewFields { get; set; }
+        public List<string> ViewFields { get; set; } = new List<string>();
 
         [JsonProperty("includeAttachments")]
         public bool IncludeAttachments { get; set; }

@@ -1,18 +1,23 @@
 ﻿#if !ONPREMISES
 using Microsoft.Online.SharePoint.TenantAdministration;
+using Microsoft.SharePoint.Client;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using OfficeDevPnP.Core.Framework.Provisioning.Model.Teams;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Utilities.Graph;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Web;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
@@ -35,15 +40,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>The provisioned Team as a JSON object</returns>
         private static JToken CreateTeamFromProvisioningSchema(PnPMonitoredScope scope, TokenParser parser, FileConnectorBase connector, Team team, string accessToken)
         {
-            String teamId = null;
+            string teamId = null;
 
             // If we have to Clone an existing Team
-            if (!String.IsNullOrWhiteSpace(team.CloneFrom))
+            if (!string.IsNullOrWhiteSpace(team.CloneFrom))
             {
                 teamId = CloneTeam(scope, team, parser, accessToken);
             }
             // If we start from an already existing Group
-            else if (!String.IsNullOrEmpty(team.GroupId))
+            else if (!string.IsNullOrEmpty(team.GroupId))
             {
                 // We need to parse the GroupId, if it is a token
                 var parsedGroupId = parser.ParseString(team.GroupId);
@@ -67,21 +72,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 teamId = CreateOrUpdateTeam(scope, team, parser, accessToken);
             }
 
-            if (!String.IsNullOrEmpty(teamId))
+            if (!string.IsNullOrEmpty(teamId))
             {
                 // Wait to be sure that the Team is ready before configuring it
                 WaitForTeamToBeReady(accessToken, teamId);
 
                 // And now we configure security, channels, and apps
                 // Only configure Security, if Security is configured
-                if (team.Security != null) { 
+                if (team.Security != null)
+                {
                     if (!SetGroupSecurity(scope, team, teamId, accessToken)) return null;
                 }
                 if (!SetTeamChannels(scope, parser, team, teamId, accessToken)) return null;
                 if (!SetTeamApps(scope, team, teamId, accessToken)) return null;
 
                 // So far the Team's photo cannot be set if we don't have an already existing mailbox
-                // if (!SetTeamPhoto(scope, parser, connector, team, teamId, accessToken)) return null;
+                if (!SetTeamPhoto(scope, parser, connector, team, teamId, accessToken)) return null;
 
                 // Call Archive or Unarchive for the current Team
                 ArchiveTeam(scope, teamId, team.Archived, accessToken);
@@ -103,8 +109,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private static void WaitForTeamToBeReady(string accessToken, string teamId)
         {
             // Wait for the Team to be ready
-            Boolean wait = true;
-            Int32 iterations = 0;
+            bool wait = true;
+            int iterations = 0;
             while (wait)
             {
                 iterations++;
@@ -112,7 +118,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 try
                 {
                     var jsonOwners = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/owners?$select=id", accessToken);
-                    if (!String.IsNullOrEmpty(jsonOwners))
+                    if (!string.IsNullOrEmpty(jsonOwners))
                     {
                         wait = false;
                     }
@@ -131,6 +137,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        private static string[] GetAllIdsForAllGroupsWithTeams(string accessToken)
+        {
+            var groupids = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')&$select=Id", accessToken);
+            var value = JObject.Parse(groupids).Value<JArray>("value");
+            return value.Select(t => t.Value<string>("id")).ToArray();
+        }
+
         /// <summary>
         /// Checks if a Group exists by ID
         /// </summary>
@@ -138,7 +151,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="groupId">The ID of the Group</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token</param>
         /// <returns>Whether the Group exists or not</returns>
-        private static Boolean GroupExistsById(PnPMonitoredScope scope, string groupId, string accessToken)
+        private static bool GroupExistsById(PnPMonitoredScope scope, string groupId, string accessToken)
         {
             var alreadyExistingGroupId = GraphHelper.ItemAlreadyExists($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups", "id", groupId, accessToken);
             return (alreadyExistingGroupId != null);
@@ -151,9 +164,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="mailNickname">The ID of the Group</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token</param>
         /// <returns>The ID of an already existing Group with the provided MailNickname, if any</returns>
-        private static String GetGroupIdByMailNickname(PnPMonitoredScope scope, string mailNickname, string accessToken)
+        private static string GetGroupIdByMailNickname(PnPMonitoredScope scope, string mailNickname, string accessToken)
         {
-            var alreadyExistingGroupId = !String.IsNullOrEmpty(mailNickname) ?
+            var alreadyExistingGroupId = !string.IsNullOrEmpty(mailNickname) ?
                 GraphHelper.ItemAlreadyExists($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups", "mailNickname", mailNickname, accessToken) :
                 null;
 
@@ -181,13 +194,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var alreadyExistingGroupId = GetGroupIdByMailNickname(scope, parsedMailNickname, accessToken);
 
             // If the Group already exists, we don't need to create it
-            if (String.IsNullOrEmpty(alreadyExistingGroupId))
+            if (string.IsNullOrEmpty(alreadyExistingGroupId))
             {
                 // Otherwise we create the Group, first
 
                 // Prepare the IDs for owners and members
-                String[] desideredOwnerIds;
-                String[] desideredMemberIds;
+                string[] desiredOwnerIds;
+                string[] desiredMemberIds;
                 try
                 {
                     var userIdsByUPN = team.Security.Owners
@@ -200,8 +213,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             return JToken.Parse(jsonUser).Value<string>("id");
                         });
 
-                    desideredOwnerIds = team.Security.Owners.Select(o => userIdsByUPN[o.UserPrincipalName]).ToArray();
-                    desideredMemberIds = team.Security.Members.Select(o => userIdsByUPN[o.UserPrincipalName]).Union(desideredOwnerIds).ToArray();
+                    desiredOwnerIds = team.Security.Owners.Select(o => userIdsByUPN[o.UserPrincipalName]).ToArray();
+                    desiredMemberIds = team.Security.Members.Select(o => userIdsByUPN[o.UserPrincipalName]).Union(desiredOwnerIds).ToArray();
                 }
                 catch (Exception ex)
                 {
@@ -213,7 +226,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     displayName = parser.ParseString(team.DisplayName),
                     description = parser.ParseString(team.Description),
-                    groupTypes = new String[]
+                    groupTypes = new string[]
                     {
                         "Unified"
                     },
@@ -221,8 +234,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     mailNickname = parsedMailNickname,
                     securityEnabled = false,
                     visibility = team.Visibility.ToString(),
-                    owners_odata_bind = (from o in desideredOwnerIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(o.Replace("'", "''"))}").ToArray(),
-                    members_odata_bind = (from m in desideredMemberIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(m.Replace("'", "''"))}").ToArray()
+                    owners_odata_bind = (from o in desiredOwnerIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(o.Replace("'", "''"))}").ToArray(),
+                    members_odata_bind = (from m in desiredMemberIds select $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(m.Replace("'", "''"))}").ToArray()
                 };
 
                 // Make the Graph request to create the Office 365 Group
@@ -231,8 +244,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var createdGroupId = JToken.Parse(createdGroupJson).Value<string>("id");
 
                 // Wait for the Group to be ready
-                Boolean wait = true;
-                Int32 iterations = 0;
+                bool wait = true;
+                int iterations = 0;
                 while (wait)
                 {
                     iterations++;
@@ -240,7 +253,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     try
                     {
                         var jsonGroup = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{createdGroupId}", accessToken);
-                        if (!String.IsNullOrEmpty(jsonGroup))
+                        if (!string.IsNullOrEmpty(jsonGroup))
                         {
                             wait = false;
                         }
@@ -306,7 +319,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="team">The Domain Model Team object</param>
         /// <param name="parser">The PnP Token Parser</param>
         /// <returns>The JSON object ready to be serialized into the JSON request</returns>
-        private static Object PrepareTeamCloneRequestContent(Team team, TokenParser parser)
+        private static object PrepareTeamCloneRequestContent(Team team, TokenParser parser)
         {
             var content = new
             {
@@ -330,7 +343,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="groupId">The ID of the Group to promote into a Team</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token</param>
         /// <returns>The ID of the created or updated Team</returns>
-        private static string CreateOrUpdateTeamFromGroup(PnPMonitoredScope scope, Team team, TokenParser parser, String groupId, string accessToken)
+        private static string CreateOrUpdateTeamFromGroup(PnPMonitoredScope scope, Team team, TokenParser parser, string groupId, string accessToken)
         {
             var content = PrepareTeamRequestContent(team, parser);
 
@@ -356,7 +369,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="team">The Domain Model Team object</param>
         /// <param name="parser">The PnP Token Parser</param>
         /// <returns>The JSON object ready to be serialized into the JSON request</returns>
-        private static Object PrepareTeamRequestContent(Team team, TokenParser parser)
+        private static object PrepareTeamRequestContent(Team team, TokenParser parser)
         {
             var content = new
             {
@@ -407,7 +420,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <param name="teamId">The ID of the target Team</param>
         /// <param name="archived">A flag to declare to archive or unarchive the Team</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token</param>
-        private static void ArchiveTeam(PnPMonitoredScope scope, String teamId, Boolean archived, String accessToken)
+        private static void ArchiveTeam(PnPMonitoredScope scope, string teamId, bool archived, string accessToken)
         {
             try
             {
@@ -440,9 +453,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>Whether the Security settings have been provisioned or not</returns>
         private static bool SetGroupSecurity(PnPMonitoredScope scope, Team team, string teamId, string accessToken)
         {
-            String[] desideredOwnerIds;
-            String[] desideredMemberIds;
-            String[] finalOwnerIds;
+            SetAllowToAddGuestsSetting(scope, teamId, team.Security.AllowToAddGuests, accessToken);
+
+            string[] desideredOwnerIds;
+            string[] desideredMemberIds;
+            string[] finalOwnerIds;
             try
             {
                 var userIdsByUPN = team.Security.Owners
@@ -464,8 +479,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 return false;
             }
 
-            String[] ownerIdsToAdd;
-            String[] ownerIdsToRemove;
+            string[] ownerIdsToAdd;
+            string[] ownerIdsToRemove;
             try
             {
                 // Get current group owners
@@ -526,8 +541,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
-            String[] memberIdsToAdd;
-            String[] memberIdsToRemove;
+            string[] memberIdsToAdd;
+            string[] memberIdsToRemove;
             try
             {
                 // Get current group members
@@ -589,6 +604,113 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
         /// <summary>
+        /// Checks if the AllowToAddGuest setting already exists for the team connected unified group, and based on the outcome either creates or updates the setting.
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="allowToAddGuests">Boolean value indicating whether external sharing should be allowed or not.</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        private static void SetAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, bool allowToAddGuests, string accessToken)
+        {
+            if (GetAllowToAddGuestsSetting(scope, teamId, accessToken))
+            {
+                UpdateAllowToAddGuestsSetting(scope, teamId, allowToAddGuests, accessToken);
+            }
+            else
+            {
+                CreateAllowToAddGuestsSetting(scope, teamId, allowToAddGuests, accessToken);
+            }
+        }
+
+        /// <summary>
+        /// Gets the AllowToAddGuests setting JSON (name and value) of the team connected unified group.
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        /// <returns>JSON object with name and value properties</returns>
+        internal static bool GetAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, string accessToken)
+        {
+            try
+            {
+                var groupGuestSettings = GetGroupUnifiedGuestSettings(scope, teamId, accessToken);
+                if (groupGuestSettings["values"] != null && groupGuestSettings["values"].FirstOrDefault(x => x["name"].Value<string>().Equals("AllowToAddGuests")) != null)
+                {
+                    return groupGuestSettings["values"].First(x => x["name"].ToString() == "AllowToAddGuests").Value<bool>();
+                }
+                return false;
+            }
+            catch (Exception e)
+            {
+                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError, e.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Gets the Group.Unified.Guest settings for the unified group that is connected to the team.
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        /// <returns>All guest related settings for the team connected unified group (not just external sharing)</returns>
+        private static JToken GetGroupUnifiedGuestSettings(PnPMonitoredScope scope, string teamId, string accessToken)
+        {
+            try
+            {
+                var response = JToken.Parse(HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/settings", accessToken));
+                 return response["value"]?.FirstOrDefault(x => x["templateId"].ToString() == "08d542b9-071f-4e16-94b0-74abb372e3d9");
+            }
+            catch (Exception e)
+            {
+                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError, e.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Creates the AllowToAddGuests setting for the team connected unified group, and sets its value.
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="allowToAddGuests">Boolean value indicating whether external sharing should be allowed or not.</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        private static void CreateAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, bool allowToAddGuests, string accessToken)
+        {
+            try
+            {
+                var body = $"{{'displayName': 'Group.Unified.Guest', 'templateId': '08d542b9-071f-4e16-94b0-74abb372e3d9', 'values': [{{'name': 'AllowToAddGuests','value': '{allowToAddGuests}'}}] }}";
+                HttpHelper.MakePostRequest($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/settings", body, "application/json", accessToken);
+            }
+            catch (Exception e)
+            {
+                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError, e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Updates an existing AllowToAddGuests setting for the team connected unified group.
+        /// </summary>
+        /// <param name="scope">The PnP Provisioning Scope</param>
+        /// <param name="teamId">The ID of the target Team</param>
+        /// <param name="allowToAddGuests">Boolean value indicating whether external sharing should be allowed or not.</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token</param>
+        private static void UpdateAllowToAddGuestsSetting(PnPMonitoredScope scope, string teamId, bool allowToAddGuests, string accessToken)
+        {
+            try
+            {
+                var groupGuestSettings = GetGroupUnifiedGuestSettings(scope, teamId, accessToken);
+                groupGuestSettings["values"].FirstOrDefault(x => x["name"].ToString() == "AllowToAddGuests")["value"] = allowToAddGuests.ToString();
+
+                HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/settings/{groupGuestSettings["id"]}", groupGuestSettings, "application/json", accessToken);
+            }
+            catch (Exception e)
+            {
+                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_RemovingMemberError, e.Message);
+            }
+        }
+
+        /// <summary>
         /// Synchronizes Team Channels settings
         /// </summary>
         /// <param name="scope">The PnP Provisioning Scope</param>
@@ -633,10 +755,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return JToken.Parse(HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels", accessToken))["value"];
         }
 
-        private static string UpdateTeamChannel(TeamChannel channel, string teamId, JToken existingChannel, string accessToken)
+        private static string UpdateTeamChannel(Model.Teams.TeamChannel channel, string teamId, JToken existingChannel, string accessToken)
         {
             // Not supported to update 'General' Channel
-            if(channel.DisplayName.Equals("General", StringComparison.InvariantCultureIgnoreCase))
+            if (channel.DisplayName.Equals("General", StringComparison.InvariantCultureIgnoreCase))
                 return existingChannel["id"].ToString();
 
             var channelId = existingChannel["id"].ToString();
@@ -657,7 +779,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return channelId;
         }
 
-        private static string CreateTeamChannel(PnPMonitoredScope scope, TeamChannel channel, string teamId, string accessToken)
+        private static string CreateTeamChannel(PnPMonitoredScope scope, Model.Teams.TeamChannel channel, string teamId, string accessToken)
         {
             var channelToCreate = new
             {
@@ -707,8 +829,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (tabId == null) return false;
             }
-
+            if (tabs.Any())
+            {
+                // is there a wiki tab and not a newly created tab?
+                var wikiTab = existingTabs.FirstOrDefault(x => x["teamsAppId"].Value<string>() == "com.microsoft.teamspace.tab.wiki");
+                if (wikiTab != null && tabs.FirstOrDefault(t => t.TeamsAppId == "com.microsoft.teamspace.tab.wiki") == null)
+                {
+                    RemoveTeamTab(wikiTab["id"].Value<string>(), channelId, teamId, accessToken);
+                }
+            }
             return true;
+        }
+
+        private static void RemoveTeamTab(string tabId, string channelId, string teamId, string accessToken)
+        {
+            HttpHelper.MakeDeleteRequest($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs/{tabId}", accessToken);
         }
 
         public static JToken GetExistingTeamChannelTabs(string teamId, string channelId, string accessToken)
@@ -762,10 +897,93 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (tab.Configuration != null)
             {
-                tab.Configuration.EntityId = parser.ParseString(tab.Configuration.EntityId);
-                tab.Configuration.ContentUrl = parser.ParseString(tab.Configuration.ContentUrl);
-                tab.Configuration.RemoveUrl = parser.ParseString(tab.Configuration.RemoveUrl);
-                tab.Configuration.WebsiteUrl = parser.ParseString(tab.Configuration.WebsiteUrl);
+                // https://docs.microsoft.com/en-us/graph/teams-configuring-builtin-tabs
+                switch (tab.TeamsAppId)
+                {
+                    case "com.microsoft.teamspace.tab.web": // Website
+                        {
+                            tab.Configuration.EntityId = null;
+                            tab.Configuration.ContentUrl = parser.ParseString(tab.Configuration.ContentUrl);
+                            tab.Configuration.RemoveUrl = null;
+                            tab.Configuration.WebsiteUrl = parser.ParseString(tab.Configuration.WebsiteUrl);
+                            break;
+                        }
+                    case "com.microsoft.teamspace.tab.planner": // Planner
+                        {
+                            tab.Configuration.EntityId = parser.ParseString(tab.Configuration.EntityId);
+                            tab.Configuration.ContentUrl = parser.ParseString(tab.Configuration.ContentUrl);
+                            tab.Configuration.RemoveUrl = parser.ParseString(tab.Configuration.ContentUrl);
+                            tab.Configuration.WebsiteUrl = parser.ParseString(tab.Configuration.ContentUrl);
+                            break;
+                        }
+                    case "com.microsoftstream.embed.skypeteamstab": // Stream
+                        {
+                            tab.Configuration.EntityId = null;
+                            tab.Configuration.ContentUrl = parser.ParseString(tab.Configuration.ContentUrl);
+                            tab.Configuration.RemoveUrl = null;
+                            tab.Configuration.WebsiteUrl = parser.ParseString(tab.Configuration.WebsiteUrl);
+                            break;
+                        }
+                    case "81fef3a6-72aa-4648-a763-de824aeafb7d": // Forms
+                        {
+                            tab.Configuration.EntityId = parser.ParseString(tab.Configuration.EntityId);
+                            tab.Configuration.ContentUrl = parser.ParseString(tab.Configuration.ContentUrl);
+                            tab.Configuration.RemoveUrl = null;
+                            tab.Configuration.WebsiteUrl = parser.ParseString(tab.Configuration.WebsiteUrl);
+                            break;
+                        }
+                    case "com.microsoft.teamspace.tab.file.staticviewer.word": // Word
+                    case "com.microsoft.teamspace.tab.file.staticviewer.excel": // Excel
+                    case "com.microsoft.teamspace.tab.file.staticviewer.powerpoint": // PowerPoint
+                    case "com.microsoft.teamspace.tab.file.staticviewer.pdf": // PDF
+                        {
+                            tab.Configuration.EntityId = parser.ParseString(tab.Configuration.EntityId);
+                            tab.Configuration.ContentUrl = parser.ParseString(tab.Configuration.ContentUrl);
+                            tab.Configuration.RemoveUrl = null;
+                            tab.Configuration.WebsiteUrl = null;
+                            break;
+                        }
+                    case "com.microsoft.teamspace.tab.wiki": // Wiki, no configuration possible
+                        {
+                            tab.Configuration = null;
+                            break;
+                        }
+                    case "com.microsoft.teamspace.tab.files.sharepoint": // Document library
+                        {
+                            tab.Configuration.EntityId = "";
+                            tab.Configuration.ContentUrl = parser.ParseString(tab.Configuration.ContentUrl);
+                            tab.Configuration.RemoveUrl = null;
+                            tab.Configuration.WebsiteUrl = null;
+                            break;
+                        }
+                    case "0d820ecd-def2-4297-adad-78056cde7c78": // OneNote
+                        {
+                            tab.Configuration.EntityId = parser.ParseString(tab.Configuration.EntityId);
+                            tab.Configuration.ContentUrl = parser.ParseString(tab.Configuration.ContentUrl);
+                            tab.Configuration.RemoveUrl = parser.ParseString(tab.Configuration.RemoveUrl);
+                            tab.Configuration.WebsiteUrl = parser.ParseString(tab.Configuration.WebsiteUrl);
+                            break;
+                        }
+                    case "com.microsoft.teamspace.tab.powerbi": //  Power BI
+                        {
+                            tab.Configuration = null;
+                            break;
+                        }
+                    case "2a527703-1f6f-4559-a332-d8a7d288cd88": // SharePoint page and lists
+                        {
+                            tab.Configuration = null;
+                            break;
+                        }
+                    default:
+                        {
+                            tab.Configuration.EntityId = parser.ParseString(tab.Configuration.EntityId);
+                            tab.Configuration.ContentUrl = parser.ParseString(tab.Configuration.ContentUrl);
+                            tab.Configuration.RemoveUrl = parser.ParseString(tab.Configuration.RemoveUrl);
+                            tab.Configuration.WebsiteUrl = parser.ParseString(tab.Configuration.WebsiteUrl);
+                            break;
+                        }
+                }
+
             }
 
             var tabToCreate = new
@@ -810,26 +1028,39 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return true;
         }
 
+        private static JObject CleanUpMessage(JObject message)
+        {
+            List<string> propertiesToRemove = new List<string> { "createdDateTime", "id", "webUrl" };
+            foreach (var property in propertiesToRemove)
+            {
+                message.Remove(property);
+            }
+            return message;
+        }
+
         private static string CreateTeamChannelMessage(PnPMonitoredScope scope, TokenParser parser, TeamChannelMessage message, string teamId, string channelId, string accessToken)
         {
             var messageString = parser.ParseString(message.Message);
-            var messageJson = default(JToken);
+            var messageObject = default(JObject);
 
             try
             {
                 // If the message is already in JSON format, we just use it
-                messageJson = JToken.Parse(messageString);
+                messageObject = JObject.Parse(messageString);
             }
             catch
             {
                 // Otherwise try to build the JSON message content from scratch
-                messageJson = JToken.Parse($"{{ \"body\": {{ \"content\": \"{messageString}\" }} }}");
+                messageObject = JObject.Parse($"{{ \"body\": {{ \"content\": \"{messageString}\" }} }}");
             }
+
+            // We cannot set the createdDateTime value when posting a message.
+            messageObject = CleanUpMessage(messageObject);
 
             var messageId = GraphHelper.CreateOrUpdateGraphObject(scope,
                 HttpMethodVerb.POST,
                 $"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/messages",
-                messageJson,
+                messageObject,
                 HttpHelper.JsonContentType,
                 accessToken,
                 null,
@@ -854,7 +1085,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             foreach (var app in team.Apps)
             {
-                Object appToCreate = new JObject
+                object appToCreate = new JObject
                 {
                     ["teamsApp@odata.bind"] = app.AppId
                 };
@@ -888,22 +1119,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>Whether the Apps have been provisioned or not</returns>
         private static bool SetTeamPhoto(PnPMonitoredScope scope, TokenParser parser, FileConnectorBase connector, Team team, string teamId, string accessToken)
         {
-            if (!String.IsNullOrEmpty(team.Photo) && connector != null)
+            if (!string.IsNullOrEmpty(team.Photo) && connector != null)
             {
                 var photoPath = parser.ParseString(team.Photo);
                 var photoBytes = ConnectorFileHelper.GetFileBytes(connector, team.Photo);
 
-                using (var mem = new MemoryStream())
+                using (var photoStream = new MemoryStream(photoBytes))
                 {
-                    mem.Write(photoBytes, 0, photoBytes.Length);
-                    mem.Position = 0;
-
-                    HttpHelper.MakePostRequest(
-                        $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/photo/$value",
-                        mem, "image/jpeg", accessToken);
+                    var contentType = MimeMapping.GetMimeMapping(photoPath);
+                    int maxRetries = 10;
+                    int retry = 0;
+                    while (retry < maxRetries)
+                        try
+                        {
+                            HttpHelper.MakePutRequest(
+                                $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}/photo/$value",
+                                photoStream, contentType, accessToken);
+                            break;
+                        }
+                        catch (Exception)
+                        {
+                            retry++;
+                            Thread.Sleep(5000*retry); // wait
+                        }
                 }
             }
-
             return true;
         }
 
@@ -964,7 +1204,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         #region PnP Provisioning Engine infrastructural code
 
-        public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ApplyConfiguration configuration)
         {
             if (!_willProvision.HasValue)
             {
@@ -974,21 +1214,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return _willProvision.Value;
         }
 
-        public override bool WillExtract(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateCreationInformation creationInfo)
+        public override bool WillExtract(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ExtractConfiguration configuration)
         {
             if (!_willExtract.HasValue)
             {
-                _willExtract = false;
+                _willExtract = true;
             }
             return _willExtract.Value;
         }
 
-        public override TokenParser ProvisionObjects(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, TokenParser parser, ApplyConfiguration configuration)
         {
             using (var scope = new PnPMonitoredScope(Name))
             {
+                int totalCount = (hierarchy.Teams.TeamTemplates != null ? hierarchy.Teams.TeamTemplates.Count : 0) + (hierarchy.Teams.Teams != null ? hierarchy.Teams.Teams.Count : 0);
+                int currentProgress = 0;
                 // Prepare a method global variable to store the Access Token
-                String accessToken = null;
+                string accessToken = null;
 
                 // - Teams based on JSON templates
                 var teamTemplates = hierarchy.Teams?.TeamTemplates;
@@ -996,6 +1238,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var teamTemplate in teamTemplates)
                     {
+                        WriteSubProgress("Teams", "Team Template", currentProgress, totalCount);
                         if (PnPProvisioningContext.Current != null)
                         {
                             // Get a fresh Access Token for every request
@@ -1010,7 +1253,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
 
                         }
-
+                        currentProgress++;
                     }
                 }
 
@@ -1020,13 +1263,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var team in teams)
                     {
+                        WriteSubProgress("Teams", "Team", currentProgress, totalCount);
+
                         // Get a fresh Access Token for every request
                         accessToken = PnPProvisioningContext.Current.AcquireToken(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All");
 
                         // Create the Team starting from the XML PnP Provisioning Schema definition
                         CreateTeamFromProvisioningSchema(scope, parser, hierarchy.Connector, team, accessToken);
 
-                        // TODO: possible further processing...
+                        currentProgress++;
                     }
                 }
 
@@ -1036,10 +1281,220 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
-        public override ProvisioningHierarchy ExtractObjects(Tenant tenant, ProvisioningHierarchy hierarchy, ProvisioningTemplateCreationInformation creationInfo)
+        public override ProvisioningHierarchy ExtractObjects(Tenant tenant, ProvisioningHierarchy hierarchy, ExtractConfiguration configuration)
         {
-            // So far, no extraction
-            return hierarchy;
+            using (var scope = new PnPMonitoredScope(Name))
+            {
+                var accessToken = PnPProvisioningContext.Current.AcquireTokenWithMultipleScopes(GraphHelper.MicrosoftGraphBaseURI, "Group.ReadWrite.All", "User.Read.All");
+
+                if (accessToken != null)
+                {
+
+                    if (configuration.Tenant.Teams.IncludeAllTeams)
+                    {
+                        // Retrieve all groups with teams
+
+                        var groupIds = GetAllIdsForAllGroupsWithTeams(accessToken);
+                        foreach (var groupId in groupIds)
+                        {
+                            Team team = ParseTeamJson(configuration, accessToken, groupId, scope);
+                            if (team != null)
+                            {
+                                hierarchy.Teams.Teams.Add(team);
+                            }
+                        }
+                    }
+                    if (configuration.Tenant.Teams.TeamSiteUrls.Any())
+                    {
+                        foreach (var siteUrl in configuration.Tenant.Teams.TeamSiteUrls)
+                        {
+                            using (var siteContext = tenant.Context.Clone(siteUrl))
+                            {
+                                var groupId = siteContext.Web.GetPropertyBagValueString("GroupId", null);
+                                if (groupId != null)
+                                {
+                                    Team team = ParseTeamJson(configuration, accessToken, groupId, scope);
+                                    if (team != null)
+                                    {
+                                        hierarchy.Teams.Teams.Add(team);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        foreach (var siteUrl in PnPProvisioningContext.Current.ParsedSiteUrls)
+                        {
+                            using (var siteContext = tenant.Context.Clone(siteUrl))
+                            {
+                                var groupId = siteContext.Web.GetPropertyBagValueString("GroupId", null);
+                                if (groupId != null)
+                                {
+                                    Team team = ParseTeamJson(configuration, accessToken, groupId, scope);
+                                    if (team != null)
+                                    {
+                                        hierarchy.Teams.Teams.Add(team);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                return hierarchy;
+            }
+        }
+
+        private static Team ParseTeamJson(ExtractConfiguration configuration, string accessToken, string groupId, PnPMonitoredScope scope)
+        {
+            var team = new Team();
+
+            // Get Settings
+            try
+            {
+                var teamString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}", accessToken);
+                team = JsonConvert.DeserializeObject<Team>(teamString);
+                if(configuration.Tenant.Teams.IncludeGroupId)
+                {
+                    team.GroupId = groupId;
+                }
+                team = GetTeamChannels(configuration, accessToken, groupId, team, scope);
+                team = GetTeamApps(accessToken, groupId, team, scope);
+                team = GetTeamSecurity(accessToken, groupId, team, scope);
+                if (configuration.PersistAssetFiles)
+                {
+                    GetTeamPhoto(configuration, accessToken, groupId, team, scope);
+                }
+            }
+            catch (ApplicationException ex)
+            {
+                if (ex.InnerException is HttpException)
+                {
+                    if (((HttpException)ex.InnerException).GetHttpCode() == 404)
+                    {
+                        // no team, swallow
+                    }
+                    else
+                    {
+                        throw ex;
+                    }
+                }
+                else
+                {
+                    throw ex;
+                }
+            }
+            return team;
+        }
+
+        private static void GetTeamPhoto(ExtractConfiguration configuration, string accessToken, string groupId, Team team, PnPMonitoredScope scope)
+        {
+            // get the photo stream
+            var teamPhotoIdString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{groupId}/photo", accessToken);
+            var teamPhotoId = JObject.Parse(teamPhotoIdString)["id"].Value<string>();
+            var groupPhotoString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{groupId}/photos/{teamPhotoId}");
+            var mediaType = JObject.Parse(groupPhotoString)["@odata.mediaContentType"].Value<string>();
+            using (var teamPhotoStream = HttpHelper.MakeGetRequestForStream($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{groupId}/photos/{teamPhotoId}/$value", null, accessToken))
+            {
+                var extension = string.Empty;
+                switch (mediaType)
+                {
+                    case "image/jpeg":
+                        {
+                            extension = ".jpg";
+                            break;
+                        }
+                    case "image/gif":
+                        {
+                            extension = ".gif";
+                            break;
+                        }
+                    case "image/png":
+                        {
+                            extension = ".png";
+                            break;
+                        }
+                    case "image/bmp":
+                        {
+                            extension = ".bmp";
+                            break;
+                        }
+                }
+                configuration.FileConnector.SaveFileStream($"photo_{groupId}_{teamPhotoId}{extension}", $"TeamData/TEAM_{groupId}", teamPhotoStream);
+                team.Photo = $"TeamData/TEAM_{groupId}/photo_{groupId}_{teamPhotoId}{extension}";
+            }
+        }
+
+        private static Team GetTeamSecurity(string accessToken, string groupId, Team team, PnPMonitoredScope scope)
+        {
+            team.Security = new TeamSecurity();
+            var teamOwnersString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/groups/{groupId}/owners", accessToken);
+            foreach (var user in JObject.Parse(teamOwnersString)["value"] as JArray)
+            {
+                team.Security.Owners.Add(user.ToObject<TeamSecurityUser>());
+            }
+            var teamMembersString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/groups/{groupId}/members", accessToken);
+            foreach (var user in JObject.Parse(teamMembersString)["value"] as JArray)
+            {
+                team.Security.Members.Add(user.ToObject<TeamSecurityUser>());
+            }
+            team.Security.AllowToAddGuests = GetAllowToAddGuestsSetting(scope, groupId, accessToken);
+
+            return team;
+        }
+
+        private static Team GetTeamApps(string accessToken, string groupId, Team team, PnPMonitoredScope scope)
+        {
+            var teamsAppsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/installedApps", accessToken);
+            foreach (var app in JObject.Parse(teamsAppsString)["value"] as JArray)
+            {
+                team.Apps.Add(new TeamAppInstance() { AppId = app["id"].Value<string>() });
+            }
+            return team;
+        }
+
+        private static Team GetTeamChannels(ExtractConfiguration configuration, string accessToken, string groupId, Team team, PnPMonitoredScope scope)
+        {
+            var teamChannelsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/channels", accessToken);
+            team.Channels.AddRange(JsonConvert.DeserializeObject<List<Model.Teams.TeamChannel>>(JObject.Parse(teamChannelsString)["value"].ToString()));
+
+            foreach (var channel in team.Channels)
+            {
+                var teamTabsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/channels/{channel.ID}/tabs", accessToken);
+                channel.Tabs.AddRange(GetTeamChannelTabs(configuration, accessToken, groupId, channel.ID));
+                if (configuration.Tenant.Teams.IncludeMessages)
+                {
+                    var channelMessagesString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/channels/{channel.ID}/messages", accessToken);
+                    foreach (var message in JObject.Parse(channelMessagesString)["value"] as JArray)
+                    {
+                        // We cannot set the createdDateTime value while posting messages, so remove it from the export.
+                        var messageObject = CleanUpMessage((JObject)message);
+                        channel.Messages.Add(new TeamChannelMessage() { Message = messageObject.ToString() });
+                    }
+                }
+            }
+            return team;
+        }
+
+        private static List<TeamTab> GetTeamChannelTabs(ExtractConfiguration configuration, string accessToken, string groupId, string channelId)
+        {
+            List<TeamTab> tabs = new List<TeamTab>();
+            var teamTabsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/channels/{channelId}/tabs", accessToken);
+            foreach (var tab in JsonConvert.DeserializeObject<List<TeamTab>>(JObject.Parse(teamTabsString)["value"].ToString()))
+            {
+                if (tab.Configuration != null && string.IsNullOrEmpty(tab.Configuration.ContentUrl))
+                {
+                    tab.Configuration = null;
+                }
+                if (tab.Configuration != null)
+                {
+                    tab.Configuration.EntityId = tab.Configuration.EntityId ?? "";
+                    tab.Configuration.WebsiteUrl = tab.Configuration.WebsiteUrl ?? "";
+                    tab.Configuration.RemoveUrl = tab.Configuration.RemoveUrl ?? "";
+                }
+                tabs.Add(tab);
+            }
+            return tabs;
         }
         #endregion
 
@@ -1060,25 +1515,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static string ReplaceAccentedCharactersWithLatin(string str)
         {
-            const string a = "[äåàáâã]";
+            const string a = "[äåàáâãæ]";
             var regex = new Regex(a, RegexOptions.IgnoreCase);
             str = regex.Replace(str, "a");
 
-            const string e = "[èéêë]";
+            const string e = "[èéêëēĕėęě]";
             regex = new Regex(e, RegexOptions.IgnoreCase);
             str = regex.Replace(str, "e");
 
-            const string i = "[ìíîï]";
+            const string i = "[ìíîïĩīĭįı]";
             regex = new Regex(i, RegexOptions.IgnoreCase);
             str = regex.Replace(str, "i");
 
-            const string o = "[öòóôõ]";
+            const string o = "[öòóôõø]";
             regex = new Regex(o, RegexOptions.IgnoreCase);
             str = regex.Replace(str, "o");
 
             const string u = "[üùúû]";
             regex = new Regex(u, RegexOptions.IgnoreCase);
             str = regex.Replace(str, "u");
+
+            const string c = "[çċčćĉ]";
+            regex = new Regex(c, RegexOptions.IgnoreCase);
+            str = regex.Replace(str, "c");
+
+            const string d = "[ðďđđ]";
+            regex = new Regex(d, RegexOptions.IgnoreCase);
+            str = regex.Replace(str, "d");
 
             return str;
         }

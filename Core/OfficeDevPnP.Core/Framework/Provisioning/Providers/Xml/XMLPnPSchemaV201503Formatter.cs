@@ -16,7 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
     [Obsolete("The PnP Provisioning Schema v201503 is obsolete and deprecated, please use the latest version available at https://github.com/OfficeDev/PnP-Provisioning-Schema")]
     internal class XMLPnPSchemaV201503Formatter :
-        IXMLSchemaFormatter, ITemplateFormatter
+        IXMLSchemaFormatter, ITemplateFormatterWithValidation
     {
         private TemplateProviderBase _provider;
 
@@ -37,6 +37,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         public bool IsValid(Stream template)
         {
+            return GetValidationResults(template).IsValid;
+        }
+
+        public ValidationResult GetValidationResults(Stream template)
+        {
+            var exceptions = new List<Exception>();
+
             if (template == null)
             {
                 throw new ArgumentNullException(nameof(template));
@@ -58,11 +65,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             Boolean result = true;
             xml.Validate(schemas, (o, e) =>
             {
+                exceptions.Add(e.Exception);
                 Diagnostics.Log.Error(e.Exception, "SchemaFormatter", "Template is not valid: {0}", e.Message);
                 result = false;
             });
 
-            return (result);
+            return new ValidationResult { IsValid = result, Exceptions = exceptions };
         }
 
         Stream ITemplateFormatter.ToFormattedTemplate(ProvisioningTemplate template)
@@ -453,11 +461,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             template.CopyTo(sourceStream);
             sourceStream.Position = 0;
 
+            var validationResult = this.GetValidationResults(sourceStream);
             // Check the provided template against the XML schema
-            if (!this.IsValid(sourceStream))
+            if (!validationResult.IsValid)
             {
-                // TODO: Use resource file
-                throw new ApplicationException("The provided template is not valid!");
+                throw new ApplicationException("Template is not valid", new AggregateException(validationResult.Exceptions));
             }
 
             sourceStream.Position = 0;

@@ -24,7 +24,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers
         /// </summary>
         /// <param name="template">The formatted template instance as a Stream</param>
         /// <returns>Boolean result of the validation</returns>
-        Boolean IsValid(Stream template);
+        bool IsValid(Stream template);
 
         /// <summary>
         /// Method to format a ProvisioningTemplate into a formatted template

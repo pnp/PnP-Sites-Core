@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.SiteFooter
+namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Navigation
 {
-    public class ExtractConfiguration
+    public class ExtractNavigationConfiguration
     {
         [JsonProperty("RemoveExistingNodes")]
         public bool RemoveExistingNodes { get; set; }

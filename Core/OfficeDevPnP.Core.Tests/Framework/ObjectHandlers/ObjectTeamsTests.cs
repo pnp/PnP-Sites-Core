@@ -37,6 +37,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             _teamNames.Add(teamName);
             var security = new TeamSecurity
             {
+                AllowToAddGuests = false,
                 Owners = { new TeamSecurityUser { UserPrincipalName = ConfigurationManager.AppSettings["SPOUserName"] } }
             };
             var funSettings = new TeamFunSettings
@@ -154,6 +155,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             return JToken.Parse(HttpHelper.MakeGetRequestForString($"{MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs", accessToken))["value"];
         }
 
+        private static bool GetAllowToAddGuests(string teamId) {
+            var accessToken = PnPProvisioningContext.Current.AcquireToken(MicrosoftGraphBaseURI, "Group.Read.All");
+            var response = JToken.Parse(HttpHelper.MakeGetRequestForString($"{MicrosoftGraphBaseURI}v1.0/groups/{teamId}/settings", accessToken));
+            var groupGuestSettings = response["value"]?.FirstOrDefault(x => x["templateId"].ToString() == "08d542b9-071f-4e16-94b0-74abb372e3d9");
+            return (bool)groupGuestSettings["values"]?.FirstOrDefault(x => x["name"].ToString() == "AllowToAddGuests")["value"];
+        }
+
         private static void DeleteTeam(string id)
         {
             var accessToken = PnPProvisioningContext.Current.AcquireToken(MicrosoftGraphBaseURI, "Group.ReadWrite.All");
@@ -175,7 +183,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 {
                     var tenant = new Tenant(ctx);
                     var parser = new TokenParser(ctx.Web, template);
-                    new ObjectTeams().ProvisionObjects(tenant, template.ParentHierarchy, null, parser, new ProvisioningTemplateApplyingInformation());
+                    new ObjectTeams().ProvisionObjects(tenant, template.ParentHierarchy, null, parser, new Core.Framework.Provisioning.Model.Configuration.ApplyConfiguration());
                 }
             }
         }
@@ -247,11 +255,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                         TeamsAppId = "0d820ecd-def2-4297-adad-78056cde7c78"
                     });
 
+                    template.ParentHierarchy.Teams.Teams[0].Security.AllowToAddGuests = true;
+
                     Provision(template);
 
                     var team = GetTeamById(teamId);
                     var existingChannels = GetTeamChannels(teamId);
                     var existingTabs = GetTeamChannelTabs(teamId, existingChannels[1]["id"].ToString());
+                    var allowToAddGuests = GetAllowToAddGuests(teamId);
 
                     Assert.AreEqual(team["funSettings"]["allowGiphy"].Value<Boolean>(),
                         template.ParentHierarchy.Teams.Teams[0].FunSettings.AllowGiphy);
@@ -264,6 +275,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     Assert.AreEqual(existingChannels[1]["description"],
                         template.ParentHierarchy.Teams.Teams[0].Channels[0].Description);
                     Assert.IsTrue(existingTabs.Any(t => t["displayName"].ToString() == template.ParentHierarchy.Teams.Teams[0].Channels[0].Tabs[1].DisplayName));
+                    Assert.IsTrue(allowToAddGuests);
                 }
                 else
                 {

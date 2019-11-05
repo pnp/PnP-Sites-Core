@@ -51,7 +51,7 @@
       "additionalProperties": false,
       "properties": {
         "groups": {
-          "description": "set to only extract contents in these groups",
+          "description": "set to only extract content types in these groups",
           "type": "array",
           "uniqueItems": true,
           "minItems": 1,

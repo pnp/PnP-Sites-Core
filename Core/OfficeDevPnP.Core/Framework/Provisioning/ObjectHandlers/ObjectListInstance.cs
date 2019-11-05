@@ -20,6 +20,7 @@ using ContentType = Microsoft.SharePoint.Client.ContentType;
 using Field = Microsoft.SharePoint.Client.Field;
 using Folder = Microsoft.SharePoint.Client.Folder;
 using View = OfficeDevPnP.Core.Framework.Provisioning.Model.View;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -293,7 +294,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var rootFolder = list.SiteList.RootFolder;
                 foreach (var folder in list.TemplateList.Folders)
                 {
-                    CreateFolderInList(list,rootFolder, folder, parser, scope);
+                    CreateFolderInList(list, rootFolder, folder, parser, scope);
                 }
             }
         }
@@ -2011,7 +2012,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
 #endif
 
-        private void CreateFolderInList(ListInfo list,Microsoft.SharePoint.Client.Folder parentFolder, Model.Folder folder, TokenParser parser, PnPMonitoredScope scope)
+        private void CreateFolderInList(ListInfo list, Microsoft.SharePoint.Client.Folder parentFolder, Model.Folder folder, TokenParser parser, PnPMonitoredScope scope)
         {
             // Determine the folder name, parsing any token
             String targetFolderName = parser.ParseString(folder.Name);
@@ -2035,7 +2036,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     foreach (var childFolder in folder.Folders)
                     {
-                        CreateFolderInList(list,currentFolder, childFolder, parser, scope);
+                        CreateFolderInList(list, currentFolder, childFolder, parser, scope);
                     }
                 }
 
@@ -2085,6 +2086,69 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             public List SiteList { get; set; }
             public ListInstance TemplateList { get; set; }
+        }
+
+        private static bool ShouldNotExtractList(ProvisioningTemplateCreationInformation creationInfo, List siteList)
+        {
+            if (creationInfo.ListsToExtract != null && creationInfo.ListsToExtract.Count > 0 &&
+                       !creationInfo.ListsToExtract.Any(i =>
+                       {
+                           if (Guid.TryParse(i, out Guid listId))
+                           {
+                               return listId == siteList.Id;
+                           }
+                           else
+                           {
+                               return false;
+                           }
+                       }) && !creationInfo.ListsToExtract.Contains(siteList.Title))
+            {
+                return true;
+            }
+            if (creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.Lists != null
+                && creationInfo.ExtractConfiguration.Lists.HasLists
+                &&
+                !creationInfo.ExtractConfiguration.Lists.Lists.Any(i =>
+                {
+                    if (Guid.TryParse(i.Title, out Guid listId))
+                    {
+                        return listId == siteList.Id;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                })
+                && !creationInfo.ExtractConfiguration.Lists.Lists.Any(i => i.Title.Equals(siteList.Title))
+                && !creationInfo.ExtractConfiguration.Lists.Lists.Any(i => siteList.RootFolder.ServerRelativeUrl.EndsWith(i.Title, StringComparison.InvariantCultureIgnoreCase)))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private static bool IntentToExtractItems(ExtractConfiguration configuration, List siteList)
+        {
+            if(configuration != null && configuration.Lists != null && configuration.Lists.HasLists)
+            {
+                Func<string,Guid,bool> matchGuid = (string title, Guid guid) =>
+                {
+                    if (Guid.TryParse(title, out Guid parsedTitle))
+                    {
+                        return guid == parsedTitle;
+                    } else
+                    {
+                        return false;
+                    }
+                };
+                var listConfig = configuration.Lists.Lists.FirstOrDefault(l => l.Title.Equals(siteList.Title)
+                || siteList.RootFolder.ServerRelativeUrl.EndsWith(l.Title, StringComparison.InvariantCulture)
+                || matchGuid(l.Title, siteList.Id));
+
+                return listConfig != null && listConfig.IncludeItems == true;
+            }
+            return false;
         }
 
         public override ProvisioningTemplate ExtractObjects(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
@@ -2177,7 +2241,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var listsToProcess = lists.AsEnumerable().Where(l => (l.Hidden == false || l.Hidden == creationInfo.IncludeHiddenLists || ((workflowSubscriptions != null && workflowSubscriptions.Length > 0) && l.BaseTemplate == 140))).ToArray();
                 var listCount = 0;
                 var totalListsCount = listsToProcess.Length;
-                if(creationInfo.ListsToExtract != null && creationInfo.ListsToExtract.Count > 0)
+                if (creationInfo.ListsToExtract != null && creationInfo.ListsToExtract.Count > 0)
                 {
                     totalListsCount = creationInfo.ListsToExtract.Count;
                 }
@@ -2188,39 +2252,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 foreach (var siteList in listsToProcess)
                 {
-                    if (creationInfo.ListsToExtract != null && creationInfo.ListsToExtract.Count > 0 &&
-                        (!creationInfo.ListsToExtract.Any(i =>
-                        {
-                            Guid listId;
-                            if (Guid.TryParse(i, out listId))
-                            {
-                                return (listId == siteList.Id);
-                            }
-                            else
-                            {
-                                return (false);
-                            }
-                        }) && !creationInfo.ListsToExtract.Contains(siteList.Title)))
-                    {
-                        // If we have a collection of lists to export and the current list
-                        // is not in that collection, just skip it
-                        continue;
-                    }
-                    if (creationInfo.ExtractConfiguration!= null && creationInfo.ExtractConfiguration.Lists != null
-                        && creationInfo.ExtractConfiguration.Lists.HasLists
-                        &&
-                        (!creationInfo.ExtractConfiguration.Lists.Lists.Any(i =>
-                        {
-                            Guid listId;
-                            if (Guid.TryParse(i.Title, out listId))
-                            {
-                                return (listId == siteList.Id);
-                            }
-                            else
-                            {
-                                return (false);
-                            }
-                        }) && creationInfo.ExtractConfiguration.Lists.Lists.FirstOrDefault(i => i.Title.Equals(siteList.Title)) == null))
+                    if (ShouldNotExtractList(creationInfo, siteList))
                     {
                         continue;
                     }
@@ -2283,12 +2315,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         DraftVersionVisibility = siteList.IsPropertyAvailable("DraftVersionVisibility") ? (int)siteList.DraftVersionVisibility : 0,
                     };
 
-                    if(creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.Lists != null && creationInfo.ExtractConfiguration.Lists.HasLists)
+                    if (creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.Lists != null && creationInfo.ExtractConfiguration.Lists.HasLists)
                     {
                         var listConfig = creationInfo.ExtractConfiguration.Lists.Lists.FirstOrDefault(l => l.Title == siteList.Title);
-                        if(listConfig != null)
+                        if (listConfig != null)
                         {
-                            if(listConfig.RemoveExistingContentTypes)
+                            if (listConfig.RemoveExistingContentTypes)
                             {
                                 list.RemoveExistingContentTypes = listConfig.RemoveExistingContentTypes;
                             }
@@ -2334,7 +2366,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     if (baseTemplateList != null)
                     {
-                        if (!baseTemplateList.Equals(list))
+                        // do we plan to extract items from this list?
+                        var extractItems = creationInfo.ExtractConfiguration != null && IntentToExtractItems(creationInfo.ExtractConfiguration, siteList);
+                        if (!baseTemplateList.Equals(list) || extractItems)
                         {
                             scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ListInstances_Adding_list___0_____1_, list.Title, list.Url);
                             template.Lists.Add(list);
