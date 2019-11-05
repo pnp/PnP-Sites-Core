@@ -273,14 +273,14 @@ namespace Microsoft.SharePoint.Client
             finally
             {
 #if !ONPREMISES
-#region Disable scripting if previously enabled
+                #region Disable scripting if previously enabled
                 if (adminContext != null)
                 {
                     // Reset disabling setting the property bag if needed
                     tenant.SetSiteProperties(site.Url, noScriptSite: true);
                     adminContext.Dispose();
                 }
-#endregion
+                #endregion
 #endif
             }
         }
@@ -332,15 +332,17 @@ namespace Microsoft.SharePoint.Client
 
             try
             {
+                string keyName = web.IsSubSite() ? "SRCH_SB_SET_WEB" : "SRCH_SB_SET_SITE";
+
                 if (!string.IsNullOrEmpty(searchCenterUrl))
                 {
                     // Set search results page URL
-                    web.SetPropertyBagValue("SRCH_SB_SET_WEB", "{\"Inherit\":false,\"ResultsPageAddress\":\"" + searchCenterUrl + "\",\"ShowNavigation\":false}");
+                    web.SetPropertyBagValue(keyName, "{\"Inherit\":false,\"ResultsPageAddress\":\"" + searchCenterUrl + "\",\"ShowNavigation\":false}");
                 }
                 else
                 {
                     // When search results page URL is blank remove the property (like the SharePoint UI does)
-                    web.RemovePropertyBagValue("SRCH_SB_SET_WEB");
+                    web.RemovePropertyBagValue(keyName);
                 }
             }
             finally
@@ -366,8 +368,10 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Search results page URL for web</returns>
         public static string GetWebSearchCenterUrl(this Web web)
         {
+            string keyName = web.IsSubSite() ? "SRCH_SB_SET_WEB" : "SRCH_SB_SET_SITE";
+
             // Get search results page URL of the current web
-            return web.GetPropertyBagValueString("SRCH_SB_SET_WEB", string.Empty);
+            return web.GetPropertyBagValueString(keyName, string.Empty);
         }
     }
 }
