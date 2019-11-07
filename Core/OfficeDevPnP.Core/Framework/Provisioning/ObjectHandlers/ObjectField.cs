@@ -407,7 +407,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        public static string GetTaxonomyFieldValidatedValue(TaxonomyField field, string defaultValue)
+        internal static string GetTaxonomyFieldValidatedValue(TaxonomyField field, string defaultValue)
         {
             string res = null;
             object parsedValue = null;
