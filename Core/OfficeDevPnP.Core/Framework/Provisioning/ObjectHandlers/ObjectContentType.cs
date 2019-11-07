@@ -125,6 +125,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var isDirty = false;
             var reOrderFields = false;
 
+			
             if (existingContentType.Hidden != templateContentType.Hidden)
             {
                 scope.LogPropertyUpdate("Hidden");
@@ -216,14 +217,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 isDirty = true;
             }
 #endif
-            if (isDirty)
-            {
-                existingContentType.Update(true);
-                web.Context.ExecuteQueryRetry();
-            }
+			if (isDirty)
+			{
+				// Default to false as there is no reason to update children on CT property changes.
+				existingContentType.Update(false);
+				web.Context.ExecuteQueryRetry();
+			}
 
-            // Set flag to reorder fields CT fields are not equal to template fields
-            var existingFieldNames = existingContentType.FieldLinks.AsEnumerable().Select(fld => fld.Name).ToArray();
+			// Set flag to reorder fields CT fields are not equal to template fields
+			var existingFieldNames = existingContentType.FieldLinks.AsEnumerable().Select(fld => fld.Name).ToArray();
             var ctFieldNames = templateContentType.FieldRefs.Select(fld => parser.ParseString(fld.Name)).ToArray();
             reOrderFields = ctFieldNames.Length > 0 && !existingFieldNames.SequenceEqual(ctFieldNames);
 
@@ -234,7 +236,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             var fieldsNotPresentInTarget = sourceIds.Except(targetIds).ToArray();
 
-            if (fieldsNotPresentInTarget.Any())
+			// Should child content types be updated.
+			bool UpdateChildren()
+			{
+				if(fieldsNotPresentInTarget.Any())
+				{
+					return !templateContentType.FieldRefs.All(f => f.UpdateChildren == false);
+				}
+
+				return true;
+			}
+			
+			if (fieldsNotPresentInTarget.Any())
             {
                 // Set flag to reorder fields when new fields are added.
                 reOrderFields = true;
@@ -263,7 +276,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldId);
-                    web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden);
+                    web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden, fieldRef.UpdateChildren);
                 }
             }
 
@@ -315,7 +328,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (isDirty)
             {
-                existingContentType.Update(true);
+				scope.LogDebug("Update child Content Types: {0}", UpdateChildren());
+				existingContentType.Update(UpdateChildren());
                 web.Context.ExecuteQueryRetry();
             }
         }
@@ -365,7 +379,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 // Add it to the target content type
                 // Notice that this code will fail if the field does not exist
-                web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden);
+                web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden, fieldRef.UpdateChildren);
             }
 
             // Add new CTs
