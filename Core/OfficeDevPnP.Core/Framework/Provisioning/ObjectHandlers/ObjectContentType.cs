@@ -125,7 +125,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var isDirty = false;
             var reOrderFields = false;
 
-			
             if (existingContentType.Hidden != templateContentType.Hidden)
             {
                 scope.LogPropertyUpdate("Hidden");
