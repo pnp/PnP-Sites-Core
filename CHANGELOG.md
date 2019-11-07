@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added initial TenantTemplate extraction, supporting Sequences and Teams
 - Limiting lists to extract now supports besides filtering on title also filtering on list url
 - Support for User Profile properties upload [gautamdsheth]
+- Support for UpdateChildren="true" in fields definition for content types [SteveClements]
 
 ### Changed
 
