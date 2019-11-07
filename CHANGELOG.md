@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Updated handling SharePoint groups and groups' owners #2444 [NicolajHedeager]
 - Fix: Update us gov auth endpoint #2463 [gobigfoot]
 - Fix: Add null guard to catch block in GetAccess*Token #2435 [fowl2]
+- Fix: ObjectSiteSettings provisioning - SearchBoxInNavBar property was not always initialized #2474 [czullu]
 
 ## [3.14.1910.1 - October 2019 intermediate release]
 
