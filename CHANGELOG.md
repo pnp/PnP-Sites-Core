@@ -14,11 +14,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added new configuration support for extraction and applying of site and tenant templates. See https://docs.microsoft.com/en-us/sharepoint/dev/solution-guidance/configuring-the-pnp-provisioning-engine
 - Added initial TenantTemplate extraction, supporting Sequences and Teams
 - Limiting lists to extract now supports besides filtering on title also filtering on list url
+- Support for User Profile properties upload [gautamdsheth]
 
 ### Changed
 - Deprecated ApplyProvisioningHierarchy and replaced with ApplyTenantTemplate
 - IsProvisioningComplete waits for max 20 minutes and logs a warning instead of throwing an exception when a longer wait is needed
 - Fix for reading/setting search redirect URL on a root site
+- Fix for handling SharePoint groups and groups' owners [NicolajHedeager]
 
 ## [3.14.1910.1 - October 2019 intermediate release]
 
