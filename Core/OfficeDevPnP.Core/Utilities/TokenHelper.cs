@@ -214,7 +214,7 @@ namespace OfficeDevPnP.Core.Utilities
                 oauth2Response =
                     client.Issue(AcsMetadataParser.GetStsUrl(targetRealm), oauth2Request) as OAuth2AccessTokenResponse;
             }
-            catch (WebException wex)
+            catch (WebException wex) when (wex.Response != null)
             {
                 using (StreamReader sr = new StreamReader(wex.Response.GetResponseStream()))
                 {
@@ -260,7 +260,7 @@ namespace OfficeDevPnP.Core.Utilities
                 oauth2Response =
                     client.Issue(AcsMetadataParser.GetStsUrl(targetRealm), oauth2Request) as OAuth2AccessTokenResponse;
             }
-            catch (WebException wex)
+            catch (WebException wex) when (wex.Response != null)
             {
                 using (StreamReader sr = new StreamReader(wex.Response.GetResponseStream()))
                 {
@@ -307,7 +307,7 @@ namespace OfficeDevPnP.Core.Utilities
                 oauth2Response =
                     client.Issue(AcsMetadataParser.GetStsUrl(targetRealm), oauth2Request) as OAuth2AccessTokenResponse;
             }
-            catch (WebException wex)
+            catch (WebException wex) when (wex.Response != null)
             {
                 using (StreamReader sr = new StreamReader(wex.Response.GetResponseStream()))
                 {
@@ -1641,7 +1641,7 @@ namespace OfficeDevPnP.Core.Utilities
 {
     internal static class TokenHelper
     {
-        #region public fields
+#region public fields
 
         /// <summary>
         /// SharePoint principal.
@@ -1653,9 +1653,9 @@ namespace OfficeDevPnP.Core.Utilities
         /// </summary>
         public static readonly TimeSpan HighTrustAccessTokenLifetime = TimeSpan.FromHours(12.0);
 
-        #endregion public fields
+#endregion public fields
 
-        #region private fields
+#region private fields
 
         //
         // Configuration Constants
@@ -1939,7 +1939,7 @@ namespace OfficeDevPnP.Core.Utilities
             }
         }
 
-        #endregion
+#endregion
 
         public static string GetRealmFromTargetUrl(Uri targetApplicationUri)
         {
@@ -2097,7 +2097,7 @@ namespace OfficeDevPnP.Core.Utilities
                 oauth2Response =
                     client.Issue(AcsMetadataParser.GetStsUrl(targetRealm), oauth2Request) as OAuth2AccessTokenResponse;
             }
-            catch (WebException wex)
+            catch (WebException wex) when (wex.Response != null)
             {
                 using (StreamReader sr = new StreamReader(wex.Response.GetResponseStream()))
                 {
@@ -2109,7 +2109,7 @@ namespace OfficeDevPnP.Core.Utilities
             return oauth2Response;
         }
 
-        #region AcsMetadataParser
+#region AcsMetadataParser
 
         // This class is used to get MetaData document from the global STS endpoint. It contains
         // methods to parse the MetaData document and get endpoints and STS certificate.
@@ -2209,10 +2209,10 @@ namespace OfficeDevPnP.Core.Utilities
             }
         }
 
-        #endregion
+#endregion
 
 
-        #region private methods
+#region private methods
 
         //private static ClientContext CreateAcsClientContextForUrl(SPRemoteEventProperties properties, Uri sharepointUrl)
         //{
@@ -2343,7 +2343,7 @@ namespace OfficeDevPnP.Core.Utilities
             bool appOnly = false)
         {
 
-            #region Actor token
+#region Actor token
 
             string issuer = string.IsNullOrEmpty(sourceRealm) ? issuerApplication : string.Format("{0}@{1}", issuerApplication, sourceRealm);
             string nameid = string.IsNullOrEmpty(sourceRealm) ? sourceApplication : string.Format("{0}@{1}", sourceApplication, sourceRealm);
@@ -2373,9 +2373,9 @@ namespace OfficeDevPnP.Core.Utilities
                 return actorTokenString;
             }
 
-            #endregion Actor token
+#endregion Actor token
 
-            #region Outer token
+#region Outer token
 
             List<Claim> outerClaims = null == claims ? new List<Claim>() : new List<Claim>(claims);
             outerClaims.Add(new Claim(ActorTokenClaimType, actorTokenString));
@@ -2389,12 +2389,12 @@ namespace OfficeDevPnP.Core.Utilities
 
             string accessToken = new JwtSecurityTokenHandler().WriteToken(jsonToken);
 
-            #endregion Outer token
+#endregion Outer token
 
             return accessToken;
         }
 
-        #endregion
+#endregion
     }
 
     /// <summary>
