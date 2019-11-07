@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: reading/setting search redirect URL on a root site
 - Fix: Updated handling SharePoint groups and groups' owners #2444 [NicolajHedeager]
 - Fix: Update us gov auth endpoint #2463 [gobigfoot]
+- Fix: Add null guard to catch block in GetAccess*Token #2435 [fowl2]
 
 ## [3.14.1910.1 - October 2019 intermediate release]
 
