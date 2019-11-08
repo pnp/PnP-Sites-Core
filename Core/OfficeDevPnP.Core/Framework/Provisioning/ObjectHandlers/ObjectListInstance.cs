@@ -338,7 +338,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var fieldDefaultValue = parser.ParseString(fieldDefault.Value);
                     var field = listInfo.SiteList.Fields.GetByInternalNameOrTitle(fieldDefault.Key);
+
+                    // If there has been a default value specified, request the type of field so we know if we have to deal with the default value in a special way according to the field type. If no default has been specified, we can simply set the default to NULL, regardless of the field type.
+                    if (!string.IsNullOrEmpty(fieldDefaultValue))
+                    {
+                        // A default value has been provided, request the field type so we know if we have to apply special handling for the type of field
+                        web.Context.Load(field, f => f.TypeAsString);
+                        web.Context.ExecuteQueryRetry();
+
+                        // In the case of a Taxonomy field, ensure that the default value which is in the format <ID>;#<NAME>|<TERMGUID> has its ID match with the actual ID in the TaxonomyHiddenList of the target site if the ID has been set to -1.
+                        if (field.TypeAsString == "TaxonomyFieldType" || field.TypeAsString == "TaxonomyFieldTypeMulti")
+                        {
+                            fieldDefaultValue = ObjectField.GetTaxonomyFieldValidatedValue(web.Context.CastTo<TaxonomyField>(field), fieldDefaultValue);
+                        }
+                    }
                     field.DefaultValue = fieldDefaultValue;
+
                     field.Update();
                     web.Context.ExecuteQueryRetry();
                 }

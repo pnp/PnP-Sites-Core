@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Added initial TenantTemplate extraction, supporting Sequences and Teams
 - Limiting lists to extract now supports besides filtering on title also filtering on list url
 - Support for User Profile properties upload [gautamdsheth]
+- Support for UpdateChildren="true" in fields definition for content types [SteveClements]
 
 ### Changed
 
@@ -25,6 +26,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Update us gov auth endpoint #2463 [gobigfoot]
 - Fix: Add null guard to catch block in GetAccess*Token #2435 [fowl2]
 - Fix: ObjectSiteSettings provisioning - SearchBoxInNavBar property was not always initialized #2474 [czullu]
+- Fix: Added support for new taxonomy field default values for fields #2329 [KoenZomers]
 
 ## [3.14.1910.1 - October 2019 intermediate release]
 
