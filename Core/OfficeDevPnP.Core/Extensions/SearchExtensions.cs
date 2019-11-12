@@ -349,8 +349,9 @@ namespace Microsoft.SharePoint.Client
             }
             catch (ServerUnauthorizedAccessException e)
             {
-                Log.Error(e, Constants.LOGGING_SOURCE, "For modern sites you need to be a SharePoint admin when setting the search redirect URL programatically.\n\nPlease use the classic UI at '/_layouts/15/enhancedSearch.aspx?level=sitecol'.");
-                throw new ApplicationException("For modern sites you need to be a SharePoint admin when setting the search redirect URL programatically.\n\nPlease use the classic UI at '/_layouts/15/enhancedSearch.aspx?level=sitecol'.", e);
+                const string errorMsg = "For modern sites you need to be a SharePoint admin when setting the search redirect URL programatically.\n\nPlease use the classic UI at '/_layouts/15/enhancedSearch.aspx?level=sitecol'.";
+                Log.Error(e, Constants.LOGGING_SOURCE, errorMsg);
+                throw new ApplicationException(errorMsg, e);
             }
             finally
             {
