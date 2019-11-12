@@ -1,6 +1,8 @@
 ﻿using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client.Search.Administration;
 using Microsoft.SharePoint.Client.Search.Portability;
+using OfficeDevPnP.Core;
+using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Text;
@@ -344,6 +346,11 @@ namespace Microsoft.SharePoint.Client
                     // When search results page URL is blank remove the property (like the SharePoint UI does)
                     web.RemovePropertyBagValue(keyName);
                 }
+            }
+            catch (ServerUnauthorizedAccessException e)
+            {
+                Log.Error(e, Constants.LOGGING_SOURCE, "For modern sites you need to be a SharePoint admin when setting the search redirect URL programatically.\n\nPlease use the classic UI at '/_layouts/15/enhancedSearch.aspx?level=sitecol'.");
+                throw new ApplicationException("For modern sites you need to be a SharePoint admin when setting the search redirect URL programatically.\n\nPlease use the classic UI at '/_layouts/15/enhancedSearch.aspx?level=sitecol'.", e);
             }
             finally
             {
