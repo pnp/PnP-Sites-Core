@@ -110,6 +110,62 @@ namespace Microsoft.SharePoint.Client
 
             return (result);
         }
+
+        /// <summary>
+        /// Checks if this site collection has a Teams team linked
+        /// </summary>
+        /// <param name="site">Site collection</param>
+        /// <param name="accessToken">Graph access token (groups.read.all) </param>
+        /// <returns>True if there's a team</returns>
+        public static bool HasTeamsTeam(this Site site, string accessToken)
+        {
+            bool result = false;
+
+            site.EnsureProperties(s => s.RootWeb, s=>s.GroupId);
+
+            // A site without a group cannot have been teamified
+            if (site.GroupId == Guid.Empty)
+            {
+                return false;
+            }
+
+            // fall back to Graph untill we've a SharePoint approach that works
+            result = UnifiedGroupsUtility.HasTeamsTeam(site.GroupId.ToString(), accessToken);
+
+            /**Problem is that this folder property is not always set
+            site.EnsureProperties(s => s.RootWeb, s => s.GroupId);
+            List defaultDocumentLibrary = site.RootWeb.DefaultDocumentLibrary();
+            site.RootWeb.Context.Load(defaultDocumentLibrary, f=>f.RootFolder);
+            site.RootWeb.Context.ExecuteQueryRetry();
+
+            if (defaultDocumentLibrary.RootFolder.FolderExists("General"))
+            {
+                // Load folder properties
+                var generalFolder = defaultDocumentLibrary.RootFolder.EnsureFolder("General", p => p.Properties);
+                site.RootWeb.Context.Load(generalFolder);
+                site.RootWeb.Context.ExecuteQueryRetry();
+
+                // Do we have the Teams channel entry ?
+                string Vti_TeamChannelUrl = "vti_teamchannelurl";
+
+                if (generalFolder.Properties.FieldValues.ContainsKey(Vti_TeamChannelUrl))
+                {
+                    var teamChannelUrl = generalFolder.Properties.FieldValues[Vti_TeamChannelUrl]?.ToString();
+                    if (!string.IsNullOrEmpty(teamChannelUrl))
+                    {
+                        // Sample teams url: https://teams.microsoft.com/l/channel/19%3A0000866a32964362b5db23f21f81704c%40thread.skype/General?groupId=c1430c5f-c423-44b8-b083-bd81ca3f09d0&tenantId=ad20b775-5d3b-40f5-b144-c5c2c772b73e
+                        // Just verify the url has a reference to the site's group id
+                        if (teamChannelUrl.ToLower().Contains(site.GroupId.ToString().ToLower()))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+            */
+
+            return result;
+        }
         
 #endif
     }
