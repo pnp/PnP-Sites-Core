@@ -10,14 +10,31 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- UnifiedGroupsUtility.HasTeamsTeam checks if an Office 365 group also has a Teams team
+
+### Changed
+
+## [3.15.1911.0 - November 2019 release]
+
+### Added
+
 - Added ApplyTenantTemplate and GetTenantTemplate methods
 - Added new configuration support for extraction and applying of site and tenant templates. See https://docs.microsoft.com/en-us/sharepoint/dev/solution-guidance/configuring-the-pnp-provisioning-engine
 - Added initial TenantTemplate extraction, supporting Sequences and Teams
 - Limiting lists to extract now supports besides filtering on title also filtering on list url
+- Support for User Profile properties upload [gautamdsheth]
+- Support for UpdateChildren="true" in fields definition for content types [SteveClements]
 
 ### Changed
+
 - Deprecated ApplyProvisioningHierarchy and replaced with ApplyTenantTemplate
 - IsProvisioningComplete waits for max 20 minutes and logs a warning instead of throwing an exception when a longer wait is needed
+- Fix: reading/setting search redirect URL on a root site
+- Fix: Updated handling SharePoint groups and groups' owners #2444 [NicolajHedeager]
+- Fix: Update us gov auth endpoint #2463 [gobigfoot]
+- Fix: Add null guard to catch block in GetAccess*Token #2435 [fowl2]
+- Fix: ObjectSiteSettings provisioning - SearchBoxInNavBar property was not always initialized #2474 [czullu]
+- Fix: Added support for new taxonomy field default values for fields #2329 [KoenZomers]
 
 ## [3.14.1910.1 - October 2019 intermediate release]
 

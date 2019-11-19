@@ -391,22 +391,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             group.RequestToJoinLeaveEmailSetting = siteGroup.RequestToJoinLeaveEmailSetting;
                             groupNeedsUpdate = true;
                         }
-                        if (parsedGroupOwner != null && group.Owner.LoginName != parsedGroupOwner)
+                        if (parsedGroupOwner != null)
                         {
-                            if (parsedGroupTitle != parsedGroupOwner)
+                            if (Int32.TryParse(parsedGroupOwner, out int roleAssignmentPrincipalId))
                             {
-                                Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName.Equals(parsedGroupOwner, StringComparison.OrdinalIgnoreCase));
-                                if (ownerPrincipal == null)
+                                parsedGroupOwner = allGroups.FirstOrDefault(g => g.Id.Equals(roleAssignmentPrincipalId))?.LoginName;
+                            }
+
+                            if (group.Owner.LoginName != parsedGroupOwner)
+                            {
+                                if (parsedGroupTitle != parsedGroupOwner)
                                 {
-                                    ownerPrincipal = web.EnsureUser(parsedGroupOwner);
+                                    Principal ownerPrincipal = allGroups.FirstOrDefault(gr => gr.LoginName.Equals(parsedGroupOwner, StringComparison.OrdinalIgnoreCase));
+                                    if (ownerPrincipal == null)
+                                    {
+                                        ownerPrincipal = web.EnsureUser(parsedGroupOwner);
+                                    }
+                                    group.Owner = ownerPrincipal;
                                 }
-                                group.Owner = ownerPrincipal;
+                                else
+                                {
+                                    group.Owner = group;
+                                }
+                                groupNeedsUpdate = true;
                             }
-                            else
-                            {
-                                group.Owner = group;
-                            }
-                            groupNeedsUpdate = true;
                         }
                         if (groupNeedsUpdate)
                         {

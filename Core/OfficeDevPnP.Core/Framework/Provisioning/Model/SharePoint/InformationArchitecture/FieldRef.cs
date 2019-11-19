@@ -48,10 +48,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public bool Remove { get; set; }
 
-        /// <summary>
-        /// Declares whether the current field reference has to be udpated on inherited content types
-        /// </summary>
-        public bool UpdateChildren { get; set; }
+		/// <summary>
+		/// Declares whether the current field reference has to be udpated on inherited content types
+		/// </summary>
+		public bool UpdateChildren { get; set; } = true;
 
         #endregion
 

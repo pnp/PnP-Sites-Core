@@ -2,6 +2,7 @@
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.Online.SharePoint.TenantAdministration.Internal;
 using Microsoft.SharePoint.Client;
+using Microsoft.SharePoint.Client.UserProfiles;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.ALM;
 using OfficeDevPnP.Core.Diagnostics;
@@ -677,6 +678,44 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 returnDict.Add((SPOTenantCdnPolicyType)Enum.Parse(typeof(SPOTenantCdnPolicyType), entryArray[0]), entryArray[1]);
             }
             return returnDict;
+        }
+
+        public static TokenParser ProcessUserProfiles(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
+        {
+            if (provisioningTenant.SPUsersProfiles != null && provisioningTenant.SPUsersProfiles.Any())
+            {
+                messagesDelegate?.Invoke("Processing User Profiles", ProvisioningMessageType.Progress);
+
+                foreach (var profile in provisioningTenant.SPUsersProfiles)
+                {
+                    string parsedUser;
+                    if (!string.IsNullOrEmpty(profile.TargetUser))
+                    {
+                        parsedUser = parser.ParseString(profile.TargetUser);
+                    }
+                    else
+                    {
+                        parsedUser = parser.ParseString(profile.TargetGroup);
+                    }
+
+                    PeopleManager peopleManager = new PeopleManager(tenant.Context);
+                    try
+                    {
+                        // Currently only supports setting Single Valued property
+                        // We don't have a way at the moment to set Multi-valued property
+                        foreach (var props in profile.Properties)
+                        {
+                            peopleManager.SetSingleValueProfileProperty($"i:0#.f|membership|{parsedUser}", props.Key, parser.ParseString(props.Value));
+                        }
+                        tenant.Context.ExecuteQueryRetry();
+                    }
+                    catch (Exception ex)
+                    {
+                        scope.LogError($"Error processing user profile for {parsedUser}. Skipped due to error: ${ex.Message}");
+                    }
+                }
+            }
+            return parser;
         }
     }
 }
