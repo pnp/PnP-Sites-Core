@@ -337,10 +337,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         }
                                     }
                                     // check if site exists
-                                    if (tenant.SiteExists(siteInfo.Url))
+                                    if (tenant.SiteExistsAnywhere(siteInfo.Url) == SiteExistence.Yes)
                                     {
                                         WriteMessage($"Using existing Communications Site at {siteInfo.Url}", ProvisioningMessageType.Progress);
                                         siteContext = (tenant.Context as ClientContext).Clone(siteInfo.Url, configuration.AccessTokens);
+                                    }
+                                    else if (tenant.SiteExistsAnywhere(siteInfo.Url) == SiteExistence.Recycled)
+                                    {
+                                        var errorMessage = $"The requested Communications Site at {siteInfo.Url} is in the Recycle Bin and cannot be created";
+                                        WriteMessage(errorMessage, ProvisioningMessageType.Error);
+                                        throw new RecycledSiteException(errorMessage);
                                     }
                                     else
                                     {
@@ -382,10 +388,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         Description = tokenParser.ParseString(t.Description),
                                         Owner = tokenParser.ParseString(t.Owner)
                                     };
-                                    if (tenant.SiteExists(siteUrl))
+                                    if (tenant.SiteExistsAnywhere(siteUrl) == SiteExistence.Yes)
                                     {
                                         WriteMessage($"Using existing Team Site at {siteUrl}", ProvisioningMessageType.Progress);
                                         siteContext = (tenant.Context as ClientContext).Clone(siteUrl, configuration.AccessTokens);
+                                    }
+                                    else if (tenant.SiteExistsAnywhere(siteUrl) == SiteExistence.Recycled)
+                                    {
+                                        var errorMessage = $"The requested Team Site at {siteUrl} is in the Recycle Bin and cannot be created";
+                                        WriteMessage(errorMessage, ProvisioningMessageType.Error);
+                                        throw new RecycledSiteException(errorMessage);
                                     }
                                     else
                                     {

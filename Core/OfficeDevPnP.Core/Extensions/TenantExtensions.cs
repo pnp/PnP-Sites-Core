@@ -304,12 +304,12 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Checks if a site collection exists, relies on tenant admin API. Sites that are recycled also return as existing sites
+        /// Checks if a site collection exists, relies on tenant admin API. Sites that are recycled also return as existing sites, but with a different flag
         /// </summary>
         /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
         /// <param name="siteFullUrl">URL to the site collection</param>
-        /// <returns>True if existing, false if not</returns>
-        public static bool SiteExists(this Tenant tenant, string siteFullUrl)
+        /// <returns>An enumerated type that can be: No, Yes, Recycled</returns>
+        public static SiteExistence SiteExistsAnywhere(this Tenant tenant, string siteFullUrl)
         {
             try
             {
@@ -319,7 +319,7 @@ namespace Microsoft.SharePoint.Client
                 tenant.Context.ExecuteQueryRetry();
 
                 // Will cause an exception if site URL is not there. Not optimal, but the way it works.
-                return true;
+                return SiteExistence.Yes;
             }
             catch (Exception ex)
             {
@@ -333,21 +333,28 @@ namespace Microsoft.SharePoint.Client
                             var deletedProperties = tenant.GetDeletedSitePropertiesByUrl(siteFullUrl);
                             tenant.Context.Load(deletedProperties);
                             tenant.Context.ExecuteQueryRetry();
-                            return deletedProperties.Status.Equals("Recycled", StringComparison.OrdinalIgnoreCase);
+                            if (deletedProperties.Status.Equals("Recycled", StringComparison.OrdinalIgnoreCase))
+                            {
+                                return SiteExistence.Recycled;
+                            }
+                            else
+                            {
+                                return SiteExistence.No;
+                            }
                         }
                         catch
                         {
-                            return false;
+                            return SiteExistence.No;
                         }
                     }
                     else
                     {
-                        return false;
+                        return SiteExistence.No;
                     }
                 }
                 else
                 {
-                    return true;
+                    return SiteExistence.Yes;
                 }
             }
         }
@@ -1266,5 +1273,24 @@ namespace Microsoft.SharePoint.Client
 
         #endregion
 
+    }
+
+    /// <summary>
+    /// Defines the existence status of a Site Collection
+    /// </summary>
+    public enum SiteExistence
+    {
+        /// <summary>
+        /// The Site Collection does not exist
+        /// </summary>
+        No,
+        /// <summary>
+        /// The Site Collection exists
+        /// </summary>
+        Yes,
+        /// <summary>
+        /// The Site Collection is in the Recycle Bin
+        /// </summary>
+        Recycled,
     }
 }
