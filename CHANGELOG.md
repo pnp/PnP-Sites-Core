@@ -10,6 +10,14 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- UnifiedGroupsUtility.HasTeamsTeam checks if an Office 365 group also has a Teams team
+
+### Changed
+
+## [3.15.1911.0 - November 2019 release]
+
+### Added
+
 - Added ApplyTenantTemplate and GetTenantTemplate methods
 - Added new configuration support for extraction and applying of site and tenant templates. See https://docs.microsoft.com/en-us/sharepoint/dev/solution-guidance/configuring-the-pnp-provisioning-engine
 - Added initial TenantTemplate extraction, supporting Sequences and Teams
