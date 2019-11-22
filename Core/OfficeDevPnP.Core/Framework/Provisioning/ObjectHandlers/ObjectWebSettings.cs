@@ -33,10 +33,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.DisableFlows,
                     w => w.DisableAppViews,
                     w => w.HorizontalQuickLaunch,
-    #if !SP2019
+#if !SP2019
                     w => w.SearchScope,
                     w => w.SearchBoxInNavBar,
-    #endif
+#endif
 #endif
                     //w => w.Title,
                     //w => w.Description,
@@ -59,10 +59,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 webSettings.DisableFlows = web.DisableFlows;
                 webSettings.DisableAppViews = web.DisableAppViews;
                 webSettings.HorizontalQuickLaunch = web.HorizontalQuickLaunch;
-    #if !SP2019
+#if !SP2019
                 webSettings.SearchScope = (SearchScopes)Enum.Parse(typeof(SearchScopes), web.SearchScope.ToString(), true);
                 webSettings.SearchBoxInNavBar = (SearchBoxInNavBar)Enum.Parse(typeof(SearchBoxInNavBar), web.SearchBoxInNavBar.ToString(), true);
-    #endif
+#endif
 #endif
                 // We're not extracting Title and Description
                 //webSettings.Title = Tokenize(web.Title, web.Url);
@@ -83,13 +83,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     site.EnsureProperties(s => s.HubSiteId, s => s.Id);
                     if (site.HubSiteId != Guid.Empty && site.HubSiteId != site.Id)
                     {
-                        using (var tenantContext = web.Context.Clone((web.Context as ClientContext).Web.GetTenantAdministrationUrl()))
+                        if (TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext))
                         {
-                            var tenant = new Tenant(tenantContext);
-                            var hubsiteProperties = tenant.GetHubSitePropertiesById(site.HubSiteId);
-                            tenantContext.Load(hubsiteProperties);
-                            tenantContext.ExecuteQueryRetry();
-                            webSettings.HubSiteUrl = hubsiteProperties.SiteUrl;
+                            using (var tenantContext = web.Context.Clone((web.Context as ClientContext).Web.GetTenantAdministrationUrl()))
+                            {
+                                var tenant = new Tenant(tenantContext);
+                                var hubsiteProperties = tenant.GetHubSitePropertiesById(site.HubSiteId);
+                                tenantContext.Load(hubsiteProperties);
+                                tenantContext.ExecuteQueryRetry();
+                                webSettings.HubSiteUrl = hubsiteProperties.SiteUrl;
+                            }
+                        }
+                        else
+                        {
+                            WriteMessage("You need to be a SharePoint admin to extract Hub site Url.", ProvisioningMessageType.Warning);
                         }
                     }
                 }
@@ -386,7 +393,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.SearchScope = (SearchScopeType)Enum.Parse(typeof(SearchScopeType), webSettings.SearchScope.ToString(), true);
                     }
 
-                    if(web.SearchBoxInNavBar.ToString() != webSettings.SearchBoxInNavBar.ToString())
+                    if (web.SearchBoxInNavBar.ToString() != webSettings.SearchBoxInNavBar.ToString())
                     {
                         web.SearchBoxInNavBar = (SearchBoxInNavBarType)Enum.Parse(typeof(SearchBoxInNavBarType), webSettings.SearchBoxInNavBar.ToString(), true);
                     }
@@ -492,19 +499,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
                     if (webSettings.HubSiteUrl != null)
                     {
-                        var hubsiteUrl = parser.ParseString(webSettings.HubSiteUrl);
-                        try
+                        if (TenantExtensions.IsCurrentUserTenantAdmin(web.Context as ClientContext))
                         {
-                            using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl(), applyingInformation.AccessTokens))
+                            var hubsiteUrl = parser.ParseString(webSettings.HubSiteUrl);
+                            try
                             {
-                                var tenant = new Tenant(tenantContext);
-                                tenant.ConnectSiteToHubSite(web.Url, hubsiteUrl);
-                                tenantContext.ExecuteQueryRetry();
+                                using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl(), applyingInformation.AccessTokens))
+                                {
+                                    var tenant = new Tenant(tenantContext);
+                                    tenant.ConnectSiteToHubSite(web.Url, hubsiteUrl);
+                                    tenantContext.ExecuteQueryRetry();
+                                }
+                            }
+                            catch (Exception ex)
+                            {
+                                WriteMessage($"Hub site association failed: {ex.Message}", ProvisioningMessageType.Warning);
                             }
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            WriteMessage($"Hub site association failed: {ex.Message}", ProvisioningMessageType.Warning);
+                            WriteMessage("You need to be a SharePoint admin when associating to a Hub site.", ProvisioningMessageType.Warning);
                         }
                     }
 #endif
