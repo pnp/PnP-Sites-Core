@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - UnifiedGroupsUtility.HasTeamsTeam checks if an Office 365 group also has a Teams team
+- SiteExistsAnywhere method to improve SiteExists internal behavior
 
 ### Changed
 
