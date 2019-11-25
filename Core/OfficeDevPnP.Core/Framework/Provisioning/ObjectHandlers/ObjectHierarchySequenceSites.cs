@@ -237,7 +237,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         DisplayName = tokenParser.ParseString(t.Title),
                                         Description = tokenParser.ParseString(t.Description),
                                         Classification = tokenParser.ParseString(t.Classification),
-                                        IsPublic = t.IsPublic
+                                        IsPublic = t.IsPublic,
+                                        Lcid = (uint)t.Language
                                     };
 
                                     var groupSiteInfo = Sites.SiteCollection.GetGroupInfoAsync(tenant.Context as ClientContext, siteInfo.Alias).GetAwaiter().GetResult();
