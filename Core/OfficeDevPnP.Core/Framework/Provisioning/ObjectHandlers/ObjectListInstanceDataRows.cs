@@ -501,6 +501,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             Overwrite = true,
                                             Level = (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), myFile.Level.ToString())
                                         };
+                                        newFile.Properties.Add("ContentTypeId", contentTypeId);
 
                                         template.Files.Add(newFile);
                                     }
