@@ -38,6 +38,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public Boolean SocialBarOnSitePagesDisabled { get; set; }
 
+        /// <summary>
+        /// Define if the suitebar search box should show or not 
+        /// </summary>
+        public SearchBoxInNavBar SearchBoxInNavBar { get; set; }
+
         #endregion
 
         #region Constructors
@@ -55,12 +60,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns hash code in integer</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}",
                 (this.AllowDesigner.GetHashCode()),
                 (this.AllowCreateDeclarativeWorkflow.GetHashCode()),
                 (this.AllowSaveDeclarativeWorkflowAsTemplate.GetHashCode()),
                 (this.AllowSavePublishDeclarativeWorkflow.GetHashCode()),
-                (this.SocialBarOnSitePagesDisabled.GetHashCode())
+                (this.SocialBarOnSitePagesDisabled.GetHashCode()),
+                (this.SearchBoxInNavBar.GetHashCode())
             ).GetHashCode());
         }
 
@@ -94,7 +100,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this.AllowCreateDeclarativeWorkflow == other.AllowCreateDeclarativeWorkflow &&
                     this.AllowSaveDeclarativeWorkflowAsTemplate == other.AllowSaveDeclarativeWorkflowAsTemplate &&
                     this.AllowSavePublishDeclarativeWorkflow == other.AllowSavePublishDeclarativeWorkflow &&
-                    this.SocialBarOnSitePagesDisabled == other.SocialBarOnSitePagesDisabled
+                    this.SocialBarOnSitePagesDisabled == other.SocialBarOnSitePagesDisabled &&
+                    this.SearchBoxInNavBar == other.SearchBoxInNavBar
                 );
         }
 

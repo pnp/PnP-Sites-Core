@@ -3,7 +3,7 @@ using OfficeDevPnP.Core.Utilities.CanvasControl.Processors;
 
 namespace OfficeDevPnP.Core.Utilities.CanvasControl
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     public class CanvasControlPostProcessorFactory
     {
         /// <summary>

@@ -5,7 +5,7 @@ using OfficeDevPnP.Core.Pages;
 
 namespace OfficeDevPnP.Core.Utilities.CanvasControl.Processors
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// Updates list id for List web part, to allow provision based on URL in a dynamic provisioning scenario
     /// </summary>

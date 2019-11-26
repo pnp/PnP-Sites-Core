@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning Author="John White" Generator="Human being" ImagePreviewUrl="https://sharepointpnp.com/ImagePreview.png" DisplayName="Sample Provisioning" Description="A sample Provisioning document" xmlns:pnp="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.13.1909.0, Culture=neutral, PublicKeyToken=null">
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.15.1911.0, Culture=neutral, PublicKeyToken=null">
     <pnp:Parameters>
       <pnp:Parameter Key="O365TenantName">contoso</pnp:Parameter>
       <pnp:Parameter Key="CodeProvidedParam" />
@@ -146,7 +146,7 @@
       </pnp:SPUserProfile>
     </pnp:SPUsersProfiles>
     <pnp:Office365GroupLifecyclePolicies>
-      <pnp:Office365GroupLifecyclePolicy ID="GROUP_LIFECYCLE_01" GroupLifetimeInDays="180" AlternateNotificationEmails="admin01@contoso.com,admin02@{parameter:O365TenantName}.onmicrosoft.com" ManagedGroupTypes="Selected " />
+      <pnp:Office365GroupLifecyclePolicy ID="GROUP_LIFECYCLE_01" GroupLifetimeInDays="180" AlternateNotificationEmails="admin01@contoso.com,admin02@{parameter:O365TenantName}.onmicrosoft.com" ManagedGroupTypes="Selected" />
     </pnp:Office365GroupLifecyclePolicies>
     <pnp:Office365GroupsSettings>
       <pnp:Property Key="UsageGuidelinesUrl" Value="http://aka.ms/SharePointPnP" />
@@ -155,14 +155,14 @@
       <pnp:Property Key="DefaultClassification" Value="MBI" />
     </pnp:Office365GroupsSettings>
   </pnp:Tenant>
-  <pnp:Templates ID="CONTAINER-DUMMY-1c6f0eef-1482-46e9-aa56-44a115269e1d">
+  <pnp:Templates ID="CONTAINER-DUMMY-76531419-c381-408f-9f38-cba8ca730959">
     <pnp:ProvisioningTemplate ID="SPECIALTEAM" Version="0" BaseSiteTemplate="STS#0" ImagePreviewUrl="https://preview.png" DisplayName="Special Team Site" Description="This is a Special Team Site for custom provisioning" TemplateCultureInfo="1040" Scope="RootSite">
       <pnp:Properties>
         <pnp:Property Key="Something" Value="One property" />
         <pnp:Property Key="SomethingElse" Value="Another property ... Who knows ..." />
       </pnp:Properties>
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
-      <pnp:WebSettings RequestAccessEmail="someone@company.com" NoCrawl="false" WelcomePage="/Pages/Home.aspx" Title="Site Title" Description="Site Description" SiteLogo="{sitecollection}/SiteAssets/Logo.png" AlternateCSS="{sitecollection}/Resources/Themes/Contoso/Contoso.css" MasterPageUrl="{sitecollection}/_catalogs/MasterPage/oslo.master" CustomMasterPageUrl="{sitecollection}/_catalogs/MasterPage/CustomMaster.master" HubSiteUrl="/sites/hubsite" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="true" IsMultilingual="true" OverwriteTranslationsOnChange="true">
+      <pnp:WebSettings RequestAccessEmail="someone@company.com" NoCrawl="false" WelcomePage="/Pages/Home.aspx" Title="Site Title" Description="Site Description" SiteLogo="{sitecollection}/SiteAssets/Logo.png" AlternateCSS="{sitecollection}/Resources/Themes/Contoso/Contoso.css" MasterPageUrl="{sitecollection}/_catalogs/MasterPage/oslo.master" CustomMasterPageUrl="{sitecollection}/_catalogs/MasterPage/CustomMaster.master" HubSiteUrl="/sites/hubsite" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="true" ExcludeFromOfflineClient="true" MembersCanShare="true" HorizontalQuickLaunch="true" SearchScope="Hub" IsMultilingual="true" OverwriteTranslationsOnChange="true">
         <pnp:AlternateUICultures>
           <pnp:AlternateUICulture LCID="1033" />
           <pnp:AlternateUICulture LCID="1040" />
@@ -682,7 +682,8 @@
         <pnp:Webhook ServerNotificationUrl="http://myapp.azurewebsites.net/WebHookListener" ExpiresInDays="120" SiteWebhookType="WebDeleted" />
       </pnp:SiteWebhooks>
       <pnp:ClientSidePages>
-        <pnp:ClientSidePage PageName="SamplePage" PromoteAsNewsArticle="true" PromoteAsTemplate="true" Overwrite="true" Title="Client Side Page Title" ContentTypeID="0x01010012345" CreateTranslations="true" ThumbnailUrl="images/pageThumbnail.png">
+        <pnp:ClientSidePage PromoteAsNewsArticle="true" PromoteAsTemplate="true" Overwrite="true" Title="Client Side Page Title" ContentTypeID="0x01010012345" ThumbnailUrl="images/pageThumbnail.png" PageName="SamplePage" LCID="0" CreateTranslations="true">
+          <pnp:Header Type="Custom" ServerRelativeImageUrl="./site%20assets/picture.png" TranslateX="10.56" TranslateY="15.12345" LayoutType="FullWidthImage" TextAlignment="Center" ShowTopicHeader="true" ShowPublishDate="true" TopicHeader="Topic header value" AlternativeText="Alternate text" Authors="John Black, Mike White" AuthorByLine="Bill Green" AuthorByLineId="5" />
           <pnp:Sections>
             <pnp:Section Order="1" Type="OneColumn" BackgroundEmphasis="Neutral">
               <pnp:Controls>
@@ -694,7 +695,6 @@
               </pnp:Controls>
             </pnp:Section>
           </pnp:Sections>
-          <pnp:Header Type="Custom" ServerRelativeImageUrl="./site%20assets/picture.png" TranslateX="10.56" TranslateY="15.12345" LayoutType="FullWidthImage" TextAlignment="Center" ShowTopicHeader="true" ShowPublishDate="true" TopicHeader="Topic header value" AlternativeText="Alternate text" Authors="John Black, Mike White" AuthorByLine="Bill Green" AuthorByLineId="5" />
           <pnp:FieldValues>
             <pnp:FieldValue Key="Category" Value="Marketing" />
             <pnp:FieldValue Key="Tags" Value="Tag01,Tag02,Tag03" />
@@ -712,7 +712,8 @@
             <pnp:Property Key="Key03" Value="Value 03" />
           </pnp:Properties>
         </pnp:ClientSidePage>
-        <pnp:ClientSidePage PageName="SamplePageWithVerticalSection" PromoteAsNewsArticle="true" PromoteAsTemplate="true" Overwrite="true" Title="Client Side Page Title" ContentTypeID="0x01010012345" CreateTranslations="true">
+        <pnp:ClientSidePage PromoteAsNewsArticle="true" PromoteAsTemplate="true" Overwrite="true" Title="Client Side Page Title" ContentTypeID="0x01010012345" PageName="SamplePageWithVerticalSection" LCID="0" CreateTranslations="true">
+          <pnp:Header Type="Custom" ServerRelativeImageUrl="./site%20assets/picture.png" TranslateX="10.56" TranslateY="15.12345" LayoutType="FullWidthImage" TextAlignment="Center" ShowTopicHeader="true" ShowPublishDate="true" TopicHeader="Topic header value" AlternativeText="Alternate text" Authors="John Black, Mike White" AuthorByLine="Bill Green" AuthorByLineId="5" />
           <pnp:Sections>
             <pnp:Section Order="1" Type="TwoColumnLeftVerticalSection" BackgroundEmphasis="Neutral" VerticalSectionEmphasis="Strong">
               <pnp:Controls>
@@ -724,7 +725,6 @@
               </pnp:Controls>
             </pnp:Section>
           </pnp:Sections>
-          <pnp:Header Type="Custom" ServerRelativeImageUrl="./site%20assets/picture.png" TranslateX="10.56" TranslateY="15.12345" LayoutType="FullWidthImage" TextAlignment="Center" ShowTopicHeader="true" ShowPublishDate="true" TopicHeader="Topic header value" AlternativeText="Alternate text" Authors="John Black, Mike White" AuthorByLine="Bill Green" AuthorByLineId="5" />
         </pnp:ClientSidePage>
       </pnp:ClientSidePages>
       <pnp:Header Layout="Standard" MenuStyle="MegaMenu" BackgroundEmphasis="Soft" />
@@ -795,7 +795,7 @@
     </pnp:ProvisioningTemplate>
     <pnp:ProvisioningTemplate ID="WORKFLOWSITE" Version="0" Scope="Undefined">
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
-      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
+      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" SearchScope="DefaultScope" />
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
@@ -828,10 +828,10 @@
       <pnp:ContentTypes>
         <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" UpdateChildren="false" />
-            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" UpdateChildren="false" />
-            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" UpdateChildren="false" />
-            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" UpdateChildren="false" />
+            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" UpdateChildren="true" />
+            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" UpdateChildren="true" />
+            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" UpdateChildren="true" />
+            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
       </pnp:ContentTypes>
@@ -925,7 +925,7 @@ function showAlert(){alert("Hello!")};
     </pnp:ProvisioningTemplate>
     <pnp:ProvisioningTemplate ID="ProjectsTemplate" Version="0" Scope="Undefined">
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
-      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
+      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" SearchScope="DefaultScope" />
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
@@ -958,10 +958,10 @@ function showAlert(){alert("Hello!")};
       <pnp:ContentTypes>
         <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" UpdateChildren="false" />
-            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" UpdateChildren="false" />
-            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" UpdateChildren="false" />
-            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" UpdateChildren="false" />
+            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" UpdateChildren="true" />
+            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" UpdateChildren="true" />
+            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" UpdateChildren="true" />
+            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
       </pnp:ContentTypes>
@@ -1057,7 +1057,7 @@ function showAlert(){alert("Hello!")};
     </pnp:ProvisioningTemplate>
     <pnp:ProvisioningTemplate ID="MeetingsTemplate" Version="0" Scope="Undefined">
       <pnp:SitePolicy>HBI</pnp:SitePolicy>
-      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" />
+      <pnp:WebSettings NoCrawl="false" SiteLogo="SiteAssets/Logo.png" AlternateCSS="Resources/Themes/Contoso/Contoso.css" MasterPageUrl="_catalogs/MasterPage/CustomMaster.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" SearchScope="DefaultScope" />
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="KEY1" Value="value1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="KEY2" Value="value2" Overwrite="false" />
@@ -1090,10 +1090,10 @@ function showAlert(){alert("Hello!")};
       <pnp:ContentTypes>
         <pnp:ContentType ID="0x01005D4F34E4BE7F4B6892AEBE088EDD215E" Name="General Project Document" Description="General Project Document Content Type" Group="Base Foundation Content Types">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" UpdateChildren="false" />
-            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" UpdateChildren="false" />
-            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" UpdateChildren="false" />
-            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" UpdateChildren="false" />
+            <pnp:FieldRef ID="23203e97-3bfe-40cb-afb4-07aa2b86bf45" UpdateChildren="true" />
+            <pnp:FieldRef ID="b01b3dbc-4630-4ed1-b5ba-321bc7841e3d" UpdateChildren="true" />
+            <pnp:FieldRef ID="a5de9600-b7a6-42dd-a05e-10d4f1500208" UpdateChildren="true" />
+            <pnp:FieldRef ID="f1a1715e-6c52-40de-8403-e9aafd0470d0" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
       </pnp:ContentTypes>
@@ -1221,7 +1221,7 @@ function showAlert(){alert("Hello!")};
           </pnp:Site>
         </pnp:Sites>
       </pnp:SiteCollection>
-      <pnp:SiteCollection d4p1:type="pnp:TeamSite" Title="{parameter:CompanyName} Projects" Description="{parameter:CompanyName} Projects" ProvisioningId="SITE.02" IsHubSite="true" Alias="Projects" DisplayName="{parameter:CompanyName} Projects" IsPublic="true" Classification="MBI" HideTeamify="true" GroupLifecyclePolicyId="GROUP_LIFECYCLE_01" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
+      <pnp:SiteCollection d4p1:type="pnp:TeamSite" Title="{parameter:CompanyName} Projects" Description="{parameter:CompanyName} Projects" ProvisioningId="SITE.02" IsHubSite="true" Alias="Projects" DisplayName="{parameter:CompanyName} Projects" IsPublic="true" Classification="MBI" HideTeamify="true" GroupLifecyclePolicyId="GROUP_LIFECYCLE_01" Language="1033" xmlns:d4p1="http://www.w3.org/2001/XMLSchema-instance">
         <pnp:Templates>
           <pnp:ProvisioningTemplateReference ID="ProjectsTemplate" />
         </pnp:Templates>
@@ -1350,11 +1350,11 @@ function showAlert(){alert("Hello!")};
           <pnp:Messages>
             <pnp:Message> 
               {
-                "body": {
-                  "contentType": "html",
-                  "content": "Hello World"
+                &amp;quot;body&amp;quot;: {
+                  &amp;quot;contentType&amp;quot;: &amp;quot;html&amp;quot;,
+                  &amp;quot;content&amp;quot;: &amp;quot;Hello World&amp;quot;
                 },
-                "subject": "Welcome to this channel"
+                &amp;quot;subject&amp;quot;: &amp;quot;Welcome to this channel&amp;quot;
               }
               </pnp:Message>
           </pnp:Messages>

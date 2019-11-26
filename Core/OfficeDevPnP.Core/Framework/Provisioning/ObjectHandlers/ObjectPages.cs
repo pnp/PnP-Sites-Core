@@ -133,7 +133,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !SP2013
                     bool webPartsNeedLocalization = false;
 #endif
-                    if (page.WebParts != null & page.WebParts.Any())
+                    if (page.WebParts != null && page.WebParts.Any())
                     {
                         if (!isNoScriptSite)
                         {

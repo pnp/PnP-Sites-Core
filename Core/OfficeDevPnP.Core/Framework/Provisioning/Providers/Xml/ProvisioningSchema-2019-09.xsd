@@ -900,7 +900,7 @@
               </xsd:documentation>
             </xsd:annotation>
           </xsd:enumeration>
-          <xsd:enumeration value="Selected ">
+          <xsd:enumeration value="Selected">
             <xsd:annotation>
               <xsd:appinfo>Updated with schema version 201909</xsd:appinfo>
               <xsd:documentation xml:lang="en">
@@ -4466,36 +4466,15 @@
 
   </xsd:complexType>
 
-  <xsd:complexType name="ClientSidePage">
+  <xsd:complexType name="BaseClientSidePage">
     <xsd:annotation>
-      <xsd:appinfo>Added with schema version 201705</xsd:appinfo>
+      <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
       <xsd:documentation xml:lang="en">
-        Defines a single element of type ClientSidePage.
+        Defines a base Client Side Page.
       </xsd:documentation>
     </xsd:annotation>
 
-    <xsd:all>
-
-      <xsd:element name="Sections" minOccurs="0" maxOccurs="1">
-        <xsd:annotation>
-          <xsd:documentation xml:lang="en">
-            Defines the Canvas sections for a single ClientSidePage.
-          </xsd:documentation>
-        </xsd:annotation>
-
-        <xsd:complexType>
-          <xsd:sequence>
-            <xsd:element name="Section" type="pnp:CanvasSection" minOccurs="0" maxOccurs="unbounded">
-              <xsd:annotation>
-                <xsd:documentation xml:lang="en">
-                  Defines a Canvas section for a single ClientSidePage.
-                </xsd:documentation>
-              </xsd:annotation>
-            </xsd:element>
-          </xsd:sequence>
-        </xsd:complexType>
-
-      </xsd:element>
+    <xsd:sequence>
 
       <xsd:element name="Header" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
@@ -4698,6 +4677,27 @@
 
       </xsd:element>
 
+      <xsd:element name="Sections" minOccurs="0" maxOccurs="1">
+        <xsd:annotation>
+          <xsd:documentation xml:lang="en">
+            Defines the Canvas sections for a single ClientSidePage.
+          </xsd:documentation>
+        </xsd:annotation>
+
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="Section" type="pnp:CanvasSection" minOccurs="0" maxOccurs="unbounded">
+              <xsd:annotation>
+                <xsd:documentation xml:lang="en">
+                  Defines a Canvas section for a single ClientSidePage.
+                </xsd:documentation>
+              </xsd:annotation>
+            </xsd:element>
+          </xsd:sequence>
+        </xsd:complexType>
+
+      </xsd:element>
+
       <xsd:element name="FieldValues" minOccurs="0">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
@@ -4742,16 +4742,7 @@
         </xsd:complexType>
       </xsd:element>
 
-    </xsd:all>
-
-    <xsd:attribute name="PageName" type="xsd:string" use="required">
-      <xsd:annotation>
-        <xsd:appinfo>Added with schema version 201705</xsd:appinfo>
-        <xsd:documentation xml:lang="en">
-          Defines the page name for a single ClientSidePage.
-        </xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute>
+    </xsd:sequence>
 
     <xsd:attribute name="PromoteAsNewsArticle" type="xsd:boolean" use="optional">
       <xsd:annotation>
@@ -4825,15 +4816,6 @@
       </xsd:annotation>
     </xsd:attribute>
 
-    <xsd:attribute name="CreateTranslations" type="xsd:boolean" use="optional" default="false">
-      <xsd:annotation>
-        <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
-        <xsd:documentation xml:lang="en">
-          Instructs the engine to create translations of the page while provisionig it, optional attribute.
-        </xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute>
-
     <xsd:attribute name="ThumbnailUrl" type="pnp:ReplaceableString" use="optional">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
@@ -4843,6 +4825,100 @@
       </xsd:annotation>
     </xsd:attribute>
 
+  </xsd:complexType>
+
+  <xsd:complexType name="ClientSidePage">
+    <xsd:annotation>
+      <xsd:appinfo>Added with schema version 201705</xsd:appinfo>
+      <xsd:documentation xml:lang="en">
+        Defines a single element of type ClientSidePage.
+      </xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexContent>
+      <xsd:extension base="pnp:BaseClientSidePage">
+
+        <xsd:sequence>
+          <xsd:element name="Translations" minOccurs="0" maxOccurs="1">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Defines a list of translated pages for the current Client Side Page, optional element.
+              </xsd:documentation>
+            </xsd:annotation>
+
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="ClientSidePage" type="pnp:TranslatedClientSidePage" minOccurs="1" maxOccurs="unbounded">
+                  <xsd:annotation>
+                    <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+                    <xsd:documentation xml:lang="en">
+                      Defines a translated page for a Client Side Page, optional element.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:element>
+              </xsd:sequence>
+            </xsd:complexType>
+
+          </xsd:element>
+        </xsd:sequence>
+
+        <xsd:attribute name="PageName" type="xsd:string" use="required">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201705</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Defines the page name for a single ClientSidePage.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="LCID" type="xsd:int" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              The Locale ID of a Localization Language, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="CreateTranslations" type="xsd:boolean" use="optional" default="false">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Defines whether to create translations of the current Client Side Page, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:extension>
+    </xsd:complexContent>
+
+  </xsd:complexType>
+
+  <xsd:complexType name="TranslatedClientSidePage">
+    <xsd:complexContent>
+      <xsd:extension base="pnp:BaseClientSidePage">
+
+        <xsd:attribute name="LCID" type="xsd:int" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              The Locale ID of a Localization Language, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+        <xsd:attribute name="PageName" type="xsd:string" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201909</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Defines the page name for a single ClientSidePage, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
+
+      </xsd:extension>
+    </xsd:complexContent>
   </xsd:complexType>
 
   <xsd:complexType name="Header">
@@ -7152,6 +7228,14 @@
             </xsd:documentation>
           </xsd:annotation>
         </xsd:attribute>
+        <xsd:attribute name="Language" type="pnp:ReplaceableString" use="optional">
+          <xsd:annotation>
+            <xsd:appinfo>Added with schema version 201807</xsd:appinfo>
+            <xsd:documentation xml:lang="en">
+              Language of the target Site, optional attribute.
+            </xsd:documentation>
+          </xsd:annotation>
+        </xsd:attribute>
       </xsd:extension>
     </xsd:complexContent>
   </xsd:complexType>
@@ -7292,7 +7376,7 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
-    <xsd:attribute name="HubSiteLogoUrl" type="xsd:string" use="optional">
+    <xsd:attribute name="HubSiteLogoUrl" type="pnp:ReplaceableString" use="optional">
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 201903</xsd:appinfo>
         <xsd:documentation xml:lang="en">

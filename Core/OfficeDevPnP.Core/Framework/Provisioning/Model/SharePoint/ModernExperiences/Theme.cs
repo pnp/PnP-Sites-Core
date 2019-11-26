@@ -31,6 +31,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </remarks>
         public String Palette { get; set; }
 
+        /// <summary>
+        /// If true, will overwrite existing tenant theme
+        /// </summary>
+        public Boolean Overwrite { get; set; }
+
         #endregion
 
         #region Comparison code
@@ -44,7 +49,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (String.Format("{0}|{1}|{2}",
                 Name?.GetHashCode() ?? 0,
                 IsInverted.GetHashCode(),
-                Palette?.GetHashCode() ?? 0
+                Palette?.GetHashCode() ?? 0,
+                Overwrite.GetHashCode()
             ).GetHashCode());
         }
 
@@ -76,7 +82,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
             return (this.Name == other.Name &&
                 this.IsInverted == other.IsInverted &&
-                this.Palette == other.Palette
+                this.Palette == other.Palette &&
+                this.Overwrite == other.Overwrite
                 );
         }
 

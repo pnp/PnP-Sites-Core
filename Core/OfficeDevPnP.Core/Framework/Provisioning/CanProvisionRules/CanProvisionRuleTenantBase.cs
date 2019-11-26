@@ -41,6 +41,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.CanProvisionRules
             // Target the root site collection
             tenant.EnsureProperty(t => t.RootSiteUrl);
 
+#if ONPREMISES
+            if (string.IsNullOrEmpty(tenant.RootSiteUrl))
+            {
+                return result;
+            }
+#endif
+
             // Connect to the root site collection
             using (var context = tenant.Context.Clone(tenant.RootSiteUrl))
             {

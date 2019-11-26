@@ -45,6 +45,26 @@
         }
       }
     },
+    "contentTypes": {
+      "description": "define content type extraction settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "groups": {
+          "description": "set to only extract content types in these groups",
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "excludeFromSyndication": {
+          "description": "Specify whether or not content types issued from a content hub should be exported. By default all content types are included.",
+          "type": "boolean"
+        }
+      }
+    },
     "lists": {
       "description": "define list settings",
       "type": "object",
@@ -74,12 +94,16 @@
                 "description": "if set to true fields with no value will be not be included in the template",
                 "type": "boolean"
               },
+              "removeExistingContentTypes": {
+                "description": "if set the 'RemoveExistingContentTypes' attribute on the list instance in the template will be set to true",
+                "type": "boolean"
+              },
               "query": {
                 "type": "object",
                 "additionalProperties": false,
                 "properties": {
                   "includeAttachments": {
-                    "description": "define if attachments should be included when exporting rowdata",
+                    "description": "define if attachments should be included when exporting rowdata. This property will be ignored with Document libraries. Files will automatically be exported when you specify the persistAssetFiles.",
                     "type": "boolean"
                   },
                   "camlQuery": {
@@ -96,6 +120,10 @@
                     "items": {
                       "type": "string"
                     }
+                  },
+                  "pageSize": {
+                    "description": "retrieve the items in a paged manner. Setting this value will override the rowlimit property.",
+                    "type": "integer"
                   }
                 }
               }
@@ -110,6 +138,10 @@
       "additionalProperties": false,
       "properties": {
         "includeSecurity": {
+          "description": "set to true to include security",
+          "type": "boolean"
+        },
+        "includeSiteCollectionTermGroup": {
           "description": "set to true to include security",
           "type": "boolean"
         }
@@ -133,6 +165,17 @@
       "properties": {
         "removeExistingNodes": {
           "description": "set to true to mark the footer navigation to remove the existing nodes when applying the template",
+          "type": "boolean"
+        }
+      }
+    },
+    "searchSettings": {
+      "descrtipion": "define search settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "include": {
+          "description": "set to true to include the search configuration in the template",
           "type": "boolean"
         }
       }

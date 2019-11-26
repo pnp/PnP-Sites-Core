@@ -261,7 +261,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             UpdateOverwriteVersion
         }
 
-        public static void UpdateListItem(ListItem item, TokenParser parser, IDictionary<string, string> valuesToSet, ListItemUpdateType updateType, bool SkipExecuteQuery=false)
+        public static void UpdateListItem(ListItem item, TokenParser parser, IDictionary<string, string> valuesToSet, ListItemUpdateType updateType, bool SkipExecuteQuery = false)
         {
             var itemValues = new List<FieldUpdateValue>();
 
@@ -329,6 +329,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                     {
                                         itemValues.Add(new FieldUpdateValue(key as string, new FieldUserValue() { LookupId = userId }));
                                     }
+                                }
+                                break;
+                            }
+                        case "MultiChoice":
+                            {
+                                if (value != null)
+                                {
+                                    var array = value.Split(";#");
+                                    itemValues.Add(new FieldUpdateValue(key as string, array));
                                 }
                                 break;
                             }
@@ -439,11 +448,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 itemValues.Add(new FieldUpdateValue(key as string, newVals));
                                 break;
                             }
+                        case "DateTime":
+                            {
+                                if (value == null) goto default;
+                                if(DateTime.TryParse(value, out DateTime dateTimeValue))
+                                {
+                                    itemValues.Add(new FieldUpdateValue(key as string, dateTimeValue));
+                                }
+                                break;
+                            }
                         case "URL":
                             {
-                                
+
                                 if (value == null) goto default;
-                                if(value.Contains(",") || value.Contains(";"))
+                                if (value.Contains(",") || value.Contains(";"))
                                 {
                                     var urlValueArray = value.Split(new char[] { ',', ';' });
                                     if (urlValueArray.Length == 2)
@@ -454,11 +472,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                             Description = value.Split(new char[] { ',', ';' })[1]
                                         };
                                         itemValues.Add(new FieldUpdateValue(key as string, urlValue));
-                                    } else
+                                    }
+                                    else
                                     {
                                         itemValues.Add(new FieldUpdateValue(key as string, value));
                                     }
-                                } else
+                                }
+                                else
                                 {
                                     var urlValue = new FieldUrlValue
                                     {
@@ -482,17 +502,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             if (isDocLib)
             {
                 // check if we have both editor and author in the item.
-                if (itemValues.FirstOrDefault(v => v.Key.Equals("author", StringComparison.InvariantCultureIgnoreCase)) == null || itemValues.FirstOrDefault(v => v.Key.Equals("editor", StringComparison.InvariantCultureIgnoreCase)) == null)
+                var setAuthor = itemValues.FirstOrDefault(v => v.Key.Equals("author", StringComparison.InvariantCultureIgnoreCase)) != null;
+                var setEditor = itemValues.FirstOrDefault(v => v.Key.Equals("editor", StringComparison.InvariantCultureIgnoreCase)) != null;
+                if ((!setAuthor || !setEditor) && (setAuthor || setEditor))
                 {
-                    if (itemValues.FirstOrDefault(v => v.Key.Equals("author", StringComparison.InvariantCultureIgnoreCase)) == null)
+                    if (!setAuthor)
                     {
-                        // We only have the editor field, set the author to the old value
-                        itemValues.Add(new FieldUpdateValue("Author", item["Author"] as FieldUserValue));
+                        var currentAuthor = item["Author"];
+                        // the null check catches the case where somebody tries to add new list items to a doc lib and the server says No
+                        if (currentAuthor != null)
+                        {
+                            // We only have the editor field, set the author to the old value
+                            itemValues.Add(new FieldUpdateValue("Author", currentAuthor));
+                        }
                     }
-                    if (itemValues.FirstOrDefault(v => v.Key.Equals("editor", StringComparison.InvariantCultureIgnoreCase)) == null)
+                    if (!setEditor)
                     {
-                        // We opnly have the author field, set the editor to the old value
-                        itemValues.Add(new FieldUpdateValue("Editor", item["Editor"] as FieldUserValue));
+                        var currentEditor = item["Editor"];
+                        // the null check catches the case where somebody tries to add new list items to a doc lib and the server says No
+                        if (currentEditor != null)
+                        {
+                            // We opnly have the author field, set the editor to the old value
+                            itemValues.Add(new FieldUpdateValue("Editor", currentEditor));
+                        }
                     }
                 }
             }
@@ -513,11 +545,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 if (itemValue.Value is TaxonomyFieldValueCollection)
                                 {
                                     taxField.SetFieldValueByValueCollection(item, itemValue.Value as TaxonomyFieldValueCollection);
-                                } else
+                                }
+                                else
                                 {
                                     taxField.SetFieldValueByValue(item, itemValue.Value as TaxonomyFieldValue);
                                 }
-                                 
+
                                 break;
                             }
                         case "TaxonomyFieldType":
@@ -530,7 +563,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
                 }
             }
-#if !ONPREMISES
+#if !SP2013 && !SP2016
             switch (updateType)
             {
                 case ListItemUpdateType.Update:
@@ -552,7 +585,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 #else
             item.Update();
 #endif
-            if(!SkipExecuteQuery)
+            if (!SkipExecuteQuery)
                 context.ExecuteQueryRetry();
         }
 

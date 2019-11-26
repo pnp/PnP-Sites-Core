@@ -554,14 +554,31 @@
     <Compile Include="Framework\Provisioning\Model\Base\BaseHierarchyModel.cs" />
     <Compile Include="Framework\Provisioning\Model\Base\BaseProvisioningTemplateObjectCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Configuration\ConfigurationHandler.cs" />
-    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractListsQueryConfiguration.cs" />
-    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractListsConfiguration.cs" />
-    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractListsListsConfiguration.cs" />
-    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractSiteFooterConfiguration.cs" />
-    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractNavigationConfiguration.cs" />
-    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractPagesConfiguration.cs" />
-    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractSiteSecurityConfiguration.cs" />
-    <Compile Include="Framework\Provisioning\Model\Configuration\ExtractTaxonomyConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\ContentTypes\ApplyContentTypeConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\ContentTypes\ExtractContentTypeConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\ApplyConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Extensibility\ApplyExtensibilityConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Extensibility\ExtractExtensibilityConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Fields\ApplyFieldsConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Lists\ApplyListsConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Lists\Lists\ExtractListsQueryConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Lists\ExtractListsConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Lists\Lists\ExtractListsListsConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\MultiLanguage\ExtractMultiLanguageConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Navigation\ApplyNavigationConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\PropertyBag\ApplyPropertyBagConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\PropertyBag\ExtractPropertyBagConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Publishing\ExtractPublishingConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Search\ExtractSearchConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\SiteFooter\ExtractSiteFooterConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Navigation\ExtractNavigationConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Pages\ExtractPagesConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\SiteSecurity\ExtractSiteSecurityConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Taxonomy\ExtractTaxonomyConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Tenant\ApplyTenantConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Tenant\ExtractTenantConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Tenant\Sequence\ExtractSequenceConfiguration.cs" />
+    <Compile Include="Framework\Provisioning\Model\Configuration\Tenant\Teams\ExtractTeamsConfiguration.cs" />
     <Compile Include="Framework\Provisioning\Model\Drive\DriveRootFolder.cs" />
     <Compile Include="Framework\Provisioning\Model\Drive\DriveFolderBase.cs" />
     <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningTemplateWebhook.cs" />
@@ -587,6 +604,9 @@
     <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningWebhookCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachment.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachmentCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\BaseClientSidePage.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\TranslatedClientSidePageCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\ModernExperiences\TranslatedClientSidePage.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\AlternateUICulture.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\Settings\AlternateUICultureCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\UserProfile\UserProfile.cs" />
@@ -688,6 +708,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectHierarchySequenceTermGroups.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\ObjectSiteSettings.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\PnPProvisioningContext.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\RecycledSiteException.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\AssociatedGroupIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\EveryoneButExternalUsersToken.cs" />
@@ -718,9 +739,14 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUpdateValue.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FileUtilities.cs" />
+    <Compile Include="Framework\Provisioning\Providers\ITemplateFormatterWithValidation.cs" />
+    <Compile Include="Framework\Provisioning\Providers\ValidationResult.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.cs">
       <DependentUpon>ProvisioningSchema-2019-09.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201807\ClientSidePageSecurityFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\ClientSidePageHeaderFromModelToSchemaTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\ClientSidePageHeaderFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveItemsFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveRootFolderFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\DriveItemsFromModelToSchemaTypeResolver.cs" />
@@ -730,6 +756,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\AlternateUICultureFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ClientSidePagesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\DriveSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ListInstancesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ProvisioningTemplateWebhooksSerializer.cs" />
@@ -1369,7 +1396,10 @@
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.xsd">
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\extract-configuration.schema.json" />
+    <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\Schemas\201909\extract-configuration.schema.json" />
+    <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\Schemas\201909\apply-configuration.schema.json" />
+    <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\Schemas\201910\apply-configuration.schema.json" />
+    <EmbeddedResource Include="Framework\Provisioning\Model\Configuration\Schemas\201910\extract-configuration.schema.json" />
     <None Include="Framework\Provisioning\Providers\Xml\readme.md" />
     <None Include="packages.config">
       <SubType>Designer</SubType>

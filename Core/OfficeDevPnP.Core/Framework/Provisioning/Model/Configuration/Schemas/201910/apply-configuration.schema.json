@@ -1,0 +1,132 @@
+{
+  "title": "Provisioning Engine Template Apply Configuration",
+  "description": "Defines the configuration to use when applying a template to a site",
+  "version": "201910",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "description": "The version number.",
+      "type": "string",
+      "enum": [
+        "1.0"
+      ]
+    },
+    "tenant": {
+      "description": "Define Tenant provisioning settings.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "DoNotWaitForSitesToBeFullyCreated": {
+          "description": "By default the engine will wait for sites to be completely created. You can select to no wait for this, while sites are being created by the server asynchronously in the background."
+          "type": "boolean"
+        }
+      }
+    },
+    "contentTypes": {
+      "description": "Defines content type provisioning settings.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provisionContentTypesToSubWebs": {
+          "description": "If set to true content types will be provisioned to existing subwebs.",
+          "type": "boolean"
+        }
+      }
+    },
+    "propertyBag": {
+      "description": "Define property bag provisioning settings.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "overwriteSystemValues": {
+          "description": "By default system settings will not be overwritten, even if specified in template. Specify true to overwrite them with the values from the template.",
+          "type": "boolean"
+        }
+      }
+    },
+    "fields": {
+      "description": "Defines field provisioning settings.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "provisionFieldsToSubWebs": {
+          "description": "Specify true provisiong fields defined in the template to existing subwebs.",
+          "type": "boolean"
+        }
+      }
+    },
+    "handlers": {
+      "description": "Set to define which handlers to execute during provisioning. If not specified all handlers will execute.",
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": [
+          "AuditSettings",
+          "ComposedLook",
+          "CustomActions",
+          "ExtensibilityProviders",
+          "Features",
+          "Fields",
+          "Files",
+          "Lists",
+          "Pages",
+          "Publishing",
+          "RegionalSettings",
+          "SearchSettings",
+          "SitePolicy",
+          "SupportedUILanguages",
+          "Taxonomy",
+          "Workflows",
+          "SiteSecurity",
+          "ContentTypes",
+          "PropertyBagEntries",
+          "WebSettings",
+          "Navigation",
+          "ImageRenditions",
+          "ApplicationLifecycleManagement",
+          "Tenant",
+          "WebApiPermissions",
+          "SiteHeader",
+          "SiteFooter",
+          "Theme",
+          "SiteSettings"
+        ]
+      }
+    },
+    "lists": {
+      "description": "Defines list provisioning settings.",
+      "type": "object",
+      "properties": {
+        "ignoreDuplicateDataRowErrors": {
+          "description": "If set to true duplicate data row errors will be ignored",
+          "type": "boolean"
+        }
+      }
+    },
+    "parameters": {
+      "type": "object",
+      "description": "Override or add parameters as set in the template.",
+      "patternProperties": {
+        ".*": {
+          "type": "string"
+        }
+      }
+    },
+    "navigation": {
+      "description": "If set an existing navigation will be cleared out when provisioning a template with a navigation structure in it.",
+      "type": "object",
+      "properties": {
+        "clearNavigation": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}

@@ -1424,7 +1424,12 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void PromoteAsNewsArticle()
         {
-            if (this.LayoutType == ClientSidePageLayoutType.Home || this.layoutType == ClientSidePageLayoutType.SingleWebPartAppPage)
+
+            if (this.LayoutType == ClientSidePageLayoutType.Home
+#if !SP2019
+                || this.layoutType == ClientSidePageLayoutType.SingleWebPartAppPage
+#endif
+                )
             {
                 throw new Exception("You can only promote article and repost pages as news article");
             }
@@ -1490,9 +1495,9 @@ namespace OfficeDevPnP.Core.Pages
                 TranslateY = translateY
             };
         }
-        #endregion
+#endregion
 
-        #region Internal and private methods
+                #region Internal and private methods
         private void EnableCommentsImplementation(bool enable)
         {
             // ensure we do have the page list item loaded
@@ -1975,7 +1980,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
         }
-        #endregion
+                #endregion
     }
 #endif
-}
+        }

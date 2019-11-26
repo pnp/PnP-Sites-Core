@@ -183,7 +183,11 @@ namespace Microsoft.SharePoint.Client
                     var response = wex.Response as HttpWebResponse;
                     // Check if request was throttled - http status code 429
                     // Check is request failed due to server unavailable - http status code 503
-                    if (response != null && (response.StatusCode == (HttpStatusCode)429 || response.StatusCode == (HttpStatusCode)503))
+                    if (response != null && 
+                        (response.StatusCode == (HttpStatusCode)429 
+                        || response.StatusCode == (HttpStatusCode)503 
+                        // || response.StatusCode == (HttpStatusCode)500
+                        ))
                     {
                         Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, backoffInterval);
 
@@ -273,7 +277,6 @@ namespace Microsoft.SharePoint.Client
             return clientTag;
         }
 
-
         /// <summary>
         /// Clones a ClientContext object while "taking over" the security context of the existing ClientContext instance
         /// </summary>
@@ -283,12 +286,24 @@ namespace Microsoft.SharePoint.Client
         /// <returns>A ClientContext object created for the passed site URL</returns>
         public static ClientContext Clone(this ClientRuntimeContext clientContext, Uri siteUrl, Dictionary<String, String> accessTokens = null)
         {
+            return Clone(clientContext, new ClientContext(siteUrl), siteUrl, accessTokens);
+        }
+        /// <summary>
+        /// Clones a ClientContext object while "taking over" the security context of the existing ClientContext instance
+        /// </summary>
+        /// <param name="clientContext">ClientContext to be cloned</param>
+        /// <param name="targetContext">CientContext stub to be used for cloning</param>
+        /// <param name="siteUrl">Site URL to be used for cloned ClientContext</param>
+        /// <param name="accessTokens">Dictionary of access tokens for sites URLs</param>
+        /// <returns>A ClientContext object created for the passed site URL</returns>
+        internal static ClientContext Clone(this ClientRuntimeContext clientContext, ClientContext targetContext, Uri siteUrl, Dictionary<String, String> accessTokens = null)
+        {
             if (siteUrl == null)
             {
                 throw new ArgumentException(CoreResources.ClientContextExtensions_Clone_Url_of_the_site_is_required_, nameof(siteUrl));
             }
 
-            ClientContext clonedClientContext = new ClientContext(siteUrl);
+            ClientContext clonedClientContext = targetContext;
             clonedClientContext.AuthenticationMode = clientContext.AuthenticationMode;
             clonedClientContext.ClientTag = clientContext.ClientTag;
 #if !ONPREMISES || SP2016 || SP2019

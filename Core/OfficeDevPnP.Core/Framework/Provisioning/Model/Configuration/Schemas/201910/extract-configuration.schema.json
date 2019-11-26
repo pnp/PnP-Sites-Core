@@ -1,0 +1,378 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "title": "Provisioning Engine Template Extraction Configuration",
+  "version": "201910",
+  "description": "Defines the configuration to use when extracting a template from a site",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [],
+  "definitions": {
+    "siteUrl": {
+      "type": "string",
+      "description": "A value in the shape of https://[yourtenant].sharepoint.com/sites/yoursite",
+      "pattern": "https:\/\/[a-zA-Z]*.sharepoint\\.[a-zA-Z].*"
+    }
+  },
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "version": {
+      "description": "The version number.",
+      "type": "string",
+      "enum": [
+        "1.0"
+      ]
+    },
+    "persistAssetFiles": {
+      "description": "set to true to persist asset files like logos, thumbnail images, images contained in modern pages, etc.",
+      "type": "boolean"
+    },
+    "multiLanguage": {
+      "description": "Defines multi language extraction settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "persistMultiLanguageResources": {
+          "description": "If specified resource values for applicable artifacts will be persisted to a resource file",
+          "type": "boolean"
+        },
+        "resourceFilePrefix": {
+          "description": "If specified, resource files will be saved with the specified prefix instead of using the template name specified. If no template name is specified the files will be called PnP-Resources.<language>.resx.",
+          "type": "string"
+        }
+      }
+    },
+    "publishing": {
+      "description": "Applies to classing publishing",
+      "type": "object",
+      "additionalProperties": false,
+      "dependencies": {
+        "includeNativePublishingFiles": [
+          "persist"
+        ]
+      },
+      "properties": {
+        "persist": {
+          "description": "If specified the files used for the publishing feature will be saved.",
+          "type": "boolean"
+        },
+        "includeNativePublishingFiles": {
+          "description": "If specified, out of the box / native publishing files will be saved.",
+          "type": "boolean"
+        }
+      }
+    },
+    "tenant": {
+      "description": "define tenant extraction settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sequence": {
+          "description": "If specified will extract site collections as defined in the siteUrls array",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "siteUrls"
+          ],
+          "properties": {
+            "siteUrls": {
+              "description": "Defines the one or more sitecollections to extract.",
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "$ref": "#/definitions/siteUrl"
+              }
+            },
+            "includedJoinedSites": {
+              "description": "If set to true, and a site collection is a hubsite, any joined sites will be included in the extraction.",
+              "type": "boolean"
+            },
+            "includeSubsites": {
+              "description": "If set to true to subsites will be included in the tenant template to extract.",
+              "type": "boolean"
+            },
+            "maxSubsiteDepth": {
+              "minimum": 0,
+              "type": "integer",
+              "description": "Defines the maximum depth to traverse when extracting a tenant template. If set to 0 all subsites will be included."
+            }
+          }
+        },
+        "teams": {
+          "type": "object",
+          "description": "Defines Microsoft Teams extraction settings.",
+          "additionalProperties": false,
+          "properties": {
+            "includeAllTeams": {
+              "type": "boolean",
+              "description": "If specified all teams in this tenant will be exported. This can take a long time."
+            },
+            "teamSiteUrls": {
+              "description": "Specify the fully qualified site urls of the SharePoint sites for which you want extract the teams.",
+              "type": "array",
+              "minItems": 0,
+              "items": {
+                "$ref": "#/definitions/siteUrl"
+              }
+            },
+            "includeMessages": {
+              "type": "boolean",
+              "description": "If specified messages will be extracted from the teams."
+            },
+            "includeGroupId": {
+              "type": "boolean",
+              "description": "If specified the group id will be set for teams allowing you to update existing teams."
+            }
+          }
+        }
+      }
+    },
+    "pages": {
+      "description": "Defines client side page settings.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "includeAllClientSidePages": {
+          "description": "If set to true to all client side pages will be included in the template.",
+          "type": "boolean"
+        },
+        "excludeAuthorInformation": {
+          "description": "If set to true to author information will be removed from webparts and modern clientside pages.",
+          "type": "boolean"
+        }
+      }
+    },
+    "siteSecurity": {
+      "description": "Defines site security extraction settings.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "includeSiteGroups": {
+          "description": "If set to true to site groups will be included when extracting site security.",
+          "type": "boolean"
+        }
+      }
+    },
+    "contentTypes": {
+      "description": "Defines content type extraction settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "groups": {
+          "description": "If set only content types in these groups will be included in the template.",
+          "type": "array",
+          "uniqueItems": true,
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "excludeFromSyndication": {
+          "description": "Specify whether or not content types issued from a content hub should be exported. By default all content types are included.",
+          "type": "boolean"
+        }
+      }
+    },
+    "lists": {
+      "description": "Defines list settings.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "includeHiddenLists": {
+          "description": "If set to true to hidden lists will be included in the template.",
+          "type": "boolean"
+        },
+        "lists": {
+          "description": "If set to only the define lists will be included in the template.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "title"
+            ],
+            "dependencies": {
+              "updateBehavior": [
+                "keyColumn"
+              ]
+            },
+            "properties": {
+              "title": {
+                "description": "The title or URL (lists/mylist) of the list to export.",
+                "type": "string"
+              },
+              "includeItems": {
+                "description": "If set to true list items will be included as datarows in the template",
+                "type": "boolean"
+              },
+              "keyColumn": {
+                "description": "If set a keycolumn value will be added to the datarow data with the column name specified.",
+                "type": "string"
+              },
+              "updateBehavior": {
+                "description": "If set the updatebehavior of datarows will be defined accordingly.",
+                "type": "string",
+                "enum": [
+                  "Overwrite",
+                  "Skip"
+                ]
+              },
+              "skipEmptyFields": {
+                "description": "If set to true fields with no value will be not be included in the template.",
+                "type": "boolean"
+              },
+              "removeExistingContentTypes": {
+                "description": "If set the 'RemoveExistingContentTypes' attribute on the list instance in the template will be set to true",
+                "type": "boolean"
+              },
+              "query": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "includeAttachments": {
+                    "description": "define if attachments should be included when exporting rowdata. This property will be ignored with Document libraries. Files will automatically be exported when you specify the persistAssetFiles.",
+                    "type": "boolean"
+                  },
+                  "camlQuery": {
+                    "description": "a CAML query used to limit the list items to export, e.g. <Where><Eq><FieldRef Name='FilterField' /><Value Type='Text'>ValueToFilterOn</Value></Eq></Where>",
+                    "type": "string"
+                  },
+                  "rowlimit": {
+                    "description": "the max numbers of rows to return",
+                    "type": "integer"
+                  },
+                  "viewFields": {
+                    "description": "the fields to return in the query",
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "pageSize": {
+                    "description": "retrieve the items in a paged manner. Setting this value will override the rowlimit property.",
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "taxonomy": {
+      "description": "Defines taxonomy / management metadata termstore extraction settings.",
+      "type": "object",
+      "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": [
+            "includeAllTermGroups"
+          ],
+          "not": {
+            "required": [
+              "includeSiteCollectionTermGroup"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "includeAllTermGroups"
+            ]
+          },
+          "required": [
+            "includeSiteCollectionTermGroup"
+          ]
+        }
+      ],
+      "properties": {
+        "includeSecurity": {
+          "description": "set to true to include security",
+          "type": "boolean"
+        },
+        "includeAllTermGroups": {
+          "description": "If set to true to all term groups will be included. Overrides 'includeSiteCollectionTermGroup'",
+          "type": "boolean"
+        },
+        "includeSiteCollectionTermGroup": {
+          "description": "set to true to include security",
+          "type": "boolean"
+        }
+      }
+    },
+    "navigation": {
+      "description": "Defines navigation extraction settings.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "removeExistingNodes": {
+          "description": "set to true to mark the navigation to remove the existing nodes when applying the template",
+          "type": "boolean"
+        }
+      }
+    },
+    "siteFooter": {
+      "description": "Defines site footer extraction settings.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "removeExistingNodes": {
+          "description": "set to true to mark the footer navigation to remove the existing nodes when applying the template",
+          "type": "boolean"
+        }
+      }
+    },
+    "searchSettings": {
+      "descrtipion": "Defines search settings.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "include": {
+          "description": "set to true to include the search configuration in the template",
+          "type": "boolean"
+        }
+      }
+    },
+    "handlers": {
+      "description": "Set to define which handlers to execute during extraction. If not specified all handlers will execute.",
+      "type": "array",
+      "uniqueItems": true,
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "enum": [
+          "AuditSettings",
+          "ComposedLook",
+          "CustomActions",
+          "ExtensibilityProviders",
+          "Features",
+          "Fields",
+          "Files",
+          "Lists",
+          "Pages",
+          "Publishing",
+          "RegionalSettings",
+          "SearchSettings",
+          "SitePolicy",
+          "SupportedUILanguages",
+          "Taxonomy",
+          "Workflows",
+          "SiteSecurity",
+          "ContentTypes",
+          "PropertyBagEntries",
+          "WebSettings",
+          "Navigation",
+          "ImageRenditions",
+          "ApplicationLifecycleManagement",
+          "Tenant",
+          "WebApiPermissions",
+          "SiteHeader",
+          "SiteFooter",
+          "Theme",
+          "SiteSettings"
+        ]
+      }
+    }
+  }
+}

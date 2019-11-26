@@ -205,7 +205,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
             this.SaveAs(template, this.Uri, formatter, extensions);
         }
 
-        public override void SaveAs(ProvisioningHierarchy hierarchy, string uri)
+        public override void SaveAs(ProvisioningHierarchy hierarchy, string uri, ITemplateFormatter formatter = null)
         {
             throw new NotImplementedException();
         }

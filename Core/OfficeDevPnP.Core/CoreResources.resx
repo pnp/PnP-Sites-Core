@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -284,6 +284,9 @@
   </data>
   <data name="Services_CookieWithCachKeyNotFound" xml:space="preserve">
     <value>The cookie with the cachekey was not found...nothing can be retrieved from cache, so no clientcontext can be created.</value>
+  </data>
+  <data name="Services_CacheItemNotFound" xml:space="preserve">
+    <value>The WebAPI context cache item was not found...nothing can be retrieved from cache, so no clientcontext can be created.</value>
   </data>
   <data name="Services_Registered" xml:space="preserve">
     <value>Service {0} has been registered for endpoint {1} using cachekey {2}.</value>
@@ -1203,5 +1206,38 @@
   </data>
   <data name="Provisioning_ObjectHandlers_AAD_User_ProvisioningError" xml:space="preserve">
     <value>Provisioning a user failed.</value>
+  </data>
+  <data name="Provisioning_Extensions_ViewLocalization_NoMUI_Skip" xml:space="preserve">
+    <value>No Viewtranslation needed since web is single language</value>
+  </data>
+  <data name="Provisioning_Extensions_ViewLocalization_DefaultLngMissing_Skip" xml:space="preserve">
+    <value>Translation for default language of site is missing</value>
+  </data>
+  <data name="Provisioning_Extensions_NavigationLocalization_NoMUI_Skip" xml:space="preserve">
+    <value>No Navigation translation needed since web is single language</value>
+  </data>
+  <data name="Provisioning_Extensions_NavigationLocalization_Skip" xml:space="preserve">
+    <value>Skipping navigation localization because we're running under a user context who has a preferred language set in it's profile. This setup will not allow to add the needed localized string versions.</value>
+  </data>
+  <data name="Provisioning_Extensions_WebPartLocalization_NoMUI_Skip" xml:space="preserve">
+    <value>No WebPart translation needed since web is single language</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ListInstancesDataRows_Creating_listitem_notsupported_0" xml:space="preserve">
+    <value>Creating list items in document libraries is not supported. Please remove DataRow elements for library '{0}'.</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_ErrorDocumentTemplate" xml:space="preserve">
+    <value>Failed to add '{1}' as DocumentTemplate to ContentType '{0}'</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_ErrorExtractDocumentSetTemplate" xml:space="preserve">
+    <value>Failed to extract DefaultDocument '{0}' from DocumentSet</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_ErrorSaveDocumentTemplateToConnector" xml:space="preserve">
+    <value>Failed to extract DocumentTemplate '{1}' from ContentType '{0}'</value>
+  </data>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_SkipDocumentTemplate" xml:space="preserve">
+    <value>Skipping uploading template as set in DocumentTemplate for ContentType '{0}' because we can't upload them on 'noscript' sites.</value>
+  </data>
+  <data name="SiteCollection_WaitForIsProvisioningComplete" xml:space="preserve">
+    <value>Server side provisioning of this web did not finish after waiting for {0} milliseconds.</value>
   </data>
 </root>

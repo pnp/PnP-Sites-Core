@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
+namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.SiteFooter
 {
-    public class ExtractNavigationConfiguration
+    public class ExtractSiteFooterConfiguration
     {
-        [JsonProperty("RemoveExistingNodes")]
+        [JsonProperty("removeExistingNodes")]
         public bool RemoveExistingNodes { get; set; }
     }
 }

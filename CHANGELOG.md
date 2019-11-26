@@ -10,23 +10,88 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Added HubSiteTitle property on Site Sequences when provisioning a Tenant Template
-- Added a ThumbnailUrl property on Client Side Pages to set the page thumbnail
-- Added additional modern web parts to our enums (CallToAction, Button, Sites)
-- Added supporto for schema 201909
+- UnifiedGroupsUtility.HasTeamsTeam checks if an Office 365 group also has a Teams team
+- SiteExistsAnywhere method to improve SiteExists internal behavior
 
 ### Changed
 
-- The Promote as News state of a page will now be persisted in an exported template.
-- Extracting a template will now persist the files referred to in page thumbnails to the Files collection of the template.
-- Extracting a template will now persist the footer logo to the Files collection of the template.
+## [3.15.1911.0 - November 2019 release]
+
+### Added
+
+- Added ApplyTenantTemplate and GetTenantTemplate methods
+- Added new configuration support for extraction and applying of site and tenant templates. See https://docs.microsoft.com/en-us/sharepoint/dev/solution-guidance/configuring-the-pnp-provisioning-engine
+- Added initial TenantTemplate extraction, supporting Sequences and Teams
+- Limiting lists to extract now supports besides filtering on title also filtering on list url
+- Support for User Profile properties upload [gautamdsheth]
+- Support for UpdateChildren="true" in fields definition for content types [SteveClements]
+
+### Changed
+
+- Deprecated ApplyProvisioningHierarchy and replaced with ApplyTenantTemplate
+- IsProvisioningComplete waits for max 20 minutes and logs a warning instead of throwing an exception when a longer wait is needed
+- Fix: reading/setting search redirect URL on a root site
+- Fix: Updated handling SharePoint groups and groups' owners #2444 [NicolajHedeager]
+- Fix: Update us gov auth endpoint #2463 [gobigfoot]
+- Fix: Add null guard to catch block in GetAccess*Token #2435 [fowl2]
+- Fix: ObjectSiteSettings provisioning - SearchBoxInNavBar property was not always initialized #2474 [czullu]
+- Fix: Added support for new taxonomy field default values for fields #2329 [KoenZomers]
+
+## [3.14.1910.1 - October 2019 intermediate release]
+
+### Added
+
+- You can now specify to overwrite a tenant theme if already present when using the 201909 schema of the provisioning engine [gautamdsheth]
+
+### Changed
+
+- When you create a modern site and don't specify a wait time after site creation we'll now use the IsProvisioningComplete attribute to wait until all server side async provisioning processes are done
+- Fix: Make sure to load item when exporting datarows and no attachment exists [czullu]
+- Fix: provisioning a content type to a folder will now change the folder to a documentset if the contenttype is a documentset [czullu]
+- Fix: default document of a documentset will now be exported if PersistAssetFiles has been set to true in the extraction configuration [czullu]
+- Fix: fixes issue when using configuration file for list extraction, includeAttachments=true, but no viewfields have been specified where only the attachments would have been extracted instead of all expected list field values. [czullu]
+- Fix: fixes issue where security is not set on new listitems when adding datarows from a provisioning template [czullu]
+- Fix: fixes issue where multichoice fields were not exported correctly to datarows when extracting a template.
+- Fix: fixes issue with null templates while invoking provisioning webhooks [gautamdsheth]
+
+## [3.14.1910.0 - October 2019 release]
+
+### Added
+
+- Vertical section support for extracting and importing provisioning templates
+- Export of list items, based upon #2326 [czullu]
+- Added HubSiteTitle property on Site Sequences when provisioning a Tenant Template
+- Added a ThumbnailUrl property on Client Side Pages to set the page thumbnail
+- Added additional modern web parts to our enums (CallToAction, Button, Sites)
+- Added support for schema 201909, this schema is the default as of the October 2019 release
+- Option to configure the export of a site to a provisioning template via the ExtractConfiguration class
+- S2S user delegation in Hightrust app scenario #2363 [tmeckel]
+- Added support to teamify and hide the teamify prompt via a tenant template #2423 [gautamdsheth]
+
+### Changed
+
+- Fix: Regex based detection of assets used by modern web parts now correctly handles guid that where wrapped in curly brackets
+- The Promote as News state of a page will now be persisted in an exported template
+- Extracting a template will now persist the files referred to in page thumbnails to the Files collection of the template
+- Extracting a template will now persist the footer logo to the Files collection of the template
 - Only load tenant CDN settings whenever there are public/private CDN settings defined in the template
 - Fix: register as hubsite will not throw an exception anymore when creating a new hubsite through a tenant template and also setting the logo for the hubsite.
 - Fix: Added retry logic to the appcatalog/AvailableApps/GetById ALM API calls to handle cases where this API is called too soon after an app has been installed in the appcatalog
 - Fix: Use UpdateOverwriteVersion instead of Update when creating a page using the client side page API, this will prevent unneeded intermediate versions showing up in the version history of the created page
 - Fix: CPU Load and Performance for ExtractClientSidePage #2395 [czullu]
-- Fix conversion of zoneEmphasis in EmphasisJsonConverter #2402 [czullu]
-- Fix to fields reference in lists #2163 [czullu]
+- Fix: conversion of zoneEmphasis in EmphasisJsonConverter #2402 [czullu]
+- Fix: fields reference in lists #2163 [czullu]
+- Fix: Localization only done when relevant (when destination single Language and PnP-Template Multilanguage) #2366 [czullu]
+- Fix: Localization token now handles the case where there are multiple resource files used in a single template #2367 [luismanez]
+- Enabled functionality (e.g. exporting and provisioning client side pages) for SP2019 that was disabled #2412 [jensotto]
+- Fix: Handle null reference exception in WebAPIHelper.GetClientContext #2426 [patrikhellgren]
+- Enable no script site detection for SP2019 #2428 [jensotto]
+- Fix: Don't process tenant hierarchy settings when template doesn't use them. #2300 [gautamdsheth]
+- Fix: Corrected issues reported by static analysis #2422 [jackpoz]
+- Additional overrides for UpdateTaxonomyFieldDefaultValue + doc updates #2328 [KoenZomers]
+- Fix: Better error handling when template contains DataRows for document libraries + improved Author/Editor handling #2341
+- Fix: Tenant Templates - sub sites now get the correct template applied. #2271 [SteveClements]
+- Enabled several functionalities in TenantExtensions for onpremises #2433 [jensotto]
 
 ## [3.13.1909.0 - September 2019 release]
 
