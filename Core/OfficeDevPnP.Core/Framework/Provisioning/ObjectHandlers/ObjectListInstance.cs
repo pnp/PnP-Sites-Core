@@ -1,8 +1,10 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
@@ -15,18 +17,17 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using OfficeDevPnP.Core.Entities;
 using ContentType = Microsoft.SharePoint.Client.ContentType;
 using Field = Microsoft.SharePoint.Client.Field;
 using Folder = Microsoft.SharePoint.Client.Folder;
 using View = OfficeDevPnP.Core.Framework.Provisioning.Model.View;
-using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectListInstance : ObjectHandlerBase
     {
         private readonly FieldAndListProvisioningStepHelper.Step step;
+
         public override string Name
         {
 #if DEBUG
@@ -156,7 +157,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // We stop here unless we reached the last provisioning stop of the list
                     if (step == FieldAndListProvisioningStepHelper.Step.ListSettings)
                     {
-
                         #region Default Field Values
 
                         foreach (var listInfo in processedLists)
@@ -214,6 +214,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         #endregion Property Bag Entries
 
                         #region Column default values
+
                         foreach (var listInfo in processedLists)
                         {
                             var defaultFolderValues = new List<Entities.IDefaultColumnValue>();
@@ -224,7 +225,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                             listInfo.SiteList.SetDefaultColumnValues(defaultFolderValues, true);
                         }
-                        #endregion
+
+                        #endregion Column default values
                     }
                     WriteMessage("Done processing lists", ProvisioningMessageType.Completed);
                 }
@@ -855,7 +857,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         createdView.Update();
                     }
                 }
-
 
                 createdList.Update();
                 web.Context.ExecuteQueryRetry();
@@ -1657,20 +1658,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     var siteField = web.AvailableFields.First(f => f.Id == fieldLink.Id);
 
-                    var fieldSchema = XElement.Parse(siteField.SchemaXmlWithResourceTokens);
-                    var displayNameBackup = (string)fieldSchema.Attribute("DisplayName") ?? (string)fieldSchema.Attribute("Name");
-
-                    fieldSchema.SetAttributeValue("DisplayName", (string)fieldSchema.Attribute("Name"));
-
-                    var createdField = list.Fields.AddFieldAsXml(fieldSchema.ToString(), false, AddFieldOptions.AddToNoContentType);
-                    ctx.ExecuteQuery();
-                    var createdFieldSchema = XElement.Parse(createdField.EnsureProperty(f => f.SchemaXml));
-                    createdFieldSchema.SetAttributeValue("DisplayName", displayNameBackup);
-                    createdField.SchemaXml = createdFieldSchema.ToString();
-                    ctx.ExecuteQuery();
+                    list.Fields.Add(siteField);
                 }
             }
+            if (ctx.HasPendingRequest)
+            {
+                ctx.ExecuteQuery();
+            }
         }
+
         private static void CreateListCustomAction(List existingList, TokenParser parser, CustomAction userCustomAction)
         {
             UserCustomAction newUserCustomAction = existingList.UserCustomActions.Add();
@@ -2175,18 +2171,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static bool IntentToExtractItems(ExtractConfiguration configuration, List siteList)
         {
-            if(configuration != null && configuration.Lists != null && configuration.Lists.HasLists)
+            if (configuration != null && configuration.Lists != null && configuration.Lists.HasLists)
             {
-                Func<string,Guid,bool> matchGuid = (string title, Guid guid) =>
-                {
-                    if (Guid.TryParse(title, out Guid parsedTitle))
-                    {
-                        return guid == parsedTitle;
-                    } else
-                    {
-                        return false;
-                    }
-                };
+                Func<string, Guid, bool> matchGuid = (string title, Guid guid) =>
+                  {
+                      if (Guid.TryParse(title, out Guid parsedTitle))
+                      {
+                          return guid == parsedTitle;
+                      }
+                      else
+                      {
+                          return false;
+                      }
+                  };
                 var listConfig = configuration.Lists.Lists.FirstOrDefault(l => l.Title.Equals(siteList.Title)
                 || siteList.RootFolder.ServerRelativeUrl.EndsWith(l.Title, StringComparison.InvariantCulture)
                 || matchGuid(l.Title, siteList.Id));
@@ -2457,7 +2454,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             foreach (var view in siteList.Views.AsEnumerable().Where(view => !view.Hidden && view.ListViewXml != null))
             {
-
                 var schemaElement = XElement.Parse(view.ListViewXml);
 
                 // exclude survey and events list as they dont support jsLink customizations
