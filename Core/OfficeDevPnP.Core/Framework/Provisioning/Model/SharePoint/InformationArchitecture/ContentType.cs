@@ -53,17 +53,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// True to define the content type as hidden. If you define a content type as hidden, SharePoint Foundation does not display that content type on the New button in list views. 
         /// </summary>
-        public bool Hidden { get; set; }
+        public bool? Hidden { get; set; }
 
         /// <summary>
         /// True to prevent changes to this content type. You cannot change the value of this attribute through the user interface, but you can change it in code if you have sufficient rights. You must have site collection administrator rights to unseal a content type. 
         /// </summary>
-        public bool Sealed { get; set; }
+        public bool? Sealed { get; set; }
 
         /// <summary>
         /// True to specify that the content type cannot be edited without explicitly removing the read-only setting. This can be done either in the user interface or in code. 
         /// </summary>
-        public bool ReadOnly { get; set; }
+        public bool? ReadOnly { get; set; }
 
         /// <summary>
         /// True to overwrite an existing content type with the same ID.

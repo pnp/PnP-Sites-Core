@@ -83,17 +83,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Declares whether the tree view has to be enabled at the site level or not, optional attribute.
         /// </summary>
-        public Boolean EnableTreeView { get; set; }
+        public Boolean? EnableTreeView { get; set; }
 
         /// <summary>
         /// Declares whether the New Page ribbon command will automatically create a navigation item for the newly created page, optional attribute.
         /// </summary>
-        public Boolean AddNewPagesToNavigation { get; set; }
+        public Boolean? AddNewPagesToNavigation { get; set; }
 
         /// <summary>
         /// Declares whether the New Page ribbon command will automatically create a friendly URL for the newly created page, optional attribute.
         /// </summary>
-        public Boolean CreateFriendlyUrlsForNewPages { get; set; }
+        public Boolean? CreateFriendlyUrlsForNewPages { get; set; }
 
         #endregion
 

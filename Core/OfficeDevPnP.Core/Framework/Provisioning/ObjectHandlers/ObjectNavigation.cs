@@ -145,8 +145,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.Context.Load(navigationSettings, ns => ns.CurrentNavigation, ns => ns.GlobalNavigation);
                     web.Context.ExecuteQueryRetry();
 
-                    navigationSettings.AddNewPagesToNavigation = template.Navigation.AddNewPagesToNavigation;
-                    navigationSettings.CreateFriendlyUrlsForNewPages = template.Navigation.CreateFriendlyUrlsForNewPages;
+                    if (template.Navigation.AddNewPagesToNavigation.HasValue)
+                    {
+                        navigationSettings.AddNewPagesToNavigation = template.Navigation.AddNewPagesToNavigation.Value;
+                    }
+                    if (template.Navigation.CreateFriendlyUrlsForNewPages.HasValue)
+                    {
+                        navigationSettings.CreateFriendlyUrlsForNewPages = template.Navigation.CreateFriendlyUrlsForNewPages.Value;
+                    }
 
                     if (!isNoScriptSite)
                     {

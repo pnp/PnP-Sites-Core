@@ -56,7 +56,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             foreach (ListInstance list in sourceCollection)
             {
                 // don't add hidden lists since they're not exported again...
-                if (!list.Hidden)
+                if (list.Hidden.HasValue && !list.Hidden.Value)
                 {
                     ProvisioningTemplate pt = new ProvisioningTemplate();
                     pt.Lists.Add(list);

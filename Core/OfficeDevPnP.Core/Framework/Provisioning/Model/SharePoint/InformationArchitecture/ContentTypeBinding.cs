@@ -32,7 +32,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Declares if the Content Type should be Hidden from New button of the list or library, optional attribute.
         /// </summary>
-        public bool Hidden { get; set; }
+        public bool? Hidden { get; set; }
 
         #endregion
 

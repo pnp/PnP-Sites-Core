@@ -44,7 +44,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Check if this is not a noscript site as we're not allowed to update some properties
                 bool isNoScriptSite = web.IsNoScriptSite();
 
-                web.Context.Load(web.ContentTypes, ct => ct.IncludeWithDefaultProperties(c => c.StringId, c => c.FieldLinks,
+                web.Context.Load(web.ContentTypes, ct => ct.IncludeWithDefaultProperties(c => c.StringId, c => c.FieldLinks, c => c.Sealed,
                                                                                          c => c.FieldLinks.Include(fl => fl.Id, fl => fl.Required, fl => fl.Hidden)));
                 web.Context.Load(web.Fields, fld => fld.IncludeWithDefaultProperties(f => f.Id, f => f.SchemaXml));
 
@@ -94,14 +94,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             else
                             {
                                 // We can't update a sealed content type unless we change sealed to false
-                                if (!existingCT.Sealed || !ct.Sealed)
+                                if (existingCT.Sealed && ((ct.Sealed.HasValue && ct.Sealed.Value) || !ct.Sealed.HasValue))
                                 {
-                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
-                                    UpdateContentType(web, template, existingCT, ct, parser, scope);
+                                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed, ct.Id, ct.Name);
                                 }
                                 else
                                 {
-                                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed, ct.Id, ct.Name);
+                                    scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
+                                    UpdateContentType(web, template, existingCT, ct, parser, scope);
                                 }
                             }
                         }
@@ -125,22 +125,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             var isDirty = false;
             var reOrderFields = false;
 
-            if (existingContentType.Hidden != templateContentType.Hidden)
+            if (templateContentType.Hidden.HasValue && existingContentType.Hidden != templateContentType.Hidden)
             {
                 scope.LogPropertyUpdate("Hidden");
-                existingContentType.Hidden = templateContentType.Hidden;
+                existingContentType.Hidden = templateContentType.Hidden.Value;
                 isDirty = true;
             }
-            if (existingContentType.ReadOnly != templateContentType.ReadOnly)
+            if (templateContentType.ReadOnly.HasValue && existingContentType.ReadOnly != templateContentType.ReadOnly)
             {
                 scope.LogPropertyUpdate("ReadOnly");
-                existingContentType.ReadOnly = templateContentType.ReadOnly;
+                existingContentType.ReadOnly = templateContentType.ReadOnly.Value;
                 isDirty = true;
             }
-            if (existingContentType.Sealed != templateContentType.Sealed)
+            if (templateContentType.Sealed.HasValue && existingContentType.Sealed != templateContentType.Sealed)
             {
                 scope.LogPropertyUpdate("Sealed");
-                existingContentType.Sealed = templateContentType.Sealed;
+                existingContentType.Sealed = templateContentType.Sealed.Value;
                 isDirty = true;
             }
             if (templateContentType.Description != null && existingContentType.Description != parser.ParseString(templateContentType.Description))
@@ -275,7 +275,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
 
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Adding_field__0__to_content_type, fieldId);
-                    web.AddFieldToContentType(existingContentType, field, fieldRef.Required, fieldRef.Hidden, fieldRef.UpdateChildren);
+                    web.AddFieldToContentType(existingContentType, field, fieldRef.Required.GetValueOrDefault(false), fieldRef.Hidden.GetValueOrDefault(false), fieldRef.UpdateChildren);
                 }
             }
 
@@ -293,16 +293,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (fieldRef != null)
                 {
                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Field__0__exists_in_content_type, fieldId);
-                    if (fieldLink.Required != fieldRef.Required)
+                    if (fieldRef.Required.HasValue && fieldLink.Required != fieldRef.Required)
                     {
                         scope.LogPropertyUpdate("Required");
-                        fieldLink.Required = fieldRef.Required;
+                        fieldLink.Required = fieldRef.Required.Value;
                         isDirty = true;
                     }
-                    if (fieldLink.Hidden != fieldRef.Hidden)
+                    if (fieldRef.Hidden.HasValue && fieldLink.Hidden != fieldRef.Hidden)
                     {
                         scope.LogPropertyUpdate("Hidden");
-                        fieldLink.Hidden = fieldRef.Hidden;
+                        fieldLink.Hidden = fieldRef.Hidden.Value;
                         isDirty = true;
                     }
                 }
@@ -378,7 +378,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 // Add it to the target content type
                 // Notice that this code will fail if the field does not exist
-                web.AddFieldToContentType(createdCT, field, fieldRef.Required, fieldRef.Hidden, fieldRef.UpdateChildren);
+                web.AddFieldToContentType(createdCT, field, fieldRef.Required.GetValueOrDefault(false), fieldRef.Hidden.GetValueOrDefault(false), fieldRef.UpdateChildren);
             }
 
             // Add new CTs
@@ -405,17 +405,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 createdCT.FieldLinks.Reorder(ctFields);
             }
-            if (createdCT.ReadOnly != templateContentType.ReadOnly)
+            if (templateContentType.ReadOnly.HasValue && createdCT.ReadOnly != templateContentType.ReadOnly)
             {
-                createdCT.ReadOnly = templateContentType.ReadOnly;
+                createdCT.ReadOnly = templateContentType.ReadOnly.Value;
             }
-            if (createdCT.Hidden != templateContentType.Hidden)
+            if (templateContentType.Hidden.HasValue && createdCT.Hidden != templateContentType.Hidden)
             {
-                createdCT.Hidden = templateContentType.Hidden;
+                createdCT.Hidden = templateContentType.Hidden.Value;
             }
-            if (createdCT.Sealed != templateContentType.Sealed)
+            if (templateContentType.Sealed.HasValue && createdCT.Sealed != templateContentType.Sealed)
             {
-                createdCT.Sealed = templateContentType.Sealed;
+                createdCT.Sealed = templateContentType.Sealed.Value;
             }
 
             if (templateContentType.DocumentSetTemplate == null)

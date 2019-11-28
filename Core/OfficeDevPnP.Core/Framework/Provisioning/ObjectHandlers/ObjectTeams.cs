@@ -90,7 +90,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (!SetTeamPhoto(scope, parser, connector, team, teamId, accessToken)) return null;
 
                 // Call Archive or Unarchive for the current Team
-                ArchiveTeam(scope, teamId, team.Archived, accessToken);
+                if(team.Archived.HasValue)
+                {
+                    ArchiveTeam(scope, teamId, team.Archived.Value, accessToken);
+                }
 
                 try
                 {
@@ -453,7 +456,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>Whether the Security settings have been provisioned or not</returns>
         private static bool SetGroupSecurity(PnPMonitoredScope scope, Team team, string teamId, string accessToken)
         {
-            SetAllowToAddGuestsSetting(scope, teamId, team.Security.AllowToAddGuests, accessToken);
+            if (team.Security.AllowToAddGuests.HasValue)
+            {
+                SetAllowToAddGuestsSetting(scope, teamId, team.Security.AllowToAddGuests.Value, accessToken);
+            }
 
             string[] desideredOwnerIds;
             string[] desideredMemberIds;
@@ -785,7 +791,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 channel.Description,
                 channel.DisplayName,
-                channel.IsFavoriteByDefault
+                IsFavoriteByDefault = channel.IsFavoriteByDefault.GetValueOrDefault(false)
             };
 
             var channelId = GraphHelper.CreateOrUpdateGraphObject(scope,

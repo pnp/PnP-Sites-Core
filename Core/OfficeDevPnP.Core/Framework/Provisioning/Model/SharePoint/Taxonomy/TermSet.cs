@@ -37,11 +37,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets the IsOpenForTermCreation flag for the termset
         /// </summary>
-        public bool IsOpenForTermCreation { get; set; }
+        public bool? IsOpenForTermCreation { get; set; }
         /// <summary>
         /// Gets or sets the IsAvailableForTagging flag for the termset
         /// </summary>
-        public bool IsAvailableForTagging { get; set; }
+        public bool? IsAvailableForTagging { get; set; }
         /// <summary>
         /// Gets or sets the termset owner
         /// </summary>

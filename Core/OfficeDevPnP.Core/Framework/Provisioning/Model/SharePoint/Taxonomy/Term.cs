@@ -38,7 +38,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets the IsAvailableForTagging flag for the term
         /// </summary>
-        public Boolean IsAvailableForTagging { get; set; }
+        public Boolean? IsAvailableForTagging { get; set; }
         /// <summary>
         /// Gets or sets the IsReused flag for the term
         /// </summary>
@@ -105,6 +105,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             this._terms = new TermCollection(this.ParentTemplate);
             this._labels = new TermLabelCollection(this.ParentTemplate);
+            this.IsSourceTerm = true;
         }
 
         /// <summary>

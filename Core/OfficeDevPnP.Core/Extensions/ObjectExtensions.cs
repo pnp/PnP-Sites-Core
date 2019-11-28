@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.SharePoint.Client;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -13,7 +14,6 @@ namespace OfficeDevPnP.Core.Extensions
     /// </summary>
     public static class ObjectExtensions
     {
-
         /// <summary>
         /// Set an object field or property and returns if the value was changed.
         /// </summary>
@@ -25,19 +25,59 @@ namespace OfficeDevPnP.Core.Extensions
         /// <param name="allowNull">continue with set operation is null value is specified</param>
         /// <param name="allowEmpty">continue with set operation is null or empty value is specified</param>
         /// <returns><c>true</c> if the value has changed, otherwise <c>false</c></returns>
-        public static bool Set<TObject, T>(this TObject target, Expression<Func<TObject, T>> propertyToSet, T valueToSet, bool allowNull=true, bool allowEmpty=true)
+        public static bool Set<TObject, T>(this TObject target, Expression<Func<TObject, T>> propertyToSet, T valueToSet, bool allowNull = true, bool allowEmpty = true)
+        {
+            return target.SetValue(propertyToSet, valueToSet, skipSetNullValue: (!allowNull || !allowEmpty), skipSetEmptyValue: !allowEmpty, skipSetUnchangedValue: true);
+        }
+
+        /// <summary>
+        /// Set an object field or property and returns if the value was set.
+        /// </summary>
+        /// <typeparam name="TObject">Type of the target object</typeparam>
+        /// <typeparam name="T">T of the property</typeparam>
+        /// <param name="target">target object </param>
+        /// <param name="propertyToSet">Expression to the property or field of the object</param>
+        /// <param name="valueToSet">new value to set. If <paramref name="valueToSet"/> is null <paramref name="defaultValue"/> is used if set</param>
+        /// <param name="defaultValue">value to set if <paramref name="valueToSet"/> is null</param>
+        /// <param name="skipSetUnchangedValue">continue with set operation if <paramref name="valueToSet"/> is the same as the existing value for <paramref name="propertyToSet"/></param>
+        /// <returns><c>true</c> if the value has changed, otherwise <c>false</c></returns>
+        internal static bool SetValue<TObject, T>(this TObject target, Expression<Func<TObject, T>> propertyToSet, Nullable<T> valueToSet, Nullable<T> defaultValue = null, bool skipSetUnchangedValue = false) where T: struct
+        {
+            if (valueToSet.HasValue || defaultValue.HasValue)
+            {
+                return target.SetValue(propertyToSet, valueToSet.GetValueOrDefault(defaultValue.GetValueOrDefault()), skipSetUnchangedValue: skipSetUnchangedValue);
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Set an object field or property and returns if the value was changed.
+        /// </summary>
+        /// <typeparam name="TObject">Type of the target object</typeparam>
+        /// <typeparam name="T">T of the property</typeparam>
+        /// <param name="target">target object </param>
+        /// <param name="propertyToSet">Expression to the property or field of the object</param>
+        /// <param name="valueToSet">new value to set</param>
+        /// <param name="skipSetNullValue">continue with set operation if null value is specified</param>
+        /// <param name="skipSetEmptyValue">continue with set operation if empty value is specified</param>
+        /// <param name="skipSetUnchangedValue">continue with set operation if <paramref name="valueToSet"/> is the same as the existing value for <paramref name="propertyToSet"/></param>
+        /// <returns><c>true</c> if the value has changed, otherwise <c>false</c></returns>
+        internal static bool SetValue<TObject, T>(this TObject target, Expression<Func<TObject, T>> propertyToSet, T valueToSet, bool skipSetNullValue = false, bool skipSetEmptyValue = false, bool skipSetUnchangedValue = false)
         {
             // Taken from https://stackoverflow.com/a/29092675/588868
             var members = new List<MemberInfo>();
 
             var exp = propertyToSet.Body;
 
-            if (!allowNull && valueToSet == null)
+            if (skipSetNullValue && valueToSet == null)
             {
                 return false;
             }
 
-            if (!allowEmpty && (valueToSet is string) && (valueToSet == null || (valueToSet as string) == ""))
+            if (skipSetEmptyValue && (valueToSet is string) && (valueToSet as string) == "")
             {
                 return false;
             }
@@ -97,30 +137,30 @@ namespace OfficeDevPnP.Core.Extensions
 
                 if (pi != null)
                 {
-                    var current = (T)pi.GetValue(targetObject);
-                    if (!EqualityComparer<T>.Default.Equals(current, valueToSet))
+                    if (skipSetUnchangedValue)
                     {
-                        pi.SetValue(targetObject, valueToSet);
-                        return true;
+                        var current = (T)pi.GetValue(targetObject);
+                        if (EqualityComparer<T>.Default.Equals(current, valueToSet))
+                        {
+                            return false;
+                        }
                     }
-                    else
-                    {
-                        return false;
-                    }
+                    pi.SetValue(targetObject, valueToSet);
+                    return true;
                 }
                 else
                 {
                     var fi = (FieldInfo)members[0];
-                    var current = (T)fi.GetValue(targetObject);
-                    if (!EqualityComparer<T>.Default.Equals(current, valueToSet))
+                    if (skipSetUnchangedValue)
                     {
-                        fi.SetValue(targetObject, valueToSet);
-                        return true;
+                        var current = (T)fi.GetValue(targetObject);
+                        if (EqualityComparer<T>.Default.Equals(current, valueToSet))
+                        {
+                            return false;
+                        }
                     }
-                    else
-                    {
-                        return false;
-                    }
+                    fi.SetValue(targetObject, valueToSet);
+                    return true;
                 }
             }
         }

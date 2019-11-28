@@ -1,6 +1,7 @@
 ﻿using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using OfficeDevPnP.Core.Utilities;
@@ -343,50 +344,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !SP2013 && !SP2016
                     if (!isNoScriptSite)
                     {
-                        web.NoCrawl = webSettings.NoCrawl;
+                        if (webSettings.NoCrawl.HasValue)
+                        {
+                            web.NoCrawl = webSettings.NoCrawl.Value;
+                        }
                     }
                     else
                     {
                         scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_WebSettings_SkipNoCrawlUpdate);
                     }
 
-                    if (web.CommentsOnSitePagesDisabled != webSettings.CommentsOnSitePagesDisabled)
-                    {
-                        web.CommentsOnSitePagesDisabled = webSettings.CommentsOnSitePagesDisabled;
-                    }
-
-                    if (web.ExcludeFromOfflineClient != webSettings.ExcludeFromOfflineClient)
-                    {
-                        web.ExcludeFromOfflineClient = webSettings.ExcludeFromOfflineClient;
-                    }
-
-                    if (web.MembersCanShare != webSettings.MembersCanShare)
-                    {
-                        web.MembersCanShare = webSettings.MembersCanShare;
-                    }
-
-                    if (web.DisableFlows != webSettings.DisableFlows)
-                    {
-                        web.DisableFlows = webSettings.DisableFlows;
-                    }
-
-                    if (web.DisableAppViews != webSettings.DisableAppViews)
-                    {
-                        web.DisableAppViews = webSettings.DisableAppViews;
-                    }
-
-                    if (web.HorizontalQuickLaunch != webSettings.HorizontalQuickLaunch)
-                    {
-                        web.HorizontalQuickLaunch = webSettings.HorizontalQuickLaunch;
-                    }
+                    web.SetValue(x => x.CommentsOnSitePagesDisabled, webSettings.CommentsOnSitePagesDisabled);
+                    web.SetValue(x => x.ExcludeFromOfflineClient, webSettings.ExcludeFromOfflineClient);
+                    web.SetValue(x => x.MembersCanShare, webSettings.MembersCanShare);
+                    web.SetValue(x => x.DisableFlows, webSettings.DisableFlows);
+                    web.SetValue(x => x.DisableAppViews, webSettings.DisableAppViews);
+                    web.SetValue(x => x.HorizontalQuickLaunch, webSettings.HorizontalQuickLaunch);
 
 #if !SP2019
-                    if (web.SearchScope.ToString() != webSettings.SearchScope.ToString())
+                    if (webSettings.SearchScope.HasValue && web.SearchScope.ToString() != webSettings.SearchScope.ToString())
                     {
                         web.SearchScope = (SearchScopeType)Enum.Parse(typeof(SearchScopeType), webSettings.SearchScope.ToString(), true);
                     }
 
-                    if(web.SearchBoxInNavBar.ToString() != webSettings.SearchBoxInNavBar.ToString())
+                    if(webSettings.SearchBoxInNavBar.HasValue && web.SearchBoxInNavBar.ToString() != webSettings.SearchBoxInNavBar.ToString())
                     {
                         web.SearchBoxInNavBar = (SearchBoxInNavBarType)Enum.Parse(typeof(SearchBoxInNavBarType), webSettings.SearchBoxInNavBar.ToString(), true);
                     }

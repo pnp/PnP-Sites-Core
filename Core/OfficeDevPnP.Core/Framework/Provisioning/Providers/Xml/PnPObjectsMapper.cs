@@ -166,45 +166,59 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             else
                             {
                                 object sourceValue = sp.GetValue(source);
-                                if (sourceValue != null && dp.PropertyType == typeof(string) && sp.PropertyType != typeof(string))
-                                {
-                                    // Default conversion to String
-                                    sourceValue = sourceValue.ToString();
-                                }
-                                else if (sourceValue != null && dp.PropertyType == typeof(int) && sp.PropertyType != typeof(int))
-                                {
-                                    // Default conversion to Int32
-                                    sourceValue = Int32.Parse(sourceValue.ToString());
-                                }
-                                else if (sourceValue != null && dp.PropertyType == typeof(bool) && sp.PropertyType != typeof(bool))
-                                {
-                                    // Default conversion to Boolean
-                                    sourceValue = Boolean.Parse(sourceValue.ToString());
-                                }
-                                else if (sourceValue == null && 
-                                    dp.ReflectedType.Namespace == typeof(ProvisioningTemplate).Namespace && 
-                                    dp.GetValue(destination) != null)
-                                {
-                                    // If the destination property is an in memory Domain Model property
-                                    // and it has a value, while the source property is null, we keep the
-                                    // existing value
-                                    sourceValue = dp.GetValue(destination);
-                                }
-                                else if (sourceValue != null && spSpecified != null)
+                                Type nullableDestinationType = Nullable.GetUnderlyingType(dp.PropertyType);
+                                bool isSpecified;
+                                if (spSpecified != null)
                                 {
                                     // We are processing a property of the schema, which can be nullable
-                                    bool isSpecified = (bool)spSpecified.GetValue(source);
-                                    if (!isSpecified)
+                                    isSpecified = (bool)spSpecified.GetValue(source);
+                                }
+                                else
+                                {
+                                    isSpecified = true;
+                                }
+
+                                if (isSpecified)
+                                {
+                                    if (sourceValue != null && dp.PropertyType == typeof(string) && sp.PropertyType != typeof(string))
                                     {
-                                        sourceValue = null;
+                                        // Default conversion to String
+                                        sourceValue = sourceValue.ToString();
                                     }
+                                    else if (sourceValue != null && (dp.PropertyType == typeof(int) || nullableDestinationType == typeof(int)) && sp.PropertyType != typeof(int))
+                                    {
+                                        // Default conversion to Int32
+                                        sourceValue = Int32.Parse(sourceValue.ToString());
+                                    }
+                                    else if (sourceValue != null && dp.PropertyType == typeof(bool) && sp.PropertyType != typeof(bool))
+                                    {
+                                        // Default conversion to Boolean
+                                        sourceValue = Boolean.Parse(sourceValue.ToString());
+                                    }
+                                    else if (sourceValue == null &&
+                                        dp.ReflectedType.Namespace == typeof(ProvisioningTemplate).Namespace &&
+                                        dp.GetValue(destination) != null)
+                                    {
+                                        // If the destination property is an in memory Domain Model property
+                                        // and it has a value, while the source property is null, we keep the
+                                        // existing value
+                                        sourceValue = dp.GetValue(destination);
+                                    }
+                                    else if (sourceValue != null && nullableDestinationType != null && nullableDestinationType.IsEnum)
+                                    {
+                                        sourceValue = Enum.Parse(nullableDestinationType, sourceValue.ToString(), true);
+                                    }
+                                }
+                                else
+                                {
+                                    sourceValue = null;
                                 }
                                 // We simply need to do 1:1 value mapping
                                 dp.SetValue(destination, sourceValue);
 
                                 if (dpSpecified != null)
                                 {
-                                    dpSpecified.SetValue(destination, true);
+                                    dpSpecified.SetValue(destination, sourceValue != null);
                                 }
                             }
                         }

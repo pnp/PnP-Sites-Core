@@ -21,12 +21,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the Menu Style
         /// </summary>
-        public SiteHeaderMenuStyle MenuStyle { get; set; }
+        public SiteHeaderMenuStyle? MenuStyle { get; set; }
 
         /// <summary>
         /// Defines the Background Emphasis of the Header
         /// </summary>
-        public Emphasis BackgroundEmphasis { get; set; }
+        public Emphasis? BackgroundEmphasis { get; set; }
 
         #endregion
 

@@ -163,7 +163,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                 Assert.IsInstanceOfType(group, typeof(Microsoft.SharePoint.Client.Taxonomy.TermGroup));
                 Assert.IsInstanceOfType(set, typeof(Microsoft.SharePoint.Client.Taxonomy.TermSet));
-                Assert.IsTrue(set.Terms.Count == 2);
+                Assert.AreEqual(2, set.Terms.Count);
 
 
                 var creationInfo = new ProvisioningTemplateCreationInformation(ctx.Web) { BaseTemplate = ctx.Web.GetBaseTemplate() };
@@ -200,6 +200,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             var reusedTerm = new Term(sourceTerm.Id, "Source Term 1", null, null, null, null, null)
             {
                 IsReused = true,
+                IsSourceTerm = false,
                 SourceTermId = sourceTerm.Id
             };
 

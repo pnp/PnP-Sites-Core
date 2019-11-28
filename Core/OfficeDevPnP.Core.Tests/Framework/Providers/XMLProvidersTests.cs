@@ -528,7 +528,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(1, result.ContentTypes.Count);
             Assert.IsNotNull(result.ContentTypes[0].FieldRefs);
             Assert.AreEqual(4, result.ContentTypes[0].FieldRefs.Count);
-            Assert.AreEqual(1, result.ContentTypes[0].FieldRefs.Count(f => f.Required));
+            Assert.AreEqual(1, result.ContentTypes[0].FieldRefs.Count(f => f.Required.HasValue && f.Required.Value));
 
             Assert.IsTrue(result.PropertyBagEntries.Count == 2);
         }
@@ -876,10 +876,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("/Forms/NewForm.aspx", ct.NewFormUrl);
             Assert.AreEqual("/Forms/EditForm.aspx", ct.EditFormUrl);
             Assert.AreEqual("DocumentTemplate.dotx", ct.DocumentTemplate);
-            Assert.IsTrue(ct.Hidden);
+            Assert.IsTrue(ct.Hidden.HasValue && ct.Hidden.Value);
             Assert.IsTrue(ct.Overwrite);
-            Assert.IsTrue(ct.ReadOnly);
-            Assert.IsTrue(ct.Sealed);
+            Assert.IsTrue(ct.ReadOnly.HasValue && ct.ReadOnly.Value);
+            Assert.IsTrue(ct.Sealed.HasValue && ct.Sealed.Value);
 
             Assert.IsNotNull(ct.DocumentSetTemplate);
             Assert.IsNotNull(ct.DocumentSetTemplate.AllowedContentTypes);
@@ -902,8 +902,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var field = ct.FieldRefs.FirstOrDefault(f => f.Name == "TestField");
             Assert.IsNotNull(field);
             Assert.AreEqual(new Guid("23203e97-3bfe-40cb-afb4-07aa2b86bf45"), field.Id);
-            Assert.IsTrue(field.Required);
-            Assert.IsTrue(field.Hidden);
+            Assert.IsTrue(field.Required.HasValue && field.Required.Value);
+            Assert.IsTrue(field.Hidden.HasValue && field.Hidden.Value);
         }
 
 
@@ -1745,8 +1745,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Test Termset 1 Test Term Group", ts.Description);
             Assert.AreEqual("termset1owner@termgroup1", ts.Owner);
             Assert.AreEqual(1049, ts.Language);
-            Assert.IsTrue(ts.IsAvailableForTagging);
-            Assert.IsTrue(ts.IsOpenForTermCreation);
+            Assert.AreEqual(true, ts.IsAvailableForTagging);
+            Assert.AreEqual(true, ts.IsOpenForTermCreation);
             Assert.IsNotNull(ts.Properties);
             Assert.AreEqual(2, ts.Properties.Count());
             Assert.IsNotNull(ts.Properties.FirstOrDefault(p => p.Key == "Property1"));
@@ -1764,7 +1764,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(1055, tm.Language);
             Assert.AreEqual("term1owner@termgroup1", tm.Owner);
             Assert.AreEqual(new Guid("bd36d6f6-ee5f-4ce5-961c-93867d8f1f3d"), tm.SourceTermId);
-            Assert.IsTrue(tm.IsAvailableForTagging);
+            Assert.AreEqual(true, tm.IsAvailableForTagging);
             Assert.IsTrue(tm.IsDeprecated);
             Assert.IsTrue(tm.IsReused);
             Assert.IsTrue(tm.IsSourceTerm);
@@ -1813,7 +1813,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsNull(tm.Language);
             Assert.AreEqual("term1owner@term2owner", tm.Owner);
             Assert.AreEqual(Guid.Empty, tm.SourceTermId);
-            Assert.IsFalse(tm.IsAvailableForTagging);
+            Assert.AreEqual(false, tm.IsAvailableForTagging);
             Assert.IsFalse(tm.IsDeprecated);
             Assert.IsFalse(tm.IsReused);
             Assert.IsFalse(tm.IsSourceTerm);
@@ -2197,7 +2197,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsFalse(wd.RequiresAssociationForm);
             Assert.IsFalse(wd.RequiresInitiationForm);
             Assert.IsNull(wd.RestrictToScope);
-            Assert.AreEqual("Universal", wd.RestrictToType);
+            Assert.IsNull(wd.RestrictToType);
             Assert.IsTrue(wd.Properties == null || wd.Properties.Count == 0);
             Assert.AreEqual("workflow2.xaml", wd.XamlPath);
 
@@ -3006,7 +3006,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("Resources/Themes/Contoso/Contoso.css", template.WebSettings.AlternateCSS);
             Assert.AreEqual("seattle.master", template.WebSettings.MasterPageUrl);
             Assert.AreEqual("custom.master", template.WebSettings.CustomMasterPageUrl);
-            Assert.IsTrue(template.WebSettings.NoCrawl);
+            Assert.AreEqual(true, template.WebSettings.NoCrawl);
             Assert.AreEqual("admin@contoso.com", template.WebSettings.RequestAccessEmail);
             Assert.AreEqual("Resources/Themes/Contoso/contosologo.png", template.WebSettings.SiteLogo);
             Assert.AreEqual("Contoso Portal", template.WebSettings.Title);
@@ -3085,8 +3085,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(DayOfWeek.Sunday, template.RegionalSettings.FirstDayOfWeek);
             Assert.AreEqual(1, template.RegionalSettings.FirstWeekOfYear);
             Assert.AreEqual(1040, template.RegionalSettings.LocaleId);
-            Assert.IsTrue(template.RegionalSettings.ShowWeeks);
-            Assert.IsTrue(template.RegionalSettings.Time24);
+            Assert.AreEqual(true, template.RegionalSettings.ShowWeeks);
+            Assert.AreEqual(true, template.RegionalSettings.Time24);
             Assert.AreEqual(2, template.RegionalSettings.TimeZone);
             Assert.AreEqual(WorkHour.PM0600, template.RegionalSettings.WorkDayEndHour);
             Assert.AreEqual(5, template.RegionalSettings.WorkDays);
@@ -3238,12 +3238,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             var prop = template.PropertyBagEntries.FirstOrDefault(p => p.Key == "KEY1");
             Assert.IsNotNull(prop);
             Assert.AreEqual("value1", prop.Value);
-            Assert.IsTrue(prop.Indexed);
+            Assert.IsTrue(prop.Indexed.HasValue && prop.Indexed.Value);
             Assert.IsTrue(prop.Overwrite);
             prop = template.PropertyBagEntries.FirstOrDefault(p => p.Key == "KEY2");
             Assert.IsNotNull(prop);
             Assert.AreEqual("value2", prop.Value);
-            Assert.IsFalse(prop.Indexed);
+            Assert.IsFalse(prop.Indexed.HasValue && prop.Indexed.Value);
             Assert.IsFalse(prop.Overwrite);
         }
 
@@ -4016,20 +4016,20 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             var l = template.Lists.FirstOrDefault(ls => ls.Title == "Project Documents");
             Assert.IsNotNull(l);
-            Assert.IsTrue(l.ContentTypesEnabled);
+            Assert.AreEqual(true, l.ContentTypesEnabled);
             Assert.AreEqual("Project Documents are stored here", l.Description);
             Assert.AreEqual("document.dotx", l.DocumentTemplate);
             Assert.AreEqual(1, l.DraftVersionVisibility);
-            Assert.IsTrue(l.EnableAttachments);
-            Assert.IsTrue(l.EnableFolderCreation);
-            Assert.IsTrue(l.EnableMinorVersions);
-            Assert.IsTrue(l.EnableModeration);
-            Assert.IsTrue(l.EnableVersioning);
-            Assert.IsTrue(l.ForceCheckout);
-            Assert.IsTrue(l.Hidden);
+            Assert.AreEqual(true, l.EnableAttachments);
+            Assert.AreEqual(true, l.EnableFolderCreation);
+            Assert.AreEqual(true, l.EnableMinorVersions);
+            Assert.AreEqual(true, l.EnableModeration);
+            Assert.AreEqual(true, l.EnableVersioning);
+            Assert.AreEqual(true, l.ForceCheckout);
+            Assert.AreEqual(true, l.Hidden);
             Assert.AreEqual(10, l.MaxVersionLimit);
             Assert.AreEqual(2, l.MinorVersionLimit);
-            Assert.IsTrue(l.OnQuickLaunch);
+            Assert.AreEqual(true, l.OnQuickLaunch);
             Assert.IsTrue(l.RemoveExistingContentTypes);
             Assert.AreEqual(new Guid("30FB193E-016E-45A6-B6FD-C6C2B31AA150"), l.TemplateFeatureID);
             Assert.AreEqual(101, l.TemplateType);
@@ -4200,20 +4200,20 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsNotNull(fr);
             Assert.AreEqual(new Guid("23203E97-3BFE-40CB-AFB4-07AA2B86BF45"), fr.Id);
             Assert.AreEqual("Project ID", fr.DisplayName);
-            Assert.IsFalse(fr.Hidden);
-            Assert.IsTrue(fr.Required);
+            Assert.IsFalse(fr.Hidden.HasValue && fr.Hidden.Value);
+            Assert.IsTrue(fr.Required.HasValue && fr.Required.Value);
             fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectName");
             Assert.IsNotNull(fr);
             Assert.AreEqual(new Guid("B01B3DBC-4630-4ED1-B5BA-321BC7841E3D"), fr.Id);
             Assert.AreEqual("Project Name", fr.DisplayName);
-            Assert.IsTrue(fr.Hidden);
-            Assert.IsFalse(fr.Required);
+            Assert.IsTrue(fr.Hidden.HasValue && fr.Hidden.Value);
+            Assert.IsFalse(fr.Required.HasValue && fr.Required.Value);
             fr = l.FieldRefs.FirstOrDefault(f => f.Name == "ProjectManager");
             Assert.IsNotNull(fr);
             Assert.AreEqual(new Guid("A5DE9600-B7A6-42DD-A05E-10D4F1500208"), fr.Id);
             Assert.AreEqual("Project Manager", fr.DisplayName);
-            Assert.IsFalse(fr.Hidden);
-            Assert.IsTrue(fr.Required);
+            Assert.IsFalse(fr.Hidden.HasValue && fr.Hidden.Value);
+            Assert.IsTrue(fr.Required.HasValue && fr.Required.Value);
 #endregion
 
 #region folders

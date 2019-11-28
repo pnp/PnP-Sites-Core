@@ -120,7 +120,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                      {
                          Key = bag.Key,
                          Value = bag.Value,
-                         Indexed = bag.Indexed
+                         Indexed = bag.Indexed.GetValueOrDefault()
                      }).ToArray();
             }
             else
@@ -221,17 +221,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                            Description = ct.Description,
                                            Group = ct.Group,
                                            Name = ct.Name,
-                                           Sealed = ct.Sealed,
-                                           Hidden = ct.Hidden,
-                                           ReadOnly = ct.ReadOnly,
+                                           Sealed = ct.Sealed.GetValueOrDefault(),
+                                           Hidden = ct.Hidden.GetValueOrDefault(),
+                                           ReadOnly = ct.ReadOnly.GetValueOrDefault(),
                                            FieldRefs = ct.FieldRefs.Count > 0 ?
                     (from fieldRef in ct.FieldRefs
                      select new V201505.ContentTypeFieldRef
                      {
                          Name = fieldRef.Name,
                          ID = fieldRef.Id.ToString(),
-                         Hidden = fieldRef.Hidden,
-                         Required = fieldRef.Required
+                         Hidden = fieldRef.Hidden.GetValueOrDefault(),
+                         Required = fieldRef.Required.GetValueOrDefault()
                      }).ToArray() : null,
                                        }).ToArray();
 
@@ -250,21 +250,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     (from list in template.Lists
                      select new V201505.ListInstance
                      {
-                         ContentTypesEnabled = list.ContentTypesEnabled,
+                         ContentTypesEnabled = list.ContentTypesEnabled.GetValueOrDefault(),
                          Description = list.Description,
                          DocumentTemplate = list.DocumentTemplate,
-                         EnableVersioning = list.EnableVersioning,
-                         EnableMinorVersions = list.EnableMinorVersions,
-                         EnableModeration = list.EnableModeration,
-                         DraftVersionVisibility = list.DraftVersionVisibility,
-                         Hidden = list.Hidden,
-                         MinorVersionLimit = list.MinorVersionLimit,
+                         EnableVersioning = list.EnableVersioning.GetValueOrDefault(),
+                         EnableMinorVersions = list.EnableMinorVersions.GetValueOrDefault(),
+                         EnableModeration = list.EnableModeration.GetValueOrDefault(),
+                         DraftVersionVisibility = list.DraftVersionVisibility.GetValueOrDefault(),
+                         Hidden = list.Hidden.GetValueOrDefault(),
+                         MinorVersionLimit = list.MinorVersionLimit.GetValueOrDefault(),
                          MinorVersionLimitSpecified = true,
-                         MaxVersionLimit = list.MaxVersionLimit,
+                         MaxVersionLimit = list.MaxVersionLimit.GetValueOrDefault(),
                          MaxVersionLimitSpecified = true,
-                         OnQuickLaunch = list.OnQuickLaunch,
-                         EnableAttachments = list.EnableAttachments,
-                         EnableFolderCreation = list.EnableFolderCreation,
+                         OnQuickLaunch = list.OnQuickLaunch.GetValueOrDefault(),
+                         EnableAttachments = list.EnableAttachments.GetValueOrDefault(true),
+                         EnableFolderCreation = list.EnableFolderCreation.GetValueOrDefault(true),
                          RemoveExistingContentTypes = list.RemoveExistingContentTypes,
                          TemplateFeatureID = list.TemplateFeatureID != Guid.Empty ? list.TemplateFeatureID.ToString() : null,
                          TemplateType = list.TemplateType,
@@ -298,8 +298,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                           {
                               Name = fieldRef.Name,
                               DisplayName = fieldRef.DisplayName,
-                              Hidden = fieldRef.Hidden,
-                              Required = fieldRef.Required,
+                              Hidden = fieldRef.Hidden.GetValueOrDefault(),
+                              Required = fieldRef.Required.GetValueOrDefault(),
                               ID = fieldRef.Id.ToString(),
                           }).ToArray() : null,
                          DataRows = list.DataRows.Count > 0 ?
@@ -546,8 +546,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             {
                                 ID = termSet.Id.ToString(),
                                 Name = termSet.Name,
-                                IsAvailableForTagging = termSet.IsAvailableForTagging,
-                                IsOpenForTermCreation = termSet.IsOpenForTermCreation,
+                                IsAvailableForTagging = termSet.IsAvailableForTagging.GetValueOrDefault(true),
+                                IsOpenForTermCreation = termSet.IsOpenForTermCreation.GetValueOrDefault(false),
                                 Description = termSet.Description,
                                 Language = termSet.Language.HasValue ? termSet.Language.Value : 0,
                                 LanguageSpecified = termSet.Language.HasValue,
@@ -1128,7 +1128,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     Owner = term.Owner,
                     LanguageSpecified = term.Language.HasValue,
                     Language = term.Language.HasValue ? term.Language.Value : 1033,
-                    IsAvailableForTagging = term.IsAvailableForTagging,
+                    IsAvailableForTagging = term.IsAvailableForTagging.GetValueOrDefault(true),
                     CustomSortOrder = term.CustomSortOrder,
                     Terms = term.Terms.Count > 0 ? new TermTerms { Items = term.Terms.FromModelTermsToSchemaTermsV201505() } : null,
                     CustomProperties = term.Properties.Count > 0 ?

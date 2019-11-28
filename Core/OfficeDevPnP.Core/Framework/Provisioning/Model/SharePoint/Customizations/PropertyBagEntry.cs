@@ -18,7 +18,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets the Indexed flag for property bag entry
         /// </summary>
-        public bool Indexed { get; set; }
+        public bool? Indexed { get; set; }
 
         /// <summary>
         /// Gets or sets the Overwrite flag for property bag entry

@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines whether the site has to be crawled or not
         /// </summary>
-        public Boolean NoCrawl { get; set; }
+        public Boolean? NoCrawl { get; set; }
 
         /// <summary>
         /// The email address to which any access request will be sent
@@ -67,12 +67,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines whether the comments on site pages are disabled or not
         /// </summary>
-        public Boolean CommentsOnSitePagesDisabled { get; set; }
+        public Boolean? CommentsOnSitePagesDisabled { get; set; }
 
         /// <summary>
         /// Enables or disables the QuickLaunch for the site
         /// </summary>
-        public Boolean QuickLaunchEnabled { get; set; }
+        public Boolean? QuickLaunchEnabled { get; set; }
 
         /// <summary>
         /// Defines the list of Alternate UI Cultures for the current web
@@ -82,47 +82,47 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines whether to enable Multilingual capabilities for the current web
         /// </summary>
-        public bool IsMultilingual { get; set; }
+        public bool? IsMultilingual { get; set; }
 
         /// <summary>
         /// Defines whether to OverwriteTranslationsOnChange on change for the current web
         /// </summary>
-        public bool OverwriteTranslationsOnChange { get; set; }
+        public bool? OverwriteTranslationsOnChange { get; set; }
 
         /// <summary>
         /// Defines whether to exclude the web from offline client
         /// </summary>
-        public bool ExcludeFromOfflineClient { get; set; }
+        public bool? ExcludeFromOfflineClient { get; set; }
 
         /// <summary>
         /// Defines whether members can share content from the current web
         /// </summary>
-        public bool MembersCanShare { get; set; }
+        public bool? MembersCanShare { get; set; }
 
         /// <summary>
         /// Defines whether disable flows for the current web
         /// </summary>
-        public bool DisableFlows { get; set; }
+        public bool? DisableFlows { get; set; }
 
         /// <summary>
         /// Defines whether disable PowerApps for the current web
         /// </summary>
-        public bool DisableAppViews { get; set; }
+        public bool? DisableAppViews { get; set; }
 
         /// <summary>
         /// Defines whether to enable the Horizontal QuickLaunch for the current web
         /// </summary>
-        public bool HorizontalQuickLaunch { get; set; }
+        public bool? HorizontalQuickLaunch { get; set; }
 
         /// <summary>
         /// Defines the SearchScope for the site
         /// </summary>
-        public SearchScopes SearchScope { get; set; }
+        public SearchScopes? SearchScope { get; set; }
 
         /// <summary>
         /// Define if the suitebar search box should show or not 
         /// </summary>
-        public SearchBoxInNavBar SearchBoxInNavBar { get; set; }
+        public SearchBoxInNavBar? SearchBoxInNavBar { get; set; }
 
         #endregion
 

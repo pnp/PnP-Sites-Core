@@ -1759,7 +1759,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, propertyBagEntries[0].Overwrite);
             Assert.AreEqual("KEY1", propertyBagEntries[0].Key);
             Assert.AreEqual("value1", propertyBagEntries[0].Value);
-            Assert.AreEqual(true, propertyBagEntries[1].Indexed);
+            Assert.AreEqual(true, propertyBagEntries[1].Indexed.Value);
         }
 
         [TestMethod]
@@ -2392,10 +2392,10 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("DocumentTemplate.dotx", ct.DocumentTemplate);
             Assert.AreEqual(new Guid("F1A1715E-6C52-40DE-8403-E9AAFD0470D0"), ct.FieldRefs[3].Id);
             Assert.AreEqual(true, ct.FieldRefs[3].UpdateChildren);
-            Assert.IsFalse(ct.Hidden);
+            Assert.IsFalse(ct.Hidden.HasValue && ct.Hidden.Value);
             Assert.IsFalse(ct.Overwrite);
-            Assert.IsFalse(ct.ReadOnly);
-            Assert.IsFalse(ct.Sealed);
+            Assert.IsFalse(ct.ReadOnly.HasValue && ct.ReadOnly.Value);
+            Assert.IsFalse(ct.Sealed.HasValue && ct.Sealed.Value);
 
             ct = template.ContentTypes.FirstOrDefault(c => c.Id == "0x0120D5200039D83CD2C9BA4A4499AEE6BE3562E023");
             Assert.IsNotNull(ct.DocumentSetTemplate);
@@ -2539,19 +2539,19 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             // common properties
             var list = template.Lists.FirstOrDefault(ls => ls.Title == "{parameter:CompanyName} - Projects");
             Assert.IsNotNull(list);
-            Assert.IsTrue(list.ContentTypesEnabled);
+            Assert.AreEqual(true, list.ContentTypesEnabled);
             Assert.AreEqual("Project Documents are stored here", list.Description);
             Assert.AreEqual(1, list.DraftVersionVisibility);
-            Assert.IsFalse(list.EnableAttachments);
-            Assert.IsTrue(list.EnableFolderCreation);
-            Assert.IsTrue(list.EnableMinorVersions);
-            Assert.IsFalse(list.EnableModeration);
-            Assert.IsTrue(list.EnableVersioning);
-            Assert.IsTrue(list.ForceCheckout);
-            Assert.IsFalse(list.Hidden);
+            Assert.AreEqual(false, list.EnableAttachments);
+            Assert.AreEqual(true, list.EnableFolderCreation);
+            Assert.AreEqual(true, list.EnableMinorVersions);
+            Assert.AreEqual(false, list.EnableModeration);
+            Assert.AreEqual(true, list.EnableVersioning);
+            Assert.AreEqual(true, list.ForceCheckout);
+            Assert.AreEqual(false, list.Hidden);
             Assert.AreEqual(10, list.MaxVersionLimit);
             Assert.AreEqual(10, list.MinorVersionLimit);
-            Assert.IsTrue(list.OnQuickLaunch);
+            Assert.AreEqual(true, list.OnQuickLaunch);
             Assert.IsFalse(list.RemoveExistingContentTypes);
             Assert.AreEqual(Core.Framework.Provisioning.Model.ListExperience.ClassicExperience, list.ListExperience);
             Assert.AreEqual(new Guid("81a7b6a8-c0e9-4819-aea1-8fc8894d3c43"), list.TemplateFeatureID);

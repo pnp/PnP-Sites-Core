@@ -133,8 +133,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     {
                         set.Description = parser.ParseString(modelTermSet.Description);
                     }
-                    set.IsOpenForTermCreation = modelTermSet.IsOpenForTermCreation;
-                    set.IsAvailableForTagging = modelTermSet.IsAvailableForTagging;
+                    if (modelTermSet.IsOpenForTermCreation.HasValue)
+                    {
+                        set.IsOpenForTermCreation = modelTermSet.IsOpenForTermCreation.Value;
+                    }
+                    if (modelTermSet.IsAvailableForTagging.HasValue)
+                    {
+                        set.IsAvailableForTagging = modelTermSet.IsAvailableForTagging.Value;
+                    }
                     foreach (var property in modelTermSet.Properties)
                     {
                         set.SetCustomProperty(property.Key, parser.ParseString(property.Value));
@@ -266,7 +272,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
             var reusedTerms = new List<ReusedTerm>();
             // If the term is a re-used term and the term is not a source term, skip for now and create later
-            if (modelTerm.IsReused && !modelTerm.IsSourceTerm)
+            
+            if (!modelTerm.IsSourceTerm)
             {
                 reusedTerms.Add(new ReusedTerm()
                 {
@@ -308,7 +315,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 term.Owner = modelTerm.Owner;
             }
 
-            term.IsAvailableForTagging = modelTerm.IsAvailableForTagging;
+            if (modelTerm.IsAvailableForTagging.HasValue)
+            {
+                term.IsAvailableForTagging = modelTerm.IsAvailableForTagging.Value;
+            }
 
             if (modelTerm.Properties.Any() || modelTerm.Labels.Any() || modelTerm.LocalProperties.Any())
             {

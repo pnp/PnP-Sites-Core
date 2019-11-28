@@ -60,72 +60,72 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 web.Context.ExecuteQueryRetry();
 
                 var isDirty = false;
-                if (web.RegionalSettings.AdjustHijriDays != template.RegionalSettings.AdjustHijriDays)
+                if (template.RegionalSettings.AdjustHijriDays.HasValue && web.RegionalSettings.AdjustHijriDays != template.RegionalSettings.AdjustHijriDays.Value)
                 {
-                    web.RegionalSettings.AdjustHijriDays = Convert.ToInt16(template.RegionalSettings.AdjustHijriDays);
+                    web.RegionalSettings.AdjustHijriDays = Convert.ToInt16(template.RegionalSettings.AdjustHijriDays.Value);
                     isDirty = true;
                 }
-                if (web.RegionalSettings.AlternateCalendarType != (short)template.RegionalSettings.AlternateCalendarType)
+                if (template.RegionalSettings.AlternateCalendarType.HasValue && web.RegionalSettings.AlternateCalendarType != (short)template.RegionalSettings.AlternateCalendarType.Value)
                 {
-                    web.RegionalSettings.AlternateCalendarType = (short)template.RegionalSettings.AlternateCalendarType;
+                    web.RegionalSettings.AlternateCalendarType = (short)template.RegionalSettings.AlternateCalendarType.Value;
                     isDirty = true;
                 }
-                if (template.RegionalSettings.CalendarType != CalendarType.None)
+                if (template.RegionalSettings.CalendarType.HasValue && template.RegionalSettings.CalendarType != CalendarType.None)
                 {
-                    if (web.RegionalSettings.CalendarType != (short)template.RegionalSettings.CalendarType)
+                    if (web.RegionalSettings.CalendarType != (short)template.RegionalSettings.CalendarType.Value)
                     {
-                        web.RegionalSettings.CalendarType = (short)template.RegionalSettings.CalendarType;
+                        web.RegionalSettings.CalendarType = (short)template.RegionalSettings.CalendarType.Value;
                         isDirty = true;
                     }
                 }
-                if (web.RegionalSettings.Collation != Convert.ToInt16(template.RegionalSettings.Collation))
+                if (template.RegionalSettings.Collation.HasValue && web.RegionalSettings.Collation != Convert.ToInt16(template.RegionalSettings.Collation.Value))
                 {
-                    web.RegionalSettings.Collation = Convert.ToInt16(template.RegionalSettings.Collation);
+                    web.RegionalSettings.Collation = Convert.ToInt16(template.RegionalSettings.Collation.Value);
                     isDirty = true;
                 }
-                if (web.RegionalSettings.FirstDayOfWeek != (uint)template.RegionalSettings.FirstDayOfWeek)
+                if (template.RegionalSettings.FirstDayOfWeek.HasValue && web.RegionalSettings.FirstDayOfWeek != (uint)template.RegionalSettings.FirstDayOfWeek.Value)
                 {
-                    web.RegionalSettings.FirstDayOfWeek = (uint)template.RegionalSettings.FirstDayOfWeek;
+                    web.RegionalSettings.FirstDayOfWeek = (uint)template.RegionalSettings.FirstDayOfWeek.Value;
                     isDirty = true;
                 }
-                if (web.RegionalSettings.FirstWeekOfYear != Convert.ToInt16(template.RegionalSettings.FirstWeekOfYear))
+                if (template.RegionalSettings.FirstWeekOfYear.HasValue && web.RegionalSettings.FirstWeekOfYear != Convert.ToInt16(template.RegionalSettings.FirstWeekOfYear.Value))
                 {
-                    web.RegionalSettings.FirstWeekOfYear = Convert.ToInt16(template.RegionalSettings.FirstWeekOfYear);
+                    web.RegionalSettings.FirstWeekOfYear = Convert.ToInt16(template.RegionalSettings.FirstWeekOfYear.Value);
                     isDirty = true;
                 }
-                if (template.RegionalSettings.LocaleId > 0 && (web.RegionalSettings.LocaleId != Convert.ToUInt32(template.RegionalSettings.LocaleId)))
+                if (template.RegionalSettings.LocaleId.HasValue && template.RegionalSettings.LocaleId > 0 && (web.RegionalSettings.LocaleId != Convert.ToUInt32(template.RegionalSettings.LocaleId.Value)))
                 {
-                    web.RegionalSettings.LocaleId = Convert.ToUInt32(template.RegionalSettings.LocaleId);
+                    web.RegionalSettings.LocaleId = Convert.ToUInt32(template.RegionalSettings.LocaleId.Value);
                     isDirty = true;
                 }
-                if (web.RegionalSettings.ShowWeeks != template.RegionalSettings.ShowWeeks)
+                if (template.RegionalSettings.ShowWeeks.HasValue && web.RegionalSettings.ShowWeeks != template.RegionalSettings.ShowWeeks.Value)
                 {
-                    web.RegionalSettings.ShowWeeks = template.RegionalSettings.ShowWeeks;
+                    web.RegionalSettings.ShowWeeks = template.RegionalSettings.ShowWeeks.Value;
                     isDirty = true;
                 }
-                if (web.RegionalSettings.Time24 != template.RegionalSettings.Time24)
+                if (template.RegionalSettings.Time24.HasValue && web.RegionalSettings.Time24 != template.RegionalSettings.Time24.Value)
                 {
-                    web.RegionalSettings.Time24 = template.RegionalSettings.Time24;
+                    web.RegionalSettings.Time24 = template.RegionalSettings.Time24.Value;
                     isDirty = true;
                 }
-                if (template.RegionalSettings.TimeZone != 0 && (web.RegionalSettings.TimeZone.Id != template.RegionalSettings.TimeZone))
+                if (template.RegionalSettings.TimeZone.HasValue && template.RegionalSettings.TimeZone != 0 && (web.RegionalSettings.TimeZone.Id != template.RegionalSettings.TimeZone.Value))
                 {
-                    web.RegionalSettings.TimeZone = web.RegionalSettings.TimeZones.GetById(template.RegionalSettings.TimeZone);
+                    web.RegionalSettings.TimeZone = web.RegionalSettings.TimeZones.GetById(template.RegionalSettings.TimeZone.Value);
                     isDirty = true;
                 }
-                if (web.RegionalSettings.WorkDayEndHour != (short)template.RegionalSettings.WorkDayEndHour)
+                if (template.RegionalSettings.WorkDayEndHour.HasValue && web.RegionalSettings.WorkDayEndHour != (short)template.RegionalSettings.WorkDayEndHour.Value)
                 {
-                    web.RegionalSettings.WorkDayEndHour = (short)template.RegionalSettings.WorkDayEndHour;
+                    web.RegionalSettings.WorkDayEndHour = (short)template.RegionalSettings.WorkDayEndHour.Value;
                     isDirty = true;
                 }
-                if (template.RegionalSettings.WorkDays > 0 && (web.RegionalSettings.WorkDays != Convert.ToInt16(template.RegionalSettings.WorkDays)))
+                if (template.RegionalSettings.WorkDays.HasValue && template.RegionalSettings.WorkDays > 0 && (web.RegionalSettings.WorkDays != Convert.ToInt16(template.RegionalSettings.WorkDays.Value)))
                 {
-                    web.RegionalSettings.WorkDays = Convert.ToInt16(template.RegionalSettings.WorkDays);
+                    web.RegionalSettings.WorkDays = Convert.ToInt16(template.RegionalSettings.WorkDays.Value);
                     isDirty = true;
                 }
-                if (web.RegionalSettings.WorkDayStartHour != (short)template.RegionalSettings.WorkDayStartHour)
+                if (template.RegionalSettings.WorkDayStartHour.HasValue && web.RegionalSettings.WorkDayStartHour != (short)template.RegionalSettings.WorkDayStartHour.Value)
                 {
-                    web.RegionalSettings.WorkDayStartHour = (short)template.RegionalSettings.WorkDayStartHour;
+                    web.RegionalSettings.WorkDayStartHour = (short)template.RegionalSettings.WorkDayStartHour.Value;
                     isDirty = true;
                 }
                 if (isDirty)

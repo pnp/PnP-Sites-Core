@@ -233,14 +233,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     (from list in template.Lists
                      select new V201503.ListInstance
                      {
-                         ContentTypesEnabled = list.ContentTypesEnabled,
+                         ContentTypesEnabled = list.ContentTypesEnabled.GetValueOrDefault(),
                          Description = list.Description,
                          DocumentTemplate = list.DocumentTemplate,
-                         EnableVersioning = list.EnableVersioning,
-                         Hidden = list.Hidden,
-                         MinorVersionLimit = list.MinorVersionLimit,
-                         MaxVersionLimit = list.MaxVersionLimit,
-                         OnQuickLaunch = list.OnQuickLaunch,
+                         EnableVersioning = list.EnableVersioning.GetValueOrDefault(),
+                         Hidden = list.Hidden.GetValueOrDefault(),
+                         MinorVersionLimit = list.MinorVersionLimit.GetValueOrDefault(),
+                         MaxVersionLimit = list.MaxVersionLimit.GetValueOrDefault(),
+                         OnQuickLaunch = list.OnQuickLaunch.GetValueOrDefault(),
                          RemoveDefaultContentType = list.RemoveExistingContentTypes,
                          TemplateType = list.TemplateType,
                          Title = list.Title,

@@ -251,7 +251,7 @@
                     IsApplicationList="false"
                     MaxVersionLimit="10"
                     MinorVersionLimit="10"
-                    ReadSecurity="11"
+                    ReadSecurity="1"
                     TemplateFeatureID="81a7b6a8-c0e9-4819-aea1-8fc8894d3c43"
                     ValidationFormula="sample formula here"
                     ValidationMessage="validation message here">
@@ -365,9 +365,9 @@
             />
         </pnp:ListInstance>
         <pnp:ListInstance Title="General Documents"
-                     Description="Project Documents are stored here"
+                     Description=""
                      DocumentTemplate=""
-                     OnQuickLaunch="true"
+                     
                      TemplateType="101"
                      Url="Lists/GeneralDocuments"
                      EnableVersioning="true"

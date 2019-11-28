@@ -16,12 +16,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// Defines whether Guests are allowed to create Channels or not
         /// </summary>
-        public Boolean AllowCreateUpdateChannels { get; set; }
+        public Boolean? AllowCreateUpdateChannels { get; set; }
 
         /// <summary>
         /// Defines whether Guests are allowed to delete Channels or not
         /// </summary>
-        public Boolean AllowDeleteChannels { get; set; }
+        public Boolean? AllowDeleteChannels { get; set; }
 
         #endregion
 

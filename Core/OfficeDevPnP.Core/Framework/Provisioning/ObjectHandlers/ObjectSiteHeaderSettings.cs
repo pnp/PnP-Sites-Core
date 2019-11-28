@@ -70,8 +70,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 break;
                             }
                     }
-                    web.HeaderEmphasis = (SPVariantThemeType)Enum.Parse(typeof(SPVariantThemeType), template.Header.BackgroundEmphasis.ToString());
-                    web.MegaMenuEnabled = template.Header.MenuStyle == SiteHeaderMenuStyle.MegaMenu;
+                    if (template.Header.BackgroundEmphasis.HasValue)
+                    {
+                        web.HeaderEmphasis = (SPVariantThemeType)Enum.Parse(typeof(SPVariantThemeType), template.Header.BackgroundEmphasis.ToString());
+                    }
+                    if (template.Header.MenuStyle.HasValue)
+                    {
+                        web.MegaMenuEnabled = template.Header.MenuStyle == SiteHeaderMenuStyle.MegaMenu;
+                    }
                     web.Update();
                     web.Context.ExecuteQueryRetry();
                 }

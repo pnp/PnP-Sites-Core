@@ -65,7 +65,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                 case "Item1200PM":
                     return Model.WorkHour.PM1200;
                 default:
-                    return Model.WorkHour.AM0100;
+                    return null;
             }
         }
     }

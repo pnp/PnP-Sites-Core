@@ -146,7 +146,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets a value that specifies whether the new list is displayed on the Quick Launch of the site.
         /// </summary>
-        public bool OnQuickLaunch { get; set; }
+        public bool? OnQuickLaunch { get; set; }
 
         /// <summary>
         /// Gets or sets a value that specifies the list server template of the new list.
@@ -162,32 +162,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets whether verisioning is enabled on the list
         /// </summary>
-        public bool EnableVersioning { get; set; }
+        public bool? EnableVersioning { get; set; }
 
         /// <summary>
         /// Gets or sets whether minor verisioning is enabled on the list
         /// </summary>
-        public bool EnableMinorVersions { get; set; }
+        public bool? EnableMinorVersions { get; set; }
 
         /// <summary>
         /// Gets or sets the DraftVersionVisibility for the list
         /// </summary>
-        public int DraftVersionVisibility { get; set; }
+        public int? DraftVersionVisibility { get; set; }
 
         /// <summary>
         /// Gets or sets whether moderation/content approval is enabled on the list
         /// </summary>
-        public bool EnableModeration { get; set; }
+        public bool? EnableModeration { get; set; }
 
         /// <summary>
         /// Gets or sets the MinorVersionLimit  for versioning, just in case it is enabled on the list
         /// </summary>
-        public int MinorVersionLimit { get; set; }
+        public int? MinorVersionLimit { get; set; }
 
         /// <summary>
         /// Gets or sets the MinorVersionLimit  for verisioning, just in case it is enabled on the list
         /// </summary>
-        public int MaxVersionLimit { get; set; }
+        public int? MaxVersionLimit { get; set; }
 
         /// <summary>
         /// Gets or sets whether existing content types should be removed
@@ -202,35 +202,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets whether content types are enabled
         /// </summary>
-        public bool ContentTypesEnabled { get; set; }
+        public bool? ContentTypesEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets whether to hide the list
         /// </summary>
-        public bool Hidden { get; set; }
+        public bool? Hidden { get; set; }
 
         /// <summary>
         /// Gets or sets whether to force checkout of documents in the library
         /// </summary>
-        public bool ForceCheckout { get; set; } = false;
+        public bool? ForceCheckout { get; set; }
 
         /// <summary>
         /// Gets or sets whether attachments are enabled. Defaults to true.
         /// </summary>
-        public bool EnableAttachments
-        {
-            get { return _enableAttachments; }
-            set { _enableAttachments = value; }
-        }
+        public bool? EnableAttachments { get; set; }
 
         /// <summary>
         /// Gets or sets whether folder is enabled. Defaults to true.
         /// </summary>
-        public bool EnableFolderCreation
-        {
-            get { return _enableFolderCreation; }
-            set { _enableFolderCreation = value; }
-        }
+        public bool? EnableFolderCreation { get; set; }
+
         /// <summary>
         /// Gets or sets the content types to associate to the list
         /// </summary>
@@ -356,12 +349,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines if the current list or library has to be included in crawling, optional attribute.
         /// </summary>
-        public Boolean NoCrawl { get; set; }
+        public Boolean? NoCrawl { get; set; }
 
         /// <summary>
         /// Defines the current list UI/UX experience (valid for SPO only).
         /// </summary>
-        public ListExperience ListExperience { get; set; }
+        public ListExperience? ListExperience { get; set; }
 
         /// <summary>
         /// Defines a value that specifies the location of the default display form for the list.
@@ -381,7 +374,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines a value that specifies the reading order of the list.
         /// </summary>
-        public ListReadingDirection Direction { get; set; }
+        public ListReadingDirection? Direction { get; set; }
 
         /// <summary>
         /// Defines a value that specifies the URI for the icon of the list, optional attribute.
@@ -391,27 +384,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines if IRM Expire property, optional attribute.
         /// </summary>
-        public Boolean IrmExpire { get; set; }
+        public Boolean? IrmExpire { get; set; }
 
         /// <summary>
         /// Defines the IRM Reject property, optional attribute.
         /// </summary>
-        public Boolean IrmReject { get; set; }
+        public Boolean? IrmReject { get; set; }
 
         /// <summary>
         /// Defines a value that specifies a flag that a client application can use to determine whether to display the list, optional attribute.
         /// </summary>
-        public Boolean IsApplicationList { get; set; }
+        public Boolean? IsApplicationList { get; set; }
 
         /// <summary>
         /// Defines the Read Security property, optional attribute.
         /// </summary>
-        public Int32 ReadSecurity { get; set; }
+        public Int32? ReadSecurity { get; set; }
 
         /// <summary>
         /// Defines the Write Security property, optional attribute.
         /// </summary>
-        public Int32 WriteSecurity { get; set; }
+        public Int32? WriteSecurity { get; set; }
 
         /// <summary>
         /// Defines a value that specifies the data validation criteria for a list item, optional attribute.

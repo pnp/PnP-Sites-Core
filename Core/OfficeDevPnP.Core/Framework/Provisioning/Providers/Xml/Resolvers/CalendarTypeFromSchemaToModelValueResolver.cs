@@ -48,7 +48,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                     return Microsoft.SharePoint.Client.CalendarType.UmAlQura;
                 case "None":
                 default:
-                    return Microsoft.SharePoint.Client.CalendarType.None;
+                    return null;
             }
         }
     }

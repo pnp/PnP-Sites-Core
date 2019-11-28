@@ -37,7 +37,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// Defines whether guests are allowed in the Team
         /// </summary>
-        public Boolean AllowToAddGuests { get; set; }
+        public Boolean? AllowToAddGuests { get; set; }
 
         #endregion
 

@@ -17,12 +17,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.AzureActiveDirectory
         /// <summary>
         /// Defines whether to force password change at next sign-in for the user
         /// </summary>
-        public Boolean ForceChangePasswordNextSignIn { get; set; }
+        public Boolean? ForceChangePasswordNextSignIn { get; set; }
 
         /// <summary>
         /// Defines whether to force password change at next sign-in with MFA for the user
         /// </summary>
-        public Boolean ForceChangePasswordNextSignInWithMfa { get; set; }
+        public Boolean? ForceChangePasswordNextSignInWithMfa { get; set; }
 
         /// <summary>
         /// The Password for the user

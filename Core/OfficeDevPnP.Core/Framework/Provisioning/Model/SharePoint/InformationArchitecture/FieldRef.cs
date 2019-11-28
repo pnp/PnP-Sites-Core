@@ -36,12 +36,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Gets or sets if the field is Required
         /// </summary>
-        public bool Required { get; set; }
+        public bool? Required { get; set; }
 
         /// <summary>
         /// Gets or sets if the field is Hidden
         /// </summary>
-        public bool Hidden { get; set; }
+        public bool? Hidden { get; set; }
 
         /// <summary>
         /// Declares if the FieldRef should be Removed from the list or library, optional attribute.

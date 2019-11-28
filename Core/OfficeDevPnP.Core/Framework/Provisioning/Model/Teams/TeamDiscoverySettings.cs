@@ -16,7 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// Defines whether the Team is visible via search and suggestions from the Teams client
         /// </summary>
-        public Boolean ShowInTeamsSearchAndSuggestions { get; set; }
+        public Boolean? ShowInTeamsSearchAndSuggestions { get; set; }
 
         #endregion
 

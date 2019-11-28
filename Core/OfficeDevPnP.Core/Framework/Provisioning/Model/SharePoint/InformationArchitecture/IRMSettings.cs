@@ -16,57 +16,57 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines whether the IRM settings have to be enabled or not.
         /// </summary>
-        public Boolean Enabled { get; set; }
+        public Boolean? Enabled { get; set; }
 
         /// <summary>
         /// Defines whether a viewer can print the downloaded document.
         /// </summary>
-        public Boolean AllowPrint { get; set; }
+        public Boolean? AllowPrint { get; set; }
 
         /// <summary>
         /// Defines whether a viewer can run a script on the downloaded document.
         /// </summary>
-        public Boolean AllowScript { get; set; }
+        public Boolean? AllowScript { get; set; }
 
         /// <summary>
         /// Defines whether a viewer can write on a copy of the downloaded document.
         /// </summary>
-        public Boolean AllowWriteCopy { get; set; }
+        public Boolean? AllowWriteCopy { get; set; }
 
         /// <summary>
         /// Defines whether to block Office Web Application Companion applications (WACs) from showing this document.
         /// </summary>
-        public Boolean DisableDocumentBrowserView { get; set; }
+        public Boolean? DisableDocumentBrowserView { get; set; }
 
         /// <summary>
         /// Defines the number of days after which the downloaded document will expire.
         /// </summary>
-        public Int32 DocumentAccessExpireDays { get; set; }
+        public Int32? DocumentAccessExpireDays { get; set; }
 
         /// <summary>
         /// Defines the expire days for the Information Rights Management (IRM) protection of this document library will expire.
         /// </summary>
-        public Int32 DocumentLibraryProtectionExpiresInDays { get; set; }
+        public Int32? DocumentLibraryProtectionExpiresInDays { get; set; }
 
         /// <summary>
         /// Defines whether the downloaded document will expire.
         /// </summary>
-        public Boolean EnableDocumentAccessExpire { get; set; }
+        public Boolean? EnableDocumentAccessExpire { get; set; }
 
         /// <summary>
         /// Defines whether to enable Office Web Application Companion applications (WACs) to publishing view.
         /// </summary>
-        public Boolean EnableDocumentBrowserPublishingView { get; set; }
+        public Boolean? EnableDocumentBrowserPublishingView { get; set; }
 
         /// <summary>
         /// Defines whether the permission of the downloaded document is applicable to a group.
         /// </summary>
-        public Boolean EnableGroupProtection { get; set; }
+        public Boolean? EnableGroupProtection { get; set; }
 
         /// <summary>
         /// Defines whether a user must verify their credentials after some interval.
         /// </summary>
-        public Boolean EnableLicenseCacheExpire { get; set; }
+        public Boolean? EnableLicenseCacheExpire { get; set; }
 
         /// <summary>
         /// Defines the group name (email address) that the permission is also applicable to.
@@ -76,7 +76,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// Defines the number of days that the application that opens the document caches the IRM license. When these elapse, the application will connect to the IRM server to validate the license.
         /// </summary>
-        public Int32 LicenseCacheExpireDays { get; set; }
+        public Int32? LicenseCacheExpireDays { get; set; }
 
         /// <summary>
         /// Defines the permission policy description.

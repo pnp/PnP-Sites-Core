@@ -16,27 +16,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// Defines if members can add and update channels
         /// </summary>
-        public Boolean AllowCreateUpdateChannels { get; set; }
+        public Boolean? AllowCreateUpdateChannels { get; set; }
 
         /// <summary>
         /// Defines if members can delete channels
         /// </summary>
-        public Boolean AllowDeleteChannels { get; set; }
+        public Boolean? AllowDeleteChannels { get; set; }
 
         /// <summary>
         /// Defines if members can add and remove apps
         /// </summary>
-        public Boolean AllowAddRemoveApps { get; set; }
+        public Boolean? AllowAddRemoveApps { get; set; }
 
         /// <summary>
         /// Defines if members can add, update, and remove tabs
         /// </summary>
-        public Boolean AllowCreateUpdateRemoveTabs { get; set; }
+        public Boolean? AllowCreateUpdateRemoveTabs { get; set; }
 
         /// <summary>
         /// Defines if members can add, update, and remove connectors
         /// </summary>
-        public Boolean AllowCreateUpdateRemoveConnectors { get; set; }
+        public Boolean? AllowCreateUpdateRemoveConnectors { get; set; }
 
         #endregion
 

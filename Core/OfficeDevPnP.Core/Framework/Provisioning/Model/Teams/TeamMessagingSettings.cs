@@ -16,27 +16,27 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// Defines if users can edit their messages
         /// </summary>
-        public Boolean AllowUserEditMessages { get; set; }
+        public Boolean? AllowUserEditMessages { get; set; }
 
         /// <summary>
         /// Defines if users can delete their messages
         /// </summary>
-        public Boolean AllowUserDeleteMessages { get; set; }
+        public Boolean? AllowUserDeleteMessages { get; set; }
 
         /// <summary>
         /// Defines if owners can delete any message
         /// </summary>
-        public Boolean AllowOwnerDeleteMessages { get; set; }
+        public Boolean? AllowOwnerDeleteMessages { get; set; }
 
         /// <summary>
         /// Defines if @team mentions are allowed
         /// </summary>
-        public Boolean AllowTeamMentions { get; set; }
+        public Boolean? AllowTeamMentions { get; set; }
 
         /// <summary>
         /// Defines if @channel mentions are allowed
         /// </summary>
-        public Boolean AllowChannelMentions { get; set; }
+        public Boolean? AllowChannelMentions { get; set; }
 
         #endregion
 

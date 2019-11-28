@@ -22,7 +22,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// Defines whether Giphys are consented or not
         /// </summary>
-        public Boolean AllowGiphy { get; set; }
+        public Boolean? AllowGiphy { get; set; }
 
         /// <summary>
         /// Defines the Content Rating for Giphys
@@ -42,12 +42,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// Defines whether Stickers and Memes are consented or not
         /// </summary>
-        public Boolean AllowStickersAndMemes { get; set; }
+        public Boolean? AllowStickersAndMemes { get; set; }
 
         /// <summary>
         /// Defines whether Custom Memes are consented or not
         /// </summary>
-        public Boolean AllowCustomMemes { get; set; }
+        public Boolean? AllowCustomMemes { get; set; }
 
         #endregion
 
