@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.14.1910.1, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.15.1911.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-DEV0template">
     <pnp:ProvisioningTemplate ID="DEV0template" Version="1" BaseSiteTemplate="STS#0" Scope="RootSite">
       <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="SitePages/DevHome.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" MembersCanShare="true" SearchScope="DefaultScope" />
@@ -13,29 +13,30 @@
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="vti_customuploadpage" Value="/_layouts/15/UploadEx.aspx" Overwrite="false" />
         <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_expirationlastrun" Value="11/8/2019 12:20:12 AM" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_expirationlastrun" Value="11/29/2019 12:12:39 AM" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_sitehaspolicy" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="7" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="f6ac4721-fda5-4bb7-8b45-b655aca40d66" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_expirationlastruncorrelation" Value="start:11/08/2019 00:20:11; end:11/08/2019 00:20:12;correlationId:b1a8159f-e0b4-1000-2852-f6c0ad7ed63a" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="WSSEndUser;#WSSCentralAdmin;#FastEndUser;#FastCentralAdmin;#MSSEndUser;#MSSCentralAdmin;#PPSDesignerEndUser;#SQLWSSAddIn" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="2ebe875d-7119-40da-a1b6-34655c9bee5d" Overwrite="false" />
         <pnp:PropertyBagEntry Key="sharepointhelpoverride" Value="SPOStandard" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="WSSEndUser;#WSSCentralAdmin;#FastEndUser;#FastCentralAdmin;#MSSEndUser;#MSSCentralAdmin;#PPSDesignerEndUser;#SQLWSSAddIn" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="profileschemaversion" Value="5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="9" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_expirationlastruncorrelation" Value="start:11/29/2019 00:12:38; end:11/29/2019 00:12:39;correlationId:ce6a1c9f-6035-2000-2880-b4d3727ba7f4" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associategroups" Value="9;6;6;8;7" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.19423" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="8" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.19506" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_sitehasexpirationpolicy" Value="True" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_policyupdatelastruncorrelation" Value="start:11/07/2019 23:19:34; end:11/07/2019 23:19:36;correlationId:50a5159f-503c-1000-2852-fa8b1bccfd91" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_policyupdatelastruncorrelation" Value="start:11/28/2019 23:17:43; end:11/28/2019 23:17:44;correlationId:a8671c9f-008c-2000-2880-bb46c3da4634" Overwrite="false" />
         <pnp:PropertyBagEntry Key="metadatatimestamp" Value="437b86fc125845a985ea87a29156ce3c|2015-03-27T08:10:01.077Z" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__ScriptSafeInternalPages" Value="WopiFrame.aspx;videoembedplayer.aspx;" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_policyupdatelastrun" Value="11/28/2019 11:17:44 PM" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="7;8;9" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_policyupdatelastrun" Value="11/7/2019 11:19:36 PM" Overwrite="false" />
         <pnp:PropertyBagEntry Key="allowslistpolicy" Value="True" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="SiteNotebookGuid" Value="185d096d-8b55-4531-9581-4fe9c2af7118" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="SiteNotebookGuid" Value="83ab900a-3377-4a37-b59a-a78b9d2b60a1" Overwrite="false" />
       </pnp:PropertyBagEntries>
       <pnp:Security AssociatedOwnerGroup="{sitetitle} Owners" AssociatedMemberGroup="{sitetitle} Members" AssociatedVisitorGroup="{sitetitle} Visitors">
         <pnp:AdditionalOwners>
@@ -70,7 +71,7 @@
         <pnp:CurrentNavigation NavigationType="StructuralLocal">
           <pnp:StructuralNavigation RemoveExistingNodes="false">
             <pnp:NavigationNode Title="Home" Url="{site}" />
-            <pnp:NavigationNode Title="Notebook" Url="{site}/_layouts/15/WopiFrame.aspx?sourcedoc=%7B185d096d-8b55-4531-9581-4fe9c2af7118%7D&amp;action=editnew" IsExternal="true" />
+            <pnp:NavigationNode Title="Notebook" Url="{site}/_layouts/15/WopiFrame.aspx?sourcedoc=%7B83ab900a-3377-4a37-b59a-a78b9d2b60a1%7D&amp;action=editnew" IsExternal="true" />
             <pnp:NavigationNode Title="News" Url="{site}/_layouts/15/News.aspx" IsExternal="true" />
             <pnp:NavigationNode Title="Documents" Url="{site}/Shared Documents/Forms/AllItems.aspx" />
             <pnp:NavigationNode Title="Pages" Url="{site}/SitePages/Forms/ByAuthor.aspx" />
@@ -82,8 +83,8 @@
         </pnp:CurrentNavigation>
       </pnp:Navigation>
       <pnp:SiteFields>
-        <Field Type="Note" DisplayName="HashTags_0" StaticName="j33b1bc20532487296f1bbbdead35a56" Name="j33b1bc20532487296f1bbbdead35a56" ID="{790722e8-f13c-4f84-90b2-36161bfe7873}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{c86776be-a9b3-440a-80ba-959051de397b}" />
-        <Field Type="Note" DisplayName="TaxKeywordTaxHTField" StaticName="TaxKeywordTaxHTField" Name="TaxKeywordTaxHTField" ID="{1390a86a-23da-45f0-8efe-ef36edadfb39}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{c86776be-a9b3-440a-80ba-959051de397b}" />
+        <Field Type="Note" DisplayName="HashTags_0" StaticName="j33b1bc20532487296f1bbbdead35a56" Name="j33b1bc20532487296f1bbbdead35a56" ID="{790722e8-f13c-4f84-90b2-36161bfe7873}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{44a63d43-5b45-46c5-90d7-98f9fe78c0d7}" />
+        <Field Type="Note" DisplayName="TaxKeywordTaxHTField" StaticName="TaxKeywordTaxHTField" Name="TaxKeywordTaxHTField" ID="{1390a86a-23da-45f0-8efe-ef36edadfb39}" ShowInViewForms="FALSE" Required="FALSE" Hidden="TRUE" CanToggleHidden="TRUE" SourceID="{44a63d43-5b45-46c5-90d7-98f9fe78c0d7}" />
         <Field ID="{56747800-D36E-4625-ABE3-B1BC74A7D5F8}" Name="LowerValuesAreBetter" StaticName="LowerValuesAreBetter" Description="Whether lower is better or higher is better" Group="Status Indicators" Type="Boolean" DisplayName="Lower values are better" SourceID="http://schemas.microsoft.com/sharepoint/v3" />
         <Field ID="{672D9500-5649-49ae-8166-777F40527874}" Name="AbuseReportsCommentsLookup" SourceID="http://schemas.microsoft.com/sharepoint/v3" DisplaceOnUpgrade="TRUE" Group="_Hidden" Type="Lookup" List="" Mult="TRUE" DisplayName="Comments Lookup" ReadOnly="TRUE" Hidden="TRUE" AllowDeletion="FALSE" Sealed="TRUE">
           <FieldRefs>
@@ -1016,542 +1017,542 @@
       <pnp:ContentTypes>
         <pnp:ContentType ID="0x00A7470EADF4194E2E9ED1031B61DA0884" Name="Common Indicator Columns" Description="" Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="249a1c1a-5a3e-4173-abad-779b01892510" Name="KpiDescription" UpdateChildren="false" />
-            <pnp:FieldRef ID="0121cb2b-4515-44f2-9d5a-0dcb3bf556aa" Name="KpiComments" UpdateChildren="false" />
-            <pnp:FieldRef ID="f0816223-fd98-41f9-aa57-b7f7db462faa" Name="Value" UpdateChildren="false" />
-            <pnp:FieldRef ID="6e4b3aad-350d-42fa-bd61-d1de715b45db" Name="Goal" UpdateChildren="false" />
-            <pnp:FieldRef ID="e84a049e-230d-4751-8d5c-8f615e968df2" Name="Warning" UpdateChildren="false" />
-            <pnp:FieldRef ID="3366aae9-30a9-43f5-a2cb-1a6ee44e2ce4" Name="FormattedValue" UpdateChildren="false" />
-            <pnp:FieldRef ID="e9df93f4-7951-474b-8cc4-e240c2f5e600" Name="FormattedGoal" UpdateChildren="false" />
-            <pnp:FieldRef ID="f53d350d-854e-4962-9318-89d56d30773a" Name="FormattedWarning" UpdateChildren="false" />
-            <pnp:FieldRef ID="9730102c-9470-4515-960e-6dfb2d89a68b" Name="DetailLink" UpdateChildren="false" />
-            <pnp:FieldRef ID="56747800-d36e-4625-abe3-b1bc74a7d5f8" Name="LowerValuesAreBetter" UpdateChildren="false" />
-            <pnp:FieldRef ID="e247cbb0-abb3-4759-b9f4-0128e37dd34a" Name="UpdateError" UpdateChildren="false" />
-            <pnp:FieldRef ID="fd3e3a59-bf10-4c99-b678-5dd7fcc6cb28" Name="LastUpdated" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="249a1c1a-5a3e-4173-abad-779b01892510" Name="KpiDescription" UpdateChildren="true" />
+            <pnp:FieldRef ID="0121cb2b-4515-44f2-9d5a-0dcb3bf556aa" Name="KpiComments" UpdateChildren="true" />
+            <pnp:FieldRef ID="f0816223-fd98-41f9-aa57-b7f7db462faa" Name="Value" UpdateChildren="true" />
+            <pnp:FieldRef ID="6e4b3aad-350d-42fa-bd61-d1de715b45db" Name="Goal" UpdateChildren="true" />
+            <pnp:FieldRef ID="e84a049e-230d-4751-8d5c-8f615e968df2" Name="Warning" UpdateChildren="true" />
+            <pnp:FieldRef ID="3366aae9-30a9-43f5-a2cb-1a6ee44e2ce4" Name="FormattedValue" UpdateChildren="true" />
+            <pnp:FieldRef ID="e9df93f4-7951-474b-8cc4-e240c2f5e600" Name="FormattedGoal" UpdateChildren="true" />
+            <pnp:FieldRef ID="f53d350d-854e-4962-9318-89d56d30773a" Name="FormattedWarning" UpdateChildren="true" />
+            <pnp:FieldRef ID="9730102c-9470-4515-960e-6dfb2d89a68b" Name="DetailLink" UpdateChildren="true" />
+            <pnp:FieldRef ID="56747800-d36e-4625-abe3-b1bc74a7d5f8" Name="LowerValuesAreBetter" UpdateChildren="true" />
+            <pnp:FieldRef ID="e247cbb0-abb3-4759-b9f4-0128e37dd34a" Name="UpdateError" UpdateChildren="true" />
+            <pnp:FieldRef ID="fd3e3a59-bf10-4c99-b678-5dd7fcc6cb28" Name="LastUpdated" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x00A7470EADF4194E2E9ED1031B61DA088401" Name="Fixed Value based Status Indicator" Description="Create a new Status Indicator using manually entered information" Group="Business Intelligence" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="249a1c1a-5a3e-4173-abad-779b01892510" Name="KpiDescription" UpdateChildren="false" />
-            <pnp:FieldRef ID="0121cb2b-4515-44f2-9d5a-0dcb3bf556aa" Name="KpiComments" UpdateChildren="false" />
-            <pnp:FieldRef ID="f0816223-fd98-41f9-aa57-b7f7db462faa" Name="Value" UpdateChildren="false" />
-            <pnp:FieldRef ID="6e4b3aad-350d-42fa-bd61-d1de715b45db" Name="Goal" UpdateChildren="false" />
-            <pnp:FieldRef ID="e84a049e-230d-4751-8d5c-8f615e968df2" Name="Warning" UpdateChildren="false" />
-            <pnp:FieldRef ID="3366aae9-30a9-43f5-a2cb-1a6ee44e2ce4" Name="FormattedValue" UpdateChildren="false" />
-            <pnp:FieldRef ID="e9df93f4-7951-474b-8cc4-e240c2f5e600" Name="FormattedGoal" UpdateChildren="false" />
-            <pnp:FieldRef ID="f53d350d-854e-4962-9318-89d56d30773a" Name="FormattedWarning" UpdateChildren="false" />
-            <pnp:FieldRef ID="9730102c-9470-4515-960e-6dfb2d89a68b" Name="DetailLink" UpdateChildren="false" />
-            <pnp:FieldRef ID="56747800-d36e-4625-abe3-b1bc74a7d5f8" Name="LowerValuesAreBetter" UpdateChildren="false" />
-            <pnp:FieldRef ID="e247cbb0-abb3-4759-b9f4-0128e37dd34a" Name="UpdateError" UpdateChildren="false" />
-            <pnp:FieldRef ID="fd3e3a59-bf10-4c99-b678-5dd7fcc6cb28" Name="LastUpdated" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="249a1c1a-5a3e-4173-abad-779b01892510" Name="KpiDescription" UpdateChildren="true" />
+            <pnp:FieldRef ID="0121cb2b-4515-44f2-9d5a-0dcb3bf556aa" Name="KpiComments" UpdateChildren="true" />
+            <pnp:FieldRef ID="f0816223-fd98-41f9-aa57-b7f7db462faa" Name="Value" UpdateChildren="true" />
+            <pnp:FieldRef ID="6e4b3aad-350d-42fa-bd61-d1de715b45db" Name="Goal" UpdateChildren="true" />
+            <pnp:FieldRef ID="e84a049e-230d-4751-8d5c-8f615e968df2" Name="Warning" UpdateChildren="true" />
+            <pnp:FieldRef ID="3366aae9-30a9-43f5-a2cb-1a6ee44e2ce4" Name="FormattedValue" UpdateChildren="true" />
+            <pnp:FieldRef ID="e9df93f4-7951-474b-8cc4-e240c2f5e600" Name="FormattedGoal" UpdateChildren="true" />
+            <pnp:FieldRef ID="f53d350d-854e-4962-9318-89d56d30773a" Name="FormattedWarning" UpdateChildren="true" />
+            <pnp:FieldRef ID="9730102c-9470-4515-960e-6dfb2d89a68b" Name="DetailLink" UpdateChildren="true" />
+            <pnp:FieldRef ID="56747800-d36e-4625-abe3-b1bc74a7d5f8" Name="LowerValuesAreBetter" UpdateChildren="true" />
+            <pnp:FieldRef ID="e247cbb0-abb3-4759-b9f4-0128e37dd34a" Name="UpdateError" UpdateChildren="true" />
+            <pnp:FieldRef ID="fd3e3a59-bf10-4c99-b678-5dd7fcc6cb28" Name="LastUpdated" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x00A7470EADF4194E2E9ED1031B61DA088402" Name="SharePoint List based Status Indicator" Description="Create a new Status Indicator using data from SharePoint Lists" Group="Business Intelligence" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="249a1c1a-5a3e-4173-abad-779b01892510" Name="KpiDescription" UpdateChildren="false" />
-            <pnp:FieldRef ID="0121cb2b-4515-44f2-9d5a-0dcb3bf556aa" Name="KpiComments" UpdateChildren="false" />
-            <pnp:FieldRef ID="f0816223-fd98-41f9-aa57-b7f7db462faa" Name="Value" UpdateChildren="false" />
-            <pnp:FieldRef ID="6e4b3aad-350d-42fa-bd61-d1de715b45db" Name="Goal" UpdateChildren="false" />
-            <pnp:FieldRef ID="e84a049e-230d-4751-8d5c-8f615e968df2" Name="Warning" UpdateChildren="false" />
-            <pnp:FieldRef ID="3366aae9-30a9-43f5-a2cb-1a6ee44e2ce4" Name="FormattedValue" UpdateChildren="false" />
-            <pnp:FieldRef ID="e9df93f4-7951-474b-8cc4-e240c2f5e600" Name="FormattedGoal" UpdateChildren="false" />
-            <pnp:FieldRef ID="f53d350d-854e-4962-9318-89d56d30773a" Name="FormattedWarning" UpdateChildren="false" />
-            <pnp:FieldRef ID="9730102c-9470-4515-960e-6dfb2d89a68b" Name="DetailLink" UpdateChildren="false" />
-            <pnp:FieldRef ID="56747800-d36e-4625-abe3-b1bc74a7d5f8" Name="LowerValuesAreBetter" UpdateChildren="false" />
-            <pnp:FieldRef ID="e247cbb0-abb3-4759-b9f4-0128e37dd34a" Name="UpdateError" UpdateChildren="false" />
-            <pnp:FieldRef ID="fd3e3a59-bf10-4c99-b678-5dd7fcc6cb28" Name="LastUpdated" UpdateChildren="false" />
-            <pnp:FieldRef ID="a9ea6e2d-bc5c-4ccc-bad8-8ddfe519710f" Name="DataSource" UpdateChildren="false" />
-            <pnp:FieldRef ID="2c7db8af-02b0-4177-b77f-15c942c08427" Name="ViewGuid" UpdateChildren="false" />
-            <pnp:FieldRef ID="93df9772-1e34-40c5-8c54-4bf3cdd56b34" Name="ValueExpression" UpdateChildren="false" />
-            <pnp:FieldRef ID="d43e8a19-f4f3-4e6a-b8c1-02e972c3ed6f" Name="PercentExpression" UpdateChildren="false" />
-            <pnp:FieldRef ID="96226eed-ec6f-4f0e-add5-9cfe66a441a0" Name="AutoUpdate" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="249a1c1a-5a3e-4173-abad-779b01892510" Name="KpiDescription" UpdateChildren="true" />
+            <pnp:FieldRef ID="0121cb2b-4515-44f2-9d5a-0dcb3bf556aa" Name="KpiComments" UpdateChildren="true" />
+            <pnp:FieldRef ID="f0816223-fd98-41f9-aa57-b7f7db462faa" Name="Value" UpdateChildren="true" />
+            <pnp:FieldRef ID="6e4b3aad-350d-42fa-bd61-d1de715b45db" Name="Goal" UpdateChildren="true" />
+            <pnp:FieldRef ID="e84a049e-230d-4751-8d5c-8f615e968df2" Name="Warning" UpdateChildren="true" />
+            <pnp:FieldRef ID="3366aae9-30a9-43f5-a2cb-1a6ee44e2ce4" Name="FormattedValue" UpdateChildren="true" />
+            <pnp:FieldRef ID="e9df93f4-7951-474b-8cc4-e240c2f5e600" Name="FormattedGoal" UpdateChildren="true" />
+            <pnp:FieldRef ID="f53d350d-854e-4962-9318-89d56d30773a" Name="FormattedWarning" UpdateChildren="true" />
+            <pnp:FieldRef ID="9730102c-9470-4515-960e-6dfb2d89a68b" Name="DetailLink" UpdateChildren="true" />
+            <pnp:FieldRef ID="56747800-d36e-4625-abe3-b1bc74a7d5f8" Name="LowerValuesAreBetter" UpdateChildren="true" />
+            <pnp:FieldRef ID="e247cbb0-abb3-4759-b9f4-0128e37dd34a" Name="UpdateError" UpdateChildren="true" />
+            <pnp:FieldRef ID="fd3e3a59-bf10-4c99-b678-5dd7fcc6cb28" Name="LastUpdated" UpdateChildren="true" />
+            <pnp:FieldRef ID="a9ea6e2d-bc5c-4ccc-bad8-8ddfe519710f" Name="DataSource" UpdateChildren="true" />
+            <pnp:FieldRef ID="2c7db8af-02b0-4177-b77f-15c942c08427" Name="ViewGuid" UpdateChildren="true" />
+            <pnp:FieldRef ID="93df9772-1e34-40c5-8c54-4bf3cdd56b34" Name="ValueExpression" UpdateChildren="true" />
+            <pnp:FieldRef ID="d43e8a19-f4f3-4e6a-b8c1-02e972c3ed6f" Name="PercentExpression" UpdateChildren="true" />
+            <pnp:FieldRef ID="96226eed-ec6f-4f0e-add5-9cfe66a441a0" Name="AutoUpdate" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x00A7470EADF4194E2E9ED1031B61DA088403" Name="Excel based Status Indicator" Description="Create a new Status Indicator using data from Excel Services" Group="Business Intelligence" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="249a1c1a-5a3e-4173-abad-779b01892510" Name="KpiDescription" UpdateChildren="false" />
-            <pnp:FieldRef ID="0121cb2b-4515-44f2-9d5a-0dcb3bf556aa" Name="KpiComments" UpdateChildren="false" />
-            <pnp:FieldRef ID="f0816223-fd98-41f9-aa57-b7f7db462faa" Name="Value" UpdateChildren="false" />
-            <pnp:FieldRef ID="6e4b3aad-350d-42fa-bd61-d1de715b45db" Name="Goal" UpdateChildren="false" />
-            <pnp:FieldRef ID="e84a049e-230d-4751-8d5c-8f615e968df2" Name="Warning" UpdateChildren="false" />
-            <pnp:FieldRef ID="3366aae9-30a9-43f5-a2cb-1a6ee44e2ce4" Name="FormattedValue" UpdateChildren="false" />
-            <pnp:FieldRef ID="e9df93f4-7951-474b-8cc4-e240c2f5e600" Name="FormattedGoal" UpdateChildren="false" />
-            <pnp:FieldRef ID="f53d350d-854e-4962-9318-89d56d30773a" Name="FormattedWarning" UpdateChildren="false" />
-            <pnp:FieldRef ID="9730102c-9470-4515-960e-6dfb2d89a68b" Name="DetailLink" UpdateChildren="false" />
-            <pnp:FieldRef ID="56747800-d36e-4625-abe3-b1bc74a7d5f8" Name="LowerValuesAreBetter" UpdateChildren="false" />
-            <pnp:FieldRef ID="e247cbb0-abb3-4759-b9f4-0128e37dd34a" Name="UpdateError" UpdateChildren="false" />
-            <pnp:FieldRef ID="fd3e3a59-bf10-4c99-b678-5dd7fcc6cb28" Name="LastUpdated" UpdateChildren="false" />
-            <pnp:FieldRef ID="a9ea6e2d-bc5c-4ccc-bad8-8ddfe519710f" Name="DataSource" UpdateChildren="false" />
-            <pnp:FieldRef ID="d096d5f3-b399-462b-9a32-83f82d9237d4" Name="ValueSheet" UpdateChildren="false" />
-            <pnp:FieldRef ID="3b32f47b-f1a1-45ff-b5ad-7b28b84c720a" Name="ValueCell" UpdateChildren="false" />
-            <pnp:FieldRef ID="69ac2b6e-f626-49b4-b0cc-c2b9580e8719" Name="GoalSheet" UpdateChildren="false" />
-            <pnp:FieldRef ID="4181b96a-3125-4f75-b823-3a4d675c6b19" Name="GoalCell" UpdateChildren="false" />
-            <pnp:FieldRef ID="3e223474-75ff-466b-b53f-9b641ce74b6c" Name="WarningSheet" UpdateChildren="false" />
-            <pnp:FieldRef ID="eeaabf1d-f6ae-4dc6-873f-7397a17c36f0" Name="WarningCell" UpdateChildren="false" />
-            <pnp:FieldRef ID="20906227-d1c8-430c-989a-30a62e3e40b2" Name="GoalFromWorkBook" UpdateChildren="false" />
-            <pnp:FieldRef ID="3c6188a0-2761-4e0a-9fc0-ee32d47e4d49" Name="WarningFromWorkBook" UpdateChildren="false" />
-            <pnp:FieldRef ID="96226eed-ec6f-4f0e-add5-9cfe66a441a0" Name="AutoUpdate" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="249a1c1a-5a3e-4173-abad-779b01892510" Name="KpiDescription" UpdateChildren="true" />
+            <pnp:FieldRef ID="0121cb2b-4515-44f2-9d5a-0dcb3bf556aa" Name="KpiComments" UpdateChildren="true" />
+            <pnp:FieldRef ID="f0816223-fd98-41f9-aa57-b7f7db462faa" Name="Value" UpdateChildren="true" />
+            <pnp:FieldRef ID="6e4b3aad-350d-42fa-bd61-d1de715b45db" Name="Goal" UpdateChildren="true" />
+            <pnp:FieldRef ID="e84a049e-230d-4751-8d5c-8f615e968df2" Name="Warning" UpdateChildren="true" />
+            <pnp:FieldRef ID="3366aae9-30a9-43f5-a2cb-1a6ee44e2ce4" Name="FormattedValue" UpdateChildren="true" />
+            <pnp:FieldRef ID="e9df93f4-7951-474b-8cc4-e240c2f5e600" Name="FormattedGoal" UpdateChildren="true" />
+            <pnp:FieldRef ID="f53d350d-854e-4962-9318-89d56d30773a" Name="FormattedWarning" UpdateChildren="true" />
+            <pnp:FieldRef ID="9730102c-9470-4515-960e-6dfb2d89a68b" Name="DetailLink" UpdateChildren="true" />
+            <pnp:FieldRef ID="56747800-d36e-4625-abe3-b1bc74a7d5f8" Name="LowerValuesAreBetter" UpdateChildren="true" />
+            <pnp:FieldRef ID="e247cbb0-abb3-4759-b9f4-0128e37dd34a" Name="UpdateError" UpdateChildren="true" />
+            <pnp:FieldRef ID="fd3e3a59-bf10-4c99-b678-5dd7fcc6cb28" Name="LastUpdated" UpdateChildren="true" />
+            <pnp:FieldRef ID="a9ea6e2d-bc5c-4ccc-bad8-8ddfe519710f" Name="DataSource" UpdateChildren="true" />
+            <pnp:FieldRef ID="d096d5f3-b399-462b-9a32-83f82d9237d4" Name="ValueSheet" UpdateChildren="true" />
+            <pnp:FieldRef ID="3b32f47b-f1a1-45ff-b5ad-7b28b84c720a" Name="ValueCell" UpdateChildren="true" />
+            <pnp:FieldRef ID="69ac2b6e-f626-49b4-b0cc-c2b9580e8719" Name="GoalSheet" UpdateChildren="true" />
+            <pnp:FieldRef ID="4181b96a-3125-4f75-b823-3a4d675c6b19" Name="GoalCell" UpdateChildren="true" />
+            <pnp:FieldRef ID="3e223474-75ff-466b-b53f-9b641ce74b6c" Name="WarningSheet" UpdateChildren="true" />
+            <pnp:FieldRef ID="eeaabf1d-f6ae-4dc6-873f-7397a17c36f0" Name="WarningCell" UpdateChildren="true" />
+            <pnp:FieldRef ID="20906227-d1c8-430c-989a-30a62e3e40b2" Name="GoalFromWorkBook" UpdateChildren="true" />
+            <pnp:FieldRef ID="3c6188a0-2761-4e0a-9fc0-ee32d47e4d49" Name="WarningFromWorkBook" UpdateChildren="true" />
+            <pnp:FieldRef ID="96226eed-ec6f-4f0e-add5-9cfe66a441a0" Name="AutoUpdate" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x00A7470EADF4194E2E9ED1031B61DA088404" Name="SQL Server Analysis Services based Status Indicator" Description="Create a new Status Indicator using data from SQL Server Analysis Services" Group="Business Intelligence" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="249a1c1a-5a3e-4173-abad-779b01892510" Name="KpiDescription" UpdateChildren="false" />
-            <pnp:FieldRef ID="0121cb2b-4515-44f2-9d5a-0dcb3bf556aa" Name="KpiComments" UpdateChildren="false" />
-            <pnp:FieldRef ID="f0816223-fd98-41f9-aa57-b7f7db462faa" Name="Value" UpdateChildren="false" />
-            <pnp:FieldRef ID="6e4b3aad-350d-42fa-bd61-d1de715b45db" Name="Goal" UpdateChildren="false" />
-            <pnp:FieldRef ID="e84a049e-230d-4751-8d5c-8f615e968df2" Name="Warning" UpdateChildren="false" />
-            <pnp:FieldRef ID="3366aae9-30a9-43f5-a2cb-1a6ee44e2ce4" Name="FormattedValue" UpdateChildren="false" />
-            <pnp:FieldRef ID="e9df93f4-7951-474b-8cc4-e240c2f5e600" Name="FormattedGoal" UpdateChildren="false" />
-            <pnp:FieldRef ID="f53d350d-854e-4962-9318-89d56d30773a" Name="FormattedWarning" UpdateChildren="false" />
-            <pnp:FieldRef ID="9730102c-9470-4515-960e-6dfb2d89a68b" Name="DetailLink" UpdateChildren="false" />
-            <pnp:FieldRef ID="56747800-d36e-4625-abe3-b1bc74a7d5f8" Name="LowerValuesAreBetter" UpdateChildren="false" />
-            <pnp:FieldRef ID="e247cbb0-abb3-4759-b9f4-0128e37dd34a" Name="UpdateError" UpdateChildren="false" />
-            <pnp:FieldRef ID="fd3e3a59-bf10-4c99-b678-5dd7fcc6cb28" Name="LastUpdated" UpdateChildren="false" />
-            <pnp:FieldRef ID="a9ea6e2d-bc5c-4ccc-bad8-8ddfe519710f" Name="DataSource" UpdateChildren="false" />
-            <pnp:FieldRef ID="11a86235-9d18-4134-b58c-fa7243f4cbba" Name="Trend" UpdateChildren="false" />
-            <pnp:FieldRef ID="3c497036-038f-41db-aec7-c9849649b135" Name="KpiStatus" UpdateChildren="false" />
-            <pnp:FieldRef ID="dd83a5ed-83c5-47b7-823a-415c6ea1b8a3" Name="DisplayFolder" UpdateChildren="false" />
-            <pnp:FieldRef ID="291aacda-4cfb-4d59-968b-5e2ea0c9eab7" Name="KPI" UpdateChildren="false" />
-            <pnp:FieldRef ID="f6df49ec-807b-4d40-a7da-a17684121f92" Name="IncludeHierarchy" UpdateChildren="false" />
-            <pnp:FieldRef ID="96226eed-ec6f-4f0e-add5-9cfe66a441a0" Name="AutoUpdate" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="249a1c1a-5a3e-4173-abad-779b01892510" Name="KpiDescription" UpdateChildren="true" />
+            <pnp:FieldRef ID="0121cb2b-4515-44f2-9d5a-0dcb3bf556aa" Name="KpiComments" UpdateChildren="true" />
+            <pnp:FieldRef ID="f0816223-fd98-41f9-aa57-b7f7db462faa" Name="Value" UpdateChildren="true" />
+            <pnp:FieldRef ID="6e4b3aad-350d-42fa-bd61-d1de715b45db" Name="Goal" UpdateChildren="true" />
+            <pnp:FieldRef ID="e84a049e-230d-4751-8d5c-8f615e968df2" Name="Warning" UpdateChildren="true" />
+            <pnp:FieldRef ID="3366aae9-30a9-43f5-a2cb-1a6ee44e2ce4" Name="FormattedValue" UpdateChildren="true" />
+            <pnp:FieldRef ID="e9df93f4-7951-474b-8cc4-e240c2f5e600" Name="FormattedGoal" UpdateChildren="true" />
+            <pnp:FieldRef ID="f53d350d-854e-4962-9318-89d56d30773a" Name="FormattedWarning" UpdateChildren="true" />
+            <pnp:FieldRef ID="9730102c-9470-4515-960e-6dfb2d89a68b" Name="DetailLink" UpdateChildren="true" />
+            <pnp:FieldRef ID="56747800-d36e-4625-abe3-b1bc74a7d5f8" Name="LowerValuesAreBetter" UpdateChildren="true" />
+            <pnp:FieldRef ID="e247cbb0-abb3-4759-b9f4-0128e37dd34a" Name="UpdateError" UpdateChildren="true" />
+            <pnp:FieldRef ID="fd3e3a59-bf10-4c99-b678-5dd7fcc6cb28" Name="LastUpdated" UpdateChildren="true" />
+            <pnp:FieldRef ID="a9ea6e2d-bc5c-4ccc-bad8-8ddfe519710f" Name="DataSource" UpdateChildren="true" />
+            <pnp:FieldRef ID="11a86235-9d18-4134-b58c-fa7243f4cbba" Name="Trend" UpdateChildren="true" />
+            <pnp:FieldRef ID="3c497036-038f-41db-aec7-c9849649b135" Name="KpiStatus" UpdateChildren="true" />
+            <pnp:FieldRef ID="dd83a5ed-83c5-47b7-823a-415c6ea1b8a3" Name="DisplayFolder" UpdateChildren="true" />
+            <pnp:FieldRef ID="291aacda-4cfb-4d59-968b-5e2ea0c9eab7" Name="KPI" UpdateChildren="true" />
+            <pnp:FieldRef ID="f6df49ec-807b-4d40-a7da-a17684121f92" Name="IncludeHierarchy" UpdateChildren="true" />
+            <pnp:FieldRef ID="96226eed-ec6f-4f0e-add5-9cfe66a441a0" Name="AutoUpdate" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x010019ACC57FBA4146AFA4C822E719824BED" Name="Category" Description="(Category Content Type Description)" Group="Community Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="ab065451-14d6-485a-88c3-414c908d50d3" Name="CategoryDescription" UpdateChildren="false" />
-            <pnp:FieldRef ID="7cc564f1-abd4-4a2f-bd9b-85dd1d071bdc" Name="CategoryImage" UpdateChildren="false" />
-            <pnp:FieldRef ID="d2264183-83dc-4d08-a57d-974686192d7a" Name="TopicCount" UpdateChildren="false" />
-            <pnp:FieldRef ID="d42630f0-0084-4b16-b876-80fe8cf88879" Name="ReplyCount" UpdateChildren="false" />
-            <pnp:FieldRef ID="497e00df-75c8-4e61-ac5c-a143b6a0fddc" Name="LastPostBy" UpdateChildren="false" />
-            <pnp:FieldRef ID="539458a6-152c-460f-a915-53722c6eb4a6" Name="LastPostDate" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="ab065451-14d6-485a-88c3-414c908d50d3" Name="CategoryDescription" UpdateChildren="true" />
+            <pnp:FieldRef ID="7cc564f1-abd4-4a2f-bd9b-85dd1d071bdc" Name="CategoryImage" UpdateChildren="true" />
+            <pnp:FieldRef ID="d2264183-83dc-4d08-a57d-974686192d7a" Name="TopicCount" UpdateChildren="true" />
+            <pnp:FieldRef ID="d42630f0-0084-4b16-b876-80fe8cf88879" Name="ReplyCount" UpdateChildren="true" />
+            <pnp:FieldRef ID="497e00df-75c8-4e61-ac5c-a143b6a0fddc" Name="LastPostBy" UpdateChildren="true" />
+            <pnp:FieldRef ID="539458a6-152c-460f-a915-53722c6eb4a6" Name="LastPostDate" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x010027FC2137D8DE4B00A40E14346D070D52" Name="Site Membership" Description="Add a new member" Group="Community Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="9e1a17bc-4b5a-498b-a0f7-e5d1ed43c349" Name="Member" UpdateChildren="false" />
-            <pnp:FieldRef ID="da25725f-5b12-4b26-8ed0-e560e4a87fff" Name="MemberStatus" UpdateChildren="false" />
-            <pnp:FieldRef ID="e236652c-cf8f-4917-8baa-30ffcccfb7e8" Name="MemberStatusInt" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="9e1a17bc-4b5a-498b-a0f7-e5d1ed43c349" Name="Member" UpdateChildren="true" />
+            <pnp:FieldRef ID="da25725f-5b12-4b26-8ed0-e560e4a87fff" Name="MemberStatus" UpdateChildren="true" />
+            <pnp:FieldRef ID="e236652c-cf8f-4917-8baa-30ffcccfb7e8" Name="MemberStatusInt" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x010027FC2137D8DE4B00A40E14346D070D5201" Name="Community Member" Description="Add a new community member" Group="Community Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="9e1a17bc-4b5a-498b-a0f7-e5d1ed43c349" Name="Member" UpdateChildren="false" />
-            <pnp:FieldRef ID="da25725f-5b12-4b26-8ed0-e560e4a87fff" Name="MemberStatus" UpdateChildren="false" />
-            <pnp:FieldRef ID="e236652c-cf8f-4917-8baa-30ffcccfb7e8" Name="MemberStatusInt" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="cba948c8-9e42-44a0-b9f1-a39d91b28cb0" Name="LastActivity" UpdateChildren="false" />
-            <pnp:FieldRef ID="1bc74b88-bb81-4be5-961d-9cf75dfe0911" Name="NumberOfBestResponses" UpdateChildren="false" />
-            <pnp:FieldRef ID="178d4af1-459b-4f61-bb41-b347986ee37b" Name="NumberOfDiscussions" UpdateChildren="false" />
-            <pnp:FieldRef ID="51139f59-4bac-45cb-8047-9c633eed1db0" Name="NumberOfReplies" UpdateChildren="false" />
-            <pnp:FieldRef ID="5e74a6c4-8771-4273-88fc-682cf6839410" Name="NumberOfRepliesToReachNextLevel" UpdateChildren="false" />
-            <pnp:FieldRef ID="edd35d15-ae36-4b1b-91aa-0e288df6c612" Name="ReputationScore" UpdateChildren="false" />
-            <pnp:FieldRef ID="501c11be-6dbf-4e6d-b322-b1882da0c8c0" Name="HideReputation" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="9e1a17bc-4b5a-498b-a0f7-e5d1ed43c349" Name="Member" UpdateChildren="true" />
+            <pnp:FieldRef ID="da25725f-5b12-4b26-8ed0-e560e4a87fff" Name="MemberStatus" UpdateChildren="true" />
+            <pnp:FieldRef ID="e236652c-cf8f-4917-8baa-30ffcccfb7e8" Name="MemberStatusInt" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="cba948c8-9e42-44a0-b9f1-a39d91b28cb0" Name="LastActivity" UpdateChildren="true" />
+            <pnp:FieldRef ID="1bc74b88-bb81-4be5-961d-9cf75dfe0911" Name="NumberOfBestResponses" UpdateChildren="true" />
+            <pnp:FieldRef ID="178d4af1-459b-4f61-bb41-b347986ee37b" Name="NumberOfDiscussions" UpdateChildren="true" />
+            <pnp:FieldRef ID="51139f59-4bac-45cb-8047-9c633eed1db0" Name="NumberOfReplies" UpdateChildren="true" />
+            <pnp:FieldRef ID="5e74a6c4-8771-4273-88fc-682cf6839410" Name="NumberOfRepliesToReachNextLevel" UpdateChildren="true" />
+            <pnp:FieldRef ID="edd35d15-ae36-4b1b-91aa-0e288df6c612" Name="ReputationScore" UpdateChildren="true" />
+            <pnp:FieldRef ID="501c11be-6dbf-4e6d-b322-b1882da0c8c0" Name="HideReputation" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x01002A2479FF33DD4BC3B1533A012B653717" Name="WorkflowServiceDefinition" Description="WorkflowServiceDefinition" Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="6391dc7e-e7f3-4faf-9890-550fd5d3022f" Name="WSGUID" UpdateChildren="false" />
-            <pnp:FieldRef ID="40270da4-0a34-4c14-8c30-59e065a28a4d" Name="WSPublishState" UpdateChildren="false" />
-            <pnp:FieldRef ID="321a8c3c-0ec7-473b-bcc6-67f3c2dae20d" Name="WSPublishError" UpdateChildren="false" />
-            <pnp:FieldRef ID="9b590294-0151-44cf-9d56-24d8bb80f802" Name="WSDisplayName" UpdateChildren="false" />
-            <pnp:FieldRef ID="f519008d-1b5b-42a8-8dab-e1a642fe5787" Name="WSDescription" UpdateChildren="false" />
-            <pnp:FieldRef ID="78eae64a-f5f2-49af-b416-3247b76f46a1" Name="FormData" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="6391dc7e-e7f3-4faf-9890-550fd5d3022f" Name="WSGUID" UpdateChildren="true" />
+            <pnp:FieldRef ID="40270da4-0a34-4c14-8c30-59e065a28a4d" Name="WSPublishState" UpdateChildren="true" />
+            <pnp:FieldRef ID="321a8c3c-0ec7-473b-bcc6-67f3c2dae20d" Name="WSPublishError" UpdateChildren="true" />
+            <pnp:FieldRef ID="9b590294-0151-44cf-9d56-24d8bb80f802" Name="WSDisplayName" UpdateChildren="true" />
+            <pnp:FieldRef ID="f519008d-1b5b-42a8-8dab-e1a642fe5787" Name="WSDescription" UpdateChildren="true" />
+            <pnp:FieldRef ID="78eae64a-f5f2-49af-b416-3247b76f46a1" Name="FormData" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x010085EC78BE64F9478AAE3ED069093B9963" Name="Project Policy" Description="Container content type for Project Policy definitions" Group="_Hidden" Sealed="true" ReadOnly="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="" />
         <pnp:ContentType ID="0x010085EC78BE64F9478AAE3ED069093B9963004A37C4B20C06FF4E85D6F87A91A460F1" Name="Project sites policy" Description="Projects have a limited lifetime. Final deliverables should be transferred to the respective division/departmental sites" Group="_Hidden" Hidden="true" ReadOnly="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="b0227f1a-b179-4d45-855b-a18f03706bcb" Name="_dlc_Exempt" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="74e6ae8a-0e3e-4dcb-bbff-b5a016d74d64" Name="_dlc_ExpireDateSaved" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="acd16fdf-052f-40f7-bb7e-564c269c9fbc" Name="_dlc_ExpireDate" UpdateChildren="false" />
+            <pnp:FieldRef ID="b0227f1a-b179-4d45-855b-a18f03706bcb" Name="_dlc_Exempt" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="74e6ae8a-0e3e-4dcb-bbff-b5a016d74d64" Name="_dlc_ExpireDateSaved" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="acd16fdf-052f-40f7-bb7e-564c269c9fbc" Name="_dlc_ExpireDate" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x0100AA27A923036E459D9EF0D18BBD0B9587" Name="WorkflowServiceSubscription" Description="WorkflowServiceSubscription" Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="6391dc7e-e7f3-4faf-9890-550fd5d3022f" Name="WSGUID" UpdateChildren="false" />
-            <pnp:FieldRef ID="40270da4-0a34-4c14-8c30-59e065a28a4d" Name="WSPublishState" UpdateChildren="false" />
-            <pnp:FieldRef ID="321a8c3c-0ec7-473b-bcc6-67f3c2dae20d" Name="WSPublishError" UpdateChildren="false" />
-            <pnp:FieldRef ID="4ca54ab8-9667-427e-b1ec-b1fb4a9f3e19" Name="WSEventContextKeys" UpdateChildren="false" />
-            <pnp:FieldRef ID="73d6d2b7-4ff3-46b4-95e1-0ab6c9b1ec9c" Name="WSEventSourceGUID" UpdateChildren="false" />
-            <pnp:FieldRef ID="9b590294-0151-44cf-9d56-24d8bb80f802" Name="WSDisplayName" UpdateChildren="false" />
-            <pnp:FieldRef ID="f519008d-1b5b-42a8-8dab-e1a642fe5787" Name="WSDescription" UpdateChildren="false" />
-            <pnp:FieldRef ID="d8225d68-5ddb-4e66-8069-2694e8f628fb" Name="WSEventSource" UpdateChildren="false" />
-            <pnp:FieldRef ID="b4ba57c8-ab73-49fa-b6af-a4f824d84c14" Name="WSEventType" UpdateChildren="false" />
-            <pnp:FieldRef ID="a569e161-e19e-4360-9ae1-20dfda097cb3" Name="WSEnabled" UpdateChildren="false" />
-            <pnp:FieldRef ID="78eae64a-f5f2-49af-b416-3247b76f46a1" Name="FormData" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="6391dc7e-e7f3-4faf-9890-550fd5d3022f" Name="WSGUID" UpdateChildren="true" />
+            <pnp:FieldRef ID="40270da4-0a34-4c14-8c30-59e065a28a4d" Name="WSPublishState" UpdateChildren="true" />
+            <pnp:FieldRef ID="321a8c3c-0ec7-473b-bcc6-67f3c2dae20d" Name="WSPublishError" UpdateChildren="true" />
+            <pnp:FieldRef ID="4ca54ab8-9667-427e-b1ec-b1fb4a9f3e19" Name="WSEventContextKeys" UpdateChildren="true" />
+            <pnp:FieldRef ID="73d6d2b7-4ff3-46b4-95e1-0ab6c9b1ec9c" Name="WSEventSourceGUID" UpdateChildren="true" />
+            <pnp:FieldRef ID="9b590294-0151-44cf-9d56-24d8bb80f802" Name="WSDisplayName" UpdateChildren="true" />
+            <pnp:FieldRef ID="f519008d-1b5b-42a8-8dab-e1a642fe5787" Name="WSDescription" UpdateChildren="true" />
+            <pnp:FieldRef ID="d8225d68-5ddb-4e66-8069-2694e8f628fb" Name="WSEventSource" UpdateChildren="true" />
+            <pnp:FieldRef ID="b4ba57c8-ab73-49fa-b6af-a4f824d84c14" Name="WSEventType" UpdateChildren="true" />
+            <pnp:FieldRef ID="a569e161-e19e-4360-9ae1-20dfda097cb3" Name="WSEnabled" UpdateChildren="true" />
+            <pnp:FieldRef ID="78eae64a-f5f2-49af-b416-3247b76f46a1" Name="FormData" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x0100DC2417D125A4489CA59DCC70E3F152B2" Name="Rule" Description="Create a rule that moves content submitted to this site to the correct library or folder." Group="_Hidden" Sealed="true" NewFormUrl="_layouts/15/EditRule.aspx" EditFormUrl="_layouts/15/EditRule.aspx" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="7ba87dae-e90b-431b-8a02-8fc26e453880" Name="RoutingRuleName" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="34a72e09-3ca6-4931-b2e3-f81c40bb87bd" Name="RoutingRuleDescription" UpdateChildren="false" />
-            <pnp:FieldRef ID="d4a6af1d-c6d7-4045-8def-cefa25b9ec31" Name="RoutingPriority" UpdateChildren="false" />
-            <pnp:FieldRef ID="3c4e7a5b-b7d5-4779-a14a-490803e63923" Name="RoutingEnabled" UpdateChildren="false" />
-            <pnp:FieldRef ID="592102d3-4bce-4640-a49e-b6f23d480b7d" Name="RoutingContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="baf14289-0687-448c-b13c-c98dc4183e06" Name="RoutingContentTypeInternal" UpdateChildren="false" />
-            <pnp:FieldRef ID="ff4470ae-85d6-49ab-a501-e5772848f6c7" Name="RoutingConditions" UpdateChildren="false" />
-            <pnp:FieldRef ID="ff4470ae-85d6-49ab-a501-e5772848f6c8" Name="RoutingConditionProperties" UpdateChildren="false" />
-            <pnp:FieldRef ID="186175f6-e318-4e9a-b5f7-4f7c751585a0" Name="RoutingAliases" UpdateChildren="false" />
-            <pnp:FieldRef ID="bda383b2-0bc3-4b10-936e-d7e48974e230" Name="RoutingTargetLibrary" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="7383b80f-b38d-4dde-b9e0-5319f0777069" Name="RoutingTargetFolder" UpdateChildren="false" />
-            <pnp:FieldRef ID="10a4d7f7-ab3a-426f-b5cc-ab1eb03a94f4" Name="RoutingTargetPath" UpdateChildren="false" />
-            <pnp:FieldRef ID="2a647aba-7c69-482b-97b2-dc94f2fb39dc" Name="RoutingAutoFolderProp" UpdateChildren="false" />
-            <pnp:FieldRef ID="e1fa3211-0188-4a95-a737-8775782cbac0" Name="RoutingAutoFolderSettings" UpdateChildren="false" />
-            <pnp:FieldRef ID="dc7d1e4c-c725-4ffb-995b-4ff324656e91" Name="RoutingCustomRouter" UpdateChildren="false" />
-            <pnp:FieldRef ID="a2455e0a-f63c-46af-857c-dbd4199ff95f" Name="RoutingRuleExternal" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="7ba87dae-e90b-431b-8a02-8fc26e453880" Name="RoutingRuleName" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="34a72e09-3ca6-4931-b2e3-f81c40bb87bd" Name="RoutingRuleDescription" UpdateChildren="true" />
+            <pnp:FieldRef ID="d4a6af1d-c6d7-4045-8def-cefa25b9ec31" Name="RoutingPriority" UpdateChildren="true" />
+            <pnp:FieldRef ID="3c4e7a5b-b7d5-4779-a14a-490803e63923" Name="RoutingEnabled" UpdateChildren="true" />
+            <pnp:FieldRef ID="592102d3-4bce-4640-a49e-b6f23d480b7d" Name="RoutingContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="baf14289-0687-448c-b13c-c98dc4183e06" Name="RoutingContentTypeInternal" UpdateChildren="true" />
+            <pnp:FieldRef ID="ff4470ae-85d6-49ab-a501-e5772848f6c7" Name="RoutingConditions" UpdateChildren="true" />
+            <pnp:FieldRef ID="ff4470ae-85d6-49ab-a501-e5772848f6c8" Name="RoutingConditionProperties" UpdateChildren="true" />
+            <pnp:FieldRef ID="186175f6-e318-4e9a-b5f7-4f7c751585a0" Name="RoutingAliases" UpdateChildren="true" />
+            <pnp:FieldRef ID="bda383b2-0bc3-4b10-936e-d7e48974e230" Name="RoutingTargetLibrary" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="7383b80f-b38d-4dde-b9e0-5319f0777069" Name="RoutingTargetFolder" UpdateChildren="true" />
+            <pnp:FieldRef ID="10a4d7f7-ab3a-426f-b5cc-ab1eb03a94f4" Name="RoutingTargetPath" UpdateChildren="true" />
+            <pnp:FieldRef ID="2a647aba-7c69-482b-97b2-dc94f2fb39dc" Name="RoutingAutoFolderProp" UpdateChildren="true" />
+            <pnp:FieldRef ID="e1fa3211-0188-4a95-a737-8775782cbac0" Name="RoutingAutoFolderSettings" UpdateChildren="true" />
+            <pnp:FieldRef ID="dc7d1e4c-c725-4ffb-995b-4ff324656e91" Name="RoutingCustomRouter" UpdateChildren="true" />
+            <pnp:FieldRef ID="a2455e0a-f63c-46af-857c-dbd4199ff95f" Name="RoutingRuleExternal" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101002039C03B61C64EC4A04F5361F3851066" Name="Display Template" Description="Base Content Type containing common Display Template columns. Use one of Control, Group, Item or Filter Display Template content types to create a display type. " Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="false" />
-            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="false" />
-            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="9da97a8a-1da5-4a77-98d3-4bc10456e700" Name="Description" UpdateChildren="false" />
-            <pnp:FieldRef ID="0a9ec8f0-0340-4e24-9b35-ca86a6ded5ab" Name="TemplateHidden" UpdateChildren="false" />
-            <pnp:FieldRef ID="cab85295-b195-4ac2-8323-87c602e6ac9d" Name="TargetControlType" UpdateChildren="false" />
-            <pnp:FieldRef ID="3c318a40-0d51-408d-ba71-16fa845b9fe5" Name="CrawlerXSLFile" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="true" />
+            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="true" />
+            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="9da97a8a-1da5-4a77-98d3-4bc10456e700" Name="Description" UpdateChildren="true" />
+            <pnp:FieldRef ID="0a9ec8f0-0340-4e24-9b35-ca86a6ded5ab" Name="TemplateHidden" UpdateChildren="true" />
+            <pnp:FieldRef ID="cab85295-b195-4ac2-8323-87c602e6ac9d" Name="TargetControlType" UpdateChildren="true" />
+            <pnp:FieldRef ID="3c318a40-0d51-408d-ba71-16fa845b9fe5" Name="CrawlerXSLFile" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101002039C03B61C64EC4A04F5361F385106605" Name="Display Template Code" Description="Display Template Code javascript that registers and executes Display Template rendering logic." Group="_Hidden" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="false" />
-            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="false" />
-            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="9da97a8a-1da5-4a77-98d3-4bc10456e700" Name="Description" UpdateChildren="false" />
-            <pnp:FieldRef ID="0a9ec8f0-0340-4e24-9b35-ca86a6ded5ab" Name="TemplateHidden" UpdateChildren="false" />
-            <pnp:FieldRef ID="cab85295-b195-4ac2-8323-87c602e6ac9d" Name="TargetControlType" UpdateChildren="false" />
-            <pnp:FieldRef ID="3c318a40-0d51-408d-ba71-16fa845b9fe5" Name="CrawlerXSLFile" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa181e85-8465-42fd-bd81-4afea427d3fe" Name="DisplayTemplateLevel" UpdateChildren="false" />
-            <pnp:FieldRef ID="a0dd6c22-0988-453e-b3e2-77479dc9f014" Name="ManagedPropertyMapping" UpdateChildren="false" />
-            <pnp:FieldRef ID="dcb8e2a9-42d1-495f-9fda-4bf9c706bc46" Name="CompatibleSearchDataTypes" UpdateChildren="false" />
-            <pnp:FieldRef ID="bab0a619-d1ec-40d7-847b-3e4408080c17" Name="CompatibleManagedProperties" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="true" />
+            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="true" />
+            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="9da97a8a-1da5-4a77-98d3-4bc10456e700" Name="Description" UpdateChildren="true" />
+            <pnp:FieldRef ID="0a9ec8f0-0340-4e24-9b35-ca86a6ded5ab" Name="TemplateHidden" UpdateChildren="true" />
+            <pnp:FieldRef ID="cab85295-b195-4ac2-8323-87c602e6ac9d" Name="TargetControlType" UpdateChildren="true" />
+            <pnp:FieldRef ID="3c318a40-0d51-408d-ba71-16fa845b9fe5" Name="CrawlerXSLFile" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa181e85-8465-42fd-bd81-4afea427d3fe" Name="DisplayTemplateLevel" UpdateChildren="true" />
+            <pnp:FieldRef ID="a0dd6c22-0988-453e-b3e2-77479dc9f014" Name="ManagedPropertyMapping" UpdateChildren="true" />
+            <pnp:FieldRef ID="dcb8e2a9-42d1-495f-9fda-4bf9c706bc46" Name="CompatibleSearchDataTypes" UpdateChildren="true" />
+            <pnp:FieldRef ID="bab0a619-d1ec-40d7-847b-3e4408080c17" Name="CompatibleManagedProperties" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x01010058DDEB47312E4967BFC1576B96E8C3D4" Name="Report" Description="" Group="Business Intelligence" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="false" />
-            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="false" />
-            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="2a16b911-b094-46e6-a7cd-227eea3effdb" Name="ReportDescription" UpdateChildren="false" />
-            <pnp:FieldRef ID="1be428c8-2c2d-4e02-970b-6663eb1d7080" Name="ParentId" UpdateChildren="false" />
-            <pnp:FieldRef ID="2e8881da-0332-4ad9-a565-45b5b8b2702f" Name="ReportOwner" UpdateChildren="false" />
-            <pnp:FieldRef ID="d8921da7-c09b-4a06-b644-dffebf73c736" Name="ReportCategory" UpdateChildren="false" />
-            <pnp:FieldRef ID="bf80df9c-32dc-4257-bcf9-08c2ee6ca1b1" Name="ReportStatus" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="true" />
+            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="true" />
+            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="2a16b911-b094-46e6-a7cd-227eea3effdb" Name="ReportDescription" UpdateChildren="true" />
+            <pnp:FieldRef ID="1be428c8-2c2d-4e02-970b-6663eb1d7080" Name="ParentId" UpdateChildren="true" />
+            <pnp:FieldRef ID="2e8881da-0332-4ad9-a565-45b5b8b2702f" Name="ReportOwner" UpdateChildren="true" />
+            <pnp:FieldRef ID="d8921da7-c09b-4a06-b644-dffebf73c736" Name="ReportCategory" UpdateChildren="true" />
+            <pnp:FieldRef ID="bf80df9c-32dc-4257-bcf9-08c2ee6ca1b1" Name="ReportStatus" UpdateChildren="true" />
           </pnp:FieldRefs>
           <pnp:DocumentTemplate TargetName="/_layouts/CreateWorkbook.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101009148F5A04DDD49CBA7127AADA5FB792B" Name="Rich Media Asset" Description="Upload an asset." Group="Digital Asset Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="false" />
-            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="false" />
-            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="94f89715-e097-4e8b-ba79-ea02aa8b7adb" Name="FileRef" UpdateChildren="false" />
-            <pnp:FieldRef ID="39360f11-34cf-4356-9945-25c44e68dade" Name="File_x0020_Type" UpdateChildren="false" />
-            <pnp:FieldRef ID="0c5e0085-eb30-494b-9cdd-ece1d3c649a2" Name="HTML_x0020_File_x0020_Type" UpdateChildren="false" />
-            <pnp:FieldRef ID="30bb605f-5bae-48fe-b4e3-1f81d9772af9" Name="FSObjType" UpdateChildren="false" />
-            <pnp:FieldRef ID="7177cfc7-f399-4d4d-905d-37dd51bc90bf" Name="EncodedAbsUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c0d0aac-9b76-4951-927a-2490abe13c0b" Name="PreviewOnForm" UpdateChildren="false" />
-            <pnp:FieldRef ID="b66e9b50-a28e-469b-b1a0-af0e45486874" Name="Keywords" UpdateChildren="false" />
-            <pnp:FieldRef ID="b9e6f3ae-5632-4b13-b636-9d1a2bd67120" Name="EncodedAbsThumbnailUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="a1ca0063-779f-49f9-999c-a4a2e3645b07" Name="EncodedAbsWebImgUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="9941082a-4160-46a1-a5b2-03394bfdf7ee" Name="ThumbnailOnForm" UpdateChildren="false" />
-            <pnp:FieldRef ID="1f43cd21-53c5-44c5-8675-b8bb86083244" Name="ThumbnailExists" UpdateChildren="false" />
-            <pnp:FieldRef ID="3ca8efcd-96e8-414f-ba90-4c8c4a8bfef8" Name="PreviewExists" UpdateChildren="false" />
-            <pnp:FieldRef ID="7e68a0f9-af76-404c-9613-6f82bc6dc28c" Name="ImageWidth" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="true" />
+            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="true" />
+            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="94f89715-e097-4e8b-ba79-ea02aa8b7adb" Name="FileRef" UpdateChildren="true" />
+            <pnp:FieldRef ID="39360f11-34cf-4356-9945-25c44e68dade" Name="File_x0020_Type" UpdateChildren="true" />
+            <pnp:FieldRef ID="0c5e0085-eb30-494b-9cdd-ece1d3c649a2" Name="HTML_x0020_File_x0020_Type" UpdateChildren="true" />
+            <pnp:FieldRef ID="30bb605f-5bae-48fe-b4e3-1f81d9772af9" Name="FSObjType" UpdateChildren="true" />
+            <pnp:FieldRef ID="7177cfc7-f399-4d4d-905d-37dd51bc90bf" Name="EncodedAbsUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c0d0aac-9b76-4951-927a-2490abe13c0b" Name="PreviewOnForm" UpdateChildren="true" />
+            <pnp:FieldRef ID="b66e9b50-a28e-469b-b1a0-af0e45486874" Name="Keywords" UpdateChildren="true" />
+            <pnp:FieldRef ID="b9e6f3ae-5632-4b13-b636-9d1a2bd67120" Name="EncodedAbsThumbnailUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="a1ca0063-779f-49f9-999c-a4a2e3645b07" Name="EncodedAbsWebImgUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="9941082a-4160-46a1-a5b2-03394bfdf7ee" Name="ThumbnailOnForm" UpdateChildren="true" />
+            <pnp:FieldRef ID="1f43cd21-53c5-44c5-8675-b8bb86083244" Name="ThumbnailExists" UpdateChildren="true" />
+            <pnp:FieldRef ID="3ca8efcd-96e8-414f-ba90-4c8c4a8bfef8" Name="PreviewExists" UpdateChildren="true" />
+            <pnp:FieldRef ID="7e68a0f9-af76-404c-9613-6f82bc6dc28c" Name="ImageWidth" UpdateChildren="true" />
           </pnp:FieldRefs>
           <pnp:DocumentTemplate TargetName="/_layouts/15/Upload.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101009148F5A04DDD49CBA7127AADA5FB792B00291D173ECE694D56B19D111489C4369D" Name="Video Rendition" Description="Upload a video file." Group="Digital Asset Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="false" />
-            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="false" />
-            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="94f89715-e097-4e8b-ba79-ea02aa8b7adb" Name="FileRef" UpdateChildren="false" />
-            <pnp:FieldRef ID="39360f11-34cf-4356-9945-25c44e68dade" Name="File_x0020_Type" UpdateChildren="false" />
-            <pnp:FieldRef ID="0c5e0085-eb30-494b-9cdd-ece1d3c649a2" Name="HTML_x0020_File_x0020_Type" UpdateChildren="false" />
-            <pnp:FieldRef ID="30bb605f-5bae-48fe-b4e3-1f81d9772af9" Name="FSObjType" UpdateChildren="false" />
-            <pnp:FieldRef ID="7177cfc7-f399-4d4d-905d-37dd51bc90bf" Name="EncodedAbsUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c0d0aac-9b76-4951-927a-2490abe13c0b" Name="PreviewOnForm" UpdateChildren="false" />
-            <pnp:FieldRef ID="b66e9b50-a28e-469b-b1a0-af0e45486874" Name="Keywords" UpdateChildren="false" />
-            <pnp:FieldRef ID="b9e6f3ae-5632-4b13-b636-9d1a2bd67120" Name="EncodedAbsThumbnailUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="a1ca0063-779f-49f9-999c-a4a2e3645b07" Name="EncodedAbsWebImgUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="9941082a-4160-46a1-a5b2-03394bfdf7ee" Name="ThumbnailOnForm" UpdateChildren="false" />
-            <pnp:FieldRef ID="1f43cd21-53c5-44c5-8675-b8bb86083244" Name="ThumbnailExists" UpdateChildren="false" />
-            <pnp:FieldRef ID="3ca8efcd-96e8-414f-ba90-4c8c4a8bfef8" Name="PreviewExists" UpdateChildren="false" />
-            <pnp:FieldRef ID="7e68a0f9-af76-404c-9613-6f82bc6dc28c" Name="ImageWidth" UpdateChildren="false" />
-            <pnp:FieldRef ID="246d0907-637c-46b7-9aa0-0bb914daa832" Name="_Author" UpdateChildren="false" />
-            <pnp:FieldRef ID="52578fc3-1f01-4f4d-b016-94ccbcf428cf" Name="_Comments" UpdateChildren="false" />
-            <pnp:FieldRef ID="f39d44af-d3f3-4ae6-b43f-ac7330b5e9bd" Name="AlternateThumbnailUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="f08ab41d-9a03-49ae-9413-6cd284a15625" Name="wic_System_Copyright" UpdateChildren="false" />
-            <pnp:FieldRef ID="de38f937-8578-435e-8cd3-50be3ea59253" Name="MediaLengthInSeconds" UpdateChildren="false" />
-            <pnp:FieldRef ID="59cd571e-e2d9-485d-bb5d-e70d12f8d0b7" Name="VideoWidthInPixels" UpdateChildren="false" />
-            <pnp:FieldRef ID="84cd09bd-85a9-461f-86e3-4c3c1738ad6b" Name="VideoHeightInPixels" UpdateChildren="false" />
-            <pnp:FieldRef ID="fd7ef3c2-486e-40cd-b651-6be6d1abbe25" Name="VideoRenditionLabel" UpdateChildren="false" />
-            <pnp:FieldRef ID="cf42542f-df94-4136-a0ac-29326fccd565" Name="VideoRenditionBitRate" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="true" />
+            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="true" />
+            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="94f89715-e097-4e8b-ba79-ea02aa8b7adb" Name="FileRef" UpdateChildren="true" />
+            <pnp:FieldRef ID="39360f11-34cf-4356-9945-25c44e68dade" Name="File_x0020_Type" UpdateChildren="true" />
+            <pnp:FieldRef ID="0c5e0085-eb30-494b-9cdd-ece1d3c649a2" Name="HTML_x0020_File_x0020_Type" UpdateChildren="true" />
+            <pnp:FieldRef ID="30bb605f-5bae-48fe-b4e3-1f81d9772af9" Name="FSObjType" UpdateChildren="true" />
+            <pnp:FieldRef ID="7177cfc7-f399-4d4d-905d-37dd51bc90bf" Name="EncodedAbsUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c0d0aac-9b76-4951-927a-2490abe13c0b" Name="PreviewOnForm" UpdateChildren="true" />
+            <pnp:FieldRef ID="b66e9b50-a28e-469b-b1a0-af0e45486874" Name="Keywords" UpdateChildren="true" />
+            <pnp:FieldRef ID="b9e6f3ae-5632-4b13-b636-9d1a2bd67120" Name="EncodedAbsThumbnailUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="a1ca0063-779f-49f9-999c-a4a2e3645b07" Name="EncodedAbsWebImgUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="9941082a-4160-46a1-a5b2-03394bfdf7ee" Name="ThumbnailOnForm" UpdateChildren="true" />
+            <pnp:FieldRef ID="1f43cd21-53c5-44c5-8675-b8bb86083244" Name="ThumbnailExists" UpdateChildren="true" />
+            <pnp:FieldRef ID="3ca8efcd-96e8-414f-ba90-4c8c4a8bfef8" Name="PreviewExists" UpdateChildren="true" />
+            <pnp:FieldRef ID="7e68a0f9-af76-404c-9613-6f82bc6dc28c" Name="ImageWidth" UpdateChildren="true" />
+            <pnp:FieldRef ID="246d0907-637c-46b7-9aa0-0bb914daa832" Name="_Author" UpdateChildren="true" />
+            <pnp:FieldRef ID="52578fc3-1f01-4f4d-b016-94ccbcf428cf" Name="_Comments" UpdateChildren="true" />
+            <pnp:FieldRef ID="f39d44af-d3f3-4ae6-b43f-ac7330b5e9bd" Name="AlternateThumbnailUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="f08ab41d-9a03-49ae-9413-6cd284a15625" Name="wic_System_Copyright" UpdateChildren="true" />
+            <pnp:FieldRef ID="de38f937-8578-435e-8cd3-50be3ea59253" Name="MediaLengthInSeconds" UpdateChildren="true" />
+            <pnp:FieldRef ID="59cd571e-e2d9-485d-bb5d-e70d12f8d0b7" Name="VideoWidthInPixels" UpdateChildren="true" />
+            <pnp:FieldRef ID="84cd09bd-85a9-461f-86e3-4c3c1738ad6b" Name="VideoHeightInPixels" UpdateChildren="true" />
+            <pnp:FieldRef ID="fd7ef3c2-486e-40cd-b651-6be6d1abbe25" Name="VideoRenditionLabel" UpdateChildren="true" />
+            <pnp:FieldRef ID="cf42542f-df94-4136-a0ac-29326fccd565" Name="VideoRenditionBitRate" UpdateChildren="true" />
           </pnp:FieldRefs>
           <pnp:DocumentTemplate TargetName="/_layouts/15/UploadEx.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101009148F5A04DDD49CBA7127AADA5FB792B006973ACD696DC4858A76371B2FB2F439A" Name="Audio" Description="Upload an audio file." Group="Digital Asset Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="false" />
-            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="false" />
-            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="94f89715-e097-4e8b-ba79-ea02aa8b7adb" Name="FileRef" UpdateChildren="false" />
-            <pnp:FieldRef ID="39360f11-34cf-4356-9945-25c44e68dade" Name="File_x0020_Type" UpdateChildren="false" />
-            <pnp:FieldRef ID="0c5e0085-eb30-494b-9cdd-ece1d3c649a2" Name="HTML_x0020_File_x0020_Type" UpdateChildren="false" />
-            <pnp:FieldRef ID="30bb605f-5bae-48fe-b4e3-1f81d9772af9" Name="FSObjType" UpdateChildren="false" />
-            <pnp:FieldRef ID="7177cfc7-f399-4d4d-905d-37dd51bc90bf" Name="EncodedAbsUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c0d0aac-9b76-4951-927a-2490abe13c0b" Name="PreviewOnForm" UpdateChildren="false" />
-            <pnp:FieldRef ID="b66e9b50-a28e-469b-b1a0-af0e45486874" Name="Keywords" UpdateChildren="false" />
-            <pnp:FieldRef ID="b9e6f3ae-5632-4b13-b636-9d1a2bd67120" Name="EncodedAbsThumbnailUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="a1ca0063-779f-49f9-999c-a4a2e3645b07" Name="EncodedAbsWebImgUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="9941082a-4160-46a1-a5b2-03394bfdf7ee" Name="ThumbnailOnForm" UpdateChildren="false" />
-            <pnp:FieldRef ID="1f43cd21-53c5-44c5-8675-b8bb86083244" Name="ThumbnailExists" UpdateChildren="false" />
-            <pnp:FieldRef ID="3ca8efcd-96e8-414f-ba90-4c8c4a8bfef8" Name="PreviewExists" UpdateChildren="false" />
-            <pnp:FieldRef ID="7e68a0f9-af76-404c-9613-6f82bc6dc28c" Name="ImageWidth" UpdateChildren="false" />
-            <pnp:FieldRef ID="246d0907-637c-46b7-9aa0-0bb914daa832" Name="_Author" UpdateChildren="false" />
-            <pnp:FieldRef ID="52578fc3-1f01-4f4d-b016-94ccbcf428cf" Name="_Comments" UpdateChildren="false" />
-            <pnp:FieldRef ID="f39d44af-d3f3-4ae6-b43f-ac7330b5e9bd" Name="AlternateThumbnailUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="f08ab41d-9a03-49ae-9413-6cd284a15625" Name="wic_System_Copyright" UpdateChildren="false" />
-            <pnp:FieldRef ID="de38f937-8578-435e-8cd3-50be3ea59253" Name="MediaLengthInSeconds" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="true" />
+            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="true" />
+            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="94f89715-e097-4e8b-ba79-ea02aa8b7adb" Name="FileRef" UpdateChildren="true" />
+            <pnp:FieldRef ID="39360f11-34cf-4356-9945-25c44e68dade" Name="File_x0020_Type" UpdateChildren="true" />
+            <pnp:FieldRef ID="0c5e0085-eb30-494b-9cdd-ece1d3c649a2" Name="HTML_x0020_File_x0020_Type" UpdateChildren="true" />
+            <pnp:FieldRef ID="30bb605f-5bae-48fe-b4e3-1f81d9772af9" Name="FSObjType" UpdateChildren="true" />
+            <pnp:FieldRef ID="7177cfc7-f399-4d4d-905d-37dd51bc90bf" Name="EncodedAbsUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c0d0aac-9b76-4951-927a-2490abe13c0b" Name="PreviewOnForm" UpdateChildren="true" />
+            <pnp:FieldRef ID="b66e9b50-a28e-469b-b1a0-af0e45486874" Name="Keywords" UpdateChildren="true" />
+            <pnp:FieldRef ID="b9e6f3ae-5632-4b13-b636-9d1a2bd67120" Name="EncodedAbsThumbnailUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="a1ca0063-779f-49f9-999c-a4a2e3645b07" Name="EncodedAbsWebImgUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="9941082a-4160-46a1-a5b2-03394bfdf7ee" Name="ThumbnailOnForm" UpdateChildren="true" />
+            <pnp:FieldRef ID="1f43cd21-53c5-44c5-8675-b8bb86083244" Name="ThumbnailExists" UpdateChildren="true" />
+            <pnp:FieldRef ID="3ca8efcd-96e8-414f-ba90-4c8c4a8bfef8" Name="PreviewExists" UpdateChildren="true" />
+            <pnp:FieldRef ID="7e68a0f9-af76-404c-9613-6f82bc6dc28c" Name="ImageWidth" UpdateChildren="true" />
+            <pnp:FieldRef ID="246d0907-637c-46b7-9aa0-0bb914daa832" Name="_Author" UpdateChildren="true" />
+            <pnp:FieldRef ID="52578fc3-1f01-4f4d-b016-94ccbcf428cf" Name="_Comments" UpdateChildren="true" />
+            <pnp:FieldRef ID="f39d44af-d3f3-4ae6-b43f-ac7330b5e9bd" Name="AlternateThumbnailUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="f08ab41d-9a03-49ae-9413-6cd284a15625" Name="wic_System_Copyright" UpdateChildren="true" />
+            <pnp:FieldRef ID="de38f937-8578-435e-8cd3-50be3ea59253" Name="MediaLengthInSeconds" UpdateChildren="true" />
           </pnp:FieldRefs>
           <pnp:DocumentTemplate TargetName="/_layouts/15/UploadEx.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101009148F5A04DDD49CBA7127AADA5FB792B00AADE34325A8B49CDA8BB4DB53328F214" Name="Image" Description="Upload an image." Group="Digital Asset Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="false" />
-            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="false" />
-            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="94f89715-e097-4e8b-ba79-ea02aa8b7adb" Name="FileRef" UpdateChildren="false" />
-            <pnp:FieldRef ID="39360f11-34cf-4356-9945-25c44e68dade" Name="File_x0020_Type" UpdateChildren="false" />
-            <pnp:FieldRef ID="0c5e0085-eb30-494b-9cdd-ece1d3c649a2" Name="HTML_x0020_File_x0020_Type" UpdateChildren="false" />
-            <pnp:FieldRef ID="30bb605f-5bae-48fe-b4e3-1f81d9772af9" Name="FSObjType" UpdateChildren="false" />
-            <pnp:FieldRef ID="7177cfc7-f399-4d4d-905d-37dd51bc90bf" Name="EncodedAbsUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c0d0aac-9b76-4951-927a-2490abe13c0b" Name="PreviewOnForm" UpdateChildren="false" />
-            <pnp:FieldRef ID="b66e9b50-a28e-469b-b1a0-af0e45486874" Name="Keywords" UpdateChildren="false" />
-            <pnp:FieldRef ID="b9e6f3ae-5632-4b13-b636-9d1a2bd67120" Name="EncodedAbsThumbnailUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="a1ca0063-779f-49f9-999c-a4a2e3645b07" Name="EncodedAbsWebImgUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="9941082a-4160-46a1-a5b2-03394bfdf7ee" Name="ThumbnailOnForm" UpdateChildren="false" />
-            <pnp:FieldRef ID="1f43cd21-53c5-44c5-8675-b8bb86083244" Name="ThumbnailExists" UpdateChildren="false" />
-            <pnp:FieldRef ID="3ca8efcd-96e8-414f-ba90-4c8c4a8bfef8" Name="PreviewExists" UpdateChildren="false" />
-            <pnp:FieldRef ID="7e68a0f9-af76-404c-9613-6f82bc6dc28c" Name="ImageWidth" UpdateChildren="false" />
-            <pnp:FieldRef ID="922551b8-c7e0-46a6-b7e3-3cf02917f68a" Name="ImageSize" UpdateChildren="false" />
-            <pnp:FieldRef ID="1944c034-d61b-42af-aa84-647f2e74ca70" Name="ImageHeight" UpdateChildren="false" />
-            <pnp:FieldRef ID="52578fc3-1f01-4f4d-b016-94ccbcf428cf" Name="_Comments" UpdateChildren="false" />
-            <pnp:FieldRef ID="246d0907-637c-46b7-9aa0-0bb914daa832" Name="_Author" UpdateChildren="false" />
-            <pnp:FieldRef ID="a5d2f824-bc53-422e-87fd-765939d863a5" Name="ImageCreateDate" UpdateChildren="false" />
-            <pnp:FieldRef ID="f08ab41d-9a03-49ae-9413-6cd284a15625" Name="wic_System_Copyright" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="true" />
+            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="true" />
+            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="94f89715-e097-4e8b-ba79-ea02aa8b7adb" Name="FileRef" UpdateChildren="true" />
+            <pnp:FieldRef ID="39360f11-34cf-4356-9945-25c44e68dade" Name="File_x0020_Type" UpdateChildren="true" />
+            <pnp:FieldRef ID="0c5e0085-eb30-494b-9cdd-ece1d3c649a2" Name="HTML_x0020_File_x0020_Type" UpdateChildren="true" />
+            <pnp:FieldRef ID="30bb605f-5bae-48fe-b4e3-1f81d9772af9" Name="FSObjType" UpdateChildren="true" />
+            <pnp:FieldRef ID="7177cfc7-f399-4d4d-905d-37dd51bc90bf" Name="EncodedAbsUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c0d0aac-9b76-4951-927a-2490abe13c0b" Name="PreviewOnForm" UpdateChildren="true" />
+            <pnp:FieldRef ID="b66e9b50-a28e-469b-b1a0-af0e45486874" Name="Keywords" UpdateChildren="true" />
+            <pnp:FieldRef ID="b9e6f3ae-5632-4b13-b636-9d1a2bd67120" Name="EncodedAbsThumbnailUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="a1ca0063-779f-49f9-999c-a4a2e3645b07" Name="EncodedAbsWebImgUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="9941082a-4160-46a1-a5b2-03394bfdf7ee" Name="ThumbnailOnForm" UpdateChildren="true" />
+            <pnp:FieldRef ID="1f43cd21-53c5-44c5-8675-b8bb86083244" Name="ThumbnailExists" UpdateChildren="true" />
+            <pnp:FieldRef ID="3ca8efcd-96e8-414f-ba90-4c8c4a8bfef8" Name="PreviewExists" UpdateChildren="true" />
+            <pnp:FieldRef ID="7e68a0f9-af76-404c-9613-6f82bc6dc28c" Name="ImageWidth" UpdateChildren="true" />
+            <pnp:FieldRef ID="922551b8-c7e0-46a6-b7e3-3cf02917f68a" Name="ImageSize" UpdateChildren="true" />
+            <pnp:FieldRef ID="1944c034-d61b-42af-aa84-647f2e74ca70" Name="ImageHeight" UpdateChildren="true" />
+            <pnp:FieldRef ID="52578fc3-1f01-4f4d-b016-94ccbcf428cf" Name="_Comments" UpdateChildren="true" />
+            <pnp:FieldRef ID="246d0907-637c-46b7-9aa0-0bb914daa832" Name="_Author" UpdateChildren="true" />
+            <pnp:FieldRef ID="a5d2f824-bc53-422e-87fd-765939d863a5" Name="ImageCreateDate" UpdateChildren="true" />
+            <pnp:FieldRef ID="f08ab41d-9a03-49ae-9413-6cd284a15625" Name="wic_System_Copyright" UpdateChildren="true" />
           </pnp:FieldRefs>
           <pnp:DocumentTemplate TargetName="/_layouts/15/Upload.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0101009D1CB255DA76424F860D91F20E6C4118002A50BFCFB7614729B56886FADA02339B" Name="Repost Page" Description="Create a new repost page." Group="Document Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="false" />
-            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="false" />
-            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="82642ec8-ef9b-478f-acf9-31f7d45fbc31" Name="LinkTitle" UpdateChildren="false" />
-            <pnp:FieldRef ID="7efc33c1-b56b-490e-9c9b-1097e971ba96" Name="ClientSideApplicationId" UpdateChildren="false" />
-            <pnp:FieldRef ID="daef58d7-ccfd-43fc-b776-2e292cc66bba" Name="PageLayoutType" UpdateChildren="false" />
-            <pnp:FieldRef ID="4966388e-6e12-4bc6-8990-5b5b66153eae" Name="CanvasContent1" UpdateChildren="false" />
-            <pnp:FieldRef ID="5baf6db5-9d25-4738-b15e-db5789298e82" Name="BannerImageUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="fb3259ac-bd07-4397-b7aa-03e885b0838e" Name="BannerImageOffset" UpdateChildren="false" />
-            <pnp:FieldRef ID="3f155110-a6a2-4d70-926c-94648101f0e8" Name="Description" UpdateChildren="false" />
-            <pnp:FieldRef ID="f5ad16a2-85be-46b2-b5f0-2bb8b4a5074a" Name="PromotedState" UpdateChildren="false" />
-            <pnp:FieldRef ID="c84f8697-331e-457d-884a-c4fb8f30ea74" Name="FirstPublishedDate" UpdateChildren="false" />
-            <pnp:FieldRef ID="261075db-0525-4fb8-a6ea-772014186599" Name="LayoutWebpartsContent" UpdateChildren="false" />
-            <pnp:FieldRef ID="1a7348e7-1bb7-4a47-9790-088e7cb20b58" Name="_AuthorByline" UpdateChildren="false" />
-            <pnp:FieldRef ID="d60d65ff-ff42-4044-a684-ac3f7a5e598c" Name="_TopicHeader" UpdateChildren="false" />
-            <pnp:FieldRef ID="9de685c5-fdf5-4319-b987-3edf55efb36f" Name="_SPSitePageFlags" UpdateChildren="false" />
-            <pnp:FieldRef ID="0e7b982f-698a-4d0c-aacb-f16906f66d30" Name="_OriginalSourceUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="36193413-dd5c-4096-8c1e-1b40098b9ba3" Name="_OriginalSourceSiteId" UpdateChildren="false" />
-            <pnp:FieldRef ID="3477a5bc-c605-4b2e-a7c1-8db8f13c017e" Name="_OriginalSourceWebId" UpdateChildren="false" />
-            <pnp:FieldRef ID="139da674-dbf6-439f-98e0-4eb05fa9a669" Name="_OriginalSourceListId" UpdateChildren="false" />
-            <pnp:FieldRef ID="91e86a43-75f2-426f-80da-35edfb47d55d" Name="_OriginalSourceItemId" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="true" />
+            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="true" />
+            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="82642ec8-ef9b-478f-acf9-31f7d45fbc31" Name="LinkTitle" UpdateChildren="true" />
+            <pnp:FieldRef ID="7efc33c1-b56b-490e-9c9b-1097e971ba96" Name="ClientSideApplicationId" UpdateChildren="true" />
+            <pnp:FieldRef ID="daef58d7-ccfd-43fc-b776-2e292cc66bba" Name="PageLayoutType" UpdateChildren="true" />
+            <pnp:FieldRef ID="4966388e-6e12-4bc6-8990-5b5b66153eae" Name="CanvasContent1" UpdateChildren="true" />
+            <pnp:FieldRef ID="5baf6db5-9d25-4738-b15e-db5789298e82" Name="BannerImageUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="fb3259ac-bd07-4397-b7aa-03e885b0838e" Name="BannerImageOffset" UpdateChildren="true" />
+            <pnp:FieldRef ID="3f155110-a6a2-4d70-926c-94648101f0e8" Name="Description" UpdateChildren="true" />
+            <pnp:FieldRef ID="f5ad16a2-85be-46b2-b5f0-2bb8b4a5074a" Name="PromotedState" UpdateChildren="true" />
+            <pnp:FieldRef ID="c84f8697-331e-457d-884a-c4fb8f30ea74" Name="FirstPublishedDate" UpdateChildren="true" />
+            <pnp:FieldRef ID="261075db-0525-4fb8-a6ea-772014186599" Name="LayoutWebpartsContent" UpdateChildren="true" />
+            <pnp:FieldRef ID="1a7348e7-1bb7-4a47-9790-088e7cb20b58" Name="_AuthorByline" UpdateChildren="true" />
+            <pnp:FieldRef ID="d60d65ff-ff42-4044-a684-ac3f7a5e598c" Name="_TopicHeader" UpdateChildren="true" />
+            <pnp:FieldRef ID="9de685c5-fdf5-4319-b987-3edf55efb36f" Name="_SPSitePageFlags" UpdateChildren="true" />
+            <pnp:FieldRef ID="0e7b982f-698a-4d0c-aacb-f16906f66d30" Name="_OriginalSourceUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="36193413-dd5c-4096-8c1e-1b40098b9ba3" Name="_OriginalSourceSiteId" UpdateChildren="true" />
+            <pnp:FieldRef ID="3477a5bc-c605-4b2e-a7c1-8db8f13c017e" Name="_OriginalSourceWebId" UpdateChildren="true" />
+            <pnp:FieldRef ID="139da674-dbf6-439f-98e0-4eb05fa9a669" Name="_OriginalSourceListId" UpdateChildren="true" />
+            <pnp:FieldRef ID="91e86a43-75f2-426f-80da-35edfb47d55d" Name="_OriginalSourceItemId" UpdateChildren="true" />
           </pnp:FieldRefs>
           <pnp:DocumentTemplate TargetName="/_layouts/15/CreateSitePage.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100A2E3C117A0C5482FAEE3D57C48CB042F" Name="Web Part Page with Status List" Description="Create a page that displays Status Indicators and Excel workbooks." Group="Business Intelligence" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="false" />
-            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="false" />
-            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="2a16b911-b094-46e6-a7cd-227eea3effdb" Name="ReportDescription" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="true" />
+            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="true" />
+            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="2a16b911-b094-46e6-a7cd-227eea3effdb" Name="ReportDescription" UpdateChildren="true" />
           </pnp:FieldRefs>
           <pnp:DocumentTemplate TargetName="/_layouts/spnewdashboard.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100C5033D6CFB8447359FB795C8A73A2B19" Name="Design File" Description="HTML, JavaScript, CSS, images, and other supporting files in the Master Page Gallery used by HTML Master Pages, HTML Page Layouts, and Display Templates." Group="_Hidden" Sealed="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="false" />
-            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="false" />
-            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="true" />
+            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="true" />
+            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x010100F8EF98760CBA4A94994F13BA881038FA" Name="InfoPath Form Template" Description="A Microsoft InfoPath Form Template." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="false" />
-            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="false" />
-            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="66b691cf-07a3-4ca6-ac6d-27fa969c8569" Name="FormName" UpdateChildren="false" />
-            <pnp:FieldRef ID="65572d4d-445a-43f1-9c77-3358222a2c93" Name="FormCategory" UpdateChildren="false" />
-            <pnp:FieldRef ID="94ad6f7c-09a1-42ca-974f-d24e080160c2" Name="FormVersion" UpdateChildren="false" />
-            <pnp:FieldRef ID="1a03fa74-8c63-40cc-bd06-73b580bd8744" Name="FormId" UpdateChildren="false" />
-            <pnp:FieldRef ID="96c27c9d-33f5-4f8e-893e-684014bc7090" Name="FormLocale" UpdateChildren="false" />
-            <pnp:FieldRef ID="1fff255c-6c88-4a76-957b-ae24bf07b78c" Name="FormDescription" UpdateChildren="false" />
-            <pnp:FieldRef ID="58eb8694-8bd6-4f98-8097-374bd97ffec4" Name="CusomContentTypeId" UpdateChildren="false" />
-            <pnp:FieldRef ID="4ef69ca4-4179-4d27-9e6c-f9544d45dfdc" Name="ShowInCatalog" UpdateChildren="false" />
-            <pnp:FieldRef ID="1a03fa74-8c63-40cc-bd06-73b580bd8743" Name="LinkTemplateName" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="true" />
+            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="true" />
+            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="66b691cf-07a3-4ca6-ac6d-27fa969c8569" Name="FormName" UpdateChildren="true" />
+            <pnp:FieldRef ID="65572d4d-445a-43f1-9c77-3358222a2c93" Name="FormCategory" UpdateChildren="true" />
+            <pnp:FieldRef ID="94ad6f7c-09a1-42ca-974f-d24e080160c2" Name="FormVersion" UpdateChildren="true" />
+            <pnp:FieldRef ID="1a03fa74-8c63-40cc-bd06-73b580bd8744" Name="FormId" UpdateChildren="true" />
+            <pnp:FieldRef ID="96c27c9d-33f5-4f8e-893e-684014bc7090" Name="FormLocale" UpdateChildren="true" />
+            <pnp:FieldRef ID="1fff255c-6c88-4a76-957b-ae24bf07b78c" Name="FormDescription" UpdateChildren="true" />
+            <pnp:FieldRef ID="58eb8694-8bd6-4f98-8097-374bd97ffec4" Name="CusomContentTypeId" UpdateChildren="true" />
+            <pnp:FieldRef ID="4ef69ca4-4179-4d27-9e6c-f9544d45dfdc" Name="ShowInCatalog" UpdateChildren="true" />
+            <pnp:FieldRef ID="1a03fa74-8c63-40cc-bd06-73b580bd8743" Name="LinkTemplateName" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x010106" Name="Master Page Preview" Description="Create a new master page preview." Group="Document Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="false" />
-            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="false" />
-            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="false" />
-            <pnp:FieldRef ID="8e334549-c2bd-4110-9f61-672971be6504" Name="UIVersion" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="5f47e085-2150-41dc-b661-442f3027f552" Name="SelectFilename" UpdateChildren="true" />
+            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="8c06beca-0777-48f7-91c7-6da68bc07b69" Name="Created" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="true" />
+            <pnp:FieldRef ID="28cf69c5-fa48-462a-b5cd-27b6f9d2bd5f" Name="Modified" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="822c78e3-1ea9-4943-b449-57863ad33ca9" Name="Modified_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="4dd7e525-8d6b-4cb4-9d3e-44ee25f973eb" Name="Created_x0020_By" UpdateChildren="true" />
+            <pnp:FieldRef ID="8e334549-c2bd-4110-9f61-672971be6504" Name="UIVersion" UpdateChildren="true" />
           </pnp:FieldRefs>
           <pnp:DocumentTemplate TargetName="/_layouts/15/upload.aspx" />
         </pnp:ContentType>
         <pnp:ContentType ID="0x0108003365C4474CAE8C42BCE396314E88E51F" Name="Workflow Task (SharePoint 2013)" Description="Create a SharePoint 2013 Workflow Task" Group="List Content Types" Hidden="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="false" />
-            <pnp:FieldRef ID="64cd368d-2f95-4bfc-a1f9-8d4324ecb007" Name="StartDate" UpdateChildren="false" />
-            <pnp:FieldRef ID="cd21b4c2-6841-4f9e-a23a-738a65f99889" Name="DueDate" UpdateChildren="false" />
-            <pnp:FieldRef ID="53101f38-dd2e-458c-b245-0c236cc13d1a" Name="AssignedTo" UpdateChildren="false" />
-            <pnp:FieldRef ID="d2311440-1ed6-46ea-b46d-daa643dc3886" Name="PercentComplete" UpdateChildren="false" />
-            <pnp:FieldRef ID="7662cd2c-f069-4dba-9e35-082cf976e170" Name="Body" UpdateChildren="false" />
-            <pnp:FieldRef ID="c3a92d97-2b77-4a25-9698-3ab54874bc6f" Name="Predecessors" UpdateChildren="false" />
-            <pnp:FieldRef ID="a8eb573e-9e11-481a-a8c9-1104a54b2fbd" Name="Priority" UpdateChildren="false" />
-            <pnp:FieldRef ID="c15b34c3-ce7d-490a-b133-3f4de8801b76" Name="Status" UpdateChildren="false" />
-            <pnp:FieldRef ID="d2a04afc-9a05-48c8-a7fa-fa98f9496141" Name="RelatedItems" UpdateChildren="false" />
-            <pnp:FieldRef ID="55b29417-1042-47f0-9dff-ce8156667f96" Name="TaskOutcome" UpdateChildren="false" />
-            <pnp:FieldRef ID="1f30d200-0d4e-4c8a-a7eb-2e49815bf2be" Name="WorkflowInstanceId" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="true" />
+            <pnp:FieldRef ID="64cd368d-2f95-4bfc-a1f9-8d4324ecb007" Name="StartDate" UpdateChildren="true" />
+            <pnp:FieldRef ID="cd21b4c2-6841-4f9e-a23a-738a65f99889" Name="DueDate" UpdateChildren="true" />
+            <pnp:FieldRef ID="53101f38-dd2e-458c-b245-0c236cc13d1a" Name="AssignedTo" UpdateChildren="true" />
+            <pnp:FieldRef ID="d2311440-1ed6-46ea-b46d-daa643dc3886" Name="PercentComplete" UpdateChildren="true" />
+            <pnp:FieldRef ID="7662cd2c-f069-4dba-9e35-082cf976e170" Name="Body" UpdateChildren="true" />
+            <pnp:FieldRef ID="c3a92d97-2b77-4a25-9698-3ab54874bc6f" Name="Predecessors" UpdateChildren="true" />
+            <pnp:FieldRef ID="a8eb573e-9e11-481a-a8c9-1104a54b2fbd" Name="Priority" UpdateChildren="true" />
+            <pnp:FieldRef ID="c15b34c3-ce7d-490a-b133-3f4de8801b76" Name="Status" UpdateChildren="true" />
+            <pnp:FieldRef ID="d2a04afc-9a05-48c8-a7fa-fa98f9496141" Name="RelatedItems" UpdateChildren="true" />
+            <pnp:FieldRef ID="55b29417-1042-47f0-9dff-ce8156667f96" Name="TaskOutcome" UpdateChildren="true" />
+            <pnp:FieldRef ID="1f30d200-0d4e-4c8a-a7eb-2e49815bf2be" Name="WorkflowInstanceId" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x01080100C9C9515DE4E24001905074F980F93160" Name="SharePoint Server Workflow Task" Description="A work item created by a workflow that you or your team needs to complete." Group="_Hidden" Hidden="true" NewFormUrl="" EditFormUrl="~layouts/WrkTaskIP.aspx" DisplayFormUrl="~layouts/WrkTaskIP.aspx">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="false" />
-            <pnp:FieldRef ID="64cd368d-2f95-4bfc-a1f9-8d4324ecb007" Name="StartDate" UpdateChildren="false" />
-            <pnp:FieldRef ID="cd21b4c2-6841-4f9e-a23a-738a65f99889" Name="DueDate" UpdateChildren="false" />
-            <pnp:FieldRef ID="53101f38-dd2e-458c-b245-0c236cc13d1a" Name="AssignedTo" UpdateChildren="false" />
-            <pnp:FieldRef ID="d2311440-1ed6-46ea-b46d-daa643dc3886" Name="PercentComplete" UpdateChildren="false" />
-            <pnp:FieldRef ID="7662cd2c-f069-4dba-9e35-082cf976e170" Name="Body" UpdateChildren="false" />
-            <pnp:FieldRef ID="c3a92d97-2b77-4a25-9698-3ab54874bc6f" Name="Predecessors" UpdateChildren="false" />
-            <pnp:FieldRef ID="a8eb573e-9e11-481a-a8c9-1104a54b2fbd" Name="Priority" UpdateChildren="false" />
-            <pnp:FieldRef ID="c15b34c3-ce7d-490a-b133-3f4de8801b76" Name="Status" UpdateChildren="false" />
-            <pnp:FieldRef ID="d2a04afc-9a05-48c8-a7fa-fa98f9496141" Name="RelatedItems" UpdateChildren="false" />
-            <pnp:FieldRef ID="58ddda52-c2a3-4650-9178-3bbc1f6e36da" Name="Link" UpdateChildren="false" />
-            <pnp:FieldRef ID="16b6952f-3ce6-45e0-8f4e-42dac6e12441" Name="OffsiteParticipant" UpdateChildren="false" />
-            <pnp:FieldRef ID="4a799ba5-f449-4796-b43e-aa5186c3c414" Name="OffsiteParticipantReason" UpdateChildren="false" />
-            <pnp:FieldRef ID="18e1c6fa-ae37-4102-890a-cfb0974ef494" Name="WorkflowOutcome" UpdateChildren="false" />
-            <pnp:FieldRef ID="e506d6ca-c2da-4164-b858-306f1c41c9ec" Name="WorkflowName" UpdateChildren="false" />
-            <pnp:FieldRef ID="ae069f25-3ac2-4256-b9c3-15dbc15da0e0" Name="GUID" UpdateChildren="false" />
-            <pnp:FieldRef ID="8d96aa48-9dff-46cf-8538-84c747ffa877" Name="TaskType" UpdateChildren="false" />
-            <pnp:FieldRef ID="17ca3a22-fdfe-46eb-99b5-9646baed3f16" Name="FormURN" UpdateChildren="false" />
-            <pnp:FieldRef ID="78eae64a-f5f2-49af-b416-3247b76f46a1" Name="FormData" UpdateChildren="false" />
-            <pnp:FieldRef ID="8cbb9252-1035-4156-9c35-f54e9056c65a" Name="EmailBody" UpdateChildren="false" />
-            <pnp:FieldRef ID="47f68c3b-8930-406f-bde2-4a8c669ee87c" Name="HasCustomEmailBody" UpdateChildren="false" />
-            <pnp:FieldRef ID="cb2413f2-7de9-4afc-8587-1ca3f563f624" Name="SendEmailNotification" UpdateChildren="false" />
-            <pnp:FieldRef ID="4d2444c2-0e97-476c-a2a3-e9e4a9c73009" Name="PendingModTime" UpdateChildren="false" />
-            <pnp:FieldRef ID="35363960-d998-4aad-b7e8-058dfe2c669e" Name="Completed" UpdateChildren="false" />
-            <pnp:FieldRef ID="1bfee788-69b7-4765-b109-d4d9c31d1ac1" Name="WorkflowListId" UpdateChildren="false" />
-            <pnp:FieldRef ID="8e234c69-02b0-42d9-8046-d5f49bf0174f" Name="WorkflowItemId" UpdateChildren="false" />
-            <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" UpdateChildren="true" />
+            <pnp:FieldRef ID="64cd368d-2f95-4bfc-a1f9-8d4324ecb007" Name="StartDate" UpdateChildren="true" />
+            <pnp:FieldRef ID="cd21b4c2-6841-4f9e-a23a-738a65f99889" Name="DueDate" UpdateChildren="true" />
+            <pnp:FieldRef ID="53101f38-dd2e-458c-b245-0c236cc13d1a" Name="AssignedTo" UpdateChildren="true" />
+            <pnp:FieldRef ID="d2311440-1ed6-46ea-b46d-daa643dc3886" Name="PercentComplete" UpdateChildren="true" />
+            <pnp:FieldRef ID="7662cd2c-f069-4dba-9e35-082cf976e170" Name="Body" UpdateChildren="true" />
+            <pnp:FieldRef ID="c3a92d97-2b77-4a25-9698-3ab54874bc6f" Name="Predecessors" UpdateChildren="true" />
+            <pnp:FieldRef ID="a8eb573e-9e11-481a-a8c9-1104a54b2fbd" Name="Priority" UpdateChildren="true" />
+            <pnp:FieldRef ID="c15b34c3-ce7d-490a-b133-3f4de8801b76" Name="Status" UpdateChildren="true" />
+            <pnp:FieldRef ID="d2a04afc-9a05-48c8-a7fa-fa98f9496141" Name="RelatedItems" UpdateChildren="true" />
+            <pnp:FieldRef ID="58ddda52-c2a3-4650-9178-3bbc1f6e36da" Name="Link" UpdateChildren="true" />
+            <pnp:FieldRef ID="16b6952f-3ce6-45e0-8f4e-42dac6e12441" Name="OffsiteParticipant" UpdateChildren="true" />
+            <pnp:FieldRef ID="4a799ba5-f449-4796-b43e-aa5186c3c414" Name="OffsiteParticipantReason" UpdateChildren="true" />
+            <pnp:FieldRef ID="18e1c6fa-ae37-4102-890a-cfb0974ef494" Name="WorkflowOutcome" UpdateChildren="true" />
+            <pnp:FieldRef ID="e506d6ca-c2da-4164-b858-306f1c41c9ec" Name="WorkflowName" UpdateChildren="true" />
+            <pnp:FieldRef ID="ae069f25-3ac2-4256-b9c3-15dbc15da0e0" Name="GUID" UpdateChildren="true" />
+            <pnp:FieldRef ID="8d96aa48-9dff-46cf-8538-84c747ffa877" Name="TaskType" UpdateChildren="true" />
+            <pnp:FieldRef ID="17ca3a22-fdfe-46eb-99b5-9646baed3f16" Name="FormURN" UpdateChildren="true" />
+            <pnp:FieldRef ID="78eae64a-f5f2-49af-b416-3247b76f46a1" Name="FormData" UpdateChildren="true" />
+            <pnp:FieldRef ID="8cbb9252-1035-4156-9c35-f54e9056c65a" Name="EmailBody" UpdateChildren="true" />
+            <pnp:FieldRef ID="47f68c3b-8930-406f-bde2-4a8c669ee87c" Name="HasCustomEmailBody" UpdateChildren="true" />
+            <pnp:FieldRef ID="cb2413f2-7de9-4afc-8587-1ca3f563f624" Name="SendEmailNotification" UpdateChildren="true" />
+            <pnp:FieldRef ID="4d2444c2-0e97-476c-a2a3-e9e4a9c73009" Name="PendingModTime" UpdateChildren="true" />
+            <pnp:FieldRef ID="35363960-d998-4aad-b7e8-058dfe2c669e" Name="Completed" UpdateChildren="true" />
+            <pnp:FieldRef ID="1bfee788-69b7-4765-b109-d4d9c31d1ac1" Name="WorkflowListId" UpdateChildren="true" />
+            <pnp:FieldRef ID="8e234c69-02b0-42d9-8046-d5f49bf0174f" Name="WorkflowItemId" UpdateChildren="true" />
+            <pnp:FieldRef ID="1c5518e2-1e99-49fe-bfc6-1a8de3ba16e2" Name="ExtendedProperties" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x0110" Name="Post" Description="Create a new blog post." Group="List Content Types" NewFormUrl="" EditFormUrl="" DisplayFormUrl="Lists/Posts/Post.aspx">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="7662cd2c-f069-4dba-9e35-082cf976e170" Name="Body" UpdateChildren="false" />
-            <pnp:FieldRef ID="38bea83b-350a-1a6e-f34a-93a6af31338b" Name="PostCategory" UpdateChildren="false" />
-            <pnp:FieldRef ID="b1b53d80-23d6-e31b-b235-3a286b9f10ea" Name="PublishedDate" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Required="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="7662cd2c-f069-4dba-9e35-082cf976e170" Name="Body" UpdateChildren="true" />
+            <pnp:FieldRef ID="38bea83b-350a-1a6e-f34a-93a6af31338b" Name="PostCategory" UpdateChildren="true" />
+            <pnp:FieldRef ID="b1b53d80-23d6-e31b-b235-3a286b9f10ea" Name="PublishedDate" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x0120D5" Name="Document Collection Folder" Description="Create a new Document Collection Folder" Group="_Hidden" Sealed="true" NewFormUrl="" EditFormUrl="" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="false" />
-            <pnp:FieldRef ID="b824e17e-a1b3-426e-aecf-f0184d900485" Name="ItemChildCount" UpdateChildren="false" />
-            <pnp:FieldRef ID="960ff01f-2b6d-4f1b-9c3f-e19ad8927341" Name="FolderChildCount" UpdateChildren="false" />
-            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Hidden="true" UpdateChildren="false" />
-            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="false" />
+            <pnp:FieldRef ID="c042a256-787d-4a6f-8a8a-cf6ab767f12d" Name="ContentType" UpdateChildren="true" />
+            <pnp:FieldRef ID="b824e17e-a1b3-426e-aecf-f0184d900485" Name="ItemChildCount" UpdateChildren="true" />
+            <pnp:FieldRef ID="960ff01f-2b6d-4f1b-9c3f-e19ad8927341" Name="FolderChildCount" UpdateChildren="true" />
+            <pnp:FieldRef ID="fa564e0f-0c70-4ab9-b863-0177e6ddd247" Name="Title" Hidden="true" UpdateChildren="true" />
+            <pnp:FieldRef ID="8553196d-ec8d-4564-9861-3dbe931050c8" Name="FileLeafRef" Required="true" UpdateChildren="true" />
           </pnp:FieldRefs>
         </pnp:ContentType>
         <pnp:ContentType ID="0x0120D520A8" Name="System Media Collection" Description="System type for a collection of rich media assets." Group="_Hidden" Sealed="true" ReadOnly="true" NewFormUrl="_layouts/15/NewDocSet.aspx" EditFormUrl="" DisplayFormUrl="">
@@ -1559,22 +1560,22 @@
         </pnp:ContentType>
         <pnp:ContentType ID="0x0120D520A808" Name="Video" Description="Upload or link to a video." Group="Digital Asset Content Types" NewFormUrl="_layouts/15/NewVideoSet.aspx" EditFormUrl="_layouts/15/EditVideoSet.aspx" DisplayFormUrl="">
           <pnp:FieldRefs>
-            <pnp:FieldRef ID="b76b58ec-0549-4f00-9575-2fd28bd55010" Name="VideoSetDescription" UpdateChildren="false" />
-            <pnp:FieldRef ID="2de1df7b-48e1-4c8e-be0f-f00e504b9948" Name="VideoSetOwner" UpdateChildren="false" />
-            <pnp:FieldRef ID="e4cd7ce1-9e29-497b-886e-619e5442acad" Name="VideoSetThumbnailTimeIndex" UpdateChildren="false" />
-            <pnp:FieldRef ID="1f300f90-c9d2-41f5-8ebb-7f2829a4c977" Name="VideoSetDefaultEncoding" UpdateChildren="false" />
-            <pnp:FieldRef ID="28bb615a-bb92-43eb-9770-4f2926228dee" Name="VideoSetUserOverrideEncoding" UpdateChildren="false" />
-            <pnp:FieldRef ID="1c2cc9d2-3c9f-4a46-8088-17287d608270" Name="VideoSetExternalLink" UpdateChildren="false" />
-            <pnp:FieldRef ID="ac836bb9-18e1-4f52-b614-e8885543c4c6" Name="VideoSetEmbedCode" UpdateChildren="false" />
-            <pnp:FieldRef ID="9cb4d391-367f-4342-8f17-ac808799784a" Name="VideoSetShowDownloadLink" UpdateChildren="false" />
-            <pnp:FieldRef ID="6e4ee0c4-4d06-4c04-8d02-58d10fdf912d" Name="VideoSetShowEmbedLink" UpdateChildren="false" />
-            <pnp:FieldRef ID="f1393ce1-ac10-4696-987d-cfdcc40ad342" Name="VideoSetRenditionsInfo" UpdateChildren="false" />
-            <pnp:FieldRef ID="f39d44af-d3f3-4ae6-b43f-ac7330b5e9bd" Name="AlternateThumbnailUrl" UpdateChildren="false" />
-            <pnp:FieldRef ID="59cd571e-e2d9-485d-bb5d-e70d12f8d0b7" Name="VideoWidthInPixels" UpdateChildren="false" />
-            <pnp:FieldRef ID="84cd09bd-85a9-461f-86e3-4c3c1738ad6b" Name="VideoHeightInPixels" UpdateChildren="false" />
-            <pnp:FieldRef ID="de38f937-8578-435e-8cd3-50be3ea59253" Name="MediaLengthInSeconds" UpdateChildren="false" />
-            <pnp:FieldRef ID="bcd999a7-9dca-4824-a515-878bee641ed3" Name="PeopleInMedia" UpdateChildren="false" />
-            <pnp:FieldRef ID="b0e12a3b-cf63-47d1-8418-4ef850d87a3c" Name="NoCrawl" UpdateChildren="false" />
+            <pnp:FieldRef ID="b76b58ec-0549-4f00-9575-2fd28bd55010" Name="VideoSetDescription" UpdateChildren="true" />
+            <pnp:FieldRef ID="2de1df7b-48e1-4c8e-be0f-f00e504b9948" Name="VideoSetOwner" UpdateChildren="true" />
+            <pnp:FieldRef ID="e4cd7ce1-9e29-497b-886e-619e5442acad" Name="VideoSetThumbnailTimeIndex" UpdateChildren="true" />
+            <pnp:FieldRef ID="1f300f90-c9d2-41f5-8ebb-7f2829a4c977" Name="VideoSetDefaultEncoding" UpdateChildren="true" />
+            <pnp:FieldRef ID="28bb615a-bb92-43eb-9770-4f2926228dee" Name="VideoSetUserOverrideEncoding" UpdateChildren="true" />
+            <pnp:FieldRef ID="1c2cc9d2-3c9f-4a46-8088-17287d608270" Name="VideoSetExternalLink" UpdateChildren="true" />
+            <pnp:FieldRef ID="ac836bb9-18e1-4f52-b614-e8885543c4c6" Name="VideoSetEmbedCode" UpdateChildren="true" />
+            <pnp:FieldRef ID="9cb4d391-367f-4342-8f17-ac808799784a" Name="VideoSetShowDownloadLink" UpdateChildren="true" />
+            <pnp:FieldRef ID="6e4ee0c4-4d06-4c04-8d02-58d10fdf912d" Name="VideoSetShowEmbedLink" UpdateChildren="true" />
+            <pnp:FieldRef ID="f1393ce1-ac10-4696-987d-cfdcc40ad342" Name="VideoSetRenditionsInfo" UpdateChildren="true" />
+            <pnp:FieldRef ID="f39d44af-d3f3-4ae6-b43f-ac7330b5e9bd" Name="AlternateThumbnailUrl" UpdateChildren="true" />
+            <pnp:FieldRef ID="59cd571e-e2d9-485d-bb5d-e70d12f8d0b7" Name="VideoWidthInPixels" UpdateChildren="true" />
+            <pnp:FieldRef ID="84cd09bd-85a9-461f-86e3-4c3c1738ad6b" Name="VideoHeightInPixels" UpdateChildren="true" />
+            <pnp:FieldRef ID="de38f937-8578-435e-8cd3-50be3ea59253" Name="MediaLengthInSeconds" UpdateChildren="true" />
+            <pnp:FieldRef ID="bcd999a7-9dca-4824-a515-878bee641ed3" Name="PeopleInMedia" UpdateChildren="true" />
+            <pnp:FieldRef ID="b0e12a3b-cf63-47d1-8418-4ef850d87a3c" Name="NoCrawl" UpdateChildren="true" />
           </pnp:FieldRefs>
           <pnp:DocumentSetTemplate>
             <pnp:AllowedContentTypes>
@@ -1593,7 +1594,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{D3B61B23-549B-4F30-A8FD-E2D9F0C2A5C1}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="{site}/Lists/AppPackages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
+            <View Name="{7FBB4183-84F1-4487-BF0B-B4863F5734A9}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="{site}/Lists/AppPackages/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -1616,7 +1617,7 @@
         </pnp:ListInstance>
         <pnp:ListInstance Title="Apps in Testing" Description="List of all apps deployed in the Dev Site" DocumentTemplate="" OnQuickLaunch="true" TemplateType="1230" Url="Lists/DraftApps" MinorVersionLimit="0" MaxVersionLimit="0" DraftVersionVisibility="0" TemplateFeatureID="e374875e-06b6-11e0-b0fa-57f5dfd72085" EnableFolderCreation="false" DefaultDisplayFormUrl="{site}/Lists/DraftApps/DispForm.aspx" DefaultEditFormUrl="{site}/Lists/DraftApps/EditForm.aspx" DefaultNewFormUrl="{site}/Lists/DraftApps/NewForm.aspx" ImageUrl="/_layouts/15/images/itgen.gif?rev=47" IrmExpire="false" IrmReject="false" IsApplicationList="false" ValidationFormula="" ValidationMessage="">
           <pnp:Views>
-            <View Name="{F3BA1A64-3437-4D17-B168-993AA173D484}" DefaultView="TRUE" Type="HTML" ReadOnly="TRUE" DisplayName="All Items" Url="{site}/Lists/DraftApps/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/images/generic.png">
+            <View Name="{5FAAF954-6282-4837-89A3-0756038925EE}" DefaultView="TRUE" Type="HTML" ReadOnly="TRUE" DisplayName="All Items" Url="{site}/Lists/DraftApps/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/images/generic.png">
               <Query />
               <ViewFields>
                 <FieldRef ID="{91a39fdb-3417-41e1-81aa-bf989bff000e}" Name="AppName" />
@@ -1647,7 +1648,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{490F4250-CC14-469C-A8F0-DA8FA29C2C9C}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="{site}/Shared Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
+            <View Name="{FC653764-D76C-43F8-A629-DE1993BDF898}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="{site}/Shared Documents/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -1673,7 +1674,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x010100F8EF98760CBA4A94994F13BA881038FA" Default="true" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{0D59F975-2BA1-41D5-B0C0-CCE3243262FC}" MobileView="TRUE" Type="HTML" DisplayName="All Documents" Url="{site}/FormServerTemplates/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
+            <View Name="{EC9D08C3-998D-4C8B-B34E-502A33253706}" MobileView="TRUE" Type="HTML" DisplayName="All Documents" Url="{site}/FormServerTemplates/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -1688,7 +1689,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{074C22F4-5CDA-4933-8B51-D8FDE753D2ED}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Forms" Url="{site}/FormServerTemplates/Forms/All Forms.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
+            <View Name="{B5B41851-1EEB-4BC9-89EC-30907B098D70}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Forms" Url="{site}/FormServerTemplates/Forms/All Forms.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="FormCategory" />
@@ -1735,7 +1736,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{DAD67021-E82D-4FA9-8AA4-63D1C1B5C295}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="{site}/Lists/PublishedFeed/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/images/generic.png">
+            <View Name="{B1C0BCBC-0777-4B85-9EBC-CA2CAD13B31C}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Items" Url="{site}/Lists/PublishedFeed/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/images/generic.png">
               <Query>
                 <OrderBy>
                   <FieldRef Name="Created_x0020_Date" />
@@ -1837,7 +1838,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{F29BC821-E9E5-42D9-BBC4-174CD678345B}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="{site}/SiteAssets/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
+            <View Name="{6D951EBE-14C6-488C-9170-847120E4BB5A}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="{site}/SiteAssets/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
@@ -1867,7 +1868,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0101009D1CB255DA76424F860D91F20E6C4118002A50BFCFB7614729B56886FADA02339B" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{8D81139E-D800-4DC8-B958-A336733F60C7}" Type="HTML" DisplayName="All Pages" Url="{site}/SitePages/Forms/AllPages.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
+            <View Name="{2301B315-6DBC-4B35-B6A0-4250827A2FDE}" Type="HTML" DisplayName="All Pages" Url="{site}/SitePages/Forms/AllPages.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
               <Query>
                 <OrderBy>
                   <FieldRef Name="Modified" Ascending="FALSE" />
@@ -1884,7 +1885,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{4AED7701-EA74-47B0-B90D-D43D7C0989FC}" Type="HTML" DisplayName="Recent Changes" Url="{site}/SitePages/Forms/RecentChanges.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
+            <View Name="{08CC62BF-B85B-4EA3-8EC1-7A20BA3F8526}" Type="HTML" DisplayName="Recent Changes" Url="{site}/SitePages/Forms/RecentChanges.aspx" Level="1" BaseViewID="2" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
               <Query>
                 <OrderBy>
                   <FieldRef Name="Modified" Ascending="FALSE" />
@@ -1901,7 +1902,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{30B68519-225A-465A-9582-B8622ABE1A82}" Type="HTML" DisplayName="Created By Me" Url="{site}/SitePages/Forms/CreatedByMe.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
+            <View Name="{9AED591E-BF9F-4242-9191-1C2A54735B70}" Type="HTML" DisplayName="Created By Me" Url="{site}/SitePages/Forms/CreatedByMe.aspx" Level="1" BaseViewID="3" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
               <Query>
                 <Where>
                   <Eq>
@@ -1926,7 +1927,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{7BF32B57-0FB5-4C83-B141-DAB5C99356F2}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="By Author" Url="{site}/SitePages/Forms/ByAuthor.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
+            <View Name="{26964D4E-FE42-4811-A74D-5261CF302F86}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="By Author" Url="{site}/SitePages/Forms/ByAuthor.aspx" Level="1" BaseViewID="4" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="Author" />
@@ -1945,7 +1946,7 @@
               <RowLimit Paged="TRUE">30</RowLimit>
               <JSLink>clienttemplates.js</JSLink>
             </View>
-            <View Name="{FA5271DF-D9D3-41E1-A798-7430409FE214}" Type="HTML" DisplayName="By Editor" Url="{site}/SitePages/Forms/ByEditor.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
+            <View Name="{74662503-8E4C-43DC-A18A-4E468573AC54}" Type="HTML" DisplayName="By Editor" Url="{site}/SitePages/Forms/ByEditor.aspx" Level="1" BaseViewID="5" ContentTypeID="0x" ToolbarTemplate="WikiLibraryViewToolBar" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
               <Query>
                 <GroupBy Collapse="FALSE">
                   <FieldRef Name="Editor" />
@@ -1990,7 +1991,7 @@
             <pnp:ContentTypeBinding ContentTypeID="0x0120" />
           </pnp:ContentTypeBindings>
           <pnp:Views>
-            <View Name="{019D1E24-F1C2-498B-8221-670B7C57384B}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="{site}/Style Library/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
+            <View Name="{DBB0EB97-E446-4363-B587-924E9FB0E359}" DefaultView="TRUE" MobileView="TRUE" MobileDefaultView="TRUE" Type="HTML" DisplayName="All Documents" Url="{site}/Style Library/Forms/AllItems.aspx" Level="1" BaseViewID="1" ContentTypeID="0x" ImageUrl="/_layouts/15/images/dlicon.png?rev=47">
               <Query>
                 <OrderBy>
                   <FieldRef Name="FileLeafRef" />
