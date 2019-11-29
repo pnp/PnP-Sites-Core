@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.14.1910.1, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.15.1911.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-SRCHCENTERLITE0template">
     <pnp:ProvisioningTemplate ID="SRCHCENTERLITE0template" Version="1" BaseSiteTemplate="SRCHCENTERLITE#0" Scope="RootSite">
       <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" SearchScope="DefaultScope" />
@@ -2482,7 +2482,7 @@
           <pnp:Fields>
             <Field Type="Text" Name="TabName" ID="{d81ccf85-954f-4bcf-a530-bf68e672ac24}" DisplayName="Tab Name" Description="This is the tab label text." Required="TRUE" TitleField="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar3" StaticName="TabName" SourceID="{{listid:Tabs in Search Pages}}" />
             <Field Type="Text" Name="Page" ID="{a1c08cd7-ca3e-42bd-9cbc-e45baeaed17f}" Direction="ltr" DisplayName="Page" Description="Type in the name of the page that should be displayed as a part of this tab. If you have not created a page, create a page using the Create Page option in Site Actions." Required="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar4" StaticName="Page" SourceID="{{listid:Tabs in Search Pages}}" />
-            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{bb4c114a-9976-4d85-b722-8e9a04a57e52}" StaticName="Comments" SourceID="{{listid:Tabs in Search Pages}}" />
+            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{a16bd9c5-5d33-4c79-8802-c8aa8423214f}" StaticName="Comments" SourceID="{{listid:Tabs in Search Pages}}" />
             <Field ReadOnly="TRUE" Filterable="FALSE" Type="Computed" Name="PagewMenu" DisplayName="Page" DisplayNameSrcField="Page" AuthoringInfo="(Page with edit menu)" ID="{37b6aa1f-7656-4823-aa56-3d216892f01c}" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="PagewMenu">
               <FieldRefs>
                 <FieldRef Name="Page" />
@@ -2565,7 +2565,7 @@
           <pnp:Fields>
             <Field Type="Text" Name="TabName" ID="{d81ccf85-954f-4bcf-a530-bf68e672ac24}" DisplayName="Tab Name" Description="This is the tab label text." Required="TRUE" TitleField="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar3" StaticName="TabName" SourceID="{{listid:Tabs in Search Results}}" />
             <Field Type="Text" Name="Page" ID="{a1c08cd7-ca3e-42bd-9cbc-e45baeaed17f}" Direction="ltr" DisplayName="Page" Description="Type in the name of the page that should be displayed as a part of this tab. If you have not created a page, create a page using the Create Page option in Site Actions." Required="TRUE" Sortable="TRUE" Filterable="TRUE" Sealed="TRUE" ColName="nvarchar4" StaticName="Page" SourceID="{{listid:Tabs in Search Results}}" />
-            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{87c986fd-2a28-4320-8e05-3a08b52aac0c}" StaticName="Comments" SourceID="{{listid:Tabs in Search Results}}" />
+            <Field Type="Note" Name="Comments" DisplayName="Tooltip" Description="This is the tooltip that will be displayed when a user moves the mouse pointer over this tab." Sortable="FALSE" ColName="ntext2" ID="{6bd1d0d8-7710-4ab7-884f-03acd79db87e}" StaticName="Comments" SourceID="{{listid:Tabs in Search Results}}" />
             <Field ReadOnly="TRUE" Filterable="FALSE" Type="Computed" Name="PagewMenu" DisplayName="Page" DisplayNameSrcField="Page" AuthoringInfo="(Page with edit menu)" ID="{37b6aa1f-7656-4823-aa56-3d216892f01c}" SourceID="http://schemas.microsoft.com/sharepoint/v3" StaticName="PagewMenu">
               <FieldRefs>
                 <FieldRef Name="Page" />
