@@ -9,6 +9,7 @@ using OfficeDevPnP.Core.Utilities.Themes;
 using OfficeDevPnP.Core.Enums;
 using Newtonsoft.Json;
 using Microsoft.Online.SharePoint.TenantAdministration;
+using OfficeDevPnP.Core.Utilities;
 #if !ONPREMISES
 using static OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities.TenantHelper;
 #endif
@@ -46,6 +47,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         var parsedPalette = parser.ParseString(template.Theme.Palette);
 
                         ThemeManager.ApplyTheme(web, parsedPalette, template.Theme.Name ?? parsedPalette);
+                    }
+                    else
+                    {
+                        var tenantUrl = web.GetTenantAdministrationUrl();
+                        using (var tenantContext = web.Context.Clone(tenantUrl))
+                        {
+                            var tenant = new Tenant(tenantContext);
+                            tenant.SetWebTheme(parsedName, web.Url);
+                            tenant.Context.ExecuteQueryRetry();
+                        }
                     }
                 }
             }
