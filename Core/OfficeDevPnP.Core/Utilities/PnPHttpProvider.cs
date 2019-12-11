@@ -36,7 +36,19 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="retryCount">Number of retries, defaults to 10</param>
         /// <param name="delay">Incremental delay increase in milliseconds</param>
         /// <param name="userAgent">User-Agent string to set</param>
-        public PnPHttpProvider(HttpMessageHandler innerHandler, int retryCount = 10, int delay = 500, string userAgent = null) : base(innerHandler)
+        public PnPHttpProvider(HttpMessageHandler innerHandler, int retryCount = 10, int delay = 500, string userAgent = null) : this(innerHandler, false, retryCount, delay, userAgent)
+        {
+        }
+
+        /// <summary>
+        /// Constructor with HttpMessageHandler
+        /// </summary>
+        /// <param name="innerHandler">HttpMessageHandler instance to pass along</param>
+        /// <param name="retryCount">Number of retries, defaults to 10</param>
+        /// <param name="delay">Incremental delay increase in milliseconds</param>
+        /// <param name="userAgent">User-Agent string to set</param>
+        /// <param name="disposeHandler">Declares whether to automatically dispose the internal HttpHandler instance</param>
+        public PnPHttpProvider(HttpMessageHandler innerHandler, bool disposeHandler, int retryCount = 10, int delay = 500, string userAgent = null) : base(innerHandler, disposeHandler)
         {
             this.retryCount = retryCount;
             this.delay = delay;
