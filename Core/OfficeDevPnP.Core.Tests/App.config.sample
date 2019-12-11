@@ -85,6 +85,10 @@
     This could lead to unit test fail... 
     -->
     <add key="WebHookTestUrl" value="https://[test-functions].azurewebsites.net" />
+
+    <!-- Support HttpHelper Function App tests -->
+    <add key="HttpHelperFunctionAppUrl" value="https://[http-helper-function-app-test].azurewebsites.net/api/HttpHelperTest?code=???"/>
+
   </appSettings>
   <system.diagnostics>
     <sharedListeners>
