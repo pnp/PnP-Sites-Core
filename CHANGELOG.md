@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - SiteExistsAnywhere method to improve SiteExists internal behavior
 
 ### Changed
+- Added support for tokens in Term names [fzbm - Florian Zink]
 
 ## [3.15.1911.0 - November 2019 release]
 
