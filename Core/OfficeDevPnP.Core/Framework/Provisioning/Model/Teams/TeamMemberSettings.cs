@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// The Members Settings for the Team
     /// </summary>
-    public class TeamMemberSettings : BaseModel, IEquatable<TeamMemberSettings>
+    public partial class TeamMemberSettings : BaseModel, IEquatable<TeamMemberSettings>
     {
         #region Public Members
 

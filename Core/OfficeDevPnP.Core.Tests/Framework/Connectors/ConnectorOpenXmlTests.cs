@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using System.IO;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
+using OfficeDevPnP.Core.Framework.Provisioning.Providers;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Connectors
 {
@@ -84,7 +85,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
 			var templateFile = openXMLConnector.GetFileStream("ProvisioningSchema-2015-12-FullSample-02.xml");
 
 			XMLPnPSchemaV201512Formatter formatter = new XMLPnPSchemaV201512Formatter();
-			Boolean checkTemplate = formatter.IsValid(templateFile);
+            var checkTemplate = formatter.IsValid(templateFile);
 
 			Assert.IsTrue(checkTemplate);
 
@@ -108,7 +109,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
 			var templateFile = openXMLConnector.GetFileStream("ProvisioningSchema-2015-12-FullSample-02.xml");
 
 			XMLPnPSchemaV201512Formatter formatter = new XMLPnPSchemaV201512Formatter();
-			Boolean checkTemplate = formatter.IsValid(templateFile);
+			var checkTemplate = formatter.IsValid(templateFile);
 
 			Assert.IsTrue(checkTemplate);
 
@@ -132,7 +133,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Connectors
 			var templateFile = openXMLConnector.GetFileStream("ProvisioningSchema-2015-12-FullSample-02.xml");
 
 			XMLPnPSchemaV201512Formatter formatter = new XMLPnPSchemaV201512Formatter();
-			Boolean checkTemplate = formatter.IsValid(templateFile);
+			var checkTemplate = formatter.IsValid(templateFile);
 
 			Assert.IsTrue(checkTemplate);
 

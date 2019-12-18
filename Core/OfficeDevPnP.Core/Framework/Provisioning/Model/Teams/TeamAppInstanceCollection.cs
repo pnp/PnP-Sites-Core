@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Defines the Apps to install or update on the Team
     /// </summary>
-    public class TeamAppInstanceCollection : BaseProvisioningTemplateObjectCollection<TeamAppInstance>
+    public partial class TeamAppInstanceCollection : BaseProvisioningTemplateObjectCollection<TeamAppInstance>
     {
         /// <summary>
         /// Constructor for TeamAppInstanceCollection class

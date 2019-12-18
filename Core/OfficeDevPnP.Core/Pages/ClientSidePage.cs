@@ -25,6 +25,7 @@ namespace OfficeDevPnP.Core.Pages
     {
         #region variables
         // fields
+        public const string BannerImageUrlField = "BannerImageUrl";
         public const string CanvasField = "CanvasContent1";
         public const string PageLayoutContentField = "LayoutWebpartsContent";
         public const string PageLayoutType = "PageLayoutType";
@@ -67,6 +68,8 @@ namespace OfficeDevPnP.Core.Pages
         private ClientSidePageLayoutType layoutType;
         private bool keepDefaultWebParts;
         private string pageTitle;
+        private string thumbnailUrl;
+        private bool isDefaultDescription;
         private ClientSidePageHeader pageHeader;
         #endregion
 
@@ -167,6 +170,18 @@ namespace OfficeDevPnP.Core.Pages
             set
             {
                 this.layoutType = value;
+            }
+        }
+
+        public string ThumbnailUrl
+        {
+            get
+            {
+                return this.thumbnailUrl;
+            }
+            set
+            {
+                this.thumbnailUrl = value;
             }
         }
 
@@ -373,9 +388,10 @@ namespace OfficeDevPnP.Core.Pages
         /// <param name="template">The <see cref="CanvasSectionTemplate"/> type of the section</param>
         /// <param name="order">Controls the order of the new section</param>
         /// <param name="zoneEmphasis">Zone emphasis (section background)</param>
-        public void AddSection(CanvasSectionTemplate template, float order, SPVariantThemeType zoneEmphasis)
-        {            
-            AddSection(template, order, (int)zoneEmphasis);
+        /// <param name="verticalSectionZoneEmphasis">Vertical Section Zone emphasis (section background)</param>
+        public void AddSection(CanvasSectionTemplate template, float order, SPVariantThemeType zoneEmphasis, SPVariantThemeType verticalSectionZoneEmphasis = SPVariantThemeType.None)
+        {
+            AddSection(template, order, (int)zoneEmphasis, (int)verticalSectionZoneEmphasis);
         }
 
         /// <summary>
@@ -384,12 +400,17 @@ namespace OfficeDevPnP.Core.Pages
         /// <param name="template">The <see cref="CanvasSectionTemplate"/> type of the section</param>
         /// <param name="order">Controls the order of the new section</param>
         /// <param name="zoneEmphasis">Zone emphasis (section background)</param>
-        public void AddSection(CanvasSectionTemplate template, float order, int zoneEmphasis)
+        /// <param name="verticalSectionZoneEmphasis">Vertical Section Zone emphasis (section background)</param>
+        public void AddSection(CanvasSectionTemplate template, float order, int zoneEmphasis, int? verticalSectionZoneEmphasis = null)
         {
             var section = new CanvasSection(this, template, order)
             {
-                ZoneEmphasis = zoneEmphasis
+                ZoneEmphasis = zoneEmphasis,
             };
+            if (section.VerticalSectionColumn != null && verticalSectionZoneEmphasis.HasValue)
+            {
+                section.VerticalSectionColumn.VerticalSectionEmphasis = verticalSectionZoneEmphasis;
+            }
             AddSection(section);
         }
 
@@ -414,7 +435,11 @@ namespace OfficeDevPnP.Core.Pages
             {
                 throw new ArgumentNullException("Passed section cannot be null");
             }
-            this.sections.Add(section);
+
+            if (CanThisSectionBeAdded(section))
+            {
+                this.sections.Add(section);
+            }
         }
 
         /// <summary>
@@ -428,8 +453,12 @@ namespace OfficeDevPnP.Core.Pages
             {
                 throw new ArgumentNullException("Passed section cannot be null");
             }
-            section.Order = order;
-            this.sections.Add(section);
+
+            if (CanThisSectionBeAdded(section))
+            {
+                section.Order = order;
+                this.sections.Add(section);
+            }
         }
 
         /// <summary>
@@ -634,7 +663,14 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     htmlWriter.Write(section.ToHtml());
                 }
-
+                // thumbnail
+                var thumbnailData = new { controlType = 0, pageSettingsSlice = new { isDefaultDescription = this.isDefaultDescription, isDefaultThumbnail = string.IsNullOrEmpty(thumbnailUrl) } };
+                htmlWriter.AddAttribute("data-sp-canvascontrol", "");
+                htmlWriter.AddAttribute("data-sp-canvasdataversion", "1.0");
+                htmlWriter.AddAttribute("data-sp-controldata", JsonConvert.SerializeObject(thumbnailData));
+                htmlWriter.RenderBeginTag(HtmlTextWriterTag.Div);
+                htmlWriter.RenderEndTag();
+                // end thumbnail
                 htmlWriter.RenderEndTag();
             }
 #endif
@@ -807,6 +843,7 @@ namespace OfficeDevPnP.Core.Pages
                 serverRelativePageName = $"{this.sitePagesServerRelativeUrl}/{this.pageName}";
             }
 
+            bool updatingExistingPage = false;
             if (this.spPagesLibrary != null && (pageFile == null || !pageFile.Exists))
             {
                 Folder folderHostingThePage = null;
@@ -833,11 +870,12 @@ namespace OfficeDevPnP.Core.Pages
                     item[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
                     item[ClientSidePage.BannerImageUrl] = "/_layouts/15/images/sitepagethumbnail.png";
                 }
-                item.Update();
+                item.UpdateOverwriteVersion();
                 this.Context.Web.Context.Load(item);
             }
             else
             {
+                updatingExistingPage = true;
                 item = pageFile.ListItemAllFields;
                 if (!string.IsNullOrWhiteSpace(this.pageTitle))
                 {
@@ -851,7 +889,18 @@ namespace OfficeDevPnP.Core.Pages
                 item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.RepostPage;
                 item[ClientSidePage.CanvasField] = "";
                 item[ClientSidePage.PageLayoutContentField] = "";
-                item.Update();
+                if (!string.IsNullOrEmpty(this.thumbnailUrl))
+                {
+                    item[ClientSidePage.BannerImageUrl] = this.thumbnailUrl;
+                }
+                if (updatingExistingPage)
+                {
+                    item.Update();
+                }
+                else
+                {
+                    item.UpdateOverwriteVersion();
+                }
                 this.Context.Web.Context.Load(item);
                 this.Context.ExecuteQueryRetry();
 
@@ -869,8 +918,20 @@ namespace OfficeDevPnP.Core.Pages
                     item[ClientSidePage.CanvasField] = this.ToHtml();
                 }
 
+                if (!string.IsNullOrEmpty(this.thumbnailUrl))
+                {
+                    item[ClientSidePage.BannerImageUrl] = this.thumbnailUrl;
+                }
+
                 // The page must first be saved, otherwise the page contents gets erased
-                item.Update();
+                if (updatingExistingPage)
+                {
+                    item.Update();
+                }
+                else
+                {
+                    item.UpdateOverwriteVersion();
+                }
                 this.Context.Web.Context.Load(item);
             }
 
@@ -914,7 +975,7 @@ namespace OfficeDevPnP.Core.Pages
 #endif
             }
 
-            item.Update();
+            item.UpdateOverwriteVersion();
             this.Context.Web.Context.Load(item);
             this.Context.ExecuteQueryRetry();
 
@@ -1006,7 +1067,7 @@ namespace OfficeDevPnP.Core.Pages
 
             if (isDirty)
             {
-                item.Update();
+                item.UpdateOverwriteVersion();
                 this.Context.Web.Context.Load(item);
                 this.Context.ExecuteQueryRetry();
             }
@@ -1052,6 +1113,7 @@ namespace OfficeDevPnP.Core.Pages
                 case DefaultClientSideWebParts.NewsFeed: return "0ef418ba-5d19-4ade-9db0-b339873291d0";
                 case DefaultClientSideWebParts.NewsReel: return "a5df8fdf-b508-4b66-98a6-d83bc2597f63";
 #if !ONPREMISES
+                case DefaultClientSideWebParts.News: return "8c88f208-6c77-4bdb-86a0-0c47b4316588";
                 case DefaultClientSideWebParts.PowerBIReportEmbed: return "58fcd18b-e1af-4b0a-b23b-422c2c52d5a2";
 #endif
                 case DefaultClientSideWebParts.QuickChart: return "91a50c94-865f-4f5c-8b4e-e49659e69772";
@@ -1087,6 +1149,8 @@ namespace OfficeDevPnP.Core.Pages
                 case DefaultClientSideWebParts.MarkDown: return "1ef5ed11-ce7b-44be-bc5e-4abd55101d16";
                 case DefaultClientSideWebParts.Planner: return "39c4c1c2-63fa-41be-8cc2-f6c0b49b253d";
                 case DefaultClientSideWebParts.Sites: return "7cba020c-5ccb-42e8-b6fc-75b3149aba7b";
+                case DefaultClientSideWebParts.CallToAction: return "df8e44e7-edd5-46d5-90da-aca1539313b8";
+                case DefaultClientSideWebParts.Button: return "0f087d7f-520e-42b7-89c0-496aaf979d58";
 #endif
                 default: return "";
             }
@@ -1112,9 +1176,10 @@ namespace OfficeDevPnP.Core.Pages
                 case "6410b3b6-d440-4663-8744-378976dc041e": return DefaultClientSideWebParts.LinkPreview;
                 case "0ef418ba-5d19-4ade-9db0-b339873291d0": return DefaultClientSideWebParts.NewsFeed;
                 case "a5df8fdf-b508-4b66-98a6-d83bc2597f63": return DefaultClientSideWebParts.NewsReel;
-                // Seems like we've been having 2 guids to identify this web part...
-                case "8c88f208-6c77-4bdb-86a0-0c47b4316588": return DefaultClientSideWebParts.NewsReel;
 #if !ONPREMISES
+                // Seems like we've been having 2 guids to identify this web part...
+                // Now that _api/web/GetClientSideWebParts returns both guids / controls we can distinguish News v NewsReel
+                case "8c88f208-6c77-4bdb-86a0-0c47b4316588": return DefaultClientSideWebParts.News;
                 case "58fcd18b-e1af-4b0a-b23b-422c2c52d5a2": return DefaultClientSideWebParts.PowerBIReportEmbed;
 #endif
                 case "91a50c94-865f-4f5c-8b4e-e49659e69772": return DefaultClientSideWebParts.QuickChart;
@@ -1150,6 +1215,8 @@ namespace OfficeDevPnP.Core.Pages
                 case "1ef5ed11-ce7b-44be-bc5e-4abd55101d16": return DefaultClientSideWebParts.MarkDown;
                 case "39c4c1c2-63fa-41be-8cc2-f6c0b49b253d": return DefaultClientSideWebParts.Planner;
                 case "7cba020c-5ccb-42e8-b6fc-75b3149aba7b": return DefaultClientSideWebParts.Sites;
+                case "df8e44e7-edd5-46d5-90da-aca1539313b8": return DefaultClientSideWebParts.CallToAction;
+                case "0f087d7f-520e-42b7-89c0-496aaf979d58": return DefaultClientSideWebParts.Button;
 #endif
                 default: return DefaultClientSideWebParts.ThirdParty;
             }
@@ -1357,9 +1424,14 @@ namespace OfficeDevPnP.Core.Pages
         /// </summary>
         public void PromoteAsNewsArticle()
         {
-            if (this.LayoutType != ClientSidePageLayoutType.Article)
+
+            if (this.LayoutType == ClientSidePageLayoutType.Home
+#if !SP2019
+                || this.layoutType == ClientSidePageLayoutType.SingleWebPartAppPage
+#endif
+                )
             {
-                throw new Exception("You can only promote article pages as news article");
+                throw new Exception("You can only promote article and repost pages as news article");
             }
 
             // ensure we do have the page list item loaded
@@ -1423,9 +1495,9 @@ namespace OfficeDevPnP.Core.Pages
                 TranslateY = translateY
             };
         }
-        #endregion
+#endregion
 
-        #region Internal and private methods
+                #region Internal and private methods
         private void EnableCommentsImplementation(bool enable)
         {
             // ensure we do have the page list item loaded
@@ -1439,6 +1511,39 @@ namespace OfficeDevPnP.Core.Pages
             {
                 throw new Exception("This page first needs to be saved before comments can be enabled or disabled");
             }
+        }
+
+        private bool CanThisSectionBeAdded(CanvasSection section)
+        {
+            if (this.Sections.Count == 0)
+            {
+                return true;
+            }
+
+            if (section.VerticalSectionColumn != null)
+            {
+                // we're adding a section that has a vertical column. This can not be combined with either another section with a vertical column or a full width section
+                if (this.Sections.Where(p => p.VerticalSectionColumn != null).Any())
+                {
+                    throw new Exception("You can only have one section with a vertical column on a page");
+                }
+
+                if (this.Sections.Where(p => p.Type == CanvasSectionTemplate.OneColumnFullWidth).Any())
+                {
+                    throw new Exception("You already have a full width section on this page, you can't add a section with vertical column");
+                }
+            }
+
+            if (section.Type == CanvasSectionTemplate.OneColumnFullWidth)
+            {
+                // we're adding a full width section. This can not be combined with either a vertical column section
+                if (this.Sections.Where(p => p.VerticalSectionColumn != null).Any())
+                {
+                    throw new Exception("You already have a section with vertical column on this page, you can't add a full width section");
+                }
+            }
+
+            return true;
         }
 
         private void ValidateOneColumnFullWidthSectionUsage()
@@ -1601,46 +1706,127 @@ namespace OfficeDevPnP.Core.Pages
                                 currentColumn = currentSection.Columns.Where(p => p.Order == sectionData.Position.SectionIndex).First();
                             }
                         }
+
+                        if (sectionData.PageSettingsSlice != null)
+                        {
+                            if (sectionData.PageSettingsSlice.IsDefaultThumbnail.HasValue)
+                            {
+                                if (sectionData.PageSettingsSlice.IsDefaultThumbnail == false)
+                                {
+                                    this.thumbnailUrl = this.PageListItem[BannerImageUrlField] != null ? ((FieldUrlValue)this.PageListItem[BannerImageUrlField]).Url : string.Empty;
+                                }
+                            }
+                            if (sectionData.PageSettingsSlice.IsDefaultDescription.HasValue)
+                            {
+                                this.isDefaultDescription = sectionData.PageSettingsSlice.IsDefaultDescription.Value;
+                            }
+                        }
                     }
 
                     controlOrder++;
                 }
             }
 
+            // Perform vertical section column matchup if that did not happen yet
+            var verticalSectionColumn = this.sections.Where(p => p.VerticalSectionColumn != null).FirstOrDefault();
+            // Only continue if the vertical section column we found was "standalone" and not yet matched with other columns
+            if (verticalSectionColumn != null && verticalSectionColumn.Columns.Count == 1)
+            {
+                // find another, non vertical section, column with the same zoneindex
+                var matchedUpSection = this.sections.Where(p => p.VerticalSectionColumn == null && p.Order == verticalSectionColumn.Order).FirstOrDefault();
+                if (matchedUpSection == null)
+                {
+                    // matchup did not yet happen, so let's handle it now
+                    // Get the top section
+                    var topSection = this.sections.Where(p => p.VerticalSectionColumn == null).OrderBy(p => p.Order).FirstOrDefault();
+                    if (topSection != null)
+                    {
+                        // Add the "standalone" vertical section column to this section
+                        topSection.MergeVerticalSectionColumn(verticalSectionColumn.Columns[0]);
+
+                        // Move the controls to the new section/column
+                        var controlsToMove = this.controls.Where(p => p.section == verticalSectionColumn);
+                        if (controlsToMove.Any())
+                        {
+                            foreach (var controlToMove in controlsToMove)
+                            {
+                                controlToMove.MoveTo(topSection, topSection.VerticalSectionColumn);
+                            }
+                        }
+
+                        // Remove the "standalone" vertical section column section
+                        this.sections.Remove(verticalSectionColumn);
+                    }
+                }
+            }
+
             // Perform section type detection
             foreach (var section in this.sections)
             {
-                if (section.Columns.Count == 1)
+                if (section.VerticalSectionColumn == null)
                 {
-                    if (section.Columns[0].ColumnFactor == 0)
+                    if (section.Columns.Count == 1)
                     {
-                        section.Type = CanvasSectionTemplate.OneColumnFullWidth;
+                        if (section.Columns[0].ColumnFactor == 0)
+                        {
+                            section.Type = CanvasSectionTemplate.OneColumnFullWidth;
+                        }
+                        else
+                        {
+                            section.Type = CanvasSectionTemplate.OneColumn;
+                        }
                     }
-                    else
+                    else if (section.Columns.Count == 2)
                     {
-                        section.Type = CanvasSectionTemplate.OneColumn;
+                        if (section.Columns[0].ColumnFactor == 6)
+                        {
+                            section.Type = CanvasSectionTemplate.TwoColumn;
+                        }
+                        else if (section.Columns[0].ColumnFactor == 4)
+                        {
+                            section.Type = CanvasSectionTemplate.TwoColumnRight;
+                        }
+                        else if (section.Columns[0].ColumnFactor == 8)
+                        {
+                            section.Type = CanvasSectionTemplate.TwoColumnLeft;
+                        }
+                    }
+                    else if (section.Columns.Count == 3)
+                    {
+                        section.Type = CanvasSectionTemplate.ThreeColumn;
                     }
                 }
-                else if (section.Columns.Count == 2)
+#if !SP2019
+                else
                 {
-                    if (section.Columns[0].ColumnFactor == 6)
+                    if (section.Columns.Count == 2)
                     {
-                        section.Type = CanvasSectionTemplate.TwoColumn;
+                        section.Type = CanvasSectionTemplate.OneColumnVerticalSection;
+                        section.Columns[0].ResetColumn(section.Columns[0].Order, section.Columns[0].ColumnFactor != 0 ? section.Columns[0].ColumnFactor : 12);
                     }
-                    else if (section.Columns[0].ColumnFactor == 4)
+                    else if (section.Columns.Count == 3)
                     {
-                        section.Type = CanvasSectionTemplate.TwoColumnRight;
+                        if (section.Columns[1].ColumnFactor == 6)
+                        {
+                            section.Type = CanvasSectionTemplate.TwoColumnVerticalSection;
+                        }
+                        else if (section.Columns[1].ColumnFactor == 4)
+                        {
+                            section.Type = CanvasSectionTemplate.TwoColumnRightVerticalSection;
+                        }
+                        else if (section.Columns[1].ColumnFactor == 8)
+                        {
+                            section.Type = CanvasSectionTemplate.TwoColumnLeftVerticalSection;
+                        }
                     }
-                    else if (section.Columns[0].ColumnFactor == 8)
+                    else if (section.Columns.Count == 4)
                     {
-                        section.Type = CanvasSectionTemplate.TwoColumnLeft;
+                        section.Type = CanvasSectionTemplate.ThreeColumnVerticalSection;
                     }
                 }
-                else if (section.Columns.Count == 3)
-                {
-                    section.Type = CanvasSectionTemplate.ThreeColumn;
-                }
+#endif
             }
+
             // Reindex the control order. We're starting control order from 1 for each column.
             ReIndex();
 
@@ -1674,10 +1860,37 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             var currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).FirstOrDefault();
+
+#if !SP2019
+            // if layout index was set this means that we possibly have a vertical section column
+            if (position.LayoutIndex.HasValue)
+            {
+                currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex && p.LayoutIndex == position.LayoutIndex.Value).FirstOrDefault();
+            }
+#endif
+
             if (currentColumn == null)
             {
-                currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor));
-                currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).First();
+#if !SP2019
+                if (position.LayoutIndex.HasValue)
+                {
+                    currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor, position.LayoutIndex.Value));
+                    currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex && p.LayoutIndex == position.LayoutIndex.Value).First();
+
+                    // ZoneEmphasis on a vertical section column needs to be retained as that "overrides" the zone emphasis set on the section
+                    if (currentColumn.IsVerticalSectionColumn)
+                    {
+                        currentColumn.VerticalSectionEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0;
+                    }
+                }
+                else
+                {
+#endif
+                    currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor));
+                    currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).First();
+#if !SP2019
+                }
+#endif
             }
 
             control.section = currentSection;
@@ -1767,7 +1980,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
         }
-        #endregion
+                #endregion
     }
 #endif
-}
+        }

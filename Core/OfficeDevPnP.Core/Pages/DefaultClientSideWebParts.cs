@@ -50,6 +50,10 @@
         NewsReel,
 #if !ONPREMISES
         /// <summary>
+        /// News webpart (the "new" version of NewsReel) - they look the same but this one supports filtering properly
+        /// </summary>
+        News,
+        /// <summary>
         /// PowerBI Report Embed webpart
         /// </summary>
         PowerBIReportEmbed,
@@ -170,7 +174,15 @@
         /// <summary>
         /// Sites web part
         /// </summary>
-        Sites
+        Sites,
+        /// <summary>
+        /// Call to Action web part
+        /// </summary>
+        CallToAction,
+        /// <summary>
+        /// Button web part
+        /// </summary>
+        Button
 #endif
     }
 #endif

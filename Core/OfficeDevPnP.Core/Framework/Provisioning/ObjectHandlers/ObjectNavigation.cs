@@ -93,6 +93,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 navigationEntity.AddNewPagesToNavigation = navigationSettings.AddNewPagesToNavigation;
                 navigationEntity.CreateFriendlyUrlsForNewPages = navigationSettings.CreateFriendlyUrlsForNewPages;
 
+                if (creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.Navigation != null && creationInfo.ExtractConfiguration.Navigation.RemoveExistingNodes)
+                {
+                    if (navigationEntity.SearchNavigation != null)
+                    {
+                        navigationEntity.SearchNavigation.RemoveExistingNodes = true;
+                    }
+                    if (navigationEntity.GlobalNavigation != null && navigationEntity.GlobalNavigation.StructuralNavigation != null)
+                    {
+                        navigationEntity.GlobalNavigation.StructuralNavigation.RemoveExistingNodes = true;
+                    }
+                    if (navigationEntity.CurrentNavigation != null && navigationEntity.CurrentNavigation.StructuralNavigation != null)
+                    {
+                        navigationEntity.CurrentNavigation.StructuralNavigation.RemoveExistingNodes = true;
+                    }
+                }
                 // If a base template is specified then use that one to "cleanup" the generated template model
                 if (creationInfo.BaseTemplate != null)
                 {
@@ -297,9 +312,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 UrlValue = Regex.Replace(UrlValue, $"{{{match.Groups["tokenname"].Value}:{match.Groups["fileurl"].Value}}}", folderId, RegexOptions.IgnoreCase);
                             }
-                            catch (Exception ex1)
+                            catch (Exception)
                             {
-
+                                // swallow exception
                             }
                         }
                     }
@@ -658,7 +673,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-#endregion
+        #endregion
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {

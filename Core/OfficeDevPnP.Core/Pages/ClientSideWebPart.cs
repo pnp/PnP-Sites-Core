@@ -24,7 +24,7 @@ namespace OfficeDevPnP.Core.Pages
         public const string WebPartDataVersionAttribute = "data-sp-webpartdataversion";
         public const string WebPartDataAttribute = "data-sp-webpartdata";
         public const string WebPartComponentIdAttribute = "data-sp-componentid";
-        public const string WebPartHtmlPropertiesAttribute = "data-sp-htmlproperties";        
+        public const string WebPartHtmlPropertiesAttribute = "data-sp-htmlproperties";
 
         private ClientSideComponent component;
         private string jsonWebPartData;
@@ -299,7 +299,7 @@ namespace OfficeDevPnP.Core.Pages
             JObject wpJObject = JObject.Parse(component.Manifest);
             this.title = wpJObject["preconfiguredEntries"][0]["title"]["default"].Value<string>();
             this.description = wpJObject["preconfiguredEntries"][0]["title"]["default"].Value<string>();
-            if (wpJObject["supportsFullBleed"]!=null)
+            if (wpJObject["supportsFullBleed"] != null)
             {
                 this.supportsFullBleed = wpJObject["supportsFullBleed"].Value<bool>();
             }
@@ -307,7 +307,7 @@ namespace OfficeDevPnP.Core.Pages
             {
                 this.supportsFullBleed = false;
             }
-            
+
             this.SetPropertiesJson(wpJObject["preconfiguredEntries"][0]["properties"].ToString(Formatting.None));
 
             if (clientSideWebPartPropertiesUpdater != null)
@@ -351,16 +351,30 @@ namespace OfficeDevPnP.Core.Pages
                 ZoneIndex = this.Section.Order,
                 SectionIndex = this.Column.Order,
                 SectionFactor = this.Column.ColumnFactor,
+#if !SP2019
+                LayoutIndex = this.Column.LayoutIndex,
+#endif
                 ControlIndex = controlIndex,
             };
+
+#if !SP2019
+            if (this.section.Type == CanvasSectionTemplate.OneColumnVerticalSection)
+            {
+                if (this.section.Columns.First().Equals(this.Column))
+                {
+                    controlData.Position.SectionFactor = 12;
+                }
+            }
+#endif
+
             controlData.Emphasis = new ClientSideSectionEmphasis()
             {
-                ZoneEmphasis = this.Section.ZoneEmphasis,
+                ZoneEmphasis = this.Column.VerticalSectionEmphasis.HasValue ? this.Column.VerticalSectionEmphasis.Value : this.Section.ZoneEmphasis,
             };
 
             // Set the control's data version to the latest version...default was 1.0, but some controls use a higher version
             var webPartType = ClientSidePage.NameToClientSideWebPartEnum(controlData.WebPartId);
-            
+
             // if we read the control from the page then the value might already be set to something different than 1.0...if so, leave as is
             if (this.DataVersion == "1.0")
             {
@@ -596,9 +610,9 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 #endif
-        #endregion
+#endregion
 
-        #region Internal and private methods
+            #region Internal and private methods
         internal override void FromHtml(IElement element)
         {
             base.FromHtml(element);
@@ -662,7 +676,7 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     this.webPartId = wpJObject["webPartData"]["id"].Value<string>();
                 }
-                
+
                 this.usingSpControlDataOnly = true;
             }
             else
@@ -777,7 +791,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.dynamicDataValues = (JObject)parsedJson["dynamicDataValues"];
             }
         }
-        #endregion
+            #endregion
     }
 #endif
-}
+        }

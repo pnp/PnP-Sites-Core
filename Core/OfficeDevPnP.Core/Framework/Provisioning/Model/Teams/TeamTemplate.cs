@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// Defines a Team Template for automated provisiong of Microsoft Teams
     /// </summary>
-    public class TeamTemplate : BaseTeam, IEquatable<TeamTemplate>
+    public partial class TeamTemplate : BaseTeam, IEquatable<TeamTemplate>
     {
         #region Public Members
 

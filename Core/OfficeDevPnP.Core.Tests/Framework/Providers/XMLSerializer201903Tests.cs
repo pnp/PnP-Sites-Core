@@ -171,7 +171,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
             Assert.AreEqual(SiteHeaderLayout.Standard, template.Header.Layout);
             Assert.AreEqual(SiteHeaderMenuStyle.MegaMenu, template.Header.MenuStyle);
-            Assert.AreEqual(Core.Framework.Provisioning.Model.BackgroundEmphasis.Soft, template.Header.BackgroundEmphasis);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.Emphasis.Soft, template.Header.BackgroundEmphasis);
         }
 
         [TestMethod]
@@ -186,7 +186,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 {
                     MenuStyle = SiteHeaderMenuStyle.Cascading,
                     Layout = SiteHeaderLayout.Compact,
-                    BackgroundEmphasis = Core.Framework.Provisioning.Model.BackgroundEmphasis.Strong
+                    BackgroundEmphasis = Core.Framework.Provisioning.Model.Emphasis.Strong
                 }
             };
 
@@ -1012,7 +1012,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_AppCatalog()
+        public void XMLSerializer_Serialize_Tenant_AppCatalog()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1070,7 +1070,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_WebApiPermissions()
+        public void XMLSerializer_Serialize_Tenant_WebApiPermissions()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1128,7 +1128,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_ContentDeliveryNetwork()
+        public void XMLSerializer_Serialize_Tenant_ContentDeliveryNetwork()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1204,7 +1204,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_SiteDesigns()
+        public void XMLSerializer_Serialize_Tenant_SiteDesigns()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1276,7 +1276,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_SiteScripts()
+        public void XMLSerializer_Serialize_Tenant_SiteScripts()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1337,7 +1337,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_StorageEntities()
+        public void XMLSerializer_Serialize_Tenant_StorageEntities()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -1389,7 +1389,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
         [TestMethod]
         [TestCategory(TEST_CATEGORY)]
-        public void XMLSerializer_Seserialize_Tenant_Themes()
+        public void XMLSerializer_Serialize_Tenant_Themes()
         {
             var provider = new XMLFileSystemTemplateProvider($@"{AppDomain.CurrentDomain.BaseDirectory}\..\..\Resources", "Templates");
 
@@ -4262,7 +4262,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             // sections
             Assert.AreEqual(1, section.Order);
             Assert.AreEqual(Core.Framework.Provisioning.Model.CanvasSectionType.OneColumn, section.Type);
-            Assert.AreEqual(Core.Framework.Provisioning.Model.BackgroundEmphasis.Neutral, section.BackgroundEmphasis);
+            Assert.AreEqual(Core.Framework.Provisioning.Model.Emphasis.Neutral, section.BackgroundEmphasis);
 
             Assert.AreEqual("...", section.Controls[0].CustomWebPartName);
             Assert.AreEqual(WebPartType.Image, section.Controls[0].Type);
@@ -4328,7 +4328,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                     {
                         Order = 1,
                         Type = CanvasSectionType.OneColumn,
-                        BackgroundEmphasis = Core.Framework.Provisioning.Model.BackgroundEmphasis.Soft,
+                        BackgroundEmphasis = Core.Framework.Provisioning.Model.Emphasis.Soft,
                         Controls =
                         {
                             new Core.Framework.Provisioning.Model.CanvasControl

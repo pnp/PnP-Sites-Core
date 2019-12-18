@@ -1114,6 +1114,54 @@ namespace OfficeDevPnP.Core.Framework.Graph
         }
 
         /// <summary>
+        /// Does this group have a Teams team?
+        /// </summary>
+        /// <param name="groupId">Id of the group to check</param>
+        /// <param name="accessToken">Access token with scope Group.Read.All</param>
+        /// <returns>True if there's a Teams linked to this group</returns>
+        public static bool HasTeamsTeam(string groupId, string accessToken)
+        {
+            if (String.IsNullOrEmpty(groupId))
+            {
+                throw new ArgumentNullException(nameof(groupId));
+            }
+
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            bool hasTeamsTeam = false;
+            
+            try
+            {
+                groupId = groupId.ToLower();
+                string getGroupsWithATeamsTeam = $"{GraphHttpClient.MicrosoftGraphBetaBaseUri}groups?$filter=resourceProvisioningOptions/Any(x:x eq 'Team')&select=id,resourceProvisioningOptions";
+
+                var getGroupResult = GraphHttpClient.MakeGetRequestForString(
+                    getGroupsWithATeamsTeam,
+                    accessToken: accessToken);
+
+                JObject groupObject = JObject.Parse(getGroupResult);
+
+                foreach (var item in groupObject["value"])
+                {
+                    if (item["id"].ToString().Equals(groupId, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        return true;
+                    }
+                }
+            }
+            catch (ServiceException ex)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
+            }
+
+            return hasTeamsTeam;
+        }
+
+        /// <summary>
         /// Creates a team associated with an Office 365 group
         /// </summary>
         /// <param name="groupId">The ID of the Office 365 Group</param>

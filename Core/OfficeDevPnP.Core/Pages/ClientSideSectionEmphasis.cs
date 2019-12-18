@@ -1,15 +1,15 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using OfficeDevPnP.Core.Utilities.JsonConverters;
 
 namespace OfficeDevPnP.Core.Pages
 {
     public class ClientSideSectionEmphasis
     {
-        [JsonProperty(PropertyName = "zoneEmphasis")]
-        public int ZoneEmphasis { get; set; }
+        [JsonProperty(PropertyName = "zoneEmphasis", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(EmphasisJsonConverter))]
+        public int ZoneEmphasis
+        {
+            get; set;
+        }
     }
 }

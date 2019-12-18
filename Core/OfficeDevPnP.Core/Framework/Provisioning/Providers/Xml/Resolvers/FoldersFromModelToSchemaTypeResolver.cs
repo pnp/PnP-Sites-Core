@@ -39,12 +39,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                     resolvers.Add($"{folderType}.Folder1", new FoldersFromModelToSchemaTypeResolver());
                     resolvers.Add($"{folderType}.Security", new SecurityFromModelToSchemaTypeResolver());
 
+                    // Default Column Values
                     var dictionaryItemTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                     var dictionaryItemType = Type.GetType(dictionaryItemTypeName, true);
                     var dictionaryItemKeySelector = CreateSelectorLambda(dictionaryItemType, "Key");
                     var dictionaryItemValueSelector = CreateSelectorLambda(dictionaryItemType, "Value");
 
                     resolvers.Add($"{folderType}.DefaultColumnValues", new FromDictionaryToArrayValueResolver<string, string>(dictionaryItemType, dictionaryItemKeySelector, dictionaryItemValueSelector));
+
+                    // Folders' Properties
+                    var folderPropertyTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.StringDictionaryItem, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                    var folderPropertyType = Type.GetType(folderPropertyTypeName, true);
+                    var folderPropertyKeySelector = CreateSelectorLambda(folderPropertyType, "Key");
+                    var folderPropertyValueSelector = CreateSelectorLambda(folderPropertyType, "Value");
+
+                    resolvers.Add($"{folderType}.Properties", new FromDictionaryToArrayValueResolver<string, string>(
+                        folderPropertyType, folderPropertyKeySelector, folderPropertyValueSelector));
 
                     for (Int32 c = 0; c < sourceFolders.Count; c++)
                     {

@@ -9,8 +9,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
     /// <summary>
     /// The Fun Settings for the Team
     /// </summary>
-    public class TeamFunSettings: BaseModel, IEquatable<TeamFunSettings>
+    public partial class TeamFunSettings : BaseModel, IEquatable<TeamFunSettings>
     {
+        #region Private Members
+
+        private string _giphyContentRating;
+
+        #endregion
+
         #region Public Members
 
         /// <summary>
@@ -21,7 +27,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// Defines the Content Rating for Giphys
         /// </summary>
-        public TeamGiphyContentRating GiphyContentRating { get; set; }
+        public string GiphyContentRating
+        {
+            get
+            {
+                return (_giphyContentRating);
+            }
+            set
+            {
+                _giphyContentRating = value?.ToLower();
+            }
+        }
 
         /// <summary>
         /// Defines whether Stickers and Memes are consented or not
@@ -90,15 +106,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <summary>
         /// Defines the Content Rating for Giphys
         /// </summary>
-        public enum TeamGiphyContentRating
+        public static class TeamGiphyContentRating
     {
         /// <summary>
         /// Moderate Content Rating
         /// </summary>
-        Moderate,
+        public const string Moderate = "moderate";
         /// <summary>
         /// Strict Content Rating
         /// </summary>
-        Strict,
+        public const string Strict = "strict";
     }
 }

@@ -20,8 +20,7 @@ using ContentType = OfficeDevPnP.Core.Framework.Provisioning.Model.ContentType;
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 {
     [Obsolete("The PnP Provisioning Schema v201505 is obsolete and deprecated, please use the latest version available at https://github.com/OfficeDev/PnP-Provisioning-Schema")]
-    internal class XMLPnPSchemaV201505Formatter :
-        IXMLSchemaFormatter, ITemplateFormatter
+    internal class XMLPnPSchemaV201505Formatter : IXMLSchemaFormatter, ITemplateFormatterWithValidation
     {
         private TemplateProviderBase _provider;
 
@@ -42,6 +41,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
         public bool IsValid(Stream template)
         {
+            return GetValidationResults(template).IsValid;
+        }
+
+        public ValidationResult GetValidationResults(Stream template)
+        {
+            var exceptions = new List<Exception>();
+
             if (template == null)
             {
                 throw new ArgumentNullException(nameof(template));
@@ -63,11 +69,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             Boolean result = true;
             xml.Validate(schemas, (o, e) =>
             {
+                exceptions.Add(e.Exception);
                 Diagnostics.Log.Error(e.Exception, "SchemaFormatter", "Template is not valid: {0}", e.Message);
                 result = false;
             });
 
-            return (result);
+            return new ValidationResult { IsValid = result, Exceptions = exceptions };
         }
 
         Stream ITemplateFormatter.ToFormattedTemplate(Model.ProvisioningTemplate template)
@@ -95,15 +102,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 }
             };
 
-#region Basic Properties
+            #region Basic Properties
             // Translate basic properties
             result.ID = template.Id;
             result.Version = (Decimal)template.Version;
             result.VersionSpecified = true;
             result.SitePolicy = template.SitePolicy;
-#endregion
+            #endregion
 
-#region Property Bag
+            #region Property Bag
             // Translate PropertyBagEntries, if any
             if (template.PropertyBagEntries != null && template.PropertyBagEntries.Count > 0)
             {
@@ -120,9 +127,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.PropertyBagEntries = null;
             }
-#endregion
+            #endregion
 
-#region Security
+            #region Security
             // Translate Security configuration, if any
             if (template.Security != null)
             {
@@ -184,9 +191,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     result.Security.AdditionalVisitors = null;
                 }
             }
-#endregion
+            #endregion
 
-#region Site Columns
+            #region Site Columns
             // Translate Site Columns (Fields), if any
             if (template.SiteFields != null && template.SiteFields.Count > 0)
             {
@@ -201,9 +208,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.SiteFields = null;
             }
-#endregion
+            #endregion
 
-#region Content Types
+            #region Content Types
             // Translate ContentTypes, if any
             if (template.ContentTypes != null && template.ContentTypes.Count > 0)
             {
@@ -233,9 +240,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.ContentTypes = null;
             }
-#endregion
+            #endregion
 
-#region List Instances
+            #region List Instances
             // Translate Lists Instances, if any
             if (template.Lists != null && template.Lists.Count > 0)
             {
@@ -309,9 +316,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.Lists = null;
             }
-#endregion
+            #endregion
 
-#region Features
+            #region Features
             // Translate Features, if any
             if (template.Features != null)
             {
@@ -353,9 +360,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     result.Features.WebFeatures = null;
                 }
             }
-#endregion
+            #endregion
 
-#region Custom Actions
+            #region Custom Actions
             // Translate CustomActions, if any
             if (template.CustomActions != null)
             {
@@ -425,9 +432,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     result.CustomActions.WebCustomActions = null;
                 }
             }
-#endregion
+            #endregion
 
-#region Files
+            #region Files
             // Translate Files, if any
             if (template.Files != null && template.Files.Count > 0)
             {
@@ -460,9 +467,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.Files = null;
             }
-#endregion
+            #endregion
 
-#region Pages
+            #region Pages
             // Translate Pages, if any
             if (template.Pages != null && template.Pages.Count > 0)
             {
@@ -520,9 +527,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
                 result.Pages = pages.ToArray();
             }
-#endregion
+            #endregion
 
-#region Taxonomy
+            #region Taxonomy
             // Translate Taxonomy elements, if any
             if (template.TermGroups != null && template.TermGroups.Count > 0)
             {
@@ -555,9 +562,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                             }).ToArray(),
                      }).ToArray();
             }
-#endregion
+            #endregion
 
-#region Composed Looks
+            #region Composed Looks
             // Translate ComposedLook, if any
             if (template.ComposedLook != null)
             {
@@ -574,9 +581,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     VersionSpecified = true,
                 };
             }
-#endregion
+            #endregion
 
-#region Providers
+            #region Providers
             // Translate Providers, if any
             if ((template.Providers != null && template.Providers.Count > 0) || (template.ExtensibilityHandlers != null && template.ExtensibilityHandlers.Count > 0))
             {
@@ -594,7 +601,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             {
                 result.Providers = null;
             }
-#endregion
+            #endregion
 
             XmlSerializerNamespaces ns =
                 new XmlSerializerNamespaces();
@@ -624,10 +631,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
             sourceStream.Position = 0;
 
             // Check the provided template against the XML schema
-            if (!this.IsValid(sourceStream))
+            var validationResult = this.GetValidationResults(sourceStream);
+            if (!validationResult.IsValid)
             {
                 // TODO: Use resource file
-                throw new ApplicationException("The provided template is not valid!");
+                throw new ApplicationException("The provided template is not valid", new AggregateException(validationResult.Exceptions));
             }
 
             sourceStream.Position = 0;
@@ -705,14 +713,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 }
             }
 
-#region Basic Properties
+            #region Basic Properties
             // Translate basic properties
             result.Id = source.ID;
             result.Version = (Double)source.Version;
             result.SitePolicy = source.SitePolicy;
-#endregion
+            #endregion
 
-#region Property Bag
+            #region Property Bag
             // Translate PropertyBagEntries, if any
             if (source.PropertyBagEntries != null)
             {
@@ -725,9 +733,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         Indexed = bag.Indexed
                     });
             }
-#endregion
+            #endregion
 
-#region Security
+            #region Security
             // Translate Security configuration, if any
             if (source.Security != null)
             {
@@ -768,9 +776,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     });
                 }
             }
-#endregion
+            #endregion
 
-#region Site Columns
+            #region Site Columns
             // Translate Site Columns (Fields), if any
             if ((source.SiteFields != null) && (source.SiteFields.Any != null))
             {
@@ -781,9 +789,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         SchemaXml = field.OuterXml,
                     });
             }
-#endregion
+            #endregion
 
-#region Content Types
+            #region Content Types
             // Translate ContentTypes, if any
             if ((source.ContentTypes != null) && (source.ContentTypes != null))
             {
@@ -811,9 +819,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         )
                     );
             }
-#endregion
+            #endregion
 
-#region List Instances
+            #region List Instances
             // Translate Lists Instances, if any
             if (source.Lists != null)
             {
@@ -877,9 +885,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         Url = list.Url,
                     });
             }
-#endregion
+            #endregion
 
-#region Features
+            #region Features
             // Translate Features, if any
             if (source.Features != null)
             {
@@ -904,9 +912,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         });
                 }
             }
-#endregion
+            #endregion
 
-#region Custom Actions
+            #region Custom Actions
             // Translate CustomActions, if any
             if (source.CustomActions != null)
             {
@@ -955,9 +963,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         });
                 }
             }
-#endregion
+            #endregion
 
-#region Files
+            #region Files
             // Translate Files, if any
             if (source.Files != null)
             {
@@ -979,9 +987,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         )
                     );
             }
-#endregion
+            #endregion
 
-#region Pages
+            #region Pages
             // Translate Pages, if any
             if (source.Pages != null)
             {
@@ -1031,9 +1039,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
 
                 }
             }
-#endregion
+            #endregion
 
-#region Taxonomy
+            #region Taxonomy
             // Translate Termgroups, if any
             if (source.TermGroups != null)
             {
@@ -1060,9 +1068,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                         Description = termGroup.Description,
                     });
             }
-#endregion
+            #endregion
 
-#region Composed Looks
+            #region Composed Looks
             // Translate ComposedLook, if any
             if (source.ComposedLook != null)
             {
@@ -1075,9 +1083,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                 result.ComposedLook.SiteLogo = source.ComposedLook.SiteLogo;
                 result.ComposedLook.Version = source.ComposedLook.Version;
             }
-#endregion
+            #endregion
 
-#region Providers
+            #region Providers
             // Translate Providers, if any
             if (source.Providers != null)
             {
@@ -1100,7 +1108,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                     }
                 }
             }
-#endregion
+            #endregion
 
             return (result);
         }

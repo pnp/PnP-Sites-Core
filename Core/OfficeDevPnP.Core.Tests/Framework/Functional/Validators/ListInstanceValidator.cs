@@ -523,10 +523,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Validators
             if (sourceSecurity != null && sourceSecurity.Any())
             {
                 var targetSecurity = targetObject.Descendants(ns + "Security");
-                if (ValidateSecurityXml(sourceSecurity.First(), targetSecurity.First()))
+                if (targetSecurity != null && targetSecurity.Any())
+                {
+                    if (ValidateSecurityXml(sourceSecurity.First(), targetSecurity.First()))
+                    {
+                        sourceSecurity.Remove();
+                        targetSecurity.Remove();
+                    }
+                }
+                else
                 {
                     sourceSecurity.Remove();
-                    targetSecurity.Remove();
                 }
             }
             #endregion

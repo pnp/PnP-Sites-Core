@@ -280,6 +280,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             if (localizations != null && localizations.Any())
             {
+                //https://github.com/SharePoint/PnP-Provisioning-Schema/issues/301
+                //fixing issue to allow multiple resx files in the template. i.e:
+                //<pnp:Localization LCID="1033" Name="core" ResourceFile="core.en-us.resx" />
+                //<pnp:Localization LCID="3082" Name="core" ResourceFile="core.es-es.resx" />
+                //<pnp:Localization LCID="1033" Name="intranet" ResourceFile="intranet.en-us.resx" />
+                //<pnp:Localization LCID="3082" Name="intranet" ResourceFile="intranet.es-es.resx" />
+                var resourcesFilesCount = localizations.GroupBy(l => l.Name).Count();
+
                 // Read all resource keys in a list
                 List<Tuple<string, uint, string>> resourceEntries = new List<Tuple<string, uint, string>>();
                 foreach (var localizationEntry in localizations)
@@ -297,6 +305,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 foreach (DictionaryEntry entry in resxReader)
                                 {
+                                    // One can have multiple resource files in a single file, by adding tokens with resource file name and without we allow both scenarios to resolve
+                                    resourceEntries.Add(new Tuple<string, uint, string>($"{localizationEntry.Name}:{entry.Key}", (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
                                     resourceEntries.Add(new Tuple<string, uint, string>(entry.Key.ToString(), (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
                                 }
                             }
