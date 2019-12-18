@@ -57,6 +57,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 AllowDeleteChannels = false,
                 AllowAddRemoveApps = true,
                 AllowCreateUpdateChannels = true,
+                AllowCreatePrivateChannels = true,
                 AllowCreateUpdateRemoveConnectors = false,
                 AllowCreateUpdateRemoveTabs = true
             };

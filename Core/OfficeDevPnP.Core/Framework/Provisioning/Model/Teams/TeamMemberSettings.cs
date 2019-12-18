@@ -19,6 +19,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         public Boolean AllowCreateUpdateChannels { get; set; }
 
         /// <summary>
+        /// Defines if members can create private channels
+        /// </summary>
+        public Boolean AllowCreatePrivateChannels { get; set; }
+
+        /// <summary>
         /// Defines if members can delete channels
         /// </summary>
         public Boolean AllowDeleteChannels { get; set; }
@@ -48,8 +53,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         /// <returns>Returns HashCode</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|",
                 AllowCreateUpdateChannels.GetHashCode(),
+                AllowCreatePrivateChannels.GetHashCode(),
                 AllowDeleteChannels.GetHashCode(),
                 AllowAddRemoveApps.GetHashCode(),
                 AllowCreateUpdateRemoveTabs.GetHashCode(),
@@ -84,6 +90,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
             }
 
             return (this.AllowCreateUpdateChannels == other.AllowCreateUpdateChannels &&
+                this.AllowCreatePrivateChannels == other.AllowCreatePrivateChannels &&
                 this.AllowDeleteChannels == other.AllowDeleteChannels &&
                 this.AllowAddRemoveApps == other.AllowAddRemoveApps &&
                 this.AllowCreateUpdateRemoveTabs == other.AllowCreateUpdateRemoveTabs &&

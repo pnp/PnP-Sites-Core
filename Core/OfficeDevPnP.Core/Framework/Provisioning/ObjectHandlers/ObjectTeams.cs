@@ -395,6 +395,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 memberSettings = new
                 {
                     team.MemberSettings?.AllowCreateUpdateChannels,
+                    team.MemberSettings?.AllowCreatePrivateChannels,
                     team.MemberSettings?.AllowAddRemoveApps,
                     team.MemberSettings?.AllowDeleteChannels,
                     team.MemberSettings?.AllowCreateUpdateRemoveTabs,

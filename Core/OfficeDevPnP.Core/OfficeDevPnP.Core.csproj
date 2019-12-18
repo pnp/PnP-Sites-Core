@@ -1573,8 +1573,8 @@
   <Target Name="AfterBuild" DependsOnTargets="">
   </Target>
   <PropertyGroup>
-    <PreBuildEvent>del $(ProjectDir)\obj\pnpcore.*
-del $(ProjectDir)\obj\*.json</PreBuildEvent>
+    <PreBuildEvent>del "$(ProjectDir)\obj\pnpcore.*"
+del "$(ProjectDir)\obj\*.json"</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
     <PostBuildEvent>

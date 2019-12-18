@@ -597,10 +597,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(true, teams[1].GuestSettings.AllowCreateUpdateChannels);
             Assert.AreEqual(false, teams[1].GuestSettings.AllowDeleteChannels);
 
-            // team memebers settings
+            // team members settings
             Assert.AreEqual(false, teams[1].MemberSettings.AllowDeleteChannels);
             Assert.AreEqual(true, teams[1].MemberSettings.AllowAddRemoveApps);
             Assert.AreEqual(true, teams[1].MemberSettings.AllowCreateUpdateChannels);
+            Assert.AreEqual(true, teams[1].MemberSettings.AllowCreatePrivateChannels);
             Assert.AreEqual(true, teams[1].MemberSettings.AllowCreateUpdateRemoveConnectors);
             Assert.AreEqual(false, teams[1].MemberSettings.AllowCreateUpdateRemoveTabs);
 
@@ -670,6 +671,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 {
                     AllowDeleteChannels = true,
                     AllowCreateUpdateChannels = true,
+                    AllowCreatePrivateChannels = true,
                     AllowCreateUpdateRemoveTabs = true,
                     AllowCreateUpdateRemoveConnectors = true,
                     AllowAddRemoveApps = true
