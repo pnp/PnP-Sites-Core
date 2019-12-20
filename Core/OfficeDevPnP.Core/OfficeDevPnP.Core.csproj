@@ -739,6 +739,7 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUpdateValue.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FileUtilities.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\WebhookSender.cs" />
     <Compile Include="Framework\Provisioning\Providers\ITemplateFormatterWithValidation.cs" />
     <Compile Include="Framework\Provisioning\Providers\ValidationResult.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.cs">

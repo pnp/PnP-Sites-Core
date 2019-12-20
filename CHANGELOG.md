@@ -15,6 +15,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Added support for tokens in Term names [fzbm - Florian Zink]
+- Improved ObjectApplicationLifecycleManagement inner logic [gautamdsheth - Gautam Sheth]
+- Fixed support for calculated fields in PowerShell [jackpoz - Giacomo Pozzoni]
 
 ## [3.15.1911.0 - November 2019 release]
 
