@@ -1167,28 +1167,44 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="groupId">The ID of the Office 365 Group</param>
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
         /// <returns></returns>
-        public static async Task CreateTeam(String groupId, String accessToken)
+        public static async Task CreateTeam(string groupId, string accessToken)
         {
-            if (String.IsNullOrEmpty(groupId))
+            if (string.IsNullOrEmpty(groupId))
             {
                 throw new ArgumentNullException(nameof(groupId));
             }
-            if (String.IsNullOrEmpty(accessToken))
+            if (string.IsNullOrEmpty(accessToken))
             {
                 throw new ArgumentNullException(nameof(accessToken));
             }
-            var createTeamEndPoint = GraphHttpClient.MicrosoftGraphV1BaseUri + $"groups/{groupId}/team";
-            try
+
+            bool wait = true;
+            int iterations = 0;
+            string createTeamEndPoint = GraphHttpClient.MicrosoftGraphV1BaseUri + $"groups/{groupId}/team";
+            while (wait)
             {
-                await Task.Run(() =>
+                iterations++;
+
+                try
                 {
-                    GraphHttpClient.MakePutRequest(createTeamEndPoint, new { }, "application/json", accessToken);
-                });
-            }
-            catch (ServiceException ex)
-            {
-                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
-                throw;
+                    await Task.Run(() =>
+                    {
+                        GraphHttpClient.MakePutRequest(createTeamEndPoint, new { }, "application/json", accessToken);
+                    });
+                }
+                catch (ServiceException ex)
+                {
+                    if (iterations > 3)
+                    {
+                        Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                        wait = false;
+                        throw;
+                    }
+                    else
+                    {
+                        System.Threading.Thread.Sleep(TimeSpan.FromSeconds(10));
+                    }
+                }
             }
         }
 
