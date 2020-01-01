@@ -64,7 +64,7 @@ namespace OfficeDevPnP.Core.Utilities.Graph
                         }                        
                         break;
                     case HttpMethodVerb.PUT:
-                        json = HttpHelper.MakePutRequestForString(uri, content, contentType, accessToken);
+                        json = HttpHelper.MakePutRequestForString(uri, content, contentType, accessToken, retryCount: 3, delay: 10000);
                         if (!string.IsNullOrEmpty(json))
                         {
                             itemId = JToken.Parse(json).Value<String>("id");
