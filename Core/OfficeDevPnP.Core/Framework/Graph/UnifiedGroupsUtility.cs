@@ -1182,7 +1182,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
             {
                 await Task.Run(() =>
                 {
-                    HttpHelper.MakePutRequestForString(createTeamEndPoint, new { }, "application/json", accessToken, retryCount: 3, delay:10000);
+                    HttpHelper.MakePutRequest(createTeamEndPoint, new { }, "application/json", accessToken, retryCount: 3, delay:10000);
                 });
             }
             catch (ServiceException ex)
