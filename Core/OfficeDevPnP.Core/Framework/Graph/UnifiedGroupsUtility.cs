@@ -1177,34 +1177,18 @@ namespace OfficeDevPnP.Core.Framework.Graph
             {
                 throw new ArgumentNullException(nameof(accessToken));
             }
-
-            bool wait = true;
-            int iterations = 0;
-            string createTeamEndPoint = GraphHttpClient.MicrosoftGraphV1BaseUri + $"groups/{groupId}/team";
-            while (wait)
+            var createTeamEndPoint = GraphHttpClient.MicrosoftGraphV1BaseUri + $"groups/{groupId}/team";
+            try
             {
-                iterations++;
-
-                try
+                await Task.Run(() =>
                 {
-                    await Task.Run(() =>
-                    {
-                        GraphHttpClient.MakePutRequest(createTeamEndPoint, new { }, "application/json", accessToken);
-                    });
-                }
-                catch (ServiceException ex)
-                {
-                    if (iterations > 3)
-                    {
-                        Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
-                        wait = false;
-                        throw;
-                    }
-                    else
-                    {
-                        System.Threading.Thread.Sleep(TimeSpan.FromSeconds(10));
-                    }
-                }
+                    HttpHelper.MakePutRequestForString(createTeamEndPoint, new { }, "application/json", accessToken, retryCount: 3, delay:10000);
+                });
+            }
+            catch (ServiceException ex)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
             }
         }
 
