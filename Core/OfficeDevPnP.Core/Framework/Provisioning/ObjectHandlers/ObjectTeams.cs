@@ -345,11 +345,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         /// <returns>The ID of the created or updated Team</returns>
         private static string CreateOrUpdateTeamFromGroup(PnPMonitoredScope scope, Team team, TokenParser parser, string groupId, string accessToken)
         {
-            // Check the archival status of the team
-            string archiveStatusReq = HttpHelper.MakeGetRequestForString(
-                $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{groupId}?$select=isArchived", accessToken: accessToken);
+            bool isCurrentlyArchived = false;
+            try
+            {
+                // Check the archival status of the team
+                string archiveStatusReq = HttpHelper.MakeGetRequestForString(
+                    $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/teams/{groupId}?$select=isArchived", accessToken: accessToken);
 
-            bool isCurrentlyArchived = JToken.Parse(archiveStatusReq).Value<bool>("isArchived");
+                isCurrentlyArchived = JToken.Parse(archiveStatusReq).Value<bool>("isArchived");
+            }
+            catch(Exception ex)
+            {
+                scope.LogError("Error checking archive status ", ex.Message);
+            }            
 
             string teamId = string.Empty;
 
@@ -384,19 +392,42 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             var content = PrepareTeamRequestContent(team, parser);
 
-            var teamId = GraphHelper.CreateOrUpdateGraphObject(scope,
-                HttpMethodVerb.PUT,
-                $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{groupId}/team",
-                content,
-                HttpHelper.JsonContentType,
-                accessToken,
-                "Conflict",
-                CoreResources.Provisioning_ObjectHandlers_Teams_Team_AlreadyExists,
-                "id",
-                parser.ParseString(team.GroupId),
-                CoreResources.Provisioning_ObjectHandlers_Teams_Team_ProvisioningError,
-                canPatch: true);
+            bool wait = true;
+            int iterations = 0;
+            var teamId = string.Empty;
+            while (wait)
+            {
+                iterations++;
 
+                try
+                {
+                    teamId = GraphHelper.CreateOrUpdateGraphObject(scope,
+                    HttpMethodVerb.PUT,
+                    $"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{groupId}/team",
+                    content,
+                    HttpHelper.JsonContentType,
+                    accessToken,
+                    "Conflict",
+                    CoreResources.Provisioning_ObjectHandlers_Teams_Team_AlreadyExists,
+                    "id",
+                    parser.ParseString(team.GroupId),
+                    CoreResources.Provisioning_ObjectHandlers_Teams_Team_ProvisioningError,
+                    canPatch: true);
+
+                    wait = false;
+                }
+                catch (Exception)
+                {
+                    // In case of exception wait for 10 secs
+                    System.Threading.Thread.Sleep(TimeSpan.FromSeconds(10));
+                }
+
+                // Don't wait more than 30 seconds
+                if (iterations > 3)
+                {
+                    wait = false;
+                }
+            }
             return (teamId);
         }
 
