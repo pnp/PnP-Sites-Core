@@ -1243,15 +1243,30 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 return null;
             }
 
-            try
+            bool wait = true;
+            int iterations = 0;
+            while (wait)
             {
-                var teamId = responseHeaders.Location.ToString().Split('\'')[1];
-                var team = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}", accessToken);
-                return JToken.Parse(team);
-            }
-            catch (Exception ex)
-            {
-                scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_TeamTemplate_FetchingError, ex.Message);
+                iterations++;
+
+                try
+                {
+                    var teamId = responseHeaders.Location.ToString().Split('\'')[1];
+                    var team = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/groups/{teamId}", accessToken);
+                    wait = false;
+                    return JToken.Parse(team);
+                }
+                catch (Exception)
+                {
+                    // In case of exception wait for 10 secs
+                    Thread.Sleep(TimeSpan.FromSeconds(10));
+                }
+
+                // Don't wait more than 1 minute
+                if (iterations > 6)
+                {
+                    wait = false;
+                }                
             }
 
             return null;
@@ -1270,7 +1285,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (teamTemplate.DisplayName != null) team["displayName"] = teamTemplate.DisplayName;
             if (teamTemplate.Description != null) team["description"] = teamTemplate.Description;
-            if (teamTemplate.Classification != null) team["classification"] = teamTemplate.Classification;
+            if (!string.IsNullOrEmpty(teamTemplate.Classification)) team["classification"] = teamTemplate.Classification;
             team["visibility"] = teamTemplate.Visibility.ToString();
 
             return team.ToString();
