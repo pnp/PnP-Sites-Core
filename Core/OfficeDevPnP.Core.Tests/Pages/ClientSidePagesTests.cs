@@ -93,6 +93,7 @@ namespace OfficeDevPnP.Core.Tests.Authentication
         //[TestMethod]
         //public void BertTest5()
         //{
+        //    //using (var cc = new AuthenticationManager().GetWebLoginClientContext("https://contoso.sharepoint.com/teams/TEST_Provisioning"))
         //    using (var cc = TestCommon.CreateClientContext("https://bertonline.sharepoint.com/sites/blabla"))
         //    {
         //        var page = cc.Web.LoadClientSidePage("visual.aspx");
