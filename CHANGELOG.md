@@ -9,8 +9,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+- Support for folder level properties [czullu - Christian Zuellig]
 
 ### Changed
+- Improved code for exporting Teams from Microsoft Teams [JarbasHorst - Jarbas Horst]
 
 - Bumped the minimal .Net version from 4.5 to 4.6.1
 
