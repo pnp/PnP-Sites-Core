@@ -9,13 +9,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ## [Unreleased]
 
 ### Added
+
 - Support for folder level properties [czullu - Christian Zuellig]
 
 ### Changed
+
 - Improved code for exporting Teams from Microsoft Teams [JarbasHorst - Jarbas Horst]
 - Fixed QuickLaunchEnabled provisioning / extract #2478 [kezack - zackariya el khalfaoui]
 - Bumped the minimal .Net version from 4.5 to 4.6.1
 - Fix #2407 by adding hidden fields to the list prior to the content type. #2408 [stevebeauge - Steve Beaugé]
+- Fix provisioning ReadOnly content type #2501 [SchauDK - Michael Schau]
 
 ## [3.16.1912.0 - December 2019 release]
 
@@ -25,6 +28,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - SiteExistsAnywhere method to improve SiteExists internal behavior
 
 ### Changed
+
 - Added support for tokens in Term names [fzbm - Florian Zink]
 - Improved ObjectApplicationLifecycleManagement inner logic [gautamdsheth - Gautam Sheth]
 - Fixed support for calculated fields in PowerShell [jackpoz - Giacomo Pozzoni]
