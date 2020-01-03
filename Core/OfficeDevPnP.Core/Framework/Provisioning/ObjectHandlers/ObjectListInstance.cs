@@ -1663,7 +1663,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             if (ctx.HasPendingRequest)
             {
-                ctx.ExecuteQuery();
+                ctx.ExecuteQueryRetry();
             }
         }
 
