@@ -1,4 +1,5 @@
 ﻿#if !ONPREMISES
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
@@ -1126,7 +1127,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 using (var photoStream = new MemoryStream(photoBytes))
                 {
+#if !NETSTANDARD2_0
                     var contentType = MimeMapping.GetMimeMapping(photoPath);
+#else
+                    string contentType;
+                    new FileExtensionContentTypeProvider().TryGetContentType(photoPath, out contentType);
+                    contentType ??= "application/octet-stream";
+#endif
                     int maxRetries = 10;
                     int retry = 0;
                     while (retry < maxRetries)
@@ -1202,7 +1209,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return team.ToString();
         }
 
-        #region PnP Provisioning Engine infrastructural code
+#region PnP Provisioning Engine infrastructural code
 
         public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ApplyConfiguration configuration)
         {
@@ -1368,6 +1375,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             catch (ApplicationException ex)
             {
+#if !NETSTANDARD2_0
                 if (ex.InnerException is HttpException)
                 {
                     if (((HttpException)ex.InnerException).GetHttpCode() == 404)
@@ -1383,6 +1391,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     throw ex;
                 }
+#else
+                // untested change
+                if (ex.Message.StartsWith("404"))
+                {
+                        // no team, swallow
+                }
+                else
+                {
+                    throw ex;
+                }
+#endif
             }
             return team;
         }
@@ -1495,7 +1514,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return tabs;
         }
-        #endregion
+#endregion
 
         private static string CreateMailNicknameFromDisplayName(string displayName)
         {
