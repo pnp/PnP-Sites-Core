@@ -1,5 +1,7 @@
 ﻿#if !ONPREMISES
+#if NETSTANDARD2_0
 using Microsoft.AspNetCore.StaticFiles;
+#endif
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
