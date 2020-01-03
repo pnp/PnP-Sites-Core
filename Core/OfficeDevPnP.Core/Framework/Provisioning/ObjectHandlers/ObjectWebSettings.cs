@@ -33,7 +33,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.DisableFlows,
                     w => w.DisableAppViews,
                     w => w.HorizontalQuickLaunch,
-    #if !SP2019
+                    w => w.QuickLaunchEnabled,
+#if !SP2019
                     w => w.SearchScope,
                     w => w.SearchBoxInNavBar,
     #endif
@@ -59,7 +60,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 webSettings.DisableFlows = web.DisableFlows;
                 webSettings.DisableAppViews = web.DisableAppViews;
                 webSettings.HorizontalQuickLaunch = web.HorizontalQuickLaunch;
-    #if !SP2019
+                webSettings.QuickLaunchEnabled = web.QuickLaunchEnabled;
+#if !SP2019
                 webSettings.SearchScope = (SearchScopes)Enum.Parse(typeof(SearchScopes), web.SearchScope.ToString(), true);
                 webSettings.SearchBoxInNavBar = (SearchBoxInNavBar)Enum.Parse(typeof(SearchBoxInNavBar), web.SearchBoxInNavBar.ToString(), true);
     #endif
@@ -486,6 +488,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         web.AlternateCssUrl = parser.ParseString(webSettings.AlternateCSS);
                     }
+
+                    web.QuickLaunchEnabled = webSettings.QuickLaunchEnabled;
+
                     web.Update();
                     web.Context.ExecuteQueryRetry();
 
