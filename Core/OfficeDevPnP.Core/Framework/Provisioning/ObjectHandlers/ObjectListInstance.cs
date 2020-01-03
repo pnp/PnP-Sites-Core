@@ -2071,6 +2071,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     parentFolder.Context.ExecuteQueryRetry();
                 }
 
+                //Set Property Fields of Folder in order to handle for example OneNote Folders
+                if (folder.Properties != null && folder.Properties.Any(p => !p.Key.Equals("ContentTypeId")))
+                {
+                    var currentFolderItem = currentFolder.ListItemAllFields;
+                    parentFolder.Context.Load(currentFolderItem);
+                    parentFolder.Context.ExecuteQueryRetry();
+                    foreach (var p in folder.Properties.Where(p => !p.Key.Equals("ContentTypeId")))
+                    {
+                        currentFolderItem[p.Key] = parser.ParseString(p.Value);
+                    }
+                    currentFolderItem.Update();
+                    currentFolder.Update();
+                    parentFolder.Context.ExecuteQueryRetry();
+                }
+
                 // Handle current folder security
                 if (folder.Security != null && folder.Security.RoleAssignments.Count != 0)
                 {
