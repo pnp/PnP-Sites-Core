@@ -13,7 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 - Improved code for exporting Teams from Microsoft Teams [JarbasHorst - Jarbas Horst]
-
+- Fixed QuickLaunchEnabled provisioning / extract #2478 [kezack - zackariya el khalfaoui]
 - Bumped the minimal .Net version from 4.5 to 4.6.1
 
 ## [3.16.1912.0 - December 2019 release]
