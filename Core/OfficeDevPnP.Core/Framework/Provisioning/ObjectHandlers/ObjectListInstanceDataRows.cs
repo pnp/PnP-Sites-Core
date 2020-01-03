@@ -437,8 +437,81 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 itemCount++;
             }
+
+            //Process Forms Folder 
+            ProcessFormsFolder(web, siteList, listInstance, template, scope);
             return template;
         }
+
+        //Export Files referred to in NewDocumentTemplates
+        private void ProcessFormsFolder(Web web, List spList, ListInstance listInstance, ProvisioningTemplate template, PnPMonitoredScope scope)
+        {
+            Microsoft.SharePoint.Client.Folder formsFolder = null;
+            try
+            {
+                web.EnsureProperties(w => w.Url);
+                spList.EnsureProperties(l => l.RootFolder.ServerRelativeUrl);
+                formsFolder = web.GetFolderByServerRelativeUrl(spList.RootFolder.ServerRelativeUrl + "/Forms");
+                web.Context.ExecuteQueryRetry();
+            }
+            catch (Exception ex)
+            {
+                formsFolder = null;
+            }
+            if (formsFolder != null)
+            {
+                var baseUri = new Uri(web.Url);
+
+                foreach (var instanceView in listInstance.Views)
+                {
+                    if (instanceView.SchemaXml.Contains("NewDocumentTemplates"))
+                    {
+                        var viewSchema = System.Xml.Linq.XDocument.Parse(instanceView.SchemaXml);
+                        var templateElement = viewSchema.Root.Elements().FirstOrDefault(element => element.Name.LocalName == "NewDocumentTemplates");
+                        if (templateElement != null)
+                        {
+                            var NewDocumentTemplates = Newtonsoft.Json.Linq.JArray.Parse(templateElement.Value);
+                            foreach (var templateFile in NewDocumentTemplates.SelectTokens("..url"))
+                            {
+                                var FileTemplate = templateFile.Parent.Parent as Newtonsoft.Json.Linq.JObject;
+                                if(FileTemplate!=null)
+                                {
+                                    var contentTypeId = FileTemplate["contentTypeId"]?.ToString();
+                                    var url = FileTemplate["url"]?.ToString();
+                                    if(!string.IsNullOrWhiteSpace(url)&& !string.IsNullOrWhiteSpace(contentTypeId))
+                                    {
+                                        var fullUri = new Uri(baseUri, url.Replace("{site}", baseUri.AbsolutePath.TrimEnd(new char[] { '/' })));
+                                        var folderPath = HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
+                                        var fileName = HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
+
+                                        var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
+
+                                        Microsoft.SharePoint.Client.File myFile = web.GetFileByUrl($"{templateFolderPath}/{fileName}");
+                                        web.Context.Load(myFile);
+                                        var stream = myFile.OpenBinaryStream();
+                                        web.Context.ExecuteQueryRetry();
+
+                                        template.Connector.SaveFileStream(myFile.Name, templateFolderPath, stream.Value);
+
+                                        Model.File newFile = new Model.File()
+                                        {
+                                            Folder = templateFolderPath,
+                                            Src = $"{templateFolderPath}/{fileName}",
+                                            TargetFileName = myFile.Name,
+                                            Overwrite = true,
+                                            Level = (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), myFile.Level.ToString())
+                                        };
+                                        
+                                        template.Files.Add(newFile);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         private void ProcessDocumentRow(Web web, List siteList, Uri baseUri, ListItem listItem, ListInstance listInstance, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, int itemCount, int itemsCount, string defaultContentTypeId)
         {
             var myFile = listItem.File; ;
