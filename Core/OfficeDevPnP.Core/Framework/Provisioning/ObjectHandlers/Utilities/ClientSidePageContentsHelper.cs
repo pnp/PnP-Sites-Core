@@ -34,7 +34,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         public void ExtractClientSidePage(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string pageUrl, string pageName, bool isHomePage, bool isTemplate = false)
         {
             bool excludeAuthorInformation = false;
-            if(creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.Pages != null)
+            if (creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.Pages != null)
             {
                 excludeAuthorInformation = creationInfo.ExtractConfiguration.Pages.ExcludeAuthorInformation;
             }
@@ -77,7 +77,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                     if (pageToExtract.PageHeader != null)
                     {
-                        
+
                         var extractedHeader = new ClientSidePageHeader()
                         {
                             Type = (ClientSidePageHeaderType)Enum.Parse(typeof(Pages.ClientSidePageHeaderType), pageToExtract.PageHeader.Type.ToString()),
@@ -86,7 +86,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             TranslateY = pageToExtract.PageHeader.TranslateY,
                             LayoutType = (ClientSidePageHeaderLayoutType)Enum.Parse(typeof(Pages.ClientSidePageHeaderLayoutType), pageToExtract.PageHeader.LayoutType.ToString()),
 #if !SP2019
-                            TextAlignment = (ClientSidePageHeaderTextAlignment)Enum.Parse(typeof(Pages.ClientSidePageHeaderTitleAlignment), pageToExtract.PageHeader.TextAlignment.ToString()),
+                            TextAlignment = (ClientSidePageHeaderTextAlignment)Enum.Parse(typeof(ClientSidePageHeaderTextAlignment), pageToExtract.PageHeader.TextAlignment.ToString()),
                             ShowTopicHeader = pageToExtract.PageHeader.ShowTopicHeader,
                             ShowPublishDate = pageToExtract.PageHeader.ShowPublishDate,
                             TopicHeader = pageToExtract.PageHeader.TopicHeader,
@@ -488,7 +488,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             }
         }
 
-                                        #region Helper methods
+        #region Helper methods
         private static void CollectImageFilesFromGenericGuids(Regex regexGuidPattern, Regex regexGuidPatternEncoded, string jsonControlData, List<Guid> fileGuids)
         {
             // grab all the guids in the already tokenized json and check try to get them as a file
@@ -744,7 +744,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
             return json;
         }
-                                        #endregion
+        #endregion
     }
 #endif
-                                    }
+}

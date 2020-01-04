@@ -57,7 +57,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     // Write page level status messages, needed in case many pages are provisioned
                     currentPageIndex++;
-                    WriteSubProgress("ClientSidePage",$"Create {pageName} stub",currentPageIndex,template.ClientSidePages.Count);
+                    WriteSubProgress("ClientSidePage", $"Create {pageName} stub", currentPageIndex, template.ClientSidePages.Count);
 
                     url = UrlUtility.Combine(web.ServerRelativeUrl, url);
 
@@ -216,7 +216,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                     page.PageHeader.LayoutType = (Pages.ClientSidePageHeaderLayoutType)Enum.Parse(typeof(ClientSidePageHeaderLayoutType), clientSidePage.Header.LayoutType.ToString());
 #if !SP2019
-                                    page.PageHeader.TextAlignment = (Pages.ClientSidePageHeaderTitleAlignment)Enum.Parse(typeof(ClientSidePageHeaderTextAlignment), clientSidePage.Header.TextAlignment.ToString());
+                                    page.PageHeader.TextAlignment = (Pages.ClientSidePageHeaderTitleAlignment)Enum.Parse(typeof(Pages.ClientSidePageHeaderTitleAlignment), clientSidePage.Header.TextAlignment.ToString());
                                     page.PageHeader.ShowTopicHeader = clientSidePage.Header.ShowTopicHeader;
                                     page.PageHeader.ShowPublishDate = clientSidePage.Header.ShowPublishDate;
                                     page.PageHeader.TopicHeader = clientSidePage.Header.TopicHeader;
@@ -690,4 +690,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
     }
 #endif
-                }
+}
