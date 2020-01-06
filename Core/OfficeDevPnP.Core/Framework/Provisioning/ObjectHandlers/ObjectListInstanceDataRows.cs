@@ -99,11 +99,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (dataRowValues.Any())
                                     {
                                         var keyColumnValue = parser.ParseString(dataRowValues.FirstOrDefault().Value);
-                                        if(keyColumnType == "DateTime")
+                                        if (keyColumnType == "DateTime")
                                         {
                                             keyColumnValue = DateTime.Parse(keyColumnValue).ToString("s") + "Z";
                                         }
-                                        var query = $@"<View><Query><Where><Eq><FieldRef Name=""{parsedKeyColumn}""/><Value {(keyColumnType == "DateTime" ? "IncludeTimeValue='TRUE'": "")} Type=""{keyColumnType}"">{keyColumnValue}</Value></Eq></Where></Query><RowLimit>1</RowLimit></View>";
+                                        var query = $@"<View><Query><Where><Eq><FieldRef Name=""{parsedKeyColumn}""/><Value {(keyColumnType == "DateTime" ? "IncludeTimeValue='TRUE'" : "")} Type=""{keyColumnType}"">{keyColumnValue}</Value></Eq></Where></Query><RowLimit>1</RowLimit></View>";
                                         var camlQuery = new CamlQuery()
                                         {
                                             ViewXml = query
@@ -474,17 +474,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             foreach (var templateFile in NewDocumentTemplates.SelectTokens("..url"))
                             {
                                 var FileTemplate = templateFile.Parent.Parent as Newtonsoft.Json.Linq.JObject;
-                                if(FileTemplate!=null)
+                                if (FileTemplate != null)
                                 {
                                     var contentTypeId = FileTemplate["contentTypeId"]?.ToString();
                                     var url = FileTemplate["url"]?.ToString();
-                                    if(!string.IsNullOrWhiteSpace(url)&& !string.IsNullOrWhiteSpace(contentTypeId))
+                                    if (!string.IsNullOrWhiteSpace(url) && !string.IsNullOrWhiteSpace(contentTypeId))
                                     {
-                                        var fullUri = new Uri(baseUri, url.Replace("{site}", baseUri.AbsolutePath.TrimEnd(new char[] { '/' })));
+                                        var fullUri = new Uri(baseUri, url.Replace("{site}", baseUri.AbsolutePath.TrimEnd('/')));
                                         var folderPath = HttpUtility.UrlDecode(fullUri.Segments.Take(fullUri.Segments.Count() - 1).ToArray().Aggregate((i, x) => i + x).TrimEnd('/'));
                                         var fileName = HttpUtility.UrlDecode(fullUri.Segments[fullUri.Segments.Count() - 1]);
 
-                                        var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray());
+                                        var templateFolderPath = folderPath.Substring(web.ServerRelativeUrl.Length).TrimStart('/');
 
                                         Microsoft.SharePoint.Client.File myFile = web.GetFileByUrl($"{templateFolderPath}/{fileName}");
                                         web.Context.Load(myFile);
@@ -501,7 +501,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             Overwrite = true,
                                             Level = (Model.FileLevel)Enum.Parse(typeof(Model.FileLevel), myFile.Level.ToString())
                                         };
-                                        
+
                                         template.Files.Add(newFile);
                                     }
                                 }
