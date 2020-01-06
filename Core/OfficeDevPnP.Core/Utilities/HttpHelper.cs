@@ -636,9 +636,13 @@ namespace OfficeDevPnP.Core.Utilities
             {
                 throw new ApplicationException(
                     string.Format("Exception while invoking endpoint {0}.", requestUrl),
+#if !NETSTANDARD2_0
                     new HttpException(
                         (int)response.StatusCode,
                         response.Content.ReadAsStringAsync().Result));
+#else
+                    new Exception(response.Content.ReadAsStringAsync().Result));
+#endif
             }
 
             return (result);
