@@ -341,6 +341,17 @@ namespace OfficeDevPnP.Core.Pages
                 return this.pageId;
             }
         }
+
+        /// <summary>
+        /// List the languages this page possibly can be translated into
+        /// </summary>
+        public List<int> SupportedUILanguages
+        {
+            get
+            {
+                return this.Context.Web.EnsureProperty(p => p.SupportedUILanguageIds).ToList();
+            }
+        }
         #endregion
 
         #region public methods
