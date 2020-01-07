@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 - Support for folder level properties [czullu - Christian Zuellig]
 - Multi-lingual page status and generation methods on the ClientSidePage object
+- Multi-lingual page support for provisioning templates
 
 ### Changed
 
