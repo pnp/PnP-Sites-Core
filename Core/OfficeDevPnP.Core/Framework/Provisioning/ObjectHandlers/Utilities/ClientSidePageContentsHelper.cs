@@ -480,6 +480,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         sectionOrder++;
                     }
 
+                    // Spaces support
+                    if (pageToExtract.LayoutType == Pages.ClientSidePageLayoutType.Spaces)
+                    {
+                        extractedPageInstance.FieldValues.Add(Pages.ClientSidePage.SpaceContentField, pageToExtract.SpaceContent);
+                    }
+
                     // Add the page to the template
                     if (page.IsTranslation)
                     {

@@ -23,6 +23,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         private const string FileRefField = "FileRef";
         private const string SPSitePageFlagsField = "_SPSitePageFlags";
         private static readonly Guid MultilingualPagesFeature = new Guid("24611c05-ee19-45da-955f-6602264abaf8");
+        private static readonly Guid MixedRealityFeature = new Guid("2ac9c540-6db4-4155-892c-3273957f1926");
 
         public override string Name
         {
@@ -46,6 +47,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // Ensure the needed languages are enabled on the site
                 EnsureWebLanguages(web, template, scope);
+                // Ensure spaces is enabled
+                EnsureSpaces(web, template, scope);
 
                 var currentPageIndex = 0;
                 // pre create the needed pages so we can fill the needed tokens which might be used later on when we put web parts on those pages
@@ -142,6 +145,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             WriteMessage("Done processing Client Side Pages", ProvisioningMessageType.Completed);
             return parser;
+        }
+
+        private static void EnsureSpaces(Web web, ProvisioningTemplate template, PnPMonitoredScope scope)
+        {
+            var spacesPages = template.ClientSidePages.Where(p => p.Layout.Equals(Pages.ClientSidePageLayoutType.Spaces.ToString(), StringComparison.InvariantCultureIgnoreCase));
+            if (spacesPages.Any())
+            {
+                try
+                {
+                    // Enable the MUI feature
+                    web.ActivateFeature(ObjectClientSidePages.MixedRealityFeature);
+                }
+                catch (Exception ex)
+                {
+                    scope.LogError($"Mixed reality feature could not be enabled: {ex.Message}");
+                    throw;
+                }
+            }
         }
 
         private static void EnsureWebLanguages(Web web, ProvisioningTemplate template, PnPMonitoredScope scope)

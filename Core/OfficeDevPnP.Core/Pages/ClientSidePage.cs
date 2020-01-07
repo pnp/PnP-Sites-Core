@@ -59,6 +59,10 @@ namespace OfficeDevPnP.Core.Pages
         // Properties
         public const string TemplatesFolderGuid = "vti_TemplatesFolderGuid";
 
+        // Spaces
+        public const string SpacesLayoutType = "d39ad2cb-84bd-48a0-9daa-4aea9f644cd4";
+        public const string SpaceContentField = "SpaceContent";
+
         private ClientContext context;
         private string pageName;
         private string pagesLibrary;
@@ -340,6 +344,14 @@ namespace OfficeDevPnP.Core.Pages
             {
                 return this.pageId;
             }
+        }
+
+        /// <summary>
+        /// Space content field (JSON) for spaces pages
+        /// </summary>
+        public string SpaceContent
+        {
+            get; set;
         }
 
         /// <summary>
@@ -759,11 +771,26 @@ namespace OfficeDevPnP.Core.Pages
                 // set layout type
                 if (item.FieldValues.ContainsKey(ClientSidePage.PageLayoutType) && item[ClientSidePage.PageLayoutType] != null && !string.IsNullOrEmpty(item[ClientSidePage.PageLayoutType].ToString()))
                 {
-                    page.LayoutType = (ClientSidePageLayoutType)Enum.Parse(typeof(ClientSidePageLayoutType), item[ClientSidePage.PageLayoutType].ToString());
+                    if (item[ClientSidePage.PageLayoutType].ToString().Equals(SpacesLayoutType, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        page.LayoutType = ClientSidePageLayoutType.Spaces;
+                    }
+                    else
+                    {
+                        page.LayoutType = (ClientSidePageLayoutType)Enum.Parse(typeof(ClientSidePageLayoutType), item[ClientSidePage.PageLayoutType].ToString());
+                    }
                 }
                 else
                 {
                     throw new Exception($"Page layout type could not be determined for page {pageName}");
+                }
+
+                if (page.LayoutType == ClientSidePageLayoutType.Spaces)
+                {
+                    if (item.FieldValues.ContainsKey(ClientSidePage.SpaceContentField) && item[ClientSidePage.SpaceContentField] != null && !string.IsNullOrEmpty(item[ClientSidePage.SpaceContentField].ToString()))
+                    {
+                        page.SpaceContent = item[ClientSidePage.SpaceContentField].ToString();
+                    }
                 }
 
                 // default canvas content for an empty page (this field contains the page's web part properties)
@@ -889,11 +916,29 @@ namespace OfficeDevPnP.Core.Pages
                 // create page listitem
                 item = folderHostingThePage.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
                 // Fix page to be modern
-                item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.ModernArticlePage;
+                if (this.LayoutType == ClientSidePageLayoutType.Spaces)
+                {
+                    item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.SpacesPage;
+                }
+                else
+                {
+                    item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.ModernArticlePage;
+                }
                 item[ClientSidePage.Title] = string.IsNullOrWhiteSpace(this.pageTitle) ? System.IO.Path.GetFileNameWithoutExtension(this.pageName) : this.pageTitle;
                 item[ClientSidePage.ClientSideApplicationId] = ClientSidePage.SitePagesFeatureId;
-                item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
-                if (this.layoutType == ClientSidePageLayoutType.Article)
+                if (this.LayoutType == ClientSidePageLayoutType.Spaces)
+                {
+                    item[ClientSidePage.PageLayoutType] = SpacesLayoutType;
+                    if (!string.IsNullOrEmpty(this.SpaceContent))
+                    {
+                        item[ClientSidePage.SpaceContentField] = this.SpaceContent;
+                    }
+                }
+                else
+                {
+                    item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
+                }
+                if (this.layoutType == ClientSidePageLayoutType.Article || this.LayoutType == ClientSidePageLayoutType.Spaces)
                 {
                     item[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
                     item[ClientSidePage.BannerImageUrl] = "/_layouts/15/images/sitepagethumbnail.png";
@@ -1014,7 +1059,7 @@ namespace OfficeDevPnP.Core.Pages
 
             // Try to set the page banner image url if not yet set
             bool isDirty = false;
-            if (this.layoutType == ClientSidePageLayoutType.Article && item[ClientSidePage.BannerImageUrl] != null)
+            if ((this.layoutType == ClientSidePageLayoutType.Article || this.LayoutType == ClientSidePageLayoutType.Spaces) && item[ClientSidePage.BannerImageUrl] != null)
             {
                 if (string.IsNullOrEmpty((item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url) || (item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url.IndexOf("/_layouts/15/images/sitepagethumbnail.png", StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
@@ -1065,14 +1110,16 @@ namespace OfficeDevPnP.Core.Pages
                 }
             }
 
-            if (item[ClientSidePage.PageLayoutType] as string != this.layoutType.ToString())
+            if (this.LayoutType != ClientSidePageLayoutType.Spaces)
             {
-                item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
-                isDirty = true;
+                if (item[ClientSidePage.PageLayoutType] as string != this.layoutType.ToString())
+                {
+                    item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
+                    isDirty = true;
+                }
             }
-
             // Try to set the page description if not yet set
-            if (this.layoutType == ClientSidePageLayoutType.Article && item.FieldValues.ContainsKey(ClientSidePage.DescriptionField))
+            if ((this.layoutType == ClientSidePageLayoutType.Article || this.LayoutType == ClientSidePageLayoutType.Spaces) && item.FieldValues.ContainsKey(ClientSidePage.DescriptionField))
             {
                 if (item[ClientSidePage.DescriptionField] == null || string.IsNullOrEmpty(item[ClientSidePage.DescriptionField].ToString()))
                 {
