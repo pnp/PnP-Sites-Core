@@ -78,13 +78,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (sitePagesLibrary != null)
                 {
-                    var templateFolderName = string.Empty;
+                    var templateFolderName = OfficeDevPnP.Core.Pages.ClientSidePage.DefaultTemplatesFolder;// string.Empty;
                     var templateFolderString = sitePagesLibrary.GetPropertyBagValueString(TemplatesFolderGuid, null);
                     Guid.TryParse(templateFolderString, out Guid templateFolderGuid);
                     if (templateFolderGuid != Guid.Empty)
                     {
-                        var templateFolder = ((ClientContext)sitePagesLibrary.Context).Web.GetFolderById(templateFolderGuid);
-                        templateFolderName = templateFolder.EnsureProperty(f => f.Name);
+                        try
+                        {
+                            var templateFolder = ((ClientContext)sitePagesLibrary.Context).Web.GetFolderById(templateFolderGuid);
+                            templateFolderName = templateFolder.EnsureProperty(f => f.Name);
+                        }
+                        catch
+                        {
+                            //eat it and continue with default name
+                        }
                     }
                     CamlQuery query = new CamlQuery
                     {
