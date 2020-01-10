@@ -771,20 +771,25 @@ namespace OfficeDevPnP.Core.Pages
                 // set layout type
                 if (item.FieldValues.ContainsKey(ClientSidePage.PageLayoutType) && item[ClientSidePage.PageLayoutType] != null && !string.IsNullOrEmpty(item[ClientSidePage.PageLayoutType].ToString()))
                 {
+#if !SP2019
                     if (item[ClientSidePage.PageLayoutType].ToString().Equals(SpacesLayoutType, StringComparison.InvariantCultureIgnoreCase))
                     {
                         page.LayoutType = ClientSidePageLayoutType.Spaces;
                     }
                     else
                     {
+#endif
                         page.LayoutType = (ClientSidePageLayoutType)Enum.Parse(typeof(ClientSidePageLayoutType), item[ClientSidePage.PageLayoutType].ToString());
+#if !SP2019
                     }
+#endif
                 }
                 else
                 {
                     throw new Exception($"Page layout type could not be determined for page {pageName}");
                 }
 
+#if !SP2019
                 if (page.LayoutType == ClientSidePageLayoutType.Spaces)
                 {
                     if (item.FieldValues.ContainsKey(ClientSidePage.SpaceContentField) && item[ClientSidePage.SpaceContentField] != null && !string.IsNullOrEmpty(item[ClientSidePage.SpaceContentField].ToString()))
@@ -792,6 +797,7 @@ namespace OfficeDevPnP.Core.Pages
                         page.SpaceContent = item[ClientSidePage.SpaceContentField].ToString();
                     }
                 }
+#endif
 
                 // default canvas content for an empty page (this field contains the page's web part properties)
                 var canvasContent1Html = @"<div><div data-sp-canvascontrol="""" data-sp-canvasdataversion=""1.0"" data-sp-controldata=""&#123;&quot;controlType&quot;&#58;0,&quot;pageSettingsSlice&quot;&#58;&#123;&quot;isDefaultDescription&quot;&#58;true,&quot;isDefaultThumbnail&quot;&#58;true&#125;&#125;""></div></div>";
@@ -916,16 +922,22 @@ namespace OfficeDevPnP.Core.Pages
                 // create page listitem
                 item = folderHostingThePage.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
                 // Fix page to be modern
+#if !SP2019
                 if (this.LayoutType == ClientSidePageLayoutType.Spaces)
                 {
                     item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.SpacesPage;
                 }
                 else
                 {
+#endif
                     item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.ModernArticlePage;
+#if !SP2019
                 }
+#endif
                 item[ClientSidePage.Title] = string.IsNullOrWhiteSpace(this.pageTitle) ? System.IO.Path.GetFileNameWithoutExtension(this.pageName) : this.pageTitle;
                 item[ClientSidePage.ClientSideApplicationId] = ClientSidePage.SitePagesFeatureId;
+
+#if !SP2019
                 if (this.LayoutType == ClientSidePageLayoutType.Spaces)
                 {
                     item[ClientSidePage.PageLayoutType] = SpacesLayoutType;
@@ -936,9 +948,16 @@ namespace OfficeDevPnP.Core.Pages
                 }
                 else
                 {
+#endif
                     item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
+#if !SP2019
                 }
-                if (this.layoutType == ClientSidePageLayoutType.Article || this.LayoutType == ClientSidePageLayoutType.Spaces)
+#endif
+                if (this.layoutType == ClientSidePageLayoutType.Article
+#if !SP2019
+                    || this.LayoutType == ClientSidePageLayoutType.Spaces
+#endif
+                    )
                 {
                     item[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
                     item[ClientSidePage.BannerImageUrl] = "/_layouts/15/images/sitepagethumbnail.png";
@@ -1059,7 +1078,11 @@ namespace OfficeDevPnP.Core.Pages
 
             // Try to set the page banner image url if not yet set
             bool isDirty = false;
-            if ((this.layoutType == ClientSidePageLayoutType.Article || this.LayoutType == ClientSidePageLayoutType.Spaces) && item[ClientSidePage.BannerImageUrl] != null)
+            if ((this.layoutType == ClientSidePageLayoutType.Article
+#if !SP2019
+                || this.LayoutType == ClientSidePageLayoutType.Spaces
+#endif
+                ) && item[ClientSidePage.BannerImageUrl] != null)
             {
                 if (string.IsNullOrEmpty((item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url) || (item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url.IndexOf("/_layouts/15/images/sitepagethumbnail.png", StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
@@ -1110,6 +1133,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
             }
 
+#if !SP2019
             if (this.LayoutType != ClientSidePageLayoutType.Spaces)
             {
                 if (item[ClientSidePage.PageLayoutType] as string != this.layoutType.ToString())
@@ -1118,8 +1142,14 @@ namespace OfficeDevPnP.Core.Pages
                     isDirty = true;
                 }
             }
+#endif
+
             // Try to set the page description if not yet set
-            if ((this.layoutType == ClientSidePageLayoutType.Article || this.LayoutType == ClientSidePageLayoutType.Spaces) && item.FieldValues.ContainsKey(ClientSidePage.DescriptionField))
+            if ((this.layoutType == ClientSidePageLayoutType.Article
+#if !SP2019
+                || this.LayoutType == ClientSidePageLayoutType.Spaces
+#endif
+                ) && item.FieldValues.ContainsKey(ClientSidePage.DescriptionField))
             {
                 if (item[ClientSidePage.DescriptionField] == null || string.IsNullOrEmpty(item[ClientSidePage.DescriptionField].ToString()))
                 {

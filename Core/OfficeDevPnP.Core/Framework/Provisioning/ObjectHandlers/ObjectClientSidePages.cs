@@ -47,8 +47,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // Ensure the needed languages are enabled on the site
                 EnsureWebLanguages(web, template, scope);
+#if !SP2019
                 // Ensure spaces is enabled
                 EnsureSpaces(web, template, scope);
+#endif
 
                 var currentPageIndex = 0;
                 // pre create the needed pages so we can fill the needed tokens which might be used later on when we put web parts on those pages
@@ -147,6 +149,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return parser;
         }
 
+#if !SP2019
         private static void EnsureSpaces(Web web, ProvisioningTemplate template, PnPMonitoredScope scope)
         {
             var spacesPages = template.ClientSidePages.Where(p => p.Layout.Equals(Pages.ClientSidePageLayoutType.Spaces.ToString(), StringComparison.InvariantCultureIgnoreCase));
@@ -164,6 +167,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
         }
+#endif
 
         private static void EnsureWebLanguages(Web web, ProvisioningTemplate template, PnPMonitoredScope scope)
         {
@@ -945,4 +949,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
     }
 #endif
-                }
+            }

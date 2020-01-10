@@ -480,11 +480,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         sectionOrder++;
                     }
 
+#if !SP2019
                     // Spaces support
                     if (pageToExtract.LayoutType == Pages.ClientSidePageLayoutType.Spaces)
                     {
                         extractedPageInstance.FieldValues.Add(Pages.ClientSidePage.SpaceContentField, pageToExtract.SpaceContent);
                     }
+#endif
 
                     // Add the page to the template
                     if (page.IsTranslation)
@@ -533,7 +535,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             }
         }
 
-        #region Helper methods
+                    #region Helper methods
         private static void CollectImageFilesFromGenericGuids(Regex regexGuidPattern, Regex regexGuidPatternEncoded, string jsonControlData, List<Guid> fileGuids)
         {
             // grab all the guids in the already tokenized json and check try to get them as a file
@@ -789,7 +791,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
             return json;
         }
-        #endregion
+                    #endregion
     }
 #endif
-}
+                }
