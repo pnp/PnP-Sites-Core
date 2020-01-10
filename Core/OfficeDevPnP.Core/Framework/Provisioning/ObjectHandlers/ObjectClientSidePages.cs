@@ -152,7 +152,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !SP2019
         private static void EnsureSpaces(Web web, ProvisioningTemplate template, PnPMonitoredScope scope)
         {
-            var spacesPages = template.ClientSidePages.Where(p => p.Layout.Equals(Pages.ClientSidePageLayoutType.Spaces.ToString(), StringComparison.InvariantCultureIgnoreCase));
+            var spacesPages = template.ClientSidePages.Where(p => p.Layout != null && p.Layout.Equals(Pages.ClientSidePageLayoutType.Spaces.ToString(), StringComparison.InvariantCultureIgnoreCase));
             if (spacesPages.Any())
             {
                 try
