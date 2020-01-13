@@ -489,7 +489,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         web.AlternateCssUrl = parser.ParseString(webSettings.AlternateCSS);
                     }
 
-                    web.QuickLaunchEnabled = webSettings.QuickLaunchEnabled;
+                    // Tempory disabled as this change is a breaking change for folks that have not set this property in their provisioning templates
+                    //web.QuickLaunchEnabled = webSettings.QuickLaunchEnabled;
 
                     web.Update();
                     web.Context.ExecuteQueryRetry();

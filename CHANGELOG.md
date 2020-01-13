@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.17.2001.1 - January 2020 release]
+
+### Changed
+
+- Reverted the apply part of #2478 as this is a breaking change for folks that did not have QuickLaunchEnabled set in their templates
+
 ## [3.17.2001.0 - January 2020 release]
 
 ### Added
