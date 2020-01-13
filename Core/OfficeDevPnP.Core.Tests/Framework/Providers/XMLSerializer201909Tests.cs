@@ -4916,6 +4916,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 ContentTypeID = "0x01010012345",
                 CreateTranslations = true,
                 ThumbnailUrl = "images/pageThumbnail.png",
+                LCID = 1040,
                 Header = new Core.Framework.Provisioning.Model.ClientSidePageHeader
                 {
                     Type = ClientSidePageHeaderType.Custom,
@@ -4964,7 +4965,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                 Properties =
                 {
                     { "Key01", "Value 01" }
-                }
+                },
             });
 
             result.ClientSidePages[0].Security.ClearSubscopes = true;
@@ -4998,6 +4999,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("0x01010012345", clientSidePages[0].ContentTypeID);
             Assert.AreEqual(true, clientSidePages[0].CreateTranslations);
             Assert.AreEqual("images/pageThumbnail.png", clientSidePages[0].ThumbnailUrl);
+            Assert.AreEqual(1040, clientSidePages[0].LCID);
 
             var page = clientSidePages[0];
             // header
