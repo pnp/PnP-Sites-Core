@@ -125,7 +125,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new CurrentUserIdToken(web));
             _tokens.Add(new CurrentUserLoginNameToken(web));
             _tokens.Add(new CurrentUserFullNameToken(web));
+#if !NETSTANDARD2_0
             _tokens.Add(new AuthenticationRealmToken(web));
+#endif
             _tokens.Add(new HostUrlToken(web));
             AddResourceTokens(web, hierarchy.Localizations, hierarchy.Connector);
             _initializedFromHierarchy = true;
@@ -205,8 +207,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new CurrentUserLoginNameToken(web));
             if (tokenIds.Contains("currentuserfullname"))
                 _tokens.Add(new CurrentUserFullNameToken(web));
+#if !NETSTANDARD2_0
             if (tokenIds.Contains("authenticationrealm"))
                 _tokens.Add(new AuthenticationRealmToken(web));
+#endif
             if (tokenIds.Contains("hosturl"))
                 _tokens.Add(new HostUrlToken(web));
 #if !ONPREMISES
