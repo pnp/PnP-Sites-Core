@@ -682,7 +682,7 @@ namespace OfficeDevPnP.Core.Pages
             }
             // Thumbnail
             var thumbnailData = new { controlType = 0, pageSettingsSlice = new { isDefaultDescription = this.isDefaultDescription, isDefaultThumbnail = string.IsNullOrEmpty(thumbnailUrl) } };
-            html.Append($@"<div data-sp-canvascontrol="""" data-sp-canvasdataversion=""1.0"" data-sp-controldata=""${JsonConvert.SerializeObject(thumbnailData).Replace("\"", "&quot;")}""></div>");
+            html.Append($@"<div data-sp-canvascontrol="""" data-sp-canvasdataversion=""1.0"" data-sp-controldata=""{JsonConvert.SerializeObject(thumbnailData).Replace("\"", "&quot;")}""></div>");
 
             html.Append("</div>");
 #else
