@@ -1468,5 +1468,21 @@ namespace Microsoft.SharePoint.Client
         #endregion
 #endif
 
+#if ONPREMISES
+
+        /// <summary>
+        /// Provides implementation of GetFileByUrl method for CSOM on-premises
+        /// </summary>
+        /// <param name="web">The web object that is extended by the method</param>
+        /// <param name="fileUrl">The site relative URL of the file to retrieve</param>
+        /// <returns>The retrieved file, which must be retrieved with context.Load and context.ExecuteQuery</returns>
+        public static Microsoft.SharePoint.Client.File GetFileByUrl(this Web web, string fileUrl)
+        {
+            string fileServerRelativeUrl = $"{web.ServerRelativeUrl}/{fileUrl}";
+            var result = web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
+            return (result);
+        }
+
+#endif
     }
 }

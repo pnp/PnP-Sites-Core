@@ -10,7 +10,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
 using System.Net.Http.Headers;
+#if !NETSTANDARD2_0
 using System.Text.Encodings.Web;
+#endif
 using System.Threading.Tasks;
 using System.Web;
 
@@ -361,7 +363,7 @@ namespace OfficeDevPnP.Core.Sites
                     request.Content = requestBody;
                     request.Headers.Add("accept", "application/json;odata.metadata=none");
                     request.Headers.Add("odata-version", "4.0");
-                    if(MediaTypeHeaderValue.TryParse("application/json;odata.metadata=none;charset=utf-8", out MediaTypeHeaderValue sharePointJsonMediaType))
+                    if (MediaTypeHeaderValue.TryParse("application/json;odata.metadata=none;charset=utf-8", out MediaTypeHeaderValue sharePointJsonMediaType))
                     {
                         requestBody.Headers.ContentType = sharePointJsonMediaType;
                     }
@@ -518,7 +520,7 @@ namespace OfficeDevPnP.Core.Sites
                         return;
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     // Catch this...sometimes there's that "sharepoint push feature has not been ..." error
                 }
@@ -537,10 +539,21 @@ namespace OfficeDevPnP.Core.Sites
                     isProvisioningComplete = web.IsProvisioningComplete;
 
                     retryAttempt++;
+
+                    // If we already waited more than 90 secs
+                    if (retryAttempt * retryDelay > 90000)
+                    {
+                        var unlockUrl = UrlUtility.Combine(web.Context.Url,
+                            "/_api/Microsoft.Sharepoint.Utilities.WebTemplateExtensions.SiteScriptUtility.ValidatePendingWebTemplateExtension");
+
+                        var clientContext = web.Context as ClientContext;
+
+                        HttpHelper.MakePostRequest(unlockUrl, spContext: clientContext);
+                    }
                 }
                 while (!isProvisioningComplete && retryAttempt <= maxRetryCount);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 // Eat the exception for now as not all tenants already have this feature
                 // TODO: remove try/catch once IsProvisioningComplete is globally deployed
@@ -550,7 +563,7 @@ namespace OfficeDevPnP.Core.Sites
             if (!isProvisioningComplete)
             {
                 // Bummer, sites seems to be still not ready...log a warning but let's not fail
-                Log.Warning(Constants.LOGGING_SOURCE,  string.Format(CoreResources.SiteCollection_WaitForIsProvisioningComplete, maxRetryCount * retryDelay));
+                Log.Warning(Constants.LOGGING_SOURCE, string.Format(CoreResources.SiteCollection_WaitForIsProvisioningComplete, maxRetryCount * retryDelay));
                 //throw new Exception($"Server side provisioning of this web did not finish after waiting for {maxRetryCount * retryDelay} milliseconds.");
             }
         }
@@ -678,7 +691,7 @@ namespace OfficeDevPnP.Core.Sites
                         if (Convert.ToInt32(responseJson["SiteStatus"]) == 2 || Convert.ToInt32(responseJson["SiteStatus"]) == 1)
 #else
                         if (responseJson["SiteStatus"].Value<int>() == 2 || responseJson["SiteStatus"].Value<int>() == 1)
-#endif                  
+#endif
                         {
                             responseContext = clientContext;
                         }

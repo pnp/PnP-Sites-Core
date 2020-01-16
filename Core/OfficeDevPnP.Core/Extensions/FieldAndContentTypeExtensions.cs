@@ -7,6 +7,7 @@ using System.Linq;
 using System.Xml.Linq;
 using Microsoft.SharePoint.Client.DocumentSet;
 using Microsoft.SharePoint.Client.Taxonomy;
+using System.Linq.Expressions;
 
 namespace Microsoft.SharePoint.Client
 {
@@ -564,6 +565,16 @@ namespace Microsoft.SharePoint.Client
                 }
             }
 
+            List<string> additionalChildNodesList = new List<string>();
+
+            if (fieldCreationInformation.AdditionalChildNodes != null)
+            {
+                foreach (var keyvaluepair in fieldCreationInformation.AdditionalChildNodes)
+                {
+                    additionalChildNodesList.Add(string.Format(Constants.FIELD_XML_CHILD_NODE, keyvaluepair.Key, keyvaluepair.Value));
+                }
+            }
+
 #if !ONPREMISES
             if (!additionalAttributesList.Contains("ClientSideComponentId"))
             {
@@ -581,14 +592,32 @@ namespace Microsoft.SharePoint.Client
             }
 #endif
 
-            string newFieldCAML = string.Format(Constants.FIELD_XML_FORMAT,
-                fieldCreationInformation.FieldType,
-                fieldCreationInformation.InternalName,
-                fieldCreationInformation.DisplayName,
-                fieldCreationInformation.Id,
-                fieldCreationInformation.Group,
-                fieldCreationInformation.Required ? "TRUE" : "FALSE",
-                additionalAttributesList.Any() ? string.Join(" ", additionalAttributesList) : "");
+            string newFieldCAML = null; 
+
+            if (additionalChildNodesList.Count > 0)
+            {
+                // Calculated fields require a Formula child node
+                newFieldCAML = string.Format(Constants.FIELD_XML_FORMAT_WITH_CHILD_NODES,
+                    fieldCreationInformation.FieldType,
+                    fieldCreationInformation.InternalName,
+                    fieldCreationInformation.DisplayName,
+                    fieldCreationInformation.Id,
+                    fieldCreationInformation.Group,
+                    fieldCreationInformation.Required ? "TRUE" : "FALSE",
+                    additionalAttributesList.Any() ? string.Join(" ", additionalAttributesList) : "",
+                    string.Join("", additionalChildNodesList));
+            }
+            else
+            {
+                newFieldCAML = string.Format(Constants.FIELD_XML_FORMAT,
+                    fieldCreationInformation.FieldType,
+                    fieldCreationInformation.InternalName,
+                    fieldCreationInformation.DisplayName,
+                    fieldCreationInformation.Id,
+                    fieldCreationInformation.Group,
+                    fieldCreationInformation.Required ? "TRUE" : "FALSE",
+                    additionalAttributesList.Any() ? string.Join(" ", additionalAttributesList) : "");
+            }
 
             return newFieldCAML;
         }
@@ -1673,9 +1702,10 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">Web to be processed</param>
         /// <param name="contentTypeId">Complete ID for the content type</param>
+        /// <param name="retrievals">Specify additional data to load when retrieving the content types</param>
         /// <param name="searchInSiteHierarchy">Searches accross all content types in the site up to the root site</param>
         /// <returns>Content type object or null if was not found</returns>
-        public static ContentType GetContentTypeById(this Web web, string contentTypeId, bool searchInSiteHierarchy = false)
+        public static ContentType GetContentTypeById(this Web web, string contentTypeId, Expression<Func<ContentTypeCollection, object>> retrievals, bool searchInSiteHierarchy = false)
         {
             if (string.IsNullOrEmpty(contentTypeId))
             {
@@ -1683,8 +1713,14 @@ namespace Microsoft.SharePoint.Client
             }
 
             var ctCol = searchInSiteHierarchy ? web.AvailableContentTypes : web.ContentTypes;
-
-            web.Context.Load(ctCol);
+            if (retrievals != null)
+            {
+                web.Context.Load(ctCol, retrievals);
+            }
+            else
+            {
+                web.Context.Load(ctCol);
+            }
             web.Context.ExecuteQueryRetry();
             foreach (var item in ctCol)
             {
@@ -1695,6 +1731,18 @@ namespace Microsoft.SharePoint.Client
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Return content type by Id
+        /// </summary>
+        /// <param name="web">Web to be processed</param>
+        /// <param name="contentTypeId">Complete ID for the content type</param>
+        /// <param name="searchInSiteHierarchy">Searches accross all content types in the site up to the root site</param>
+        /// <returns>Content type object or null if was not found</returns>
+        public static ContentType GetContentTypeById(this Web web, string contentTypeId, bool searchInSiteHierarchy = false)
+        {
+            return GetContentTypeById(web, contentTypeId, null, searchInSiteHierarchy);
         }
 
         /// <summary>

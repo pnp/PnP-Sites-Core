@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.15.1911.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.16.1912.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-SRCHCEN0template">
     <pnp:ProvisioningTemplate ID="SRCHCEN0template" Version="1" BaseSiteTemplate="SRCHCEN#0" Scope="RootSite">
-      <pnp:WebSettings RequestAccessEmail="" NoCrawl="true" WelcomePage="Pages/default.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" MembersCanShare="true" SearchScope="DefaultScope" />
+      <pnp:WebSettings RequestAccessEmail="" NoCrawl="true" WelcomePage="Pages/default.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="true" MembersCanShare="true" SearchScope="DefaultScope" />
       <pnp:SiteSettings AllowDesigner="true" AllowCreateDeclarativeWorkflow="true" AllowSaveDeclarativeWorkflowAsTemplate="true" AllowSavePublishDeclarativeWorkflow="true" />
       <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="Gregorian" Collation="25" FirstDayOfWeek="Sunday" FirstWeekOfYear="0" LocaleId="1033" ShowWeeks="false" Time24="false" TimeZone="4" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
       <pnp:SupportedUILanguages>
@@ -17,18 +17,20 @@
         <pnp:PropertyBagEntry Key="htmldesignviewnamealldevicechannelssimplelisting" Value="9000b911-8f11-4638-9d39-3bc1762aea4f" Overwrite="false" />
         <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="87132c26-5b41-4cdf-b34b-1018f88df4ef" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_cmslayoutlanguages" Value="1031;1036;2108;1057;1044;1049;2052;1028;1081;1086;1060;1030;1069;1035;1043;1051;1068;1026;1110;1055;1106;1050;1038;1042;1063;1071;1033;1025;1041;1062;1164;1046;2070;9242;1054;5146;1029;3082;1037;1045;10266;2074;1058;1032;1061;1040;1087;1053;1066;1027;1048" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_ReusableContentListId" Value="a89364d2-85df-43d1-be6f-7528d6acc7cd" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__CurrentNavigationIncludeTypes" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="metadatatimestamp" Value="437b86fc125845a985ea87a29156ce3c|2015-03-27T08:10:01.077Z" Overwrite="false" />
         <pnp:PropertyBagEntry Key="htmldesignviewnamehtmldesignfiles" Value="904bab8a-75d8-4d1d-b806-8a44ea0b9c3a" Overwrite="false" />
         <pnp:PropertyBagEntry Key="_VarLabelsListId" Value="6fc17e16-21d1-44ad-b69f-1215506dd0e9" Overwrite="false" />
         <pnp:PropertyBagEntry Key="sharepointhelpoverride" Value="SPOStandard" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__PageLayouts" Value="&lt;pagelayouts&gt;&lt;layout guid=&quot;788a8706-c307-4c91-a6a9-464602fcfb45&quot; url=&quot;_catalogs/masterpage/SearchResults.aspx&quot; /&gt;&lt;/pagelayouts&gt;" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__GlobalNavigationIncludeTypes" Value="1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="PersistedNavigationHash" Value="CpTNa4J1f/bxU8a9jCQpfEOiLpdrITUHGEpuk0baXao=" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_policyupdatelastrun" Value="1/4/2020 11:19:28 PM" Overwrite="false" />
         <pnp:PropertyBagEntry Key="showurlstructure" Value="1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlmasterpages" Value="6cefffd1-b1cd-4ce9-86dc-52a6fbefb1b1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="SaveSiteAsTemplateEnabled" Value="false" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__CurrentNavigationIncludeTypes" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="__SiteColDocumentsListId" Value="5ed16ac2-3117-4d69-8beb-83d621a77d4a" Overwrite="false" />
         <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_sitehasexpirationpolicy" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.19513" Overwrite="false" />
@@ -38,11 +40,12 @@
         <pnp:PropertyBagEntry Key="vti_cmsviewformpagesanonstate" Value="False" Overwrite="false" />
         <pnp:PropertyBagEntry Key="_webnavigationsettings" Value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-16&quot; standalone=&quot;yes&quot;?&gt;&#xD;&#xA;&lt;WebNavigationSettings Version=&quot;1.1&quot;&gt;&#xD;&#xA;  &lt;SiteMapProviderSettings&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;CurrentNavigationSwitchableProvider&quot; TargetProviderName=&quot;CurrentNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;CurrentNavigationTaxonomyProvider&quot; TermStoreId=&quot;437b86fc-1258-45a9-85ea-87a29156ce3c&quot; TermSetId=&quot;f73c0d62-6f04-4929-a604-6d01c7b4d23b&quot; /&gt;&#xD;&#xA;    &lt;SwitchableSiteMapProviderSettings Name=&quot;GlobalNavigationSwitchableProvider&quot; TargetProviderName=&quot;GlobalNavigationTaxonomyProvider&quot; /&gt;&#xD;&#xA;    &lt;TaxonomySiteMapProviderSettings Name=&quot;GlobalNavigationTaxonomyProvider&quot; TermStoreId=&quot;437b86fc-1258-45a9-85ea-87a29156ce3c&quot; TermSetId=&quot;f73c0d62-6f04-4929-a604-6d01c7b4d23b&quot; /&gt;&#xD;&#xA;  &lt;/SiteMapProviderSettings&gt;&#xD;&#xA;  &lt;NewPageSettings AddNewPagesToNavigation=&quot;True&quot; CreateFriendlyUrlsForNewPages=&quot;True&quot; /&gt;&#xD;&#xA;&lt;/WebNavigationSettings&gt;&#xD;&#xA;" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_sitehaspolicy" Value="True" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_policyupdatelastruncorrelation" Value="start:01/04/2020 23:19:27; end:01/04/2020 23:19:28;correlationId:7a50289f-606f-2000-2e75-bbe9b950be26" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_ReusableContentListId" Value="a89364d2-85df-43d1-be6f-7528d6acc7cd" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__CurrentNavigationExcludes" Value="f768c6a5-c411-4fdf-b75a-258a1a901d33;" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__pageslistname" Value="Pages" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__PublishingFeatureActivated" Value="True" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="_PublishedLinksListId" Value="53b246d4-818c-43da-8308-e98513c874b4" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="PersistedFileUpdateTime" Value="29/11/2019 8:26:48" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="PersistedFileUpdateTime" Value="18/12/2019 12:41:26" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_webhasexpirationpolicy" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__DocumentsListId" Value="79f38d87-6fb9-414d-a438-9734bbc9a6ee" Overwrite="false" />
         <pnp:PropertyBagEntry Key="_SmtReportsListId" Value="6afbe06d-b9da-4160-b300-6a677c75c6c5" Overwrite="false" />
@@ -50,7 +53,7 @@
         <pnp:PropertyBagEntry Key="__DefaultPageLayout" Value="&lt;layout guid=&quot;788a8706-c307-4c91-a6a9-464602fcfb45&quot; url=&quot;_catalogs/masterpage/SearchResults.aspx&quot; /&gt;" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__ScriptSafeInternalPages" Value="WopiFrame.aspx;videoembedplayer.aspx;" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__SearchReportsAndDataRuleId" Value="3af50da5-c677-469c-815d-3d146bdf622f" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="PersistedFileUpdateLockTime" Value="29/11/2019 8:26:48" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="PersistedFileUpdateLockTime" Value="18/12/2019 12:41:26" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="4" Overwrite="false" />
         <pnp:PropertyBagEntry Key="htmldesignviewnamehtmlpagelayouts" Value="19be608c-fc29-4754-af5f-194eaeaf3990" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__PagesListId" Value="e353d9b2-462a-485b-ad4e-8e86c47868cd" Overwrite="false" />
@@ -58,10 +61,11 @@
         <pnp:PropertyBagEntry Key="allowslistpolicy" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__GlobalNavigationExcludes" Value="f768c6a5-c411-4fdf-b75a-258a1a901d33;" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_expirationlastruncorrelation" Value="start:01/06/2020 01:07:16; end:01/06/2020 01:07:18;correlationId:eba8289f-40be-2000-2e75-b33ab8a7f126" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associategroups" Value="6;5;4" Overwrite="false" />
         <pnp:PropertyBagEntry Key="SiteCollectionGroupId437b86fc-1258-45a9-85ea-87a29156ce3c" Value="39925acc-407e-4972-b197-2813982cd78d" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="__SiteColDocumentsListId" Value="5ed16ac2-3117-4d69-8beb-83d621a77d4a" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_expirationlastrun" Value="1/6/2020 1:07:18 AM" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="_PublishedLinksListId" Value="53b246d4-818c-43da-8308-e98513c874b4" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__SearchVideoRuleId" Value="641c230f-c9c9-4084-8a0a-e2e6232322be" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__SiteColImagesListId" Value="62ab085d-66f5-4f40-a4aa-695621b2ae2e" Overwrite="false" />
@@ -72,7 +76,7 @@
         <pnp:PropertyBagEntry Key="NavigationPropertiesSet" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__CacheProfileListId" Value="3800bd16-4274-4d75-a65d-32fbb800cebc" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="4;5;6" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="metadatatimestamp" Value="437b86fc125845a985ea87a29156ce3c|2015-03-27T08:10:01.077Z" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="6" Overwrite="false" />
         <pnp:PropertyBagEntry Key="NoCrawl" Value="true" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_filenotfoundpage" Value="/sites/templateSRCHCEN0/Pages/PageNotFoundError.aspx" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__NoMobileMapping82cd3bc003f3477aa044b6588d171f24" Value="True" Overwrite="false" />
@@ -4262,6 +4266,7 @@
           <pnp:Feature ID="00bfea71-eb8a-40b1-80c7-506be7590102" />
           <pnp:Feature ID="00bfea71-3a1d-41d3-a0ee-651d11570120" />
           <pnp:Feature ID="22a9ef51-737b-4ff2-9346-694633fe4416" />
+          <pnp:Feature ID="8c6f9096-388d-4eed-96ff-698b3ec46fc4" />
           <pnp:Feature ID="00bfea71-513d-4ca0-96c2-6a47775c0119" />
           <pnp:Feature ID="00bfea71-2062-426c-90bf-714c59600103" />
           <pnp:Feature ID="00bfea71-2d77-4a75-9fca-76516689e21a" />

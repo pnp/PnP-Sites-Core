@@ -1,9 +1,12 @@
 ﻿using AngleSharp.Parser.Html;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Utilities.Async;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -45,6 +48,7 @@ namespace OfficeDevPnP.Core.Pages
         public const string _OriginalSourceWebId = "_OriginalSourceWebId";
         public const string _OriginalSourceListId = "_OriginalSourceListId";
         public const string _OriginalSourceItemId = "_OriginalSourceItemId";
+        public const string IdField = "ID";
 
         // feature
         public const string SitePagesFeatureId = "b6917cb1-93a0-4b97-a84d-7cf49975d4ec";
@@ -54,6 +58,10 @@ namespace OfficeDevPnP.Core.Pages
 
         // Properties
         public const string TemplatesFolderGuid = "vti_TemplatesFolderGuid";
+
+        // Spaces
+        public const string SpacesLayoutType = "d39ad2cb-84bd-48a0-9daa-4aea9f644cd4";
+        public const string SpaceContentField = "SpaceContent";
 
         private ClientContext context;
         private string pageName;
@@ -71,6 +79,7 @@ namespace OfficeDevPnP.Core.Pages
         private string thumbnailUrl;
         private bool isDefaultDescription;
         private ClientSidePageHeader pageHeader;
+        private int? pageId;
         #endregion
 
         #region construction
@@ -326,7 +335,38 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
+        /// <summary>
+        /// ID value of the page (only available when the page was saved)
+        /// </summary>
+        public int? PageId
+        {
+            get
+            {
+                return this.pageId;
+            }
+        }
 
+        /// <summary>
+        /// Space content field (JSON) for spaces pages
+        /// </summary>
+        public string SpaceContent
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// List the languages this page possibly can be translated into
+        /// </summary>
+        public List<int> SupportedUILanguages
+        {
+            get
+            {
+                return this.Context.Web.EnsureProperty(p => p.SupportedUILanguageIds).ToList();
+            }
+        }
+        #endregion
+
+        #region public methods
         /// <summary>
         /// Returns the name of the templates folder, and creates if it doesn't exist.
         /// </summary>
@@ -360,11 +400,6 @@ namespace OfficeDevPnP.Core.Pages
             }
         }
 
-
-
-        #endregion
-
-        #region public methods
         /// <summary>
         /// Clears all control and sections from this page
         /// </summary>
@@ -728,15 +763,41 @@ namespace OfficeDevPnP.Core.Pages
                 page.pageListItem = item;
                 page.pageTitle = Convert.ToString(item[ClientSidePage.Title]);
 
+                if (int.TryParse(item[ClientSidePage.IdField].ToString(), out int pageIdValue))
+                {
+                    page.pageId = pageIdValue;
+                }
+
                 // set layout type
                 if (item.FieldValues.ContainsKey(ClientSidePage.PageLayoutType) && item[ClientSidePage.PageLayoutType] != null && !string.IsNullOrEmpty(item[ClientSidePage.PageLayoutType].ToString()))
                 {
-                    page.LayoutType = (ClientSidePageLayoutType)Enum.Parse(typeof(ClientSidePageLayoutType), item[ClientSidePage.PageLayoutType].ToString());
+#if !SP2019
+                    if (item[ClientSidePage.PageLayoutType].ToString().Equals(SpacesLayoutType, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        page.LayoutType = ClientSidePageLayoutType.Spaces;
+                    }
+                    else
+                    {
+#endif
+                        page.LayoutType = (ClientSidePageLayoutType)Enum.Parse(typeof(ClientSidePageLayoutType), item[ClientSidePage.PageLayoutType].ToString());
+#if !SP2019
+                    }
+#endif
                 }
                 else
                 {
                     throw new Exception($"Page layout type could not be determined for page {pageName}");
                 }
+
+#if !SP2019
+                if (page.LayoutType == ClientSidePageLayoutType.Spaces)
+                {
+                    if (item.FieldValues.ContainsKey(ClientSidePage.SpaceContentField) && item[ClientSidePage.SpaceContentField] != null && !string.IsNullOrEmpty(item[ClientSidePage.SpaceContentField].ToString()))
+                    {
+                        page.SpaceContent = item[ClientSidePage.SpaceContentField].ToString();
+                    }
+                }
+#endif
 
                 // default canvas content for an empty page (this field contains the page's web part properties)
                 var canvasContent1Html = @"<div><div data-sp-canvascontrol="""" data-sp-canvasdataversion=""1.0"" data-sp-controldata=""&#123;&quot;controlType&quot;&#58;0,&quot;pageSettingsSlice&quot;&#58;&#123;&quot;isDefaultDescription&quot;&#58;true,&quot;isDefaultThumbnail&quot;&#58;true&#125;&#125;""></div></div>";
@@ -861,11 +922,42 @@ namespace OfficeDevPnP.Core.Pages
                 // create page listitem
                 item = folderHostingThePage.Files.AddTemplateFile(serverRelativePageName, TemplateFileType.ClientSidePage).ListItemAllFields;
                 // Fix page to be modern
-                item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.ModernArticlePage;
+#if !SP2019
+                if (this.LayoutType == ClientSidePageLayoutType.Spaces)
+                {
+                    item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.SpacesPage;
+                }
+                else
+                {
+#endif
+                    item[ClientSidePage.ContentTypeId] = BuiltInContentTypeId.ModernArticlePage;
+#if !SP2019
+                }
+#endif
                 item[ClientSidePage.Title] = string.IsNullOrWhiteSpace(this.pageTitle) ? System.IO.Path.GetFileNameWithoutExtension(this.pageName) : this.pageTitle;
                 item[ClientSidePage.ClientSideApplicationId] = ClientSidePage.SitePagesFeatureId;
-                item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
-                if (this.layoutType == ClientSidePageLayoutType.Article)
+
+#if !SP2019
+                if (this.LayoutType == ClientSidePageLayoutType.Spaces)
+                {
+                    item[ClientSidePage.PageLayoutType] = SpacesLayoutType;
+                    if (!string.IsNullOrEmpty(this.SpaceContent))
+                    {
+                        item[ClientSidePage.SpaceContentField] = this.SpaceContent;
+                    }
+                }
+                else
+                {
+#endif
+                    item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
+#if !SP2019
+                }
+#endif
+                if (this.layoutType == ClientSidePageLayoutType.Article
+#if !SP2019
+                    || this.LayoutType == ClientSidePageLayoutType.Spaces
+#endif
+                    )
                 {
                     item[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
                     item[ClientSidePage.BannerImageUrl] = "/_layouts/15/images/sitepagethumbnail.png";
@@ -979,9 +1071,18 @@ namespace OfficeDevPnP.Core.Pages
             this.Context.Web.Context.Load(item);
             this.Context.ExecuteQueryRetry();
 
+            if (int.TryParse(item[ClientSidePage.IdField].ToString(), out int pageIdValue))
+            {
+                this.pageId = pageIdValue;
+            }
+
             // Try to set the page banner image url if not yet set
             bool isDirty = false;
-            if (this.layoutType == ClientSidePageLayoutType.Article && item[ClientSidePage.BannerImageUrl] != null)
+            if ((this.layoutType == ClientSidePageLayoutType.Article
+#if !SP2019
+                || this.LayoutType == ClientSidePageLayoutType.Spaces
+#endif
+                ) && item[ClientSidePage.BannerImageUrl] != null)
             {
                 if (string.IsNullOrEmpty((item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url) || (item[ClientSidePage.BannerImageUrl] as FieldUrlValue).Url.IndexOf("/_layouts/15/images/sitepagethumbnail.png", StringComparison.InvariantCultureIgnoreCase) >= 0)
                 {
@@ -1032,14 +1133,23 @@ namespace OfficeDevPnP.Core.Pages
                 }
             }
 
-            if (item[ClientSidePage.PageLayoutType] as string != this.layoutType.ToString())
+#if !SP2019
+            if (this.LayoutType != ClientSidePageLayoutType.Spaces)
             {
-                item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
-                isDirty = true;
+                if (item[ClientSidePage.PageLayoutType] as string != this.layoutType.ToString())
+                {
+                    item[ClientSidePage.PageLayoutType] = this.layoutType.ToString();
+                    isDirty = true;
+                }
             }
+#endif
 
             // Try to set the page description if not yet set
-            if (this.layoutType == ClientSidePageLayoutType.Article && item.FieldValues.ContainsKey(ClientSidePage.DescriptionField))
+            if ((this.layoutType == ClientSidePageLayoutType.Article
+#if !SP2019
+                || this.LayoutType == ClientSidePageLayoutType.Spaces
+#endif
+                ) && item.FieldValues.ContainsKey(ClientSidePage.DescriptionField))
             {
                 if (item[ClientSidePage.DescriptionField] == null || string.IsNullOrEmpty(item[ClientSidePage.DescriptionField].ToString()))
                 {
@@ -1355,6 +1465,167 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// Generate translations for this page
+        /// </summary>
+        /// <param name="translationStatusCreationRequest">Languages to generate a translation for</param>
+        /// <returns><see cref="TranslationStatusCollection"/> collection listing translated and untranslated pages</returns>
+        public TranslationStatusCollection GenerateTranslations(TranslationStatusCreationRequest translationStatusCreationRequest)
+        {
+            // When we're using app-only we do need an accesstoken for the REST request
+            if (!this.securityInitialized && this.Context.Credentials == null)
+            {
+                this.InitializeSecurity();
+            }
+
+            Task<String> result = Task.Run(() => GenerateTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId, translationStatusCreationRequest).GetAwaiter().GetResult());
+
+            if (!string.IsNullOrEmpty(result.Result))
+            {
+                var translationStatus = JsonConvert.DeserializeObject<TranslationStatusCollection>(result.Result, new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                });
+                return translationStatus;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the translation status of this page
+        /// </summary>
+        /// <returns><see cref="TranslationStatusCollection"/> collection listing translated and untranslated pages</returns>
+        public TranslationStatusCollection Translations()
+        {
+            // When we're using app-only we do need an accesstoken for the REST request
+            if (!this.securityInitialized && this.Context.Credentials == null)
+            {
+                this.InitializeSecurity();
+            }
+
+            Task<string> result = Task.Run(() => GetTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId).GetAwaiter().GetResult());
+
+            if (!string.IsNullOrEmpty(result.Result))
+            {
+                var translationStatus = JsonConvert.DeserializeObject<TranslationStatusCollection>(result.Result, new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                });
+                return translationStatus;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the translation status of this page
+        /// </summary>
+        /// <returns><see cref="TranslationStatusCollection"/> collection listing translated and untranslated pages</returns>
+        public async Task<TranslationStatusCollection> TranslationsAsync()
+        {
+            // When we're using app-only we do need an accesstoken for the REST request
+            await new SynchronizationContextRemover();
+
+            if (!this.securityInitialized)
+            {
+                await this.InitializeSecurityAsync();
+            }
+
+            string result = await GetTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId);
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                var translationStatus = JsonConvert.DeserializeObject<TranslationStatusCollection>(result, new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                });
+                return translationStatus;
+            }
+
+            return null;
+        }
+        /// <summary>
+        /// Generate translations for this page, for all languages defined in this site
+        /// </summary>
+        /// <returns><see cref="TranslationStatusCollection"/> collection listing translated and untranslated pages</returns>
+        public TranslationStatusCollection GenerateTranslations()
+        {
+            // When we're using app-only we do need an accesstoken for the REST request
+            if (!this.securityInitialized && this.Context.Credentials == null)
+            {
+                this.InitializeSecurity();
+            }
+            
+            Task<string> result = Task.Run(() => GenerateTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId, null).GetAwaiter().GetResult());
+
+            if (!string.IsNullOrEmpty(result.Result))
+            {
+                var translationStatus = JsonConvert.DeserializeObject<TranslationStatusCollection>(result.Result, new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                });
+                return translationStatus;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Generate translations for this page
+        /// </summary>
+        /// <param name="translationStatusCreationRequest">Languages to generate a translation for</param>
+        /// <returns><see cref="TranslationStatusCollection"/> collection listing translated and untranslated pages</returns>
+        public async Task<TranslationStatusCollection> GenerateTranslationsAsync(TranslationStatusCreationRequest translationStatusCreationRequest)
+        {
+            await new SynchronizationContextRemover();
+
+            if (!this.securityInitialized)
+            {
+                await this.InitializeSecurityAsync();
+            }
+
+            string result = await GenerateTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId, translationStatusCreationRequest);
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                var translationStatus = JsonConvert.DeserializeObject<TranslationStatusCollection>(result, new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                });
+                return translationStatus;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Generate translations for this page, for all languages defined in this site
+        /// </summary>
+        /// <returns><see cref="TranslationStatusCollection"/> collection listing translated and untranslated pages</returns>
+        public async Task<TranslationStatusCollection> GenerateTranslationsAsync()
+        {
+            await new SynchronizationContextRemover();
+
+            if (!this.securityInitialized)
+            {
+                await this.InitializeSecurityAsync();
+            }
+
+            string result = await GenerateTranslationsImplementationAsync(this.accessToken, this.Context, this.PageId, null);
+
+            if (!string.IsNullOrEmpty(result))
+            {
+                var translationStatus = JsonConvert.DeserializeObject<TranslationStatusCollection>(result, new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Ignore
+                });
+                return translationStatus;
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Publishes a client side page
         /// </summary>
         public void Publish()
@@ -1495,6 +1766,12 @@ namespace OfficeDevPnP.Core.Pages
                 TranslateY = translateY
             };
         }
+
+        public void CreateTranslations()
+        {
+
+        }
+
 #endregion
 
                 #region Internal and private methods
@@ -1896,6 +2173,109 @@ namespace OfficeDevPnP.Core.Pages
             control.section = currentSection;
             control.column = currentColumn;
         }
+
+        private async Task<string> GetTranslationsImplementationAsync(string accessToken, ClientContext context, int? pageID)
+        {
+            await new SynchronizationContextRemover();
+
+            if (!pageId.HasValue)
+            {
+                throw new Exception("First save the page before generating translations");
+            }
+
+
+            string responseString = null;
+
+            using (var handler = new HttpClientHandler())
+            {
+                context.Web.EnsureProperty(w => w.Url);
+
+                // we're not in app-only or user + app context, so let's fall back to cookie based auth
+                if (String.IsNullOrEmpty(accessToken))
+                {
+                    handler.SetAuthenticationCookies(context);
+                }
+
+                using (var httpClient = new PnPHttpProvider(handler))
+                {
+                    string requestUrl = $"{context.Web.Url}/_api/sitepages/pages({pageID.Value})/translations";
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Get, requestUrl);
+                    request.Headers.Add("accept", "application/json;odata.metadata=none");
+                    request.Headers.Add("odata-version", "4.0");
+
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        responseString = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        // Something went wrong...
+                        throw new Exception(await response.Content.ReadAsStringAsync());
+                    }
+                }
+                return responseString;
+            }
+        }
+
+        private async Task<string> GenerateTranslationsImplementationAsync(string accessToken, ClientContext context, int? pageID, TranslationStatusCreationRequest translationStatusCreationRequest)
+        {
+            await new SynchronizationContextRemover();
+
+            if (!pageId.HasValue)
+            {
+                throw new Exception("First save the page before generating translations");
+            }
+
+            string responseString = null;
+
+            using (var handler = new HttpClientHandler())
+            {
+                context.Web.EnsureProperty(w => w.Url);
+
+                // we're not in app-only or user + app context, so let's fall back to cookie based auth
+                if (String.IsNullOrEmpty(accessToken))
+                {
+                    handler.SetAuthenticationCookies(context);
+                }
+
+                using (var httpClient = new PnPHttpProvider(handler))
+                {
+                    string requestUrl = $"{context.Web.Url}/_api/sitepages/pages({pageID.Value})/translations/create";
+                    HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
+                    request.Headers.Add("accept", "application/json;odata.metadata=none");
+                    request.Headers.Add("odata-version", "4.0");
+                    request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
+
+                    if (translationStatusCreationRequest != null && translationStatusCreationRequest.LanguageCodes.Count > 0)
+                    {
+                        var body = new { request = translationStatusCreationRequest };
+                        var jsonBody = JsonConvert.SerializeObject(body);
+                        var requestBody = new StringContent(jsonBody);
+                        request.Content = requestBody;
+                        if (MediaTypeHeaderValue.TryParse("application/json;odata.metadata=none;charset=utf-8", out MediaTypeHeaderValue sharePointJsonMediaType))
+                        {
+                            requestBody.Headers.ContentType = sharePointJsonMediaType;
+                        }
+                    }
+
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        responseString = await response.Content.ReadAsStringAsync();
+                    }
+                    else
+                    {
+                        // Something went wrong...
+                        throw new Exception(await response.Content.ReadAsStringAsync());
+                    }
+                }
+                return responseString;
+            }
+        }
+
 
         private async Task<string> GetClientSideWebPartsAsync(string accessToken, ClientContext context)
         {

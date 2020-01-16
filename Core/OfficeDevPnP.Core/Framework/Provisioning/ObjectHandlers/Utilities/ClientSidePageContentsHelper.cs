@@ -5,6 +5,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -20,6 +21,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
     {
         private const string ContentTypeIdField = "ContentTypeId";
 
+        public void ExtractClientSidePage(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string pageUrl, string pageName, bool isHomePage, bool isTemplate = false)
+        {
+            PageToExport page = new PageToExport()
+            {
+                PageName = pageName,
+                PageUrl = pageUrl,
+                IsHomePage = isHomePage,
+                IsTemplate = isTemplate,
+                IsTranslation = false
+            };
+
+            ExtractClientSidePage(web, template, creationInfo, scope, page);
+        }
+
         /// <summary>
         /// Extracts a client side page
         /// </summary>
@@ -27,11 +42,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         /// <param name="template">Current provisioning template that will hold the extracted page</param>
         /// <param name="creationInfo">ProvisioningTemplateCreationInformation passed into the provisioning engine</param>
         /// <param name="scope">Scope used for logging</param>
-        /// <param name="pageUrl">Url of the page to extract</param>
-        /// <param name="pageName">Name of the page to extract</param>
-        /// <param name="isHomePage">Is this a home page?</param>
-        /// <param name="isTemplate">Is this a template?</param>
-        public void ExtractClientSidePage(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, string pageUrl, string pageName, bool isHomePage, bool isTemplate = false)
+        /// <param name="page">page to be exported</param>
+        public void ExtractClientSidePage(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, PageToExport page)
         {
             bool excludeAuthorInformation = false;
             if(creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.Pages != null)
@@ -41,9 +53,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             try
             {
                 List<string> errorneousOrNonImageFileGuids = new List<string>();
-                var pageToExtract = web.LoadClientSidePage(pageName);
+                var pageToExtract = web.LoadClientSidePage(page.PageName);
 
-                if (pageToExtract.Sections.Count == 0 && pageToExtract.Controls.Count == 0 && isHomePage)
+                if (pageToExtract.Sections.Count == 0 && pageToExtract.Controls.Count == 0 && page.IsHomePage)
                 {
                     // This is default home page which was not customized...and as such there's no page definition stored in the list item. We don't need to extact this page.
                     scope.LogInfo(CoreResources.Provisioning_ObjectHandlers_ClientSidePageContents_DefaultHomePage);
@@ -59,21 +71,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
 
                     var isNews = pageToExtract.LayoutType != Pages.ClientSidePageLayoutType.Home && int.Parse(pageToExtract.PageListItem[OfficeDevPnP.Core.Pages.ClientSidePage.PromotedStateField].ToString()) == (int)Pages.PromotedState.Promoted;
-                    // Create the page
-                    var extractedPageInstance = new ClientSidePage()
-                    {
-                        PageName = pageName,
-                        PromoteAsNewsArticle = isNews,
-                        PromoteAsTemplate = isTemplate,
-                        Overwrite = true,
-                        Publish = true,
-                        Layout = pageToExtract.LayoutType.ToString(),
-                        EnableComments = !pageToExtract.CommentsDisabled,
-                        Title = pageToExtract.PageTitle,
-                        ContentTypeID = !pageContentTypeId.Equals(BuiltInContentTypeId.ModernArticlePage, StringComparison.InvariantCultureIgnoreCase) ? pageContentTypeId : null,
-                        ThumbnailUrl = pageToExtract.ThumbnailUrl != null ? TokenizeJsonControlData(web, pageToExtract.ThumbnailUrl) : ""
-                    };
 
+                    // Create the page;
+                    BaseClientSidePage extractedPageInstance;
+                    if (page.IsTranslation)
+                    {
+                        extractedPageInstance = new TranslatedClientSidePage();
+                        (extractedPageInstance as TranslatedClientSidePage).PageName = page.PageName;
+                    }
+                    else
+                    {
+                        extractedPageInstance = new ClientSidePage();
+                        (extractedPageInstance as ClientSidePage).PageName = page.PageName;
+                    }
+
+                    extractedPageInstance.PromoteAsNewsArticle = isNews;
+                    extractedPageInstance.PromoteAsTemplate = page.IsTemplate;
+                    extractedPageInstance.Overwrite = true;
+                    extractedPageInstance.Publish = true;
+                    extractedPageInstance.Layout = pageToExtract.LayoutType.ToString();
+                    extractedPageInstance.EnableComments = !pageToExtract.CommentsDisabled;
+                    extractedPageInstance.Title = pageToExtract.PageTitle;
+                    extractedPageInstance.ContentTypeID = !pageContentTypeId.Equals(BuiltInContentTypeId.ModernArticlePage, StringComparison.InvariantCultureIgnoreCase) ? pageContentTypeId : null;
+                    extractedPageInstance.ThumbnailUrl = pageToExtract.ThumbnailUrl != null ? TokenizeJsonControlData(web, pageToExtract.ThumbnailUrl) : "";
 
                     if (pageToExtract.PageHeader != null)
                     {
@@ -460,24 +480,51 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         sectionOrder++;
                     }
 
+#if !SP2019
+                    // Spaces support
+                    if (pageToExtract.LayoutType == Pages.ClientSidePageLayoutType.Spaces)
+                    {
+                        extractedPageInstance.FieldValues.Add(Pages.ClientSidePage.SpaceContentField, pageToExtract.SpaceContent);
+                    }
+#endif
+
                     // Add the page to the template
-                    template.ClientSidePages.Add(extractedPageInstance);
+                    if (page.IsTranslation)
+                    {
+                        var parentPage = template.ClientSidePages.Where(p => p.PageName == page.SourcePageName).FirstOrDefault();
+                        if (parentPage != null)
+                        {
+                            var translatedPageInstance = (TranslatedClientSidePage)extractedPageInstance;
+                            translatedPageInstance.LCID = new CultureInfo(page.Language).LCID;
+                            parentPage.Translations.Add(translatedPageInstance);
+                        }
+                    }
+                    else
+                    {
+                        var clientSidePageInstance = (ClientSidePage)extractedPageInstance;
+                        if (page.TranslatedLanguages != null && page.TranslatedLanguages.Count > 0)
+                        {
+                            clientSidePageInstance.CreateTranslations = true;
+                            clientSidePageInstance.LCID = Convert.ToInt32(web.EnsureProperty(p => p.Language));
+                        }
+                        template.ClientSidePages.Add(clientSidePageInstance);
+                    }
 
                     // Set the homepage
-                    if (isHomePage)
+                    if (page.IsHomePage)
                     {
                         if (template.WebSettings == null)
                         {
                             template.WebSettings = new WebSettings();
                         }
 
-                        if (pageUrl.StartsWith(web.ServerRelativeUrl, StringComparison.InvariantCultureIgnoreCase))
+                        if (page.PageUrl.StartsWith(web.ServerRelativeUrl, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            template.WebSettings.WelcomePage = pageUrl.Replace(web.ServerRelativeUrl + "/", "");
+                            template.WebSettings.WelcomePage = page.PageUrl.Replace(web.ServerRelativeUrl + "/", "");
                         }
                         else
                         {
-                            template.WebSettings.WelcomePage = pageUrl;
+                            template.WebSettings.WelcomePage = page.PageUrl;
                         }
                     }
                 }
@@ -488,7 +535,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             }
         }
 
-                                        #region Helper methods
+                    #region Helper methods
         private static void CollectImageFilesFromGenericGuids(Regex regexGuidPattern, Regex regexGuidPatternEncoded, string jsonControlData, List<Guid> fileGuids)
         {
             // grab all the guids in the already tokenized json and check try to get them as a file
@@ -744,7 +791,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
             return json;
         }
-                                        #endregion
+                    #endregion
     }
 #endif
-                                    }
+                }

@@ -1,8 +1,10 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
@@ -15,18 +17,17 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using OfficeDevPnP.Core.Entities;
 using ContentType = Microsoft.SharePoint.Client.ContentType;
 using Field = Microsoft.SharePoint.Client.Field;
 using Folder = Microsoft.SharePoint.Client.Folder;
 using View = OfficeDevPnP.Core.Framework.Provisioning.Model.View;
-using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
     internal class ObjectListInstance : ObjectHandlerBase
     {
         private readonly FieldAndListProvisioningStepHelper.Step step;
+
         public override string Name
         {
 #if DEBUG
@@ -54,6 +55,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     web.EnsureProperties(w => w.ServerRelativeUrl, w => w.SupportedUILanguageIds);
 
                     web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
+                    web.Context.Load(web.AvailableFields, fields => fields.Include(f => f.Id, f => f.InternalName, f => f.SchemaXmlWithResourceTokens));
                     web.Context.ExecuteQueryRetry();
                     var existingLists = web.Lists.AsEnumerable().ToList();
                     var serverRelativeUrl = web.ServerRelativeUrl;
@@ -155,7 +157,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // We stop here unless we reached the last provisioning stop of the list
                     if (step == FieldAndListProvisioningStepHelper.Step.ListSettings)
                     {
-
                         #region Default Field Values
 
                         foreach (var listInfo in processedLists)
@@ -213,6 +214,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         #endregion Property Bag Entries
 
                         #region Column default values
+
                         foreach (var listInfo in processedLists)
                         {
                             var defaultFolderValues = new List<Entities.IDefaultColumnValue>();
@@ -223,7 +225,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                             listInfo.SiteList.SetDefaultColumnValues(defaultFolderValues, true);
                         }
-                        #endregion
+
+                        #endregion Column default values
                     }
                     WriteMessage("Done processing lists", ProvisioningMessageType.Completed);
                 }
@@ -854,7 +857,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         createdView.Update();
                     }
                 }
-
 
                 createdList.Update();
                 web.Context.ExecuteQueryRetry();
@@ -1558,7 +1560,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (var ctb in templateList.ContentTypeBindings)
             {
-                var tempCT = web.GetContentTypeById(ctb.ContentTypeId, searchInSiteHierarchy: true);
+                var tempCT = web.GetContentTypeById(
+                    ctb.ContentTypeId,
+                    cts => cts.Include(
+                        ct => ct.Id,
+                        ct => ct.Name,
+                        ct => ct.FieldLinks.Include(fl => fl.Id, fl => fl.Hidden)
+                    ),
+                    searchInSiteHierarchy: true
+                    );
                 if (tempCT != null)
                 {
                     ContentTypeId existingContentTypeId = list.ContentTypes.BestMatch(ctb.ContentTypeId);
@@ -1583,6 +1593,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         }
                         else
                         {
+                            // To avoid error [Exception setting "Hidden": "Cannot change Hidden attribute for this field], add fields to list before adding the content type. #2407
+                            AddContentTypeHiddenFieldsToList(tempCT, list);
                             // Add the content type
                             listContentType = list.ContentTypes.AddExistingContentType(tempCT);
                         }
@@ -1633,6 +1645,25 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 defaultContentType.EnsureProperty(ct => ct.Id);
                 list.SetDefaultContentType(defaultContentType.Id);
+            }
+        }
+
+        private void AddContentTypeHiddenFieldsToList(ContentType tempCT, List list)
+        {
+            var ctx = (ClientContext)list.Context;
+            var web = ctx.Web;
+            foreach (var fieldLink in tempCT.FieldLinks)
+            {
+                if (fieldLink.Hidden && !list.FieldExistsById(fieldLink.Id))
+                {
+                    var siteField = web.AvailableFields.First(f => f.Id == fieldLink.Id);
+
+                    list.Fields.Add(siteField);
+                }
+            }
+            if (ctx.HasPendingRequest)
+            {
+                ctx.ExecuteQueryRetry();
             }
         }
 
@@ -2077,6 +2108,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     parentFolder.Context.ExecuteQueryRetry();
                 }
 
+                //Set Property Fields of Folder in order to handle for example OneNote Folders
+                if (folder.Properties != null && folder.Properties.Any(p => !p.Key.Equals("ContentTypeId")))
+                {
+                    var currentFolderItem = currentFolder.ListItemAllFields;
+                    parentFolder.Context.Load(currentFolderItem);
+                    parentFolder.Context.ExecuteQueryRetry();
+                    foreach (var p in folder.Properties.Where(p => !p.Key.Equals("ContentTypeId")))
+                    {
+                        currentFolderItem[p.Key] = parser.ParseString(p.Value);
+                    }
+                    currentFolderItem.Update();
+                    currentFolder.Update();
+                    parentFolder.Context.ExecuteQueryRetry();
+                }
+
                 // Handle current folder security
                 if (folder.Security != null && folder.Security.RoleAssignments.Count != 0)
                 {
@@ -2146,18 +2192,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static bool IntentToExtractItems(ExtractConfiguration configuration, List siteList)
         {
-            if(configuration != null && configuration.Lists != null && configuration.Lists.HasLists)
+            if (configuration != null && configuration.Lists != null && configuration.Lists.HasLists)
             {
-                Func<string,Guid,bool> matchGuid = (string title, Guid guid) =>
-                {
-                    if (Guid.TryParse(title, out Guid parsedTitle))
-                    {
-                        return guid == parsedTitle;
-                    } else
-                    {
-                        return false;
-                    }
-                };
+                Func<string, Guid, bool> matchGuid = (string title, Guid guid) =>
+                  {
+                      if (Guid.TryParse(title, out Guid parsedTitle))
+                      {
+                          return guid == parsedTitle;
+                      }
+                      else
+                      {
+                          return false;
+                      }
+                  };
                 var listConfig = configuration.Lists.Lists.FirstOrDefault(l => l.Title.Equals(siteList.Title)
                 || siteList.RootFolder.ServerRelativeUrl.EndsWith(l.Title, StringComparison.InvariantCulture)
                 || matchGuid(l.Title, siteList.Id));
@@ -2428,7 +2475,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             foreach (var view in siteList.Views.AsEnumerable().Where(view => !view.Hidden && view.ListViewXml != null))
             {
-
                 var schemaElement = XElement.Parse(view.ListViewXml);
 
                 // exclude survey and events list as they dont support jsLink customizations
