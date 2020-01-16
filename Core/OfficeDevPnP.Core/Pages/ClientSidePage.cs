@@ -364,6 +364,8 @@ namespace OfficeDevPnP.Core.Pages
                 return this.Context.Web.EnsureProperty(p => p.SupportedUILanguageIds).ToList();
             }
         }
+
+        public object htmlWriter { get; private set; }
         #endregion
 
         #region public methods
@@ -660,6 +662,9 @@ namespace OfficeDevPnP.Core.Pages
         {
             StringBuilder html = new StringBuilder(100);
 #if NETSTANDARD2_0
+            
+            if (this.sections.Count == 0) return string.Empty;
+
             html.Append($@"<div>");
             // Normalize section order by starting from 1, users could have started from 0 or left gaps in the numbering
             var sectionsToOrder = this.sections.OrderBy(p => p.Order).ToList();
@@ -675,6 +680,10 @@ namespace OfficeDevPnP.Core.Pages
                 html.Append(section.ToHtml());
 
             }
+            // Thumbnail
+            var thumbnailData = new { controlType = 0, pageSettingsSlice = new { isDefaultDescription = this.isDefaultDescription, isDefaultThumbnail = string.IsNullOrEmpty(thumbnailUrl) } };
+            html.Append($@"<div data-sp-canvascontrol="""" data-sp-canvasdataversion=""1.0"" data-sp-controldata=""${JsonConvert.SerializeObject(thumbnailData).Replace("\"", "&quot;")}""></div>");
+
             html.Append("</div>");
 #else
             using (var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), ""))

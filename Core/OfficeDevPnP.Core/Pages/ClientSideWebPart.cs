@@ -442,16 +442,23 @@ namespace OfficeDevPnP.Core.Pages
 
             StringBuilder html = new StringBuilder(100);
 #if NETSTANDARD2_0
-            html.Append($@"<div {CanvasControlAttribute}=""{this.CanvasControlData}"" {CanvasDataVersionAttribute}=""{this.DataVersion}"" {ControlDataAttribute}=""{this.JsonControlData.Replace("\"", "&quot;")}"">");
-            html.Append($@"<div {WebPartAttribute}=""{this.WebPartData}"" {WebPartDataVersionAttribute}=""{this.DataVersion}"" {WebPartDataAttribute}=""{this.JsonWebPartData.Replace("\"", "&quot;")}"">");
-            html.Append($@"<div {WebPartComponentIdAttribute}=""""");
-            html.Append(this.WebPartId);
-            html.Append("/div>");
-            html.Append($@"<div {WebPartHtmlPropertiesAttribute}=""{this.HtmlProperties}"">");
-            RenderHtmlProperties(ref html);
-            html.Append("</div>");
-            html.Append("</div>");
-            html.Append("</div>");
+            if (this.usingSpControlDataOnly)
+            {
+                html.Append($@"<div {CanvasControlAttribute}=""{this.CanvasControlData}"" {CanvasDataVersionAttribute}=""{this.DataVersion}"" {ControlDataAttribute}=""{this.JsonControlData.Replace("\"", "&quot;")}""></div>");
+            }
+            else
+            {
+                html.Append($@"<div {CanvasControlAttribute}=""{this.CanvasControlData}"" {CanvasDataVersionAttribute}=""{this.DataVersion}"" {ControlDataAttribute}=""{this.JsonControlData.Replace("\"", "&quot;")}"">");
+                html.Append($@"<div {WebPartAttribute}=""{this.WebPartData}"" {WebPartDataVersionAttribute}=""{this.DataVersion}"" {WebPartDataAttribute}=""{this.JsonWebPartData.Replace("\"", "&quot;").Replace("<","&lt;").Replace(">","&gt;")}"">");
+                html.Append($@"<div {WebPartComponentIdAttribute}="""">");
+                html.Append(this.WebPartId);
+                html.Append("</div>");
+                html.Append($@"<div {WebPartHtmlPropertiesAttribute}=""{this.HtmlProperties}"">");
+                RenderHtmlProperties(ref html);
+                html.Append("</div>");
+                html.Append("</div>");
+                html.Append("</div>");
+            }
 #else
             var htmlWriter = new HtmlTextWriter(new System.IO.StringWriter(html), "");
             try
@@ -542,6 +549,14 @@ namespace OfficeDevPnP.Core.Pages
                     foreach (JProperty property in this.ServerProcessedContent["links"])
                     {
                         htmlWriter.Append($@"<a data-sp-prop-name=""{property.Name}"" href=""{property.Value.Value<string>()}""></a>");
+                    }
+                }
+
+                if (this.ServerProcessedContent["htmlStrings"] != null)
+                {
+                    foreach (JProperty property in this.ServerProcessedContent["htmlStrings"])
+                    {
+                        htmlWriter.Append($@"<div data-sp-prop-name=""{property.Name}"">{property.Value.ToString()}</div>");
                     }
                 }
             }
