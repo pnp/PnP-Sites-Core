@@ -12,6 +12,8 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>bin\DebugCore\</OutputPath>
     <DefineConstants>TRACE;NETSTANDARD2_0</DefineConstants>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -42,6 +44,10 @@
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.xsd" />
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.xsd" />
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-01.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-05.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.xsd" />
     <None Remove="OfficeDevPnP.Core.csproj.DotSettings" />
     <None Remove="Properties\Settings.settings" />
     <None Remove="Version.txt" />
@@ -55,6 +61,9 @@
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.xsd" />
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.xsd" />
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-01.xsd" />
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.xsd" />
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.xsd" />
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.xsd" />
   </ItemGroup>
 
   <ItemGroup>
@@ -98,6 +107,10 @@
 
   <ItemGroup>
     <Folder Include="Utilities\OAuth\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-05.xsd" />
   </ItemGroup>
 
 </Project>
