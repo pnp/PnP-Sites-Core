@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.15.1911.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.16.1912.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-STS3template">
     <pnp:ProvisioningTemplate ID="STS3template" Version="1" BaseSiteTemplate="STS#3" Scope="RootSite">
-      <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="SitePages/Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" MembersCanShare="true" SearchScope="DefaultScope" />
+      <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="SitePages/Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="true" MembersCanShare="true" SearchScope="DefaultScope" />
       <pnp:SiteSettings AllowDesigner="true" AllowCreateDeclarativeWorkflow="true" AllowSaveDeclarativeWorkflowAsTemplate="true" AllowSavePublishDeclarativeWorkflow="true" />
       <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="Gregorian" Collation="25" FirstDayOfWeek="Sunday" FirstWeekOfYear="0" LocaleId="1033" ShowWeeks="false" Time24="false" TimeZone="4" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
       <pnp:SupportedUILanguages>
@@ -61,25 +61,29 @@
       </pnp:SupportedUILanguages>
       <pnp:AuditSettings AuditLogTrimmingRetention="90" TrimAuditLog="true" />
       <pnp:PropertyBagEntries>
-        <pnp:PropertyBagEntry Key="vti_associategroups" Value="5;4;3" Overwrite="false" />
         <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_expirationlastrun" Value="1/6/2020 1:07:18 AM" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="3" Overwrite="false" />
         <pnp:PropertyBagEntry Key="enabledhelpcollections" Value="VGSEndUser" Overwrite="false" />
         <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="WSSEndUser;#WSSCentralAdmin;#FastEndUser;#FastCentralAdmin;#MSSEndUser;#MSSCentralAdmin;#PPSDesignerEndUser;#SQLWSSAddIn" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
         <pnp:PropertyBagEntry Key="taxonomyhiddenlist" Value="9d59615d-a84e-4d34-a5d0-24007d52db34" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="sharepointhelpoverride" Value="SPOStandard" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="vti_sitemasterid" Value="8ed42844-dc1f-4658-800f-1d86ec77989e" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="profileschemaversion" Value="5" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_categories" Value="Travel Expense\ Report Business Competition Goals/Objectives Ideas Miscellaneous Waiting VIP In\ Process Planning Schedule" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="5" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="SiteNotebookGuid" Value="3b34e737-ad4d-458c-8a1b-c4b6350e4cf7" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="profileschemaversion" Value="5" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="sharepointhelpoverride" Value="SPOStandard" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_expirationlastruncorrelation" Value="start:01/06/2020 01:07:18; end:01/06/2020 01:07:18;correlationId:eba8289f-40be-2000-2e75-b33ab8a7f126" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_associategroups" Value="5;4;3" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="4" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="HomepageProvisioned" Value="1" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="vti_sitemasterid" Value="8ed42844-dc1f-4658-800f-1d86ec77989e" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_extenderversion" Value="16.0.0.19416" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_policyupdatelastruncorrelation" Value="start:01/04/2020 23:19:28; end:01/04/2020 23:19:28;correlationId:7a50289f-606f-2000-2e75-bbe9b950be26" Overwrite="false" />
         <pnp:PropertyBagEntry Key="metadatatimestamp" Value="437b86fc125845a985ea87a29156ce3c|2015-03-27T08:10:01.077Z" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="HomepageProvisioned" Value="1" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="3;4;5" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_policyupdatelastrun" Value="1/4/2020 11:19:28 PM" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="SiteNotebookGuid" Value="3b34e737-ad4d-458c-8a1b-c4b6350e4cf7" Overwrite="false" />
       </pnp:PropertyBagEntries>
       <pnp:Security AssociatedOwnerGroup="{sitetitle} Owners" AssociatedMemberGroup="{sitetitle} Members" AssociatedVisitorGroup="{sitetitle} Visitors">
         <pnp:AdditionalOwners>
@@ -823,6 +827,7 @@
           <pnp:Feature ID="00bfea71-eb8a-40b1-80c7-506be7590102" />
           <pnp:Feature ID="780ac353-eaf8-4ac2-8c47-536d93c03fd6" />
           <pnp:Feature ID="00bfea71-3a1d-41d3-a0ee-651d11570120" />
+          <pnp:Feature ID="8c6f9096-388d-4eed-96ff-698b3ec46fc4" />
           <pnp:Feature ID="00bfea71-513d-4ca0-96c2-6a47775c0119" />
           <pnp:Feature ID="f151bb39-7c3b-414f-bb36-6bf18872052f" />
           <pnp:Feature ID="00bfea71-2062-426c-90bf-714c59600103" />

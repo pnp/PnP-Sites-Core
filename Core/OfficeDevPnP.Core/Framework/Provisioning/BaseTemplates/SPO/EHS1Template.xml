@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <pnp:Provisioning xmlns:pnp="http://schemas.dev.office.com/PnP/2019/09/ProvisioningSchema">
-  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.15.1911.0, Culture=neutral, PublicKeyToken=null" />
+  <pnp:Preferences Generator="OfficeDevPnP.Core, Version=3.16.1912.0, Culture=neutral, PublicKeyToken=null" />
   <pnp:Templates ID="CONTAINER-EHS1template">
     <pnp:ProvisioningTemplate ID="EHS1template" Version="1" BaseSiteTemplate="STS#0" Scope="RootSite">
-      <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="SitePages/Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="false" MembersCanShare="true" SearchScope="DefaultScope" />
+      <pnp:WebSettings RequestAccessEmail="" NoCrawl="false" WelcomePage="SitePages/Home.aspx" SiteLogo="" AlternateCSS="" MasterPageUrl="{masterpagecatalog}/seattle.master" CustomMasterPageUrl="{masterpagecatalog}/seattle.master" CommentsOnSitePagesDisabled="false" QuickLaunchEnabled="true" MembersCanShare="true" SearchScope="DefaultScope" />
       <pnp:SiteSettings AllowDesigner="true" AllowCreateDeclarativeWorkflow="true" AllowSaveDeclarativeWorkflowAsTemplate="true" AllowSavePublishDeclarativeWorkflow="true" />
       <pnp:RegionalSettings AdjustHijriDays="0" AlternateCalendarType="None" CalendarType="Gregorian" Collation="25" FirstDayOfWeek="Sunday" FirstWeekOfYear="0" LocaleId="1033" ShowWeeks="false" Time24="false" TimeZone="4" WorkDayEndHour="5:00PM" WorkDays="62" WorkDayStartHour="8:00AM" />
       <pnp:SupportedUILanguages>
@@ -12,7 +12,7 @@
       <pnp:AuditSettings AuditLogTrimmingRetention="90" TrimAuditLog="true" />
       <pnp:PropertyBagEntries>
         <pnp:PropertyBagEntry Key="FollowLinkEnabled" Value="TRUE" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_policyupdatelastruncorrelation" Value="start:11/28/2019 23:17:44; end:11/28/2019 23:17:44;correlationId:a8671c9f-008c-2000-2880-bb46c3da4634" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_policyupdatelastruncorrelation" Value="start:01/02/2020 23:31:03; end:01/02/2020 23:31:03;correlationId:56ac279f-80ab-2000-2e75-b3dd6fa8cebc" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_approvallevels" Value="Approved Rejected Pending\ Review" Overwrite="false" />
         <pnp:PropertyBagEntry Key="disabledhelpcollections" Value="WSSEndUser;#WSSCentralAdmin;#FastEndUser;#FastCentralAdmin;#MSSEndUser;#MSSCentralAdmin;#PPSDesignerEndUser;#SQLWSSAddIn;#SPOStandard" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_defaultlanguage" Value="en-us" Overwrite="false" />
@@ -24,15 +24,15 @@
         <pnp:PropertyBagEntry Key="vti_sitemasterid" Value="55ff308a-0505-4768-bd12-bfd1dd2de640" Overwrite="false" />
         <pnp:PropertyBagEntry Key="profileschemaversion" Value="5" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatemembergroup" Value="9" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_expirationlastruncorrelation" Value="start:11/29/2019 00:12:39; end:11/29/2019 00:12:40;correlationId:ce6a1c9f-6035-2000-2880-b4d3727ba7f4" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_expirationlastruncorrelation" Value="start:01/04/2020 00:21:28; end:01/04/2020 00:21:29;correlationId:a001289f-00fa-2000-2e75-ba73ccd51f98" Overwrite="false" />
         <pnp:PropertyBagEntry Key="__ScriptSafeInternalPages" Value="WopiFrame.aspx;videoembedplayer.aspx;" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associateownergroup" Value="7" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_createdassociategroups" Value="7;8;9" Overwrite="false" />
         <pnp:PropertyBagEntry Key="sharepointhelpoverride" Value="SPOLite" Overwrite="false" />
         <pnp:PropertyBagEntry Key="SiteNotebookGuid" Value="1f26a5e9-7f6a-412f-9b72-f12561fab09c" Overwrite="false" />
         <pnp:PropertyBagEntry Key="dlc_sitehasexpirationpolicy" Value="True" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_expirationlastrun" Value="11/29/2019 12:12:40 AM" Overwrite="false" />
-        <pnp:PropertyBagEntry Key="dlc_policyupdatelastrun" Value="11/28/2019 11:17:44 PM" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_expirationlastrun" Value="1/4/2020 12:21:29 AM" Overwrite="false" />
+        <pnp:PropertyBagEntry Key="dlc_policyupdatelastrun" Value="1/2/2020 11:31:03 PM" Overwrite="false" />
         <pnp:PropertyBagEntry Key="allowslistpolicy" Value="True" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_associatevisitorgroup" Value="8" Overwrite="false" />
         <pnp:PropertyBagEntry Key="vti_customuploadpage" Value="/_layouts/15/UploadEx.aspx" Overwrite="false" />
@@ -2036,6 +2036,7 @@
           <pnp:Feature ID="780ac353-eaf8-4ac2-8c47-536d93c03fd6" />
           <pnp:Feature ID="5007df5b-1eea-49f8-9c02-5debc81ce3f2" />
           <pnp:Feature ID="00bfea71-3a1d-41d3-a0ee-651d11570120" />
+          <pnp:Feature ID="8c6f9096-388d-4eed-96ff-698b3ec46fc4" />
           <pnp:Feature ID="00bfea71-513d-4ca0-96c2-6a47775c0119" />
           <pnp:Feature ID="f151bb39-7c3b-414f-bb36-6bf18872052f" />
           <pnp:Feature ID="00bfea71-2062-426c-90bf-714c59600103" />

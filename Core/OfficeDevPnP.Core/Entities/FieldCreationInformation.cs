@@ -30,6 +30,10 @@ namespace OfficeDevPnP.Core.Entities
         /// </summary>
         public IEnumerable<KeyValuePair<string, string>> AdditionalAttributes { get; set; }
         /// <summary>
+        /// List of additional child nodes that need to be included in the CAML field on creation
+        /// </summary>
+        public IEnumerable<KeyValuePair<string, string>> AdditionalChildNodes { get; set; }
+        /// <summary>
         /// Type of the field
         /// </summary>
         public string FieldType { get; protected set; }

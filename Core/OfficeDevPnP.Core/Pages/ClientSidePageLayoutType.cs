@@ -23,6 +23,10 @@
         /// Page is a custom search result page
         /// </summary>
         HeaderlessSearchResults = 4,
+        /// <summary>
+        /// Page is a spaces page
+        /// </summary>
+        Spaces = 5,
 #endif
         /// <summary>
         /// Page is a repost / link page

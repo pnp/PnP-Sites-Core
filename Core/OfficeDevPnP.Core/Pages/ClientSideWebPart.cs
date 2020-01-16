@@ -657,7 +657,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
 
                 // Store the server processed content as that's needed for full fidelity
-                if (wpJObject["webPartData"] != null && wpJObject["webPartData"]["serverProcessedContent"] != null)
+                if (wpJObject["webPartData"] != null && wpJObject["webPartData"]["serverProcessedContent"] != null && wpJObject["webPartData"]["serverProcessedContent"].ToString() != "")
                 {
                     this.serverProcessedContent = (JObject)wpJObject["webPartData"]["serverProcessedContent"];
                 }
@@ -704,7 +704,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
 
                 // Store the server processed content as that's needed for full fidelity
-                if (wpJObject["serverProcessedContent"] != null)
+                if (wpJObject["serverProcessedContent"] != null && wpJObject["serverProcessedContent"].ToString() != "")
                 {
                     this.serverProcessedContent = (JObject)wpJObject["serverProcessedContent"];
                 }

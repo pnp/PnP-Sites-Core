@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OfficeDevPnP.Core</RootNamespace>
     <AssemblyName>OfficeDevPnP.Core</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -739,6 +739,8 @@
     <Compile Include="Framework\Provisioning\ObjectHandlers\TokenDefinitions\RoleDefinitionIdToken.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FieldUpdateValue.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\FileUtilities.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\PageToExport.cs" />
+    <Compile Include="Framework\Provisioning\ObjectHandlers\WebhookSender.cs" />
     <Compile Include="Framework\Provisioning\Providers\ITemplateFormatterWithValidation.cs" />
     <Compile Include="Framework\Provisioning\Providers\ValidationResult.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.cs">
@@ -767,6 +769,8 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\WebSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201909Serializer.cs" />
     <Compile Include="Pages\ClientSidePageSettingsSlice.cs" />
+    <Compile Include="Pages\TranslationStatus.cs" />
+    <Compile Include="Pages\TranslationStatusCreationRequest.cs" />
     <Compile Include="Utilities\Graph\GraphHelper.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ListItemUtilities.cs" />
     <Compile Include="Framework\Provisioning\ObjectHandlers\Utilities\ConnectorFileHelper.cs" />
