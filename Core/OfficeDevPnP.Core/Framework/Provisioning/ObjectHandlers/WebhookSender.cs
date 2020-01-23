@@ -47,13 +47,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             SimpleTokenParser internalParser = new SimpleTokenParser();
-            foreach (var webhookparam in webhook.Parameters)
+            if (webhook.Parameters != null)
             {
-                requestParameters.Add(webhookparam.Key, parser != null ? parser.ParseString(webhookparam.Value) : webhookparam.Value);
-                internalParser.AddToken(new WebhookParameter(webhookparam.Key, requestParameters[webhookparam.Key]));
+                foreach (var webhookparam in webhook.Parameters)
+                {
+                    requestParameters.Add(webhookparam.Key, parser != null ? parser.ParseString(webhookparam.Value) : webhookparam.Value);
+                    internalParser.AddToken(new WebhookParameter(webhookparam.Key, requestParameters[webhookparam.Key]));
+                }
             }
             var url = parser != null ? parser.ParseString(webhook.Url) : webhook.Url; // parse for template scoped parameters
             url = internalParser.ParseString(url); // parse for webhook scoped parameters
+
+            // Fix URL if it does not contain ?
+            if (!url.Contains("?"))
+            {
+                url += "?";
+            }
 
             switch (webhook.Method)
             {
