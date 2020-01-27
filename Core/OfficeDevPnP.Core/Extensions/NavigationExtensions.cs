@@ -891,6 +891,9 @@ namespace Microsoft.SharePoint.Client
             targetAction.ClientSideComponentId = customAction.ClientSideComponentId;
             targetAction.ClientSideComponentProperties = customAction.ClientSideComponentProperties;
 #endif
+#if !ONPREMISES
+            targetAction.HostProperties = customAction.ClientSideHostProperties;
+#endif
             if (customAction.Location == JavaScriptExtensions.SCRIPT_LOCATION)
             {
                 targetAction.ScriptBlock = customAction.ScriptBlock;
