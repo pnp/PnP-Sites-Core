@@ -34,6 +34,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public int TimeZoneId { get; set; }
 
+        /// <summary>
+        /// Declare whether to groupify the team site after creation or not
+        /// </summary>
+        public bool Groupify { get; set; }
+
         protected override bool EqualsInherited(SiteCollection other)
         {
             if (!(other is TeamNoGroupSiteCollection otherTyped))
@@ -44,17 +49,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             return (this.Url == otherTyped.Url &&
                 this.Owner == otherTyped.Owner &&
                 this.Language == otherTyped.Language &&
-                this.TimeZoneId == otherTyped.TimeZoneId
+                this.TimeZoneId == otherTyped.TimeZoneId &&
+                this.Groupify == otherTyped.Groupify
                 );
         }
 
         protected override int GetInheritedHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|",
                 this.Url?.GetHashCode() ?? 0,
                 this.Owner?.GetHashCode() ?? 0,
                 this.Language.GetHashCode(),
-                this.TimeZoneId.GetHashCode()
+                this.TimeZoneId.GetHashCode(),
+                this.Groupify.GetHashCode()
             ).GetHashCode());
         }
     }

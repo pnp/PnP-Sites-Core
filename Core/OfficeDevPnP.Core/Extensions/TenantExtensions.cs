@@ -566,8 +566,8 @@ namespace Microsoft.SharePoint.Client
             bool? noScriptSite = null,
             bool? commentsOnSitePagesDisabled = null,
             bool? socialBarOnSitePagesDisabled = null,
-            SharingPermissionType? defaultLinkPermission = null,
-            SharingLinkType? defaultSharingLinkType = null,
+            Microsoft.Online.SharePoint.TenantManagement.SharingPermissionType? defaultLinkPermission = null,
+            Microsoft.Online.SharePoint.TenantManagement.SharingLinkType? defaultSharingLinkType = null,
             bool wait = true, Func<TenantOperationMessage, bool> timeoutFunction = null
             )
 #endif
