@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Added
+
+### Changed
+
+- Reliability improvements in pages API to load some very old pages
+
 ## [3.17.2001.2 - January 2020 release]
 
 ### Changed

@@ -2138,49 +2138,71 @@ namespace OfficeDevPnP.Core.Pages
 
         private void ApplySectionAndColumn(CanvasControl control, ClientSideCanvasControlPosition position, ClientSideSectionEmphasis emphasis)
         {
-            var currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).FirstOrDefault();
-            if (currentSection == null)
+            if (position == null)
             {
-                this.AddSection(new CanvasSection(this) { ZoneEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0 }, position.ZoneIndex);
-                currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).First();
-            }
+                var currentSection = this.sections.FirstOrDefault();
+                if (currentSection == null)
+                {
+                    this.AddSection(new CanvasSection(this) { ZoneEmphasis = 0 }, 0);
+                    currentSection = this.sections.FirstOrDefault();
+                }
 
-            var currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).FirstOrDefault();
+                var currentColumn = currentSection.Columns.FirstOrDefault();
+                if (currentColumn == null)
+                {
+                    currentSection.AddColumn(new CanvasColumn(currentSection, 0));
+                    currentColumn = currentSection.Columns.FirstOrDefault();
+                }
+
+                control.section = currentSection;
+                control.column = currentColumn;
+            }
+            else
+            {
+                var currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).FirstOrDefault();
+                if (currentSection == null)
+                {
+                    this.AddSection(new CanvasSection(this) { ZoneEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0 }, position.ZoneIndex);
+                    currentSection = this.sections.Where(p => p.Order == position.ZoneIndex).First();
+                }
+
+                var currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).FirstOrDefault();
 
 #if !SP2019
-            // if layout index was set this means that we possibly have a vertical section column
-            if (position.LayoutIndex.HasValue)
-            {
-                currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex && p.LayoutIndex == position.LayoutIndex.Value).FirstOrDefault();
-            }
-#endif
-
-            if (currentColumn == null)
-            {
-#if !SP2019
+                // if layout index was set this means that we possibly have a vertical section column
                 if (position.LayoutIndex.HasValue)
                 {
-                    currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor, position.LayoutIndex.Value));
-                    currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex && p.LayoutIndex == position.LayoutIndex.Value).First();
-
-                    // ZoneEmphasis on a vertical section column needs to be retained as that "overrides" the zone emphasis set on the section
-                    if (currentColumn.IsVerticalSectionColumn)
-                    {
-                        currentColumn.VerticalSectionEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0;
-                    }
+                    currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex && p.LayoutIndex == position.LayoutIndex.Value).FirstOrDefault();
                 }
-                else
+#endif
+
+                if (currentColumn == null)
                 {
-#endif
-                    currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor));
-                    currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).First();
 #if !SP2019
-                }
-#endif
-            }
+                    if (position.LayoutIndex.HasValue)
+                    {
+                        currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor, position.LayoutIndex.Value));
+                        currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex && p.LayoutIndex == position.LayoutIndex.Value).First();
 
-            control.section = currentSection;
-            control.column = currentColumn;
+                        // ZoneEmphasis on a vertical section column needs to be retained as that "overrides" the zone emphasis set on the section
+                        if (currentColumn.IsVerticalSectionColumn)
+                        {
+                            currentColumn.VerticalSectionEmphasis = emphasis != null ? emphasis.ZoneEmphasis : 0;
+                        }
+                    }
+                    else
+                    {
+#endif
+                        currentSection.AddColumn(new CanvasColumn(currentSection, position.SectionIndex, position.SectionFactor));
+                        currentColumn = currentSection.Columns.Where(p => p.Order == position.SectionIndex).First();
+#if !SP2019
+                    }
+#endif
+                }
+
+                control.section = currentSection;
+                control.column = currentColumn;
+            }
         }
 
         private async Task<string> GetTranslationsImplementationAsync(string accessToken, ClientContext context, int? pageID)
