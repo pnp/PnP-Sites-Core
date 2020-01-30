@@ -1011,7 +1011,7 @@
       <xsd:annotation>
         <xsd:appinfo>Added with schema version 202002</xsd:appinfo>
         <xsd:documentation xml:lang="en">
-          Defines a comma separated list of allowed domains for sharing, optional attribute. It is considered if and only if SharingDomainRestrictionMode=AllowList.
+          Defines domains restrictions for sharing, optional attribute.
         </xsd:documentation>
       </xsd:annotation>
 

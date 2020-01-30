@@ -762,6 +762,8 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromModelToSchemaTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\AlternateUICultureFromSchemaToModelTypeResolver.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V201909\TeamSecurityFromSchemaToModelTypeResolver.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V202002\SharingSettingsFromModelToSchema.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Resolvers\V202002\SharingSettingsFromSchemaToModel.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ClientSidePagesSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\DriveSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\ListInstancesSerializer.cs" />
@@ -771,6 +773,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\TenantSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\SiteSettingsSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V201909\WebSettingsSerializer.cs" />
+    <Compile Include="Framework\Provisioning\Providers\Xml\Serializers\V202002\TenantSerializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV202002Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201909Serializer.cs" />
     <Compile Include="Pages\ClientSidePageSettingsSlice.cs" />
