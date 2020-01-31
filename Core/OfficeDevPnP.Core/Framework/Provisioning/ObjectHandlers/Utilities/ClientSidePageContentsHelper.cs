@@ -482,7 +482,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
 #if !SP2019
                     // Spaces support
-                    if (pageToExtract.LayoutType == Pages.ClientSidePageLayoutType.Spaces)
+                    if (pageToExtract.LayoutType == Pages.ClientSidePageLayoutType.Spaces && !string.IsNullOrEmpty(pageToExtract.SpaceContent))
                     {
                         extractedPageInstance.FieldValues.Add(Pages.ClientSidePage.SpaceContentField, pageToExtract.SpaceContent);
                     }
