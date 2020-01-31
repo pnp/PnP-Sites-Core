@@ -2150,7 +2150,7 @@ namespace OfficeDevPnP.Core.Pages
                 var currentColumn = currentSection.Columns.FirstOrDefault();
                 if (currentColumn == null)
                 {
-                    currentSection.AddColumn(new CanvasColumn(currentSection, 0));
+                    currentSection.AddColumn(new CanvasColumn(currentSection));
                     currentColumn = currentSection.Columns.FirstOrDefault();
                 }
 
