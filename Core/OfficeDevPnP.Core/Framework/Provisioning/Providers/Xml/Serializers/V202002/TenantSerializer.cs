@@ -85,9 +85,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
         {
             if (template.Tenant != null && 
                 (template.Tenant.AppCatalog != null || template.Tenant.ContentDeliveryNetwork != null ||
-                template.Tenant.SiteDesigns != null || template.Tenant.SiteScripts != null ||
-                template.Tenant.StorageEntities != null || template.Tenant.Themes != null ||
-                template.Tenant.WebApiPermissions != null))
+                (template.Tenant.SiteDesigns != null && template.Tenant.SiteDesigns.Count > 0) ||
+                (template.Tenant.SiteScripts != null && template.Tenant.SiteScripts.Count > 0) ||
+                (template.Tenant.StorageEntities != null && template.Tenant.StorageEntities .Count > 0)|| 
+                (template.Tenant.Themes != null && template.Tenant.Themes.Count > 0) ||
+                (template.Tenant.WebApiPermissions != null && template.Tenant.WebApiPermissions.Count > 0) ||
+                template.Tenant.SharingSettings != null))
             {
                 var tenantTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.Tenant, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var tenantType = Type.GetType(tenantTypeName, false);

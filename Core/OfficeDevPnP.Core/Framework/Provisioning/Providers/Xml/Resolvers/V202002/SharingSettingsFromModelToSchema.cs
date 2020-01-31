@@ -24,12 +24,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2020
             // Declare supporting types
             var sharingSettingsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.SharingSettings, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
             var sharingSettingsType = Type.GetType(sharingSettingsTypeName, true);
-            result = Activator.CreateInstance(sharingSettingsType);
 
             var settings = ((Model.ProvisioningTenant)source).SharingSettings;
 
             if (null != settings)
             {
+                result = Activator.CreateInstance(sharingSettingsType);
+
                 PnPObjectsMapper.MapProperties(settings, result, resolvers, recursive);
 
                 if (settings.AllowedDomainList.Count > 0)

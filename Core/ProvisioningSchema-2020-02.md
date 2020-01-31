@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 1/29/2020*
+* Topic automatically generated on 1/31/2020*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -614,7 +614,7 @@ FolderAnonymousLinkType|AnonymousLinkType|Defines the permissions for anonymous 
 DefaultSharingLinkType||Defines the default type of a sharing link, optional attribute.|No|
 PreventExternalUsersFromResharing|xsd:boolean|Defines whether external users are allowed to reshare the content, optional attribute.|No|
 RequireAcceptingAccountMatchInvitedAccount|xsd:boolean|Defines whether invited external users need to use the same account used as the target for the invite, optional attribute.|No|
-SharingDomainRestrictionMode||Defines a comma separated list of allowed domains for sharing, optional attribute. It is considered if and only if SharingDomainRestrictionMode=AllowList.|No|
+SharingDomainRestrictionMode||Defines domains restrictions for sharing, optional attribute.|No|
 AllowedDomainList|ReplaceableString|Defines a comma separated list of allowed domains for sharing, optional attribute. It is considered if and only if SharingDomainRestrictionMode=AllowList.|No|
 BlockedDomainList|ReplaceableString|Defines a comma separated list of blocked domains for sharing, optional attribute. It is considered if and only if SharingDomainRestrictionMode=BlockList.|No|
 <a name="office365grouplifecyclepolicy"></a>
@@ -3815,7 +3815,11 @@ SiteDesign|ReplaceableString|The ID of the SiteDesign, if any, to apply to the t
       Owner="pnp:ReplaceableString"
       TimeZoneId="pnp:ReplaceableString"
       Language="pnp:ReplaceableString"
-      Groupify="xsd:boolean">
+      Groupify="xsd:boolean"
+      Alias="pnp:ReplaceableString"
+      Classification="pnp:ReplaceableString"
+      IsPublic="xsd:boolean"
+      KeepOldHomePage="xsd:boolean">
 </pnp:TeamSiteNoGroup>
 ```
 
@@ -3830,6 +3834,10 @@ Owner|ReplaceableString|Primary Owner of the target Site, required attribute.|Ye
 TimeZoneId|ReplaceableString|TimeZone of the target Site, optional attribute.|No|
 Language|ReplaceableString|Language of the target Site, optional attribute.|No|
 Groupify|xsd:boolean|Declare whether to groupify the team site after creation or not, optional attribute.|No|
+Alias|ReplaceableString|The Alias of the target Office 365 Group backing the Site, optional attribute. It is used if and only if the Groupify attribute has a value of True.|No|
+Classification|ReplaceableString|The Classification of the target groupified Site, if any, optional attribute. It is used if and only if the Groupify attribute has a value of True.|No|
+IsPublic|xsd:boolean|Defines whether the Office 365 Group for the target groupified Site is Public or Private, optional attribute. It is used if and only if the Groupify attribute has a value of True.|No|true
+KeepOldHomePage|xsd:boolean|Defines whether to keep the old home page of the site after it gets groupified, optional attribute. It is used if and only if the Groupify attribute has a value of True.|No|false
 <a name="site"></a>
 ### Site
 Defines a Site that will be created into a target Site Collection.
