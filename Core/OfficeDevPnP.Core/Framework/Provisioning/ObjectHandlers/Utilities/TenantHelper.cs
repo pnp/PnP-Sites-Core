@@ -717,6 +717,49 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             }
             return parser;
         }
+
+        public static TokenParser ProcessSharingSettings(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
+        {
+            var sharingSettings = provisioningTenant.SharingSettings;
+            if (sharingSettings != null)
+            {
+                // Set general setting of Sharing Capability
+                tenant.SharingCapability = (Microsoft.Online.SharePoint.TenantManagement.SharingCapabilities)Enum.Parse(typeof(Microsoft.Online.SharePoint.TenantManagement.SharingCapabilities), sharingSettings.SharingCapability.ToString());
+
+                if (sharingSettings.SharingCapability != SharingCapability.Disabled)
+                {
+                    // Configure the number of days for anonymous links expiration
+                    tenant.RequireAnonymousLinksExpireInDays = sharingSettings.RequireAnonymousLinksExpireInDays;
+                    // Configure the default anonymous link type for files
+                    tenant.FileAnonymousLinkType = (Microsoft.SharePoint.Client.AnonymousLinkType)Enum.Parse(typeof(Microsoft.SharePoint.Client.AnonymousLinkType), sharingSettings.FileAnonymousLinkType.ToString());
+                    // Configure the default anonymous link type for folders
+                    tenant.FolderAnonymousLinkType = (Microsoft.SharePoint.Client.AnonymousLinkType)Enum.Parse(typeof(Microsoft.SharePoint.Client.AnonymousLinkType), sharingSettings.FolderAnonymousLinkType.ToString());
+                    // Configure the default sharing link type
+                    tenant.DefaultSharingLinkType = (Microsoft.Online.SharePoint.TenantManagement.SharingLinkType)Enum.Parse(typeof(Microsoft.Online.SharePoint.TenantManagement.SharingLinkType), sharingSettings.DefaultSharingLinkType.ToString());
+                    // Configure whether external users are prevented from re-sharing shared content
+                    tenant.PreventExternalUsersFromResharing = sharingSettings.PreventExternalUsersFromResharing;
+                    // Configure if the the guest account must match the invited account
+                    tenant.RequireAcceptingAccountMatchInvitedAccount = sharingSettings.RequireAcceptingAccountMatchInvitedAccount;
+                    // Configure the domain restriction mode
+                    tenant.SharingDomainRestrictionMode = (Microsoft.Online.SharePoint.TenantManagement.SharingDomainRestrictionModes)Enum.Parse(typeof(Microsoft.Online.SharePoint.TenantManagement.SharingDomainRestrictionModes), sharingSettings.SharingDomainRestrictionMode.ToString());
+
+                    if (sharingSettings.SharingDomainRestrictionMode == SharingDomainRestrictionMode.AllowList)
+                    {
+                        // Configure the list of allowed domains
+                        tenant.SharingAllowedDomainList = sharingSettings.AllowedDomainList.Aggregate(string.Empty, (acc, next) => acc += $" {next}").Trim();
+                    }
+                    else if (sharingSettings.SharingDomainRestrictionMode == SharingDomainRestrictionMode.BlockList)
+                    {
+                        // Configure the list of blocked domains
+                        tenant.SharingBlockedDomainList = sharingSettings.BlockedDomainList.Aggregate(string.Empty, (acc, next) => acc += $" {next}").Trim();
+                    }
+                }
+
+                // Save the new settings
+                tenant.Context.ExecuteQueryRetry();
+            }
+            return parser;
+        }
     }
 }
 #endif

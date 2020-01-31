@@ -401,7 +401,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     team.MemberSettings?.AllowAddRemoveApps,
                     team.MemberSettings?.AllowDeleteChannels,
                     team.MemberSettings?.AllowCreateUpdateRemoveTabs,
-                    team.MemberSettings?.AllowCreateUpdateRemoveConnectors
+                    team.MemberSettings?.AllowCreateUpdateRemoveConnectors,
+                    team.MemberSettings?.AllowCreatePrivateChannels,
                 },
                 messagingSettings = new
                 {

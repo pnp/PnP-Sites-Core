@@ -279,7 +279,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
         }
 
-        public SharingSettings SharingSettings { get; set; } = new SharingSettings();
+        public SharingSettings SharingSettings { get; set; }
 
         #endregion
 

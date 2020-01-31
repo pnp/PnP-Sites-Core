@@ -240,6 +240,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         IsPublic = t.IsPublic,
                                         Lcid = (uint)t.Language
                                     };
+                                    if (Guid.TryParse(t.SiteDesign, out Guid siteDesignId))
+                                    {
+                                        siteInfo.SiteDesignId = siteDesignId;
+                                    }
 
                                     var groupSiteInfo = Sites.SiteCollection.GetGroupInfoAsync(tenant.Context as ClientContext, siteInfo.Alias).GetAwaiter().GetResult();
                                     if (groupSiteInfo == null)
@@ -404,6 +408,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     {
                                         WriteMessage($"Creating Team Site with no Office 365 group at {siteUrl}", ProvisioningMessageType.Progress);
                                         siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait);
+                                    }
+                                    if (t.Groupify)
+                                    {
+                                        if (string.IsNullOrEmpty(t.Alias))
+                                        {
+                                            // We generate the alias, if it is missing
+                                            t.Alias = t.Title.Replace(" ", string.Empty).ToLower();
+                                        }
+
+                                        // In case we need to groupify the just created site
+                                        var groupifyInformation = new TeamSiteCollectionGroupifyInformation
+                                        {
+                                            Alias = t.Alias, // Mandatory
+                                            Classification = t.Classification, // Optional
+                                            Description = t.Description,
+                                            DisplayName = t.Title,
+                                            HubSiteId = Guid.Empty, // Optional, so far we skip it
+                                            IsPublic = t.IsPublic, // Mandatory
+                                            KeepOldHomePage = t.KeepOldHomePage, // Optional, but we provide it
+                                            Lcid = (uint)t.Language,
+                                            Owners = new string[] {t.Owner},
+                                        };
+                                        tenant.GroupifySite(siteUrl, groupifyInformation);
                                     }
                                     if (t.IsHubSite)
                                     {

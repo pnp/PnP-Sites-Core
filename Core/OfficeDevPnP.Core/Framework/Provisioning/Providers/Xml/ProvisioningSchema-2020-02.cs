@@ -2419,6 +2419,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
         
         private bool groupifyFieldSpecified;
         
+        private string aliasField;
+        
+        private string classificationField;
+        
+        private bool isPublicField;
+        
+        private bool keepOldHomePageField;
+        
+        public TeamSiteNoGroup() {
+            this.isPublicField = true;
+            this.keepOldHomePageField = false;
+        }
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string Url {
@@ -2482,6 +2495,52 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
             }
             set {
                 this.groupifyFieldSpecified = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Alias {
+            get {
+                return this.aliasField;
+            }
+            set {
+                this.aliasField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Classification {
+            get {
+                return this.classificationField;
+            }
+            set {
+                this.classificationField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(true)]
+        public bool IsPublic {
+            get {
+                return this.isPublicField;
+            }
+            set {
+                this.isPublicField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool KeepOldHomePage {
+            get {
+                return this.keepOldHomePageField;
+            }
+            set {
+                this.keepOldHomePageField = value;
             }
         }
     }

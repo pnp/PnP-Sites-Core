@@ -1281,7 +1281,11 @@
                           Language="1040"
                           Theme="CustomOrange"
                           TimeZoneId="4"
-                          Groupify="true">
+                          Groupify="true"
+                          Alias="{parameter:CompanyName}Meetings"
+                          Classification="HBI"
+                          IsPublic="true"
+                          KeepOldHomePage="false">
         <pnp:Templates>
           <pnp:ProvisioningTemplateReference ID="MeetingsTemplate" />
         </pnp:Templates>

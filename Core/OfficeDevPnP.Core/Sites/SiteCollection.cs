@@ -158,6 +158,10 @@ namespace OfficeDevPnP.Core.Sites
                     optionalParams.Add("Description", siteCollectionCreationInformation.Description ?? "");
                     optionalParams.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
                     var creationOptionsValues = new List<string>();
+                    if (siteCollectionCreationInformation.SiteDesignId.HasValue)
+                    {
+                        creationOptionsValues.Add($"implicit_formula_292aa8a00786498a87a5ca52d9f4214a_{siteCollectionCreationInformation.SiteDesignId.Value.ToString("D").ToLower()}");
+                    }
                     if (siteCollectionCreationInformation.Lcid != 0)
                     {
                         creationOptionsValues.Add($"SPSiteLanguage:{siteCollectionCreationInformation.Lcid}");

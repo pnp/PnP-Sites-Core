@@ -76,6 +76,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
     ///     SPUserProfile
     ///     Office365Group Settings
     ///     Office365Group Lifecycle
+    ///     Sharing Settings
     /// Drive
     /// 
     /// </summary>
@@ -1928,6 +1929,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             result.ParentHierarchy.Tenant = new ProvisioningTenant(result.ApplicationLifecycleManagement.AppCatalog,
                 new Core.Framework.Provisioning.Model.ContentDeliveryNetwork());
 
+            result.Tenant.SharingSettings = new Core.Framework.Provisioning.Model.SharingSettings();
             result.Tenant.SharingSettings.SharingCapability = SharingCapability.ExternalUserAndGuestSharing;
             result.Tenant.SharingSettings.RequireAnonymousLinksExpireInDays = 30;
             result.Tenant.SharingSettings.FileAnonymousLinkType = Core.Framework.Provisioning.Model.AnonymousLinkType.View;
