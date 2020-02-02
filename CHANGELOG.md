@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- EnableCommunicationSite extension method to transform a classic, non publishing, site into a communication site
+
 ### Changed
 
 - Reliability improvements in pages API to load some very old pages
