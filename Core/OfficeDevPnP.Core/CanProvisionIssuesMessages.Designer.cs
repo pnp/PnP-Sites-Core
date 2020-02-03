@@ -61,7 +61,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This template requires a fully provisioned App Catalog. The App Catalog on your tenant has been created within the last 2 hours. Please wait a bit longer to provision the template..
+        ///   Looks up a localized string similar to This template requires a fully provisioned App Catalog. The App Catalog in your tenant has been created within the last 2 hours. Please wait to provision this template for two hours after creating the App Catalog..
         /// </summary>
         internal static string App_Catalog_Not_Yet_Fully_Provisioned {
             get {
