@@ -43,6 +43,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     parser = TenantHelper.ProcessStorageEntities(tenant, hierarchy.Tenant, parser, scope, configuration, MessagesDelegate);
                     parser = TenantHelper.ProcessThemes(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
                     parser = TenantHelper.ProcessUserProfiles(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
+                    parser = TenantHelper.ProcessSharingSettings(tenant, hierarchy.Tenant, parser, scope, MessagesDelegate);
                     // So far we do not provision CDN settings
                     // It will come in the near future
                     // NOOP on CDN
@@ -54,6 +55,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillExtract(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ExtractConfiguration configuration)
         {
+            // By default we don't extract the tenant settings
             return false;
         }
 
@@ -70,7 +72,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 (hierarchy.Tenant.Themes != null && hierarchy.Tenant.Themes.Count > 0) ||
                                 (hierarchy.Tenant.SPUsersProfiles != null && hierarchy.Tenant.SPUsersProfiles.Count > 0) ||
                                 (hierarchy.Tenant.Office365GroupLifecyclePolicies != null && hierarchy.Tenant.Office365GroupLifecyclePolicies.Count > 0) ||
-                                (hierarchy.Tenant.Office365GroupsSettings?.Properties != null && hierarchy.Tenant.Office365GroupsSettings?.Properties.Count > 0)
+                                (hierarchy.Tenant.Office365GroupsSettings?.Properties != null && hierarchy.Tenant.Office365GroupsSettings?.Properties.Count > 0) ||
+                                hierarchy.Tenant.SharingSettings != null
                                 );
             }
             return (_willProvision.Value);

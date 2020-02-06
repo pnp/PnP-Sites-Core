@@ -61,8 +61,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public override bool WillExtract(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo)
         {
-            // By default we don't extract the packages
-            return (false);
+            // By default we don't extract the tenant settings
+            return false;
         }
 
         public override bool WillProvision(Web web, ProvisioningTemplate template, ProvisioningTemplateApplyingInformation applyingInformation)
@@ -75,7 +75,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 (template.Tenant.SiteScripts!= null && template.Tenant.SiteScripts.Count > 0) ||
                                 (template.Tenant.StorageEntities != null && template.Tenant.StorageEntities.Count > 0) ||
                                 (template.Tenant.WebApiPermissions!= null && template.Tenant.WebApiPermissions.Count > 0) ||
-                                (template.Tenant.Themes != null && template.Tenant.Themes.Count > 0)
+                                (template.Tenant.Themes != null && template.Tenant.Themes.Count > 0) ||
+                                template.Tenant.SharingSettings != null
                                 );
             }
             return (_willProvision.Value);
