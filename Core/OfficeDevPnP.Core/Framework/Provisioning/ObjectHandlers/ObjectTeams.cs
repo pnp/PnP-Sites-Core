@@ -859,43 +859,57 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             var displayname = parser.ParseString(tab.DisplayName);
 
-            // teamsAppId is not allowed in the request
-            var teamsAppId = parser.ParseString(tab.TeamsAppId);
-            tab.TeamsAppId = null;
-
-            if (tab.Configuration != null)
+            if (!tab.Remove)
             {
-                tab.Configuration.EntityId = parser.ParseString(tab.Configuration.EntityId);
-                tab.Configuration.ContentUrl = parser.ParseString(tab.Configuration.ContentUrl);
-                tab.Configuration.RemoveUrl = parser.ParseString(tab.Configuration.RemoveUrl);
-                tab.Configuration.WebsiteUrl = parser.ParseString(tab.Configuration.WebsiteUrl);
+                // teamsAppId is not allowed in the request
+                var teamsAppId = parser.ParseString(tab.TeamsAppId);
+                tab.TeamsAppId = null;
+
+                if (tab.Configuration != null)
+                {
+                    tab.Configuration.EntityId = parser.ParseString(tab.Configuration.EntityId);
+                    tab.Configuration.ContentUrl = parser.ParseString(tab.Configuration.ContentUrl);
+                    tab.Configuration.RemoveUrl = parser.ParseString(tab.Configuration.RemoveUrl);
+                    tab.Configuration.WebsiteUrl = parser.ParseString(tab.Configuration.WebsiteUrl);
+                }
+
+
+                // Prepare the request body for the Tab update
+                var tabToUpdate = new
+                {
+                    displayName = displayname,
+                    configuration = tab.Configuration != null
+                        ? new
+                        {
+                            tab.Configuration.EntityId,
+                            tab.Configuration.ContentUrl,
+                            tab.Configuration.RemoveUrl,
+                            tab.Configuration.WebsiteUrl
+                        } : null,
+                };
+
+                HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs/{tabId}", tabToUpdate, HttpHelper.JsonContentType, accessToken);
+
+                // Add the teamsAppId back now that we've updated the tab
+                tab.TeamsAppId = teamsAppId;
             }
-
-
-            // Prepare the request body for the Tab update
-            var tabToUpdate = new
+            else
             {
-                displayName = displayname,
-                configuration = tab.Configuration != null
-                    ? new
-                    {
-                        tab.Configuration.EntityId,
-                        tab.Configuration.ContentUrl,
-                        tab.Configuration.RemoveUrl,
-                        tab.Configuration.WebsiteUrl
-                    } : null,
-            };
-
-            HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs/{tabId}", tabToUpdate, HttpHelper.JsonContentType, accessToken);
-
-            // Add the teamsAppId back now that we've updated the tab
-            tab.TeamsAppId = teamsAppId;
+                // Simply delete the tab
+                HttpHelper.MakeDeleteRequest($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs/{tabId}", accessToken);
+            }
 
             return tabId;
         }
 
         private static string CreateTeamTab(PnPMonitoredScope scope, TeamTab tab, TokenParser parser, string teamId, string channelId, string accessToken)
         {
+            // There is no reason to create a tab that has to be removed
+            if (tab.Remove)
+            {
+                return null;
+            }
+
             var displayname = parser.ParseString(tab.DisplayName);
             var teamsAppId = parser.ParseString(tab.TeamsAppId);
 

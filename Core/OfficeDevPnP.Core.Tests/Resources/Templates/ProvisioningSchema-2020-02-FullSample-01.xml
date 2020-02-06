@@ -1396,6 +1396,7 @@
                      Description="This is just a Sample Channel"
                      IsFavoriteByDefault="true" ID="12345">
           <pnp:Tabs>
+            <pnp:Tab DisplayName="Wiki" TeamsAppId="com.microsoft.teamspace.tab.wiki" Remove="true" />
             <pnp:Tab DisplayName="My Tab 01" TeamsAppId="12345" ID="67890">
               <pnp:Configuration EntityId="2DCA2E6C7A10415CAF6B8AB6661B3154"
                                  ContentUrl="https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView"

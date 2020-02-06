@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 1/31/2020*
+* Topic automatically generated on 2/6/2020*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -4312,7 +4312,8 @@ Defines a Tab for a Channel in a Team, optional element.
 <pnp:Tab
       DisplayName="pnp:ReplaceableString"
       TeamsAppId="pnp:ReplaceableString"
-      ID="pnp:ReplaceableString">
+      ID="pnp:ReplaceableString"
+      Remove="xsd:boolean">
    <pnp:Configuration />
 </pnp:Tab>
 ```
@@ -4333,6 +4334,7 @@ Attibute|Type|Description|Required|Default
 DisplayName|ReplaceableString|Defines the Display Name of the Channel, required attribute.|Yes|
 TeamsAppId|ReplaceableString|App definition identifier of the tab, required attribute.|Yes|
 ID|ReplaceableString|Declares the ID for the Tab, optional attribute.|No|
+Remove|xsd:boolean|Allows to remove an already existing Tab, optional attribute.|No|
 <a name="teamtabresources"></a>
 ### TeamTabResources
 Defines a collection of Resources for Tabs of a Channel in a Team.

@@ -980,6 +980,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
         
         private string idField;
         
+        private bool removeField;
+        
+        private bool removeFieldSpecified;
+        
         /// <remarks/>
         public TeamChannelTabsTabConfiguration Configuration {
             get {
@@ -1020,6 +1024,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
             }
             set {
                 this.idField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public bool Remove {
+            get {
+                return this.removeField;
+            }
+            set {
+                this.removeField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
+        public bool RemoveSpecified {
+            get {
+                return this.removeFieldSpecified;
+            }
+            set {
+                this.removeFieldSpecified = value;
             }
         }
     }

@@ -9012,6 +9012,15 @@
             </xsd:annotation>
           </xsd:attribute>
 
+          <xsd:attribute name="Remove" type="xsd:boolean" use="optional">
+            <xsd:annotation>
+              <xsd:appinfo>Added with schema version 202002</xsd:appinfo>
+              <xsd:documentation xml:lang="en">
+                Allows to remove an already existing Tab, optional attribute.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:attribute>
+
         </xsd:complexType>
       </xsd:element>
     </xsd:sequence>

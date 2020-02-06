@@ -712,14 +712,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("This is just a Sample Channel", channels[0].Description);
             Assert.AreEqual("Sample Channel 01", channels[0].DisplayName);
             Assert.AreEqual(true, channels[0].IsFavoriteByDefault);
-            Assert.AreEqual(1, channels[0].Tabs.Count);
-            Assert.AreEqual("67890", channels[0].Tabs[0].ID);
-            Assert.AreEqual("My Tab 01", channels[0].Tabs[0].DisplayName);
-            Assert.AreEqual("12345", channels[0].Tabs[0].TeamsAppId);
-            Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView", channels[0].Tabs[0].Configuration.ContentUrl);
-            Assert.AreEqual("2DCA2E6C7A10415CAF6B8AB6661B3154", channels[0].Tabs[0].Configuration.EntityId);
-            Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/uninstallTab", channels[0].Tabs[0].Configuration.RemoveUrl);
-            Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154", channels[0].Tabs[0].Configuration.WebsiteUrl);
+            Assert.AreEqual(2, channels[0].Tabs.Count);
+            Assert.AreEqual(true, channels[0].Tabs[0].Remove);
+            Assert.AreEqual("67890", channels[0].Tabs[1].ID);
+            Assert.AreEqual("My Tab 01", channels[0].Tabs[1].DisplayName);
+            Assert.AreEqual("12345", channels[0].Tabs[1].TeamsAppId);
+            Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView", channels[0].Tabs[1].Configuration.ContentUrl);
+            Assert.AreEqual("2DCA2E6C7A10415CAF6B8AB6661B3154", channels[0].Tabs[1].Configuration.EntityId);
+            Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/uninstallTab", channels[0].Tabs[1].Configuration.RemoveUrl);
+            Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154", channels[0].Tabs[1].Configuration.WebsiteUrl);
             Assert.IsTrue(channels[0].TabResources[0].TabResourceSettings.Contains("\"displayName\": \"Notebook name\""));
             Assert.AreEqual("{TeamsTabId:TabDisplayName}", channels[0].TabResources[0].TargetTabId);
             Assert.AreEqual(TabResourceType.Notebook, channels[0].TabResources[0].Type);
@@ -829,6 +830,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                         {
                             new TeamTab
                             {
+                                DisplayName = "Wiki",
+                                TeamsAppId = "com.microsoft.teamspace.tab.wiki",
+                                ID = "{TeamsTabId:Wiki}",
+                                Remove = true,
+                            },
+                            new TeamTab
+                            {
                                 DisplayName = "My Tab 01",
                                 TeamsAppId = "12345",
                                 ID = "67890",
@@ -931,14 +939,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual("This is just a Sample Channel", channels[0].Description);
             Assert.AreEqual("Sample Channel 01", channels[0].DisplayName);
             Assert.AreEqual(true, channels[0].IsFavoriteByDefault);
-            Assert.AreEqual(1, channels[0].Tabs.Count());
-            Assert.AreEqual("67890", channels[0].Tabs[0].ID);
-            Assert.AreEqual("My Tab 01", channels[0].Tabs[0].DisplayName);
-            Assert.AreEqual("12345", channels[0].Tabs[0].TeamsAppId);
-            Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView", channels[0].Tabs[0].Configuration.ContentUrl);
-            Assert.AreEqual("2DCA2E6C7A10415CAF6B8AB6661B3154", channels[0].Tabs[0].Configuration.EntityId);
-            Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/uninstallTab", channels[0].Tabs[0].Configuration.RemoveUrl);
-            Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154", channels[0].Tabs[0].Configuration.WebsiteUrl);
+            Assert.AreEqual(2, channels[0].Tabs.Count());
+            Assert.AreEqual(true, channels[0].Tabs[0].Remove);
+            Assert.AreEqual("67890", channels[0].Tabs[1].ID);
+            Assert.AreEqual("My Tab 01", channels[0].Tabs[1].DisplayName);
+            Assert.AreEqual("12345", channels[0].Tabs[1].TeamsAppId);
+            Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/tabView", channels[0].Tabs[1].Configuration.ContentUrl);
+            Assert.AreEqual("2DCA2E6C7A10415CAF6B8AB6661B3154", channels[0].Tabs[1].Configuration.EntityId);
+            Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154/uninstallTab", channels[0].Tabs[1].Configuration.RemoveUrl);
+            Assert.AreEqual("https://www.contoso.com/Orders/2DCA2E6C7A10415CAF6B8AB6661B3154", channels[0].Tabs[1].Configuration.WebsiteUrl);
             Assert.IsTrue(channels[0].TabResources[0].TabResourceSettings.Contains("\"displayName\": \"Notebook name\""));
             Assert.AreEqual("{TeamsTabId:TabDisplayName}", channels[0].TabResources[0].TargetTabId);
             Assert.AreEqual(TeamTabResourcesTabResourceType.Planner, channels[0].TabResources[0].Type);
