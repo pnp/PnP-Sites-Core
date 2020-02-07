@@ -2073,11 +2073,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             if (currentFolder != null)
             {
+#if !SP2013
                 //add the uniqueid's of the folders to the Token Parser
                 currentFolder.EnsureProperties(p => p.UniqueId, p => p.ServerRelativeUrl);
                 parser.AddToken(new FileUniqueIdToken(list.SiteList.ParentWeb, currentFolder.ServerRelativeUrl.Substring(list.SiteList.ParentWeb.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), currentFolder.UniqueId));
                 parser.AddToken(new FileUniqueIdEncodedToken(list.SiteList.ParentWeb, currentFolder.ServerRelativeUrl.Substring(list.SiteList.ParentWeb.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()), currentFolder.UniqueId));
-
+#endif
                 // Handle any child-folder
                 if (folder.Folders != null && folder.Folders.Count > 0)
                 {

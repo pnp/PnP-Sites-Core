@@ -19,7 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Reliability improvements in pages API to load some very old pages
 - Add Folder UniqueID to parser token as fileuniqueid #2524 [czullu - Christian Zuellig]
 - Fix: Change indentation back to spaces. #2529 [jensotto - Jens Otto Hatlevold]
-- Added option to set requesting access to a web to the default owners #2533 [KoenZomers - Koen Zomers]
+- Added option to set requesting access to a web to the default owners + marked the methods supporting multiple email addresses as obsolete #2533 / #2534 [KoenZomers - Koen Zomers]
 
 ## [3.17.2001.2 - January 2020 release]
 

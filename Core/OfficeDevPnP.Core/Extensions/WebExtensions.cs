@@ -1315,7 +1315,9 @@ namespace Microsoft.SharePoint.Client
         /// <param name="email">The e-mail address to send access requests to.</param>
         public static void EnableRequestAccess(this Web web, string email)
         {
+#if !ONPREMISES
             web.SetUseAccessRequestDefaultAndUpdate(false);
+#endif
             web.RequestAccessEmail = email;
             web.Update();
             web.Context.ExecuteQueryRetry();
