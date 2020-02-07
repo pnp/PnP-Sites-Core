@@ -1259,6 +1259,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The web to enable request access.</param>
         /// <param name="emails">The e-mail addresses to send access requests to.</param>
+        [Obsolete("Only one e-mail address can be set for receiving access requests, use the EnableRequestAccess with string email instead")]
         public static void EnableRequestAccess(this Web web, params string[] emails)
         {
             web.EnableRequestAccess(emails.AsEnumerable());
@@ -1269,6 +1270,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The web to enable request access.</param>
         /// <param name="emails">The e-mail addresses to send access requests to.</param>
+        [Obsolete("Only one e-mail address can be set for receiving access requests, use the EnableRequestAccess with string email instead")]
         public static void EnableRequestAccess(this Web web, IEnumerable<string> emails)
         {
             // keep them unique, but keep order
@@ -1302,6 +1304,19 @@ namespace Microsoft.SharePoint.Client
             web.SetUseAccessRequestDefaultAndUpdate(false);
 #endif
             web.RequestAccessEmail = sb.ToString();
+            web.Update();
+            web.Context.ExecuteQueryRetry();
+        }
+
+        /// <summary>
+        /// Enables request access for the specified e-mail address.
+        /// </summary>
+        /// <param name="web">The web to enable request access.</param>
+        /// <param name="email">The e-mail address to send access requests to.</param>
+        public static void EnableRequestAccess(this Web web, string email)
+        {
+            web.SetUseAccessRequestDefaultAndUpdate(false);
+            web.RequestAccessEmail = email;
             web.Update();
             web.Context.ExecuteQueryRetry();
         }
