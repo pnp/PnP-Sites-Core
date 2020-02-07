@@ -1242,6 +1242,17 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Enables request access for the default owners group of the site.
+        /// </summary>
+        /// <param name="web">The web to enable request access.</param>
+        public static void EnableRequestAccess(this Web web)
+        {
+            web.SetUseAccessRequestDefaultAndUpdate(true);
+            web.Update();
+            web.Context.ExecuteQueryRetry();
+        }
+
+        /// <summary>
         /// Enables request access for the specified e-mail addresses.
         /// </summary>
         /// <param name="web">The web to enable request access.</param>
@@ -1285,6 +1296,7 @@ namespace Microsoft.SharePoint.Client
             if (skippedEmails.Count > 0)
                 Log.Warning(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_RequestAccessEmailLimitExceeded, string.Join(", ", skippedEmails));
 
+            web.SetUseAccessRequestDefaultAndUpdate(false);
             web.RequestAccessEmail = sb.ToString();
             web.Update();
             web.Context.ExecuteQueryRetry();
