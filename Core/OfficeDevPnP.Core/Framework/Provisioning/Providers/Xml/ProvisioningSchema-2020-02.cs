@@ -6954,7 +6954,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
         private string clientSideComponentIdField;
         
         private string clientSideComponentPropertiesField;
-        
+
+        private string clientSideHostPropertiesField;
+
         public CustomAction() {
             this.enabledField = true;
             this.removeField = false;

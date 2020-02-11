@@ -90,6 +90,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !SP2013 && !SP2016
                         ClientSideComponentId = customAction.ClientSideComponentId,
                         ClientSideComponentProperties = customAction.ClientSideComponentProperties != null ? parser.ParseString(customAction.ClientSideComponentProperties) : customAction.ClientSideComponentProperties,
+                        ClientSideHostProperties = customAction.ClientSideHostProperties != null ? parser.ParseString(customAction.ClientSideHostProperties) : customAction.ClientSideHostProperties,
 #endif
                         CommandUIExtension = customAction.CommandUIExtension != null ? parser.ParseString(customAction.CommandUIExtension.ToString()) : string.Empty,
                         Description = parser.ParseString(customAction.Description),
