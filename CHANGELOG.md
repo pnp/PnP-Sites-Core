@@ -6,6 +6,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Added
+
+- Option to use an access token in the TimerJob framework
+- Option specify the Azure environment being used by the timerjob framework
+
+### Changed
+
+- Respect the set Azure environment in the GetAzureADCredentialsContext AuthenticationManager method
+
 ## [3.17.2002.0 - February 2020 release]
 
 ### Added

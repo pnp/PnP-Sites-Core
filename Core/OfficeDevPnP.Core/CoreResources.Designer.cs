@@ -2864,6 +2864,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Timer job authentication set to type AccessToken.
+        /// </summary>
+        internal static string TimerJob_Authentication_AccessToken {
+            get {
+                return ResourceManager.GetString("TimerJob_Authentication_AccessToken", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Timer job authentication set to type App-Only with clientId {0}.
         /// </summary>
         internal static string TimerJob_Authentication_AppOnly {

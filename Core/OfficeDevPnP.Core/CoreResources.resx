@@ -1240,4 +1240,7 @@
   <data name="SiteCollection_WaitForIsProvisioningComplete" xml:space="preserve">
     <value>Server side provisioning of this web did not finish after waiting for {0} milliseconds.</value>
   </data>
+  <data name="TimerJob_Authentication_AccessToken" xml:space="preserve">
+    <value>Timer job authentication set to type AccessToken</value>
+  </data>
 </root>

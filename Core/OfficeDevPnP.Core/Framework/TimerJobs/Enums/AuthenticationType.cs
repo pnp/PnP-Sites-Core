@@ -21,7 +21,11 @@
         /// <summary>
         /// Azure Active Directory Apps-Only Authentication.
         /// </summary>
-        AzureADAppOnly = 3
+        AzureADAppOnly = 3,
+        /// <summary>
+        /// Consumer provides a valid access token
+        /// </summary>
+        AccessToken = 4,
 #endif
     }
 }
