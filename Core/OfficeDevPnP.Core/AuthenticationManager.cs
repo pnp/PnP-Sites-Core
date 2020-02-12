@@ -171,7 +171,7 @@ namespace OfficeDevPnP.Core
         /// </summary>
         /// <param name="environment">Environment to get the login information for</param>
         /// <returns>Azure ASC login endpoint</returns>
-        public static string GetAzureADACSEndPoint(AzureEnvironment environment)
+        public string GetAzureADACSEndPoint(AzureEnvironment environment)
         {
             switch (environment)
             {
@@ -207,7 +207,7 @@ namespace OfficeDevPnP.Core
         /// </summary>
         /// <param name="environment">Environment to get the login information for</param>
         /// <returns>Azure ACS login endpoint prefix</returns>
-        public static string GetAzureADACSEndPointPrefix(AzureEnvironment environment)
+        public string GetAzureADACSEndPointPrefix(AzureEnvironment environment)
         {
             switch (environment)
             {
@@ -691,7 +691,7 @@ namespace OfficeDevPnP.Core
         public static async Task<string> AcquireTokenAsync(string resourceUri, string username, string password, AzureEnvironment environment)
         {
             HttpClient client = new HttpClient();
-            string tokenEndpoint = $"{GetAzureADLoginEndPoint(environment)}/common/oauth2/token";
+            string tokenEndpoint = $"{new AuthenticationManager().GetAzureADLoginEndPoint(environment)}/common/oauth2/token";
 
             var body = $"resource={resourceUri}&client_id=9bc3ab49-b65d-410a-85ad-de819febfddc&grant_type=password&username={username}&password={password}";
             var stringContent = new StringContent(body, System.Text.Encoding.UTF8, "application/x-www-form-urlencoded");
@@ -1016,7 +1016,7 @@ namespace OfficeDevPnP.Core
         /// </summary>
         /// <param name="environment">Environment to get the login information for</param>
         /// <returns>Azure AD login endpoint</returns>
-        public static string GetAzureADLoginEndPoint(AzureEnvironment environment)
+        public string GetAzureADLoginEndPoint(AzureEnvironment environment)
         {
             switch (environment)
             {
