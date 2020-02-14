@@ -189,7 +189,7 @@ namespace OfficeDevPnP.Core
                     }
                 case AzureEnvironment.USGovernment:
                     {
-                        return "accesscontrol.windows.net";
+                        return "microsoftonline.us";
                     }
                 case AzureEnvironment.PPE:
                     {
@@ -225,7 +225,7 @@ namespace OfficeDevPnP.Core
                     }
                 case AzureEnvironment.USGovernment:
                     {
-                        return "accounts";
+                        return "login";
                     }
                 case AzureEnvironment.PPE:
                     {

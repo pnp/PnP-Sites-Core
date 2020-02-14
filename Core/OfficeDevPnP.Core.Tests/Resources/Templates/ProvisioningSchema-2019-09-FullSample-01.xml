@@ -1247,6 +1247,7 @@
                           Classification="MBI"
                           Teamify="false"
                           HideTeamify="true"
+                          Language="1033"
                           GroupLifecyclePolicyId="GROUP_LIFECYCLE_01">
         <pnp:Templates>
           <pnp:ProvisioningTemplateReference ID="ProjectsTemplate" />

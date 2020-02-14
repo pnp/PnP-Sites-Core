@@ -2,7 +2,7 @@
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.Pages
 {
-    public class ExtractConfiguration
+    public class ExtractPagesConfiguration
     {
         [JsonProperty("excludeAuthorInformation")]
         public bool ExcludeAuthorInformation { get; set; }

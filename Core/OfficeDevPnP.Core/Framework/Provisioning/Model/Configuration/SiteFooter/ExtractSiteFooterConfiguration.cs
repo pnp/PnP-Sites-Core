@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration.SiteFooter
 {
-    public class ExtractConfiguration
+    public class ExtractSiteFooterConfiguration
     {
-        [JsonProperty("RemoveExistingNodes")]
+        [JsonProperty("removeExistingNodes")]
         public bool RemoveExistingNodes { get; set; }
     }
 }

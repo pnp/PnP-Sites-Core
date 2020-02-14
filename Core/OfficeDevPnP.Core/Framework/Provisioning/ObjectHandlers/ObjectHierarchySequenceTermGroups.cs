@@ -20,7 +20,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public override string Name => "Term Groups";
 
         public override TokenParser ProvisionObjects(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, TokenParser parser,
-            ProvisioningTemplateApplyingInformation applyingInformation)
+            ApplyConfiguration configuration)
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
@@ -183,7 +183,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
 
 
-        public override bool WillProvision(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override bool WillProvision(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, ApplyConfiguration configuration)
         {
             return hierarchy.Sequences.Where(s => s.TermStore != null && s.TermStore.TermGroups != null && s.TermStore.TermGroups.Any()).Any();
         }

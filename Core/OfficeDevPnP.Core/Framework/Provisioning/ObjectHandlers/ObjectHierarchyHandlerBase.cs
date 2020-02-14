@@ -23,11 +23,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public ProvisioningMessagesDelegate MessagesDelegate { get; set; }
 
-        public abstract bool WillProvision(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation);
+        public abstract bool WillProvision(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, ApplyConfiguration configuration);
 
         public abstract bool WillExtract(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, ExtractConfiguration configuration);
 
-        public abstract TokenParser ProvisionObjects(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation);
+        public abstract TokenParser ProvisionObjects(Tenant tenant, Model.ProvisioningHierarchy hierarchy, string sequenceId, TokenParser parser, ApplyConfiguration configuration);
 
         public abstract ProvisioningHierarchy ExtractObjects(Tenant tenant, Model.ProvisioningHierarchy hierarchy, ExtractConfiguration configuration);
 

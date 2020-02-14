@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
 {
-    public class JsonPnPFormatter : ITemplateFormatter
+    public class JsonPnPFormatter : ITemplateFormatterWithValidation
     {
         private TemplateProviderBase _provider;
 
@@ -17,10 +17,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Json
             this._provider = provider;
         }
 
-        public bool IsValid(System.IO.Stream template)
+        public bool IsValid(Stream template)
+        {
+            return GetValidationResults(template).IsValid;
+        }
+
+        public ValidationResult GetValidationResults(System.IO.Stream template)
         {
             // We do not provide JSON validation capabilities
-            return (true);
+            return new ValidationResult { IsValid = true, Exceptions = null };
         }
 
         public System.IO.Stream ToFormattedTemplate(Model.ProvisioningTemplate template)

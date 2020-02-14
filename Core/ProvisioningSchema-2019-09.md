@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 10/6/2019*
+* Topic automatically generated on 11/25/2019*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -3739,7 +3739,8 @@ Language|ReplaceableString|Language of the target Site, optional attribute.
       Classification="pnp:ReplaceableString"
       Teamify="xsd:boolean"
       HideTeamify="xsd:boolean"
-      GroupLifecyclePolicyId="pnp:ReplaceableString">
+      GroupLifecyclePolicyId="pnp:ReplaceableString"
+      Language="pnp:ReplaceableString">
 </pnp:TeamSite>
 ```
 
@@ -3756,6 +3757,7 @@ Classification|ReplaceableString|The Classification of the target Site, if any, 
 Teamify|xsd:boolean|Defines whether to create a Microsoft Team backing the modern Team Site, optional attribute.
 HideTeamify|xsd:boolean|Defines whether to hide the create a Microsoft Team option in the UI of the Team Site, optional attribute.
 GroupLifecyclePolicyId|ReplaceableString|Allows to associate the Office 365 Group associated with the Team Site to a Group Lifecycle Policy, optional attribute.
+Language|ReplaceableString|Language of the target Site, optional attribute.
 <a name="teamsitenogroup"></a>
 ### TeamSiteNoGroup
 

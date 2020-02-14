@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
     <RootNamespace>OfficeDevPnP.Core</RootNamespace>
     <AssemblyName>OfficeDevPnP.Core</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -11,6 +11,9 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>bin\DebugCore\</OutputPath>
+    <DefineConstants>TRACE;NETSTANDARD2_0</DefineConstants>
+    <DebugType>full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -41,6 +44,10 @@
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.xsd" />
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.xsd" />
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-01.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-05.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.xsd" />
     <None Remove="OfficeDevPnP.Core.csproj.DotSettings" />
     <None Remove="Properties\Settings.settings" />
     <None Remove="Version.txt" />
@@ -54,11 +61,15 @@
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2016-05.xsd" />
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2017-05.xsd" />
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-01.xsd" />
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.xsd" />
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.xsd" />
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.xsd" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="0.9.9.2" />
     <PackageReference Include="DocumentFormat.OpenXml" Version="2.8.1" />
+    <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.2.0" />
     <PackageReference Include="Microsoft.Graph" Version="1.7.0" />
     <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="3.19.2" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="5.2.1" />
@@ -96,6 +107,10 @@
 
   <ItemGroup>
     <Folder Include="Utilities\OAuth\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-05.xsd" />
   </ItemGroup>
 
 </Project>

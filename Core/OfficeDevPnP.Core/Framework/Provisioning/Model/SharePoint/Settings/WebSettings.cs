@@ -124,6 +124,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public SearchBoxInNavBar SearchBoxInNavBar { get; set; }
 
+        /// <summary>
+        /// Defines the Search Center URL
+        /// </summary>
+        public string SearchCenterUrl { get; set; }
+
         #endregion
 
         #region Constructors
@@ -177,7 +182,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <returns>Returns hash code in integer</returns>
         public override int GetHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}|{16}|{17}|{18}|{19}|{20}",
                 (this.NoCrawl.GetHashCode()),
                 (this.RequestAccessEmail != null ? this.RequestAccessEmail.GetHashCode() : 0),
                 (this.WelcomePage != null ? this.WelcomePage.GetHashCode() : 0),
@@ -197,7 +202,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.DisableAppViews.GetHashCode(),
                 this.HorizontalQuickLaunch.GetHashCode(),
                 this.SearchScope.GetHashCode(),
-                this.SearchBoxInNavBar.GetHashCode()
+                this.SearchBoxInNavBar.GetHashCode(),
+                this.SearchCenterUrl.GetHashCode()
             ).GetHashCode());
         }
 
@@ -246,7 +252,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this.DisableAppViews == other.DisableAppViews &&
                     this.HorizontalQuickLaunch == other.HorizontalQuickLaunch &&
                     this.SearchScope == other.SearchScope &&
-                    this.SearchBoxInNavBar == other.SearchBoxInNavBar
+                    this.SearchBoxInNavBar == other.SearchBoxInNavBar &&
+                    this.SearchCenterUrl == other.SearchCenterUrl
                 );
         }
 

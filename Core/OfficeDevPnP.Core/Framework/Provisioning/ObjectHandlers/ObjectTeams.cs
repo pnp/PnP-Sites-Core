@@ -1,4 +1,7 @@
 ﻿#if !ONPREMISES
+#if NETSTANDARD2_0
+using Microsoft.AspNetCore.StaticFiles;
+#endif
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
@@ -398,7 +401,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     team.MemberSettings?.AllowAddRemoveApps,
                     team.MemberSettings?.AllowDeleteChannels,
                     team.MemberSettings?.AllowCreateUpdateRemoveTabs,
-                    team.MemberSettings?.AllowCreateUpdateRemoveConnectors
+                    team.MemberSettings?.AllowCreateUpdateRemoveConnectors,
+                    team.MemberSettings?.AllowCreatePrivateChannels,
                 },
                 messagingSettings = new
                 {
@@ -855,43 +859,57 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             var displayname = parser.ParseString(tab.DisplayName);
 
-            // teamsAppId is not allowed in the request
-            var teamsAppId = parser.ParseString(tab.TeamsAppId);
-            tab.TeamsAppId = null;
-
-            if (tab.Configuration != null)
+            if (!tab.Remove)
             {
-                tab.Configuration.EntityId = parser.ParseString(tab.Configuration.EntityId);
-                tab.Configuration.ContentUrl = parser.ParseString(tab.Configuration.ContentUrl);
-                tab.Configuration.RemoveUrl = parser.ParseString(tab.Configuration.RemoveUrl);
-                tab.Configuration.WebsiteUrl = parser.ParseString(tab.Configuration.WebsiteUrl);
+                // teamsAppId is not allowed in the request
+                var teamsAppId = parser.ParseString(tab.TeamsAppId);
+                tab.TeamsAppId = null;
+
+                if (tab.Configuration != null)
+                {
+                    tab.Configuration.EntityId = parser.ParseString(tab.Configuration.EntityId);
+                    tab.Configuration.ContentUrl = parser.ParseString(tab.Configuration.ContentUrl);
+                    tab.Configuration.RemoveUrl = parser.ParseString(tab.Configuration.RemoveUrl);
+                    tab.Configuration.WebsiteUrl = parser.ParseString(tab.Configuration.WebsiteUrl);
+                }
+
+
+                // Prepare the request body for the Tab update
+                var tabToUpdate = new
+                {
+                    displayName = displayname,
+                    configuration = tab.Configuration != null
+                        ? new
+                        {
+                            tab.Configuration.EntityId,
+                            tab.Configuration.ContentUrl,
+                            tab.Configuration.RemoveUrl,
+                            tab.Configuration.WebsiteUrl
+                        } : null,
+                };
+
+                HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs/{tabId}", tabToUpdate, HttpHelper.JsonContentType, accessToken);
+
+                // Add the teamsAppId back now that we've updated the tab
+                tab.TeamsAppId = teamsAppId;
             }
-
-
-            // Prepare the request body for the Tab update
-            var tabToUpdate = new
+            else
             {
-                displayName = displayname,
-                configuration = tab.Configuration != null
-                    ? new
-                    {
-                        tab.Configuration.EntityId,
-                        tab.Configuration.ContentUrl,
-                        tab.Configuration.RemoveUrl,
-                        tab.Configuration.WebsiteUrl
-                    } : null,
-            };
-
-            HttpHelper.MakePatchRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs/{tabId}", tabToUpdate, HttpHelper.JsonContentType, accessToken);
-
-            // Add the teamsAppId back now that we've updated the tab
-            tab.TeamsAppId = teamsAppId;
+                // Simply delete the tab
+                HttpHelper.MakeDeleteRequest($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{teamId}/channels/{channelId}/tabs/{tabId}", accessToken);
+            }
 
             return tabId;
         }
 
         private static string CreateTeamTab(PnPMonitoredScope scope, TeamTab tab, TokenParser parser, string teamId, string channelId, string accessToken)
         {
+            // There is no reason to create a tab that has to be removed
+            if (tab.Remove)
+            {
+                return null;
+            }
+
             var displayname = parser.ParseString(tab.DisplayName);
             var teamsAppId = parser.ParseString(tab.TeamsAppId);
 
@@ -1126,7 +1144,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 using (var photoStream = new MemoryStream(photoBytes))
                 {
+#if !NETSTANDARD2_0
                     var contentType = MimeMapping.GetMimeMapping(photoPath);
+#else
+                    string contentType;
+                    new FileExtensionContentTypeProvider().TryGetContentType(photoPath, out contentType);
+                    contentType ??= "application/octet-stream";
+#endif
                     int maxRetries = 10;
                     int retry = 0;
                     while (retry < maxRetries)
@@ -1137,10 +1161,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 photoStream, contentType, accessToken);
                             break;
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
-                            Thread.Sleep(5000); // wait half a second
                             retry++;
+                            Thread.Sleep(5000*retry); // wait
                         }
                 }
             }
@@ -1202,9 +1226,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return team.ToString();
         }
 
-        #region PnP Provisioning Engine infrastructural code
+#region PnP Provisioning Engine infrastructural code
 
-        public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override bool WillProvision(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, ApplyConfiguration configuration)
         {
             if (!_willProvision.HasValue)
             {
@@ -1223,7 +1247,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return _willExtract.Value;
         }
 
-        public override TokenParser ProvisionObjects(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, TokenParser parser, ProvisioningTemplateApplyingInformation applyingInformation)
+        public override TokenParser ProvisionObjects(Tenant tenant, ProvisioningHierarchy hierarchy, string sequenceId, TokenParser parser, ApplyConfiguration configuration)
         {
             using (var scope = new PnPMonitoredScope(Name))
             {
@@ -1368,6 +1392,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             catch (ApplicationException ex)
             {
+#if !NETSTANDARD2_0
                 if (ex.InnerException is HttpException)
                 {
                     if (((HttpException)ex.InnerException).GetHttpCode() == 404)
@@ -1383,6 +1408,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     throw ex;
                 }
+#else
+                // untested change
+                if (ex.Message.StartsWith("404"))
+                {
+                        // no team, swallow
+                }
+                else
+                {
+                    throw ex;
+                }
+#endif
             }
             return team;
         }
@@ -1460,7 +1496,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (var channel in team.Channels)
             {
-                var teamTabsString = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}beta/teams/{groupId}/channels/{channel.ID}/tabs", accessToken);
                 channel.Tabs.AddRange(GetTeamChannelTabs(configuration, accessToken, groupId, channel.ID));
                 if (configuration.Tenant.Teams.IncludeMessages)
                 {
@@ -1496,7 +1531,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             return tabs;
         }
-        #endregion
+#endregion
 
         private static string CreateMailNicknameFromDisplayName(string displayName)
         {

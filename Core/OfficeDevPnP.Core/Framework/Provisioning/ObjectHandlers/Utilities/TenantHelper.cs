@@ -2,11 +2,13 @@
 using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.Online.SharePoint.TenantAdministration.Internal;
 using Microsoft.SharePoint.Client;
+using Microsoft.SharePoint.Client.UserProfiles;
 using Newtonsoft.Json;
 using OfficeDevPnP.Core.ALM;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Framework.Provisioning.Connectors;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System;
 using System.Collections.Generic;
@@ -30,13 +32,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
    </Where>
 </Query>
 </View>";
-        public static TokenParser ProcessApps(Tenant tenant, ProvisioningTenant provisioningTenant, FileConnectorBase connector, TokenParser parser, PnPMonitoredScope scope, ProvisioningTemplateApplyingInformation applyingInformation, ProvisioningMessagesDelegate messagesDelegate)
+        public static TokenParser ProcessApps(Tenant tenant, ProvisioningTenant provisioningTenant, FileConnectorBase connector, TokenParser parser, PnPMonitoredScope scope, ApplyConfiguration configuration, ProvisioningMessagesDelegate messagesDelegate)
         {
             if (provisioningTenant.AppCatalog != null && provisioningTenant.AppCatalog.Packages.Count > 0)
             {
                 var rootSiteUrl = tenant.GetRootSiteUrl();
                 tenant.Context.ExecuteQueryRetry();
-                using (var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl.Value, applyingInformation.AccessTokens))
+                using (var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl.Value, configuration.AccessTokens))
                 {
 
                     var web = context.Web;
@@ -91,7 +93,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                 var exists = false;
                                 var appId = Guid.Empty;
 
-                                using (var appCatalogContext = ((ClientContext)tenant.Context).Clone(appCatalogUri, applyingInformation.AccessTokens))
+                                using (var appCatalogContext = ((ClientContext)tenant.Context).Clone(appCatalogUri, configuration.AccessTokens))
                                 {
                                     // check if the app already is present
                                     var appList = appCatalogContext.Web.GetListByUrl("AppCatalog");
@@ -182,14 +184,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             return hashString;
         }
 
-        internal static TokenParser ProcessStorageEntities(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningTemplateApplyingInformation applyingInformation, ProvisioningMessagesDelegate messagesDelegate)
+        internal static TokenParser ProcessStorageEntities(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ApplyConfiguration configuration, ProvisioningMessagesDelegate messagesDelegate)
         {
             if (provisioningTenant.StorageEntities != null && provisioningTenant.StorageEntities.Any())
             {
                 var rootSiteUrl = tenant.GetRootSiteUrl();
                 tenant.Context.ExecuteQueryRetry();
 
-                using (var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl.Value, applyingInformation.AccessTokens))
+                using (var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl.Value, configuration.AccessTokens))
                 {
                     var web = context.Web;
 
@@ -222,7 +224,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                     if (appCatalogUri != null)
                     {
-                        using (var appCatalogContext = context.Clone(appCatalogUri, applyingInformation.AccessTokens))
+                        using (var appCatalogContext = context.Clone(appCatalogUri, configuration.AccessTokens))
                         {
                             foreach (var entity in provisioningTenant.StorageEntities)
                             {
@@ -676,6 +678,87 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 returnDict.Add((SPOTenantCdnPolicyType)Enum.Parse(typeof(SPOTenantCdnPolicyType), entryArray[0]), entryArray[1]);
             }
             return returnDict;
+        }
+
+        public static TokenParser ProcessUserProfiles(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
+        {
+            if (provisioningTenant.SPUsersProfiles != null && provisioningTenant.SPUsersProfiles.Any())
+            {
+                messagesDelegate?.Invoke("Processing User Profiles", ProvisioningMessageType.Progress);
+
+                foreach (var profile in provisioningTenant.SPUsersProfiles)
+                {
+                    string parsedUser;
+                    if (!string.IsNullOrEmpty(profile.TargetUser))
+                    {
+                        parsedUser = parser.ParseString(profile.TargetUser);
+                    }
+                    else
+                    {
+                        parsedUser = parser.ParseString(profile.TargetGroup);
+                    }
+
+                    PeopleManager peopleManager = new PeopleManager(tenant.Context);
+                    try
+                    {
+                        // Currently only supports setting Single Valued property
+                        // We don't have a way at the moment to set Multi-valued property
+                        foreach (var props in profile.Properties)
+                        {
+                            peopleManager.SetSingleValueProfileProperty($"i:0#.f|membership|{parsedUser}", props.Key, parser.ParseString(props.Value));
+                        }
+                        tenant.Context.ExecuteQueryRetry();
+                    }
+                    catch (Exception ex)
+                    {
+                        scope.LogError($"Error processing user profile for {parsedUser}. Skipped due to error: ${ex.Message}");
+                    }
+                }
+            }
+            return parser;
+        }
+
+        public static TokenParser ProcessSharingSettings(Tenant tenant, ProvisioningTenant provisioningTenant, TokenParser parser, PnPMonitoredScope scope, ProvisioningMessagesDelegate messagesDelegate)
+        {
+            var sharingSettings = provisioningTenant.SharingSettings;
+            if (sharingSettings != null)
+            {
+                // Set general setting of Sharing Capability
+                tenant.SharingCapability = (Microsoft.Online.SharePoint.TenantManagement.SharingCapabilities)Enum.Parse(typeof(Microsoft.Online.SharePoint.TenantManagement.SharingCapabilities), sharingSettings.SharingCapability.ToString());
+
+                if (sharingSettings.SharingCapability != SharingCapability.Disabled)
+                {
+                    // Configure the number of days for anonymous links expiration
+                    tenant.RequireAnonymousLinksExpireInDays = sharingSettings.RequireAnonymousLinksExpireInDays;
+                    // Configure the default anonymous link type for files
+                    tenant.FileAnonymousLinkType = (Microsoft.SharePoint.Client.AnonymousLinkType)Enum.Parse(typeof(Microsoft.SharePoint.Client.AnonymousLinkType), sharingSettings.FileAnonymousLinkType.ToString());
+                    // Configure the default anonymous link type for folders
+                    tenant.FolderAnonymousLinkType = (Microsoft.SharePoint.Client.AnonymousLinkType)Enum.Parse(typeof(Microsoft.SharePoint.Client.AnonymousLinkType), sharingSettings.FolderAnonymousLinkType.ToString());
+                    // Configure the default sharing link type
+                    tenant.DefaultSharingLinkType = (Microsoft.Online.SharePoint.TenantManagement.SharingLinkType)Enum.Parse(typeof(Microsoft.Online.SharePoint.TenantManagement.SharingLinkType), sharingSettings.DefaultSharingLinkType.ToString());
+                    // Configure whether external users are prevented from re-sharing shared content
+                    tenant.PreventExternalUsersFromResharing = sharingSettings.PreventExternalUsersFromResharing;
+                    // Configure if the the guest account must match the invited account
+                    tenant.RequireAcceptingAccountMatchInvitedAccount = sharingSettings.RequireAcceptingAccountMatchInvitedAccount;
+                    // Configure the domain restriction mode
+                    tenant.SharingDomainRestrictionMode = (Microsoft.Online.SharePoint.TenantManagement.SharingDomainRestrictionModes)Enum.Parse(typeof(Microsoft.Online.SharePoint.TenantManagement.SharingDomainRestrictionModes), sharingSettings.SharingDomainRestrictionMode.ToString());
+
+                    if (sharingSettings.SharingDomainRestrictionMode == SharingDomainRestrictionMode.AllowList)
+                    {
+                        // Configure the list of allowed domains
+                        tenant.SharingAllowedDomainList = sharingSettings.AllowedDomainList.Aggregate(string.Empty, (acc, next) => acc += $" {next}").Trim();
+                    }
+                    else if (sharingSettings.SharingDomainRestrictionMode == SharingDomainRestrictionMode.BlockList)
+                    {
+                        // Configure the list of blocked domains
+                        tenant.SharingBlockedDomainList = sharingSettings.BlockedDomainList.Aggregate(string.Empty, (acc, next) => acc += $" {next}").Trim();
+                    }
+                }
+
+                // Save the new settings
+                tenant.Context.ExecuteQueryRetry();
+            }
+            return parser;
         }
     }
 }

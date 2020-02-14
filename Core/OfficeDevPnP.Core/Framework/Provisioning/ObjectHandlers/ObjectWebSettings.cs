@@ -33,7 +33,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     w => w.DisableFlows,
                     w => w.DisableAppViews,
                     w => w.HorizontalQuickLaunch,
-    #if !SP2019
+                    w => w.QuickLaunchEnabled,
+#if !SP2019
                     w => w.SearchScope,
                     w => w.SearchBoxInNavBar,
     #endif
@@ -59,9 +60,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 webSettings.DisableFlows = web.DisableFlows;
                 webSettings.DisableAppViews = web.DisableAppViews;
                 webSettings.HorizontalQuickLaunch = web.HorizontalQuickLaunch;
-    #if !SP2019
+                webSettings.QuickLaunchEnabled = web.QuickLaunchEnabled;
+#if !SP2019
                 webSettings.SearchScope = (SearchScopes)Enum.Parse(typeof(SearchScopes), web.SearchScope.ToString(), true);
                 webSettings.SearchBoxInNavBar = (SearchBoxInNavBar)Enum.Parse(typeof(SearchBoxInNavBar), web.SearchBoxInNavBar.ToString(), true);
+                webSettings.SearchCenterUrl = web.GetWebSearchCenterUrl(true);
     #endif
 #endif
                 // We're not extracting Title and Description
@@ -262,8 +265,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
                 else
                 {
-                    WriteMessage("No connector present to persist homepage.", ProvisioningMessageType.Error);
-                    scope.LogError("No connector present to persist homepage");
+                    WriteMessage("No connector present to persist site logo.", ProvisioningMessageType.Error);
+                    scope.LogError("No connector present to persist site logo");
                 }
             }
             else
@@ -390,6 +393,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         web.SearchBoxInNavBar = (SearchBoxInNavBarType)Enum.Parse(typeof(SearchBoxInNavBarType), webSettings.SearchBoxInNavBar.ToString(), true);
                     }
+
+                    if (!string.IsNullOrEmpty(webSettings.SearchCenterUrl) &&
+                        web.GetWebSearchCenterUrl(true) != webSettings.SearchCenterUrl)
+                    {
+                        web.SetWebSearchCenterUrl(webSettings.SearchCenterUrl);
+                    }
 #endif
 #endif
                     var masterUrl = parser.ParseString(webSettings.MasterPageUrl);
@@ -486,6 +495,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         web.AlternateCssUrl = parser.ParseString(webSettings.AlternateCSS);
                     }
+
+                    // Tempory disabled as this change is a breaking change for folks that have not set this property in their provisioning templates
+                    //web.QuickLaunchEnabled = webSettings.QuickLaunchEnabled;
+
                     web.Update();
                     web.Context.ExecuteQueryRetry();
 

@@ -5,15 +5,84 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
-## [Unreleased]
+
+## [3.17.2002.0 - February 2020 release]
 
 ### Added
+
+- EnableCommunicationSite extension method to transform a classic, non publishing, site into a communication site
+- February 2020 schema version was added and set as default schema
+- Support for SharingSettings, Search Center URL, new Teams settings, and Groupify of STS#3 sites in the Provisioning Engine
+
+### Changed
+
+- Reliability improvements in pages API to load some very old pages
+- Add Folder UniqueID to parser token as fileuniqueid #2524 [czullu - Christian Zuellig]
+- Fix: Change indentation back to spaces. #2529 [jensotto - Jens Otto Hatlevold]
+- Added option to set requesting access to a web to the default owners + marked the methods supporting multiple email addresses as obsolete #2533 / #2534 [KoenZomers - Koen Zomers]
+
+## [3.17.2001.2 - January 2020 release]
+
+### Changed
+
+- Reverted the apply part of #2478 as this is a breaking change for folks that did not have QuickLaunchEnabled set in their templates
+
+## [3.17.2001.0 - January 2020 release]
+
+### Added
+
+- Support for folder level properties [czullu - Christian Zuellig]
+- Multi-lingual page status and generation methods on the ClientSidePage object
+- Multi-lingual page support for provisioning templates
+- Support for Microsoft Spaces pages (API and provisioning templates)
+
+### Changed
+
+- Improved code for exporting Teams from Microsoft Teams [JarbasHorst - Jarbas Horst]
+- Fixed QuickLaunchEnabled provisioning / extract #2478 [kezack - zackariya el khalfaoui]
+- Bumped the minimal .Net version from 4.5 to 4.6.1
+- Fix #2407 by adding hidden fields to the list prior to the content type. #2408 [stevebeauge - Steve Beaugé]
+- Fix provisioning ReadOnly content type #2501 [SchauDK - Michael Schau]
+
+## [3.16.1912.0 - December 2019 release]
+
+### Added
+
+- UnifiedGroupsUtility.HasTeamsTeam checks if an Office 365 group also has a Teams team
+- SiteExistsAnywhere method to improve SiteExists internal behavior
+
+### Changed
+
+- Added support for tokens in Term names [fzbm - Florian Zink]
+- Improved ObjectApplicationLifecycleManagement inner logic [gautamdsheth - Gautam Sheth]
+- Fixed support for calculated fields in PowerShell [jackpoz - Giacomo Pozzoni]
+
+## [3.15.1911.0 - November 2019 release]
+
+### Added
+
+- Added ApplyTenantTemplate and GetTenantTemplate methods
+- Added new configuration support for extraction and applying of site and tenant templates. See https://docs.microsoft.com/en-us/sharepoint/dev/solution-guidance/configuring-the-pnp-provisioning-engine
 - Added initial TenantTemplate extraction, supporting Sequences and Teams
 - Limiting lists to extract now supports besides filtering on title also filtering on list url
+- Support for User Profile properties upload [gautamdsheth]
+- Support for UpdateChildren="true" in fields definition for content types [SteveClements]
+
+### Changed
+
+- Deprecated ApplyProvisioningHierarchy and replaced with ApplyTenantTemplate
+- IsProvisioningComplete waits for max 20 minutes and logs a warning instead of throwing an exception when a longer wait is needed
+- Fix: reading/setting search redirect URL on a root site
+- Fix: Updated handling SharePoint groups and groups' owners #2444 [NicolajHedeager]
+- Fix: Update us gov auth endpoint #2463 [gobigfoot]
+- Fix: Add null guard to catch block in GetAccess*Token #2435 [fowl2]
+- Fix: ObjectSiteSettings provisioning - SearchBoxInNavBar property was not always initialized #2474 [czullu]
+- Fix: Added support for new taxonomy field default values for fields #2329 [KoenZomers]
 
 ## [3.14.1910.1 - October 2019 intermediate release]
 
 ### Added
+
 - You can now specify to overwrite a tenant theme if already present when using the 201909 schema of the provisioning engine [gautamdsheth]
 
 ### Changed

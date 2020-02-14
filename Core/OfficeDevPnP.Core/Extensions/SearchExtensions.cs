@@ -1,6 +1,10 @@
 ﻿using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client.Search.Administration;
 using Microsoft.SharePoint.Client.Search.Portability;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using OfficeDevPnP.Core;
+using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
 using System;
 using System.Text;
@@ -273,14 +277,14 @@ namespace Microsoft.SharePoint.Client
             finally
             {
 #if !ONPREMISES
-#region Disable scripting if previously enabled
+                #region Disable scripting if previously enabled
                 if (adminContext != null)
                 {
                     // Reset disabling setting the property bag if needed
                     tenant.SetSiteProperties(site.Url, noScriptSite: true);
                     adminContext.Dispose();
                 }
-#endregion
+                #endregion
 #endif
             }
         }
@@ -332,16 +336,24 @@ namespace Microsoft.SharePoint.Client
 
             try
             {
+                string keyName = web.IsSubSite() ? "SRCH_SB_SET_WEB" : "SRCH_SB_SET_SITE";
+
                 if (!string.IsNullOrEmpty(searchCenterUrl))
                 {
                     // Set search results page URL
-                    web.SetPropertyBagValue("SRCH_SB_SET_WEB", "{\"Inherit\":false,\"ResultsPageAddress\":\"" + searchCenterUrl + "\",\"ShowNavigation\":false}");
+                    web.SetPropertyBagValue(keyName, "{\"Inherit\":false,\"ResultsPageAddress\":\"" + searchCenterUrl + "\",\"ShowNavigation\":false}");
                 }
                 else
                 {
                     // When search results page URL is blank remove the property (like the SharePoint UI does)
-                    web.RemovePropertyBagValue("SRCH_SB_SET_WEB");
+                    web.RemovePropertyBagValue(keyName);
                 }
+            }
+            catch (ServerUnauthorizedAccessException e)
+            {
+                const string errorMsg = "For modern sites you need to be a SharePoint admin when setting the search redirect URL programatically.\n\nPlease use the classic UI at '/_layouts/15/enhancedSearch.aspx?level=sitecol'.";
+                Log.Error(e, Constants.LOGGING_SOURCE, errorMsg);
+                throw new ApplicationException(errorMsg, e);
             }
             finally
             {
@@ -363,11 +375,41 @@ namespace Microsoft.SharePoint.Client
         /// Get the search results page URL for the web (Site Settings -> Search --> Search Settings)
         /// </summary>
         /// <param name="web">SharePoint site - current web</param>
+        /// <param name="urlOnly">Allows to declare to return the URL only and not the full JSON settings</param>
         /// <returns>Search results page URL for web</returns>
-        public static string GetWebSearchCenterUrl(this Web web)
+        public static string GetWebSearchCenterUrl(this Web web, bool urlOnly = false)
         {
-            // Get search results page URL of the current web
-            return web.GetPropertyBagValueString("SRCH_SB_SET_WEB", string.Empty);
+            string keyName = web.IsSubSite() ? "SRCH_SB_SET_WEB" : "SRCH_SB_SET_SITE";
+
+            // Get the Search Settings JSON value
+            var searchSettingsValue = web.GetPropertyBagValueString(keyName, string.Empty);
+
+            // Convert the settings into a typed object
+            var searchSettings = JsonConvert.DeserializeAnonymousType(searchSettingsValue, new
+            {
+                Inherit = false,
+                ResultsPageAddress = String.Empty,
+                ShowNavigation = false,
+            });
+
+            if (searchSettings != null && !searchSettings.Inherit)
+            {
+                if (!urlOnly)
+                {
+                    // Return the whole JSON settings
+                    return searchSettingsValue;
+                }
+                else
+                {
+                    // Return the search results page URL of the current web
+                    return searchSettings?.ResultsPageAddress;
+                }
+            }
+            else
+            {
+                // If we're inheriting settings, just return NULL
+                return null;
+            }
         }
     }
 }

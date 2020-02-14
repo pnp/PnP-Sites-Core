@@ -22,10 +22,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
         public FileConnectorBase FileConnector { get; set; }
 
         [JsonIgnore]
-        public Action<string, int, int> ProgressAction { get; set; }
+        public ProvisioningProgressDelegate ProgressDelegate { get; set; }
 
         [JsonIgnore]
-        public Action<string, ProvisioningMessageType> MessageAction { get; set; }
+        public ProvisioningMessagesDelegate MessagesDelegate { get; set; }
+
+        [JsonIgnore]
+        public ProvisioningSiteProvisionedDelegate SiteProvisionedDelegate { get; set; }
 
         [JsonIgnore]
         public Dictionary<String, String> AccessTokens
@@ -43,6 +46,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
                 this._accessTokens = value;
             }
         }
+
+
 
         [JsonProperty("handlers")]
         public List<ConfigurationHandler> Handlers { get; set; } = new List<ConfigurationHandler>();
@@ -69,6 +74,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
 
         [JsonProperty("navigation")]
         public Navigation.ApplyNavigationConfiguration Navigation { get; set; } = new Navigation.ApplyNavigationConfiguration();
+
+        [JsonProperty("extensibility")]
+        public Extensibility.ApplyExtensibilityConfiguration Extensibility { get; set; } = new Extensibility.ApplyExtensibilityConfiguration();
 
         public ProvisioningTemplateApplyingInformation ToApplyingInformation()
         {
@@ -113,24 +121,63 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration
                 ai.HandlersToProcess = Model.Handlers.All;
             }
 
-            if (this.ProgressAction != null)
+            if (this.ProgressDelegate != null)
             {
                 ai.ProgressDelegate = (message, step, total) =>
                 {
-                    ProgressAction(message, step, total);
+                    ProgressDelegate(message, step, total);
                 };
             }
-            if (this.MessageAction != null)
+            if (this.MessagesDelegate != null)
             {
                 ai.MessagesDelegate = (message, type) =>
                 {
-                    MessageAction(message, type);
+                    MessagesDelegate(message, type);
+                };
+            }
+            if (this.SiteProvisionedDelegate != null)
+            {
+                ai.SiteProvisionedDelegate = (title, siteUrl) =>
+                {
+                    SiteProvisionedDelegate(title, siteUrl);
                 };
             }
 
             return ai;
         }
 
+        public static ApplyConfiguration FromApplyingInformation(ProvisioningTemplateApplyingInformation information)
+        {
+            var config = new ApplyConfiguration();
+            config.AccessTokens = information.AccessTokens;
+            config.Navigation.ClearNavigation = information.ClearNavigation;
+            config.Tenant.DelayAfterModernSiteCreation = information.DelayAfterModernSiteCreation;
+            config.Extensibility.Handlers = information.ExtensibilityHandlers;
+            if(information.HandlersToProcess == Model.Handlers.All)
+            {
+                config.Handlers = new List<ConfigurationHandler>();
+            } else
+            {
+                foreach(var enumValue in (Handlers[])Enum.GetValues(typeof(Handlers)))
+                {
+                    if(information.HandlersToProcess.Has(enumValue))
+                    {
+                        if(Enum.TryParse<ConfigurationHandler>(enumValue.ToString(),out ConfigurationHandler configHandler))
+                        {
+                            config.Handlers.Add(configHandler);
+                        }
+                    }
+                }
+            }
+            config.Lists.IgnoreDuplicateDataRowErrors = information.IgnoreDuplicateDataRowErrors;
+            config.MessagesDelegate = information.MessagesDelegate;
+            config.PropertyBag.OverwriteSystemValues = information.OverwriteSystemPropertyBagValues;
+            config.ProgressDelegate = information.ProgressDelegate;
+            config.ContentTypes.ProvisionContentTypesToSubWebs = information.ProvisionContentTypesToSubWebs;
+            config.Fields.ProvisionFieldsToSubWebs = information.ProvisionFieldsToSubWebs;
+            config.SiteProvisionedDelegate = information.SiteProvisionedDelegate;
+            return config;
+        }
         public static ApplyConfiguration FromString(string input)
         {
             //var assembly = Assembly.GetExecutingAssembly();

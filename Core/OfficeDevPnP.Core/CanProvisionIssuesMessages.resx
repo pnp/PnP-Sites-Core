@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="App_Catalog_Not_Yet_Fully_Provisioned" xml:space="preserve">
-    <value>This template requires a fully provisioned App Catalog. The App Catalog on your tenant has been created within the last 2 hours. Please wait a bit longer to provision the template.</value>
+    <value>This template requires a fully provisioned App Catalog. The App Catalog in your tenant has been created within the last 2 hours. Please wait to provision this template for two hours after creating the App Catalog.</value>
   </data>
   <data name="Missing_App_Catalog" xml:space="preserve">
     <value>In order to provision the template you need to have an App Catalog in your tenant. Please, create one (for instructions you can read this document: https://go.microsoft.com/fwlink/?linkid=2087251), wait up to 2 hours, and try again.</value>

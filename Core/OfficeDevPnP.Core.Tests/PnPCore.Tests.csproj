@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>OfficeDevPnP.Core.Tests</AssemblyName>
     <RootNamespace>OfficeDevPnP.Core.Tests</RootNamespace>
     <IsPackable>false</IsPackable>

@@ -1235,6 +1235,9 @@
     <value>Failed to extract DocumentTemplate '{1}' from ContentType '{0}'</value>
   </data>
   <data name="Provisioning_ObjectHandlers_ContentTypes_SkipDocumentTemplate" xml:space="preserve">
-    <value>Skipping adding DocumentTemplate to ContentType '{0}' because we can't upload them on 'noscript' sites.</value>
+    <value>Skipping uploading template as set in DocumentTemplate for ContentType '{0}' because we can't upload them on 'noscript' sites.</value>
+  </data>
+  <data name="SiteCollection_WaitForIsProvisioningComplete" xml:space="preserve">
+    <value>Server side provisioning of this web did not finish after waiting for {0} milliseconds.</value>
   </data>
 </root>

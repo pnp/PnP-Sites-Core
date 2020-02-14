@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OfficeDevPnP.Core.Tests</RootNamespace>
     <AssemblyName>OfficeDevPnP.Core.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -355,6 +355,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.IdentityModel" />
     <Reference Include="System.IdentityModel.Selectors" />
+    <Reference Include="System.Net.Http" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.ServiceModel" />
@@ -523,6 +524,7 @@
     <Compile Include="Framework\Providers\Extensibility\SecureXml.cs" />
     <Compile Include="Framework\Providers\Extensibility\XMLEncryptionTemplateProviderExtension.cs" />
     <Compile Include="Framework\Providers\XMLProvidersTests.cs" />
+    <Compile Include="Framework\Providers\XMLSerializer202002Tests.cs" />
     <Compile Include="Framework\Providers\XMLSerializer201909Tests.cs" />
     <Compile Include="Framework\Providers\XMLSerializer201903Tests.cs" />
     <Compile Include="Framework\ProvisioningTemplates\DomainModelTests.cs" />
@@ -535,6 +537,7 @@
     <Compile Include="Diagnostics\PnPMonitoredScopeTests.cs" />
     <Compile Include="Utilities\ThemeUtilityTests.cs" />
     <Compile Include="Utilities\UnifiedGroupsUtilityTests.cs" />
+    <Compile Include="Utilities\HttpHelperTests.cs" />
     <Compile Include="Utilities\UrlUtilityTests.cs" />
     <Compile Include="Extensions\WebExtensionsTests.cs" />
     <Compile Include="Extensions\PageExtensionsTests.cs" />
@@ -777,6 +780,7 @@
     <Content Include="Resources\Templates\ProvisioningSchema-2019-03-FullSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2019-09-FullSample-01-OUT.xml" />
     <Content Include="Resources\Templates\ProvisioningSchema-2019-09-FullSample-01.xml" />
+    <Content Include="Resources\Templates\ProvisioningSchema-2020-02-FullSample-01.xml" />
     <Content Include="Resources\Templates\ProvisioningTemplate-2015-03-Sample-01.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

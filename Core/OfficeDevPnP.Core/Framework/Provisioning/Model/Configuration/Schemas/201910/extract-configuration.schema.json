@@ -28,6 +28,41 @@
       "description": "set to true to persist asset files like logos, thumbnail images, images contained in modern pages, etc.",
       "type": "boolean"
     },
+    "multiLanguage": {
+      "description": "Defines multi language extraction settings",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "persistMultiLanguageResources": {
+          "description": "If specified resource values for applicable artifacts will be persisted to a resource file",
+          "type": "boolean"
+        },
+        "resourceFilePrefix": {
+          "description": "If specified, resource files will be saved with the specified prefix instead of using the template name specified. If no template name is specified the files will be called PnP-Resources.<language>.resx.",
+          "type": "string"
+        }
+      }
+    },
+    "publishing": {
+      "description": "Applies to classing publishing",
+      "type": "object",
+      "additionalProperties": false,
+      "dependencies": {
+        "includeNativePublishingFiles": [
+          "persist"
+        ]
+      },
+      "properties": {
+        "persist": {
+          "description": "If specified the files used for the publishing feature will be saved.",
+          "type": "boolean"
+        },
+        "includeNativePublishingFiles": {
+          "description": "If specified, out of the box / native publishing files will be saved.",
+          "type": "boolean"
+        }
+      }
+    },
     "tenant": {
       "description": "define tenant extraction settings",
       "type": "object",
@@ -229,9 +264,35 @@
       "description": "Defines taxonomy / management metadata termstore extraction settings.",
       "type": "object",
       "additionalProperties": false,
+      "oneOf": [
+        {
+          "required": [
+            "includeAllTermGroups"
+          ],
+          "not": {
+            "required": [
+              "includeSiteCollectionTermGroup"
+            ]
+          }
+        },
+        {
+          "not": {
+            "required": [
+              "includeAllTermGroups"
+            ]
+          },
+          "required": [
+            "includeSiteCollectionTermGroup"
+          ]
+        }
+      ],
       "properties": {
         "includeSecurity": {
           "description": "set to true to include security",
+          "type": "boolean"
+        },
+        "includeAllTermGroups": {
+          "description": "If set to true to all term groups will be included. Overrides 'includeSiteCollectionTermGroup'",
           "type": "boolean"
         },
         "includeSiteCollectionTermGroup": {

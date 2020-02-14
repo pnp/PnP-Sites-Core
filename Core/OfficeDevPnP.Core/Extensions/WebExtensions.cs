@@ -1241,11 +1241,25 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
         }
 
+#if !ONPREMISES
+        /// <summary>
+        /// Enables request access for the default owners group of the site.
+        /// </summary>
+        /// <param name="web">The web to enable request access.</param>
+        public static void EnableRequestAccess(this Web web)
+        {
+            web.SetUseAccessRequestDefaultAndUpdate(true);
+            web.Update();
+            web.Context.ExecuteQueryRetry();
+        }
+#endif
+
         /// <summary>
         /// Enables request access for the specified e-mail addresses.
         /// </summary>
         /// <param name="web">The web to enable request access.</param>
         /// <param name="emails">The e-mail addresses to send access requests to.</param>
+        [Obsolete("Only one e-mail address can be set for receiving access requests, use the EnableRequestAccess with string email instead")]
         public static void EnableRequestAccess(this Web web, params string[] emails)
         {
             web.EnableRequestAccess(emails.AsEnumerable());
@@ -1256,6 +1270,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The web to enable request access.</param>
         /// <param name="emails">The e-mail addresses to send access requests to.</param>
+        [Obsolete("Only one e-mail address can be set for receiving access requests, use the EnableRequestAccess with string email instead")]
         public static void EnableRequestAccess(this Web web, IEnumerable<string> emails)
         {
             // keep them unique, but keep order
@@ -1285,7 +1300,25 @@ namespace Microsoft.SharePoint.Client
             if (skippedEmails.Count > 0)
                 Log.Warning(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_RequestAccessEmailLimitExceeded, string.Join(", ", skippedEmails));
 
+#if !ONPREMISES
+            web.SetUseAccessRequestDefaultAndUpdate(false);
+#endif
             web.RequestAccessEmail = sb.ToString();
+            web.Update();
+            web.Context.ExecuteQueryRetry();
+        }
+
+        /// <summary>
+        /// Enables request access for the specified e-mail address.
+        /// </summary>
+        /// <param name="web">The web to enable request access.</param>
+        /// <param name="email">The e-mail address to send access requests to.</param>
+        public static void EnableRequestAccess(this Web web, string email)
+        {
+#if !ONPREMISES
+            web.SetUseAccessRequestDefaultAndUpdate(false);
+#endif
+            web.RequestAccessEmail = email;
             web.Update();
             web.Context.ExecuteQueryRetry();
         }
@@ -1468,5 +1501,21 @@ namespace Microsoft.SharePoint.Client
         #endregion
 #endif
 
+#if ONPREMISES
+
+        /// <summary>
+        /// Provides implementation of GetFileByUrl method for CSOM on-premises
+        /// </summary>
+        /// <param name="web">The web object that is extended by the method</param>
+        /// <param name="fileUrl">The site relative URL of the file to retrieve</param>
+        /// <returns>The retrieved file, which must be retrieved with context.Load and context.ExecuteQuery</returns>
+        public static Microsoft.SharePoint.Client.File GetFileByUrl(this Web web, string fileUrl)
+        {
+            string fileServerRelativeUrl = $"{web.ServerRelativeUrl}/{fileUrl}";
+            var result = web.GetFileByServerRelativeUrl(fileServerRelativeUrl);
+            return (result);
+        }
+
+#endif
     }
 }

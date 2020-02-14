@@ -192,6 +192,11 @@ namespace OfficeDevPnP.Core.Sites
         public string[] Owners { get; set; }
 
         /// <summary>
+        /// The ID of the Site Design to apply, if any
+        /// </summary>
+        public Guid? SiteDesignId { get; set; }
+
+        /// <summary>
         /// Default constructor
         /// </summary>
         public TeamSiteCollectionCreationInformation() : base()

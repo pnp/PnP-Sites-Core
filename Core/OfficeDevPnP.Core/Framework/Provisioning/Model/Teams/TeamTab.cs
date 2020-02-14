@@ -24,6 +24,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model.Teams
         public String TeamsAppId { get; set; }
 
         /// <summary>
+        /// Allows to remove an already existing Tab
+        /// </summary>
+        public bool Remove { get; set; }
+
+        /// <summary>
         /// Defines the Configuration for the Tab
         /// </summary>
         public TeamTabConfiguration Configuration { get; set; }
