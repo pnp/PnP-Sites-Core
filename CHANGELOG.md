@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Changed
 
 - Respect the set Azure environment in the GetAzureADCredentialsContext AuthenticationManager method
+- Added fallback to check for web setting on search redirect url on a root site if sc setting is empty in the SearchExtensions SetWebSearchCenterUrl method
 
 ## [3.17.2002.0 - February 2020 release]
 
