@@ -550,25 +550,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
 
-                if (!isNoScriptSite)
+                foreach (var doc in templateContentType.DocumentSetTemplate.DefaultDocuments)
                 {
-                    foreach (var doc in templateContentType.DocumentSetTemplate.DefaultDocuments)
+                    Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == doc.ContentTypeId);
+                    if (ct != null)
                     {
-                        Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == doc.ContentTypeId);
-                        if (ct != null)
+                        using (Stream fileStream = connector.GetFileStream(doc.FileSourcePath))
                         {
-                            using (Stream fileStream = connector.GetFileStream(doc.FileSourcePath))
-                            {
-                                documentSetTemplate.DefaultDocuments.Add(doc.Name, ct.Id, ReadFullStream(fileStream));
-                            }
+                            documentSetTemplate.DefaultDocuments.Add(doc.Name, ct.Id, ReadFullStream(fileStream));
                         }
-                    }
-                }
-                else
-                {
-                    if (templateContentType.DocumentSetTemplate.DefaultDocuments.Any())
-                    {
-                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_SkipDocumentSetDefaultDocuments, name);
                     }
                 }
 
