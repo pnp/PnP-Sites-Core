@@ -599,7 +599,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
                     f => f.ListItemAllFields,
                     f => f.ListItemAllFields.RoleAssignments,
-                    f => f.ListItemAllFields.RoleAssignments.Include(r => r.PrincipalId, r=>r.Member.LoginName, r => r.RoleDefinitionBindings.Include(rb => rb.Name, rb => rb.Order)),
+                    f => f.ListItemAllFields.RoleAssignments.Include(r => r.PrincipalId, r=>r.Member.LoginName, r => r.RoleDefinitionBindings.Include(rb => rb.Name, rb => rb.Order, rb => rb.RoleTypeKind)),
                     f => f.ListItemAllFields.HasUniqueRoleAssignments,
                     f => f.ListItemAllFields.ParentList,
                     f => f.ListItemAllFields.ContentType.StringId);
@@ -768,7 +768,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     f => f.Properties,
                     f => f.ListItemAllFields,
                     f => f.ListItemAllFields.RoleAssignments,
-                    f => f.ListItemAllFields.RoleAssignments.Include(r => r.PrincipalId, r => r.Member.LoginName, r => r.RoleDefinitionBindings.Include(rb => rb.Name, rb => rb.Order)),
+                    f => f.ListItemAllFields.RoleAssignments.Include(r => r.PrincipalId, r => r.Member.LoginName, r => r.RoleDefinitionBindings.Include(rb => rb.Name, rb => rb.Order, rb => rb.RoleTypeKind)),
                     f => f.ListItemAllFields.HasUniqueRoleAssignments,
                     f => f.ListItemAllFields.ParentList,
                     f => f.ListItemAllFields.ContentType.StringId);
@@ -1004,7 +1004,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             if (item.HasUniqueRoleAssignments)
             {
-                item.Context.Load(item, i => i.RoleAssignments.Include(r => r.PrincipalId, r => r.Member.LoginName, r => r.RoleDefinitionBindings.Include(rb => rb.Name, rb => rb.Order)));
+                item.Context.Load(item, i => i.RoleAssignments.Include(r => r.PrincipalId, r => r.Member.LoginName, r => r.RoleDefinitionBindings.Include(rb => rb.Name, rb => rb.Order, rb => rb.RoleTypeKind)));
                 item.Context.ExecuteQueryRetry();
 
                 GetObjectSecurity(web, item.RoleAssignments, dataRow.Security, siteSecurity);
