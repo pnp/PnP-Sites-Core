@@ -1069,7 +1069,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
             foreach (var ra in RoleAssignments)
             {
-                foreach (var rb in ra.RoleDefinitionBindings.OrderBy(d => d.Order))
+                //Ignore LimitedAccess as this is a result of access permission on a item on a lower level and given automatically
+                foreach (var rb in ra.RoleDefinitionBindings.Where(rb1=>rb1.RoleTypeKind!= RoleType.Guest).OrderBy(d => d.Order))
                 {
                     if (ra.PrincipalId == web.AssociatedOwnerGroup.Id)
                     {
