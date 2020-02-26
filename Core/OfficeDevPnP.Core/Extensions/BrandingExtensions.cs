@@ -244,9 +244,16 @@ namespace Microsoft.SharePoint.Client
             backgroundUrl = System.Net.WebUtility.UrlDecode(backgroundUrl);
             masterUrl = System.Net.WebUtility.UrlDecode(masterUrl);
 
-            web.SetMasterPageByUrl(masterUrl, resetSubsitesToInherit, updateRootOnly);
-            web.SetCustomMasterPageByUrl(masterUrl, resetSubsitesToInherit, updateRootOnly);
-            web.SetThemeByUrl(paletteUrl, fontUrl, backgroundUrl, resetSubsitesToInherit, updateRootOnly);
+            if (!string.IsNullOrEmpty(masterUrl))
+            {
+                web.SetMasterPageByUrl(masterUrl, resetSubsitesToInherit, updateRootOnly);
+                web.SetCustomMasterPageByUrl(masterUrl, resetSubsitesToInherit, updateRootOnly);
+            }
+
+            if (!string.IsNullOrWhiteSpace(paletteUrl))
+            {
+                web.SetThemeByUrl(paletteUrl, fontUrl, backgroundUrl, resetSubsitesToInherit, updateRootOnly);
+            }
 
             // Update/create the "Current" reference in the composed looks gallery
             string currentLookName = GetLocalizedCurrentValue(web);
