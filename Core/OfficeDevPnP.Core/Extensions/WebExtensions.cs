@@ -315,7 +315,7 @@ namespace Microsoft.SharePoint.Client
 
         /// <summary>
         /// Performs a best effort detection of if the site in question has no script enabled or not.
-        /// Detection is done by verifying if the AddAndCustomizePages permission is missing.
+        /// Detection is done by verifying if the authenticated user has AddAndCustomizePages permission on the web.
         /// Detection will return a false positive if the current user does not have the AddAndCustomizePages permission. 
         ///
         /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
@@ -331,7 +331,7 @@ namespace Microsoft.SharePoint.Client
 
         /// <summary>
         /// Performs a best effort detection of if the site in question has no script enabled or not.
-        /// Detection is done by verifying if the AddAndCustomizePages permission is missing.
+        /// Detection is done by verifying if the authenticated user has AddAndCustomizePages permission on the web.
         /// Detection will return a false positive if the current user does not have the AddAndCustomizePages permission. 
         /// 
         /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
