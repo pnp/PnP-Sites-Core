@@ -114,7 +114,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             scope.LogPropertyUpdate("ReadOnly");
                             existingCT.ReadOnly = ct.ReadOnly;
 
-                            existingCT.Update(UpdateChildrenRequested(ct));
+                            existingCT.Update(ct.ShouldUpdateChildren());
                             existingCT.Context.ExecuteQueryRetry();
                         }
                     }
@@ -122,11 +122,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             WriteMessage($"Done processing Content Types", ProvisioningMessageType.Completed);
             return parser;
-        }
-
-        private static bool UpdateChildrenRequested(ContentType ct)
-        {
-            return !ct.FieldRefs.All(f => f.UpdateChildren == false);
         }
 
         private void UpdateContentType(
@@ -241,7 +236,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
             if (isDirty)
             {
-                existingContentType.Update(isChildrenDirty && UpdateChildrenRequested(templateContentType));
+                existingContentType.Update(isChildrenDirty && templateContentType.ShouldUpdateChildren());
                 web.Context.ExecuteQueryRetry();
             }
 
