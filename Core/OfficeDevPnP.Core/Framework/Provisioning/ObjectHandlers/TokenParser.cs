@@ -1007,6 +1007,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return xmlDoc.OuterXml;
         }
 
+        private static readonly Regex ReInvalidSPGroupNameChars = new Regex(@"[""/\\\[\]:|<>+=;,?*'@]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        /// <summary>
+        /// Replaces invalid characters for SharePoint Group name.
+        /// Invalid characters are: " / \ [ ] : | &lt; &gt; + = ; , ? * ' @
+        /// </summary>
+        /// <param name="input">The group name value</param>
+        /// <returns>Returns a string where invalid characters are replaced with _</returns>
+        public string ParseStringSPGroupName(string input)
+        {
+            var parsedString = ParseString(input, null);
+            return ReInvalidSPGroupNameChars.Replace(parsedString, "_");
+        }
+
         internal void RemoveToken<T>(T oldToken) where T : TokenDefinition
         {
             for (int i = 0; i < _tokens.Count; i++)

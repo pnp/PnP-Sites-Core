@@ -46,9 +46,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (web.EnsureProperty(w => w.HasUniqueRoleAssignments))
                 {
-                    string parsedAssociatedOwnerGroupName = parser.ParseString(template.Security.AssociatedOwnerGroup);
-                    string parsedAssociatedMemberGroupName = parser.ParseString(template.Security.AssociatedMemberGroup);
-                    string parsedAssociatedVisitorGroupName = parser.ParseString(template.Security.AssociatedVisitorGroup);
+                    string parsedAssociatedOwnerGroupName = parser.ParseStringSPGroupName(template.Security.AssociatedOwnerGroup);
+                    string parsedAssociatedMemberGroupName = parser.ParseStringSPGroupName(template.Security.AssociatedMemberGroup);
+                    string parsedAssociatedVisitorGroupName = parser.ParseStringSPGroupName(template.Security.AssociatedVisitorGroup);
 
                     bool setAssociatedOwnerGroup = parsedAssociatedOwnerGroupName != null;
                     bool setAssociatedMemberGroup = parsedAssociatedMemberGroupName != null;
@@ -278,7 +278,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName, gr => gr.Id));
                     web.Context.ExecuteQueryRetry();
 
-                    string parsedGroupTitle = parser.ParseString(siteGroup.Title);
+                    string parsedGroupTitle = parser.ParseStringSPGroupName(siteGroup.Title);
                     string parsedGroupOwner = parser.ParseString(siteGroup.Owner);
                     string parsedGroupDescription = parser.ParseString(siteGroup.Description);
 
