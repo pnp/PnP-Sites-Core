@@ -170,6 +170,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         foreach (var listInfo in processedLists)
                         {
+                            parser.RebuildListTokens(web);
                             ProcessViews(web, parser, scope, listInfo);
                         }
 
