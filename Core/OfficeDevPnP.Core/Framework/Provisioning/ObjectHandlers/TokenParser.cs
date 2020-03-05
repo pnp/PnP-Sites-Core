@@ -678,7 +678,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var contentType in list.ContentTypes)
                 {
                     _tokens.Add(new ListContentTypeIdToken(web, list.Title, contentType.Name, contentType.Id));
-                    _tokens.Add(new ListContentTypeIdToken(web, list.Title, contentType.Id.StringValue, contentType.Id));
+                    _tokens.Add(new ListContentTypeIdToken(web, list.Title, contentType.Id.GetParentIdValue(), contentType.Id));
                 }
             }
 
