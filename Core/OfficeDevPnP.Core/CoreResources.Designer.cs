@@ -514,7 +514,7 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The argument must be a single file name and cannot contain path characters..
+        ///   Looks up a localized string similar to The argument must be a single file name and cannot contain path characters. Value:&apos;{0}&apos;.
         /// </summary>
         internal static string FileFolderExtensions_UploadFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_ {
             get {
