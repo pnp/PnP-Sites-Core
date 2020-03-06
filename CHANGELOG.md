@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Respect the set Azure environment in the GetAzureADCredentialsContext AuthenticationManager method
 - Added fallback to check for web setting on search redirect url on a root site if sc setting is empty in the SearchExtensions SetWebSearchCenterUrl method
 - Fix: Improve error message when uploading a file with invalid characters in the file name #2575 [jackpoz - Giacomo Pozzoni]
+- Fix: Catch WebException with Timeout status to fix timeout on update field and push changes #2557 [NicolajHedeager - Nicolaj Hedeager Larsen]
 
 ## [3.17.2002.0 - February 2020 release]
 
