@@ -610,7 +610,7 @@
     <value>Destination file name is required.</value>
   </data>
   <data name="FileFolderExtensions_UploadFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_" xml:space="preserve">
-    <value>The argument must be a single file name and cannot contain path characters.</value>
+    <value>The argument must be a single file name and cannot contain path characters. Value:'{0}'</value>
   </data>
   <data name="FileFolderExtensions_UploadFileWebDav_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_" xml:space="preserve">
     <value>The argument must be a single file name and cannot contain path characters.</value>
