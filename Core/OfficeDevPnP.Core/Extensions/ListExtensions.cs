@@ -164,15 +164,15 @@ namespace Microsoft.SharePoint.Client
             // Get the access from the client context if not specified.
             accessToken = accessToken ?? list.Context.GetAccessToken();
 
-            // Ensure the list Id is known
-            Guid listId = list.EnsureProperty(l => l.Id);
+            // Ensure the list Id and Url are known
+            list.EnsureProperties(l => l.Id, l => l.ParentWeb, l => l.ParentWeb.Url);
 
             try
             {
-                return WebhookUtility.AddWebhookSubscriptionAsync(list.Context.Url,
+                return WebhookUtility.AddWebhookSubscriptionAsync(list.ParentWeb.Url,
                                WebHookResourceType.List, accessToken, list.Context as ClientContext, new WebhookSubscription()
                                {
-                                   Resource = listId.ToString(),
+                                   Resource = list.Id.ToString(),
                                    ExpirationDateTime = expirationDate,
                                    NotificationUrl = notificationUrl,
                                    ClientState = clientState

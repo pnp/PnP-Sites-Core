@@ -33,7 +33,7 @@ namespace OfficeDevPnP.Core.Utilities
     internal static class WebhookUtility
     {
         private const string SubscriptionsUrlPart = "subscriptions";
-        private const string ListIdentifierFormat = @"{0}/_api/web/lists('{1}')";
+        private const string ListIdentifierFormat = @"{0}/_api/web/lists(guid'{1}')";
         public const int MaximumValidityInMonths = 6;
         public const int ExpirationDateTimeMaxDays = 180;
 
