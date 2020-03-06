@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Improve error message when uploading a file with invalid characters in the file name #2575 [jackpoz - Giacomo Pozzoni]
 - Fix: Catch WebException with Timeout status to fix timeout on update field and push changes #2557 [NicolajHedeager - Nicolaj Hedeager Larsen]
 - Fix: Ensure null value is never set for MaterPageUrl and ColorPaletteUrl #2558 [NicolajHedeager - Nicolaj Hedeager Larsen]
+- Fix: Added SP2019 RTM CSOM Assemblies #2573 [jensotto - Jens Otto Hatlevold]
 
 ## [3.17.2002.0 - February 2020 release]
 
