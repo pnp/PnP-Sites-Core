@@ -1072,8 +1072,8 @@
   <data name="Provisioning_ObjectHandlers_TermGroups_Wrong_Configuration" xml:space="preserve">
     <value>The Managed Metadata Service is not properly configured. Please set a default storage location for Keywords and for column specific term sets. The TermGroups handler execution will be skipped!</value>
   </data>
-  <data name="Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed" xml:space="preserve">
-    <value>Existing content type with Id {0} and name {1} will not be updated because it's marked as sealed and the template is not changing the sealed value.</value>
+  <data name="Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_SealedOrReadOnly" xml:space="preserve">
+    <value>Existing content type with Id {0} and name {1} will not be updated because it's marked as sealed or read only and the template is not changing the value.</value>
   </data>
   <data name="ClientContextExtensions_HasMinimalServerLibraryVersion_Error" xml:space="preserve">
     <value>The server version could not be detected. Note that the check does assume the process at least has read access to SharePoint. Error: {0}.</value>
