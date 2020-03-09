@@ -23,6 +23,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Added SP2019 RTM CSOM Assemblies #2573 [jensotto - Jens Otto Hatlevold]
 - Fix: Skip update of read only content type unless readonly is changed to false #2569 [NicolajHedeager - Nicolaj Hedeager Larsen]
 - Fix: Added list content type id token to support specifying list content types in the NewDocumentTemplates node for the default view #2570 [jensotto - Jens Otto Hatlevold]
+- Fix: Added guid prefix in webhook API call #2574 [gzukula]
 
 ## [3.17.2002.0 - February 2020 release]
 
