@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [3.19.2003.0 - March 2020 release]
 
 ### Added
 
@@ -25,7 +25,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Added list content type id token to support specifying list content types in the NewDocumentTemplates node for the default view #2570 [jensotto - Jens Otto Hatlevold]
 - Fix: Added guid prefix in webhook API call #2574 [gzukula]
 
-## [3.17.2002.0 - February 2020 release]
+## [3.18.2002.0 - February 2020 release]
 
 ### Added
 
