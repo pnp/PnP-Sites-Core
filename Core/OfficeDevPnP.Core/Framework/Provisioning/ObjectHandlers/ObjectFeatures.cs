@@ -121,10 +121,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             if(parent is Site)
             {
-                parser.AddListTokens((parent as Site).RootWeb);
+                parser.RebuildListTokens((parent as Site).RootWeb);
             } else
             {
-                parser.AddListTokens(parent as Web);
+                parser.RebuildListTokens(parent as Web);
             }
             return parser;
         }
