@@ -53,6 +53,8 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         private string realm;
         private string clientId;
         private string clientSecret;
+        private string accessToken;
+        private AzureEnvironment azureEnvironment;
         private bool highTrust;
         private string azureTenant;
         private X509Certificate2 certificate;
@@ -121,6 +123,7 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
 
             // Default authentication model will be Office365
             this.authenticationType = AuthenticationType.Office365;
+            this.azureEnvironment = AzureEnvironment.Production;
             this.authenticationManagers = new ConcurrentDictionary<string, AuthenticationManager>();
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Constructor, this.name, this.version);
@@ -642,6 +645,21 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
         }
 
         /// <summary>
+        /// Azure environment that will be used
+        /// </summary>
+        public AzureEnvironment AzureEnvironment
+        {
+            get
+            {
+                return this.azureEnvironment;
+            }
+            set
+            {
+                this.azureEnvironment = value;
+            }
+        }
+
+        /// <summary>
         /// Option to specify the tenant admin site. For MT this typically is not needed since we can detect the tenant admin site, but for on premises and DvNext this is needed
         /// </summary>
         public string TenantAdminSite
@@ -989,6 +1007,25 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
 
             Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_AzureADAppOnly, clientId, certificate.SubjectName);
         }
+
+        /// <summary>
+        ///  Prepares the TimerJob to operate against SharePoint Only with a provided access token. Sets AuthenticationType 
+        /// to AuthenticationType.AccessToken
+        /// </summary>
+        /// <param name="accessToken">Provided access token</param>
+        public void UseAccessTokenAuthentication(string accessToken)
+        {
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            this.authenticationType = AuthenticationType.AccessToken;
+            this.accessToken = accessToken;
+
+            Log.Info(Constants.LOGGING_SOURCE, CoreResources.TimerJob_Authentication_AccessToken);
+        }
+
 #endif
 
         /// <summary>
@@ -1546,7 +1583,8 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
 #if !ONPREMISES
                 if (AuthenticationType == AuthenticationType.Office365)
                 {
-                    return GetAuthenticationManager(site).GetSharePointOnlineAuthenticatedContextTenant(site, username, password);
+                    //return GetAuthenticationManager(site).GetSharePointOnlineAuthenticatedContextTenant(site, username, password);
+                    return GetAuthenticationManager(site).GetAzureADCredentialsContext(site, username, password, this.azureEnvironment);
                 }
                 else if (AuthenticationType == AuthenticationType.AppOnly)
                 {
@@ -1556,12 +1594,16 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 {
                     if (this.certificate != null)
                     {
-                        return GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(site, this.clientId, this.azureTenant, this.certificate);
+                        return GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(site, this.clientId, this.azureTenant, this.certificate, this.azureEnvironment);
                     }
                     else
                     {
-                        return GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(site, this.clientId, this.azureTenant, this.certificatePath, this.certificatePassword);
+                        return GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(site, this.clientId, this.azureTenant, this.certificatePath, this.certificatePassword, this.azureEnvironment);
                     }
+                }
+                else if (AuthenticationType == AuthenticationType.AccessToken)
+                {
+                    return GetAuthenticationManager(site).GetAzureADAccessTokenAuthenticatedContext(site, this.accessToken);
                 }
 #else
                 if (AuthenticationType == AuthenticationType.NetworkCredentials)

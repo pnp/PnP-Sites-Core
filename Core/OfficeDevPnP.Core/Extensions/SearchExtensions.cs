@@ -379,10 +379,16 @@ namespace Microsoft.SharePoint.Client
         /// <returns>Search results page URL for web</returns>
         public static string GetWebSearchCenterUrl(this Web web, bool urlOnly = false)
         {
-            string keyName = web.IsSubSite() ? "SRCH_SB_SET_WEB" : "SRCH_SB_SET_SITE";
+            bool isSubSite = web.IsSubSite();
+            string keyName = isSubSite ? "SRCH_SB_SET_WEB" : "SRCH_SB_SET_SITE";
 
             // Get the Search Settings JSON value
             var searchSettingsValue = web.GetPropertyBagValueString(keyName, string.Empty);
+            if (!isSubSite && string.IsNullOrWhiteSpace(searchSettingsValue))
+            {
+                // fallback to read web value on sc root
+                searchSettingsValue = web.GetPropertyBagValueString("SRCH_SB_SET_WEB", string.Empty);
+            }
 
             // Convert the settings into a typed object
             var searchSettings = JsonConvert.DeserializeAnonymousType(searchSettingsValue, new
