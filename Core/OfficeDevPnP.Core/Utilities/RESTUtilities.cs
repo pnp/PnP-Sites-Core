@@ -91,7 +91,9 @@ namespace OfficeDevPnP.Core.Utilities
                             handler.Credentials = networkCredential;
                         }
                     }
-                    request.Headers.Add("X-RequestDigest", await (web.Context as ClientContext).GetRequestDigest());
+
+                    var requestDigest = await (web.Context as ClientContext).GetRequestDigest().ConfigureAwait(false);
+                    request.Headers.Add("X-RequestDigest", requestDigest);
 
                     // Perform actual post operation
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
@@ -154,7 +156,8 @@ namespace OfficeDevPnP.Core.Utilities
                             handler.Credentials = networkCredential;
                         }
                     }
-                    request.Headers.Add("X-RequestDigest", await (web.Context as ClientContext).GetRequestDigest());
+                    var requestDigest = await (web.Context as ClientContext).GetRequestDigest().ConfigureAwait(false);
+                    request.Headers.Add("X-RequestDigest", requestDigest);
 
                     if (!string.IsNullOrEmpty(payload))
                     {

@@ -707,6 +707,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
+        //public static async Task<string> GetRequestDigest(this ClientContext context)
         public static async Task<string> GetRequestDigest(this ClientContext context)
         {
             await new SynchronizationContextRemover();
@@ -756,7 +757,7 @@ namespace Microsoft.SharePoint.Client
                 var contextInformation = JsonConvert.DeserializeObject<dynamic>(responseString);
 
                 string formDigestValue = contextInformation.d.GetContextWebInformation.FormDigestValue;
-                return await Task.Run(() => formDigestValue);
+                return await Task.Run(() => formDigestValue).ConfigureAwait(false);
             }
         }
 
