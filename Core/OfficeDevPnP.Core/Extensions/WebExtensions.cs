@@ -314,7 +314,9 @@ namespace Microsoft.SharePoint.Client
 
 
         /// <summary>
-        /// Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing.
+        /// Performs a best effort detection of if the site in question has no script enabled or not.
+        /// Detection is done by verifying if the authenticated user has AddAndCustomizePages permission on the web.
+        /// Detection will return a false positive if the current user does not have the AddAndCustomizePages permission. 
         ///
         /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
         /// for the effects of NoScript
@@ -328,8 +330,10 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
-        /// Detects if the site in question has no script enabled or not. Detection is done by verifying if the AddAndCustomizePages permission is missing.
-        ///
+        /// Performs a best effort detection of if the site in question has no script enabled or not.
+        /// Detection is done by verifying if the authenticated user has AddAndCustomizePages permission on the web.
+        /// Detection will return a false positive if the current user does not have the AddAndCustomizePages permission. 
+        /// 
         /// See https://support.office.com/en-us/article/Turn-scripting-capabilities-on-or-off-1f2c515f-5d7e-448a-9fd7-835da935584f
         /// for the effects of NoScript
         ///
@@ -1241,11 +1245,25 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
         }
 
+#if !ONPREMISES
+        /// <summary>
+        /// Enables request access for the default owners group of the site.
+        /// </summary>
+        /// <param name="web">The web to enable request access.</param>
+        public static void EnableRequestAccess(this Web web)
+        {
+            web.SetUseAccessRequestDefaultAndUpdate(true);
+            web.Update();
+            web.Context.ExecuteQueryRetry();
+        }
+#endif
+
         /// <summary>
         /// Enables request access for the specified e-mail addresses.
         /// </summary>
         /// <param name="web">The web to enable request access.</param>
         /// <param name="emails">The e-mail addresses to send access requests to.</param>
+        [Obsolete("Only one e-mail address can be set for receiving access requests, use the EnableRequestAccess with string email instead")]
         public static void EnableRequestAccess(this Web web, params string[] emails)
         {
             web.EnableRequestAccess(emails.AsEnumerable());
@@ -1256,6 +1274,7 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="web">The web to enable request access.</param>
         /// <param name="emails">The e-mail addresses to send access requests to.</param>
+        [Obsolete("Only one e-mail address can be set for receiving access requests, use the EnableRequestAccess with string email instead")]
         public static void EnableRequestAccess(this Web web, IEnumerable<string> emails)
         {
             // keep them unique, but keep order
@@ -1285,7 +1304,25 @@ namespace Microsoft.SharePoint.Client
             if (skippedEmails.Count > 0)
                 Log.Warning(Constants.LOGGING_SOURCE, CoreResources.WebExtensions_RequestAccessEmailLimitExceeded, string.Join(", ", skippedEmails));
 
+#if !ONPREMISES
+            web.SetUseAccessRequestDefaultAndUpdate(false);
+#endif
             web.RequestAccessEmail = sb.ToString();
+            web.Update();
+            web.Context.ExecuteQueryRetry();
+        }
+
+        /// <summary>
+        /// Enables request access for the specified e-mail address.
+        /// </summary>
+        /// <param name="web">The web to enable request access.</param>
+        /// <param name="email">The e-mail address to send access requests to.</param>
+        public static void EnableRequestAccess(this Web web, string email)
+        {
+#if !ONPREMISES
+            web.SetUseAccessRequestDefaultAndUpdate(false);
+#endif
+            web.RequestAccessEmail = email;
             web.Update();
             web.Context.ExecuteQueryRetry();
         }

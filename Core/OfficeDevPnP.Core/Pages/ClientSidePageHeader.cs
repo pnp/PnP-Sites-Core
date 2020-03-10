@@ -207,7 +207,18 @@ namespace OfficeDevPnP.Core.Pages
                 var pageHeaderControl = document.All.Where(m => m.HasAttribute(CanvasControl.ControlDataAttribute)).FirstOrDefault();
                 if (pageHeaderControl != null)
                 {
-                    var decoded = WebUtility.HtmlDecode(pageHeaderControl.GetAttribute(ClientSideWebPart.ControlDataAttribute));
+                    string pageHeaderData = pageHeaderControl.GetAttribute(ClientSideWebPart.ControlDataAttribute);
+                    string decoded = "";
+
+                    if (pageHeaderData.Contains("%7B") && pageHeaderData.Contains("%22") && pageHeaderData.Contains("%7D"))
+                    {
+                        decoded = WebUtility.UrlDecode(pageHeaderData);
+                    }
+                    else
+                    {
+                        decoded = WebUtility.HtmlDecode(pageHeaderData);
+                    }
+
                     JObject wpJObject = JObject.Parse(decoded);
 
                     // Store the server processed content as that's needed for full fidelity

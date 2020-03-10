@@ -1,6 +1,8 @@
 ﻿using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client.Search.Administration;
 using Microsoft.SharePoint.Client.Search.Portability;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities;
@@ -373,13 +375,47 @@ namespace Microsoft.SharePoint.Client
         /// Get the search results page URL for the web (Site Settings -> Search --> Search Settings)
         /// </summary>
         /// <param name="web">SharePoint site - current web</param>
+        /// <param name="urlOnly">Allows to declare to return the URL only and not the full JSON settings</param>
         /// <returns>Search results page URL for web</returns>
-        public static string GetWebSearchCenterUrl(this Web web)
+        public static string GetWebSearchCenterUrl(this Web web, bool urlOnly = false)
         {
-            string keyName = web.IsSubSite() ? "SRCH_SB_SET_WEB" : "SRCH_SB_SET_SITE";
+            bool isSubSite = web.IsSubSite();
+            string keyName = isSubSite ? "SRCH_SB_SET_WEB" : "SRCH_SB_SET_SITE";
 
-            // Get search results page URL of the current web
-            return web.GetPropertyBagValueString(keyName, string.Empty);
+            // Get the Search Settings JSON value
+            var searchSettingsValue = web.GetPropertyBagValueString(keyName, string.Empty);
+            if (!isSubSite && string.IsNullOrWhiteSpace(searchSettingsValue))
+            {
+                // fallback to read web value on sc root
+                searchSettingsValue = web.GetPropertyBagValueString("SRCH_SB_SET_WEB", string.Empty);
+            }
+
+            // Convert the settings into a typed object
+            var searchSettings = JsonConvert.DeserializeAnonymousType(searchSettingsValue, new
+            {
+                Inherit = false,
+                ResultsPageAddress = String.Empty,
+                ShowNavigation = false,
+            });
+
+            if (searchSettings != null && !searchSettings.Inherit)
+            {
+                if (!urlOnly)
+                {
+                    // Return the whole JSON settings
+                    return searchSettingsValue;
+                }
+                else
+                {
+                    // Return the search results page URL of the current web
+                    return searchSettings?.ResultsPageAddress;
+                }
+            }
+            else
+            {
+                // If we're inheriting settings, just return NULL
+                return null;
+            }
         }
     }
 }

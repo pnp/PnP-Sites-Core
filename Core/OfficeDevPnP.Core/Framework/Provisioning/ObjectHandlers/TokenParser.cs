@@ -16,6 +16,9 @@ using System.Linq;
 using System.Resources;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.Diagnostics;
+#if NETSTANDARD2_0
+using System.Xml.Linq;
+#endif
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
@@ -81,8 +84,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new SiteToken(web));
 
             // remove list tokens
-            if (tokenIds.Contains("listid") || tokenIds.Contains("listurl") || tokenIds.Contains("viewid"))
-                AddListTokens(web); // tokens are remove in method
+            if (tokenIds.Contains("listid") || tokenIds.Contains("listurl") || tokenIds.Contains("viewid") || tokenIds.Contains("listcontenttypeid"))
+            {
+                RebuildListTokens(web);
+            }
             // remove content type tokens
             if (tokenIds.Contains("contenttypeid"))
                 AddContentTypeTokens(web);
@@ -125,7 +130,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new CurrentUserIdToken(web));
             _tokens.Add(new CurrentUserLoginNameToken(web));
             _tokens.Add(new CurrentUserFullNameToken(web));
+#if !NETSTANDARD2_0
             _tokens.Add(new AuthenticationRealmToken(web));
+#endif
             _tokens.Add(new HostUrlToken(web));
             AddResourceTokens(web, hierarchy.Localizations, hierarchy.Connector);
             _initializedFromHierarchy = true;
@@ -205,8 +212,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new CurrentUserLoginNameToken(web));
             if (tokenIds.Contains("currentuserfullname"))
                 _tokens.Add(new CurrentUserFullNameToken(web));
+#if !NETSTANDARD2_0
             if (tokenIds.Contains("authenticationrealm"))
                 _tokens.Add(new AuthenticationRealmToken(web));
+#endif
             if (tokenIds.Contains("hosturl"))
                 _tokens.Add(new HostUrlToken(web));
 #if !ONPREMISES
@@ -219,7 +228,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
 
             if (tokenIds.Contains("listid") || tokenIds.Contains("listurl") || tokenIds.Contains("viewid"))
-                AddListTokens(web);
+                RebuildListTokens(web);
             if (tokenIds.Contains("contenttypeid"))
                 AddContentTypeTokens(web);
 
@@ -299,9 +308,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
 #if !NETSTANDARD2_0
                             using (ResXResourceReader resxReader = new ResXResourceReader(stream))
-#else
-                            using (ResourceReader resxReader = new ResourceReader(stream))
-#endif
                             {
                                 foreach (DictionaryEntry entry in resxReader)
                                 {
@@ -310,6 +316,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     resourceEntries.Add(new Tuple<string, uint, string>(entry.Key.ToString(), (uint)localizationEntry.LCID, entry.Value.ToString().Replace("\"", "&quot;")));
                                 }
                             }
+#else
+                            var xElement = XElement.Load(stream);
+                            foreach (var dataElement in xElement.Descendants("data"))
+                            {
+                                var key = dataElement.Attribute("name").Value;
+                                var value = dataElement.Value;
+                                resourceEntries.Add(new Tuple<string, uint, string>($"{localizationEntry.Name}:{key}", (uint)localizationEntry.LCID, value.ToString().Replace("\"", "&quot;")));
+                                resourceEntries.Add(new Tuple<string, uint, string>(key.ToString(), (uint)localizationEntry.LCID, value.ToString().Replace("\"", "&quot;")));
+                            }
+#endif
                         }
                     }
                 }
@@ -626,15 +642,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        internal void AddListTokens(Web web)
+        internal void RebuildListTokens(Web web)
         {
             web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Language);
 
             _tokens.RemoveAll(t => t.GetType() == typeof(ListIdToken));
             _tokens.RemoveAll(t => t.GetType() == typeof(ListUrlToken));
             _tokens.RemoveAll(t => t.GetType() == typeof(ListViewIdToken));
-
-            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views
+            _tokens.RemoveAll(t => t.GetType() == typeof(ListContentTypeIdToken));
+            
+            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views, l => l.ContentTypes
 #if !SP2013
             , l => l.TitleResource
 #endif
@@ -656,6 +673,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var view in list.Views)
                 {
                     _tokens.Add(new ListViewIdToken(web, list.Title, view.Title, view.Id));
+                }
+                
+                foreach (var contentType in list.ContentTypes)
+                {
+                    _tokens.Add(new ListContentTypeIdToken(web, list.Title, contentType.Name, contentType.Id));
+                    _tokens.Add(new ListContentTypeIdToken(web, list.Title, contentType.Id.GetParentIdValue(), contentType.Id));
                 }
             }
 

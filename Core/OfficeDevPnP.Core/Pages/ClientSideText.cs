@@ -148,7 +148,14 @@ namespace OfficeDevPnP.Core.Pages
 #if NETSTANDARD2_0
             html.Append($@"<div {CanvasControlAttribute}=""{this.CanvasControlData}"" {CanvasDataVersionAttribute}=""{ this.DataVersion}""  {ControlDataAttribute}=""{this.jsonControlData.Replace("\"", "&quot;")}"">");
             html.Append($@"<div {TextRteAttribute}=""{this.Rte}"">");
-            html.Append($@"<p>{this.Text}</p>");
+            if (this.Text.Trim().StartsWith("<p>", StringComparison.InvariantCultureIgnoreCase))
+            {
+                html.Append(this.Text);
+            }
+            else
+            {
+                html.Append($@"<p>{this.Text}</p>");
+            }
             html.Append("</div>");
             html.Append("</div>");
 #else
@@ -182,9 +189,9 @@ namespace OfficeDevPnP.Core.Pages
 #endif
             return html.ToString();
         }
-#endregion
+        #endregion
 
-            #region Internal and private methods
+        #region Internal and private methods
         internal override void FromHtml(IElement element)
         {
             base.FromHtml(element);
@@ -222,7 +229,7 @@ namespace OfficeDevPnP.Core.Pages
             this.spControlData = JsonConvert.DeserializeObject<ClientSideTextControlData>(element.GetAttribute(CanvasControl.ControlDataAttribute), jsonSerializerSettings);
             this.controlType = this.spControlData.ControlType;
         }
-            #endregion
+        #endregion
     }
 #endif
-        }
+}

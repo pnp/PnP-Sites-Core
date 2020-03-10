@@ -89,15 +89,20 @@ namespace Microsoft.SharePoint.Client
                 var siteList = tenantContext.Web.Lists.GetByTitle("DO_NOT_DELETE_SPLIST_TENANTADMIN_AGGREGATED_SITECOLLECTIONS");
                 var query = new CamlQuery()
                 {
-                    ViewXml = $"<View><Query><Where><And><Eq><FieldRef Name='HubSiteId' /><Value Type='Guid'>{hubsiteId}</Value></Eq><And><Neq><FieldRef Name='SiteId' /><Value Type='Guid'>{hubsiteId}</Value></Neq><IsNull><FieldRef Name='TimeDeleted'/></IsNull></And></And></Where></Query><ViewFields><FieldRef Name='SiteUrl'/></ViewFields></View>"
+                    ViewXml = $"<View><Query><Where><And><Eq><FieldRef Name='HubSiteId' /><Value Type='Guid'>{hubsiteId}</Value></Eq><And><Neq><FieldRef Name='SiteId' /><Value Type='Guid'>{hubsiteId}</Value></Neq><IsNull><FieldRef Name='TimeDeleted'/></IsNull></And></And></Where></Query><ViewFields><FieldRef Name='SiteUrl'/></ViewFields></View><RowLimit Paging='TRUE'>100</RowLimit>"
                 };
-                var items = siteList.GetItems(query);
-                tenantContext.Load(items);
-                tenantContext.ExecuteQueryRetry();
-                foreach (var item in items)
+
+                do
                 {
-                    urls.Add(item["SiteUrl"].ToString());
-                }
+                    var items = siteList.GetItems(query);
+                    tenantContext.Load(items);
+                    tenantContext.ExecuteQueryRetry();
+                    foreach (var item in items)
+                    {
+                        urls.Add(item["SiteUrl"].ToString());
+                    }
+                    query.ListItemCollectionPosition = items.ListItemCollectionPosition;
+                } while (query.ListItemCollectionPosition != null);
             }
             return urls;
         }
@@ -561,8 +566,8 @@ namespace Microsoft.SharePoint.Client
             bool? noScriptSite = null,
             bool? commentsOnSitePagesDisabled = null,
             bool? socialBarOnSitePagesDisabled = null,
-            SharingPermissionType? defaultLinkPermission = null,
-            SharingLinkType? defaultSharingLinkType = null,
+            Microsoft.Online.SharePoint.TenantManagement.SharingPermissionType? defaultLinkPermission = null,
+            Microsoft.Online.SharePoint.TenantManagement.SharingLinkType? defaultSharingLinkType = null,
             bool wait = true, Func<TenantOperationMessage, bool> timeoutFunction = null
             )
 #endif

@@ -51,6 +51,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public string GroupLifecyclePolicyId { get; set; }
 
+        /// <summary>
+        /// The ID of the SiteDesign, if any, to apply to the target Site
+        /// </summary>
+        public string SiteDesign { get; set; }
+
         protected override bool EqualsInherited(SiteCollection other)
         {
             if (!(other is TeamSiteCollection otherTyped))
@@ -65,13 +70,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Teamify == otherTyped.Teamify &&
                 this.HideTeamify == otherTyped.HideTeamify &&
                 this.GroupLifecyclePolicyId == otherTyped.GroupLifecyclePolicyId &&
-                this.Language == otherTyped.Language
+                this.Language == otherTyped.Language &&
+                this.SiteDesign == otherTyped.SiteDesign
                 );
         }
 
         protected override int GetInheritedHashCode()
         {
-            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|",
+            return (String.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|",
                 this.Alias?.GetHashCode() ?? 0,
                 this.DisplayName?.GetHashCode() ?? 0,
                 this.IsPublic.GetHashCode(),
@@ -79,7 +85,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                 this.Teamify.GetHashCode(),
                 this.HideTeamify.GetHashCode(),
                 this.GroupLifecyclePolicyId?.GetHashCode() ?? 0,
-                this.Language.GetHashCode()
+                this.Language.GetHashCode(),
+                this.SiteDesign.GetHashCode()
             ).GetHashCode());
         }
     }

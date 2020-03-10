@@ -6,6 +6,40 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [3.19.2003.0 - March 2020 release]
+
+### Added
+
+- Option to use an access token in the TimerJob framework
+- Option specify the Azure environment being used by the timerjob framework
+
+### Changed
+
+- Respect the set Azure environment in the GetAzureADCredentialsContext AuthenticationManager method
+- Added fallback to check for web setting on search redirect url on a root site if sc setting is empty in the SearchExtensions SetWebSearchCenterUrl method
+- Fix: Improve error message when uploading a file with invalid characters in the file name #2575 [jackpoz - Giacomo Pozzoni]
+- Fix: Catch WebException with Timeout status to fix timeout on update field and push changes #2557 [NicolajHedeager - Nicolaj Hedeager Larsen]
+- Fix: Ensure null value is never set for MaterPageUrl and ColorPaletteUrl #2558 [NicolajHedeager - Nicolaj Hedeager Larsen]
+- Fix: Added SP2019 RTM CSOM Assemblies #2573 [jensotto - Jens Otto Hatlevold]
+- Fix: Skip update of read only content type unless readonly is changed to false #2569 [NicolajHedeager - Nicolaj Hedeager Larsen]
+- Fix: Added list content type id token to support specifying list content types in the NewDocumentTemplates node for the default view #2570 [jensotto - Jens Otto Hatlevold]
+- Fix: Added guid prefix in webhook API call #2574 [gzukula]
+
+## [3.18.2002.0 - February 2020 release]
+
+### Added
+
+- EnableCommunicationSite extension method to transform a classic, non publishing, site into a communication site
+- February 2020 schema version was added and set as default schema
+- Support for SharingSettings, Search Center URL, new Teams settings, and Groupify of STS#3 sites in the Provisioning Engine
+
+### Changed
+
+- Reliability improvements in pages API to load some very old pages
+- Add Folder UniqueID to parser token as fileuniqueid #2524 [czullu - Christian Zuellig]
+- Fix: Change indentation back to spaces. #2529 [jensotto - Jens Otto Hatlevold]
+- Added option to set requesting access to a web to the default owners + marked the methods supporting multiple email addresses as obsolete #2533 / #2534 [KoenZomers - Koen Zomers]
+
 ## [3.17.2001.2 - January 2020 release]
 
 ### Changed
