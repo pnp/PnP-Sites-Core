@@ -714,6 +714,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public List<Tuple<string, string>> GetResourceTokenResourceValues(string tokenValue)
         {
             List<Tuple<string, string>> resourceValues = new List<Tuple<string, string>>();
+            tokenValue = $"{{{Regex.Escape(tokenValue.Trim(new char[] { '{', '}' }))}}}"; // since LocalizationToken are Regex.Escaped before load
             var resourceTokens = _tokens.Where(t => t is LocalizationToken && t.GetTokens().Contains(tokenValue));
             foreach (LocalizationToken resourceToken in resourceTokens)
             {
