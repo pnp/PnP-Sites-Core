@@ -9,13 +9,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     [TokenDefinitionDescription(
      Token = "{listContentTypeId:[listname],[contentTypeName]}",
      Description = "Returns an id of the content type given its name for a given list",
-     Example = "{listContentTypeId:My List,Folder}",
+     Example = "{listContentTypeId:My List,Document}",
      Returns = "0x010100F0D7B2FF0128AD459168DFA77A2A1BD0")]
     [TokenDefinitionDescription(
      Token = "{listContentTypeId:[listname],[contentTypeId]}",
      Description = "Returns an id of the content type given its direct parent id for a given list",
-     Example = "{listContentTypeId:My List,Folder}",
-     Returns = "0x0101")]
+     Example = "{listContentTypeId:My List,0x0101}",
+     Returns = "0x010100F0D7B2FF0128AD459168DFA77A2A1BD0")]
     internal class ListContentTypeIdToken : TokenDefinition
     {
         private string _contentTypeId = null;
