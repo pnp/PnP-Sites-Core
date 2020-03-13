@@ -1862,19 +1862,19 @@ namespace Microsoft.SharePoint.Client
         private static ContentTypeId BestMatch(string contentTypeId, IEnumerable<ContentType> contentTypeCollection)
         {
             ContentTypeId bestMatch = null;
-            int num = 0;
-            foreach (ContentType id2 in contentTypeCollection)
+            int bestMatchCommonBytes = 0;
+            foreach (ContentType contentType in contentTypeCollection)
             {
-                int num2 = id2.Id.CountCommonBytes(contentTypeId);
-                if (num2 > num)
+                int commonBytes = contentType.Id.CountCommonBytes(contentTypeId);
+                if (commonBytes > bestMatchCommonBytes)
                 {
-                    bestMatch = id2.Id;
-                    num = num2;
+                    bestMatch = contentType.Id;
+                    bestMatchCommonBytes = commonBytes;
                     continue;
                 }
-                if ((num2 == num) && (id2.Id.StringValue.Length < bestMatch.StringValue.Length))
+                if ((commonBytes == bestMatchCommonBytes) && (contentType.Id.StringValue.Length < bestMatch.StringValue.Length))
                 {
-                    bestMatch = id2.Id;
+                    bestMatch = contentType.Id;
                 }
             }
             return bestMatch;
