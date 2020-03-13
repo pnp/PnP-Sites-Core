@@ -1,6 +1,7 @@
 ﻿using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 using OfficeDevPnP.Core.Framework.Provisioning.Model;
+using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -190,6 +191,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 isValid = false;
             }
             return isValid;
+        }
+
+
+        /// <summary>
+        /// Tokenize a XML snippet based list view attribute with {listcontenttypeid:listname,contenttypeid}, {themecatalog} or {masterpagecatalog}
+        /// </summary>
+        /// <param name="xml">the XML snippet to tokenize as String</param>
+        /// <param name="list">List being used</param>
+        /// <param name="web">Web being used</param>
+        /// <returns>tokenized xml as String</returns>
+        protected string TokenizeListView(string xml, List list, Web web = null)
+        {
+            if (string.IsNullOrEmpty(xml))
+            {
+                // nothing to tokenize...
+                return string.Empty;
+            }
+            else
+            {
+                foreach (Microsoft.SharePoint.Client.ContentType contentType in list.ContentTypes)
+                {
+                    string contentTypeReplacement = ListContentTypeIdToken.CreateToken(list.Title, contentType.Id);
+                    xml = Regex.Replace(xml, contentType.Id.StringValue, contentTypeReplacement, RegexOptions.IgnoreCase);
+                }
+
+                return TokenizeXml(xml, web);
+            }
         }
 
         /// <summary>
