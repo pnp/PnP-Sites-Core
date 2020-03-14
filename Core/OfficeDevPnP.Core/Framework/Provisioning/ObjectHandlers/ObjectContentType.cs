@@ -325,7 +325,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // The new CT is a DocumentSet, and the target should be, as well
             if (templateContentType.DocumentSetTemplate != null)
             {
-                if (!Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.IsChildOfDocumentSetContentType(web.Context, existingContentType).Value)
+                var isChildOfDocumentSetContentType = Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.IsChildOfDocumentSetContentType(web.Context, existingContentType);
+                web.Context.ExecuteQueryRetry();
+
+                if (!isChildOfDocumentSetContentType.Value)
                 {
                     scope.LogError(CoreResources.Provisioning_ObjectHandlers_ContentTypes_InvalidDocumentSet_Update_Request, existingContentType.Id, existingContentType.Name);
                 }
