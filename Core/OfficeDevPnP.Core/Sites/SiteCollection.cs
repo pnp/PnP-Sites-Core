@@ -530,12 +530,22 @@ namespace OfficeDevPnP.Core.Sites
                     // Catch this...sometimes there's that "sharepoint push feature has not been ..." error
                 }
 
-                // Let's start polling for completion. We'll wait maximum 20 minutes for completion.               
+                // Let's start polling for completion. We'll wait maximum 20 minutes for completion.
+
+                Log.Debug(Constants.LOGGING_SOURCE, $"Starting to wait for site collection to be created");
+
+                var stopwatch = new Stopwatch();
+                stopwatch.Start();
+
                 var retryAttempt = 1;
                 do
                 {
+                    Log.Debug(Constants.LOGGING_SOURCE, $"Elapsed: {stopwatch.Elapsed.ToString(@"mm\:ss\.fff")} | Attempt {retryAttempt}/{maxRetryCount}");
+
                     if (retryAttempt > 1)
                     {
+                        Log.Debug(Constants.LOGGING_SOURCE, $"Elapsed: {stopwatch.Elapsed.ToString(@"mm\:ss\.fff")} | Waiting {retryDelay / 1000} seconds");
+
                         System.Threading.Thread.Sleep(retryDelay);
                     }
 
@@ -557,6 +567,9 @@ namespace OfficeDevPnP.Core.Sites
                     }
                 }
                 while (!isProvisioningComplete && retryAttempt <= maxRetryCount);
+
+                stopwatch.Stop();
+                Log.Debug(Constants.LOGGING_SOURCE, $"Elapsed: {stopwatch.Elapsed.ToString(@"mm\:ss\.fff")} | Finished");
             }
             catch (Exception)
             {
