@@ -276,7 +276,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !SP2013 && !SP2016
             if (!string.IsNullOrWhiteSpace(UrlValue))
             {
-                Regex regex = new Regex("(?:=[{]{1,2})(?<tokenname>fileuniqueid|fileuniqueidencoded)(?::)(?<fileurl>[^}]*)", RegexOptions.Compiled | RegexOptions.Multiline);
+                Regex regex = new Regex("(?:=([{]{1,2})|(%7[bB]{1}[{]{1}))(?<tokenname>fileuniqueid|fileuniqueidencoded)(?::)(?<fileurl>[^}]*)", RegexOptions.Compiled | RegexOptions.Multiline);
 
                 Match match = regex.Match(UrlValue);
                 if (match.Success)
