@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: UnitTest SP2013 - ResetFileToPreviousVersionTest #2577 [gszdev]
 - Fix: Resx-Issue if names contain char handled by Regex.Escape #2578 [czullu - Christian Zuellig]
 - Improve logging when waiting for a site collection to be created #2581 [jackpoz - Giacomo Pozzoni]
+- Fix: Encoding in fileuniqueid token dedection in navigationlink #2579 [czullu - Christian Zuellig]
 
 ## [3.19.2003.0 - March 2020 release]
 
