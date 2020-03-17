@@ -20,6 +20,7 @@ using OfficeDevPnP.Core.Utilities.Async;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities.Context;
+using System.Web;
 
 namespace OfficeDevPnP.Core
 {
@@ -28,11 +29,11 @@ namespace OfficeDevPnP.Core
     /// </summary>
     public enum AzureEnvironment
     {
-        Production=0,
-        PPE=1,
-        China=2,
-        Germany=3,
-        USGovernment=4
+        Production = 0,
+        PPE = 1,
+        China = 2,
+        Germany = 3,
+        USGovernment = 4
     }
 
     /// <summary>
@@ -358,7 +359,8 @@ namespace OfficeDevPnP.Core
                         if (Regex.IsMatch(cookieString, "FedAuth", RegexOptions.IgnoreCase))
                         {
                             authCookies = cookieString.Split(',').Where(c => c.StartsWith("FedAuth", StringComparison.InvariantCultureIgnoreCase) || c.StartsWith("rtFa", StringComparison.InvariantCultureIgnoreCase));
-                        } else if (Regex.IsMatch(cookieString, "EdgeAccessCookie", RegexOptions.IgnoreCase))
+                        }
+                        else if (Regex.IsMatch(cookieString, "EdgeAccessCookie", RegexOptions.IgnoreCase))
                         {
                             authCookies = cookieString.Split(',').Where(c => c.StartsWith("EdgeAccessCookie", StringComparison.InvariantCultureIgnoreCase));
                         }
@@ -392,9 +394,9 @@ namespace OfficeDevPnP.Core
             return null;
         }
 #endif
-#endregion
+        #endregion
 
-#region Authenticating against SharePoint on-premises using credentials
+        #region Authenticating against SharePoint on-premises using credentials
         /// <summary>
         /// Returns a SharePoint on-premises / SharePoint Online Dedicated ClientContext object
         /// </summary>
@@ -693,7 +695,7 @@ namespace OfficeDevPnP.Core
             HttpClient client = new HttpClient();
             string tokenEndpoint = $"{new AuthenticationManager().GetAzureADLoginEndPoint(environment)}/common/oauth2/token";
 
-            var body = $"resource={resourceUri}&client_id=9bc3ab49-b65d-410a-85ad-de819febfddc&grant_type=password&username={username}&password={password}";
+            var body = $"resource={resourceUri}&client_id=9bc3ab49-b65d-410a-85ad-de819febfddc&grant_type=password&username={HttpUtility.UrlEncode(username)}&password={HttpUtility.UrlEncode(password)}";
             var stringContent = new StringContent(body, System.Text.Encoding.UTF8, "application/x-www-form-urlencoded");
 
             var result = await client.PostAsync(tokenEndpoint, stringContent).ContinueWith<string>((response) =>
