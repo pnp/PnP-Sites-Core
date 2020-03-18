@@ -9,6 +9,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using Field = OfficeDevPnP.Core.Framework.Provisioning.Model.Field;
@@ -187,9 +188,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             web.Context.ExecuteQueryRetry();
                         }
-                        catch (ServerException se)
+                        catch (Exception ex)
                         {
-                            if (se.ServerErrorTypeName == "Microsoft.SharePoint.Client.ClientServiceTimeoutException")
+                            if ((ex is ServerException && (ex as ServerException).ServerErrorTypeName == "Microsoft.SharePoint.Client.ClientServiceTimeoutException")
+                               || (ex is WebException && (ex as WebException).Status == WebExceptionStatus.Timeout))
                             {
                                 string fieldName = existingFieldElement.Attribute("Name") != null ? existingFieldElement.Attribute("Name").Value : existingFieldElement.Attribute("StaticName").Value;
                                 WriteMessage(string.Format(CoreResources.Provisioning_ObjectHandlers_Fields_Updating_field__0__timeout, fieldName), ProvisioningMessageType.Warning);

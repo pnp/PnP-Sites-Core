@@ -84,8 +84,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new SiteToken(web));
 
             // remove list tokens
-            if (tokenIds.Contains("listid") || tokenIds.Contains("listurl") || tokenIds.Contains("viewid"))
-                AddListTokens(web); // tokens are remove in method
+            if (tokenIds.Contains("listid") || tokenIds.Contains("listurl") || tokenIds.Contains("viewid") || tokenIds.Contains("listcontenttypeid"))
+            {
+                RebuildListTokens(web);
+            }
             // remove content type tokens
             if (tokenIds.Contains("contenttypeid"))
                 AddContentTypeTokens(web);
@@ -226,7 +228,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
 
             if (tokenIds.Contains("listid") || tokenIds.Contains("listurl") || tokenIds.Contains("viewid"))
-                AddListTokens(web);
+                RebuildListTokens(web);
             if (tokenIds.Contains("contenttypeid"))
                 AddContentTypeTokens(web);
 
@@ -640,15 +642,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
-        internal void AddListTokens(Web web)
+        internal void RebuildListTokens(Web web)
         {
             web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Language);
 
             _tokens.RemoveAll(t => t.GetType() == typeof(ListIdToken));
             _tokens.RemoveAll(t => t.GetType() == typeof(ListUrlToken));
             _tokens.RemoveAll(t => t.GetType() == typeof(ListViewIdToken));
-
-            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views
+            _tokens.RemoveAll(t => t.GetType() == typeof(ListContentTypeIdToken));
+            
+            web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views, l => l.ContentTypes
 #if !SP2013
             , l => l.TitleResource
 #endif
@@ -670,6 +673,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 foreach (var view in list.Views)
                 {
                     _tokens.Add(new ListViewIdToken(web, list.Title, view.Title, view.Id));
+                }
+                
+                foreach (var contentType in list.ContentTypes)
+                {
+                    _tokens.Add(new ListContentTypeIdToken(web, list.Title, contentType.Name, contentType.Id));
+                    _tokens.Add(new ListContentTypeIdToken(web, list.Title, contentType.Id.GetParentIdValue(), contentType.Id));
                 }
             }
 
@@ -705,6 +714,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         public List<Tuple<string, string>> GetResourceTokenResourceValues(string tokenValue)
         {
             List<Tuple<string, string>> resourceValues = new List<Tuple<string, string>>();
+            tokenValue = $"{{{Regex.Escape(tokenValue.Trim(new char[] { '{', '}' }))}}}"; // since LocalizationToken are Regex.Escaped before load
             var resourceTokens = _tokens.Where(t => t is LocalizationToken && t.GetTokens().Contains(tokenValue));
             foreach (LocalizationToken resourceToken in resourceTokens)
             {

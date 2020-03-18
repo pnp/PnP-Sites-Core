@@ -10,6 +10,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+### Changed
+
+- Fix: IsChildOfDocumentSetContentType in ContentType Provisioning #2585 [koenzomers - Koen Zomers]
+- Fix: UnitTest SP2013 - ResetFileToPreviousVersionTest #2577 [gszdev]
+- Fix: Resx-Issue if names contain char handled by Regex.Escape #2578 [czullu - Christian Zuellig]
+- Improve logging when waiting for a site collection to be created #2581 [jackpoz - Giacomo Pozzoni]
+- Fix: Encoding in fileuniqueid token dedection in navigationlink #2579 [czullu - Christian Zuellig]
+
+## [3.19.2003.0 - March 2020 release]
+
+### Added
+
 - Option to use an access token in the TimerJob framework
 - Option specify the Azure environment being used by the timerjob framework
 - Added EnsureAppCatalogAsync extension method on Tenant to create and register a new app catalog
@@ -18,8 +30,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 - Respect the set Azure environment in the GetAzureADCredentialsContext AuthenticationManager method
 - Added fallback to check for web setting on search redirect url on a root site if sc setting is empty in the SearchExtensions SetWebSearchCenterUrl method
+- Fix: Improve error message when uploading a file with invalid characters in the file name #2575 [jackpoz - Giacomo Pozzoni]
+- Fix: Catch WebException with Timeout status to fix timeout on update field and push changes #2557 [NicolajHedeager - Nicolaj Hedeager Larsen]
+- Fix: Ensure null value is never set for MaterPageUrl and ColorPaletteUrl #2558 [NicolajHedeager - Nicolaj Hedeager Larsen]
+- Fix: Added SP2019 RTM CSOM Assemblies #2573 [jensotto - Jens Otto Hatlevold]
+- Fix: Skip update of read only content type unless readonly is changed to false #2569 [NicolajHedeager - Nicolaj Hedeager Larsen]
+- Fix: Added list content type id token to support specifying list content types in the NewDocumentTemplates node for the default view #2570 [jensotto - Jens Otto Hatlevold]
+- Fix: Added guid prefix in webhook API call #2574 [gzukula]
 
-## [3.17.2002.0 - February 2020 release]
+## [3.18.2002.0 - February 2020 release]
 
 ### Added
 

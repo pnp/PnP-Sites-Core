@@ -5,12 +5,9 @@ using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Utilities.Async;
 using OfficeDevPnP.Core.Utilities.Webhooks;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Utilities
@@ -33,7 +30,7 @@ namespace OfficeDevPnP.Core.Utilities
     internal static class WebhookUtility
     {
         private const string SubscriptionsUrlPart = "subscriptions";
-        private const string ListIdentifierFormat = @"{0}/_api/web/lists('{1}')";
+        private const string ListIdentifierFormat = @"{0}/_api/web/lists(guid'{1}')";
         public const int MaximumValidityInMonths = 6;
         public const int ExpirationDateTimeMaxDays = 180;
 

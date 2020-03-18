@@ -95,15 +95,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                             else
                             {
-                                // We can't update a sealed content type unless we change sealed to false
-                                if (!existingCT.Sealed || !ct.Sealed)
+                                // We can't update a sealed or read only content type unless we change the value to false
+                                if ((!existingCT.Sealed || !ct.Sealed) && (!existingCT.ReadOnly || !ct.ReadOnly))
                                 {
                                     scope.LogDebug(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type___0_____1_, ct.Id, ct.Name);
                                     UpdateContentType(web, template, existingCT, ct, parser, scope);
                                 }
                                 else
                                 {
-                                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_Sealed, ct.Id, ct.Name);
+                                    scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ContentTypes_Updating_existing_Content_Type_SealedOrReadOnly, ct.Id, ct.Name);
                                 }
                             }
                         }
@@ -325,7 +325,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // The new CT is a DocumentSet, and the target should be, as well
             if (templateContentType.DocumentSetTemplate != null)
             {
-                if (!Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.IsChildOfDocumentSetContentType(web.Context, existingContentType).Value)
+                var isChildOfDocumentSetContentType = Microsoft.SharePoint.Client.DocumentSet.DocumentSetTemplate.IsChildOfDocumentSetContentType(web.Context, existingContentType);
+                web.Context.ExecuteQueryRetry();
+
+                if (!isChildOfDocumentSetContentType.Value)
                 {
                     scope.LogError(CoreResources.Provisioning_ObjectHandlers_ContentTypes_InvalidDocumentSet_Update_Request, existingContentType.Id, existingContentType.Name);
                 }

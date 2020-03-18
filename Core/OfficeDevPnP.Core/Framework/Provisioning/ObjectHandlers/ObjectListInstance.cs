@@ -157,6 +157,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // We stop here unless we reached the last provisioning stop of the list
                     if (step == FieldAndListProvisioningStepHelper.Step.ListSettings)
                     {
+                        parser.RebuildListTokens(web);
+
                         #region Default Field Values
 
                         foreach (var listInfo in processedLists)
@@ -172,6 +174,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             ProcessViews(web, parser, scope, listInfo);
                         }
+
+                        parser.RebuildListTokens(web);
 
                         #endregion Views
 

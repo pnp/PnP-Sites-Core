@@ -1758,7 +1758,7 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFile_Destination_file_name_is_required_, nameof(fileName));
 
             if (fileName.ContainsInvalidFileFolderChars())
-                throw new ArgumentException(CoreResources.FileFolderExtensions_UploadFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_, nameof(fileName));
+                throw new ArgumentException(string.Format(CoreResources.FileFolderExtensions_UploadFile_The_argument_must_be_a_single_file_name_and_cannot_contain_path_characters_, fileName), nameof(fileName));
 
             // Create the file
             var newFileInfo = new FileCreationInformation()
