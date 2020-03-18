@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 - Option to use an access token in the TimerJob framework
 - Option specify the Azure environment being used by the timerjob framework
+- Added EnsureAppCatalogAsync extension method on Tenant to create and register a new app catalog
 
 ### Changed
 
