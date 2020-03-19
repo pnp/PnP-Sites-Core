@@ -448,7 +448,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 {
                                     Microsoft.SharePoint.Client.Folder ctFolder = web.GetFolderByServerRelativeUrl($"{web.ServerRelativeUrl}/_cts/{name}");
                                     web.Context.Load(ctFolder, fl => fl.Files.Include(f => f.Name, f => f.ServerRelativeUrl));
-                                    web.Context.ExecuteQuery();
+                                    web.Context.ExecuteQueryRetry();
 
                                     FileCreationInformation newFile = new FileCreationInformation();
                                     newFile.ContentStream = fsstream;
@@ -456,7 +456,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                                     Microsoft.SharePoint.Client.File uploadedFile = ctFolder.Files.Add(newFile);
                                     web.Context.Load(uploadedFile);
-                                    web.Context.ExecuteQuery();
+                                    web.Context.ExecuteQueryRetry();
                                 }
                             }
                             createdCT.DocumentTemplate = documentTemplate;
