@@ -764,17 +764,18 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
         /// <param name="displayName">The DisplayName of the Office 365 Group</param>
         /// <param name="mailNickname">The MailNickname of the Office 365 Group</param>
-        /// <param name="startIndex">Not relevant anymore</param>
-        /// <param name="endIndex">Not relevant anymore</param>
+        /// <param name="startIndex">If not specified, method will start with the first group.</param>
+        /// <param name="endIndex">If not specified, method will return all groups.</param>
         /// <param name="includeSite">Defines whether to return details about the Modern SharePoint Site backing the group. Default is true.</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <param name="includeClassification">Defines whether or not to return details about the Modern Site classification value.</param>
+        /// <param name="pageSize">Page size used for the individual requests to Micrsoft Graph. Defaults to 999 which is currently the maximum value.</param>
         /// <returns>An IList of SiteEntity objects</returns>
         public static List<UnifiedGroupEntity> ListUnifiedGroups(string accessToken,
             String displayName = null, string mailNickname = null,
-            int startIndex = 0, int endIndex = 999, bool includeSite = true,
-            int retryCount = 10, int delay = 500, bool includeClassification = false)
+            int startIndex = 0, int? endIndex = null, bool includeSite = true,
+            int retryCount = 10, int delay = 500, bool includeClassification = false, int pageSize = 999)
         {
             if (String.IsNullOrEmpty(accessToken))
             {
@@ -798,7 +799,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     var pagedGroups = await graphClient.Groups
                         .Request()
                         .Filter($"groupTypes/any(grp: grp eq 'Unified'){displayNameFilter}{mailNicknameFilter}")
-                        .Top(endIndex)
+                        .Top(pageSize)
                         .GetAsync();
 
                     Int32 pageCount = 0;
@@ -845,7 +846,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                             }
                         }
 
-                        if (pagedGroups.NextPageRequest != null && groups.Count < endIndex)
+                        if (pagedGroups.NextPageRequest != null && (endIndex == null || groups.Count < endIndex))
                         {
                             pagedGroups = await pagedGroups.NextPageRequest.GetAsync();
                         }
