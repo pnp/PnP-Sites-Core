@@ -189,8 +189,8 @@ namespace Microsoft.SharePoint.Client
                         // || response.StatusCode == (HttpStatusCode)500
                         ))
                     {
-                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, backoffInterval);
-
+                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, (int)response.StatusCode, backoffInterval);
+                        
 #if !ONPREMISES
                         wrapper = (ClientRequestWrapper)wex.Data["ClientRequest"];
                         retry = true;
@@ -223,7 +223,7 @@ namespace Microsoft.SharePoint.Client
                     }
                     else
                     {
-                        Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, wex.ToString());
+                        Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, (response!=null?(int)response.StatusCode:0), wex.ToString());
                         throw;
                     }
                 }
