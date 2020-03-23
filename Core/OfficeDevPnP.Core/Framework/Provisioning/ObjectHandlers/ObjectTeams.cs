@@ -789,7 +789,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 channel.Description,
                 channel.DisplayName,
-                channel.IsFavoriteByDefault
+                channel.IsFavoriteByDefault,
+                membershipType = channel.Private ? "private" : "standard"
             };
 
             var channelId = GraphHelper.CreateOrUpdateGraphObject(scope,
