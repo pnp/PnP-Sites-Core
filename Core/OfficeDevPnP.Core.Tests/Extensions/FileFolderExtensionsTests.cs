@@ -35,6 +35,19 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
             if (documentLibrary == null)
             {
                 documentLibrary = clientContext.Web.CreateList(ListTemplateType.DocumentLibrary, DocumentLibraryName, false);
+#if SP2013 // SharePoint 2013 Server Side default behaviour does not create a library with major versioning enabled. 
+                documentLibrary.EnsureProperties(
+                    d => d.EnableVersioning,
+                    d => d.MajorVersionLimit);
+
+                if (documentLibrary.EnableVersioning == false)
+                {
+                    documentLibrary.EnableVersioning = true;
+                    documentLibrary.MajorVersionLimit = 10;
+                    documentLibrary.Update();
+                    clientContext.ExecuteQueryRetry();
+                }
+#endif
             }
 
             clientContext.Load(documentLibrary.RootFolder.Folders);
