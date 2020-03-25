@@ -41,7 +41,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                 foreach (var ct in documentSetTemplate.AllowedContentTypes)
                 {
                     var item = Activator.CreateInstance(allowedContentTypeType);
-                    item.SetPublicInstancePropertyValue("ContentTypeID", ct);
+                    item.SetPublicInstancePropertyValue("ContentTypeID", ct.ContentTypeId);
+                    item.SetPublicInstancePropertyValue("Name", ct.Name);
+                    item.SetPublicInstancePropertyValue("Remove", ct.Remove);
                     allowedContentTypesArray.SetValue(item, i);
                     i++;
                 }

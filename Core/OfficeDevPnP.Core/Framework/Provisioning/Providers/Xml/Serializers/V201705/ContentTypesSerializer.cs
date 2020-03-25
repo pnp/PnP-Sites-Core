@@ -40,7 +40,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                     new RemoveExistingContentTypesFromSchemaToModelValueResolver());
 
                 //document set template - shared fields
-                expressions.Add(c => c.DocumentSetTemplate.SharedFields, new ExpressionCollectionValueResolver<Guid>((s) => Guid.Parse(s.GetPublicInstancePropertyValue("ID").ToString())));
+                expressions.Add(c => c.DocumentSetTemplate.SharedFields,
+                    new DocumentSetTemplateSharedFieldsFromSchemaToModelTypeResolver());
                 //document set template - welcome page fields
                 expressions.Add(c => c.DocumentSetTemplate.WelcomePageFields, new ExpressionCollectionValueResolver<Guid>((s) => Guid.Parse(s.GetPublicInstancePropertyValue("ID").ToString())));
 

@@ -1460,7 +1460,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                      }) : null,
                                 contentType.DocumentSetTemplate.WelcomePageFields != null ?
                                     (from wpf in contentType.DocumentSetTemplate.WelcomePageFields
-                                     select Guid.Parse(wpf.ID)) : null
+                                     select new Model.WelcomePageField
+                                     {
+                                         FieldId = Guid.Parse(wpf.ID)
+                                     }) : null
                                 ) : null,
                         DisplayFormUrl = contentType.DisplayFormUrl,
                         EditFormUrl = contentType.EditFormUrl,
