@@ -443,13 +443,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     foreach (var welcomePageField in templateContentType.DocumentSetTemplate.WelcomePageFields)
                     {
                         // Ensure the welcomepage field is not part of the document set yet
-                        if (documentSetTemplate.WelcomePageFields.All(w => w.Id != welcomePageField))
+                        if (documentSetTemplate.WelcomePageFields.All(w => w.Id != welcomePageField.FieldId))
                         {
-                            Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField);
+                            Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField.FieldId);
                             if (field != null)
                             {
                                 documentSetTemplate.WelcomePageFields.Add(field);
                                 documentSetIsDirty = true;
+                            }
+                        }
+                        else
+                        {
+                            // Welcome page field is part of the document set already, check if it should be removed
+                            if (welcomePageField.Remove)
+                            {
+                                // Remove the welcome page field
+                                Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField.FieldId);
+                                if (field != null)
+                                {
+                                    documentSetTemplate.WelcomePageFields.Remove(field.Id);
+                                }
                             }
                         }
                     }
@@ -712,7 +725,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var welcomePageField in templateContentType.DocumentSetTemplate.WelcomePageFields)
                 {
-                    Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField);
+                    // If the welcome page field is marked to be removed, since we're creating the document set here, we simply skip this line
+                    if (welcomePageField.Remove) continue;
+
+                    Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField.FieldId);
                     if (field != null)
                     {
                         documentSetTemplate.WelcomePageFields.Add(field);
@@ -927,7 +943,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                  FieldId = sharedField.Id
                              }).ToList(),
                             (from welcomePageField in documentSetTemplate.WelcomePageFields.AsEnumerable()
-                             select welcomePageField.Id).ToList()
+                             select new WelcomePageField
+                             {
+                                 FieldId = welcomePageField.Id
+                             }).ToList()
                         );
 
                         //extract the DefaultDocument files

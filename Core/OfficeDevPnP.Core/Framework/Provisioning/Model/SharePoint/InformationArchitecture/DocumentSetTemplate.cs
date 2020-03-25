@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using OfficeDevPnP.Core.Extensions;
 
@@ -18,7 +16,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         private AllowedContentTypeCollection _allowedContentTypes;
         private DefaultDocumentCollection _defaultDocuments;
         private SharedFieldCollection _sharedFields;
-        private List<Guid> _welcomePageFields = new List<Guid>();
+        private WelcomePageFieldCollection _welcomePageFields;
 
         #endregion
 
@@ -32,6 +30,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             _defaultDocuments = new DefaultDocumentCollection(this.ParentTemplate);
             _allowedContentTypes = new AllowedContentTypeCollection(this.ParentTemplate);
             _sharedFields = new SharedFieldCollection(this.ParentTemplate);
+            _welcomePageFields = new WelcomePageFieldCollection(this.ParentTemplate);
         }
 
         /// <summary>
@@ -42,7 +41,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <param name="defaultDocuments">Default documents for the DocumentSet</param>
         /// <param name="sharedFields">Shared Fields for the DocumentSet</param>
         /// <param name="welcomePageFields">Welcome Page Fields for the DocumentSet</param>
-        public DocumentSetTemplate(String welcomePage, IEnumerable<AllowedContentType> allowedContentTypes = null, IEnumerable<DefaultDocument> defaultDocuments = null, IEnumerable<SharedField> sharedFields = null, IEnumerable<Guid> welcomePageFields = null) : 
+        public DocumentSetTemplate(String welcomePage, IEnumerable<AllowedContentType> allowedContentTypes = null, IEnumerable<DefaultDocument> defaultDocuments = null, IEnumerable<SharedField> sharedFields = null, IEnumerable<WelcomePageField> welcomePageFields = null) : 
             this()
         {
             if (!String.IsNullOrEmpty(welcomePage))
@@ -101,7 +100,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// The list of Welcome Page Fields for the Document Set
         /// </summary>
-        public List<Guid> WelcomePageFields
+        public WelcomePageFieldCollection WelcomePageFields
         {
             get { return this._welcomePageFields; }
             private set { this._welcomePageFields = value; }
