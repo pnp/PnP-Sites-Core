@@ -415,13 +415,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     foreach (var sharedField in templateContentType.DocumentSetTemplate.SharedFields)
                     {                            
                         // Ensure the shared field is not part of the document set yet
-                        if (documentSetTemplate.SharedFields.All(f => f.Id != sharedField))
+                        if (documentSetTemplate.SharedFields.All(f => f.Id != sharedField.FieldId))
                         {
-                            Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField);
+                            Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField.FieldId);
                             if (field != null)
                             {
                                 documentSetTemplate.SharedFields.Add(field);
                                 documentSetIsDirty = true;
+                            }
+                        }
+                        else
+                        {
+                            // Shared Field is part of the document set already, check if it should be removed
+                            if (sharedField.Remove)
+                            {
+                                // Remove the shared field
+                                Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField.FieldId);
+                                if (field != null)
+                                {
+                                    documentSetTemplate.SharedFields.Remove(field);
+                                }
                             }
                         }
                     }
@@ -687,7 +700,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 foreach (var sharedField in templateContentType.DocumentSetTemplate.SharedFields)
                 {
-                    Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField);
+                    // If the shared field is marked to be removed, since we're creating the document set here, we simply skip this line
+                    if (sharedField.Remove) continue;
+
+                    Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField.FieldId);
                     if (field != null)
                     {
                         documentSetTemplate.SharedFields.Add(field);
@@ -906,7 +922,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
                              }).ToList(),
                             (from sharedField in documentSetTemplate.SharedFields.AsEnumerable()
-                             select sharedField.Id).ToList(),
+                             select new SharedField
+                             {
+                                 FieldId = sharedField.Id
+                             }).ToList(),
                             (from welcomePageField in documentSetTemplate.WelcomePageFields.AsEnumerable()
                              select welcomePageField.Id).ToList()
                         );

@@ -602,6 +602,8 @@
     <Compile Include="Framework\Provisioning\Model\Hierarchy\ProvisioningSequenceCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningWebhook.cs" />
     <Compile Include="Framework\Provisioning\Model\Extensibility\ProvisioningWebhookCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\SharedFieldCollection.cs" />
+    <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\SharedField.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachment.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\DataRowAttachmentCollection.cs" />
     <Compile Include="Framework\Provisioning\Model\SharePoint\InformationArchitecture\AllowedContentType.cs" />

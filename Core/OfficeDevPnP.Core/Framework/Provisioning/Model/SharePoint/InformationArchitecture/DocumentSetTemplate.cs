@@ -17,7 +17,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
 
         private AllowedContentTypeCollection _allowedContentTypes;
         private DefaultDocumentCollection _defaultDocuments;
-        private List<Guid> _sharedFields = new List<Guid>();
+        private SharedFieldCollection _sharedFields;
         private List<Guid> _welcomePageFields = new List<Guid>();
 
         #endregion
@@ -31,6 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         {
             _defaultDocuments = new DefaultDocumentCollection(this.ParentTemplate);
             _allowedContentTypes = new AllowedContentTypeCollection(this.ParentTemplate);
+            _sharedFields = new SharedFieldCollection(this.ParentTemplate);
         }
 
         /// <summary>
@@ -41,7 +42,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <param name="defaultDocuments">Default documents for the DocumentSet</param>
         /// <param name="sharedFields">Shared Fields for the DocumentSet</param>
         /// <param name="welcomePageFields">Welcome Page Fields for the DocumentSet</param>
-        public DocumentSetTemplate(String welcomePage, IEnumerable<AllowedContentType> allowedContentTypes = null, IEnumerable<DefaultDocument> defaultDocuments = null, IEnumerable<Guid> sharedFields = null, IEnumerable<Guid> welcomePageFields = null) : 
+        public DocumentSetTemplate(String welcomePage, IEnumerable<AllowedContentType> allowedContentTypes = null, IEnumerable<DefaultDocument> defaultDocuments = null, IEnumerable<SharedField> sharedFields = null, IEnumerable<Guid> welcomePageFields = null) : 
             this()
         {
             if (!String.IsNullOrEmpty(welcomePage))
@@ -52,7 +53,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             {
                 this.AllowedContentTypes.AddRange(allowedContentTypes);
             }
-            this.DefaultDocuments.AddRange(defaultDocuments);
+            if (defaultDocuments != null)
+            {
+                this.DefaultDocuments.AddRange(defaultDocuments);
+            }
             if (sharedFields != null)
             {
                 this._sharedFields.AddRange(sharedFields);
@@ -88,7 +92,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// The list of Shared Fields for the Document Set
         /// </summary>
-        public List<Guid> SharedFields
+        public SharedFieldCollection SharedFields
         {
             get { return this._sharedFields; }
             private set { this._sharedFields = value; }

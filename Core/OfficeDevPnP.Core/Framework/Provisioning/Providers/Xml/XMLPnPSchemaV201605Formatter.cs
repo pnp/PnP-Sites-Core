@@ -1637,7 +1637,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                      }) : null,
                                 contentType.DocumentSetTemplate.SharedFields != null ?
                                     (from sf in contentType.DocumentSetTemplate.SharedFields
-                                     select Guid.Parse(sf.ID)) : null,
+                                     select new Model.SharedField
+                                     {
+                                         FieldId = Guid.Parse(sf.ID)
+                                     }) : null,
                                 contentType.DocumentSetTemplate.WelcomePageFields != null ?
                                     (from wpf in contentType.DocumentSetTemplate.WelcomePageFields
                                      select Guid.Parse(wpf.ID)) : null
