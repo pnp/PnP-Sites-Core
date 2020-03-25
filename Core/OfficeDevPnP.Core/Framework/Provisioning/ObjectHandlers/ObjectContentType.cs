@@ -356,16 +356,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     // AllowedContentTypes
                     // Add additional content types to the set of allowed content types
-                    foreach (string ctId in templateContentType.DocumentSetTemplate.AllowedContentTypes)
+                    foreach (AllowedContentType allowedContentType in templateContentType.DocumentSetTemplate.AllowedContentTypes)
                     {
                         // Validate if the content type is not part of the document set content types yet
-                        if (documentSetTemplate.AllowedContentTypes.All(d => d.StringValue != ctId))
+                        if (documentSetTemplate.AllowedContentTypes.All(d => d.StringValue != allowedContentType.ContentTypeId))
                         {
-                            Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == ctId);
+                            Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == allowedContentType.ContentTypeId);
                             if (ct != null)
                             {
                                 documentSetTemplate.AllowedContentTypes.Add(ct.Id);
                                 documentSetIsDirty = true;
+                            }
+                        }
+                        else
+                        {
+                            // Content Type is part of the document set already, check if it should be removed
+                            if(allowedContentType.Remove)
+                            {
+                                // Remove the content type
+                                Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == allowedContentType.ContentTypeId);
+                                if (ct != null)
+                                {
+                                    documentSetTemplate.AllowedContentTypes.Remove(ct.Id);
+                                }
                             }
                         }
                     }
@@ -624,9 +637,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 // Add additional content types to the set of allowed content types
                 bool hasDefaultDocumentContentTypeInTemplate = false;
-                foreach (String ctId in templateContentType.DocumentSetTemplate.AllowedContentTypes)
+                foreach (AllowedContentType allowedContentType in templateContentType.DocumentSetTemplate.AllowedContentTypes)
                 {
-                    Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == ctId);
+                    // If the allowed content type is marked to be removed, since we're creating the document set here, we simply skip this line
+                    if (allowedContentType.Remove) continue;
+
+                    Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == allowedContentType.ContentTypeId);
                     if (ct != null)
                     {
                         if (ct.Id.StringValue.Equals("0x0101", StringComparison.InvariantCultureIgnoreCase))
@@ -874,7 +890,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         newCT.DocumentSetTemplate = new DocumentSetTemplate(
                             null, // TODO: WelcomePage not yet supported
                             (from allowedCT in documentSetTemplate.AllowedContentTypes.AsEnumerable()
-                             select allowedCT.StringValue).ToList(),
+                             select new AllowedContentType
+                             {
+                                 ContentTypeId = allowedCT.StringValue
+                             }).ToList(),
                             (from defaultDocument in documentSetTemplate.DefaultDocuments.AsEnumerable()
                              select new DefaultDocument
                              {

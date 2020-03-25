@@ -412,7 +412,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                      (from act in ct.DocumentSetTemplate.AllowedContentTypes
                                       select new DocumentSetTemplateAllowedContentType
                                       {
-                                          ContentTypeID = act
+                                          ContentTypeID = act.ContentTypeId
                                       }).ToArray() : null,
                                  DefaultDocuments = ct.DocumentSetTemplate.DefaultDocuments.Count > 0 ?
                                      (from dd in ct.DocumentSetTemplate.DefaultDocuments
@@ -1334,14 +1334,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                 contentType.DocumentSetTemplate.WelcomePage,
                                 contentType.DocumentSetTemplate.AllowedContentTypes != null ?
                                     (from act in contentType.DocumentSetTemplate.AllowedContentTypes
-                                     select act.ContentTypeID) : null,
+                                     select new Model.AllowedContentType
+                                     {
+                                         ContentTypeId = act.ContentTypeID
+                                     }) : null,
                                 contentType.DocumentSetTemplate.DefaultDocuments != null ?
                                     (from dd in contentType.DocumentSetTemplate.DefaultDocuments
                                      select new Model.DefaultDocument
                                      {
                                          ContentTypeId = dd.ContentTypeID,
                                          FileSourcePath = dd.FileSourcePath,
-                                         Name = dd.Name,
+                                         Name = dd.Name
                                      }) : null,
                                 contentType.DocumentSetTemplate.SharedFields != null ?
                                     (from sf in contentType.DocumentSetTemplate.SharedFields
@@ -1352,7 +1355,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml
                                 ) : null,
                         DisplayFormUrl = contentType.DisplayFormUrl,
                         EditFormUrl = contentType.EditFormUrl,
-                        NewFormUrl = contentType.NewFormUrl,
+                        NewFormUrl = contentType.NewFormUrl
                     }
                 );
             }

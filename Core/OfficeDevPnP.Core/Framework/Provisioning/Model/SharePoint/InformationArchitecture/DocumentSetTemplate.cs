@@ -15,7 +15,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
     {
         #region Private Members
 
-        private List<String> _allowedContentTypes = new List<String>();
+        private AllowedContentTypeCollection _allowedContentTypes;
         private DefaultDocumentCollection _defaultDocuments;
         private List<Guid> _sharedFields = new List<Guid>();
         private List<Guid> _welcomePageFields = new List<Guid>();
@@ -30,6 +30,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         public DocumentSetTemplate()
         {
             _defaultDocuments = new DefaultDocumentCollection(this.ParentTemplate);
+            _allowedContentTypes = new AllowedContentTypeCollection(this.ParentTemplate);
         }
 
         /// <summary>
@@ -40,7 +41,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <param name="defaultDocuments">Default documents for the DocumentSet</param>
         /// <param name="sharedFields">Shared Fields for the DocumentSet</param>
         /// <param name="welcomePageFields">Welcome Page Fields for the DocumentSet</param>
-        public DocumentSetTemplate(String welcomePage, IEnumerable<String> allowedContentTypes = null, IEnumerable<DefaultDocument> defaultDocuments = null, IEnumerable<Guid> sharedFields = null, IEnumerable<Guid> welcomePageFields = null) : 
+        public DocumentSetTemplate(String welcomePage, IEnumerable<AllowedContentType> allowedContentTypes = null, IEnumerable<DefaultDocument> defaultDocuments = null, IEnumerable<Guid> sharedFields = null, IEnumerable<Guid> welcomePageFields = null) : 
             this()
         {
             if (!String.IsNullOrEmpty(welcomePage))
@@ -49,7 +50,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
             }
             if (allowedContentTypes != null)
             {
-                this._allowedContentTypes.AddRange(allowedContentTypes);
+                this.AllowedContentTypes.AddRange(allowedContentTypes);
             }
             this.DefaultDocuments.AddRange(defaultDocuments);
             if (sharedFields != null)
@@ -69,7 +70,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// <summary>
         /// The list of allowed Content Types for the Document Set
         /// </summary>
-        public List<String> AllowedContentTypes
+        public AllowedContentTypeCollection AllowedContentTypes
         {
             get { return this._allowedContentTypes; }
             private set { this._allowedContentTypes = value; }
