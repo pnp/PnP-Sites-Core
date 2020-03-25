@@ -387,17 +387,31 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // DefaultDocuments
                     if (!isNoScriptSite)
                     {
-                        foreach (var doc in templateContentType.DocumentSetTemplate.DefaultDocuments)
+                        foreach (var defaultDocument in templateContentType.DocumentSetTemplate.DefaultDocuments)
                         {                                
                             // Ensure the default document is not part of the document set yet
-                            if (documentSetTemplate.DefaultDocuments.All(d => d.Name != doc.Name))
+                            if (documentSetTemplate.DefaultDocuments.All(d => d.Name != defaultDocument.Name))
                             {
-                                Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == doc.ContentTypeId);
+                                Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == defaultDocument.ContentTypeId);
                                 if (ct != null)
                                 {
-                                    using (Stream fileStream = connector.GetFileStream(doc.FileSourcePath))
+                                    using (Stream fileStream = connector.GetFileStream(defaultDocument.FileSourcePath))
                                     {
-                                        documentSetTemplate.DefaultDocuments.Add(doc.Name, ct.Id, ReadFullStream(fileStream));
+                                        documentSetTemplate.DefaultDocuments.Add(defaultDocument.Name, ct.Id, ReadFullStream(fileStream));
+                                        documentSetIsDirty = true;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                // Default Document is part of the document set already, check if it should be removed
+                                if (defaultDocument.Remove)
+                                {
+                                    // Remove the default document
+                                    Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == defaultDocument.ContentTypeId);
+                                    if (ct != null)
+                                    {
+                                        documentSetTemplate.DefaultDocuments.Remove(defaultDocument.Name);
                                         documentSetIsDirty = true;
                                     }
                                 }
@@ -694,14 +708,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (!isNoScriptSite)
                 {
-                    foreach (var doc in templateContentType.DocumentSetTemplate.DefaultDocuments)
+                    foreach (var defaultDocument in templateContentType.DocumentSetTemplate.DefaultDocuments)
                     {
-                        Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == doc.ContentTypeId);
+                        // If the default document is marked to be removed, since we're creating the document set here, we simply skip this line
+                        if (defaultDocument.Remove) continue;
+
+                        Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == defaultDocument.ContentTypeId);
                         if (ct != null)
                         {
-                            using (Stream fileStream = connector.GetFileStream(doc.FileSourcePath))
+                            using (Stream fileStream = connector.GetFileStream(defaultDocument.FileSourcePath))
                             {
-                                documentSetTemplate.DefaultDocuments.Add(doc.Name, ct.Id, ReadFullStream(fileStream));
+                                documentSetTemplate.DefaultDocuments.Add(defaultDocument.Name, ct.Id, ReadFullStream(fileStream));
                             }
                         }
                     }

@@ -4204,6 +4204,13 @@
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:attribute>
+                <xsd:attribute name="Remove" type="xsd:boolean" use="optional" default="false">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      Declares if the default document should be Removed from the document set, optional attribute.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
               </xsd:complexType>
             </xsd:element>
           </xsd:sequence>

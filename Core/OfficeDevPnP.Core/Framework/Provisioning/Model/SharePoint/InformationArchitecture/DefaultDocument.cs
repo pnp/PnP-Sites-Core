@@ -78,7 +78,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
                     this.FileSourcePath == other.FileSourcePath &&
                     this.Remove == other.Remove
                 );
-
         }
 
         #endregion
