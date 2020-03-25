@@ -378,6 +378,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 if (ct != null)
                                 {
                                     documentSetTemplate.AllowedContentTypes.Remove(ct.Id);
+                                    documentSetIsDirty = true;
                                 }
                             }
                         }
@@ -434,6 +435,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 if (field != null)
                                 {
                                     documentSetTemplate.SharedFields.Remove(field);
+                                    documentSetIsDirty = true;
                                 }
                             }
                         }
@@ -462,6 +464,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 if (field != null)
                                 {
                                     documentSetTemplate.WelcomePageFields.Remove(field.Id);
+                                    documentSetIsDirty = true;
                                 }
                             }
                         }
