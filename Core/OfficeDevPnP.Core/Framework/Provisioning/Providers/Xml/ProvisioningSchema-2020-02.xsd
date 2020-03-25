@@ -4144,6 +4144,20 @@
                     </xsd:documentation>
                   </xsd:annotation>
                 </xsd:attribute>
+                <xsd:attribute name="Name" type="xsd:string" use="optional">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      The name of the content type used in the content type reference. This is for reference/readability only.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="Remove" type="xsd:boolean" use="optional" default="false">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      Declares if the AllowedContentType should be Removed from the document set, optional attribute.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
               </xsd:complexType>
             </xsd:element>
           </xsd:sequence>
@@ -4309,6 +4323,20 @@
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
+    <xsd:attribute name="Name" type="xsd:string" use="optional">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          The name of the field reference. This is for reference/readability only.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
+    <xsd:attribute name="Remove" type="xsd:boolean" use="optional" default="false">
+      <xsd:annotation>
+        <xsd:documentation xml:lang="en">
+          Declares if the field reference should be Removed from the document set, optional attribute.
+        </xsd:documentation>
+      </xsd:annotation>
+    </xsd:attribute>
   </xsd:complexType>
 
   <xsd:complexType name="FieldRefFull">
@@ -4329,7 +4357,7 @@
     <xsd:attribute name="Name" type="xsd:string" use="optional">
       <xsd:annotation>
         <xsd:documentation xml:lang="en">
-          The name of the field used in the field reference. This is for reference/readibility only.
+          The name of the field used in the field reference. This is for reference/readability only.
         </xsd:documentation>
       </xsd:annotation>
     </xsd:attribute>
