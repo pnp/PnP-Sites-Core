@@ -358,11 +358,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Add additional content types to the set of allowed content types
                     foreach (string ctId in templateContentType.DocumentSetTemplate.AllowedContentTypes)
                     {
-                        Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == ctId);
-                        if (ct != null)
+                        // Validate if the content type is not part of the document set content types yet
+                        if (documentSetTemplate.AllowedContentTypes.All(d => d.StringValue != ctId))
                         {
-                            // Validate if the content type is not part of the document set content types yet
-                            if (documentSetTemplate.AllowedContentTypes.All(d => d.StringValue != ctId))
+                            Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == ctId);
+                            if (ct != null)
                             {
                                 documentSetTemplate.AllowedContentTypes.Add(ct.Id);
                                 documentSetIsDirty = true;
@@ -374,12 +374,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (!isNoScriptSite)
                     {
                         foreach (var doc in templateContentType.DocumentSetTemplate.DefaultDocuments)
-                        {
-                            Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == doc.ContentTypeId);
-                            if (ct != null)
+                        {                                
+                            // Ensure the default document is not part of the document set yet
+                            if (documentSetTemplate.DefaultDocuments.All(d => d.Name != doc.Name))
                             {
-                                // Ensure the default document is not part of the document set yet
-                                if (documentSetTemplate.DefaultDocuments.All(d => d.Name != doc.Name))
+                                Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == doc.ContentTypeId);
+                                if (ct != null)
                                 {
                                     using (Stream fileStream = connector.GetFileStream(doc.FileSourcePath))
                                     {
@@ -400,12 +400,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     // SharedFields
                     foreach (var sharedField in templateContentType.DocumentSetTemplate.SharedFields)
-                    {
-                        Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField);
-                        if (field != null)
+                    {                            
+                        // Ensure the shared field is not part of the document set yet
+                        if (documentSetTemplate.SharedFields.All(f => f.Id != sharedField))
                         {
-                            // Ensure the shared field is not part of the document set yet
-                            if (documentSetTemplate.SharedFields.All(f => f.Id != field.Id))
+                            Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField);
+                            if (field != null)
                             {
                                 documentSetTemplate.SharedFields.Add(field);
                                 documentSetIsDirty = true;
@@ -416,11 +416,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // WelcomePageFields
                     foreach (var welcomePageField in templateContentType.DocumentSetTemplate.WelcomePageFields)
                     {
-                        Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField);
-                        if (field != null)
+                        // Ensure the welcomepage field is not part of the document set yet
+                        if (documentSetTemplate.WelcomePageFields.All(w => w.Id != welcomePageField))
                         {
-                            // Ensure the welcomepage field is not part of the document set yet
-                            if (documentSetTemplate.WelcomePageFields.All(w => w.Id != field.Id))
+                            Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField);
+                            if (field != null)
                             {
                                 documentSetTemplate.WelcomePageFields.Add(field);
                                 documentSetIsDirty = true;
