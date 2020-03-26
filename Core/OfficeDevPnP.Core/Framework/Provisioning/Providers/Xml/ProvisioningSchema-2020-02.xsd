@@ -4224,8 +4224,31 @@
             </xsd:documentation>
           </xsd:annotation>
           <xsd:sequence>
-            <xsd:element name="SharedField" type="pnp:DocumentSetFieldRef"
-                         minOccurs="1" maxOccurs="unbounded" />
+            <xsd:element name="SharedField" minOccurs="1" maxOccurs="unbounded">
+              <xsd:complexType>
+                <xsd:attribute name="ID" type="pnp:ReplaceableString" use="required">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      The ID of the field to use as a shared field in the Document Set, required attribute.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="Name" type="xsd:string" use="optional">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      The name of the field to use as a shared field. This is for reference/readability only.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="Remove" type="xsd:boolean" use="optional" default="false">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      Declares if the SharedField should be Removed from the document set, optional attribute.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+              </xsd:complexType>
+            </xsd:element>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4237,8 +4260,31 @@
             </xsd:documentation>
           </xsd:annotation>
           <xsd:sequence>
-            <xsd:element name="WelcomePageField" type="pnp:DocumentSetFieldRef"
-                         minOccurs="1" maxOccurs="unbounded" />
+            <xsd:element name="WelcomePageField" minOccurs="1" maxOccurs="unbounded">
+              <xsd:complexType>
+                <xsd:attribute name="ID" type="pnp:ReplaceableString" use="required">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      The ID of the field to use as a welcome page field in the Document Set, required attribute.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="Name" type="xsd:string" use="optional">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      The name of the field to use as a welcome page field. This is for reference/readability only.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+                <xsd:attribute name="Remove" type="xsd:boolean" use="optional" default="false">
+                  <xsd:annotation>
+                    <xsd:documentation xml:lang="en">
+                      Declares if the WelcomePageField should be Removed from the document set, optional attribute.
+                    </xsd:documentation>
+                  </xsd:annotation>
+                </xsd:attribute>
+              </xsd:complexType>
+            </xsd:element>
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
@@ -4431,17 +4477,6 @@
           </xsd:annotation>
         </xsd:attribute>
       </xsd:extension>
-    </xsd:complexContent>
-  </xsd:complexType>
-
-  <xsd:complexType name="DocumentSetFieldRef">
-    <xsd:annotation>
-      <xsd:documentation xml:lang="en">
-        Defines the binding between a Document Set and a Field.
-      </xsd:documentation>
-    </xsd:annotation>
-    <xsd:complexContent>
-      <xsd:extension base="pnp:FieldRefBase" />
     </xsd:complexContent>
   </xsd:complexType>
 

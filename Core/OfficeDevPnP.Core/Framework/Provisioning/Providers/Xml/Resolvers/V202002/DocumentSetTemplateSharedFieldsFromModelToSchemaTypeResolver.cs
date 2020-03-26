@@ -33,7 +33,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                 Int32 i = 0;
                 foreach (var field in documentSetTemplate.SharedFields)
                 {
-                    var item = Activator.CreateInstance(sharedFieldsType);
+                    var item = Activator.CreateInstance(sharedFieldType);
                     item.SetPublicInstancePropertyValue("ID", field.FieldId);
                     item.SetPublicInstancePropertyValue("Name", field.Name);
                     item.SetPublicInstancePropertyValue("Remove", field.Remove);
