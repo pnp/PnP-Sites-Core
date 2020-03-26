@@ -1787,7 +1787,7 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentNullException(nameof(contentTypeId));
             }
             var ctx = contentTypes.Context;
-            contentTypes.EnsureProperties(c => c.Include(ct => ct.Id));
+            contentTypes.EnsureProperty(c => c.Include(ct => ct.Id));
 
             var res = contentTypes.Where(c => c.Id.StringValue.StartsWith(contentTypeId, StringComparison.InvariantCultureIgnoreCase)).OrderBy(c => c.Id.StringValue.Length).FirstOrDefault();
             if (res != null)

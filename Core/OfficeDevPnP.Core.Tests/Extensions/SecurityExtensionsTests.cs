@@ -201,7 +201,7 @@ namespace Microsoft.SharePoint.Client.Tests
 				//Arrange
 				var subSite = CreateTestTeamSubSite(clientContext.Web);
 
-                subSite.EnsureProperties(s => s.HasUniqueRoleAssignments);
+                subSite.EnsureProperty(s => s.HasUniqueRoleAssignments);
 				
 				if (!subSite.HasUniqueRoleAssignments)
 				{
@@ -232,7 +232,7 @@ namespace Microsoft.SharePoint.Client.Tests
 				//Arrange
 				var list = clientContext.Web.CreateList(ListTemplateType.GenericList, GetRandomString(), false);
 
-                list.EnsureProperties(l => l.HasUniqueRoleAssignments);
+                list.EnsureProperty(l => l.HasUniqueRoleAssignments);
                 
 				if (!list.HasUniqueRoleAssignments)
 				{
@@ -268,7 +268,7 @@ namespace Microsoft.SharePoint.Client.Tests
 				clientContext.Load(item);
 				clientContext.ExecuteQueryRetry();
 
-                item.EnsureProperties(i => i.HasUniqueRoleAssignments);
+                item.EnsureProperty(i => i.HasUniqueRoleAssignments);
 				
 				if (!item.HasUniqueRoleAssignments)
 				{
@@ -300,7 +300,7 @@ namespace Microsoft.SharePoint.Client.Tests
 				var subSite = CreateTestTeamSubSite(clientContext.Web);
 
 
-                subSite.EnsureProperties(s => s.HasUniqueRoleAssignments);
+                subSite.EnsureProperty(s => s.HasUniqueRoleAssignments);
 				
 				if (!subSite.HasUniqueRoleAssignments)
 				{

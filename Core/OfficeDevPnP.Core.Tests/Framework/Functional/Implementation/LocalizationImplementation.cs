@@ -150,7 +150,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
         private void DeletePages(ClientContext cc)
         {
             Web web = cc.Web;
-            web.EnsureProperties(w => w.ServerRelativeUrl);
+            web.EnsureProperty(w => w.ServerRelativeUrl);
             string serverRelatedUrl = web.ServerRelativeUrl;
 
             try

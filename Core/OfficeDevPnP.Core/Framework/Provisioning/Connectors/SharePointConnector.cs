@@ -413,7 +413,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
                 spFolder = cc.Web.RootFolder;
             }
 
-            spFolder.EnsureProperties(f => f.ServerRelativeUrl);
+            spFolder.EnsureProperty(f => f.ServerRelativeUrl);
 
             return UrlUtility.Combine(spFolder.ServerRelativeUrl, fileName);
         }

@@ -300,7 +300,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             //Test if fileuniqueid belongs to a folder
                             try
                             {
-                                web.EnsureProperties(w => w.ServerRelativeUrl);
+                                web.EnsureProperty(w => w.ServerRelativeUrl);
                                 string folderUrl = $"{web.ServerRelativeUrl}/{ match.Groups["fileurl"].Value}";
                                 var spFolder = web.GetFolderByServerRelativeUrl(folderUrl);
                                 web.Context.Load(spFolder, f => f.UniqueId);

@@ -114,7 +114,7 @@ namespace Microsoft.SharePoint.Client
             }
 
             var deleted = false;
-            parentWeb.EnsureProperties(w => w.ServerRelativeUrl);
+            parentWeb.EnsureProperty(w => w.ServerRelativeUrl);
 
             var serverRelativeUrl = UrlUtility.Combine(parentWeb.ServerRelativeUrl, leafUrl);
             var webs = parentWeb.Webs;
@@ -215,7 +215,7 @@ namespace Microsoft.SharePoint.Client
                 throw new ArgumentException("The argument must be a single web URL and cannot contain path characters.", nameof(leafUrl));
             }
 
-            parentWeb.EnsureProperties(w => w.ServerRelativeUrl);
+            parentWeb.EnsureProperty(w => w.ServerRelativeUrl);
 
             var serverRelativeUrl = UrlUtility.Combine(parentWeb.ServerRelativeUrl, leafUrl);
             var webs = parentWeb.Webs;
@@ -339,7 +339,7 @@ namespace Microsoft.SharePoint.Client
         public static bool IsNoScriptSite(this Web web)
         {
 #if !SP2013 && !SP2016
-            web.EnsureProperties(w => w.EffectiveBasePermissions);
+            web.EnsureProperty(w => w.EffectiveBasePermissions);
 
             // Definition of no-script is not having the AddAndCustomizePages permission
             if (!web.EffectiveBasePermissions.Has(PermissionKind.AddAndCustomizePages))
@@ -1149,7 +1149,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="descriptionResource">Localized Description string</param>
         public static void SetLocalizationLabels(this Web web, string cultureName, string titleResource, string descriptionResource)
         {
-            web.EnsureProperties(w => w.TitleResource);
+            web.EnsureProperty(w => w.TitleResource);
 
             // Set translations for the culture
             web.TitleResource.SetValueForUICulture(cultureName, titleResource);
@@ -1355,7 +1355,7 @@ namespace Microsoft.SharePoint.Client
         public static Uri GetAppCatalog(this Web web)
         {
             var tenantSettings = TenantSettings.GetCurrent(web.Context);
-            tenantSettings.EnsureProperties(s => s.CorporateCatalogUrl);
+            tenantSettings.EnsureProperty(s => s.CorporateCatalogUrl);
             if(!string.IsNullOrEmpty(tenantSettings.CorporateCatalogUrl))
             {
                 return new Uri(tenantSettings.CorporateCatalogUrl);

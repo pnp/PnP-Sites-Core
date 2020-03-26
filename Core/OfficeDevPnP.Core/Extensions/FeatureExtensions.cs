@@ -243,7 +243,7 @@ namespace Microsoft.SharePoint.Client
             }
 
             var iprFeature = features.GetById(featureID);
-            iprFeature.EnsureProperties(f => f.DefinitionId);
+            iprFeature.EnsureProperty(f => f.DefinitionId);
 
             if (iprFeature != null && iprFeature.IsPropertyAvailable("DefinitionId") && !iprFeature.ServerObjectIsNull.Value && iprFeature.DefinitionId.Equals(featureID))
             {
