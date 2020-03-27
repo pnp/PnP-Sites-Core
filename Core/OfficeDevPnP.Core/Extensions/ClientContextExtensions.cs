@@ -131,6 +131,57 @@ namespace Microsoft.SharePoint.Client
             if (delay <= 0)
                 throw new ArgumentException("Provide a delay greater than zero.");
 
+            ClientContext ctx = clientContext as ClientContext;
+            if (ctx != null)
+            {
+                var formDigestInfoField = ctx.GetType().GetField("m_formDigestInfo", BindingFlags.Instance | BindingFlags.NonPublic);
+                var formDigestInfoValue = formDigestInfoField.GetValue(ctx) as FormDigestInfo;
+                if (formDigestInfoValue == null || (DateTime.UtcNow.AddSeconds(-1) >= formDigestInfoValue.Expiration))
+                {
+                    int retryAttemptsDigest = 0;
+                    int retryAfterIntervalDigest = 0;
+                    int backoffIntervalDigest = delay;
+                    bool refreshDigestSuccess = false;
+                    while (retryAttemptsDigest < retryCount && !refreshDigestSuccess)
+                    {
+                        try
+                        {
+                            FormDigestInfo formDigestInfo = ctx.GetFormDigestDirect();
+                            formDigestInfoField.SetValue(ctx, formDigestInfo);
+                            refreshDigestSuccess = true;
+                        }
+                        catch (WebException wex)
+                        {
+                            var response = wex.Response as HttpWebResponse;
+                            // Check if request was throttled - http status code 429
+                            // Check is request failed due to server unavailable - http status code 503
+                            if (response != null &&
+                                (response.StatusCode == (HttpStatusCode)429
+                                || response.StatusCode == (HttpStatusCode)503
+                                ))
+                            {
+                                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, backoffIntervalDigest);
+#if !ONPREMISES
+                                retryAfterIntervalDigest = backoffIntervalDigest;
+                                await Task.Delay(retryAfterIntervalDigest);
+#else
+                                Thread.Sleep(backoffIntervalDigest);
+#endif
+                                //Add to retry count and increase delay.
+                                retryAttemptsDigest++;
+                                backoffIntervalDigest = backoffIntervalDigest * 2;
+                            }
+                            else
+                            {
+                                Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, wex.ToString());
+                                throw;
+                            }
+                        }
+                    }
+                }
+            }
+
+
             // Do while retry attempt is less than retry count
             while (retryAttempts < retryCount)
             {
