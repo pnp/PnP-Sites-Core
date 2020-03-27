@@ -87,7 +87,7 @@ namespace OfficeDevPnP.Core.Utilities
                     if (result != null && result.Result != null && (result.Result.StatusCode == (HttpStatusCode)429 || result.Result.StatusCode == (HttpStatusCode)503))
                     {
                         // And return the response in case of success
-                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_SendAsyncRetry, $"{backoffInterval}-A");
+                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_SendAsyncRetry, $"{backoffInterval}");
 
                         //Add delay for retry
                         Task.Delay(backoffInterval).Wait();
@@ -96,7 +96,7 @@ namespace OfficeDevPnP.Core.Utilities
                         retryAttempts++;
                         backoffInterval = backoffInterval * 2;
 
-                        workrequest = workrequest.Clone();
+                        workrequest = workrequest.CloneRequest();
                     }
                     else
                     {
@@ -125,7 +125,7 @@ namespace OfficeDevPnP.Core.Utilities
                             //Add to retry count and increase delay.
                             retryAttempts++;
                             backoffInterval = backoffInterval * 2;
-                            workrequest = workrequest.Clone();
+                            workrequest = workrequest.CloneRequest();
                         }
                         else
                         {
@@ -140,13 +140,14 @@ namespace OfficeDevPnP.Core.Utilities
             throw new Microsoft.SharePoint.Client.ClientContextExtensions.MaximumRetryAttemptedException($"Maximum retry attempts {this.retryCount}, has be attempted.");
         }
     }
-    public static class PnPHttpRequestCloneExtension
+
+    internal static class PnPHttpRequestCloneExtension
     {
-        public static HttpRequestMessage Clone(this HttpRequestMessage request)
+        public static HttpRequestMessage CloneRequest(this HttpRequestMessage request)
         {
             var clone = new HttpRequestMessage(request.Method, request.RequestUri)
             {
-                Content = request.Content.Clone(),
+                Content = request.Content.CloneRequest(),
                 Version = request.Version
             };
             foreach (KeyValuePair<string, object> prop in request.Properties)
@@ -161,47 +162,12 @@ namespace OfficeDevPnP.Core.Utilities
             return clone;
         }
 
-        public static HttpContent Clone(this HttpContent content)
+        public static HttpContent CloneRequest(this HttpContent content)
         {
             if (content == null) return null;
 
             var ms = new MemoryStream();
-            content.CopyToAsync(ms).Wait();
-            ms.Position = 0;
-
-            var clone = new StreamContent(ms);
-            foreach (KeyValuePair<string, IEnumerable<string>> header in content.Headers)
-            {
-                clone.Headers.Add(header.Key, header.Value);
-            }
-            return clone;
-        }
-
-        public static async Task<HttpRequestMessage> CloneAsync(this HttpRequestMessage request)
-        {
-            var clone = new HttpRequestMessage(request.Method, request.RequestUri)
-            {
-                Content = await request.Content.CloneAsync().ConfigureAwait(false),
-                Version = request.Version
-            };
-            foreach (KeyValuePair<string, object> prop in request.Properties)
-            {
-                clone.Properties.Add(prop);
-            }
-            foreach (KeyValuePair<string, IEnumerable<string>> header in request.Headers)
-            {
-                clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
-            }
-
-            return clone;
-        }
-
-        public static async Task<HttpContent> CloneAsync(this HttpContent content)
-        {
-            if (content == null) return null;
-
-            var ms = new MemoryStream();
-            await content.CopyToAsync(ms).ConfigureAwait(false);
+            content.CopyToAsync(ms).ConfigureAwait(false).GetAwaiter().GetResult();
             ms.Position = 0;
 
             var clone = new StreamContent(ms);
