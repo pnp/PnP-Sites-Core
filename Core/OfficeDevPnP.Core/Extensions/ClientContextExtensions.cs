@@ -160,7 +160,7 @@ namespace Microsoft.SharePoint.Client
                                 || response.StatusCode == (HttpStatusCode)503
                                 ))
                             {
-                                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, backoffIntervalDigest);
+                                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, (int)response.StatusCode, backoffIntervalDigest);
 #if !ONPREMISES
                                 retryAfterIntervalDigest = backoffIntervalDigest;
                                 await Task.Delay(retryAfterIntervalDigest);
@@ -240,7 +240,7 @@ namespace Microsoft.SharePoint.Client
                         // || response.StatusCode == (HttpStatusCode)500
                         ))
                     {
-                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, backoffInterval);
+                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetry, (int)response.StatusCode, backoffInterval);
 
 #if !ONPREMISES
                         wrapper = (ClientRequestWrapper)wex.Data["ClientRequest"];
