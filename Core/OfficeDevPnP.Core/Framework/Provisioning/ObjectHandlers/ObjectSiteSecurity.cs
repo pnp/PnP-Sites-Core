@@ -46,9 +46,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (web.EnsureProperty(w => w.HasUniqueRoleAssignments))
                 {
-                    string parsedAssociatedOwnerGroupName = parser.ParseString(template.Security.AssociatedOwnerGroup);
-                    string parsedAssociatedMemberGroupName = parser.ParseString(template.Security.AssociatedMemberGroup);
-                    string parsedAssociatedVisitorGroupName = parser.ParseString(template.Security.AssociatedVisitorGroup);
+                    string parsedAssociatedOwnerGroupName = parser.ParseGroupTitleString(template.Security.AssociatedOwnerGroup,web);
+                    string parsedAssociatedMemberGroupName = parser.ParseGroupTitleString(template.Security.AssociatedMemberGroup, web);
+                    string parsedAssociatedVisitorGroupName = parser.ParseGroupTitleString(template.Security.AssociatedVisitorGroup, web);
 
                     bool setAssociatedOwnerGroup = parsedAssociatedOwnerGroupName != null;
                     bool setAssociatedMemberGroup = parsedAssociatedMemberGroupName != null;
@@ -278,8 +278,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     var allGroups = web.Context.LoadQuery(web.SiteGroups.Include(gr => gr.LoginName, gr => gr.Id));
                     web.Context.ExecuteQueryRetry();
 
-                    string parsedGroupTitle = parser.ParseString(siteGroup.Title);
-                    string parsedGroupOwner = parser.ParseString(siteGroup.Owner);
+                    string parsedGroupTitle = parser.ParseGroupTitleString(siteGroup.Title,web);
+                    string parsedGroupOwner = parser.ParseGroupTitleString(siteGroup.Owner,web);
                     string parsedGroupDescription = parser.ParseString(siteGroup.Description);
 
                     if (!web.GroupExists(parsedGroupTitle))
@@ -630,7 +630,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static Principal GetPrincipal(Web web, TokenParser parser, PnPMonitoredScope scope, IEnumerable<Group> groups, Model.RoleAssignment roleAssignment)
         {
-            var parsedRoleDefinition = parser.ParseString(roleAssignment.Principal);
+            var parsedRoleDefinition = parser.ParseGroupTitleString(roleAssignment.Principal,web);
             Principal principal = groups.FirstOrDefault(g => g.LoginName.Equals(parsedRoleDefinition, StringComparison.OrdinalIgnoreCase));
 
             if (principal == null)

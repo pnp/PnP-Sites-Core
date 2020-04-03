@@ -738,6 +738,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             return ParseString(input, null);
         }
 
+        public string ParseGroupTitleString(string input, Web web)
+        {
+            web.EnsureProperty(w => w.Title);
+            string siteTitle = web.Title;
+            //If User creates site from ms ui using special char in title they will be replaced by _
+            //The group name is empty, or you are using one or more of the following invalid characters: " / \ [ ] : | < > + = ; , ? * ' @
+            siteTitle = Regex.Replace(siteTitle, "[\"/\\[\\]\\\\:|<>+=;,?*\'@]", "_");
+            input=Regex.Replace(input, "{sitetitle}", siteTitle);
+            input = Regex.Replace(input, "{sitename}", siteTitle);
+            return ParseString(input, null);
+        }
+
         static readonly Regex ReGuid = new Regex("(?<guid>\\{\\S{8}-\\S{4}-\\S{4}-\\S{4}-\\S{12}?\\})", RegexOptions.Compiled);
         /// <summary>
         /// Gets left over tokens

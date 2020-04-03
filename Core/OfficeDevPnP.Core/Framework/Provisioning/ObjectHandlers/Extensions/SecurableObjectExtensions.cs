@@ -31,7 +31,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
             {
                 if (!roleAssignment.Remove)
                 {
-                    var roleAssignmentPrincipal = parser.ParseString(roleAssignment.Principal);
+                    var roleAssignmentPrincipal = parser.ParseGroupTitleString(roleAssignment.Principal, context.Web);
 
                     Principal principal = groups.FirstOrDefault(g => g.LoginName.Equals(roleAssignmentPrincipal, StringComparison.OrdinalIgnoreCase));
 
@@ -64,7 +64,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                     }
                 } else
                 {
-                    var roleAssignmentPrincipal = parser.ParseString(roleAssignment.Principal);
+                    var roleAssignmentPrincipal = parser.ParseGroupTitleString(roleAssignment.Principal, context.Web);
 
                     Principal principal = groups.FirstOrDefault(g => g.LoginName.Equals(roleAssignmentPrincipal, StringComparison.OrdinalIgnoreCase));
 
