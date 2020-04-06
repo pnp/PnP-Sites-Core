@@ -527,6 +527,7 @@
     <Compile Include="Framework\Graph\Model\DirectorySettingTemplates.cs" />
     <Compile Include="Framework\Graph\GraphHttpClient.cs" />
     <Compile Include="Framework\Graph\Model\DirectorySettingValue.cs" />
+    <Compile Include="Framework\Graph\Model\GroupCreationRequest.cs" />
     <Compile Include="Framework\Graph\Model\SiteClassificationsSettings.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionIssueTags.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRuleAttribute.cs" />

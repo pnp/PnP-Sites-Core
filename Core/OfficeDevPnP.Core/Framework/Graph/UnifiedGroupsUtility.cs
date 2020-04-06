@@ -192,7 +192,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     Microsoft.Graph.Group addedGroup = null;
                     String modernSiteUrl = null;
 
-                    // Add the group to the collection of groups (if it does not exist
+                    // Add the group to the collection of groups (if it does not exist)
                     if (addedGroup == null)
                     {
                         addedGroup = await graphClient.Groups.Request().AddAsync(newGroup);
@@ -272,25 +272,6 @@ namespace OfficeDevPnP.Core.Framework.Graph
                             group.SiteUrl = modernSiteUrl;
                         }
                     }
-                    /*
-                    #region Handle group's owners
-
-                    if (owners != null && owners.Length > 0)
-                    {
-                        await UpdateOwners(owners, graphClient, addedGroup);
-                    }
-
-                    #endregion
-
-                    #region Handle group's members
-
-                    if (members != null && members.Length > 0)
-                    {
-                        await UpdateMembers(members, graphClient, addedGroup);
-                    }
-
-                    #endregion
-                    */
 
                     if (createTeam)
                     {

@@ -493,7 +493,7 @@ namespace OfficeDevPnP.Core.Utilities
         /// <param name="spContext">An optional SharePoint client context</param>
         /// <typeparam name="TResult">The type of the result, if any</typeparam>
         /// <returns>The value of the result, if any</returns>
-        private static TResult MakeHttpRequest<TResult>(
+        internal static TResult MakeHttpRequest<TResult>(
             string httpMethod,
             string requestUrl,
             out HttpResponseHeaders responseHeaders,

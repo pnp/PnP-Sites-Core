@@ -23,6 +23,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Utilities;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
+using System.Threading.Tasks;
 #endif
 
 namespace Microsoft.SharePoint.Client
@@ -217,6 +218,66 @@ namespace Microsoft.SharePoint.Client
                 Lcid = lcid
             };
             return tenant.CreateSiteCollection(siteCol, removeFromRecycleBin, wait, timeoutFunction);
+        }
+
+        /// <summary>
+        /// Creates a new App Catalog and registers the app catalog site as the tenant App Catalog.
+        /// </summary>
+        /// <param name="tenant">A tenant object pointing to the context of a Tenant Administration site</param>
+        /// <param name="url">The Full Site Url, e.g. https://yourtenant.sharepoint.com/sites/appcatalog</param>
+        /// <param name="ownerLogin">The username of the owner of the appcatalog, e.g. user@domain.com</param>
+        /// <param name="timeZoneId">TimeZoneId for the appcatalog site. "(UTC+01:00) Brussels, Copenhagen, Madrid, Paris" = 3"</param>
+        /// <param name="force">If true, and an appcatalog is already registered and present, the new appcatalog will be created. If the same URL is provided and the site is present the current one will be deleted and a new one will be created.</param>
+        /// <returns></returns>
+        public static async Task EnsureAppCatalogAsync(this Tenant tenant, string url, string ownerLogin, int timeZoneId, bool force = false)
+        {
+
+            if (string.IsNullOrEmpty(url))
+            {
+                throw new ArgumentException("App Catalog Site Url is required", nameof(url));
+            }
+
+            if (string.IsNullOrEmpty(ownerLogin))
+            {
+                throw new ArgumentException("Owner is required", nameof(ownerLogin));
+            }
+
+            // Check if there is already an app catalog
+            var settings = TenantSettings.GetCurrent(tenant.Context);
+            var appCatalogUrl = await settings.EnsurePropertyAsync(s => s.CorporateCatalogUrl);
+            if (!string.IsNullOrEmpty(appCatalogUrl))
+            {
+                // check if the site exists
+                var siteExistence = tenant.SiteExistsAnywhere(appCatalogUrl);
+                if (siteExistence == SiteExistence.No)
+                {
+                    CreateAppCatalogInternal(tenant, url, ownerLogin, timeZoneId, force);
+                }
+                else if (force)
+                {
+                    DeleteSiteCollection(tenant, appCatalogUrl, false);
+                    CreateAppCatalogInternal(tenant, url, ownerLogin, timeZoneId, force);
+                } else
+                {
+                    throw new Exception($"An App Catalog already exists at {appCatalogUrl} and force is not specified.");
+                }
+            }
+            else
+            {
+                CreateAppCatalogInternal(tenant, url, ownerLogin, timeZoneId, true);
+            }
+        }
+
+        private static void CreateAppCatalogInternal(Tenant tenant, string url, string ownerLogin, int timeZoneId, bool removeFromRecycleBin)
+        {
+            var siteEntity = new SiteEntity
+            {
+                Template = "APPCATALOG#0",
+                SiteOwnerLogin = ownerLogin,
+                TimeZoneId = timeZoneId,
+                Url = url
+            };
+            CreateSiteCollection(tenant, siteEntity, removeFromRecycleBin, true);
         }
         #endregion
 

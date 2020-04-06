@@ -6,6 +6,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Added
+
+- Added EnsureAppCatalogAsync extension method on Tenant to create and register a new app catalog
+- Added support for creating modern team sites with app-only access token
+
+### Changed
+
+- Fix: IsChildOfDocumentSetContentType in ContentType Provisioning #2585 [koenzomers - Koen Zomers]
+- Fix: UnitTest SP2013 - ResetFileToPreviousVersionTest #2577 [gszdev]
+- Fix: Resx-Issue if names contain char handled by Regex.Escape #2578 [czullu - Christian Zuellig]
+- Improve logging when waiting for a site collection to be created #2581 [jackpoz - Giacomo Pozzoni]
+- Fix: Encoding in fileuniqueid token dedection in navigationlink #2579 [czullu - Christian Zuellig]
+- Fix: Bugfix for authenticating with credentials containing special characters #2599 [koenzomers - Koen Zomers]
+
 ## [3.19.2003.0 - March 2020 release]
 
 ### Added
