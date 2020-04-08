@@ -114,7 +114,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             scope.LogPropertyUpdate("ReadOnly");
                             existingCT.ReadOnly = ct.ReadOnly;
 
-                            existingCT.Update(false);
+                            existingCT.Update(ct.ShouldUpdateChildren());
                             existingCT.Context.ExecuteQueryRetry();
                         }
                     }
@@ -136,6 +136,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             var isDirty = false;
             var reOrderFields = false;
+            var isChildrenDirty = false;
 
             if (existingContentType.Hidden != templateContentType.Hidden)
             {
@@ -150,12 +151,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 scope.LogPropertyUpdate("ReadOnly");
                 existingContentType.ReadOnly = templateContentType.ReadOnly;
                 isDirty = true;
+                isChildrenDirty = true;
             }
             if (existingContentType.Sealed != templateContentType.Sealed)
             {
                 scope.LogPropertyUpdate("Sealed");
                 existingContentType.Sealed = templateContentType.Sealed;
                 isDirty = true;
+                isChildrenDirty = true;
             }
             if (templateContentType.Description != null && existingContentType.Description != parser.ParseString(templateContentType.Description))
             {
@@ -168,6 +171,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 scope.LogPropertyUpdate("DocumentTemplate");
                 existingContentType.DocumentTemplate = parser.ParseString(templateContentType.DocumentTemplate);
                 isDirty = true;
+                isChildrenDirty = true;
             }
             if (existingContentType.Name != parser.ParseString(templateContentType.Name))
             {
@@ -232,8 +236,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
             if (isDirty)
             {
-                // Default to false as there is no reason to update children on CT property changes.
-                existingContentType.Update(false);
+                existingContentType.Update(isChildrenDirty && templateContentType.ShouldUpdateChildren());
                 web.Context.ExecuteQueryRetry();
             }
 

@@ -201,5 +201,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         }
 
         #endregion
+
+        /// <summary>
+        /// Performs a best effort guess if inherited content types should be updated or not. This will return true if any of the field references has the UpdateChildren set to true.
+        /// Future change to the schema will support specifying this directly as a property on the content type.
+        /// This is set to Internal until such change has been made so that the property is not taken into use by external code. This way it can easily be replaced with a new property without breaking external dependencies.
+        /// </summary>
+        internal bool ShouldUpdateChildren()
+        {
+            return !this.FieldRefs.All(f => f.UpdateChildren == false);
+        }
     }
 }
