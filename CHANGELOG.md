@@ -28,6 +28,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Additional check to determine whether theme exists in the tenant #2603 [gautamdsheth - Gautam Sheth]
 - Fix: Client side web part parser description was mapped to title #2606 [czullu - Christian Zuellig]
 - Fix: Site Logo file url needs be stored url decoded in the template #2608 [czullu - Christian Zuellig]
+- Fix: Set file properties before checkin/publish. #2610 [czullu - Christian Zuellig]
 
 ## [3.19.2003.0 - March 2020 release]
 
