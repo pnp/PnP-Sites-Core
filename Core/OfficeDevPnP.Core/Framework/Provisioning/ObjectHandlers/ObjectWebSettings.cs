@@ -134,7 +134,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                         if (PersistFile(web, creationInfo, scope, siteLogoServerRelativeUrl))
                         {
-                            template.Files.Add(GetTemplateFile(web, siteLogoServerRelativeUrl));
+                            template.Files.Add(GetTemplateFile(web, HttpUtility.UrlDecode(siteLogoServerRelativeUrl)));
                         }
                     }
                     if (!string.IsNullOrEmpty(web.AlternateCssUrl))
