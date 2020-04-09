@@ -25,7 +25,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Make all the Framework Handler use ExecuteQueryRetry #2590 [czullu - Christian Zuellig]
 - For AzureFunctions allow SharePointPnPUserAgent to be set in Environment #2591 [czullu - Christian Zuellig]
 - Make PnPHttpProvider respect SharePointPnPUserAgent setting #2592 [czullu - Christian Zuellig]
-- Fix: additional check to determine whether theme exists in the tenant #2603 [gautamdsheth - Gautam Sheth]
+- Fix: Additional check to determine whether theme exists in the tenant #2603 [gautamdsheth - Gautam Sheth]
+- Fix: Client side web part parser description was mapped to title #2606 [czullu - Christian Zuellig]
 
 ## [3.19.2003.0 - March 2020 release]
 
