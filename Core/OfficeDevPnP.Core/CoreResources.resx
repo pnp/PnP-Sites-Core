@@ -873,9 +873,6 @@
   <data name="Provisioning_ObjectHandlers_ContentTypes_InvalidDocumentSet_Update_Request" xml:space="preserve">
     <value>Content Type {0} with ID {1} cannot be transformed into a DocumentSet</value>
   </data>
-  <data name="Provisioning_ObjectHandlers_ContentTypes_DocumentSet_DeltaHandling_OnHold" xml:space="preserve">
-    <value>Content Type {0} with ID {1} cannot be updated because delta handling for DocumentSets is on hold.</value>
-  </data>
   <data name="Provisioning_ObjectHandlers_SitePolicy_PolicyAdded" xml:space="preserve">
     <value>Site policy '{0}' applied to site</value>
   </data>
