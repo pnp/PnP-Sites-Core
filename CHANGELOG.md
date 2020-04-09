@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 - Added EnsureAppCatalogAsync extension method on Tenant to create and register a new app catalog
 - Added support for creating modern team sites with app-only access token
+- Added functionality to allow PnP Templates to update docsets #2600 [koenzomers - Koen Zomers]
 
 ### Changed
 
