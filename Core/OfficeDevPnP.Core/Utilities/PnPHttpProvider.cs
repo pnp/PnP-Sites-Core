@@ -1,6 +1,7 @@
 ﻿using OfficeDevPnP.Core.Diagnostics;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -76,6 +77,14 @@ namespace OfficeDevPnP.Core.Utilities
                 try
                 {
                     // Add the PnP User Agent string
+                    if(string.IsNullOrEmpty(userAgent))
+                    {
+                        userAgent = ConfigurationManager.AppSettings["SharePointPnPUserAgent"];
+                        if (string.IsNullOrWhiteSpace(userAgent))
+                        {
+                            userAgent = System.Environment.GetEnvironmentVariable("SharePointPnPUserAgent", EnvironmentVariableTarget.Process);
+                        }
+                    }
                     request.Headers.UserAgent.TryParseAdd(string.IsNullOrEmpty(userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : userAgent);
 
                     // Make the request
