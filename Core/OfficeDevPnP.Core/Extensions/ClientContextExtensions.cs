@@ -39,6 +39,10 @@ namespace Microsoft.SharePoint.Client
         static ClientContextExtensions()
         {
             ClientContextExtensions.userAgentFromConfig = ConfigurationManager.AppSettings["SharePointPnPUserAgent"];
+            if(string.IsNullOrWhiteSpace(ClientContextExtensions.userAgentFromConfig))
+            {
+                ClientContextExtensions.userAgentFromConfig = System.Environment.GetEnvironmentVariable("SharePointPnPUserAgent", EnvironmentVariableTarget.Process);
+            }
         }
 
 
