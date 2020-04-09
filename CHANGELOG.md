@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Client side web part parser description was mapped to title #2606 [czullu - Christian Zuellig]
 - Fix: Site Logo file url needs be stored url decoded in the template #2608 [czullu - Christian Zuellig]
 - Fix: Set file properties before checkin/publish. #2610 [czullu - Christian Zuellig]
+- Fix: Resolves issue where sharing settings defaults to disbled even when not set in the template #2596 [SteveClements - Steve Clements]
 
 ## [3.19.2003.0 - March 2020 release]
 
