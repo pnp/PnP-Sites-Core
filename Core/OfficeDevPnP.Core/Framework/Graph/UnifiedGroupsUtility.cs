@@ -676,8 +676,9 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="includeSite">Defines whether to return details about the Modern SharePoint Site backing the group. Default is true.</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
-        /// <param name="includeClassification">Defines whether to return classification value of the unified group. Default is true.</param>
-        public static UnifiedGroupEntity GetUnifiedGroup(String groupId, String accessToken, int retryCount = 10, int delay = 500, bool includeSite = true, bool includeClassification = false)
+        /// <param name="includeClassification">Defines whether to return classification value of the unified group. Default is false.</param>
+        /// <param name="includeHasTeam">Defines whether to check for each unified group if it has a Microsoft Team provisioned for it. Default is false.</param>
+        public static UnifiedGroupEntity GetUnifiedGroup(String groupId, String accessToken, int retryCount = 10, int delay = 500, bool includeSite = true, bool includeClassification = false, bool includeHasTeam = false)
         {
             if (String.IsNullOrEmpty(groupId))
             {
@@ -727,6 +728,11 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         group.Classification = g.Classification;
                     }
 
+                    if(includeHasTeam)
+                    {
+                        group.HasTeam = HasTeamsTeam(group.GroupId, accessToken);
+                    }
+
                     return (group);
 
                 }).GetAwaiter().GetResult();
@@ -751,11 +757,13 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <param name="includeClassification">Defines whether or not to return details about the Modern Site classification value.</param>
+        /// <param name="includeHasTeam">Defines whether to check for each unified group if it has a Microsoft Team provisioned for it. Default is false.</param>
         /// <returns>An IList of SiteEntity objects</returns>
         public static List<UnifiedGroupEntity> ListUnifiedGroups(string accessToken,
             String displayName = null, string mailNickname = null,
             int startIndex = 0, int endIndex = 999, bool includeSite = true,
-            int retryCount = 10, int delay = 500, bool includeClassification = false)
+            int retryCount = 10, int delay = 500, bool includeClassification = false, 
+            bool includeHasTeam = false)
         {
             if (String.IsNullOrEmpty(accessToken))
             {
@@ -820,6 +828,11 @@ namespace OfficeDevPnP.Core.Framework.Graph
                                 if (includeClassification)
                                 {
                                     group.Classification = g.Classification;
+                                }
+
+                                if (includeHasTeam)
+                                {
+                                    group.HasTeam = HasTeamsTeam(group.GroupId, accessToken);
                                 }
 
                                 groups.Add(group);
