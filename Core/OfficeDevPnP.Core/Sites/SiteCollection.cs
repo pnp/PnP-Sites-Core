@@ -1071,7 +1071,7 @@ namespace OfficeDevPnP.Core.Sites
         {
             string responseString = null;
 
-            context.Site.EnsureProperties(s => s.GroupId);
+            context.Site.EnsureProperty(s => s.GroupId);
 
             if (context.Web.IsSubSite())
             {

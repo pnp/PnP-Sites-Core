@@ -30,7 +30,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (!template.Lists.Any()) return parser;
 
-                web.EnsureProperties(w => w.ServerRelativeUrl);
+                web.EnsureProperty(w => w.ServerRelativeUrl);
 
                 web.Context.Load(web.Lists, lc => lc.IncludeWithDefaultProperties(l => l.RootFolder.ServerRelativeUrl));
                 web.Context.ExecuteQueryRetry();
@@ -863,7 +863,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private void ProcessFolderRow(Web web, ListItem listItem, List siteList, ListInstance listInstance, Model.Configuration.Lists.Lists.ExtractListsQueryConfiguration queryConfig, ProvisioningTemplate template, PnPMonitoredScope scope)
         {
-            listItem.EnsureProperties(it => it.ParentList.RootFolder.ServerRelativeUrl);
+            listItem.EnsureProperty(it => it.ParentList.RootFolder.ServerRelativeUrl);
             string serverRelativeListUrl = listItem.ParentList.RootFolder.ServerRelativeUrl;
             string folderPath = listItem.FieldValuesAsText["FileRef"].Substring(serverRelativeListUrl.Length).TrimStart(new char[] { '/' });
 

@@ -586,7 +586,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static void ClearExistingUsers(Group group)
         {
-            group.EnsureProperties(g => g.Users);
+            group.EnsureProperty(g => g.Users);
             while (group.Users.Count > 0)
             {
                 var user = group.Users[0];

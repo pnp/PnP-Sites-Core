@@ -69,7 +69,7 @@ namespace Microsoft.SharePoint.Client
             var backgroundUrl = default(string);
             var masterUrl = default(string);
 
-            web.EnsureProperties(w => w.ServerRelativeUrl);
+            web.EnsureProperty(w => w.ServerRelativeUrl);
 
             if (!string.IsNullOrEmpty(paletteFileName))
             {
@@ -105,7 +105,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="replaceContent">Replace composed look if it already exists (default true)</param>
         public static void CreateComposedLookByUrl(this Web web, string lookName, string paletteServerRelativeUrl, string fontServerRelativeUrl, string backgroundServerRelativeUrl, string masterServerRelativeUrl, int displayOrder = 1, bool replaceContent = true)
         {
-            web.EnsureProperties(w => w.ServerRelativeUrl);
+            web.EnsureProperty(w => w.ServerRelativeUrl);
 
             var composedLooksList = web.GetCatalog((int)ListTemplateType.DesignCatalog);
 
@@ -721,7 +721,7 @@ namespace Microsoft.SharePoint.Client
 
         private static string GetLocalizedCurrentValue(this Web web)
         {
-            web.EnsureProperties(w => w.Language);
+            web.EnsureProperty(w => w.Language);
             ClientResult<string> currentTranslated = Utilities.Utility.GetLocalizedString(web.Context, "$Resources:Current", "core", (int)web.Language);
             web.Context.ExecuteQueryRetry();
             return currentTranslated.Value;
@@ -1354,7 +1354,7 @@ namespace Microsoft.SharePoint.Client
             if (string.IsNullOrEmpty(url))
                 throw new ArgumentNullException(nameof(url));
 
-            web.EnsureProperties(w => w.ServerRelativeUrl);
+            web.EnsureProperty(w => w.ServerRelativeUrl);
 
             string newUrl = url.Substring(web.ServerRelativeUrl.Length);
             if (newUrl.Length > 0 && newUrl[0] == '/')

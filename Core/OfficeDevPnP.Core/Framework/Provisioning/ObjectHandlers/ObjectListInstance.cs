@@ -289,7 +289,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private void ProcessFolders(Web web, TokenParser parser, PnPMonitoredScope scope, ListInfo list)
         {
-            list.SiteList.EnsureProperties(l => l.BaseType);
+            list.SiteList.EnsureProperty(l => l.BaseType);
             if ((list.SiteList.BaseType == BaseType.DocumentLibrary
                 || list.SiteList.BaseType == BaseType.GenericList)
                 && list.TemplateList.Folders != null && list.TemplateList.Folders.Count > 0)
@@ -1324,7 +1324,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     isDirty |= existingList.Set(x => x.IrmEnabled, templateList.IRMSettings.Enabled);
 
-                    existingList.EnsureProperties(l => l.InformationRightsManagementSettings);
+                    existingList.EnsureProperty(l => l.InformationRightsManagementSettings);
 
                     isDirty |= existingList.Set(x => x.InformationRightsManagementSettings.AllowPrint, templateList.IRMSettings.AllowPrint);
                     isDirty |= existingList.Set(x => x.InformationRightsManagementSettings.AllowScript, templateList.IRMSettings.AllowScript);
@@ -2396,7 +2396,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                     if (siteList.BaseTemplate != (int)ListTemplateType.PictureLibrary)
                     {
-                        siteList.EnsureProperties(l => l.InformationRightsManagementSettings);
+                        siteList.EnsureProperty(l => l.InformationRightsManagementSettings);
                     }
 
                     if (creationInfo.PersistMultiLanguageResources)

@@ -1124,7 +1124,7 @@ namespace OfficeDevPnP.Core.Pages
                     {
                         try
                         {
-                            this.Context.Site.EnsureProperties(p => p.Id);
+                            this.Context.Site.EnsureProperty(p => p.Id);
                             this.Context.Web.EnsureProperties(p => p.Id, p => p.Url);
 
                             var previewImage = this.Context.Web.GetFileByServerRelativePath(ResourcePath.FromDecodedUrl(previewImageServerRelativeUrl));

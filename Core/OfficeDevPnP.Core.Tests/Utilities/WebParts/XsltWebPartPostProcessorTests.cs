@@ -66,14 +66,14 @@ namespace OfficeDevPnP.Core.Tests.Utilities.WebParts
             using (var ctx = TestCommon.CreateClientContext())
             {
                 var docsList = ctx.Web.GetListByUrl(TestListUrl);
-                docsList.EnsureProperties(d => d.Id);
+                docsList.EnsureProperty(d => d.Id);
                 var newView = docsList.Views.Add(new ViewCreationInformation
                 {
                     Title = ViewName
                 });
                 newView.ListViewXml = ViewXml;
                 newView.Update();
-                newView.EnsureProperties(v => v.Id);
+                newView.EnsureProperty(v => v.Id);
                 ctx.ExecuteQueryRetry();
                 _viewId = newView.Id;
                 _docsListId = docsList.Id;
@@ -113,7 +113,7 @@ namespace OfficeDevPnP.Core.Tests.Utilities.WebParts
         {
             using (var ctx = TestCommon.CreateClientContext())
             {
-                ctx.Web.EnsureProperties(w => w.ServerRelativeUrl);
+                ctx.Web.EnsureProperty(w => w.ServerRelativeUrl);
 
                 if (ctx.Web.RootFolder.FolderExists(folder))
                 {
@@ -419,7 +419,7 @@ namespace OfficeDevPnP.Core.Tests.Utilities.WebParts
                     childWeb = CreateTestTeamSubSite(ctx.Web);
                     childWeb.EnsureProperty(w => w.Id);
                     var docsList = childWeb.GetListByUrl(TestListUrl);
-                    docsList.EnsureProperties(l => l.Id);
+                    docsList.EnsureProperty(l => l.Id);
                     var wpXml =
                     $@"<webParts>
                         <webPart xmlns=""http://schemas.microsoft.com/WebPart/v3"">
@@ -484,7 +484,7 @@ namespace OfficeDevPnP.Core.Tests.Utilities.WebParts
 
         private void AssertViewIsValid(View view)
         {
-            view.EnsureProperties(v => v.ViewFields);
+            view.EnsureProperty(v => v.ViewFields);
 
             Assert.AreEqual(view.JSLink, "my_link.js");
             Assert.AreEqual(view.Aggregations, @"<FieldRef Name=""DocIcon"" Type=""COUNT"" />");
@@ -499,7 +499,7 @@ namespace OfficeDevPnP.Core.Tests.Utilities.WebParts
 
         private File GetFile(ClientContext ctx)
         {
-            ctx.Web.EnsureProperties(w => w.ServerRelativeUrl);
+            ctx.Web.EnsureProperty(w => w.ServerRelativeUrl);
 
             var serverRelativeUrl = UrlUtility.Combine(ctx.Web.ServerRelativeUrl, $"{folder}/{testPage}");
             var webPartPage = ctx.Web.GetFileByServerRelativeUrl(serverRelativeUrl);
