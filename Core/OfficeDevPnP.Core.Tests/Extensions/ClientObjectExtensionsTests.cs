@@ -278,7 +278,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 //at this stage clientContext.Web.IsObjectPropertyInstantiated("Fields") will be true
                 //but actually Fields are not loaded, CollectionNotInitializedException will be thrown when trying to access the collection
 
-                clientContext.Web.EnsureProperty(w => w.Fields);
+                clientContext.Web.EnsureProperties(w => w.Fields);
 
                 //Act
                 var fieldTitle2 = clientContext.Web.Fields.FirstOrDefault(f => f.Title.Equals("Title"));

@@ -1133,10 +1133,10 @@ namespace Microsoft.SharePoint.Client
                 using (var context = currentContext.Clone(fileWeb.Url))
                 {
 #if !SP2013
-                    webPartPage.EnsureProperty(f => f.UniqueId);
+                    webPartPage.EnsureProperties(f => f.UniqueId);
                     var file = context.Web.GetFileById(webPartPage.UniqueId);
 #else
-                    webPartPage.EnsureProperty(f => f.ServerRelativeUrl);
+                    webPartPage.EnsureProperties(f => f.ServerRelativeUrl);
                     var file = context.Web.GetFileByServerRelativeUrl(webPartPage.ServerRelativeUrl);
 #endif
                     webPartPostProcessor.Process(wpdNew, file);
