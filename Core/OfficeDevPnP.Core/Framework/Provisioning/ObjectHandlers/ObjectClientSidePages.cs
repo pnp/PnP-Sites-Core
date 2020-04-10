@@ -36,7 +36,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             using (var scope = new PnPMonitoredScope(this.Name))
             {
-                web.EnsureProperty(w => w.ServerRelativeUrl);
+                web.EnsureProperties(w => w.ServerRelativeUrl);
 
                 // determine pages library
                 string pagesLibrary = "SitePages";

@@ -146,7 +146,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
                         if (file.WebParts != null && file.WebParts.Any())
                         {
-                            targetFile.EnsureProperty(f => f.ServerRelativeUrl);
+                            targetFile.EnsureProperties(f => f.ServerRelativeUrl);
 
                             var existingWebParts = web.GetWebParts(targetFile.ServerRelativeUrl).ToList();
                             foreach (var webPart in file.WebParts)

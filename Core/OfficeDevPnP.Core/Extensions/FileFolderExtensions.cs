@@ -403,7 +403,7 @@ namespace Microsoft.SharePoint.Client
         private static async Task<Folder> ConvertFolderToDocumentSetImplementation(this List list, Folder folder)
         {
 #endif
-            list.EnsureProperty(l => l.ContentTypes.Include(c => c.StringId));
+            list.EnsureProperties(l => l.ContentTypes.Include(c => c.StringId));
             folder.Context.Load(folder.ListItemAllFields, l => l["ContentTypeId"]);
             folder.Context.ExecuteQueryRetry();
             var listItem = folder.ListItemAllFields;
@@ -731,8 +731,8 @@ namespace Microsoft.SharePoint.Client
 #if ONPREMISES
         public static Folder EnsureFolderImplementation(this Web web, Folder parentFolder, string folderPath, params Expression<Func<Folder, object>>[] expressions)
         {
-            web.EnsureProperty(w => w.ServerRelativeUrl);
-            parentFolder.EnsureProperty(f => f.ServerRelativeUrl);
+            web.EnsureProperties(w => w.ServerRelativeUrl);
+            parentFolder.EnsureProperties(f => f.ServerRelativeUrl);
 #else
         public static async Task<Folder> EnsureFolderImplementation(this Web web, Folder parentFolder, string folderPath, params Expression<Func<Folder, object>>[] expressions)
         {
@@ -1956,7 +1956,7 @@ namespace Microsoft.SharePoint.Client
 
             try
             {
-                folder.EnsureProperty(f => f.ServerRelativeUrl);
+                folder.EnsureProperties(f => f.ServerRelativeUrl);
 
                 var fileServerRelativeUrl = UrlUtility.Combine(folder.ServerRelativeUrl, fileName);
                 var context = folder.Context as ClientContext;

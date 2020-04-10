@@ -66,7 +66,7 @@ alert(""Hello!"");
         {
             using (var ctx = TestCommon.CreateClientContext())
             {
-                ctx.Web.EnsureProperty(w => w.ServerRelativeUrl);
+                ctx.Web.EnsureProperties(w => w.ServerRelativeUrl);
 
                 var file = ctx.Web.GetFileByServerRelativeUrl(UrlUtility.Combine(ctx.Web.ServerRelativeUrl, "test/" + fileName));
                 ctx.Load(file, f => f.Exists);
@@ -102,7 +102,7 @@ alert(""Hello!"");
                 new ObjectFiles().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
 
-                ctx.Web.EnsureProperty(w => w.ServerRelativeUrl);
+                ctx.Web.EnsureProperties(w => w.ServerRelativeUrl);
                 var serverRelativeUrl = UrlUtility.Combine(ctx.Web.ServerRelativeUrl, UrlUtility.Combine(folder, fileName));
                 var file = ctx.Web.GetFileByServerRelativeUrl(serverRelativeUrl);
                 
@@ -158,7 +158,7 @@ alert(""Hello!"");
                 var parser = new TokenParser(ctx.Web, template);
                 new ObjectFiles().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
-                ctx.Web.EnsureProperty(w => w.ServerRelativeUrl);
+                ctx.Web.EnsureProperties(w => w.ServerRelativeUrl);
 
                 var file = ctx.Web.GetFileByServerRelativeUrl(
                     UrlUtility.Combine(ctx.Web.ServerRelativeUrl,
@@ -218,7 +218,7 @@ alert(""Hello!"");
                 new ObjectFiles().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
 
-                ctx.Web.EnsureProperty(w => w.ServerRelativeUrl);
+                ctx.Web.EnsureProperties(w => w.ServerRelativeUrl);
 
                 var file = ctx.Web.GetFileByServerRelativeUrl(
                     UrlUtility.Combine(ctx.Web.ServerRelativeUrl,

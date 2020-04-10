@@ -2101,7 +2101,7 @@ namespace Microsoft.SharePoint.Client
             if (termSet == default(TermSet))
                 throw new ArgumentException("Bound TaxonomyItem must be either a TermSet or a Term");
 
-            termSet.EnsureProperty(ts => ts.TermStore);
+            termSet.EnsureProperties(ts => ts.TermStore);
 
             // set the SSP ID and Term Set ID on the taxonomy field
             var taxField = clientContext.CastTo<TaxonomyField>(field);

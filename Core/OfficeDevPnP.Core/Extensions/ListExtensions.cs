@@ -2210,7 +2210,7 @@ namespace Microsoft.SharePoint.Client
         /// <param name="list">List to process</param>
         public static void ReIndexList(this List list)
         {
-            list.EnsureProperty(l => l.NoCrawl);
+            list.EnsureProperties(l => l.NoCrawl);
             if (list.NoCrawl)
             {
                 Log.Warning(Constants.LOGGING_SOURCE, CoreResources.ListExtensions_SkipNoCrawlLists);
