@@ -61,10 +61,11 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="siteCollectionCreationInformation">information about the site to create</param>
         /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
+        /// <param name="graphAccessToken">An optional Access Token for Microsoft Graph to use for creeating the site within an App-Only context</param>
         /// <returns>ClientContext object for the created site collection</returns>
-        public static ClientContext Create(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false)
+        public static ClientContext Create(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation, int delayAfterCreation = 0, bool noWait = false, string graphAccessToken = null)
         {
-            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation, noWait: noWait).GetAwaiter().GetResult();
+            var context = CreateAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation, noWait: noWait, graphAccessToken: graphAccessToken).GetAwaiter().GetResult();
             return context;
         }
 
@@ -113,12 +114,14 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="maxRetryCount">Maximum number of retries for a pending site provisioning. Default 12 retries.</param>
         /// <param name="retryDelay">Delay between retries for a pending site provisioning. Default 10 seconds.</param>
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
+        /// <param name="graphAccessToken">An optional Access Token for Microsoft Graph to use for creeating the site within an App-Only context</param>
         /// <returns>ClientContext object for the created site collection</returns>
         public static async Task<ClientContext> CreateAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation,
             int delayAfterCreation = 0,
             int maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
             int retryDelay = 1000 * 10, // Wait time default to 10sec,
-            bool noWait = false
+            bool noWait = false,
+            string graphAccessToken = null
             )
         {
             if (siteCollectionCreationInformation.Alias.Contains(" "))
@@ -130,10 +133,42 @@ namespace OfficeDevPnP.Core.Sites
 
             ClientContext responseContext = null;
 
-            if (clientContext.IsAppOnly())
+            if (clientContext.IsAppOnly() && string.IsNullOrEmpty(graphAccessToken))
             {
-                throw new Exception("App-Only is currently not supported.");
+                throw new Exception("App-Only is currently not supported, unless you provide a Microsoft Graph Access Token.");
             }
+
+            if (string.IsNullOrEmpty(graphAccessToken))
+            {
+                // Use the regular REST API of SPO to create the modern Team Site
+                responseContext = await CreateTeamSiteViaSPOAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation, maxRetryCount, noWait: noWait);
+            }
+            else
+            {
+                // Use Microsoft Graph to create the Office 365 Group, and as such the related modern Team Site
+                responseContext = await CreateTeamSiteViaGraphAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation, maxRetryCount, noWait: noWait, graphAccessToken: graphAccessToken);
+            }
+
+            return responseContext;
+        }
+
+        /// <summary>
+        /// Private method to create a new Modern Team Site Collection (so with an Office 365 group connected) using SPO REST
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <param name="maxRetryCount">Maximum number of retries for a pending site provisioning. Default 12 retries.</param>
+        /// <param name="retryDelay">Delay between retries for a pending site provisioning. Default 10 seconds.</param>
+        /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+        private static async Task<ClientContext> CreateTeamSiteViaSPOAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation,
+            int delayAfterCreation = 0,
+            int maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
+            int retryDelay = 1000 * 10, // Wait time default to 10sec,
+            bool noWait = false)
+        {
+            ClientContext responseContext = null;
 
             var accessToken = clientContext.GetAccessToken();
 
@@ -316,6 +351,47 @@ namespace OfficeDevPnP.Core.Sites
         }
 
         /// <summary>
+        /// Creates a new Modern Team Site Collection (so with an Office 365 group connected) using Microsoft Graph
+        /// </summary>
+        /// <param name="clientContext">ClientContext object of a regular site</param>
+        /// <param name="siteCollectionCreationInformation">information about the site to create</param>
+        /// <param name="delayAfterCreation">Defines the number of seconds to wait after creation</param>
+        /// <param name="maxRetryCount">Maximum number of retries for a pending site provisioning. Default 12 retries.</param>
+        /// <param name="retryDelay">Delay between retries for a pending site provisioning. Default 10 seconds.</param>
+        /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
+        /// <param name="graphAccessToken">An optional Access Token for Microsoft Graph to use for creeating the site within an App-Only context</param>
+        /// <returns>ClientContext object for the created site collection</returns>
+        public static async Task<ClientContext> CreateTeamSiteViaGraphAsync(ClientContext clientContext, TeamSiteCollectionCreationInformation siteCollectionCreationInformation,
+            int delayAfterCreation = 0,
+            int maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
+            int retryDelay = 1000 * 10, // Wait time default to 10sec,
+            bool noWait = false,
+            string graphAccessToken = null
+            )
+        {
+            ClientContext responseContext = null;
+
+            var group = OfficeDevPnP.Core.Framework.Graph.UnifiedGroupsUtility.CreateUnifiedGroup(
+                siteCollectionCreationInformation.DisplayName,
+                siteCollectionCreationInformation.Description,
+                siteCollectionCreationInformation.Alias,
+                graphAccessToken,
+                siteCollectionCreationInformation.Owners,
+                null, // No members
+                isPrivate: !siteCollectionCreationInformation.IsPublic,
+                createTeam: false,
+                retryCount: maxRetryCount,
+                delay: retryDelay);
+
+            if (group != null && !string.IsNullOrEmpty(group.SiteUrl))
+            {
+                responseContext = clientContext.Clone(group.SiteUrl);
+            }
+
+            return responseContext;
+        }
+
+        /// <summary>
         /// Create a modern site without a group (so communication site and modern team sites without group STS#3)
         /// </summary>
         /// <param name="clientContext">ClientContext object of a regular site</param>
@@ -327,11 +403,11 @@ namespace OfficeDevPnP.Core.Sites
         /// <param name="noWait">If specified the site will be created and the process will be finished asynchronously</param>
         /// <returns>ClientContext object for the created site collection</returns>
         private static async Task<ClientContext> CreateAsync(ClientContext clientContext, string owner, Dictionary<string, object> payload,
-            int delayAfterCreation = 0,
-            int maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
-            int retryDelay = 1000 * 10, // Wait time default to 10sec
-            bool noWait = false
-            )
+        int delayAfterCreation = 0,
+        int maxRetryCount = 12, // Maximum number of retries (12 x 10 sec = 120 sec = 2 mins)
+        int retryDelay = 1000 * 10, // Wait time default to 10sec
+        bool noWait = false
+        )
         {
             await new SynchronizationContextRemover();
 

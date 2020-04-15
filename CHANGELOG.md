@@ -10,8 +10,15 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Added EnsureAppCatalogAsync extension method on Tenant to create and register a new app catalog
+### Changed
 
+## [3.20.2004.0 - April 2020 release]
+
+### Added
+
+- Added EnsureAppCatalogAsync extension method on Tenant to create and register a new app catalog
+- Added support for creating modern team sites with app-only access token
+- Added functionality to allow PnP Templates to update docsets #2600 [koenzomers - Koen Zomers]
 
 ### Changed
 
@@ -21,6 +28,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Improve logging when waiting for a site collection to be created #2581 [jackpoz - Giacomo Pozzoni]
 - Fix: Encoding in fileuniqueid token dedection in navigationlink #2579 [czullu - Christian Zuellig]
 - Fix: Bugfix for authenticating with credentials containing special characters #2599 [koenzomers - Koen Zomers]
+- Fix: Added HasTeam boolean to UnifiedGroupEntity #2614 [koenzomers - Koen Zomers]
+- Fix: Make all the Framework Handler use ExecuteQueryRetry #2590 [czullu - Christian Zuellig]
+- For AzureFunctions allow SharePointPnPUserAgent to be set in Environment #2591 [czullu - Christian Zuellig]
+- Make PnPHttpProvider respect SharePointPnPUserAgent setting #2592 [czullu - Christian Zuellig]
+- Fix: Additional check to determine whether theme exists in the tenant #2603 [gautamdsheth - Gautam Sheth]
+- Fix: Client side web part parser description was mapped to title #2606 [czullu - Christian Zuellig]
+- Fix: Site Logo file url needs be stored url decoded in the template #2608 [czullu - Christian Zuellig]
+- Fix: Set file properties before checkin/publish. #2610 [czullu - Christian Zuellig]
+- Fix: Resolves issue where sharing settings defaults to disbled even when not set in the template #2596 [SteveClements - Steve Clements]
+- Fix: ensuring correct usage of EnsureProperties method #2602 [gautamdsheth - Gautam Sheth]
 
 ## [3.19.2003.0 - March 2020 release]
 

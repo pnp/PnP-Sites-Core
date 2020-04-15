@@ -659,7 +659,7 @@ namespace OfficeDevPnP.Core.Pages
                 }
                 if (wpJObject["webPartData"] != null && wpJObject["webPartData"]["description"] != null)
                 {
-                    this.title = wpJObject["webPartData"]["description"].Value<string>();
+                    this.description = wpJObject["webPartData"]["description"].Value<string>();
                 }
                 if (wpJObject["webPartData"] != null && wpJObject["webPartData"]["properties"] != null)
                 {
