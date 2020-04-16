@@ -16,17 +16,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 
         public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {
-            Object result = null;
-
             var documentSetTemplate = source as Model.DocumentSetTemplate;
 
             if (null != documentSetTemplate)
             {
-                var sharedFieldsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DocumentSetTemplateSharedFields, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-                var sharedFieldsType = Type.GetType(sharedFieldsTypeName, true);
-                result = Activator.CreateInstance(sharedFieldsType);
-
-                var sharedFieldTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DocumentSetTemplateSharedFieldsSharedField, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var sharedFieldTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DocumentSetTemplateSharedField, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var sharedFieldType = Type.GetType(sharedFieldTypeName, true);
                 var sharedFieldsArray = Array.CreateInstance(sharedFieldType, documentSetTemplate.SharedFields.Count);
 
@@ -34,24 +28,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
                 foreach (var field in documentSetTemplate.SharedFields)
                 {
                     var item = Activator.CreateInstance(sharedFieldType);
-                    item.SetPublicInstancePropertyValue("ID", field.FieldId);
+                    item.SetPublicInstancePropertyValue("ID", field.FieldId.ToString());
                     item.SetPublicInstancePropertyValue("Name", field.Name);
                     item.SetPublicInstancePropertyValue("Remove", field.Remove);
                     sharedFieldsArray.SetValue(item, i);
                     i++;
                 }
 
-                if (sharedFieldsArray.Length > 0)
-                {
-                    result.SetPublicInstancePropertyValue("SharedField", sharedFieldsArray);
-                }
-                else
-                {
-                    result = null;
-                }
+                return sharedFieldsArray;
             }
 
-            return (result);
+            return null;
         }
     }
 }

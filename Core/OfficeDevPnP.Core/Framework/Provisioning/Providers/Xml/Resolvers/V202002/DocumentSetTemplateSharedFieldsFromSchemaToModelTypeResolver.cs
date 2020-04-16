@@ -22,11 +22,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2017
             var result = new List<Model.SharedField>();
 
             var sharedFieldsContainer = source.GetPublicInstancePropertyValue("SharedFields");
-            var sharedFieldTypes = sharedFieldsContainer?.GetPublicInstancePropertyValue("SharedField");
 
-            if (null != sharedFieldTypes)
+            if (null != sharedFieldsContainer)
             {
-                foreach(var field in (IEnumerable)sharedFieldTypes)
+                foreach(var field in (IEnumerable)sharedFieldsContainer)
                 {
                     var model = new Model.SharedField
                     {                        

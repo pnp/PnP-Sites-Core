@@ -81,8 +81,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Serializers.V20
                 expressions.Add($"{contentTypeType.Namespace}.DocumentSetTemplate.AllowedContentTypes",
                     new DocumentSetTemplateAllowedContentTypesFromModelToSchemaTypeResolver());
 
-                //document set template - shared fields and welcome page fields (this expression also used to resolve fieldref collection ids because of same type name)
+                //document set template - shared fields
+                expressions.Add($"{contentTypeType.Namespace}.DocumentSetTemplate.SharedFields",
+                    new DocumentSetTemplateSharedFieldsFromModelToSchemaTypeResolver());
+
+                //document set template - welcome page fields
+                expressions.Add($"{contentTypeType.Namespace}.DocumentSetTemplate.WelcomePageFields",
+                    new DocumentSetTemplateWelcomePageFieldsFromModelToSchemaTypeResolver());
+
+                //document set template - fieldref collection
                 expressions.Add($"{contentTypeType.Namespace}.FieldRefBase.ID", new ExpressionValueResolver((s, v) => v != null ? v.ToString() : s?.ToString()));
+
                 //document template
                 expressions.Add($"{contentTypeType.FullName}.DocumentTemplate", new DocumentTemplateFromModelToSchemaTypeResolver(documentTemplateType));
 

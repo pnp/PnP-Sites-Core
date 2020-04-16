@@ -4226,7 +4226,7 @@
           <xsd:sequence>
             <xsd:element name="SharedField" minOccurs="1" maxOccurs="unbounded">
               <xsd:complexType>
-                <xsd:attribute name="ID" type="pnp:ReplaceableString" use="required">
+                <xsd:attribute name="ID" type="pnp:GUID" use="required">
                   <xsd:annotation>
                     <xsd:documentation xml:lang="en">
                       The ID of the field to use as a shared field in the Document Set, required attribute.
@@ -4288,6 +4288,7 @@
           </xsd:sequence>
         </xsd:complexType>
       </xsd:element>
+      
       <xsd:element name="XmlDocuments" minOccurs="0" maxOccurs="1">
         <xsd:annotation>
           <xsd:appinfo>Added with schema version 201805</xsd:appinfo>
@@ -4406,14 +4407,6 @@
         Common set of attributes for any FieldRef element.
       </xsd:documentation>
     </xsd:annotation>
-
-    <xsd:attribute name="Name" type="xsd:string" use="optional">
-      <xsd:annotation>
-        <xsd:documentation xml:lang="en">
-          The name of the field used in the field reference. This is for reference/readability only.
-        </xsd:documentation>
-      </xsd:annotation>
-    </xsd:attribute>
 
     <xsd:attribute name="Required" type="xsd:boolean" use="optional" default="false">
       <xsd:annotation>

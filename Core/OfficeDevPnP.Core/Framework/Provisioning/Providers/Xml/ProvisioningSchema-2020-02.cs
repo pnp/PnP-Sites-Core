@@ -8651,10 +8651,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
         
         private string displayNameField;
         
-        private bool removeField;
+        private bool remove1Field;
         
         public ListInstanceFieldRef() {
-            this.removeField = false;
+            this.remove1Field = false;
         }
         
         /// <remarks/>
@@ -8669,14 +8669,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.Xml.Serialization.XmlAttributeAttribute("Remove")]
         [System.ComponentModel.DefaultValueAttribute(false)]
-        public bool Remove {
+        public bool Remove1 {
             get {
-                return this.removeField;
+                return this.remove1Field;
             }
             set {
-                this.removeField = value;
+                this.remove1Field = value;
             }
         }
     }
@@ -8691,8 +8691,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
     [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2020/02/ProvisioningSchema")]
     public partial class FieldRefFull : FieldRefBase {
         
-        private string nameField;
-        
         private bool requiredField;
         
         private bool hiddenField;
@@ -8700,17 +8698,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
         public FieldRefFull() {
             this.requiredField = false;
             this.hiddenField = false;
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string Name {
-            get {
-                return this.nameField;
-            }
-            set {
-                this.nameField = value;
-            }
         }
         
         /// <remarks/>
@@ -8739,7 +8726,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
     }
     
     /// <remarks/>
-    [System.Xml.Serialization.XmlIncludeAttribute(typeof(DocumentSetFieldRef))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(FieldRefFull))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ContentTypeFieldRef))]
     [System.Xml.Serialization.XmlIncludeAttribute(typeof(ListInstanceFieldRef))]
@@ -8752,6 +8738,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
         
         private string idField;
         
+        private string nameField;
+        
+        private bool removeField;
+        
+        public FieldRefBase() {
+            this.removeField = false;
+        }
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string ID {
@@ -8762,15 +8756,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
                 this.idField = value;
             }
         }
-    }
-    
-    /// <remarks/>
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.8.3928.0")]
-    [System.SerializableAttribute()]
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.ComponentModel.DesignerCategoryAttribute("code")]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://schemas.dev.office.com/PnP/2020/02/ProvisioningSchema")]
-    public partial class DocumentSetFieldRef : FieldRefBase {
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Name {
+            get {
+                return this.nameField;
+            }
+            set {
+                this.nameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool Remove {
+            get {
+                return this.removeField;
+            }
+            set {
+                this.removeField = value;
+            }
+        }
     }
     
     /// <remarks/>
@@ -9031,9 +9039,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
         
         private DocumentSetTemplateDefaultDocument[] defaultDocumentsField;
         
-        private DocumentSetFieldRef[] sharedFieldsField;
+        private DocumentSetTemplateSharedField[] sharedFieldsField;
         
-        private DocumentSetFieldRef[] welcomePageFieldsField;
+        private DocumentSetTemplateWelcomePageField[] welcomePageFieldsField;
         
         private DocumentSetTemplateXmlDocuments xmlDocumentsField;
         
@@ -9062,7 +9070,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute("SharedField", IsNullable=false)]
-        public DocumentSetFieldRef[] SharedFields {
+        public DocumentSetTemplateSharedField[] SharedFields {
             get {
                 return this.sharedFieldsField;
             }
@@ -9073,7 +9081,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
         
         /// <remarks/>
         [System.Xml.Serialization.XmlArrayItemAttribute("WelcomePageField", IsNullable=false)]
-        public DocumentSetFieldRef[] WelcomePageFields {
+        public DocumentSetTemplateWelcomePageField[] WelcomePageFields {
             get {
                 return this.welcomePageFieldsField;
             }
@@ -9154,6 +9162,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
         
         private string contentTypeIDField;
         
+        private string nameField;
+        
+        private bool removeField;
+        
+        public DocumentSetTemplateAllowedContentTypesAllowedContentType() {
+            this.removeField = false;
+        }
+        
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
         public string ContentTypeID {
@@ -9162,6 +9178,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
             }
             set {
                 this.contentTypeIDField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Name {
+            get {
+                return this.nameField;
+            }
+            set {
+                this.nameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool Remove {
+            get {
+                return this.removeField;
+            }
+            set {
+                this.removeField = value;
             }
         }
     }
@@ -9179,6 +9218,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
         private string contentTypeIDField;
         
         private string fileSourcePathField;
+        
+        private bool removeField;
+        
+        public DocumentSetTemplateDefaultDocument() {
+            this.removeField = false;
+        }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
@@ -9210,6 +9255,124 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
             }
             set {
                 this.fileSourcePathField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool Remove {
+            get {
+                return this.removeField;
+            }
+            set {
+                this.removeField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.8.3928.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2020/02/ProvisioningSchema")]
+    public partial class DocumentSetTemplateSharedField {
+        
+        private string idField;
+        
+        private string nameField;
+        
+        private bool removeField;
+        
+        public DocumentSetTemplateSharedField() {
+            this.removeField = false;
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ID {
+            get {
+                return this.idField;
+            }
+            set {
+                this.idField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Name {
+            get {
+                return this.nameField;
+            }
+            set {
+                this.nameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool Remove {
+            get {
+                return this.removeField;
+            }
+            set {
+                this.removeField = value;
+            }
+        }
+    }
+    
+    /// <remarks/>
+    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.8.3928.0")]
+    [System.SerializableAttribute()]
+    [System.Diagnostics.DebuggerStepThroughAttribute()]
+    [System.ComponentModel.DesignerCategoryAttribute("code")]
+    [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true, Namespace="http://schemas.dev.office.com/PnP/2020/02/ProvisioningSchema")]
+    public partial class DocumentSetTemplateWelcomePageField {
+        
+        private string idField;
+        
+        private string nameField;
+        
+        private bool removeField;
+        
+        public DocumentSetTemplateWelcomePageField() {
+            this.removeField = false;
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string ID {
+            get {
+                return this.idField;
+            }
+            set {
+                this.idField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string Name {
+            get {
+                return this.nameField;
+            }
+            set {
+                this.nameField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool Remove {
+            get {
+                return this.removeField;
+            }
+            set {
+                this.removeField = value;
             }
         }
     }

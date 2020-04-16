@@ -21,8 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers.V2017
         {
             var result = new List<Model.WelcomePageField>();
 
-            var welcomePageFieldsContainer = source.GetPublicInstancePropertyValue("WelcomePageFields");
-            var welcomePageFieldTypes = welcomePageFieldsContainer?.GetPublicInstancePropertyValue("WelcomePageField");
+            var welcomePageFieldTypes = source.GetPublicInstancePropertyValue("WelcomePageFields");
 
             if (null != welcomePageFieldTypes)
             {

@@ -16,42 +16,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.Resolvers
 
         public object Resolve(object source, Dictionary<String, IResolver> resolvers = null, Boolean recursive = false)
         {
-            Object result = null;
-
             var documentSetTemplate = source as Model.DocumentSetTemplate;
 
             if (null != documentSetTemplate)
             {
-                var welcomePageFieldsTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DocumentSetTemplateWelcomePageFields, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
-                var welcomePageFieldsType = Type.GetType(welcomePageFieldsTypeName, true);
-                result = Activator.CreateInstance(welcomePageFieldsType);
-
-                var welcomePageFieldTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DocumentSetTemplateWelcomePageFieldsWelcomePageField, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
+                var welcomePageFieldTypeName = $"{PnPSerializationScope.Current?.BaseSchemaNamespace}.DocumentSetTemplateWelcomePageField, {PnPSerializationScope.Current?.BaseSchemaAssemblyName}";
                 var welcomePageFieldType = Type.GetType(welcomePageFieldTypeName, true);
                 var welcomePageFieldsArray = Array.CreateInstance(welcomePageFieldType, documentSetTemplate.WelcomePageFields.Count);
 
                 Int32 i = 0;
-                foreach (var field in documentSetTemplate.SharedFields)
+                foreach (var field in documentSetTemplate.WelcomePageFields)
                 {
                     var item = Activator.CreateInstance(welcomePageFieldType);
-                    item.SetPublicInstancePropertyValue("ID", field.FieldId);
+                    item.SetPublicInstancePropertyValue("ID", field.FieldId.ToString());
                     item.SetPublicInstancePropertyValue("Name", field.Name);
                     item.SetPublicInstancePropertyValue("Remove", field.Remove);
                     welcomePageFieldsArray.SetValue(item, i);
                     i++;
                 }
 
-                if (welcomePageFieldsArray.Length > 0)
-                {
-                    result.SetPublicInstancePropertyValue("WelcomePageFields", welcomePageFieldsArray);
-                }
-                else
-                {
-                    result = null;
-                }
+                return welcomePageFieldsArray;
             }
 
-            return (result);
+            return null;
         }
     }
 }

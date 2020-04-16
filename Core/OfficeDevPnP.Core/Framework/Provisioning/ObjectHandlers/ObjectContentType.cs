@@ -358,8 +358,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // Add additional content types to the set of allowed content types
                     foreach (AllowedContentType allowedContentType in templateContentType.DocumentSetTemplate.AllowedContentTypes)
                     {
-                        // Validate if the content type is not part of the document set content types yet
-                        if (documentSetTemplate.AllowedContentTypes.All(d => d.StringValue != allowedContentType.ContentTypeId))
+                        // Validate if the content type is not part of the document set content types yet and it hasn't got the instruction to remove it
+                        if (!allowedContentType.Remove && documentSetTemplate.AllowedContentTypes.All(d => d.StringValue != allowedContentType.ContentTypeId))
                         {
                             Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == allowedContentType.ContentTypeId);
                             if (ct != null)
@@ -388,9 +388,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     if (!isNoScriptSite)
                     {
                         foreach (var defaultDocument in templateContentType.DocumentSetTemplate.DefaultDocuments)
-                        {                                
-                            // Ensure the default document is not part of the document set yet
-                            if (documentSetTemplate.DefaultDocuments.All(d => d.Name != defaultDocument.Name))
+                        {
+                            // Ensure the default document is not part of the document set yet and it hasn't got the instruction to remove it
+                            if (!defaultDocument.Remove && documentSetTemplate.DefaultDocuments.All(d => d.Name != defaultDocument.Name))
                             {
                                 Microsoft.SharePoint.Client.ContentType ct = existingCTs.FirstOrDefault(c => c.StringId == defaultDocument.ContentTypeId);
                                 if (ct != null)
@@ -428,9 +428,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     // SharedFields
                     foreach (var sharedField in templateContentType.DocumentSetTemplate.SharedFields)
-                    {                            
-                        // Ensure the shared field is not part of the document set yet
-                        if (documentSetTemplate.SharedFields.All(f => f.Id != sharedField.FieldId))
+                    {
+                        // Ensure the shared field is not part of the document set yet and it hasn't got the instruction to remove it
+                        if (!sharedField.Remove && documentSetTemplate.SharedFields.All(f => f.Id != sharedField.FieldId))
                         {
                             Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == sharedField.FieldId);
                             if (field != null)
@@ -458,8 +458,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     // WelcomePageFields
                     foreach (var welcomePageField in templateContentType.DocumentSetTemplate.WelcomePageFields)
                     {
-                        // Ensure the welcomepage field is not part of the document set yet
-                        if (documentSetTemplate.WelcomePageFields.All(w => w.Id != welcomePageField.FieldId))
+                        // Ensure the welcomepage field is not part of the document set yet and it hasn't got the instruction to remove it
+                        if (!welcomePageField.Remove && documentSetTemplate.WelcomePageFields.All(w => w.Id != welcomePageField.FieldId))
                         {
                             Microsoft.SharePoint.Client.Field field = existingFields.FirstOrDefault(f => f.Id == welcomePageField.FieldId);
                             if (field != null)
@@ -960,12 +960,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             (from sharedField in documentSetTemplate.SharedFields.AsEnumerable()
                              select new SharedField
                              {
-                                 FieldId = sharedField.Id
+                                 FieldId = sharedField.Id,
+                                 Name = sharedField.StaticName
                              }).ToList(),
                             (from welcomePageField in documentSetTemplate.WelcomePageFields.AsEnumerable()
                              select new WelcomePageField
                              {
-                                 FieldId = welcomePageField.Id
+                                 FieldId = welcomePageField.Id,
+                                 Name = welcomePageField.StaticName
                              }).ToList()
                         );
 
