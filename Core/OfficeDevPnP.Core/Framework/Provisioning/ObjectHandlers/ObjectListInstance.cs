@@ -2108,7 +2108,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         currentFolder.Properties["docset_LastRefresh"] = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss");
                         currentFolder.Properties["vti_contenttypeorder"] = string.Join(",", list.SiteList.ContentTypes.ToList().Where(c => c.StringId.StartsWith(BuiltInContentTypeId.Document + "00"))?.Select(c => c.StringId));
                     }
-                    currentFolderItem.Update();
+                    currentFolderItem.SystemUpdate();
                     currentFolder.Update();
                     parentFolder.Context.ExecuteQueryRetry();
                 }
@@ -2123,7 +2123,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         currentFolderItem[p.Key] = parser.ParseString(p.Value);
                     }
-                    currentFolderItem.Update();
+                    currentFolderItem.SystemUpdate();
                     currentFolder.Update();
                     parentFolder.Context.ExecuteQueryRetry();
                 }
