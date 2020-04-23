@@ -248,8 +248,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     var groupSiteInfo = Sites.SiteCollection.GetGroupInfoAsync(tenant.Context as ClientContext, siteInfo.Alias).GetAwaiter().GetResult();
                                     if (groupSiteInfo == null)
                                     {
+                                        var graphAccessToken = PnPProvisioningContext.Current.AcquireCookie(Core.Utilities.Graph.GraphHelper.MicrosoftGraphBaseURI);
                                         WriteMessage($"Creating Team Site {siteInfo.Alias}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait);
+                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait, graphAccessToken: graphAccessToken);
                                     }
                                     else
                                     {
