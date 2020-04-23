@@ -20,7 +20,7 @@ OfficeDevPnP.Core | Office Developer PnP team
 ### Version history ###
 Version  | Date | Comments
 ---------| -----| --------
-2.x  | Frist Friday of each month | Monthly release
+3.x  | Frist Friday of each month | Monthly release
 
 ### Disclaimer ###
 **THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESS 

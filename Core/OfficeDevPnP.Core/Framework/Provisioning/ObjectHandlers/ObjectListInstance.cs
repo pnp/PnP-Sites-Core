@@ -519,7 +519,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 ct.FieldLinks.Add(new FieldLinkCreationInformation { Field = field });
                                 ct.Update(false);
-                                listInfo.SiteList.Context.ExecuteQuery();
+                                listInfo.SiteList.Context.ExecuteQueryRetry();
                             }
                         }
                     }
