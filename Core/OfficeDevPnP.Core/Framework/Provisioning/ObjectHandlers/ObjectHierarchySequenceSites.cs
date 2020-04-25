@@ -55,14 +55,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 Model.SiteCollection siteCollection = null;
                 using (var siteContext = tenant.Context.Clone(siteCollectionUrl))
                 {
-                    siteContext.Site.EnsureProperty(s => s.Id);
+                    siteContext.Site.EnsureProperties(s => s.ShareByEmailEnabled, s => s.Classification);
+
                     var templateGuid = siteContext.Site.Id.ToString("N");
                     switch (siteProperties.Template)
                     {
                         case "SITEPAGEPUBLISHING#0":
                             {
-                                siteContext.Site.EnsureProperties(s => s.ShareByEmailEnabled, s => s.Classification);
-
                                 siteCollection = new CommunicationSiteCollection();
 
                                 siteCollection.IsHubSite = siteProperties.IsHubSite;
@@ -90,8 +89,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         case "GROUP#0":
                             {
-                                siteContext.Site.EnsureProperty(s => s.GroupId);
-
                                 siteCollection = new TeamSiteCollection();
                                 siteCollection.IsHubSite = siteProperties.IsHubSite;
                                 if (siteProperties.IsHubSite)
@@ -104,17 +101,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 siteCollection.Description = siteProperties.Description;
 
-                                var groupInfo = Sites.SiteCollection.GetGroupInfoByGroupIdAsync(siteContext, siteContext.Site.GroupId.ToString()).GetAwaiter().GetResult();
-                                if (groupInfo != null)
+                                string alias = siteProperties.Url.Substring(siteProperties.Url.LastIndexOf("/")).TrimStart(new char[] { '/' });
+                                tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_ALIAS", alias);
+                                ((TeamSiteCollection)siteCollection).Alias = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_ALIAS}}";
+
+                                if (!string.IsNullOrEmpty(siteContext.Site.Classification))
                                 {
-                                    tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_ALIAS", Convert.ToString(groupInfo["alias"]));
-                                    ((TeamSiteCollection)siteCollection).Alias = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_ALIAS}}";
-                                    if (groupInfo["classification"] != null)
-                                    {
-                                        ((TeamSiteCollection)siteCollection).Classification = Convert.ToString(groupInfo["classification"]);
-                                    }
-                                    ((TeamSiteCollection)siteCollection).IsPublic = Convert.ToBoolean(groupInfo["isPublic"]);
+                                    ((TeamSiteCollection)siteCollection).Classification = siteContext.Site.Classification;
                                 }
+
+                                var groupInfo = Sites.SiteCollection.GetGroupInfoAsync(siteContext, alias).GetAwaiter().GetResult();
+                                if(groupInfo != null)
+                                {
+                                    ((TeamSiteCollection)siteCollection).IsPublic = Convert.ToBoolean(groupInfo["isPublic"]);
+                                }                                
 
                                 ((TeamSiteCollection)siteCollection).DisplayName = siteProperties.Title;
                                 ((TeamSiteCollection)siteCollection).HideTeamify = Sites.SiteCollection.IsTeamifyPromptHiddenAsync(siteContext).GetAwaiter().GetResult();
