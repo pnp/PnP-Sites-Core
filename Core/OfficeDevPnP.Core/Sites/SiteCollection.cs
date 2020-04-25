@@ -1187,6 +1187,7 @@ namespace OfficeDevPnP.Core.Sites
 
             await context.Web.ExecutePost("/_api/sitepages/communicationsite/enable", $@" {{ ""designPackageId"": ""{designPackageId.ToString()}"" }}");
         }
+
     }
 }
 #endif
