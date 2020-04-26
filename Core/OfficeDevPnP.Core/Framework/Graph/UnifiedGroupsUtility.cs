@@ -443,6 +443,36 @@ namespace OfficeDevPnP.Core.Framework.Graph
         }
 
         /// <summary>
+        /// Renews the Office 365 Group by extending its expiration with the number of days defined in the group expiration policy set on the Azure Active Directory
+        /// </summary>
+        /// <param name="groupId">The ID of the Office 365 Group</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry.</param>
+        public static void RenewUnifiedGroup(string groupId,
+                                             string accessToken, int retryCount = 10, int delay = 500)
+        {
+            try
+            {
+                // Use a synchronous model to invoke the asynchronous process
+                Task.Run(async () =>
+                {
+                    var graphClient = CreateGraphClient(accessToken, retryCount, delay);
+
+                    await graphClient.Groups[groupId]
+                        .Renew()
+                        .Request()
+                        .PostAsync();
+                }).GetAwaiter().GetResult();
+            }
+            catch (ServiceException ex)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
+            }
+        }
+
+        /// <summary>
         /// Updates the logo, members or visibility state of an Office 365 Group
         /// </summary>
         /// <param name="groupId">The ID of the Office 365 Group</param>
