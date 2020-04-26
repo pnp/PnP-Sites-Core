@@ -117,6 +117,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }                                
 
                                 ((TeamSiteCollection)siteCollection).DisplayName = siteProperties.Title;
+                                ((TeamSiteCollection)siteCollection).Language = (int)siteProperties.Lcid;
                                 ((TeamSiteCollection)siteCollection).HideTeamify = Sites.SiteCollection.IsTeamifyPromptHiddenAsync(siteContext).GetAwaiter().GetResult();
 
                                 tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_TITLE", siteProperties.Title);
