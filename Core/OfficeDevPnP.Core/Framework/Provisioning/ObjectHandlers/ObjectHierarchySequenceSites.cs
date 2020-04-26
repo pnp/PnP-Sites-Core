@@ -55,7 +55,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 Model.SiteCollection siteCollection = null;
                 using (var siteContext = tenant.Context.Clone(siteCollectionUrl))
                 {
-                    siteContext.Site.EnsureProperties(s => s.ShareByEmailEnabled, s => s.Classification);
+                    siteContext.Site.EnsureProperties(s=> s.Id, s => s.ShareByEmailEnabled, s => s.Classification);
 
                     var templateGuid = siteContext.Site.Id.ToString("N");
                     switch (siteProperties.Template)
