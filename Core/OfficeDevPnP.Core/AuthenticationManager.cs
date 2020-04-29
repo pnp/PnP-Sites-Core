@@ -703,6 +703,10 @@ namespace OfficeDevPnP.Core
             });
 
             JObject jobject = JObject.Parse(result);
+
+            // Ensure the resulting JSON could be parsed and that it doesn't contain an error. If incorrect credentials have been provided, this will not be the case and we return NULL to indicate not to have an access token.
+            if (jobject == null || jobject["error"] != null) return null;
+
             var token = jobject["access_token"].Value<string>();
             return token;
         }
