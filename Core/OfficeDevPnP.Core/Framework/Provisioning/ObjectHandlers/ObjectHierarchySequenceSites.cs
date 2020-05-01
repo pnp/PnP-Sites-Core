@@ -55,7 +55,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 Model.SiteCollection siteCollection = null;
                 using (var siteContext = tenant.Context.Clone(siteCollectionUrl))
                 {
-                    siteContext.Site.EnsureProperties(s => s.Id, s => s.ShareByEmailEnabled, s => s.Classification);
+                    siteContext.Site.EnsureProperties(s => s.Id, s => s.ShareByEmailEnabled, s => s.Classification, s => s.GroupId);
 
                     var templateGuid = siteContext.Site.Id.ToString("N");
                     switch (siteProperties.Template)
@@ -101,20 +101,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                                 siteCollection.Description = siteProperties.Description;
 
-                                string alias = siteProperties.Url.Substring(siteProperties.Url.LastIndexOf("/")).TrimStart(new char[] { '/' });
-                                tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_ALIAS", alias);
-                                ((TeamSiteCollection)siteCollection).Alias = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_ALIAS}}";
+                                var groupInfo = Sites.SiteCollection.GetGroupInfoByGroupIdAsync(siteContext, siteContext.Site.GroupId.ToString()).GetAwaiter().GetResult();
 
-                                if (!string.IsNullOrEmpty(siteContext.Site.Classification))
+                                if (groupInfo != null)
                                 {
-                                    ((TeamSiteCollection)siteCollection).Classification = siteContext.Site.Classification;
-                                }
-
-                                var groupInfo = Sites.SiteCollection.GetGroupInfoAsync(siteContext, alias).GetAwaiter().GetResult();
-                                if(groupInfo != null)
-                                {
+                                    tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_ALIAS", Convert.ToString(groupInfo["alias"]));
+                                    ((TeamSiteCollection)siteCollection).Alias = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_ALIAS}}";
+                                    if (groupInfo["classification"] != null)
+                                    {
+                                        ((TeamSiteCollection)siteCollection).Classification = Convert.ToString(groupInfo["classification"]);
+                                    }
                                     ((TeamSiteCollection)siteCollection).IsPublic = Convert.ToBoolean(groupInfo["isPublic"]);
-                                }                                
+                                }
 
                                 ((TeamSiteCollection)siteCollection).DisplayName = siteProperties.Title;
                                 ((TeamSiteCollection)siteCollection).Language = (int)siteProperties.Lcid;
@@ -126,25 +124,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             }
                         case "STS#3":
                             {
-                                siteCollection = new TeamNoGroupSiteCollection();
-                                siteCollection.IsHubSite = siteProperties.IsHubSite;
-                                if (siteProperties.IsHubSite)
+                                if (siteContext.Site.GroupId == Guid.Empty)
                                 {
-                                    var hubsiteProperties = tenant.GetHubSitePropertiesByUrl(siteCollectionUrl);
-                                    tenant.Context.Load(hubsiteProperties);
-                                    tenant.Context.ExecuteQueryRetry();
-                                    siteCollection.HubSiteLogoUrl = hubsiteProperties.LogoUrl;
-                                    siteCollection.HubSiteTitle = hubsiteProperties.Title;
+                                    siteCollection = new TeamNoGroupSiteCollection();
+                                    siteCollection.IsHubSite = siteProperties.IsHubSite;
+                                    if (siteProperties.IsHubSite)
+                                    {
+                                        var hubsiteProperties = tenant.GetHubSitePropertiesByUrl(siteCollectionUrl);
+                                        tenant.Context.Load(hubsiteProperties);
+                                        tenant.Context.ExecuteQueryRetry();
+                                        siteCollection.HubSiteLogoUrl = hubsiteProperties.LogoUrl;
+                                        siteCollection.HubSiteTitle = hubsiteProperties.Title;
+                                    }
+                                    siteCollection.Description = siteProperties.Description;
+                                    ((TeamNoGroupSiteCollection)siteCollection).Language = (int)siteProperties.Lcid;
+                                    ((TeamNoGroupSiteCollection)siteCollection).Owner = siteProperties.OwnerEmail;
+                                    ((TeamNoGroupSiteCollection)siteCollection).TimeZoneId = siteProperties.TimeZoneId;
+                                    tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_URL", siteProperties.Url);
+                                    ((TeamNoGroupSiteCollection)siteCollection).Url = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_URL}}";
+                                    tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_TITLE", siteProperties.Title);
+                                    siteCollection.Title = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_TITLE}}";
+                                    break;
                                 }
-                                siteCollection.Description = siteProperties.Description;
-                                ((TeamNoGroupSiteCollection)siteCollection).Language = (int)siteProperties.Lcid;
-                                ((TeamNoGroupSiteCollection)siteCollection).Owner = siteProperties.OwnerEmail;
-                                ((TeamNoGroupSiteCollection)siteCollection).TimeZoneId = siteProperties.TimeZoneId;
-                                tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_URL", siteProperties.Url);
-                                ((TeamNoGroupSiteCollection)siteCollection).Url = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_URL}}";
-                                tenantTemplate.Parameters.Add($"SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_TITLE", siteProperties.Title);
-                                siteCollection.Title = $"{{parameter:SITECOLLECTION_{siteContext.Site.Id.ToString("N")}_TITLE}}";
-                                break;
+                                else
+                                {
+                                    goto case "GROUP#0";
+                                }
                             }
                     }
                     var siteTemplateCreationInfo = new ProvisioningTemplateCreationInformation(siteContext.Web);
