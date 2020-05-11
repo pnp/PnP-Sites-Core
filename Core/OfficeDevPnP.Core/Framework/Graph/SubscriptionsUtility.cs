@@ -35,16 +35,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         .Request()
                         .GetAsync();
 
-                    var subscriptionModel = new Model.Subscription
-                    {
-                        Id = subscription.Id,
-                        ChangeType = subscription.ChangeType.Split(',').Select(ct => (Enums.GraphSubscriptionChangeType)Enum.Parse(typeof(Enums.GraphSubscriptionChangeType), ct, true)).Aggregate((prev, next) => prev | next),
-                        NotificationUrl = subscription.NotificationUrl,
-                        Resource = subscription.Resource,
-                        ExpirationDateTime = subscription.ExpirationDateTime,
-                        ClientState = subscription.ClientState
-                    };
-
+                    var subscriptionModel = MapGraphEntityToModel(subscription);
                     return subscriptionModel;
                 }).GetAwaiter().GetResult();
 
@@ -100,16 +91,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                             if (currentIndex >= startIndex)
                             {
-                                var subscription = new Model.Subscription
-                                {
-                                    Id = s.Id,
-                                    ChangeType = s.ChangeType.Split(',').Select(ct => (Enums.GraphSubscriptionChangeType)Enum.Parse(typeof(Enums.GraphSubscriptionChangeType), ct, true)).Aggregate((prev, next) => prev | next),
-                                    NotificationUrl = s.NotificationUrl,
-                                    Resource = s.Resource,
-                                    ExpirationDateTime = s.ExpirationDateTime,
-                                    ClientState = s.ClientState
-                                };
-
+                                var subscription = MapGraphEntityToModel(s);
                                 subscriptions.Add(subscription);
                             }
                         }
@@ -189,16 +171,8 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         return null;
                     }
 
-                    var subscriptionModel = new Model.Subscription
-                    {
-                        Id = subscription.Id,
-                        ChangeType = subscription.ChangeType.Split(',').Select(ct => (Enums.GraphSubscriptionChangeType)Enum.Parse(typeof(Enums.GraphSubscriptionChangeType), ct, true)).Aggregate((prev, next) => prev | next),
-                        NotificationUrl = subscription.NotificationUrl,
-                        Resource = subscription.Resource,
-                        ExpirationDateTime = subscription.ExpirationDateTime,
-                        ClientState = subscription.ClientState
-                    };
-                    return (subscriptionModel);
+                    var subscriptionModel = MapGraphEntityToModel(subscription);
+                    return subscriptionModel;
 
                 }).GetAwaiter().GetResult();
             }
@@ -251,16 +225,8 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         return null;
                     }
 
-                    var subscriptionModel = new Model.Subscription
-                    {
-                        Id = subscription.Id,
-                        ChangeType = subscription.ChangeType.Split(',').Select(ct => (Enums.GraphSubscriptionChangeType)Enum.Parse(typeof(Enums.GraphSubscriptionChangeType), ct, true)).Aggregate((prev, next) => prev | next),
-                        NotificationUrl = subscription.NotificationUrl,
-                        Resource = subscription.Resource,
-                        ExpirationDateTime = subscription.ExpirationDateTime,
-                        ClientState = subscription.ClientState
-                    };
-                    return (subscriptionModel);
+                    var subscriptionModel = MapGraphEntityToModel(subscription);
+                    return subscriptionModel;
 
                 }).GetAwaiter().GetResult();
             }
@@ -305,6 +271,25 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
                 throw;
             }
+        }
+
+        /// <summary>
+        /// Maps an entity returned by Microsoft Graph to its equivallent Model maintained within this library
+        /// </summary>
+        /// <param name="subscription">Microsoft Graph Subscription entity</param>
+        /// <returns>Subscription Model</returns>
+        private static Model.Subscription MapGraphEntityToModel(Subscription subscription)
+        {
+            var subscriptionModel = new Model.Subscription
+            {
+                Id = subscription.Id,
+                ChangeType = subscription.ChangeType.Split(',').Select(ct => (Enums.GraphSubscriptionChangeType)Enum.Parse(typeof(Enums.GraphSubscriptionChangeType), ct, true)).Aggregate((prev, next) => prev | next),
+                NotificationUrl = subscription.NotificationUrl,
+                Resource = subscription.Resource,
+                ExpirationDateTime = subscription.ExpirationDateTime,
+                ClientState = subscription.ClientState
+            };
+            return subscriptionModel;
         }
     }
 }
