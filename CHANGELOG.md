@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Bug while provisioning teams without security settings in the template got fixed
 - Fix: ExtractClientSidePage check isNews when PromotedState is null #2618 [czullu - Christian Zuellig]
 - Fix: Handle special char in SiteTile beeing replaced by _ for SP-Groupnames #2617 [czullu - Christian Zuellig]
+- Fix: NullReferenceException in case the authentication with credentials fails #2634 [koenzomers - Koen Zomers]
 
 ## [3.20.2004.0 - April 2020 release]
 
