@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Adding support for retrieval of Users from Azure Active Directory #2622 [koenzomers - Koen Zomers]
 - Add YAML metadata for PnP-Sites-Core #2631 [nokafor - Sylvia Okafor]
 - Added UnifiedGroupsUtility.RenewUnifiedGroup #2630 [koenzomers - Koen Zomers]
+- Added GetNestedUnifiedGroupMembers method #2377 [anoopt - Anoop Tatti]
 
 ### Changed
 
