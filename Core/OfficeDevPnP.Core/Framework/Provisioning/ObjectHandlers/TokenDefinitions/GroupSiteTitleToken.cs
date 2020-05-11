@@ -1,7 +1,6 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using Microsoft.SharePoint.Client;
+﻿using Microsoft.SharePoint.Client;
 using OfficeDevPnP.Core.Attributes;
+using System.Text.RegularExpressions;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitions
 {
