@@ -1,0 +1,10 @@
+page_type: sample
+products:
+  - office-sp
+languages:
+  - csharp
+extensions:
+  contentType: tools
+  createdDate: '7/23/2015 9:23:48 AM'
+title: PnP Sites Core
+description: Office 365 Dev PnP Core component (.NET) targeted for increasing developer productivity with CSOM based solutions.
