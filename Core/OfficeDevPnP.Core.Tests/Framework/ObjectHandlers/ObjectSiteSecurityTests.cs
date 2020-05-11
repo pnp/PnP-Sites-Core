@@ -310,9 +310,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 // default groups created during site creation assigned as associated owner group,
                 // associated member group, and associated visitor group.
                 // This is a prerequisite for the site collection used for unit testing purposes.                
-                Assert.IsTrue(template.Security.AssociatedOwnerGroup.Contains("{sitetitle}"), "Associated owner group title does not contain the Site Title token.");
-                Assert.IsTrue(template.Security.AssociatedMemberGroup.Contains("{sitetitle}"), "Associated owner group title does not contain the Site Title token.");
-                Assert.IsTrue(template.Security.AssociatedVisitorGroup.Contains("{sitetitle}"), "Associated owner group title does not contain the Site Title token.");
+                Assert.IsTrue(template.Security.AssociatedOwnerGroup.Contains("{groupsitetitle}"), "Associated owner group title does not contain the Group Site Title token.");
+                Assert.IsTrue(template.Security.AssociatedMemberGroup.Contains("{groupsitetitle}"), "Associated owner group title does not contain the Group Site Title token.");
+                Assert.IsTrue(template.Security.AssociatedVisitorGroup.Contains("{groupsitetitle}"), "Associated owner group title does not contain the Group Site Title token.");
             }
         }
 

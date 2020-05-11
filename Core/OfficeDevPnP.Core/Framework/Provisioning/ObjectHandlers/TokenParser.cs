@@ -190,6 +190,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 _tokens.Add(new SiteOwnerToken(web));
             if (tokenIds.Contains("sitetitle") || tokenIds.Contains("sitename"))
                 _tokens.Add(new SiteTitleToken(web));
+            if (tokenIds.Contains("groupsitetitle") || tokenIds.Contains("groupsitename"))
+                _tokens.Add(new GroupSiteTitleToken(web));
             if (tokenIds.Contains("associatedownergroupid"))
                 _tokens.Add(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.owners));
             if (tokenIds.Contains("associatedmembergroupid"))

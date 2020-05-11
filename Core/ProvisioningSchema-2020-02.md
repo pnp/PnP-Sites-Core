@@ -1,7 +1,7 @@
 ﻿
 # PnP Provisioning Schema
 ----------
-* Topic automatically generated on 2/6/2020*
+* Topic automatically generated on 3/23/2020*
 
 ## Namespace
 The namespace of the PnP Provisioning Schema is:
@@ -4261,7 +4261,8 @@ Defines a Channel for a Team, optional element.
       DisplayName="pnp:ReplaceableString"
       Description="pnp:ReplaceableString"
       IsFavoriteByDefault="xsd:boolean"
-      ID="pnp:ReplaceableString">
+      ID="pnp:ReplaceableString"
+      Private="xsd:boolean">
    <pnp:Tabs />
    <pnp:TabResources />
    <pnp:Messages />
@@ -4287,6 +4288,7 @@ DisplayName|ReplaceableString|Defines the Display Name of the Channel, required 
 Description|ReplaceableString|Defines the Description of the Channel, required attribute.|Yes|
 IsFavoriteByDefault|xsd:boolean|Defines whether the Channel is Favorite by default for all members of the Team, optional attribute.|No|false
 ID|ReplaceableString|Declares the ID for the Channel, optional attribute.|No|
+Private|xsd:boolean|Declares whether the Channel is private or not, optional attribute (default false).|No|false
 <a name="teamchanneltabs"></a>
 ### TeamChannelTabs
 Defines a collection of Tabs for a Channel in a Team, optional element.

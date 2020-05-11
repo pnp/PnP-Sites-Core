@@ -726,6 +726,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.AreEqual(TabResourceType.Notebook, channels[0].TabResources[0].Type);
             Assert.AreEqual(1, channels[0].Messages.Count);
             Assert.IsTrue(channels[0].Messages[0].Message.Contains("Welcome to this channel"));
+            Assert.AreEqual(true, channels[2].Private);
 
             // team apps
             Assert.AreEqual(2, teams[1].Apps.Count);
@@ -826,6 +827,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
                         Description = "This is just a Sample Channel",
                         DisplayName = "Sample Channel 01",
                         IsFavoriteByDefault = true,
+                        Private = true,
                         Tabs =
                         {
                             new TeamTab
@@ -951,6 +953,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
             Assert.IsTrue(channels[0].TabResources[0].TabResourceSettings.Contains("\"displayName\": \"Notebook name\""));
             Assert.AreEqual("{TeamsTabId:TabDisplayName}", channels[0].TabResources[0].TargetTabId);
             Assert.AreEqual(TeamTabResourcesTabResourceType.Planner, channels[0].TabResources[0].Type);
+            Assert.AreEqual(true, channels[0].Private);
 
             // team apps
             Assert.AreEqual(1, team.Apps.Count());

@@ -204,25 +204,33 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Prepare the IDs for owners and members
                 string[] desiredOwnerIds;
                 string[] desiredMemberIds;
-                try
+                if (team.Security != null)
                 {
-                    var userIdsByUPN = team.Security.Owners
-                        .Select(o => o.UserPrincipalName)
-                        .Concat(team.Security.Members.Select(m => m.UserPrincipalName))
-                        .Distinct(StringComparer.OrdinalIgnoreCase)
-                        .ToDictionary(k => k, k =>
-                        {
-                            var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(k.Replace("'", "''"))}?$select=id", accessToken);
-                            return JToken.Parse(jsonUser).Value<string>("id");
-                        });
+                    try
+                    {
+                        var userIdsByUPN = team.Security.Owners
+                            .Select(o => o.UserPrincipalName)
+                            .Concat(team.Security.Members.Select(m => m.UserPrincipalName))
+                            .Distinct(StringComparer.OrdinalIgnoreCase)
+                            .ToDictionary(k => k, k =>
+                            {
+                                var jsonUser = HttpHelper.MakeGetRequestForString($"{GraphHelper.MicrosoftGraphBaseURI}v1.0/users/{Uri.EscapeDataString(k.Replace("'", "''"))}?$select=id", accessToken);
+                                return JToken.Parse(jsonUser).Value<string>("id");
+                            });
 
-                    desiredOwnerIds = team.Security.Owners.Select(o => userIdsByUPN[o.UserPrincipalName]).ToArray();
-                    desiredMemberIds = team.Security.Members.Select(o => userIdsByUPN[o.UserPrincipalName]).Union(desiredOwnerIds).ToArray();
+                        desiredOwnerIds = team.Security.Owners.Select(o => userIdsByUPN[o.UserPrincipalName]).ToArray();
+                        desiredMemberIds = team.Security.Members.Select(o => userIdsByUPN[o.UserPrincipalName]).Union(desiredOwnerIds).ToArray();
+                    }
+                    catch (Exception ex)
+                    {
+                        scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_FetchingUserError, ex.Message);
+                        return (null);
+                    }
                 }
-                catch (Exception ex)
+                else
                 {
-                    scope.LogError(CoreResources.Provisioning_ObjectHandlers_Teams_Team_FetchingUserError, ex.Message);
-                    return (null);
+                    desiredOwnerIds = new string[0];
+                    desiredMemberIds = new string[0];
                 }
 
                 var groupCreationRequest = new
@@ -789,7 +797,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 channel.Description,
                 channel.DisplayName,
-                channel.IsFavoriteByDefault
+                channel.IsFavoriteByDefault,
+                membershipType = channel.Private ? "private" : "standard"
             };
 
             var channelId = GraphHelper.CreateOrUpdateGraphObject(scope,

@@ -20,6 +20,7 @@ using OfficeDevPnP.Core.Utilities.Async;
 using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities.Context;
+using System.Web;
 
 namespace OfficeDevPnP.Core
 {
@@ -693,7 +694,7 @@ namespace OfficeDevPnP.Core
             HttpClient client = new HttpClient();
             string tokenEndpoint = $"{new AuthenticationManager().GetAzureADLoginEndPoint(environment)}/common/oauth2/token";
 
-            var body = $"resource={resourceUri}&client_id=9bc3ab49-b65d-410a-85ad-de819febfddc&grant_type=password&username={username}&password={password}";
+            var body = $"resource={resourceUri}&client_id=9bc3ab49-b65d-410a-85ad-de819febfddc&grant_type=password&username={HttpUtility.UrlEncode(username)}&password={HttpUtility.UrlEncode(password)}";
             var stringContent = new StringContent(body, System.Text.Encoding.UTF8, "application/x-www-form-urlencoded");
 
             var result = await client.PostAsync(tokenEndpoint, stringContent).ContinueWith<string>((response) =>
@@ -702,6 +703,10 @@ namespace OfficeDevPnP.Core
             });
 
             JObject jobject = JObject.Parse(result);
+
+            // Ensure the resulting JSON could be parsed and that it doesn't contain an error. If incorrect credentials have been provided, this will not be the case and we return NULL to indicate not to have an access token.
+            if (jobject == null || jobject["error"] != null) return null;
+
             var token = jobject["access_token"].Value<string>();
             return token;
         }

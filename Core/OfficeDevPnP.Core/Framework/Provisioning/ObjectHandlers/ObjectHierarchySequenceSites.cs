@@ -222,6 +222,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     TokenParser siteTokenParser = null;
 
+                    var tenantThemes = tenant.GetAllTenantThemes();
+                    tenant.Context.Load(tenantThemes);
+                    tenant.Context.ExecuteQueryRetry();
 
                     foreach (var sitecollection in sequence.SiteCollections)
                     {
@@ -248,8 +251,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     var groupSiteInfo = Sites.SiteCollection.GetGroupInfoAsync(tenant.Context as ClientContext, siteInfo.Alias).GetAwaiter().GetResult();
                                     if (groupSiteInfo == null)
                                     {
+                                        var graphAccessToken = PnPProvisioningContext.Current.AcquireCookie(Core.Utilities.Graph.GraphHelper.MicrosoftGraphBaseURI);
                                         WriteMessage($"Creating Team Site {siteInfo.Alias}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait);
+                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait, graphAccessToken: graphAccessToken);
                                     }
                                     else
                                     {
@@ -268,8 +272,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (!string.IsNullOrEmpty(t.Theme))
                                     {
                                         var parsedTheme = tokenParser.ParseString(t.Theme);
-                                        tenant.SetWebTheme(parsedTheme, siteContext.Url);
-                                        tenant.Context.ExecuteQueryRetry();
+                                        if (tenantThemes.FirstOrDefault(th => th.Name == parsedTheme) != null)
+                                        {
+                                            tenant.SetWebTheme(parsedTheme, siteContext.Url);
+                                            tenant.Context.ExecuteQueryRetry();
+                                        }
+                                        else
+                                        {
+                                            WriteMessage($"Theme {parsedTheme} doesn't exist in the tenant, will not be applied", ProvisioningMessageType.Warning);
+                                        }
                                     }
                                     if (t.Teamify)
                                     {
@@ -367,8 +378,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (!string.IsNullOrEmpty(c.Theme))
                                     {
                                         var parsedTheme = tokenParser.ParseString(c.Theme);
-                                        tenant.SetWebTheme(parsedTheme, siteInfo.Url);
-                                        tenant.Context.ExecuteQueryRetry();
+                                        if (tenantThemes.FirstOrDefault(th => th.Name == parsedTheme) != null)
+                                        {
+                                            tenant.SetWebTheme(parsedTheme, siteInfo.Url);
+                                            tenant.Context.ExecuteQueryRetry();
+                                        }
+                                        else
+                                        {
+                                            WriteMessage($"Theme {parsedTheme} doesn't exist in the tenant, will not be applied", ProvisioningMessageType.Warning);
+                                        }
                                     }
                                     siteUrls.Add(c.Id, siteInfo.Url);
                                     if (!string.IsNullOrEmpty(c.ProvisioningId))
@@ -441,8 +459,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (!string.IsNullOrEmpty(t.Theme))
                                     {
                                         var parsedTheme = tokenParser.ParseString(t.Theme);
-                                        tenant.SetWebTheme(parsedTheme, siteContext.Url);
-                                        tenant.Context.ExecuteQueryRetry();
+                                        if (tenantThemes.FirstOrDefault(th => th.Name == parsedTheme) != null)
+                                        {
+                                            tenant.SetWebTheme(parsedTheme, siteContext.Url);
+                                            tenant.Context.ExecuteQueryRetry();
+                                        }
+                                        else
+                                        {
+                                            WriteMessage($"Theme {parsedTheme} doesn't exist in the tenant, will not be applied", ProvisioningMessageType.Warning);
+                                        }                                        
                                     }
                                     siteUrls.Add(t.Id, siteContext.Url);
                                     if (!string.IsNullOrEmpty(t.ProvisioningId))

@@ -192,7 +192,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     Microsoft.Graph.Group addedGroup = null;
                     String modernSiteUrl = null;
 
-                    // Add the group to the collection of groups (if it does not exist
+                    // Add the group to the collection of groups (if it does not exist)
                     if (addedGroup == null)
                     {
                         addedGroup = await graphClient.Groups.Request().AddAsync(newGroup);
@@ -272,25 +272,6 @@ namespace OfficeDevPnP.Core.Framework.Graph
                             group.SiteUrl = modernSiteUrl;
                         }
                     }
-                    /*
-                    #region Handle group's owners
-
-                    if (owners != null && owners.Length > 0)
-                    {
-                        await UpdateOwners(owners, graphClient, addedGroup);
-                    }
-
-                    #endregion
-
-                    #region Handle group's members
-
-                    if (members != null && members.Length > 0)
-                    {
-                        await UpdateMembers(members, graphClient, addedGroup);
-                    }
-
-                    #endregion
-                    */
 
                     if (createTeam)
                     {
@@ -458,6 +439,36 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 {
                     pageExists = false;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Renews the Office 365 Group by extending its expiration with the number of days defined in the group expiration policy set on the Azure Active Directory
+        /// </summary>
+        /// <param name="groupId">The ID of the Office 365 Group</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry.</param>
+        public static void RenewUnifiedGroup(string groupId,
+                                             string accessToken, int retryCount = 10, int delay = 500)
+        {
+            try
+            {
+                // Use a synchronous model to invoke the asynchronous process
+                Task.Run(async () =>
+                {
+                    var graphClient = CreateGraphClient(accessToken, retryCount, delay);
+
+                    await graphClient.Groups[groupId]
+                        .Renew()
+                        .Request()
+                        .PostAsync();
+                }).GetAwaiter().GetResult();
+            }
+            catch (ServiceException ex)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
             }
         }
 
@@ -695,8 +706,9 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="includeSite">Defines whether to return details about the Modern SharePoint Site backing the group. Default is true.</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
-        /// <param name="includeClassification">Defines whether to return classification value of the unified group. Default is true.</param>
-        public static UnifiedGroupEntity GetUnifiedGroup(String groupId, String accessToken, int retryCount = 10, int delay = 500, bool includeSite = true, bool includeClassification = false)
+        /// <param name="includeClassification">Defines whether to return classification value of the unified group. Default is false.</param>
+        /// <param name="includeHasTeam">Defines whether to check for each unified group if it has a Microsoft Team provisioned for it. Default is false.</param>
+        public static UnifiedGroupEntity GetUnifiedGroup(String groupId, String accessToken, int retryCount = 10, int delay = 500, bool includeSite = true, bool includeClassification = false, bool includeHasTeam = false)
         {
             if (String.IsNullOrEmpty(groupId))
             {
@@ -746,6 +758,11 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         group.Classification = g.Classification;
                     }
 
+                    if(includeHasTeam)
+                    {
+                        group.HasTeam = HasTeamsTeam(group.GroupId, accessToken);
+                    }
+
                     return (group);
 
                 }).GetAwaiter().GetResult();
@@ -764,18 +781,19 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
         /// <param name="displayName">The DisplayName of the Office 365 Group</param>
         /// <param name="mailNickname">The MailNickname of the Office 365 Group</param>
-        /// <param name="startIndex">If not specified, method will start with the first group.</param>
-        /// <param name="endIndex">If not specified, method will return all groups.</param>
+        /// <param name="startIndex">Not relevant anymore</param>
+        /// <param name="endIndex">Not relevant anymore</param>
         /// <param name="includeSite">Defines whether to return details about the Modern SharePoint Site backing the group. Default is true.</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <param name="includeClassification">Defines whether or not to return details about the Modern Site classification value.</param>
-        /// <param name="pageSize">Page size used for the individual requests to Micrsoft Graph. Defaults to 999 which is currently the maximum value.</param>
+        /// <param name="includeHasTeam">Defines whether to check for each unified group if it has a Microsoft Team provisioned for it. Default is false.</param>
         /// <returns>An IList of SiteEntity objects</returns>
         public static List<UnifiedGroupEntity> ListUnifiedGroups(string accessToken,
             String displayName = null, string mailNickname = null,
-            int startIndex = 0, int? endIndex = null, bool includeSite = true,
-            int retryCount = 10, int delay = 500, bool includeClassification = false, int pageSize = 999)
+            int startIndex = 0, int endIndex = 999, bool includeSite = true,
+            int retryCount = 10, int delay = 500, bool includeClassification = false, 
+            bool includeHasTeam = false)
         {
             if (String.IsNullOrEmpty(accessToken))
             {
@@ -799,7 +817,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                     var pagedGroups = await graphClient.Groups
                         .Request()
                         .Filter($"groupTypes/any(grp: grp eq 'Unified'){displayNameFilter}{mailNicknameFilter}")
-                        .Top(pageSize)
+                        .Top(endIndex)
                         .GetAsync();
 
                     Int32 pageCount = 0;
@@ -842,11 +860,16 @@ namespace OfficeDevPnP.Core.Framework.Graph
                                     group.Classification = g.Classification;
                                 }
 
+                                if (includeHasTeam)
+                                {
+                                    group.HasTeam = HasTeamsTeam(group.GroupId, accessToken);
+                                }
+
                                 groups.Add(group);
                             }
                         }
 
-                        if (pagedGroups.NextPageRequest != null && (endIndex == null || groups.Count < endIndex))
+                        if (pagedGroups.NextPageRequest != null && groups.Count < endIndex)
                         {
                             pagedGroups = await pagedGroups.NextPageRequest.GetAsync();
                         }
@@ -940,6 +963,79 @@ namespace OfficeDevPnP.Core.Framework.Graph
         }
 
         /// <summary>
+        /// Returns all the Members of an Office 365 group (including nested groups).
+        /// </summary>
+        /// <param name="group"></param>
+        /// <param name="accessToken"></param>
+        /// <param name="retryCount"></param>
+        /// <param name="delay"></param>
+        /// <returns></returns>
+
+        public static List<UnifiedGroupUser> GetNestedUnifiedGroupMembers(UnifiedGroupEntity group, string accessToken, int retryCount = 10, int delay = 500)
+        {
+            List<UnifiedGroupUser> unifiedGroupUsers = new List<UnifiedGroupUser>();
+            List<User> unifiedGroupGraphUsers = null;
+            IGroupMembersCollectionWithReferencesPage groupUsers = null;
+
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+            if (group == null)
+            {
+                throw new ArgumentNullException(nameof(group));
+            }
+
+            try
+            {
+                var result = Task.Run(async () =>
+                {
+                    var graphClient = CreateGraphClient(accessToken, retryCount, delay);
+
+                    // Get the members of an Office 365 group.
+                    groupUsers = await graphClient.Groups[group.GroupId].Members.Request().GetAsync();
+                    if (groupUsers.CurrentPage != null && groupUsers.CurrentPage.Count > 0)
+                    {
+                        unifiedGroupGraphUsers = new List<User>();
+
+                        GenerateNestedGraphUserCollection(groupUsers.CurrentPage, unifiedGroupGraphUsers, unifiedGroupUsers, accessToken);
+                    }
+
+                    // Retrieve users when the results are paged.
+                    while (groupUsers.NextPageRequest != null)
+                    {
+                        groupUsers = groupUsers.NextPageRequest.GetAsync().GetAwaiter().GetResult();
+                        if (groupUsers.CurrentPage != null && groupUsers.CurrentPage.Count > 0)
+                        {
+                            GenerateNestedGraphUserCollection(groupUsers.CurrentPage, unifiedGroupGraphUsers, unifiedGroupUsers, accessToken);
+                        }
+                    }
+
+                    // Create the collection of type OfficeDevPnP 'UnifiedGroupUser' after all users are retrieved, including paged data.
+                    if (unifiedGroupGraphUsers != null && unifiedGroupGraphUsers.Count > 0)
+                    {
+                        foreach (User usr in unifiedGroupGraphUsers)
+                        {
+                            UnifiedGroupUser groupUser = new UnifiedGroupUser();
+                            groupUser.UserPrincipalName = usr.UserPrincipalName != null ? usr.UserPrincipalName : string.Empty;
+                            groupUser.DisplayName = usr.DisplayName != null ? usr.DisplayName : string.Empty;
+                            unifiedGroupUsers.Add(groupUser);
+                        }
+                    }
+                    return unifiedGroupUsers;
+
+                }).GetAwaiter().GetResult();
+            }
+            catch (ServiceException ex)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
+            }
+            return unifiedGroupUsers;
+        }
+
+
+        /// <summary>
         /// Returns all the Owners of an Office 365 group.
         /// </summary>
         /// <param name="group">The Office 365 group object of type UnifiedGroupEntity</param>
@@ -1024,6 +1120,66 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
 
             return unifiedGroupGraphUsers;
+        }
+
+        /// <summary>
+        /// Helper method. Generates a neseted collection of Microsoft.Graph.User entity from directory objects.
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="unifiedGroupGraphUsers"></param>
+        /// <param name="unifiedGroupUsers"></param>
+        /// <param name="accessToken"></param>
+        /// <returns></returns>
+
+        private static List<User> GenerateNestedGraphUserCollection(IList<DirectoryObject> page, List<User> unifiedGroupGraphUsers, List<UnifiedGroupUser> unifiedGroupUsers, string accessToken)
+        {
+            // Create a collection of Microsoft.Graph.User type
+            foreach (var usr in page)
+            {
+
+                if (usr != null)
+                {
+                    if (usr.GetType() == typeof(User))
+                    {
+                        unifiedGroupGraphUsers.Add((User)usr);
+                    }
+                }
+            }
+
+            //Get groups within the group and users in that group
+            List<Group> unifiedGroupGraphGroups = new List<Group>();
+            GenerateGraphGroupCollection(page, unifiedGroupGraphGroups);
+            foreach (Group unifiedGroupGraphGroup in unifiedGroupGraphGroups)
+            {
+                var grp = GetUnifiedGroup(unifiedGroupGraphGroup.Id, accessToken);
+                unifiedGroupUsers.AddRange(GetUnifiedGroupMembers(grp, accessToken));
+            }
+
+            return unifiedGroupGraphUsers;
+        }
+
+        /// <summary>
+        /// Helper method. Generates a collection of Microsoft.Graph.Group entity from directory objects.
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="unifiedGroupGraphGroups"></param>
+        /// <returns></returns>
+        private static List<Group> GenerateGraphGroupCollection(IList<DirectoryObject> page, List<Group> unifiedGroupGraphGroups)
+        {
+            // Create a collection of Microsoft.Graph.Group type
+            foreach (var grp in page)
+            {
+
+                if (grp != null)
+                {
+                    if (grp.GetType() == typeof(Group))
+                    {
+                        unifiedGroupGraphGroups.Add((Group)grp);
+                    }
+                }
+            }
+
+            return unifiedGroupGraphGroups;
         }
 
         /// <summary>

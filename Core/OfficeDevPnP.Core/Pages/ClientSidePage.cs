@@ -968,9 +968,10 @@ namespace OfficeDevPnP.Core.Pages
 #endif
                     )
                 {
-                    item[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
                     item[ClientSidePage.BannerImageUrl] = "/_layouts/15/images/sitepagethumbnail.png";
                 }
+
+                item[ClientSidePage.PromotedStateField] = (Int32)PromotedState.NotPromoted;
                 item.UpdateOverwriteVersion();
                 this.Context.Web.Context.Load(item);
             }

@@ -881,8 +881,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
         
         private string idField;
         
+        private bool privateField;
+        
         public TeamChannel() {
             this.isFavoriteByDefaultField = false;
+            this.privateField = false;
         }
         
         /// <remarks/>
@@ -960,6 +963,18 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml.V202002 {
             }
             set {
                 this.idField = value;
+            }
+        }
+        
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        [System.ComponentModel.DefaultValueAttribute(false)]
+        public bool Private {
+            get {
+                return this.privateField;
+            }
+            set {
+                this.privateField = value;
             }
         }
     }
