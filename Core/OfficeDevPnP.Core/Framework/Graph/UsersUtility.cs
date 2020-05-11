@@ -21,7 +21,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="endIndex">Last item in the results returned by Microsoft Graph to return</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry.</param>
-        /// <returns>List with User objects</returns>
+        /// <returns>User object</returns>
         public static Model.User GetUser(string accessToken, Guid userId, int startIndex = 0, int endIndex = 999, int retryCount = 10, int delay = 500)
         {
             return ListUsers(accessToken, $"id eq '{userId}'", null, startIndex, endIndex, retryCount, delay).FirstOrDefault();
@@ -105,7 +105,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                             }
                         }
 
-                        if (pagedUsers.NextPageRequest != null && users.Count < endIndex)
+                        if (pagedUsers.NextPageRequest != null && currentIndex < endIndex)
                         {
                             pagedUsers = await pagedUsers.NextPageRequest.GetAsync();
                         }
