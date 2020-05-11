@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
+- Adding support for retrieval of Users from Azure Active Directory #2622 [koenzomers - Koen Zomers]
+
 ### Changed
 
 - Fix: Bug while provisioning teams without security settings in the template got fixed
