@@ -28,6 +28,21 @@ namespace OfficeDevPnP.Core.Framework.Graph
         }
 
         /// <summary>
+        /// Returns the user with the provided <paramref name="userPrincipalName"/> from Azure Active Directory
+        /// </summary>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="userPrincipalName">The User Principal Name of the user in Azure Active Directory to return</param>        
+        /// <param name="startIndex">First item in the results returned by Microsoft Graph to return</param>
+        /// <param name="endIndex">Last item in the results returned by Microsoft Graph to return</param>
+        /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry.</param>
+        /// <returns>User object</returns>
+        public static Model.User GetUser(string accessToken, string userPrincipalName, int startIndex = 0, int endIndex = 999, int retryCount = 10, int delay = 500)
+        {
+            return ListUsers(accessToken, $"userPrincipalName eq '{userPrincipalName}'", null, startIndex, endIndex, retryCount, delay).FirstOrDefault();
+        }
+
+        /// <summary>
         /// Returns all the Users in the current domain
         /// </summary>
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>        
