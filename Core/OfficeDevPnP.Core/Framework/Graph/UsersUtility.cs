@@ -16,44 +16,47 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// Returns the user with the provided userId from Azure Active Directory
         /// </summary>
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
-        /// <param name="userId">The unique identifier of the user in Azure Active Directory to return</param>        
+        /// <param name="userId">The unique identifier of the user in Azure Active Directory to return</param>    
+        /// <param name="selectProperties">Allows providing the names of properties to return regarding the users. If not provided, the standard properties will be returned.</param>
         /// <param name="startIndex">First item in the results returned by Microsoft Graph to return</param>
         /// <param name="endIndex">Last item in the results returned by Microsoft Graph to return</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry.</param>
         /// <returns>List with User objects</returns>
-        public static Model.User GetUser(string accessToken, Guid userId, int startIndex = 0, int endIndex = 999, int retryCount = 10, int delay = 500)
+        public static Model.User GetUser(string accessToken, Guid userId, string[] selectProperties = null, int startIndex = 0, int endIndex = 999, int retryCount = 10, int delay = 500)
         {
-            return ListUsers(accessToken, $"id eq '{userId}'", null, startIndex, endIndex, retryCount, delay).FirstOrDefault();
+            return ListUsers(accessToken, $"id eq '{userId}'", null, selectProperties, startIndex, endIndex, retryCount, delay).FirstOrDefault();
         }
 
         /// <summary>
         /// Returns the user with the provided <paramref name="userPrincipalName"/> from Azure Active Directory
         /// </summary>
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
-        /// <param name="userPrincipalName">The User Principal Name of the user in Azure Active Directory to return</param>        
+        /// <param name="userPrincipalName">The User Principal Name of the user in Azure Active Directory to return</param>
+        /// <param name="selectProperties">Allows providing the names of properties to return regarding the users. If not provided, the standard properties will be returned.</param>
         /// <param name="startIndex">First item in the results returned by Microsoft Graph to return</param>
         /// <param name="endIndex">Last item in the results returned by Microsoft Graph to return</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry.</param>
         /// <returns>User object</returns>
-        public static Model.User GetUser(string accessToken, string userPrincipalName, int startIndex = 0, int endIndex = 999, int retryCount = 10, int delay = 500)
+        public static Model.User GetUser(string accessToken, string userPrincipalName, string[] selectProperties = null, int startIndex = 0, int endIndex = 999, int retryCount = 10, int delay = 500)
         {
-            return ListUsers(accessToken, $"userPrincipalName eq '{userPrincipalName}'", null, startIndex, endIndex, retryCount, delay).FirstOrDefault();
+            return ListUsers(accessToken, $"userPrincipalName eq '{userPrincipalName}'", null, selectProperties, startIndex, endIndex, retryCount, delay).FirstOrDefault();
         }
 
         /// <summary>
         /// Returns all the Users in the current domain
         /// </summary>
-        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>        
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param> 
+        /// <param name="additionalProperties">Allows providing the names of additional properties to return regarding the users</param>
         /// <param name="startIndex">First item in the results returned by Microsoft Graph to return</param>
         /// <param name="endIndex">Last item in the results returned by Microsoft Graph to return</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry.</param>
         /// <returns>List with User objects</returns>
-        public static List<Model.User> ListUsers(string accessToken, int startIndex = 0, int endIndex = 999, int retryCount = 10, int delay = 500)
+        public static List<Model.User> ListUsers(string accessToken, string[] additionalProperties = null, int startIndex = 0, int endIndex = 999, int retryCount = 10, int delay = 500)
         {
-            return ListUsers(accessToken, null, null, startIndex, endIndex, retryCount, delay);
+            return ListUsers(accessToken, null, null, additionalProperties, startIndex, endIndex, retryCount, delay);
         }
 
         /// <summary>
@@ -62,12 +65,13 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
         /// <param name="filter">OData filter to apply to retrieval of the users from the Microsoft Graph</param>
         /// <param name="orderby">OData orderby instruction</param>
+        /// <param name="selectProperties">Allows providing the names of properties to return regarding the users. If not provided, the standard properties will be returned.</param>
         /// <param name="startIndex">First item in the results returned by Microsoft Graph to return</param>
         /// <param name="endIndex">Last item in the results returned by Microsoft Graph to return</param>
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry.</param>
         /// <returns>List with User objects</returns>
-        public static List<Model.User> ListUsers(string accessToken, string filter, string orderby, int startIndex = 0, int endIndex = 999, int retryCount = 10, int delay = 500)
+        public static List<Model.User> ListUsers(string accessToken, string filter, string orderby, string[] selectProperties = null, int startIndex = 0, int endIndex = 999, int retryCount = 10, int delay = 500)
         {
             if (String.IsNullOrEmpty(accessToken))
             {
@@ -84,19 +88,28 @@ namespace OfficeDevPnP.Core.Framework.Graph
 
                     var graphClient = GraphUtility.CreateGraphClient(accessToken, retryCount, delay);
 
-                    var pagedUsers = await graphClient.Users
-                        .Request()
-                        .Filter(filter)
-                        .OrderBy(orderby)
-                        .GetAsync();
+                    IGraphServiceUsersCollectionPage pagedUsers;
 
+                    pagedUsers = selectProperties != null ?
+                        await graphClient.Users
+                            .Request()
+                            .Select(string.Join(",", selectProperties))
+                            .Filter(filter)
+                            .OrderBy(orderby)
+                            .GetAsync() :
+                        await graphClient.Users
+                            .Request()
+                            .Filter(filter)
+                            .OrderBy(orderby)
+                            .GetAsync();
+                    
                     int pageCount = 0;
                     int currentIndex = 0;
 
                     while (true)
                     {
                         pageCount++;
-
+                        
                         foreach (var u in pagedUsers)
                         {
                             currentIndex++;
@@ -113,7 +126,9 @@ namespace OfficeDevPnP.Core.Framework.Graph
                                     OfficeLocation = u.OfficeLocation,
                                     PreferredLanguage = u.PreferredLanguage,
                                     Surname = u.Surname,
-                                    UserPrincipalName = u.UserPrincipalName
+                                    UserPrincipalName = u.UserPrincipalName,
+                                    BusinessPhones = u.BusinessPhones,
+                                    AdditionalProperties = u.AdditionalData
                                 };
 
                                 users.Add(user);
