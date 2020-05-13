@@ -319,6 +319,16 @@ namespace Microsoft.SharePoint.Client
             if (clientContext.Credentials != null)
             {
                 clonedClientContext.Credentials = clientContext.Credentials;
+
+                // In case of existing Event Handlers
+                clonedClientContext.ExecutingWebRequest += (sender, webRequestEventArgs) =>
+                {
+                    // Call the ExecutingWebRequest delegate method from the original ClientContext object, but pass along the webRequestEventArgs of 
+                    // the new delegate method
+                    MethodInfo methodInfo = clientContext.GetType().GetMethod("OnExecutingWebRequest", BindingFlags.Instance | BindingFlags.NonPublic);
+                    object[] parametersArray = new object[] { webRequestEventArgs };
+                    methodInfo.Invoke(clientContext, parametersArray);
+                };
             }
             else
             {
