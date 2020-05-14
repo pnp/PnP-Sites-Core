@@ -32,6 +32,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 property.PropertyName = "members@odata.bind";
                 skipEmptyArray = true;
             }
+            else if (property.PropertyName.Equals("private_channel_member_odata_type", StringComparison.OrdinalIgnoreCase))
+            {
+                property.PropertyName = "@odata.type";
+            }
+            else if (property.PropertyName.Equals("private_channel_user_odata_bind", StringComparison.OrdinalIgnoreCase))
+            {
+                property.PropertyName = "user@odata.bind";
+            }
 
             if (skipEmptyArray)
             {
