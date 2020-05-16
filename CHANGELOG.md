@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Fix: Modern page translation api's did not take in account the access token
 
 ## [3.20.2005.0 - May 2020 release]
 

@@ -2235,6 +2235,19 @@ namespace OfficeDevPnP.Core.Pages
                     request.Headers.Add("accept", "application/json;odata.metadata=none");
                     request.Headers.Add("odata-version", "4.0");
 
+                    // We've an access token, so we're in app-only or user + app context
+                    if (!String.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                    else
+                    {
+                        if (context.Credentials is NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
+                    }
+
                     HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
 
                     if (response.IsSuccessStatusCode)
@@ -2278,6 +2291,20 @@ namespace OfficeDevPnP.Core.Pages
                     HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Post, requestUrl);
                     request.Headers.Add("accept", "application/json;odata.metadata=none");
                     request.Headers.Add("odata-version", "4.0");
+
+                    // We've an access token, so we're in app-only or user + app context
+                    if (!String.IsNullOrEmpty(accessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    }
+                    else
+                    {
+                        if (context.Credentials is NetworkCredential networkCredential)
+                        {
+                            handler.Credentials = networkCredential;
+                        }
+                    }
+
                     request.Headers.Add("X-RequestDigest", await context.GetRequestDigest());
 
                     if (translationStatusCreationRequest != null && translationStatusCreationRequest.LanguageCodes.Count > 0)
