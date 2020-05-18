@@ -530,6 +530,7 @@
     <Compile Include="Framework\Graph\Model\GroupCreationRequest.cs" />
     <Compile Include="Framework\Graph\Model\SiteClassificationsSettings.cs" />
     <Compile Include="Framework\Graph\Model\User.cs" />
+    <Compile Include="Framework\Graph\Model\UserDelta.cs" />
     <Compile Include="Framework\Graph\UsersUtility.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionIssueTags.cs" />
     <Compile Include="Framework\Provisioning\CanProvisionRules\CanProvisionRuleAttribute.cs" />
