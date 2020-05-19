@@ -142,6 +142,10 @@ namespace Microsoft.SharePoint.Client
                 {
                     clientContext.ClientTag = SetClientTag(clientTag);
 
+#if NETSTANDARD2_0
+                    (clientContext as ClientContext).FormDigestHandlingEnabled = false;
+#endif
+
                     // Make CSOM request more reliable by disabling the return value cache. Given we 
                     // often clone context objects and the default value is
 #if !ONPREMISES || SP2016 || SP2019
