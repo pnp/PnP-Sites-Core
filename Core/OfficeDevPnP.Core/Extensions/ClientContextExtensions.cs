@@ -156,21 +156,13 @@ namespace Microsoft.SharePoint.Client
 #if !ONPREMISES
                     if (!retry)
                     {
-#if !NETSTANDARD2_0
                         await clientContext.ExecuteQueryAsync();
-#else
-                        clientContext.ExecuteQuery();
-#endif
                     }
                     else
                     {
                         if (wrapper != null && wrapper.Value != null)
                         {
-#if !NETSTANDARD2_0
                             await clientContext.RetryQueryAsync(wrapper.Value);
-#else
-                            clientContext.RetryQuery(wrapper.Value);
-#endif
                         }
                     }
 #else

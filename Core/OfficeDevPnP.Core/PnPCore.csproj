@@ -48,6 +48,7 @@
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.xsd" />
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.xsd" />
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2020-02.xsd" />
     <None Remove="OfficeDevPnP.Core.csproj.DotSettings" />
     <None Remove="Properties\Settings.settings" />
     <None Remove="Version.txt" />
@@ -64,6 +65,7 @@
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.xsd" />
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.xsd" />
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.xsd" />
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2020-02.xsd" />
   </ItemGroup>
 
   <ItemGroup>

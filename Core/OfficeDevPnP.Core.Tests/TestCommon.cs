@@ -25,9 +25,7 @@ namespace OfficeDevPnP.Core.Tests
 
         public static string AppSetting(string key)
         {
-#if !NETSTANDARD2_0
-            return ConfigurationManager.AppSettings[key];
-#else
+            //return ConfigurationManager.AppSettings[key];
             try
             {
                 return configuration.AppSettings.Settings[key].Value;
@@ -36,7 +34,6 @@ namespace OfficeDevPnP.Core.Tests
             {
                 return null;
             }
-#endif
         }
 
         #region Constructor
