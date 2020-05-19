@@ -1780,6 +1780,7 @@ namespace Microsoft.SharePoint.Client
             return file;
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Uploads a file to the specified folder by saving the binary directly (via webdav).
         /// </summary>
@@ -1861,6 +1862,7 @@ namespace Microsoft.SharePoint.Client
             return await folder.UploadFileWebDavImplementation(fileName, stream, overwriteIfExists);
         }
 #endif
+
         /// <summary>
         /// Uploads a file to the specified folder by saving the binary directly (via webdav).
         /// Note: this method does not work using app only token.
@@ -1909,6 +1911,8 @@ namespace Microsoft.SharePoint.Client
 #endif
             return file;
         }
+#endif
+
         /// <summary>
         /// Gets a file in a document library.
         /// </summary>

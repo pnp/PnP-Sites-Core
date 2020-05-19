@@ -85,13 +85,16 @@ namespace OfficeDevPnP.Core.Tests
                     string[] userParts = tempCred.UserName.Split('\\');
                     Credentials = new NetworkCredential(userParts[1], tempCred.SecurePassword, userParts[0]);
                 }
+#if !NETSTANDARD2_0
                 else
                 {
                     Credentials = new SharePointOnlineCredentials(tempCred.UserName, tempCred.SecurePassword);
                 }
+#endif
             }
             else
             {
+#if !NETSTANDARD2_0
                 if (!String.IsNullOrEmpty(AppSetting("SPOUserName")) &&
                     !String.IsNullOrEmpty(AppSetting("SPOPassword")))
                 {
@@ -101,7 +104,9 @@ namespace OfficeDevPnP.Core.Tests
                     Password = EncryptionUtility.ToSecureString(password);
                     Credentials = new SharePointOnlineCredentials(UserName, Password);
                 }
-                else if (!String.IsNullOrEmpty(AppSetting("OnPremUserName")) &&
+                else 
+#endif                
+                if (!String.IsNullOrEmpty(AppSetting("OnPremUserName")) &&
                          !String.IsNullOrEmpty(AppSetting("OnPremDomain")) &&
                          !String.IsNullOrEmpty(AppSetting("OnPremPassword")))
                 {
@@ -361,7 +366,7 @@ namespace OfficeDevPnP.Core.Tests
             return context;
         }
 
-        #endregion
+#endregion
 
 
 #if !ONPREMISES

@@ -442,6 +442,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Renews the Office 365 Group by extending its expiration with the number of days defined in the group expiration policy set on the Azure Active Directory
         /// </summary>
@@ -471,6 +472,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 throw;
             }
         }
+#endif
 
         /// <summary>
         /// Updates the logo, members or visibility state of an Office 365 Group
@@ -510,7 +512,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         Id = groupToUpdate.Id
                     };
 
-                    #region Logic to update the group DisplayName and Description
+#region Logic to update the group DisplayName and Description
 
                     var updateGroup = false;
                     var groupUpdated = false;
@@ -569,9 +571,9 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         groupUpdated = true;
                     }
 
-                    #endregion
+#endregion
 
-                    #region Logic to update the group Logo
+#region Logic to update the group Logo
 
                     var logoUpdated = false;
 
@@ -581,7 +583,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         logoUpdated = true;
                     }
 
-                    #endregion
+#endregion
 
                     // If any of the previous update actions has been completed
                     return (groupUpdated || logoUpdated);

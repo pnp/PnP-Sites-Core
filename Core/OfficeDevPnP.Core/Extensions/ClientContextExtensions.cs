@@ -308,7 +308,9 @@ namespace Microsoft.SharePoint.Client
             }
 
             ClientContext clonedClientContext = targetContext;
+#if !NETSTANDARD2_0
             clonedClientContext.AuthenticationMode = clientContext.AuthenticationMode;
+#endif
             clonedClientContext.ClientTag = clientContext.ClientTag;
 #if !ONPREMISES || SP2016 || SP2019
             clonedClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
