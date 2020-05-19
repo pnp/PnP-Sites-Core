@@ -2084,7 +2084,7 @@ namespace Microsoft.SharePoint.Client
 #endif
 
             // Hash contents
-            HashAlgorithm ha = HashAlgorithm.Create();
+            HashAlgorithm ha = HashAlgorithm.Create("SHA");
             using (var serverStream = streamResult.Value)
                 serverHash = ha.ComputeHash(serverStream);
 
