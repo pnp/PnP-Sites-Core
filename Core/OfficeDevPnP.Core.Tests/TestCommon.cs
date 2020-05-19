@@ -14,6 +14,7 @@ using System.Threading;
 using System.Security.Cryptography.X509Certificates;
 using OfficeDevPnP.Core.Utilities;
 using Newtonsoft.Json.Linq;
+using Microsoft.Online.SharePoint.TenantManagement;
 
 namespace OfficeDevPnP.Core.Tests
 {
@@ -374,6 +375,12 @@ namespace OfficeDevPnP.Core.Tests
             if (tenantId == null) return null;
 
             var clientId = TestCommon.AppSetting("AppId");
+
+            if (string.IsNullOrEmpty(clientId) || Password == null || string.IsNullOrEmpty(UserName))
+            {
+                return null;
+            }
+
             var username = UserName;
             var password = EncryptionUtility.ToInsecureString(Password);
 
