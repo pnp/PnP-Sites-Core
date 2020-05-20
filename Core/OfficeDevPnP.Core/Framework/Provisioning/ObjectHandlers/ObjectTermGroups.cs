@@ -447,7 +447,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             SiteCollectionTermGroup = isSiteCollectionTermGroup
                         };
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
 
                         // If we need to include TermGroups security
                         if (creationInfo.IncludeTermGroupsSecurity)

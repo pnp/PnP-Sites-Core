@@ -14,7 +14,7 @@ using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// Test cases for the provisioning engine web settings functionality
     /// </summary>

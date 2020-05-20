@@ -17,6 +17,8 @@
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
     <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -558,8 +560,49 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
+    <Content Include="App.config">
       <SubType>Designer</SubType>
+      <TransformOnBuild>true</TransformOnBuild>
+    </Content>
+    <None Include="App.Debug.config">
+      <DependentUpon>App.config</DependentUpon>
+      <SubType>Designer</SubType>
+      <IsTransformFile>true</IsTransformFile>
+    </None>
+    <None Include="App.Debug15.config">
+      <DependentUpon>App.config</DependentUpon>
+      <SubType>Designer</SubType>
+      <IsTransformFile>true</IsTransformFile>
+    </None>
+    <None Include="App.Debug16.config">
+      <DependentUpon>App.config</DependentUpon>
+      <SubType>Designer</SubType>
+      <IsTransformFile>true</IsTransformFile>
+    </None>
+    <None Include="App.Debug19.config">
+      <DependentUpon>App.config</DependentUpon>
+      <SubType>Designer</SubType>
+      <IsTransformFile>true</IsTransformFile>
+    </None>
+    <None Include="App.Release.config">
+      <DependentUpon>App.config</DependentUpon>
+      <SubType>Designer</SubType>
+      <IsTransformFile>true</IsTransformFile>
+    </None>
+    <None Include="App.Release15.config">
+      <DependentUpon>App.config</DependentUpon>
+      <SubType>Designer</SubType>
+      <IsTransformFile>true</IsTransformFile>
+    </None>
+    <None Include="App.Release16.config">
+      <DependentUpon>App.config</DependentUpon>
+      <SubType>Designer</SubType>
+      <IsTransformFile>true</IsTransformFile>
+    </None>
+    <None Include="App.Release19.config">
+      <DependentUpon>App.config</DependentUpon>
+      <SubType>Designer</SubType>
+      <IsTransformFile>true</IsTransformFile>
     </None>
     <None Include="App.config.sample" />
     <None Include="Framework\Functional\Templates\ct3document.docx" />
@@ -717,6 +760,7 @@
     <Content Include="Framework\Functional\Templates\searchsettings_web_1605_add.xml" />
     <Content Include="Framework\Functional\Templates\searchsettings_site_1605_add.xml" />
     <Content Include="Framework\Functional\Templates\publishing_add.xml" />
+    <Content Include="Framework\Functional\Templates\workflows_add_1605.SP2013.xml" />
     <Content Include="Framework\Functional\Templates\workflows_add_1605.xml" />
     <Content Include="Pages\Samples\EmbedWebPart.html" />
     <Content Include="Pages\Samples\FileViewerWebPart.html" />
@@ -858,6 +902,13 @@
     <PreBuildEvent>del $(ProjectDir)\obj\pnpcore.*
 del $(ProjectDir)\obj\*.json</PreBuildEvent>
   </PropertyGroup>
+  <Import Project="..\packages\Microsoft.VisualStudio.SlowCheetah.3.2.26\build\Microsoft.VisualStudio.SlowCheetah.targets" Condition="Exists('..\packages\Microsoft.VisualStudio.SlowCheetah.3.2.26\build\Microsoft.VisualStudio.SlowCheetah.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.VisualStudio.SlowCheetah.3.2.26\build\Microsoft.VisualStudio.SlowCheetah.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.VisualStudio.SlowCheetah.3.2.26\build\Microsoft.VisualStudio.SlowCheetah.targets'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

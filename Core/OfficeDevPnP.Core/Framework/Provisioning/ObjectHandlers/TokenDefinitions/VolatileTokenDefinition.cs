@@ -9,7 +9,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     /// </summary>
     public abstract class VolatileTokenDefinition : TokenDefinition
     {
-        private ClientContext _context;
+        // private ClientContext _context;
 
         public VolatileTokenDefinition(Web web, params string[] token) : base(web, token)
         {
@@ -19,7 +19,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
         {
             this.CacheValue = null;
             this.Web = web;
-            _context = null;
+            // _context = null;
         }
     }
 }

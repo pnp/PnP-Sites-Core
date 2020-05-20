@@ -22,7 +22,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
         {
             using (var context = TestCommon.CreateClientContext())
             {
-                OfficeDevPnP.Core.Sites.SiteCollection.GetGroupInfo(context, "demo1").GetAwaiter().GetResult();
+                OfficeDevPnP.Core.Sites.SiteCollection.GetGroupInfoAsync(context, "demo1").GetAwaiter().GetResult();
             }
         }
 
@@ -67,7 +67,14 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 
         [TestMethod]
         public void ProvisionTenantTemplate()
-        {
+        {            
+            string tenantNameParamValue = new Uri(TestCommon.DevSiteUrl).DnsSafeHost.Split('.')[0];
+            string accountDomainParamValue = TestCommon.O365AccountDomain;
+            if (string.IsNullOrEmpty(accountDomainParamValue))
+            {
+                accountDomainParamValue = "contoso.com";
+            }
+
             var resourceFolder = string.Format(@"{0}\..\..\Resources\Templates", AppDomain.CurrentDomain.BaseDirectory);
             XMLTemplateProvider provider = new XMLFileSystemTemplateProvider(resourceFolder, "");
 
@@ -91,6 +98,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
             hierarchy.Templates.Add(template);
 
             hierarchy.Parameters.Add("CompanyName", "Contoso");
+
+            if (!string.IsNullOrEmpty(tenantNameParamValue))
+            {
+                hierarchy.Parameters.Add("O365TenantName", tenantNameParamValue);
+            }
+
+            if (!string.IsNullOrEmpty(accountDomainParamValue))
+            {
+                hierarchy.Parameters.Add("O365AccountDomain", accountDomainParamValue);
+            }
+
+
 
             var sequence = new ProvisioningSequence();
 
@@ -151,8 +170,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 
             using (var tenantContext = TestCommon.CreateTenantClientContext())
             {
-                var applyingInformation = new ProvisioningTemplateApplyingInformation();
-                applyingInformation.ProgressDelegate = (message, step, total) =>
+                var applyConfiguration = new ApplyConfiguration();
+                applyConfiguration.ProgressDelegate = (message, step, total) =>
                 {
                     if (message != null)
                     {
@@ -163,7 +182,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 
                 var tenant = new Tenant(tenantContext);
 
-                tenant.ApplyProvisionHierarchy(hierarchy, sequence.ID, applyingInformation);
+                tenant.ApplyTenantTemplate(hierarchy, sequence.ID, applyConfiguration);
             }
         }
     }

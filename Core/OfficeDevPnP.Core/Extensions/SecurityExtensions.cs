@@ -1029,12 +1029,17 @@ namespace Microsoft.SharePoint.Client
             web.Context.ExecuteQueryRetry();
             if (group != null)
             {
-                User user = group.Users.GetByLoginName(userLoginName);
-                web.Context.Load(user);
-                web.Context.ExecuteQueryRetry();
-                if (!user.ServerObjectIsNull.Value)
+                // Check wether the group contains any users to avoid errors / exceptions
+                group.EnsureProperty(g => g.Users);
+                if (group.Users.Count > 0)
                 {
-                    web.RemoveUserFromGroup(group, user);
+                    User user = group.Users.GetByLoginName(userLoginName);
+                    web.Context.Load(user);
+                    web.Context.ExecuteQueryRetry();
+                    if (!user.ServerObjectIsNull.Value)
+                    {
+                        web.RemoveUserFromGroup(group, user);
+                    }
                 }
             }
         }

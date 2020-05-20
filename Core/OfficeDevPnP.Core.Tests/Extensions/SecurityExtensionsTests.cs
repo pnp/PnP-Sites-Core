@@ -122,11 +122,15 @@ namespace Microsoft.SharePoint.Client.Tests
                     string adminLoginName = admin.LoginName;
                     String[] parts = adminLoginName.Split(new string[] { "|" }, StringSplitOptions.RemoveEmptyEntries);
 
-                    if (parts.Length > 1)
+                    if (parts.Length >= 3)
                     {
                         adminLoginName = parts[2];
                     }
-                    
+                    else if (parts.Length >= 2)
+                    {
+                        adminLoginName = parts[1];
+                    }
+
                     if (adminLoginName.Equals(_userLogin, StringComparison.InvariantCultureIgnoreCase))
                     {
                         found = true;
