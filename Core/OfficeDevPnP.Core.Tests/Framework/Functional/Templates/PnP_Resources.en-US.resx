@@ -2619,17 +2619,17 @@
   <data name="CustomAction_CA_SUBSITE_OVERRIDE_Description" xml:space="preserve">
     <value>Sub Site Settings SiteTasks Description</value>
   </data>
-  <data name="CustomAction_CA_SITE_SETTINGS_SITECLASSIFICATION_Title" xml:space="preserve">
-    <value>Site Settings SiteTasks Title</value>
-  </data>
-  <data name="CustomAction_CA_SITE_SETTINGS_SITECLASSIFICATION_Description" xml:space="preserve">
-    <value>Site Settings SiteTasks Description</value>
-  </data>
   <data name="CustomAction_CA_STDMENU_SITECLASSIFICATION_Title" xml:space="preserve">
     <value>Standard Menu SiteActions Title</value>
   </data>
   <data name="CustomAction_CA_STDMENU_SITECLASSIFICATION_Description" xml:space="preserve">
     <value>Standard Menu SiteActions Description</value>
+  </data>
+  <data name="CustomAction_CA_SITE_SETTINGS_SITECLASSIFICATION_Title" xml:space="preserve">
+    <value>Site Settings SiteTasks Title</value>
+  </data>
+  <data name="CustomAction_CA_SITE_SETTINGS_SITECLASSIFICATION_Description" xml:space="preserve">
+    <value>Site Settings SiteTasks Description</value>
   </data>
   <data name="NavigationNode_0_2010_Title" xml:space="preserve">
     <value>Navigation One</value>

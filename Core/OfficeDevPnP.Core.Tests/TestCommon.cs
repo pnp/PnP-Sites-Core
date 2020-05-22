@@ -26,7 +26,7 @@ namespace OfficeDevPnP.Core.Tests
 
         public static string AppSetting(string key)
         {
-            //return ConfigurationManager.AppSettings[key];
+#if NETSTANDARD2_0
             try
             {
                 return configuration.AppSettings.Settings[key].Value;
@@ -35,9 +35,13 @@ namespace OfficeDevPnP.Core.Tests
             {
                 return null;
             }
+#else
+            return ConfigurationManager.AppSettings[key];
+#endif
+
         }
 
-        #region Constructor
+#region Constructor
         static TestCommon()
         {
 #if NETSTANDARD2_0
@@ -60,7 +64,7 @@ namespace OfficeDevPnP.Core.Tests
             {
 #if !ONPREMISES
                 DefaultSiteOwner = AppSetting("SPOUserName");
-#else                    
+#else
                 DefaultSiteOwner = $"{AppSetting("OnPremDomain")}\\{AppSetting("OnPremUserName")}";
 #endif
             }
@@ -115,7 +119,7 @@ namespace OfficeDevPnP.Core.Tests
                     Credentials = new SharePointOnlineCredentials(UserName, Password);
                 }
                 else 
-#endif                
+#endif
                 if (!String.IsNullOrEmpty(AppSetting("OnPremUserName")) &&
                          !String.IsNullOrEmpty(AppSetting("OnPremDomain")) &&
                          !String.IsNullOrEmpty(AppSetting("OnPremPassword")))
@@ -417,12 +421,22 @@ namespace OfficeDevPnP.Core.Tests
             string response;
             if (scope == null) // use v1 endpoint
             {
-                body = $"grant_type=password&client_id={clientId}&client_secret={clientSecret}&username={username}&password={password}&resource={resource}";
+                body = $"grant_type=password&client_id={clientId}&username={username}&password={password}&resource={resource}";
+
+                // TODO: If your app is a public client, then the client_secret or client_assertion cannot be included. If the app is a confidential client, then it must be included.
+                // https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc
+                //body = $"grant_type=password&client_id={clientId}&client_secret={clientSecret}&username={username}&password={password}&resource={resource}";
+
                 response = HttpHelper.MakePostRequestForString($"https://login.microsoftonline.com/{tenantId}/oauth2/token", body, "application/x-www-form-urlencoded");
             }
             else // use v2 endpoint
             {
-                body = $"grant_type=password&client_id={clientId}&client_secret={clientSecret}&username={username}&password={password}&scope={scope}";
+                body = $"grant_type=password&client_id={clientId}&username={username}&password={password}&scope={scope}";
+                
+                // TODO: If your app is a public client, then the client_secret or client_assertion cannot be included. If the app is a confidential client, then it must be included.
+                // https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth-ropc
+                //body = $"grant_type=password&client_id={clientId}&client_secret={clientSecret}&username={username}&password={password}&scope={scope}";
+
                 response = HttpHelper.MakePostRequestForString($"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token", body, "application/x-www-form-urlencoded");
             }
 

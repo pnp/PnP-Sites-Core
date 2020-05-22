@@ -537,6 +537,7 @@
     <Compile Include="Utilities\JsonUtilityTests.cs" />
     <Compile Include="Utilities\EncryptionUtilityTests.cs" />
     <Compile Include="Diagnostics\PnPMonitoredScopeTests.cs" />
+    <Compile Include="Utilities\RetryHelper.cs" />
     <Compile Include="Utilities\ThemeUtilityTests.cs" />
     <Compile Include="Utilities\UnifiedGroupsUtilityTests.cs" />
     <Compile Include="Utilities\HttpHelperTests.cs" />
