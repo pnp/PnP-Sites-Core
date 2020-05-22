@@ -146,7 +146,6 @@ namespace Microsoft.SharePoint.Client
                     }
                 case BuiltInIdentity.EveryoneButExternalUsers:
                     {
-#if !NETSTANDARD2_0
                         User spReader = null;
                         try
                         {
@@ -179,9 +178,6 @@ namespace Microsoft.SharePoint.Client
                         web.AssociatedVisitorGroup.Update();
                         web.Context.ExecuteQueryRetry();
                         return spReader;
-#else
-                        throw new Exception("Not supported");
-#endif
                     }
             }
 

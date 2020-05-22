@@ -67,7 +67,12 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
 
         [TestMethod]
         public void ProvisionTenantTemplate()
-        {            
+        {
+            if (TestCommon.AppOnlyTesting())
+            {
+                Assert.Inconclusive("This test does not yet work with app-only due to group connected site creation");
+            }
+            
             string tenantNameParamValue = new Uri(TestCommon.DevSiteUrl).DnsSafeHost.Split('.')[0];
             string accountDomainParamValue = TestCommon.O365AccountDomain;
             if (string.IsNullOrEmpty(accountDomainParamValue))
@@ -109,11 +114,13 @@ namespace OfficeDevPnP.Core.Tests.Framework.ProvisioningTemplates
                 hierarchy.Parameters.Add("O365AccountDomain", accountDomainParamValue);
             }
 
+            var sequence = new ProvisioningSequence
+            {
+                ID = Guid.NewGuid().ToString(),
 
-
-            var sequence = new ProvisioningSequence();
-
-            sequence.TermStore = new ProvisioningTermStore();
+                TermStore = new ProvisioningTermStore()
+            };
+            
             var termGroup = new TermGroup() { Name = "Contoso TermGroup" };
             var termSet = new TermSet() { Name = "Projects", Id = Guid.NewGuid(), IsAvailableForTagging = true, Language = 1033 };
             var term = new Term() { Name = "Contoso Term" };

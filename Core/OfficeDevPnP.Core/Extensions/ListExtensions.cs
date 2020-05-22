@@ -1652,7 +1652,11 @@ namespace Microsoft.SharePoint.Client
                         path = path.Equals("/") ? list.RootFolder.ServerRelativeUrl : UrlUtility.Combine(list.RootFolder.ServerRelativeUrl, path);
                         // Find all in the same path:
                         var defaultColumnValuesInSamePath = columnValues.Where(x => x.FolderRelativePath == defaultColumnValue.FolderRelativePath);
+#if !NETSTANDARD2_0
                         path = Utilities.HttpUtility.UrlPathEncode(path, false);
+#else
+                        path = System.Web.HttpUtility.UrlEncode(path);
+#endif
 
                         var xATag = new XElement("a", new XAttribute("href", path));
 
@@ -1802,7 +1806,11 @@ namespace Microsoft.SharePoint.Client
                         foreach (var value in values)
                         {
                             var href = value.Attribute("href").Value;
+#if !NETSTANDARD2_0
                             href = Utilities.HttpUtility.UrlKeyValueDecode(href);
+#else
+                            href = System.Web.HttpUtility.UrlDecode(href);
+#endif
                             href = href.Replace(list.RootFolder.ServerRelativeUrl, "/").Replace("//", "/");
                             var defaultValues = from d in value.Descendants("DefaultValue") select d;
                             foreach (var defaultValue in defaultValues)
@@ -2023,7 +2031,12 @@ namespace Microsoft.SharePoint.Client
                         foreach (var value in values)
                         {
                             var href = value.Attribute("href").Value;
+#if !NETSTANDARD2_0
                             href = Utilities.HttpUtility.UrlKeyValueDecode(href);
+#else
+                            href = System.Web.HttpUtility.UrlDecode(href);
+#endif
+
                             href = href.Replace(list.RootFolder.ServerRelativeUrl, "/").Replace("//", "/");
                             var defaultValues = from d in value.Descendants("DefaultValue") select d;
                             foreach (var defaultValue in defaultValues)
@@ -2154,7 +2167,11 @@ namespace Microsoft.SharePoint.Client
                         foreach (var value in values)
                         {
                             var href = value.Attribute("href").Value;
+#if !NETSTANDARD2_0
                             href = Utilities.HttpUtility.UrlKeyValueDecode(href);
+#else
+                            href = System.Web.HttpUtility.UrlDecode(href);
+#endif
                             href = href.Replace(list.RootFolder.ServerRelativeUrl, "/").Replace("//", "/");
 
                             var defaultValues = from d in value.Descendants("DefaultValue") select d;

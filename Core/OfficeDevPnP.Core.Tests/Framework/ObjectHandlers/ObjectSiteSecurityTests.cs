@@ -542,6 +542,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod()]
         public async Task CanExportAndImportAssociatedGroupsProperlyInNewNoScriptSite()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
             this.CheckAndExcludeTestNotSupportedForAppOnlyTestting();
 
             var newCommSiteUrl = "";
@@ -613,6 +615,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod()]
         public async Task CanMapAssociatedGroupsToExistingOnesInNewScriptSite()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
             var newCommSiteUrl = string.Empty;
 
             ProvisioningTemplate template = new ProvisioningTemplate();
@@ -676,6 +680,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod()]
         public async Task CanCreateNewAssociatedGroupsInNewScriptSite_CreateNewAssociatedGroup()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
             this.CheckAndExcludeTestNotSupportedForAppOnlyTestting();
 
             var newCommSiteUrl = string.Empty;
@@ -748,6 +754,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod()]
         public async Task CanCreateNewAssociatedGroupsInNewScriptSite_BeforeAsyncRename()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
             this.CheckAndExcludeTestNotSupportedForAppOnlyTestting();
 
             var newCommSiteUrl = string.Empty;
@@ -814,6 +822,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod()]
         public async Task CanCreateNewAssociatedGroupsInNewScriptSite_AfterAsyncRename()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
             this.CheckAndExcludeTestNotSupportedForAppOnlyTestting();
 
             var newCommSiteUrl = string.Empty;
@@ -880,6 +890,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod()]
         public async Task CanMapToExistingGroupsInNewScriptSite()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
             this.CheckAndExcludeTestNotSupportedForAppOnlyTestting();
 
             var newCommSiteUrl = string.Empty;
@@ -1019,7 +1031,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             }
         }
 #endif
-                    private void CheckAndExcludeTestNotSupportedForAppOnlyTestting()
+        private void CheckAndExcludeTestNotSupportedForAppOnlyTestting()
         {
 #if SP2019
             // TODO: Check SP2019 Support for Owner property in futures cumulative updates (After CU 2020-03)

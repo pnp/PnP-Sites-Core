@@ -142,6 +142,10 @@ namespace Microsoft.SharePoint.Client
                 {
                     clientContext.ClientTag = SetClientTag(clientTag);
 
+#if NETSTANDARD2_0
+                    (clientContext as ClientContext).FormDigestHandlingEnabled = false;
+#endif
+
                     // Make CSOM request more reliable by disabling the return value cache. Given we 
                     // often clone context objects and the default value is
 #if !SP2013
@@ -156,21 +160,13 @@ namespace Microsoft.SharePoint.Client
 #if !ONPREMISES
                     if (!retry)
                     {
-#if !NETSTANDARD2_0
                         await clientContext.ExecuteQueryAsync();
-#else
-                        clientContext.ExecuteQuery();
-#endif
                     }
                     else
                     {
                         if (wrapper != null && wrapper.Value != null)
                         {
-#if !NETSTANDARD2_0
                             await clientContext.RetryQueryAsync(wrapper.Value);
-#else
-                            clientContext.RetryQuery(wrapper.Value);
-#endif
                         }
                     }
 #else
@@ -338,7 +334,9 @@ namespace Microsoft.SharePoint.Client
             }
 
             ClientContext clonedClientContext = targetContext;
+#if !NETSTANDARD2_0
             clonedClientContext.AuthenticationMode = clientContext.AuthenticationMode;
+#endif
             clonedClientContext.ClientTag = clientContext.ClientTag;
 #if !SP2013
             clonedClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
