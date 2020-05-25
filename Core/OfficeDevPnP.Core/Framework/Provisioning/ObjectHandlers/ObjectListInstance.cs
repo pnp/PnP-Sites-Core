@@ -2430,6 +2430,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     list = ExtractUserCustomActions(web, siteList, list, creationInfo, template);
 
+                    list = ExtractFolders(web, siteList, list);
+
 #if !ONPREMISES
                     list = ExtractWebhooks(siteList, list);
 #endif
@@ -2459,6 +2461,32 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             WriteMessage("Done processing lists", ProvisioningMessageType.Completed);
             return template;
+        }
+
+        private ListInstance ExtractFolders(Web web, List siteList, ListInstance list)
+        {
+            var rootFolder = siteList.RootFolder;
+            var folder = new Model.Folder();
+            folder = ExtractFoldersRecursion(web.Context, rootFolder, folder);
+            list.Folders.AddRange(folder.Folders);
+            return list;
+        }
+
+        private Model.Folder ExtractFoldersRecursion(ClientRuntimeContext context, Folder folder, Model.Folder outFolder)
+        {
+            // Only caring about structure, still a major improvment from nothing
+            // You could continue to add default values, security etc, but most customers do not use this
+            context.Load(folder);
+            context.Load(folder.Folders);
+            context.ExecuteQueryRetry();
+            outFolder.Name = folder.Name;
+            foreach(var subFolder in folder.Folders)
+            {
+                var tmp = new Model.Folder();
+                ExtractFoldersRecursion(context, subFolder, tmp);
+                outFolder.Folders.Add(tmp);
+            }
+            return outFolder;
         }
 
 #if !ONPREMISES
