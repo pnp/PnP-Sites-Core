@@ -1,5 +1,4 @@
 ﻿using System;
-using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Framework.Graph;
 
