@@ -38,6 +38,7 @@ namespace OfficeDevPnP.Core.Tests
             {
                 return null;
             }
+#endif
         }
 
 #region Constructor
