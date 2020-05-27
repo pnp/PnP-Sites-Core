@@ -766,9 +766,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         fl => fl.DisplayName,
                         fl => fl.ReadOnly, 
                         fl => fl.ShowInDisplayForm)
-                    )
-#endif
                     
+#endif
+                    )
                 );
 
             web.Context.ExecuteQueryRetry();

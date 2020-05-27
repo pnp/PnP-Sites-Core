@@ -49,7 +49,7 @@ namespace OfficeDevPnP.Core.Tests.Sites
 #if !ONPREMISES
                         tenant.DeleteSiteCollection(communicationSiteUrl, false);
 #else
-                    tenant.DeleteSiteCollection(communicationSiteUrl);
+                        tenant.DeleteSiteCollection(communicationSiteUrl);
 #endif
                     }
 
@@ -59,7 +59,7 @@ namespace OfficeDevPnP.Core.Tests.Sites
 #if !ONPREMISES
                         tenant.DeleteSiteCollection(teamSiteUrl, false);
 #else
-                    tenant.DeleteSiteCollection(teamSiteUrl);
+                        tenant.DeleteSiteCollection(teamSiteUrl);
 #endif
                     }
 

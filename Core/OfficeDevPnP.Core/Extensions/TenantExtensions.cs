@@ -1257,6 +1257,12 @@ namespace Microsoft.SharePoint.Client
                         return SiteExistence.No;
                     }
                 }
+#if ONPREMISES
+                else if (IsFileNotFoundException(ex))
+                {
+                    return SiteExistence.No;
+                }
+#endif
                 else
                 {
                     return SiteExistence.Yes;
@@ -1328,6 +1334,26 @@ namespace Microsoft.SharePoint.Client
             if (ex is ServerException)
             {
                 if (((ServerException)ex).ServerErrorCode == -1 && ((ServerException)ex).ServerErrorTypeName.Equals("Microsoft.Online.SharePoint.Common.SpoNoSiteException", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static bool IsFileNotFoundException(Exception ex)
+        {
+            if (ex is ServerException)
+            {
+                if (((ServerException)ex).ServerErrorCode == -2147024894
+                    && ((ServerException)ex).ServerErrorTypeName.Equals("System.IO.FileNotFoundException", StringComparison.InvariantCultureIgnoreCase))
                 {
                     return true;
                 }
