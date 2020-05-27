@@ -2465,14 +2465,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private ListInstance ExtractFolders(Web web, List siteList, ListInstance list)
         {
-            var rootFolder = siteList.RootFolder;
-            var folder = new Model.Folder();
-            folder = ExtractFoldersRecursion(web.Context, rootFolder, folder);
-            list.Folders.AddRange(folder.Folders);
+            siteList.EnsureProperties(l => l.BaseType);
+            if ((siteList.BaseType == BaseType.DocumentLibrary
+                || siteList.BaseType == BaseType.GenericList) && siteList.EnableFolderCreation)
+            {
+                var rootFolder = siteList.RootFolder;
+                var folder = new Model.Folder();
+                folder = ExtractFoldersRecursion(web.Context, rootFolder, folder, 0);
+                list.Folders.AddRange(folder.Folders);
+            }
             return list;
         }
 
-        private Model.Folder ExtractFoldersRecursion(ClientRuntimeContext context, Folder folder, Model.Folder outFolder)
+        private Model.Folder ExtractFoldersRecursion(ClientRuntimeContext context, Folder folder, Model.Folder outFolder, int level)
         {
             // Only caring about structure, still a major improvment from nothing
             // You could continue to add default values, security etc, but most customers do not use this
@@ -2480,10 +2485,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             context.Load(folder.Folders);
             context.ExecuteQueryRetry();
             outFolder.Name = folder.Name;
-            foreach(var subFolder in folder.Folders)
+            // Recurse subfolders
+            foreach (var subFolder in folder.Folders)
             {
+                if (subFolder.Name == "Forms" && level == 0) continue;
                 var tmp = new Model.Folder();
-                ExtractFoldersRecursion(context, subFolder, tmp);
+                ExtractFoldersRecursion(context, subFolder, tmp, level++);
                 outFolder.Folders.Add(tmp);
             }
             return outFolder;
