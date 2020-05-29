@@ -14,6 +14,7 @@ using System.Threading;
 using System.Security.Cryptography.X509Certificates;
 using OfficeDevPnP.Core.Utilities;
 using Newtonsoft.Json.Linq;
+using Microsoft.Online.SharePoint.TenantManagement;
 
 namespace OfficeDevPnP.Core.Tests
 {
@@ -25,9 +26,7 @@ namespace OfficeDevPnP.Core.Tests
 
         public static string AppSetting(string key)
         {
-#if !NETSTANDARD2_0
-            return ConfigurationManager.AppSettings[key];
-#else
+            //return ConfigurationManager.AppSettings[key];
             try
             {
                 return configuration.AppSettings.Settings[key].Value;
@@ -36,7 +35,6 @@ namespace OfficeDevPnP.Core.Tests
             {
                 return null;
             }
-#endif
         }
 
         #region Constructor
@@ -85,13 +83,16 @@ namespace OfficeDevPnP.Core.Tests
                     string[] userParts = tempCred.UserName.Split('\\');
                     Credentials = new NetworkCredential(userParts[1], tempCred.SecurePassword, userParts[0]);
                 }
+#if !NETSTANDARD2_0
                 else
                 {
                     Credentials = new SharePointOnlineCredentials(tempCred.UserName, tempCred.SecurePassword);
                 }
+#endif
             }
             else
             {
+#if !NETSTANDARD2_0
                 if (!String.IsNullOrEmpty(AppSetting("SPOUserName")) &&
                     !String.IsNullOrEmpty(AppSetting("SPOPassword")))
                 {
@@ -101,7 +102,9 @@ namespace OfficeDevPnP.Core.Tests
                     Password = EncryptionUtility.ToSecureString(password);
                     Credentials = new SharePointOnlineCredentials(UserName, Password);
                 }
-                else if (!String.IsNullOrEmpty(AppSetting("OnPremUserName")) &&
+                else 
+#endif                
+                if (!String.IsNullOrEmpty(AppSetting("OnPremUserName")) &&
                          !String.IsNullOrEmpty(AppSetting("OnPremDomain")) &&
                          !String.IsNullOrEmpty(AppSetting("OnPremPassword")))
                 {
@@ -361,7 +364,7 @@ namespace OfficeDevPnP.Core.Tests
             return context;
         }
 
-        #endregion
+#endregion
 
 
 #if !ONPREMISES
@@ -372,6 +375,12 @@ namespace OfficeDevPnP.Core.Tests
             if (tenantId == null) return null;
 
             var clientId = TestCommon.AppSetting("AppId");
+
+            if (string.IsNullOrEmpty(clientId) || Password == null || string.IsNullOrEmpty(UserName))
+            {
+                return null;
+            }
+
             var username = UserName;
             var password = EncryptionUtility.ToInsecureString(Password);
 

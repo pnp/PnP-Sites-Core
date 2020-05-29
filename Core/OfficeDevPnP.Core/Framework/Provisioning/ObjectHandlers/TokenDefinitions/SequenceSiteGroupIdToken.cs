@@ -14,7 +14,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.TokenDefinitio
     {
         private Guid _id = Guid.Empty;
         public SequenceSiteGroupIdToken(Web web, string provisioningId, Guid id)
-            : base(web, $"{{sequencesiteid:{provisioningId}}}")
+            : base(web, $"{{sequencesitegroupid:{provisioningId}}}")
         {
             _id = id;
         }

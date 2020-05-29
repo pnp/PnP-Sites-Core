@@ -651,12 +651,15 @@ namespace OfficeDevPnP.Core.Utilities
         private static void SetAuthenticationCookies(HttpClientHandler handler, ClientContext context)
         {
             context.Web.EnsureProperty(w => w.Url);
+#if !NETSTANDARD2_0
             if (context.Credentials is SharePointOnlineCredentials spCred)
             {
                 handler.Credentials = context.Credentials;
                 handler.CookieContainer.SetCookies(new Uri(context.Web.Url), spCred.GetAuthenticationCookie(new Uri(context.Web.Url)));
             }
-            else if (context.Credentials == null)
+            else 
+#endif            
+            if (context.Credentials == null)
             {
                 var cookieString = CookieReader.GetCookie(context.Web.Url).Replace("; ", ",").Replace(";", ",");
                 var authCookiesContainer = new System.Net.CookieContainer();

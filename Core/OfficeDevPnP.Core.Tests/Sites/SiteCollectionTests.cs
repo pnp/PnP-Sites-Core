@@ -37,13 +37,16 @@ namespace OfficeDevPnP.Core.Tests.Sites
         [TestCleanup]
         public void CleanUp()
         {
-            using (var clientContext = TestCommon.CreateTenantClientContext())
+            if (!TestCommon.AppOnlyTesting())
             {
-                var tenant = new Tenant(clientContext);
-                tenant.DeleteSiteCollection($"{baseUrl}/sites/site{communicationSiteGuid}", false);
-                // Commented this, first group cleanup needs to be implemented in this test case
-                //tenant.DeleteSiteCollection($"{baseUrl}/sites/site{teamSiteGuid}", false);
-                //TODO: Cleanup group
+                using (var clientContext = TestCommon.CreateTenantClientContext())
+                {
+                    var tenant = new Tenant(clientContext);
+                    tenant.DeleteSiteCollection($"{baseUrl}/sites/site{communicationSiteGuid}", false);
+                    // Commented this, first group cleanup needs to be implemented in this test case
+                    //tenant.DeleteSiteCollection($"{baseUrl}/sites/site{teamSiteGuid}", false);
+                    //TODO: Cleanup group
+                }
             }
         }
 

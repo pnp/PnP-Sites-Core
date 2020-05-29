@@ -12,6 +12,25 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Fix: Modern page translation api's did not take in account the access token
+
+## [3.20.2005.0 - May 2020 release]
+
+### Added
+
+- Adding support for retrieval of Users from Azure Active Directory #2622 [koenzomers - Koen Zomers]
+- Add YAML metadata for PnP-Sites-Core #2631 [nokafor - Sylvia Okafor]
+- Added UnifiedGroupsUtility.RenewUnifiedGroup #2630 [koenzomers - Koen Zomers]
+- Added GetNestedUnifiedGroupMembers method #2377 [anoopt - Anoop Tatti]
+
+### Changed
+
+- Fix: Bug while provisioning teams without security settings in the template got fixed
+- Fix: ExtractClientSidePage check isNews when PromotedState is null #2618 [czullu - Christian Zuellig]
+- Fix: Handle special char in SiteTile beeing replaced by _ for SP-Groupnames #2617 [czullu - Christian Zuellig]
+- Fix: NullReferenceException in case the authentication with credentials fails #2634 [koenzomers - Koen Zomers]
+- Fix: Enable changing view title casing #2584 [jensotto - Jens Otto Hatlevold]
+
 ## [3.20.2004.0 - April 2020 release]
 
 ### Added

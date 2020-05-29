@@ -251,8 +251,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     var groupSiteInfo = Sites.SiteCollection.GetGroupInfoAsync(tenant.Context as ClientContext, siteInfo.Alias).GetAwaiter().GetResult();
                                     if (groupSiteInfo == null)
                                     {
+                                        string graphAccessToken = null;
+                                        try
+                                        {
+                                            graphAccessToken = PnPProvisioningContext.Current.AcquireCookie(Core.Utilities.Graph.GraphHelper.MicrosoftGraphBaseURI);
+                                        }
+                                        catch
+                                        {
+                                            graphAccessToken = PnPProvisioningContext.Current.AcquireToken(Core.Utilities.Graph.GraphHelper.MicrosoftGraphBaseURI, null);
+                                        }
                                         WriteMessage($"Creating Team Site {siteInfo.Alias}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait);
+                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait, graphAccessToken: graphAccessToken);
                                     }
                                     else
                                     {
@@ -490,6 +499,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             foreach (var token in _additionalTokens)
                             {
                                 siteTokenParser.AddToken(token);
+                                
+                                // Add the token to the global token parser, too
+                                tokenParser.AddToken(token);
                             }
                         }
 

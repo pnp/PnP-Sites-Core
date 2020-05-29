@@ -13,6 +13,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.CanProvisionRules
         [TestMethod]
         public void CanProvisionSite()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Template requires term store work, so this will not work in app-only");
+
             XMLTemplateProvider provider =
                 new XMLFileSystemTemplateProvider(
                     String.Format(@"{0}\..\..\Resources",
@@ -44,6 +46,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.CanProvisionRules
         [TestMethod]
         public void CanProvisionHierarchy()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Template requires term store work, so this will not work in app-only");
+
             XMLTemplateProvider provider =
                 new XMLFileSystemTemplateProvider(
                     String.Format(@"{0}\..\..\Resources",
