@@ -22,6 +22,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 // Ensure the needed tokens are added to the target token parser, this is needed due to the tokenparser perf optimalizations
                 result.TargetTokenParser.Tokens.Add(new SiteToken(cc.Web));
                 result.TargetTokenParser.Tokens.Add(new SiteTitleToken(cc.Web));
+                result.TargetTokenParser.Tokens.Add(new GroupSiteTitleToken(cc.Web));
 
                 Assert.IsTrue(CustomActionValidator.Validate(result.SourceTemplate.CustomActions, result.TargetTemplate.CustomActions, result.TargetTokenParser, cc.Web));
 
@@ -31,6 +32,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 // Ensure the needed tokens are added to the target token parser, this is needed due to the tokenparser perf optimalizations
                 result2.TargetTokenParser.Tokens.Add(new SiteToken(cc.Web));
                 result2.TargetTokenParser.Tokens.Add(new SiteTitleToken(cc.Web));
+                result2.TargetTokenParser.Tokens.Add(new GroupSiteTitleToken(cc.Web));
 
                 Assert.IsTrue(CustomActionValidator.Validate(result2.SourceTemplate.CustomActions, result2.TargetTemplate.CustomActions, result2.TargetTokenParser, cc.Web));
 
@@ -39,6 +41,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 // Ensure the needed tokens are added to the target token parser, this is needed due to the tokenparser perf optimalizations
                 result3.TargetTokenParser.Tokens.Add(new SiteToken(cc.Web));
                 result3.TargetTokenParser.Tokens.Add(new SiteTitleToken(cc.Web));
+                result3.TargetTokenParser.Tokens.Add(new GroupSiteTitleToken(cc.Web));
 
                 Assert.IsTrue(CustomActionValidator.Validate(result3.SourceTemplate.CustomActions, result3.TargetTemplate.CustomActions, result3.TargetTokenParser, cc.Web));
 #endif
@@ -57,6 +60,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 // Ensure the needed tokens are added to the target token parser, this is needed due to the tokenparser perf optimalizations
                 result.TargetTokenParser.Tokens.Add(new SiteToken(cc.Web));
                 result.TargetTokenParser.Tokens.Add(new SiteTitleToken(cc.Web));
+                result.TargetTokenParser.Tokens.Add(new GroupSiteTitleToken(cc.Web));
 
                 Assert.IsTrue(CustomActionValidator.ValidateCustomActions(result.SourceTemplate.CustomActions.WebCustomActions, result.TargetTemplate.CustomActions.WebCustomActions, result.TargetTokenParser, cc.Web));
 
@@ -66,6 +70,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
                 // Ensure the needed tokens are added to the target token parser, this is needed due to the tokenparser perf optimalizations
                 result2.TargetTokenParser.Tokens.Add(new SiteToken(cc.Web));
                 result2.TargetTokenParser.Tokens.Add(new SiteTitleToken(cc.Web));
+                result2.TargetTokenParser.Tokens.Add(new GroupSiteTitleToken(cc.Web));
 
                 Assert.IsTrue(CustomActionValidator.ValidateCustomActions(result2.SourceTemplate.CustomActions.WebCustomActions, result2.TargetTemplate.CustomActions.WebCustomActions, result2.TargetTokenParser, cc.Web));
 #endif

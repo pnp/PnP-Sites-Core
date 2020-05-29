@@ -181,6 +181,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             file.LocalizeWebParts(web, parser, targetFile, scope);
                         }
 #endif
+                        
+                        //Set Properties before Checkin
+                        if (file.Properties != null && file.Properties.Any())
+                        {
+                            Dictionary<string, string> transformedProperties = file.Properties.ToDictionary(property => property.Key, property => parser.ParseString(property.Value));
+                            SetFileProperties(targetFile, transformedProperties, parser, false);
+                        }
 
                         switch (file.Level)
                         {
@@ -211,13 +218,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             targetFile.ListItemAllFields.SetSecurity(parser, file.Security);
                         }
-
-                        if (file.Properties != null && file.Properties.Any())
-                        {
-                            Dictionary<string, string> transformedProperties = file.Properties.ToDictionary(property => property.Key, property => parser.ParseString(property.Value));
-                            SetFileProperties(targetFile, transformedProperties, parser, false);
-                        }
-
                     }
 
                     web = originalWeb; // restore context in case files are provisioned to the master page gallery #1059

@@ -310,9 +310,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 // default groups created during site creation assigned as associated owner group,
                 // associated member group, and associated visitor group.
                 // This is a prerequisite for the site collection used for unit testing purposes.                
-                Assert.IsTrue(template.Security.AssociatedOwnerGroup.Contains("{sitetitle}"), "Associated owner group title does not contain the Site Title token.");
-                Assert.IsTrue(template.Security.AssociatedMemberGroup.Contains("{sitetitle}"), "Associated owner group title does not contain the Site Title token.");
-                Assert.IsTrue(template.Security.AssociatedVisitorGroup.Contains("{sitetitle}"), "Associated owner group title does not contain the Site Title token.");
+                Assert.IsTrue(template.Security.AssociatedOwnerGroup.Contains("{groupsitetitle}"), "Associated owner group title does not contain the Group Site Title token.");
+                Assert.IsTrue(template.Security.AssociatedMemberGroup.Contains("{groupsitetitle}"), "Associated owner group title does not contain the Group Site Title token.");
+                Assert.IsTrue(template.Security.AssociatedVisitorGroup.Contains("{groupsitetitle}"), "Associated owner group title does not contain the Group Site Title token.");
             }
         }
 
@@ -513,6 +513,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod()]
         public async Task CanExportAndImportAssociatedGroupsProperlyInNewNoScriptSite()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
             var newCommSiteUrl = "";
             var newSiteTitle = "Comm Site Test - Groups";
             var loginName = "";
@@ -577,6 +579,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod()]
         public async Task CanMapAssociatedGroupsToExistingOnesInNewScriptSite()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
             var newCommSiteUrl = string.Empty;
 
             ProvisioningTemplate template = new ProvisioningTemplate();
@@ -636,6 +640,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod()]
         public async Task CanCreateNewAssociatedGroupsInNewScriptSite_CreateNewAssociatedGroup()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
             var newCommSiteUrl = string.Empty;
 
             ProvisioningTemplate template = new ProvisioningTemplate();
@@ -702,6 +708,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod()]
         public async Task CanCreateNewAssociatedGroupsInNewScriptSite_BeforeAsyncRename()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
             var newCommSiteUrl = string.Empty;
             var siteTitle = "Dummy";
 
@@ -762,6 +770,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod()]
         public async Task CanCreateNewAssociatedGroupsInNewScriptSite_AfterAsyncRename()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
             var newCommSiteUrl = string.Empty;
             var siteTitle = "Dummy";
 
@@ -822,6 +832,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestMethod()]
         public async Task CanMapToExistingGroupsInNewScriptSite()
         {
+            if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
             var newCommSiteUrl = string.Empty;
 
             ProvisioningTemplate template = new ProvisioningTemplate();

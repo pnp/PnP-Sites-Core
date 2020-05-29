@@ -1,6 +1,7 @@
 ﻿using OfficeDevPnP.Core.Diagnostics;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -79,7 +80,7 @@ namespace OfficeDevPnP.Core.Utilities
                 try
                 {
                     // Add the PnP User Agent string
-                    workrequest.Headers.UserAgent.TryParseAdd(string.IsNullOrEmpty(userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : userAgent);
+                    request.Headers.UserAgent.TryParseAdd(string.IsNullOrEmpty(userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : userAgent);
 
                     // Make the request
                     Task<HttpResponseMessage> result = base.SendAsync(workrequest, cancellationToken);

@@ -1,4 +1,6 @@
-﻿using Microsoft.Online.SharePoint.TenantAdministration;
+﻿#if !NETSTANDARD2_0
+
+using Microsoft.Online.SharePoint.TenantAdministration;
 using Microsoft.SharePoint.Client;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OfficeDevPnP.Core.Entities;
@@ -516,3 +518,4 @@ namespace OfficeDevPnP.Core.Tests.Framework.Providers
 
     }
 }
+#endif

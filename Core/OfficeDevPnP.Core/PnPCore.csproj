@@ -37,6 +37,75 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\BDR0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\BICENTERSITE0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\BLANKINTERNET0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\BLOG0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\CMSPUBLISHING0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\COMMUNITY0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\COMMUNITYPORTAL0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\DEV0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\ENTERWIKI0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\OFFILE1Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\PROJECTSITE0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\SRCHCEN0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\SRCHCENTERLITE0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\STS0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\STS1Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2013\VISPRUS0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\BDR0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\BICENTERSITE0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\BLANKINTERNET0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\BLOG0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\CMSPUBLISHING0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\COMMUNITY0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\COMMUNITYPORTAL0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\DEV0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\ENTERWIKI0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\OFFILE1Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\PROJECTSITE0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\SRCHCEN0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\SRCHCENTERLITE0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\STS0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\STS1Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2016\VISPRUS0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\BDR0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\BICENTERSITE0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\BLANKINTERNET0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\BLOG0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\CMSPUBLISHING0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\COMMUNITY0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\COMMUNITYPORTAL0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\DEV0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\ENTERWIKI0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\OFFILE1Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\PROJECTSITE0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\SRCHCEN0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\SRCHCENTERLITE0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\STS0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\STS1Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\STS3Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\2019\VISPRUS0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\Common\Publishing-Feature-Native-Files.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\BDR0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\BICenterSite0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\BLANKINTERNET0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\BLOG0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\CMSPUBLISHING0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\COMMUNITY0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\COMMUNITYPORTAL0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\DEV0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\EHS1Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\ENTERWIKI0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\GROUP0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\OFFILE1Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\PROJECTSITE0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\SITEPAGEPUBLISHING0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\SRCHCEN0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\SRCHCENTERLITE0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\STS0Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\STS3Template.xml" />
+    <None Remove="Framework\Provisioning\BaseTemplates\SPO\VISPRUS0Template.xml" />
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-03.xsd" />
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-05.xsd" />
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-08.xsd" />
@@ -48,12 +117,82 @@
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.xsd" />
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.xsd" />
     <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.xsd" />
+    <None Remove="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2020-02.xsd" />
     <None Remove="OfficeDevPnP.Core.csproj.DotSettings" />
     <None Remove="Properties\Settings.settings" />
     <None Remove="Version.txt" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\BDR0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\BICENTERSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\BLOG0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\CMSPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\COMMUNITYPORTAL0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\OFFILE1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\PROJECTSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\SRCHCENTERLITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\STS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\STS1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2013\VISPRUS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BDR0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BICENTERSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BLOG0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\CMSPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\COMMUNITYPORTAL0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\OFFILE1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\PROJECTSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\SRCHCENTERLITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\STS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\STS1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\VISPRUS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\BDR0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\BICENTERSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\BLOG0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\CMSPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\COMMUNITYPORTAL0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\OFFILE1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\PROJECTSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\SRCHCENTERLITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\STS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\STS1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\STS3Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2019\VISPRUS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\Common\Publishing-Feature-Native-Files.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\BDR0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\BICenterSite0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\BLANKINTERNET0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\BLOG0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\CMSPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\COMMUNITY0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\COMMUNITYPORTAL0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\DEV0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\EHS1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\ENTERWIKI0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\GROUP0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\OFFILE1Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\PROJECTSITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\SITEPAGEPUBLISHING0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\SRCHCEN0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\SRCHCENTERLITE0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\STS0Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\STS3Template.xml" />
+    <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\SPO\VISPRUS0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-03.xsd" />
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-05.xsd" />
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2015-08.xsd" />
@@ -64,6 +203,7 @@
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-07.xsd" />
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-03.xsd" />
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2019-09.xsd" />
+    <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2020-02.xsd" />
   </ItemGroup>
 
   <ItemGroup>
@@ -81,12 +221,6 @@
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
     <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
     <PackageReference Include="WindowsAzure.Storage" Version="9.1.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="SharePointPnP.Client">
-      <HintPath>..\..\Assemblies\16.1\SharePointPnP.Client.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -111,6 +245,51 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Framework\Provisioning\Providers\Xml\ProvisioningSchema-2018-05.xsd" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Office.Client.Policy">
+      <HintPath>..\..\Assemblies\core\Microsoft.Office.Client.Policy.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.Client.TranslationServices">
+      <HintPath>..\..\Assemblies\core\Microsoft.Office.Client.TranslationServices.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Office.SharePoint.Tools">
+      <HintPath>..\..\Assemblies\core\Microsoft.Office.SharePoint.Tools.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Online.SharePoint.Client.Tenant">
+      <HintPath>..\..\Assemblies\core\Microsoft.Online.SharePoint.Client.Tenant.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.ProjectServer.Client">
+      <HintPath>..\..\Assemblies\core\Microsoft.ProjectServer.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client">
+      <HintPath>..\..\Assemblies\core\Microsoft.SharePoint.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.DocumentManagement">
+      <HintPath>..\..\Assemblies\core\Microsoft.SharePoint.Client.DocumentManagement.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.Publishing">
+      <HintPath>..\..\Assemblies\core\Microsoft.SharePoint.Client.Publishing.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.Runtime">
+      <HintPath>..\..\Assemblies\core\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.Search">
+      <HintPath>..\..\Assemblies\core\Microsoft.SharePoint.Client.Search.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.Search.Applications">
+      <HintPath>..\..\Assemblies\core\Microsoft.SharePoint.Client.Search.Applications.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.Taxonomy">
+      <HintPath>..\..\Assemblies\core\Microsoft.SharePoint.Client.Taxonomy.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.UserProfiles">
+      <HintPath>..\..\Assemblies\core\Microsoft.SharePoint.Client.UserProfiles.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SharePoint.Client.WorkflowServices">
+      <HintPath>..\..\Assemblies\core\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
