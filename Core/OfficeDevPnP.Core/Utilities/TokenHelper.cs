@@ -1622,7 +1622,9 @@ namespace OfficeDevPnP.Core.Utilities
 #else
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.SharePoint.Client;
+#if !NETSTANDARD2_0
 using Microsoft.SharePoint.Client.EventReceivers;
+#endif
 using Newtonsoft.Json;
 using SharePointPnP.IdentityModel.Extensions.S2S.Protocols.OAuth2;
 using System;
@@ -2050,7 +2052,9 @@ namespace OfficeDevPnP.Core.Utilities
         {
             ClientContext clientContext = new ClientContext(targetUrl);
 
+#if !NETSTANDARD2_0
             clientContext.AuthenticationMode = ClientAuthenticationMode.Anonymous;
+#endif
             clientContext.FormDigestHandlingEnabled = false;
             clientContext.ExecutingWebRequest +=
                 delegate (object oSender, WebRequestEventArgs webRequestEventArgs)

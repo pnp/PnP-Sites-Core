@@ -638,7 +638,7 @@ namespace OfficeDevPnP.Core.Tests.AppModelExtensions
                 data.Value.CopyTo(memStream);
 
                 //Compute a hash of the file 
-                var hashAlgorithm = HashAlgorithm.Create();
+                var hashAlgorithm = HashAlgorithm.Create("SHA");
                 byte[] hash = hashAlgorithm.ComputeHash(memStream);
                 //Convert to a hex string for human consumption 
                 string hex = BitConverter.ToString(hash);

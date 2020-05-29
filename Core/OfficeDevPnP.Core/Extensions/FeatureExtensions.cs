@@ -226,6 +226,11 @@ namespace Microsoft.SharePoint.Client
                     clientTag = clientTag.Substring(0, 32);
                 }
                 features.Context.ClientTag = clientTag;
+
+#if NETSTANDARD2_0
+                (features.Context as ClientContext).FormDigestHandlingEnabled = false;
+#endif
+
                 // Don't update this to ExecuteQueryRetry
 #if !ONPREMISES
                 await features.Context.ExecuteQueryAsync();

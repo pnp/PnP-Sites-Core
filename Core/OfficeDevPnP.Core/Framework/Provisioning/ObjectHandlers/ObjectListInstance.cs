@@ -519,7 +519,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             {
                                 ct.FieldLinks.Add(new FieldLinkCreationInformation { Field = field });
                                 ct.Update(false);
-                                listInfo.SiteList.Context.ExecuteQuery();
+                                listInfo.SiteList.Context.ExecuteQueryRetry();
                             }
                         }
                     }
@@ -736,6 +736,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (urlHasValue)
                 {
                     //restore original title
+                    if (string.Equals(createdView.Title, viewTitle, StringComparison.CurrentCultureIgnoreCase))
+                    {
+                        // The title field will only be updated if a change other than case is applied
+                        createdView.Title = $"{viewTitle}_temp";
+                        createdView.Title = viewTitle;
+                        createdView.Update();
+                        web.Context.ExecuteQueryRetry();
+                    }
                     createdView.Title = viewTitle;
                     createdView.Update();
                 }
