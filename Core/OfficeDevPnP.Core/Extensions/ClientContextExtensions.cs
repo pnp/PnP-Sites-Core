@@ -588,6 +588,76 @@ namespace Microsoft.SharePoint.Client
         }
 
         /// <summary>
+        /// Gets the CookieCollection by cookie name = FedAuth or rtFa
+        /// </summary>
+        /// <param name="clientContext"></param>
+        /// <returns></returns>
+        internal static CookieCollection GetCookieCollection(this ClientRuntimeContext clientContext)
+        {
+            return GetCookieCollection(clientContext, new List<string>
+            {
+                "FedAuth", "rtFa"
+            });
+        }
+
+        /// <summary>
+        /// Gets the CookieCollection by the cookie name. If no cookieNames are passed in it returns all cookies
+        /// </summary>
+        /// <param name="clientContext"></param>
+        /// <param name="cookieNames"></param>
+        /// <returns></returns>
+        internal static CookieCollection GetCookieCollection(this ClientRuntimeContext clientContext, IReadOnlyCollection<string> cookieNames)
+        {
+            CookieCollection cookieCollection = null;
+
+            void Handler(object sender, WebRequestEventArgs e)
+                => cookieCollection = HandleWebRequest(e, cookieNames);
+
+            clientContext.ExecutingWebRequest += Handler;
+            clientContext.ExecuteQuery();
+            clientContext.ExecutingWebRequest -= Handler;
+
+            return cookieCollection;
+        }
+
+        private static CookieCollection HandleWebRequest(WebRequestEventArgs e, IReadOnlyCollection<string> cookieNames = null)
+        {
+            var cookieCollection = new CookieCollection();
+
+            if (e.WebRequestExecutor?.WebRequest?.CookieContainer == null)
+            {
+                return null;
+            }
+
+            var cookies = e.WebRequestExecutor.WebRequest.CookieContainer
+                .GetCookies(e.WebRequestExecutor.WebRequest.RequestUri);
+
+            if (cookies.Count <= 0)
+            {
+                return null;
+            }
+
+            foreach (Cookie cookie in cookies)
+            {
+                if (cookie == null)
+                {
+                    continue;
+                }
+
+                if (cookieNames == null || !cookieNames.Any())
+                {
+                    cookieCollection.Add(cookie);
+                }
+                else if (cookieNames.Any(r => r.Equals(cookie.Name)))
+                {
+                    cookieCollection.Add(cookie);
+                }
+            }
+
+            return cookieCollection;
+        }
+
+        /// <summary>
         /// Defines a Maximum Retry Attemped Exception
         /// </summary>
         [Serializable]
