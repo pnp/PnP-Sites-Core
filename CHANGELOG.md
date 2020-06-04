@@ -24,6 +24,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: CreateFolder leads to version count increase of 2 while it should be 1 #2660 [czullu - Christian Zuellig]
 - Fix: PnpHttpHandler SendAync retry did not recreate the HttpRequestMessage on retry #2658 [czullu - Christian Zuellig]
 - Fix: Clone OnExecutingWebRequest handler for credential auth #2646 [PowershellNinja - Raphael]
+- Fix: 403 error on GetWebPartXML in on-premises SharePoint. Fixes #1438, #2371 and #2677 #2667 [jay1050]
 
 ## [3.20.2005.2 - May 2020 release - intermediate release]
 
