@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace OfficeDevPnP.Core.Framework.Graph.Model
@@ -11,7 +12,7 @@ namespace OfficeDevPnP.Core.Framework.Graph.Model
         /// <summary>
         /// Business phone numbers for the user
         /// </summary>
-        public List<string> BusinessPhones { get; set; }
+        public IEnumerable<string> BusinessPhones { get; set; }
 
         /// <summary>
         /// Display name for the user
@@ -62,5 +63,16 @@ namespace OfficeDevPnP.Core.Framework.Graph.Model
         /// Unique identifier of the user
         /// </summary>
         public Guid? Id { get; set; }
+
+        /// <summary>
+        /// Indicates if the account is currently enabled
+        /// </summary>
+        [JsonProperty("accountEnabled", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? AccountEnabled { get; set; }
+
+        /// <summary>
+        /// Additional properties requested regarding the user and included in the response
+        /// </summary>
+        public IDictionary<string, object> AdditionalProperties { get; set; }
     }
 }

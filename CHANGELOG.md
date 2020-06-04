@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 - Adding CRUD operations for Microsoft Graph Subscriptions #2641 [koenzomers - Koen Zomers]
 - Adding GetValidSiteUrlFromAliasAsync and GetIsAliasAvailableAsync #2657 [koenzomers - Koen Zomers]
+- Added option to retrieve AAD user by its UPN optionally with specific properties #2644 [koenzomers - Koen Zomers]
 
 ### Changed
 
