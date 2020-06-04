@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -71,27 +73,37 @@ namespace OfficeDevPnP.Core.Utilities
             int retryAttempts = 0;
             int backoffInterval = this.delay;
 
+            HttpRequestMessage workrequest = request;
+
             // Loop until we need to retry
             while (retryAttempts < this.retryCount)
             {
                 try
                 {
                     // Add the PnP User Agent string
-                    if(string.IsNullOrEmpty(userAgent))
-                    {
-                        userAgent = ConfigurationManager.AppSettings["SharePointPnPUserAgent"];
-                        if (string.IsNullOrWhiteSpace(userAgent))
-                        {
-                            userAgent = System.Environment.GetEnvironmentVariable("SharePointPnPUserAgent", EnvironmentVariableTarget.Process);
-                        }
-                    }
                     request.Headers.UserAgent.TryParseAdd(string.IsNullOrEmpty(userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : userAgent);
 
                     // Make the request
-                    Task<HttpResponseMessage> result = base.SendAsync(request, cancellationToken);
+                    Task<HttpResponseMessage> result = base.SendAsync(workrequest, cancellationToken);
 
-                    // And return the response in case of success
-                    return (result);
+                    if (result != null && result.Result != null && (result.Result.StatusCode == (HttpStatusCode)429 || result.Result.StatusCode == (HttpStatusCode)503))
+                    {
+                        // And return the response in case of success
+                        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_SendAsyncRetry, $"{backoffInterval}");
+
+                        //Add delay for retry
+                        Task.Delay(backoffInterval).Wait();
+
+                        //Add to retry count and increase delay.
+                        retryAttempts++;
+                        backoffInterval = backoffInterval * 2;
+
+                        workrequest = workrequest.CloneRequest();
+                    }
+                    else
+                    {
+                        return result;
+                    }
                 }
                 // Or handle any ServiceException
                 catch (Exception ex)
@@ -115,6 +127,7 @@ namespace OfficeDevPnP.Core.Utilities
                             //Add to retry count and increase delay.
                             retryAttempts++;
                             backoffInterval = backoffInterval * 2;
+                            workrequest = workrequest.CloneRequest();
                         }
                         else
                         {
@@ -129,5 +142,42 @@ namespace OfficeDevPnP.Core.Utilities
             throw new Microsoft.SharePoint.Client.ClientContextExtensions.MaximumRetryAttemptedException($"Maximum retry attempts {this.retryCount}, has be attempted.");
         }
     }
+
+    internal static class PnPHttpRequestCloneExtension
+    {
+        public static HttpRequestMessage CloneRequest(this HttpRequestMessage request)
+        {
+            var clone = new HttpRequestMessage(request.Method, request.RequestUri)
+            {
+                Content = request.Content.CloneRequest(),
+                Version = request.Version
+            };
+            foreach (KeyValuePair<string, object> prop in request.Properties)
+            {
+                clone.Properties.Add(prop);
+            }
+            foreach (KeyValuePair<string, IEnumerable<string>> header in request.Headers)
+            {
+                clone.Headers.TryAddWithoutValidation(header.Key, header.Value);
+            }
+
+            return clone;
+        }
+
+        public static HttpContent CloneRequest(this HttpContent content)
+        {
+            if (content == null) return null;
+
+            var ms = new MemoryStream();
+            content.CopyToAsync(ms).ConfigureAwait(false).GetAwaiter().GetResult();
+            ms.Position = 0;
+
+            var clone = new StreamContent(ms);
+            foreach (KeyValuePair<string, IEnumerable<string>> header in content.Headers)
+            {
+                clone.Headers.Add(header.Key, header.Value);
+            }
+            return clone;
+        }
+    }
 }
-   
