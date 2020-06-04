@@ -399,9 +399,19 @@ namespace Microsoft.SharePoint.Client
                 var pageUrl = $"{uri.Scheme}://{uri.Host}:{uri.Port}{serverRelativePageUrl}";
                 var request = (HttpWebRequest)WebRequest.Create($"{webUrl}/_vti_bin/exportwp.aspx?pageurl={HttpUtility.UrlKeyValueEncode(pageUrl)}&guidstring={id}");
 
+                var cookieCollection = web.Context.GetCookieCollection();
+
                 if (web.Context.Credentials != null)
                 {
                     request.Credentials = web.Context.Credentials;
+                }
+                else if (cookieCollection != null && cookieCollection.Count > 0)
+                {
+                    if (request.CookieContainer == null)
+                    {
+                       request.CookieContainer = new CookieContainer();
+                    }
+                    request.CookieContainer.Add(cookieCollection);
                 }
                 else
                 {
