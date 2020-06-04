@@ -2617,13 +2617,21 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var siteContext = web.Context.GetSiteCollectionContext();
                 var rootWeb = siteContext.Site.RootWeb;
                 siteColumns = rootWeb.Fields;
+#if !SP2013 && !SP2016
                 siteContext.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue, sc => sc.PinnedToFiltersPane, sc => sc.ShowInFiltersPane, sc => sc.CustomFormatter));
+#else
+                siteContext.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue));
+#endif
                 siteContext.ExecuteQueryRetry();
             }
             else
             {
                 siteColumns = web.Fields;
+#if !SP2013 && !SP2016
                 web.Context.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue, sc => sc.PinnedToFiltersPane, sc => sc.ShowInFiltersPane, sc => sc.CustomFormatter));
+#else
+                web.Context.Load(siteColumns, scs => scs.Include(sc => sc.Id, sc => sc.DefaultValue));
+#endif
                 web.Context.ExecuteQueryRetry();
             }
 
@@ -2633,7 +2641,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 bool includeAsListField = false;
                 var siteColumn = siteColumns.FirstOrDefault(sc => sc.Id == field.Id);
-                if(siteColumn != null)
+
+#if !SP2013 && !SP2016
+                if (siteColumn != null)
                 {
                     //include the list field if settings on List field instance are different then the ones on the web field
                     if(siteColumn.PinnedToFiltersPane != field.PinnedToFiltersPane 
@@ -2643,6 +2653,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         includeAsListField = true;
                     }
                 }
+#endif
 
                 if (siteColumn != null && !includeAsListField)
                 {
