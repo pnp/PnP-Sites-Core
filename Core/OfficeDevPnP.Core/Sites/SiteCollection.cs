@@ -9,6 +9,7 @@ using OfficeDevPnP.Core.Utilities.Async;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 #if !NETSTANDARD2_0
@@ -87,6 +88,14 @@ namespace OfficeDevPnP.Core.Sites
                 payload.Add("SiteDesignId", siteDesignId);
             }
             payload.Add("HubSiteId", siteCollectionCreationInformation.HubSiteId);
+
+            bool sensitivityLabelExists = !string.IsNullOrEmpty(siteCollectionCreationInformation.SensitivityLabel);
+            if (sensitivityLabelExists)
+            {
+                Guid sensitivityLabelId = await GetSensitivityLabelId(clientContext, siteCollectionCreationInformation.SensitivityLabel);
+                payload.Add("SensitivityLabel", sensitivityLabelId);
+                payload["Classification"] = siteCollectionCreationInformation.SensitivityLabel;
+            }
 
             return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation, noWait: noWait);
         }
@@ -181,6 +190,14 @@ namespace OfficeDevPnP.Core.Sites
                     handler.SetAuthenticationCookies(clientContext);
                 }
 
+                bool sensitivityLabelExists = !string.IsNullOrEmpty(siteCollectionCreationInformation.SensitivityLabel);
+
+                var sensitivityLabelId = Guid.Empty;
+                if (sensitivityLabelExists)
+                {
+                    sensitivityLabelId = await GetSensitivityLabelId(clientContext, siteCollectionCreationInformation.SensitivityLabel);
+                }
+
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
                     string requestUrl = string.Format("{0}/_api/GroupSiteManager/CreateGroupEx", clientContext.Web.Url);
@@ -192,7 +209,14 @@ namespace OfficeDevPnP.Core.Sites
 
                     var optionalParams = new Dictionary<string, object>();
                     optionalParams.Add("Description", siteCollectionCreationInformation.Description ?? "");
-                    optionalParams.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
+                    if (sensitivityLabelExists && sensitivityLabelId != Guid.Empty)
+                    {
+                        optionalParams.Add("Classification", siteCollectionCreationInformation.SensitivityLabel ?? "");
+                    }
+                    else
+                    {
+                        optionalParams.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
+                    }
                     var creationOptionsValues = new List<string>();
                     if (siteCollectionCreationInformation.SiteDesignId.HasValue)
                     {
@@ -203,6 +227,10 @@ namespace OfficeDevPnP.Core.Sites
                         creationOptionsValues.Add($"SPSiteLanguage:{siteCollectionCreationInformation.Lcid}");
                     }
                     creationOptionsValues.Add($"HubSiteId:{siteCollectionCreationInformation.HubSiteId}");
+                    if (sensitivityLabelExists && sensitivityLabelId != Guid.Empty)
+                    {
+                        creationOptionsValues.Add($"SensitivityLabel:{sensitivityLabelId}");
+                    }
                     optionalParams.Add("CreationOptions", creationOptionsValues);
 
                     if (siteCollectionCreationInformation.Owners != null && siteCollectionCreationInformation.Owners.Length > 0)
@@ -1186,6 +1214,32 @@ namespace OfficeDevPnP.Core.Sites
             }
 
             await context.Web.ExecutePost("/_api/sitepages/communicationsite/enable", $@" {{ ""designPackageId"": ""{designPackageId.ToString()}"" }}");
+        }
+
+        /// <summary>
+        /// Get sensitivity label id for a given Label
+        /// </summary>
+        /// <param name="context">Client context</param>
+        /// <param name="sensitiveLabelString">Sensitive Label string value</param>
+        /// <returns></returns>
+        private static async Task<Guid> GetSensitivityLabelId(ClientContext context, string sensitiveLabelString)
+        {
+            var result = await context.Web.ExecuteGet("/_api/groupsitemanager/GetGroupCreationContext");
+
+            var results = JObject.Parse(result);
+
+            JToken val = results["DataClassificationOptionsNew"]?.Children().FirstOrDefault(jt => (string)jt["Value"] == sensitiveLabelString);
+
+            string sensitivityLabelStringId = Convert.ToString(val?["Key"]);
+
+            Guid sensitivityLabelId = Guid.Empty;
+
+            if (!string.IsNullOrEmpty(sensitivityLabelStringId))
+            {
+                sensitivityLabelId = Guid.Parse(sensitivityLabelStringId);
+            }
+
+            return await Task.Run(() => sensitivityLabelId);
         }
 
     }
