@@ -14,6 +14,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 
+- Fix #2649 - Added correct document set content type check #2652 [gautamdsheth - Gautam Sheth]
+
 ## [3.20.2005.2 - May 2020 release - intermediate release]
 
 ### Changed
