@@ -409,7 +409,7 @@ namespace Microsoft.SharePoint.Client
             var listItem = folder.ListItemAllFields;
 
             // If already a document set, just return the folder
-            if (listItem["ContentTypeId"].ToString() == BuiltInContentTypeId.Folder) return folder;
+            if (listItem["ContentTypeId"].ToString().StartsWith(BuiltInContentTypeId.DocumentSet)) return folder;
             listItem["ContentTypeId"] = BuiltInContentTypeId.DocumentSet;
 
             // Add missing properties            
