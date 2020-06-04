@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 ### Added
 
 - Adding CRUD operations for Microsoft Graph Subscriptions #2641 [koenzomers - Koen Zomers]
+- Adding GetValidSiteUrlFromAliasAsync and GetIsAliasAvailableAsync #2657 [koenzomers - Koen Zomers]
 
 ### Changed
 
