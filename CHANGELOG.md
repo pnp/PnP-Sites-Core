@@ -13,12 +13,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Adding CRUD operations for Microsoft Graph Subscriptions #2641 [koenzomers - Koen Zomers]
 - Adding GetValidSiteUrlFromAliasAsync and GetIsAliasAvailableAsync #2657 [koenzomers - Koen Zomers]
 - Added option to retrieve AAD user by its UPN optionally with specific properties #2644 [koenzomers - Koen Zomers]
+- Added support for Sensitivity Label while creating modern sites #2668 [gautamdsheth - Gautam Sheth]
 
 ### Changed
 
 - Fix: #2649 - Added correct document set content type check #2652 [gautamdsheth - Gautam Sheth]
 - Fix: Paging for retrieving AAD Users #2643 [koenzomers - Koen Zomers]
-- Fix: ClientSidePageContent/ExtractObject - The Url for SitePages library was wrong for the root site collection #2662
+- Fix: ClientSidePageContent/ExtractObject - The Url for SitePages library was wrong for the root site collection #2662 [czullu - Christian Zuellig]
 
 ## [3.20.2005.2 - May 2020 release - intermediate release]
 
