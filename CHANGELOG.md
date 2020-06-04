@@ -25,6 +25,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: PnpHttpHandler SendAync retry did not recreate the HttpRequestMessage on retry #2658 [czullu - Christian Zuellig]
 - Fix: Clone OnExecutingWebRequest handler for credential auth #2646 [PowershellNinja - Raphael]
 - Fix: 403 error on GetWebPartXML in on-premises SharePoint. Fixes #1438, #2371 and #2677 #2667 [jay1050]
+- Fix: Remove tokens from TokenDictionary and ListTokenDictionary when rebuilding the token cache #2638 [ZeroneBit]
 
 ## [3.20.2005.2 - May 2020 release - intermediate release]
 
