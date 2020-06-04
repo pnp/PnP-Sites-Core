@@ -1,13 +1,9 @@
 ﻿using OfficeDevPnP.Core.Diagnostics;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
-using System.Configuration;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -81,7 +77,7 @@ namespace OfficeDevPnP.Core.Utilities
                 try
                 {
                     // Add the PnP User Agent string
-                    request.Headers.UserAgent.TryParseAdd(string.IsNullOrEmpty(userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : userAgent);
+                    workrequest.Headers.UserAgent.TryParseAdd(string.IsNullOrEmpty(userAgent) ? $"{PnPCoreUtilities.PnPCoreUserAgent}" : userAgent);
 
                     // Make the request
                     Task<HttpResponseMessage> result = base.SendAsync(workrequest, cancellationToken);
@@ -143,6 +139,7 @@ namespace OfficeDevPnP.Core.Utilities
         }
     }
 
+    //Reference: https://stackoverflow.com/questions/18000583/re-send-httprequestmessage-exception/18014515#18014515
     internal static class PnPHttpRequestCloneExtension
     {
         public static HttpRequestMessage CloneRequest(this HttpRequestMessage request)
