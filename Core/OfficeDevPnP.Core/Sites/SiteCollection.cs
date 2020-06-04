@@ -1014,7 +1014,25 @@ namespace OfficeDevPnP.Core.Sites
             return await Task.Run(() => returnValue);
         }
 
-        private static async Task<string> GetValidSiteUrlFromAliasAsync(ClientContext context, string alias)
+        /// <summary>
+        /// Allows validation if the provided <paramref name="alias"/> is valid to be used to create a new site collection
+        /// </summary>
+        /// <param name="context">SharePoint ClientContext to use to communicate with SharePoint</param>
+        /// <param name="alias">The alias to check for availability</param>
+        /// <returns>True if the provided alias is available to be used, false if it is not</returns>
+        public static async Task<bool> GetIsAliasAvailableAsync(ClientContext context, string alias)
+        {
+            var proposedUrl = await GetValidSiteUrlFromAliasAsync(context, alias);
+            return proposedUrl.EndsWith($"/{alias}", StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        /// <summary>
+        /// Checks if the provided <paramref name="alias"/> is valid to be used to create a new site collection and will return an alternative available proposal if it is not. Use <see cref="GetIsAliasAvailableAsync"/> instead if you are just intered in knowing whether or not a certain alias is still available to be used.
+        /// </summary>
+        /// <param name="context">SharePoint ClientContext to use to communicate with SharePoint</param>
+        /// <param name="alias">The alias to check for availability</param>
+        /// <returns>The full SharePoint URL proposed to be used. If that URL ends with the alias you provided, it means it is still available. If its not available, it will return an alternative proposal to use.</returns>
+        public static async Task<string> GetValidSiteUrlFromAliasAsync(ClientContext context, string alias)
         {
             string responseString = null;
 
@@ -1047,9 +1065,10 @@ namespace OfficeDevPnP.Core.Sites
 
                     if (response.IsSuccessStatusCode)
                     {
-                        // If value empty, URL is taken
-                        responseString = await response.Content.ReadAsStringAsync();
+                        var requestResponse = await response.Content.ReadAsStringAsync();
+                        var requestResponseJson = JObject.Parse(requestResponse);
 
+                        responseString = requestResponseJson["value"].ToString();
                     }
                     else
                     {
