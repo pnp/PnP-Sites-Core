@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: #2649 - Added correct document set content type check #2652 [gautamdsheth - Gautam Sheth]
 - Fix: Paging for retrieving AAD Users #2643 [koenzomers - Koen Zomers]
 - Fix: ClientSidePageContent/ExtractObject - The Url for SitePages library was wrong for the root site collection #2662 [czullu - Christian Zuellig]
+- Fix: CreateFolder leads to version count increase of 2 while it should be 1 #2660 [czullu - Christian Zuellig]
 
 ## [3.20.2005.2 - May 2020 release - intermediate release]
 
