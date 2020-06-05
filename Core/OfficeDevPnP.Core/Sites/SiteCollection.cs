@@ -226,7 +226,10 @@ namespace OfficeDevPnP.Core.Sites
                     {
                         creationOptionsValues.Add($"SPSiteLanguage:{siteCollectionCreationInformation.Lcid}");
                     }
-                    creationOptionsValues.Add($"HubSiteId:{siteCollectionCreationInformation.HubSiteId}");
+                    if (siteCollectionCreationInformation.HubSiteId != Guid.Empty)
+                    {
+                        creationOptionsValues.Add($"HubSiteId:{siteCollectionCreationInformation.HubSiteId}");
+                    }
                     if (sensitivityLabelExists && sensitivityLabelId != Guid.Empty)
                     {
                         creationOptionsValues.Add($"SensitivityLabel:{sensitivityLabelId}");
