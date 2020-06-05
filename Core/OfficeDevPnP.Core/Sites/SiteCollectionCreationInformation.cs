@@ -1,9 +1,5 @@
 ﻿#if !ONPREMISES
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Sites
 {
@@ -95,7 +91,6 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         public string Owner { get; set; }
 
-
         /// <summary>
         /// If set to true, file sharing for guest users will be allowed.
         /// </summary>
@@ -140,7 +135,7 @@ namespace OfficeDevPnP.Core.Sites
         /// <summary>
         /// The geography in which to create the site collection. Only applicable to multi-geo enabled tenants.
         /// </summary>
-        public string PreferredDataLocation { get; set; }
+        public Enums.Office365Geography? PreferredDataLocation { get; set; }
 
         public SiteCreationInformation()
         {
@@ -177,7 +172,6 @@ namespace OfficeDevPnP.Core.Sites
         {
         }
 
-
         /// <summary>
         /// TeamSiteCollectionTeamSiteCollectionGroupifyInformationCreationInformation constructor
         /// </summary>
@@ -187,7 +181,6 @@ namespace OfficeDevPnP.Core.Sites
         public TeamSiteCollectionGroupifyInformation(string alias, string displayName, string description = null) : base(alias, displayName, description)
         {
         }
-
     }
 
     /// <summary>
@@ -270,7 +263,7 @@ namespace OfficeDevPnP.Core.Sites
         /// <summary>
         /// The geography in which to create the site collection. Only applicable to multi-geo enabled tenants.
         /// </summary>
-        public string PreferredDataLocation { get; set; }
+        public Enums.Office365Geography? PreferredDataLocation { get; set; }
 
         public SiteCreationGroupInformation()
         {
