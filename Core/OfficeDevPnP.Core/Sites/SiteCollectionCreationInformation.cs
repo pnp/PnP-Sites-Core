@@ -137,6 +137,10 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         public string WebTemplate { get; protected set; }
 
+        /// <summary>
+        /// The geography in which to create the site collection. Only applicable to multi-geo enabled tenants.
+        /// </summary>
+        public string PreferredDataLocation { get; set; }
 
         public SiteCreationInformation()
         {
@@ -262,6 +266,11 @@ namespace OfficeDevPnP.Core.Sites
         /// The Sensitivity label to use. For instance 'Top Secret'. See https://www.youtube.com/watch?v=NxvUXBiPFcw for more information.
         /// </summary>
         public string SensitivityLabel { get; set; }
+
+        /// <summary>
+        /// The geography in which to create the site collection. Only applicable to multi-geo enabled tenants.
+        /// </summary>
+        public string PreferredDataLocation { get; set; }
 
         public SiteCreationGroupInformation()
         {
