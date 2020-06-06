@@ -787,6 +787,7 @@
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV202002Serializer.cs" />
     <Compile Include="Framework\Provisioning\Providers\Xml\XMLPnPSchemaV201909Serializer.cs" />
     <Compile Include="Pages\ClientSidePageSettingsSlice.cs" />
+    <Compile Include="Pages\HeaderControlData.cs" />
     <Compile Include="Pages\TranslationStatus.cs" />
     <Compile Include="Pages\TranslationStatusCreationRequest.cs" />
     <Compile Include="Utilities\Graph\GraphHelper.cs" />

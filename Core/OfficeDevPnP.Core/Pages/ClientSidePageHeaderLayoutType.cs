@@ -14,6 +14,7 @@ namespace OfficeDevPnP.Core.Pages
 #if !SP2019
         ColorBlock,
         CutInShape,
+        TopicPage,
 #endif
     }
 #endif
