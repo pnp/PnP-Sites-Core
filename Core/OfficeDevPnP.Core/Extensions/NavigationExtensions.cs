@@ -771,6 +771,11 @@ namespace Microsoft.SharePoint.Client
         }
 
 #if !ONPREMISES
+        /// <summary>
+        /// Returns the navigation elements shown in the footer
+        /// </summary>
+        /// <param name="web">Web instance to return the footer navigation of</param>
+        /// <returns>NavigationNodeCollection containing the navigation elements shown in the footer or NULL if no navigation has been set on the footer</returns>
         public static NavigationNodeCollection LoadFooterNavigation(this Web web)
         {
             var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
@@ -784,13 +789,20 @@ namespace Microsoft.SharePoint.Client
                 menuState = JObject.Parse(structureString);
             }
 
-            if (menuState["nodes"] != null)
+            if (menuState["Nodes"] != null)
             {
-                var nodes = menuState["nodes"] as JArray;
+                var nodes = menuState["Nodes"] as JArray;
                 var topNode = web.Navigation.GetNodeById(Convert.ToInt32(menuState["StartingNodeKey"].Value<string>()));
                 web.Context.Load(topNode, n => n.Children.IncludeWithDefaultProperties());
                 web.Context.ExecuteQueryRetry();
                 var menuNode = topNode.Children.FirstOrDefault(n => n.Title == Constants.SITEFOOTER_MENUNODEKEY);
+                if (menuNode == null)
+                {
+                    // No navigation elements have been added to the footer
+                    return null;
+                }
+
+                // Navigation elements have been added to the footer, return them
                 menuNode.EnsureProperty(n => n.Children.IncludeWithDefaultProperties());
                 return menuNode.Children;
             }
@@ -798,6 +810,115 @@ namespace Microsoft.SharePoint.Client
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Returns the title shown in the footer
+        /// </summary>
+        /// <param name="web">Web instance to return the footer title of</param>
+        /// <returns>Title shown in the footer or NULL if no title has been set</returns>
+        public static string GetFooterTitle(this Web web)
+        {
+            var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
+            var menuState = JObject.Parse(structureString);
+
+            if (menuState["Nodes"] == null)
+            {
+                // No information is returned which helps us to identity the title node
+                return null;
+            }
+
+            // Retrieve the Node representing the title node
+            var titleNode = menuState["Nodes"].FirstOrDefault(n => n["Title"].Value<string>() == Constants.SITEFOOTER_TITLENODEKEY);
+
+            // Ensure the title node contains the expected child elements
+            if(titleNode == null || titleNode["Nodes"] == null || titleNode["Nodes"].Count() == 0 || titleNode["Nodes"][0]["Title"] == null)
+            {
+                // The expected child elements were not found
+                return null;
+            }
+
+            // Retrieve the title
+            var title = titleNode["Nodes"][0]["Title"].Value<string>();
+            return title;
+        }
+
+        /// <summary>
+        /// Sets the title shown in the footer
+        /// </summary>
+        /// <param name="web">Web instance to set the footer title of</param>
+        /// <param name="title">Title to show in the footer</param>
+        /// <returns>Boolean indicating if setting the title succeeded</returns>
+        public static bool SetFooterTitle(this Web web, string title)
+        {
+            web.EnsureProperty(w => w.ServerRelativeUrl);
+            var responseString = web.ExecutePost("/_api/navigation/SaveMenuState", 
+                                                @"{""menuState"":{""StartingNodeTitle"":""" + Constants.SITEFOOTER_NODEKEY + @""",""SPSitePrefix"":""/"",""SPWebPrefix"":""" + web.ServerRelativeUrl + @""",""FriendlyUrlPrefix"":"""",""SimpleUrl"":"""",""Nodes"":[{""NodeType"":0,""Title"":""" + Constants.SITEFOOTER_TITLENODEKEY + @""",""Key"":""2004"",""FriendlyUrlSegment"":"""",""Nodes"":[{""NodeType"":0,""Title"":""" + title + @""",""FriendlyUrlSegment"":""""}]}]}}").GetAwaiter().GetResult();
+            var responseJson = JObject.Parse(responseString);
+            var requestSucceeded = responseJson != null && responseJson["value"] != null && responseJson["value"].Value<string>() == "200";
+            return requestSucceeded;
+        }
+
+        /// <summary>
+        /// Returns the server relative URL of the logo shown in the footer
+        /// </summary>
+        /// <param name="web">Web instance to return the footer logo url of</param>
+        /// <returns>Server relative URL of the logo shown in the footer or NULL if no footer has been set</returns>
+        public static string GetFooterLogoUrl(this Web web)
+        {
+            var structureString = web.ExecuteGet($"/_api/navigation/MenuState?menuNodeKey='{Constants.SITEFOOTER_NODEKEY}'").GetAwaiter().GetResult();
+            var menuState = JObject.Parse(structureString);
+
+            if (menuState["Nodes"] == null)
+            {
+                // No information is returned which helps us to identity the logo node
+                return null;
+            }
+
+            // Retrieve the Node representing the logo node
+            var logoUrlNode = menuState["Nodes"].FirstOrDefault(n => n["Title"].Value<string>() == Constants.SITEFOOTER_LOGONODEKEY);
+
+            // Ensure the logo node contains the expected child elements
+            if (logoUrlNode == null || logoUrlNode["SimpleUrl"] == null)
+            {
+                // The expected child elements were not found
+                return null;
+            }
+
+            // Retrieve the logo url
+            var logoUrl = logoUrlNode["SimpleUrl"].Value<string>();
+            return logoUrl;
+        }
+
+        /// <summary>
+        /// Sets the logo shown in the footer
+        /// </summary>
+        /// <param name="web">Web instance to set the footer logo url of</param>
+        /// <param name="logoUrl">Server relative path to the logo to show in the footer</param>
+        /// <returns>Boolean indicating if setting the logo succeeded</returns>
+        public static bool SetFooterLogoUrl(this Web web, string logoUrl)
+        {
+            web.EnsureProperty(w => w.ServerRelativeUrl);
+            var responseString = web.ExecutePost("/_api/navigation/SaveMenuState",
+                                                @"{""menuState"":{""StartingNodeTitle"":""" + Constants.SITEFOOTER_NODEKEY + @""",""SPSitePrefix"":""/"",""SPWebPrefix"":""" + web.ServerRelativeUrl + @""",""FriendlyUrlPrefix"":"""",""SimpleUrl"":"""",""Nodes"":[{""NodeType"":0,""Title"":""" + Constants.SITEFOOTER_LOGONODEKEY + @""",""Key"":""2006"",""SimpleUrl"":""" + logoUrl + @""",""FriendlyUrlSegment"":""""}]}}").GetAwaiter().GetResult();
+            var responseJson = JObject.Parse(responseString);
+            var requestSucceeded = responseJson != null && responseJson["value"] != null && responseJson["value"].Value<string>() == "200";
+            return requestSucceeded;
+        }
+
+        /// <summary>
+        /// Removes the logo shown in the footer
+        /// </summary>
+        /// <param name="web">Web instance to remove the footer of</param>
+        /// <returns>Boolean indicating if removing the logo succeeded</returns>
+        public static bool RemoveFooterLogoUrl(this Web web)
+        {
+            web.EnsureProperty(w => w.ServerRelativeUrl);
+            var responseString = web.ExecutePost("/_api/navigation/SaveMenuState",
+                                                @"{""menuState"":{""StartingNodeTitle"":""" + Constants.SITEFOOTER_NODEKEY + @""",""SPSitePrefix"":""/"",""SPWebPrefix"":""" + web.ServerRelativeUrl + @""",""FriendlyUrlPrefix"":"""",""SimpleUrl"":"""",""Nodes"":[{""NodeType"":0,""Title"":""" + Constants.SITEFOOTER_LOGONODEKEY + @""",""IsDeleted"":""True"",""FriendlyUrlSegment"":""""}]}}").GetAwaiter().GetResult();
+            var responseJson = JObject.Parse(responseString);
+            var requestSucceeded = responseJson != null && responseJson["value"] != null && responseJson["value"].Value<string>() == "200";
+            return requestSucceeded;
         }
 #endif
         #endregion
