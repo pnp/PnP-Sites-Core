@@ -135,11 +135,6 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 throw new ArgumentNullException(nameof(displayName));
             }
 
-            if (String.IsNullOrEmpty(description))
-            {
-                throw new ArgumentNullException(nameof(description));
-            }
-
             if (String.IsNullOrEmpty(mailNickname))
             {
                 throw new ArgumentNullException(nameof(mailNickname));
