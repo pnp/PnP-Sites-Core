@@ -533,6 +533,7 @@
     <Compile Include="Framework\Graph\Model\GroupCreationRequest.cs" />
     <Compile Include="Framework\Graph\Model\SiteClassificationsSettings.cs" />
     <Compile Include="Framework\Graph\Model\Subscription.cs" />
+    <Compile Include="Framework\Graph\Model\Group.cs" />
     <Compile Include="Framework\Graph\Model\User.cs" />
     <Compile Include="Framework\Graph\SubscriptionsUtility.cs" />
     <Compile Include="Framework\Graph\Model\UserDelta.cs" />

@@ -437,6 +437,53 @@ namespace OfficeDevPnP.Core.Framework.Graph
             }
         }
 
+        /// <summary>
+        /// Sets the visibility of a Group
+        /// </summary>
+        /// <param name="groupId">Id of the Microsoft 365 Group to set the visibility state for</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="hideFromAddressLists">True if the group should not be displayed in certain parts of the Outlook UI: the Address Book, address lists for selecting message recipients, and the Browse Groups dialog for searching groups; otherwise, false. Default value is false.</param>
+        /// <param name="hideFromOutlookClients">True if the group should not be displayed in Outlook clients, such as Outlook for Windows and Outlook on the web; otherwise, false. Default value is false.</param>
+        public static void SetUnifiedGroupVisibility(string groupId, string accessToken, bool? hideFromAddressLists, bool? hideFromOutlookClients)
+        {
+            if (String.IsNullOrEmpty(groupId))
+            {
+                throw new ArgumentNullException(nameof(groupId));
+            }
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            // Ensure there's something to update
+            if(!hideFromAddressLists.HasValue && !hideFromOutlookClients.HasValue)
+            {
+                return;
+            }
+
+            try
+            {
+                // PATCH https://graph.microsoft.com/v1.0/groups/{id}
+                string updateGroupUrl = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groups/{groupId}";
+                var groupRequest = new Model.Group
+                {
+                    HideFromAddressLists = hideFromAddressLists,
+                    HideFromOutlookClients = hideFromOutlookClients
+                };
+
+                var response = GraphHttpClient.MakePatchRequestForString(
+                    requestUrl: updateGroupUrl,
+                    content: JsonConvert.SerializeObject(groupRequest),
+                    contentType: "application/json",
+                    accessToken: accessToken);
+            }
+            catch (ServiceException ex)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
+            }
+        }
+
 #if !NETSTANDARD2_0
         /// <summary>
         /// Renews the Office 365 Group by extending its expiration with the number of days defined in the group expiration policy set on the Azure Active Directory
