@@ -451,6 +451,7 @@ namespace OfficeDevPnP.Core.Pages
             else
             {
                 HeaderControlData webpartData = new HeaderControlData() { Id = this.WebPartId, InstanceId = this.InstanceId.ToString("D"), Title = this.Title, Description = this.Description, DataVersion = this.DataVersion, Properties = "jsonPropsToReplacePnPRules", ServerProcessedContent = "jsonServerProcessedContentToReplacePnPRules" };
+                this.canvasDataVersion = this.DataVersion;
                 this.jsonWebPartData = JsonConvert.SerializeObject(webpartData);
                 this.jsonWebPartData = this.jsonWebPartData.Replace("\"jsonPropsToReplacePnPRules\"", this.Properties.ToString(Formatting.None));
                 this.jsonWebPartData = this.jsonWebPartData.Replace("\"jsonServerProcessedContentToReplacePnPRules\"", this.ServerProcessedContent.ToString(Formatting.None));

@@ -349,9 +349,15 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 page.PageTitle = newTitle;
             }
+            
+            // Set page layout
+            if (!string.IsNullOrEmpty(clientSidePage.Layout))
+            {
+                page.LayoutType = (Pages.ClientSidePageLayoutType)Enum.Parse(typeof(Pages.ClientSidePageLayoutType), clientSidePage.Layout);
+            }
 
             // Page Header
-            if (clientSidePage.Header != null)
+            if (clientSidePage.Header != null && page.LayoutType != Pages.ClientSidePageLayoutType.Topic)
             {
                 switch (clientSidePage.Header.Type)
                 {
@@ -393,12 +399,6 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
-            // Set page layout
-            if (!string.IsNullOrEmpty(clientSidePage.Layout))
-            {
-                page.LayoutType = (Pages.ClientSidePageLayoutType)Enum.Parse(typeof(Pages.ClientSidePageLayoutType), clientSidePage.Layout);
-            }
-
             if (!string.IsNullOrEmpty(clientSidePage.ThumbnailUrl))
             {
                 page.ThumbnailUrl = parser.ParseString(clientSidePage.ThumbnailUrl);
@@ -420,6 +420,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 // Apply the "layout" and content
                 foreach (var section in clientSidePage.Sections)
                 {
+                    // Skip topic page header control section
+                    if (section.Order == 999999)
+                    {
+                        continue;
+                    }
+
                     sectionCount++;
                     switch (section.Type)
                     {
@@ -700,6 +706,85 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ClientSidePages_BaseControlNotFound, control.ControlId, control.CustomWebPartName);
                                 }
                             }
+                        }
+                    }
+                }
+            }
+
+            // Handle the header controls in the topic pages
+            if (page.LayoutType == Pages.ClientSidePageLayoutType.Topic)
+            {
+                var headerControlSection = clientSidePage.Sections.FirstOrDefault(p => p.Order == 999999);
+                if (headerControlSection != null)
+                {
+                    // Ensure there's at least one default section available
+                    if (!page.Sections.Any())
+                    {
+                        page.Sections.Add(new Pages.CanvasSection(page, Pages.CanvasSectionTemplate.OneColumn, 0));
+                    }
+
+                    // Clear existing header controls as they'll be overwritten
+                    page.HeaderControls.Clear();
+
+                    // Load existing available controls
+                    var componentsToAdd = page.AvailableClientSideComponents().ToList();
+
+                    int order = 1;
+                    foreach (var headerControl in headerControlSection.Controls)
+                    {
+                        Pages.ClientSideComponent baseControl = null;
+                        // apply token parsing on the web part properties
+                        headerControl.JsonControlData = parser.ParseString(headerControl.JsonControlData);
+
+                        if (headerControl.Type == WebPartType.Custom)
+                        {
+                            // Find the base control installed to the current site
+                            baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals($"{{{headerControl.ControlId.ToString()}}}", StringComparison.CurrentCultureIgnoreCase));
+                            if (baseControl == null)
+                            {
+                                baseControl = componentsToAdd.FirstOrDefault(p => p.Id.Equals(headerControl.ControlId.ToString(), StringComparison.InvariantCultureIgnoreCase));
+                            }
+
+                            if (baseControl != null)
+                            {
+                                Pages.ClientSideWebPart myWebPart = new Pages.ClientSideWebPart(baseControl)
+                                {
+                                    Order = headerControl.Order,
+                                    IsHeaderControl = true
+                                };
+
+                                if (!String.IsNullOrEmpty(headerControl.JsonControlData))
+                                {
+                                    var json = JsonConvert.DeserializeObject<JObject>(headerControl.JsonControlData);
+                                    if (json["instanceId"] != null && json["instanceId"].Type != JTokenType.Null)
+                                    {
+                                        if (Guid.TryParse(json["instanceId"].Value<string>(), out Guid instanceId))
+                                        {
+                                            myWebPart.instanceId = instanceId;
+                                        }
+                                    }
+
+                                    if (json["dataVersion"] != null && json["dataVersion"].Type != JTokenType.Null)
+                                    {
+
+                                        myWebPart.dataVersion = json["dataVersion"].Value<string>();
+                                    }
+                                }
+
+                                // set properties using json string
+                                if (!String.IsNullOrEmpty(headerControl.JsonControlData))
+                                {
+                                    myWebPart.PropertiesJson = headerControl.JsonControlData;
+                                }
+
+                                page.AddHeaderControl(myWebPart, order);
+                                order++;
+                            }
+                            else
+                            {
+                                scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ClientSidePages_BaseControlNotFound, headerControl.ControlId, headerControl.CustomWebPartName);
+                            }
+
                         }
                     }
                 }

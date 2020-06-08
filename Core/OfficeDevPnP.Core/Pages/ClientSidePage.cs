@@ -684,6 +684,26 @@ namespace OfficeDevPnP.Core.Pages
         }
 
         /// <summary>
+        /// Adds a new header control to your client side page with a given order
+        /// </summary>
+        /// <param name="control"><see cref="CanvasControl"/> to add</param>
+
+        /// <param name="order">Order of the control in the given section</param>
+        public void AddHeaderControl(CanvasControl control, int order)
+        {
+            if (control == null)
+            {
+                throw new ArgumentNullException("Passed control cannot be null");
+            }
+
+            control.section = this.DefaultSection;
+            control.column = this.DefaultSection.DefaultColumn;
+            control.Order = order;
+
+            this.headerControls.Add(control);
+        }
+
+        /// <summary>
         /// Deletes a control from a page
         /// </summary>
         public void Delete()
