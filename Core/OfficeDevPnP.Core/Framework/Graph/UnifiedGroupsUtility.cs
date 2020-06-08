@@ -947,12 +947,13 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
         /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
         /// <param name="includeClassification">Defines whether or not to return details about the Modern Site classification value.</param>
+        /// <param name="includeHasTeam">Defines whether to check for each unified group if it has a Microsoft Team provisioned for it. Default is false.</param>
         /// <param name="pageSize">Page size used for the individual requests to Micrsoft Graph. Defaults to 999 which is currently the maximum value.</param>
         /// <returns>An IList of SiteEntity objects</returns>
         public static List<UnifiedGroupEntity> GetUnifiedGroups(string accessToken,
             String displayName = null, string mailNickname = null,
             int startIndex = 0, int? endIndex = null, bool includeSite = true,
-            int retryCount = 10, int delay = 500, bool includeClassification = false, int pageSize = 999)
+            int retryCount = 10, int delay = 500, bool includeClassification = false, bool includeHasTeam = false, int pageSize = 999)
         {
             if (String.IsNullOrEmpty(accessToken))
             {
@@ -1017,6 +1018,11 @@ namespace OfficeDevPnP.Core.Framework.Graph
                                 if (includeClassification)
                                 {
                                     group.Classification = g.Classification;
+                                }
+
+                                if (includeHasTeam)
+                                {
+                                    group.HasTeam = HasTeamsTeam(group.GroupId, accessToken);
                                 }
 
                                 groups.Add(group);

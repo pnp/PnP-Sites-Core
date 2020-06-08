@@ -32,6 +32,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Change: Removing requirement for a description to be provided for unified group creation #2670 [koenzomers - Koen Zomers]
 - Change: Avoided providing HubSiteId on new sitecollection creation if no HubSite has been provided #2671 [koenzomers - Koen Zomers]
 - Fix: Bugfix in LoadFooterNavigation + added Footer Title & Logo methods #2673 [koenzomers - Koen Zomers]
+- Fix: Retrieve all groups from Graph endpoint #2594 [ohaak - Ole Rühaak]
 
 ## [3.20.2005.2 - May 2020 release - intermediate release]
 
