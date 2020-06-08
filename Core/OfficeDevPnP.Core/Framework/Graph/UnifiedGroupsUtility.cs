@@ -833,6 +833,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="includeClassification">Defines whether or not to return details about the Modern Site classification value.</param>
         /// <param name="includeHasTeam">Defines whether to check for each unified group if it has a Microsoft Team provisioned for it. Default is false.</param>
         /// <returns>An IList of SiteEntity objects</returns>
+        [Obsolete("ListUnifiedGroups is deprecated, please use GetUnifiedGroups instead.")]
         public static List<UnifiedGroupEntity> ListUnifiedGroups(string accessToken,
             String displayName = null, string mailNickname = null,
             int startIndex = 0, int endIndex = 999, bool includeSite = true,
@@ -914,6 +915,115 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         }
 
                         if (pagedGroups.NextPageRequest != null && groups.Count < endIndex)
+                        {
+                            pagedGroups = await pagedGroups.NextPageRequest.GetAsync();
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    return (groups);
+                }).GetAwaiter().GetResult();
+            }
+            catch (ServiceException ex)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
+            }
+            return (result);
+        }
+
+        /// <summary>
+        /// Returns all the Office 365 Groups in the current Tenant based on a startIndex. IncludeSite adds additional properties about the Modern SharePoint Site backing the group
+        /// </summary>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="displayName">The DisplayName of the Office 365 Group</param>
+        /// <param name="mailNickname">The MailNickname of the Office 365 Group</param>
+        /// <param name="startIndex">If not specified, method will start with the first group.</param>
+        /// <param name="endIndex">If not specified, method will return all groups.</param>
+        /// <param name="includeSite">Defines whether to return details about the Modern SharePoint Site backing the group. Default is true.</param>
+        /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
+        /// <param name="includeClassification">Defines whether or not to return details about the Modern Site classification value.</param>
+        /// <param name="pageSize">Page size used for the individual requests to Micrsoft Graph. Defaults to 999 which is currently the maximum value.</param>
+        /// <returns>An IList of SiteEntity objects</returns>
+        public static List<UnifiedGroupEntity> GetUnifiedGroups(string accessToken,
+            String displayName = null, string mailNickname = null,
+            int startIndex = 0, int? endIndex = null, bool includeSite = true,
+            int retryCount = 10, int delay = 500, bool includeClassification = false, int pageSize = 999)
+        {
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            List<UnifiedGroupEntity> result = null;
+            try
+            {
+                // Use a synchronous model to invoke the asynchronous process
+                result = Task.Run(async () =>
+                {
+                    List<UnifiedGroupEntity> groups = new List<UnifiedGroupEntity>();
+
+                    var graphClient = CreateGraphClient(accessToken, retryCount, delay);
+
+                    // Apply the DisplayName filter, if any
+                    var displayNameFilter = !String.IsNullOrEmpty(displayName) ? $" and (DisplayName eq '{Uri.EscapeDataString(displayName.Replace("'", "''"))}')" : String.Empty;
+                    var mailNicknameFilter = !String.IsNullOrEmpty(mailNickname) ? $" and (MailNickname eq '{Uri.EscapeDataString(mailNickname.Replace("'", "''"))}')" : String.Empty;
+
+                    var pagedGroups = await graphClient.Groups
+                        .Request()
+                        .Filter($"groupTypes/any(grp: grp eq 'Unified'){displayNameFilter}{mailNicknameFilter}")
+                        .Top(pageSize)
+                        .GetAsync();
+
+                    Int32 pageCount = 0;
+                    Int32 currentIndex = 0;
+
+                    while (true)
+                    {
+                        pageCount++;
+
+                        foreach (var g in pagedGroups)
+                        {
+                            currentIndex++;
+
+                            if (currentIndex >= startIndex)
+                            {
+                                var group = new UnifiedGroupEntity
+                                {
+                                    GroupId = g.Id,
+                                    DisplayName = g.DisplayName,
+                                    Description = g.Description,
+                                    Mail = g.Mail,
+                                    MailNickname = g.MailNickname,
+                                    Visibility = g.Visibility
+                                };
+
+                                if (includeSite)
+                                {
+                                    try
+                                    {
+                                        group.SiteUrl = GetUnifiedGroupSiteUrl(g.Id, accessToken);
+                                    }
+                                    catch (ServiceException e)
+                                    {
+                                        group.SiteUrl = e.Error.Message;
+                                    }
+                                }
+
+                                if (includeClassification)
+                                {
+                                    group.Classification = g.Classification;
+                                }
+
+                                groups.Add(group);
+                            }
+                        }
+
+                        if (pagedGroups.NextPageRequest != null && (endIndex == null || groups.Count < endIndex))
                         {
                             pagedGroups = await pagedGroups.NextPageRequest.GetAsync();
                         }
