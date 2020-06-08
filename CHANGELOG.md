@@ -33,6 +33,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Change: Avoided providing HubSiteId on new sitecollection creation if no HubSite has been provided #2671 [koenzomers - Koen Zomers]
 - Fix: Bugfix in LoadFooterNavigation + added Footer Title & Logo methods #2673 [koenzomers - Koen Zomers]
 - Fix: Retrieve all groups from Graph endpoint #2594 [ohaak - Ole Rühaak]
+- Fix: AuthenticationManager implements IDisposable and will release created threads (to invalidate requested tokens) on dispose
 
 ## [3.20.2005.2 - May 2020 release - intermediate release]
 
