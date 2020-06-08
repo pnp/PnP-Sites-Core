@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Include Default ListFields if they are Pinned/Showed in FiltersPane or have CustomFormatter set #2650 [czullu - Christian Zuellig]
 - Added option to provide a PreferredDataLocation during site collection creation (for supporting multi-geo tenants) #2672 [koenzomers - Koen Zomers]
 - Client side page API: added support for Cortex topic pages (read/save using API + import/export using provisioning templates)
+- Added SetUnifiedGroupVisibility to allow toggling the visibility of a unified group #2674 [koenzomers - Koen Zomers]
 
 ### Changed
 
