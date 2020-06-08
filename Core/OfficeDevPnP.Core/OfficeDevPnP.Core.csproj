@@ -486,6 +486,7 @@
     <Compile Include="Enums\AppCatalogScope.cs" />
     <Compile Include="Enums\GraphSubscriptionChangeType.cs" />
     <Compile Include="Enums\GraphSubscriptionTlsVersion.cs" />
+    <Compile Include="Enums\Office365Geography.cs" />
     <Compile Include="Enums\SharePointTheme.cs" />
     <Compile Include="Extensions\ClientContextExtensions.cs" />
     <Compile Include="Extensions\ClientObjectExtensions.cs" />
