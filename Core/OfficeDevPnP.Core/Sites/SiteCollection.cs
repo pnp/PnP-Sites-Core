@@ -147,8 +147,8 @@ namespace OfficeDevPnP.Core.Sites
                 throw new Exception("App-Only is currently not supported, unless you provide a Microsoft Graph Access Token.");
             }
 
-            // Creating sites through the Microsoft Graph API is preffered. However, if we need to pass in a PreferredDataLocation, we need to use the SharePoint API still.
-            if (string.IsNullOrEmpty(graphAccessToken) || siteCollectionCreationInformation.PreferredDataLocation.HasValue)
+            // Creating sites through the Microsoft Graph API is preffered. However, if we need to pass in a PreferredDataLocation or a sensitivity label, we need to use the SharePoint API still.
+            if (string.IsNullOrEmpty(graphAccessToken) || siteCollectionCreationInformation.PreferredDataLocation.HasValue || !string.IsNullOrEmpty(siteCollectionCreationInformation.SensitivityLabel))
             {
                 // Use the regular REST API of SPO to create the modern Team Site
                 responseContext = await CreateTeamSiteViaSPOAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation, maxRetryCount, noWait: noWait);
