@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Adding GetValidSiteUrlFromAliasAsync and GetIsAliasAvailableAsync #2657 [koenzomers - Koen Zomers]
 - Added option to retrieve AAD user by its UPN optionally with specific properties #2644 [koenzomers - Koen Zomers]
 - Added support for Sensitivity Label while creating modern sites #2668 [gautamdsheth - Gautam Sheth]
+- Include Default ListFields if they are Pinned/Showed in FiltersPane or have CustomFormatter set #2650 [czullu - Christian Zuellig]
 
 ### Changed
 
@@ -22,6 +23,9 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: ClientSidePageContent/ExtractObject - The Url for SitePages library was wrong for the root site collection #2662 [czullu - Christian Zuellig]
 - Fix: CreateFolder leads to version count increase of 2 while it should be 1 #2660 [czullu - Christian Zuellig]
 - Fix: PnpHttpHandler SendAync retry did not recreate the HttpRequestMessage on retry #2658 [czullu - Christian Zuellig]
+- Fix: Clone OnExecutingWebRequest handler for credential auth #2646 [PowershellNinja - Raphael]
+- Fix: 403 error on GetWebPartXML in on-premises SharePoint. Fixes #1438, #2371 and #2677 #2667 [jay1050]
+- Fix: Remove tokens from TokenDictionary and ListTokenDictionary when rebuilding the token cache #2638 [ZeroneBit]
 
 ## [3.20.2005.2 - May 2020 release - intermediate release]
 
