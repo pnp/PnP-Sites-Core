@@ -101,7 +101,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     extractedPageInstance.ContentTypeID = !pageContentTypeId.Equals(BuiltInContentTypeId.ModernArticlePage, StringComparison.InvariantCultureIgnoreCase) ? pageContentTypeId : null;
                     extractedPageInstance.ThumbnailUrl = pageToExtract.ThumbnailUrl != null ? TokenizeJsonControlData(web, pageToExtract.ThumbnailUrl) : "";
 
-                    if (pageToExtract.PageHeader != null && pageToExtract.LayoutType != Pages.ClientSidePageLayoutType.Topic)
+                    if (pageToExtract.PageHeader != null
+#if !SP2019
+                        && pageToExtract.LayoutType != Pages.ClientSidePageLayoutType.Topic
+#endif
+                        )
                     {
                         
                         var extractedHeader = new ClientSidePageHeader()
@@ -532,7 +536,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             }
         }
 
-        #region Helper methods
+                        #region Helper methods
         private void TokenizeBeforeExport(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, List<string> errorneousOrNonImageFileGuids, Regex regexGuidPattern, Regex regexGuidPatternEncoded, Regex regexSiteAssetUrls, CanvasControl controlInstance, string untokenizedJsonControlData)
         {
             // Export relevant files if this flag is set
@@ -857,7 +861,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
             return json;
         }
-                    #endregion
+                        #endregion
     }
 #endif
                 }

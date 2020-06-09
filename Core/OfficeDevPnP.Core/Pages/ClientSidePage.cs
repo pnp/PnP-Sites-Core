@@ -987,13 +987,18 @@ namespace OfficeDevPnP.Core.Pages
             }
 
             var pageHeaderHtml = "";
-            if (this.pageHeader != null && this.pageHeader.Type != ClientSidePageHeaderType.None && this.LayoutType != ClientSidePageLayoutType.RepostPage && this.LayoutType != ClientSidePageLayoutType.Topic)
+            if (this.pageHeader != null && this.pageHeader.Type != ClientSidePageHeaderType.None && this.LayoutType != ClientSidePageLayoutType.RepostPage
+#if !SP2019
+                && this.LayoutType != ClientSidePageLayoutType.Topic
+#endif
+                )
             {               
                 // this triggers resolving of the header image which has to be done early as otherwise there will be version conflicts
                 // (see here: https://github.com/SharePoint/PnP-Sites-Core/issues/2203)
                 pageHeaderHtml = this.pageHeader.ToHtml(this.PageTitle);
             }
 
+#if !SP2019
             if (this.LayoutType == ClientSidePageLayoutType.Topic)
             {
                 // If we have extra header controls (e.g. with topic pages) then we need to persist those controls to a html snippet that will need to be embedded in the header
@@ -1002,6 +1007,7 @@ namespace OfficeDevPnP.Core.Pages
                     pageHeaderHtml = $"<div>{HeaderControlsToHtml()}</div>";
                 }
             }
+#endif
 
             // Try to load the page
             if (pageFile == null && pagesLibrary == null)
@@ -2242,6 +2248,7 @@ namespace OfficeDevPnP.Core.Pages
             // Reindex the control order. We're starting control order from 1 for each column.
             ReIndex();
 
+#if !SP2019
             // Load page header controls. Cortex Topic pages do have 5 controls in the header (= controls that cannot be moved)
             if (LayoutType == ClientSidePageLayoutType.Topic)
             {
@@ -2270,9 +2277,12 @@ namespace OfficeDevPnP.Core.Pages
             }
             else
             {
+#endif
                 // Load the page header
                 this.pageHeader.FromHtml(pageHeaderHtml);
+#if !SP2019
             }
+#endif
         }
 
         private void ReIndex()
@@ -2573,7 +2583,7 @@ namespace OfficeDevPnP.Core.Pages
                 this.accessToken = e.WebRequestExecutor.RequestHeaders.Get("Authorization").Replace("Bearer ", "");
             }
         }
-                #endregion
+#endregion
     }
 #endif
         }

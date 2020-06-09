@@ -357,7 +357,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
 
             // Page Header
-            if (clientSidePage.Header != null && page.LayoutType != Pages.ClientSidePageLayoutType.Topic)
+            if (clientSidePage.Header != null
+#if !SP2019
+                && page.LayoutType != Pages.ClientSidePageLayoutType.Topic
+#endif
+                )
             {
                 switch (clientSidePage.Header.Type)
                 {
@@ -711,6 +715,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 }
             }
 
+#if !SP2019
             // Handle the header controls in the topic pages
             if (page.LayoutType == Pages.ClientSidePageLayoutType.Topic)
             {
@@ -789,6 +794,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     }
                 }
             }
+#endif
 
             // Persist the page
             if (clientSidePage.Layout == "Article" && clientSidePage.PromoteAsTemplate)
@@ -1034,4 +1040,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         }
     }
 #endif
-            }
+        }
