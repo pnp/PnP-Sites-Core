@@ -1075,6 +1075,9 @@ namespace OfficeDevPnP.Core
         /// <returns></returns>
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, X509Certificate2 certificate, AzureEnvironment environment = AzureEnvironment.Production)
         {
+            LoggerCallbackHandler.UseDefaultLogging = false;
+
+
             var clientContext = new ClientContext(siteUrl);
 #if !ONPREMISES || SP2016 || SP2019
             clientContext.DisableReturnValueCache = true;
@@ -1147,10 +1150,10 @@ namespace OfficeDevPnP.Core
                     }
             }
         }
-#endregion
+        #endregion
 
 #if !NETSTANDARD2_0
-#region Authenticating against SharePoint on-premises using ADFS based authentication
+        #region Authenticating against SharePoint on-premises using ADFS based authentication
         /// <summary>
         /// Returns a SharePoint on-premises ClientContext for sites secured via ADFS
         /// </summary>
@@ -1359,6 +1362,10 @@ namespace OfficeDevPnP.Core
             }
         }
 
+      
+
+        #endregion
+#endif
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -1389,8 +1396,5 @@ namespace OfficeDevPnP.Core
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
         }
-
-        #endregion
-#endif
     }
 }
