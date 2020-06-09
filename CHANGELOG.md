@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [Unreleased]
+## [3.21.2006.0 - June 2020 release]
 
 ### Added
 
@@ -35,13 +35,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix: Retrieve all groups from Graph endpoint #2594 [ohaak - Ole Rühaak]
 - Fix: AuthenticationManager implements IDisposable and will release created threads (to invalidate requested tokens) on dispose
 
-## [3.20.2005.2 - May 2020 release - intermediate release]
+## [3.21.2005.2 - May 2020 release - intermediate release]
 
 ### Changed
 
 - Fix: Modern page translation api's did not take in account the access token
 
-## [3.20.2005.0 - May 2020 release]
+## [3.21.2005.0 - May 2020 release]
 
 ### Added
 
