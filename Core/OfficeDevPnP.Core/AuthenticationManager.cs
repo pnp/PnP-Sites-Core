@@ -1375,15 +1375,14 @@ namespace OfficeDevPnP.Core
                     if (appOnlyAccessTokenResetEvent != null)
                     {
                         appOnlyAccessTokenResetEvent.Set();
+                        appOnlyAccessTokenResetEvent?.Dispose();
                     }
 
                     if (azureADCredentialsResetEvent != null)
                     {
                         azureADCredentialsResetEvent.Set();
+                        azureADCredentialsResetEvent?.Dispose();
                     }
-
-                    appOnlyAccessTokenResetEvent.Dispose();
-                    azureADCredentialsResetEvent.Dispose();
                 }
 
                 disposedValue = true;
