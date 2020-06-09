@@ -256,10 +256,44 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             {
                 if (template.Footer != null)
                 {
-                    web.EnsureProperty(w => w.ServerRelativeUrl);
+                    web.EnsureProperties(w => w.ServerRelativeUrl, 
+                        w => w.FooterEnabled,
+                        w => w.FooterLayout,
+                        w => w.FooterEmphasis);
                     web.FooterEnabled = template.Footer.Enabled;
-                    web.Update();
-                    web.Context.ExecuteQueryRetry();
+
+                    if (PnPProvisioningContext.Current != null)
+                    {
+                        // Get an Access Token for the SetChromeOptions request
+                        var spoResourceUri = new Uri(web.Url).Authority;
+                        var accessToken = PnPProvisioningContext.Current.AcquireToken(spoResourceUri, null);
+
+                        if (accessToken != null)
+                        {
+                            // Prepare the JSON request for SetChromeOptions
+                            var jsonRequest = new
+                            {
+                                footerEnabled = web.FooterEnabled,
+                                footerLayout = web.FooterLayout,
+                                footerEmphasis = web.FooterEmphasis
+                            };
+
+                            // Build the URL of the SetChromeOptions API
+                            var setChromeOptionsApiUrl = $"{web.Url}/_api/web/SetChromeOptions";
+
+                            // Make the POST request to the SetChromeOptions API
+                            // and fail in case of any exception
+                            HttpHelper.MakePostRequest(setChromeOptionsApiUrl,
+                                jsonRequest,
+                                "application/json",
+                                accessToken);
+                        }
+                    }
+                    else
+                    {
+                        web.Update();
+                        web.Context.ExecuteQueryRetry();
+                    }
 
                     if (web.FooterEnabled)
                     {

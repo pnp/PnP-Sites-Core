@@ -1348,6 +1348,24 @@ namespace Microsoft.SharePoint.Client
         }
         #endregion
 
+        #region Security checks
+
+#if !ONPREMISES
+
+        /// <summary>
+        /// Checks if the site is the SharePoint Admin site
+        /// </summary>
+        /// <param name="web"></param>
+        /// <returns></returns>
+        public static bool IsAdminSite(this Web web)
+        {
+            return web.Url.Contains("-admin.sharepoint.com");
+        }
+
+#endif
+
+        #endregion
+
         /// <summary>
         /// Gets the name part of the URL of the Server Relative URL of the Web.
         /// </summary>
@@ -1383,7 +1401,7 @@ namespace Microsoft.SharePoint.Client
         }
 
 #if !SP2013 && !SP2016
-        #region ClientSide Package Deployment
+#region ClientSide Package Deployment
         /// <summary>
         /// Gets the Uri for the tenant's app catalog site (if that one has already been created)
         /// </summary>
@@ -1502,7 +1520,7 @@ namespace Microsoft.SharePoint.Client
                 return sppkgFile.ListItemAllFields;
             }
         }
-        #endregion
+#endregion
 #endif
 
 #if ONPREMISES

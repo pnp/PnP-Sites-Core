@@ -118,7 +118,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         public TokenParser(Tenant tenant, Model.ProvisioningHierarchy hierarchy, ProvisioningTemplateApplyingInformation applyingInformation)
         {
-            var web = ((ClientContext)tenant.Context).Web;
+            // CHANGED: To avoid issues with low privilege users
+            Web web = null;
+
+            if (TenantExtensions.IsCurrentUserTenantAdmin((ClientContext)tenant.Context))
+            {
+                web = ((ClientContext)tenant.Context).Web;
+            }
+            else
+            {
+                var rootSiteUrl = tenant.Context.Url.Replace("-admin", "");
+                var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl);
+                web = context.Web;
+            }
+
             web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url, w => w.Language);
             _web = web;
             _tokens = new List<TokenDefinition>();

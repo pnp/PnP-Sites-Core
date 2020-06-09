@@ -26,7 +26,7 @@ namespace OfficeDevPnP.Core.Tests
 
         public static string AppSetting(string key)
         {
-            //return ConfigurationManager.AppSettings[key];
+#if NETSTANDARD2_0
             try
             {
                 return configuration.AppSettings.Settings[key].Value;
@@ -35,6 +35,9 @@ namespace OfficeDevPnP.Core.Tests
             {
                 return null;
             }
+#else
+            return ConfigurationManager.AppSettings[key];
+#endif
         }
 
         #region Constructor
@@ -103,7 +106,7 @@ namespace OfficeDevPnP.Core.Tests
                     Credentials = new SharePointOnlineCredentials(UserName, Password);
                 }
                 else 
-#endif                
+#endif
                 if (!String.IsNullOrEmpty(AppSetting("OnPremUserName")) &&
                          !String.IsNullOrEmpty(AppSetting("OnPremDomain")) &&
                          !String.IsNullOrEmpty(AppSetting("OnPremPassword")))

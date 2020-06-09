@@ -516,7 +516,7 @@ namespace Microsoft.SharePoint.Client
                 result = true;
             }
             // As a final check, do we have the auth cookies?
-            if (clientContext.HasAuthCookies())
+            else if (clientContext.HasAuthCookies())
             {
                 result = false;
             }
@@ -531,18 +531,26 @@ namespace Microsoft.SharePoint.Client
         public static string GetAccessToken(this ClientRuntimeContext clientContext)
         {
             string accessToken = null;
-            EventHandler<WebRequestEventArgs> handler = (s, e) =>
+
+            if (PnPProvisioningContext.Current != null)
             {
-                string authorization = e.WebRequestExecutor.RequestHeaders["Authorization"];
-                if (!string.IsNullOrEmpty(authorization))
+                accessToken = PnPProvisioningContext.Current.AcquireToken(new Uri(clientContext.Url).Authority, null);
+            }
+            else
+            {
+                EventHandler<WebRequestEventArgs> handler = (s, e) =>
                 {
-                    accessToken = authorization.Replace("Bearer ", string.Empty);
-                }
-            };
-            // Issue a dummy request to get it from the Authorization header
-            clientContext.ExecutingWebRequest += handler;
-            clientContext.ExecuteQueryRetry();
-            clientContext.ExecutingWebRequest -= handler;
+                    string authorization = e.WebRequestExecutor.RequestHeaders["Authorization"];
+                    if (!string.IsNullOrEmpty(authorization))
+                    {
+                        accessToken = authorization.Replace("Bearer ", string.Empty);
+                    }
+                };
+                // Issue a dummy request to get it from the Authorization header
+                clientContext.ExecutingWebRequest += handler;
+                clientContext.ExecuteQueryRetry();
+                clientContext.ExecutingWebRequest -= handler;
+            }
 
             return accessToken;
         }

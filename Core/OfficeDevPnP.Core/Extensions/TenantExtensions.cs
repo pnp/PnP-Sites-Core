@@ -24,6 +24,7 @@ using OfficeDevPnP.Core.Utilities;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Framework.Provisioning.Model.Configuration;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 #endif
 
 namespace Microsoft.SharePoint.Client
@@ -257,7 +258,8 @@ namespace Microsoft.SharePoint.Client
                 {
                     DeleteSiteCollection(tenant, appCatalogUrl, false);
                     CreateAppCatalogInternal(tenant, url, ownerLogin, timeZoneId, force);
-                } else
+                }
+                else
                 {
                     throw new Exception($"An App Catalog already exists at {appCatalogUrl} and force is not specified.");
                 }
@@ -377,19 +379,33 @@ namespace Microsoft.SharePoint.Client
         /// <returns>An enumerated type that can be: No, Yes, Recycled</returns>
         public static SiteExistence SiteExistsAnywhere(this Tenant tenant, string siteFullUrl)
         {
+            var userIsTenantAdmin = TenantExtensions.IsCurrentUserTenantAdmin((ClientContext)tenant.Context);
+
             try
             {
-                //Get the site name
-                var properties = tenant.GetSitePropertiesByUrl(siteFullUrl, false);
-                tenant.Context.Load(properties);
-                tenant.Context.ExecuteQueryRetry();
+                // CHANGED: Modified in order to support non privilege users
+                if (userIsTenantAdmin)
+                {
+                    // Get the site name
+                    var properties = tenant.GetSitePropertiesByUrl(siteFullUrl, false);
+                    tenant.Context.Load(properties);
+                    tenant.Context.ExecuteQueryRetry();
+                }
+                else
+                {
+                    // Get the site context for the current user
+                    var siteContext = tenant.Context.Clone(siteFullUrl);
+                    var site = siteContext.Site;                    
+                    siteContext.Load(site);
+                    siteContext.ExecuteQueryRetry();
+                }
 
                 // Will cause an exception if site URL is not there. Not optimal, but the way it works.
                 return SiteExistence.Yes;
             }
             catch (Exception ex)
             {
-                if (IsCannotGetSiteException(ex) || IsUnableToAccessSiteException(ex))
+                if (userIsTenantAdmin && (IsCannotGetSiteException(ex) || IsUnableToAccessSiteException(ex)))
                 {
                     if (IsUnableToAccessSiteException(ex))
                     {
@@ -417,6 +433,10 @@ namespace Microsoft.SharePoint.Client
                     {
                         return SiteExistence.No;
                     }
+                }
+                else if (IsNotFoundException(ex))
+                {
+                    return SiteExistence.No;
                 }
                 else
                 {
@@ -965,6 +985,24 @@ namespace Microsoft.SharePoint.Client
             }
             return succeeded;
         }
+        private static bool IsNotFoundException(Exception ex)
+        {
+            if (ex is WebException)
+            {
+                if (((WebException)ex).Status == WebExceptionStatus.ProtocolError && ex.Message.Contains("(404) Not Found."))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
 
         private static bool IsCannotGetSiteException(Exception ex)
         {
@@ -1163,11 +1201,60 @@ namespace Microsoft.SharePoint.Client
 
         #region User rights
 
-        public static Boolean IsCurrentUserTenantAdmin(ClientContext clientContext)
+        public static bool IsCurrentUserTenantAdmin(ClientContext clientContext)
+        {
+            if (PnPProvisioningContext.Current != null)
+            {
+                return IsCurrentUserTenantAdminViaGraph();
+            }
+            else
+            {
+                return IsCurrentUserTenantAdminViaSPO(clientContext);
+            }
+        }
+
+        private static bool IsCurrentUserTenantAdminViaGraph()
+        {
+            string globalTenantAdminRole = "Company Administrator";
+            
+            try
+            {
+                var accessToken = PnPProvisioningContext.Current.AcquireToken(new Uri("https://graph.microsoft.com/").Authority, null);
+
+                // Retrieve (using the Microsoft Graph) the current user's roles
+                String jsonResponse = HttpHelper.MakeGetRequestForString(
+                    "https://graph.microsoft.com/v1.0/me/memberOf?$select=id,displayName",
+                    accessToken);
+
+                if (jsonResponse != null)
+                {
+                    var result = JsonConvert.DeserializeAnonymousType(jsonResponse,
+                        new
+                        {
+                            value = new[] {
+                                new {
+                                    Id = Guid.Empty,
+                                    DisplayName = ""
+                                }
+                            }
+                        });
+                    // Check if the requested role is included in the list
+                    return (result.value.Any(r => r.DisplayName == globalTenantAdminRole));
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore any exception and return false (user is not member of ...)
+            }
+
+            return (false);
+        }
+
+        private static bool IsCurrentUserTenantAdminViaSPO(ClientContext clientContext)
         {
             // Get the URL of the current site collection
             var site = clientContext.Site;
-            site.EnsureProperty(s => s.Url);
+            site.EnsureProperty(s => s.Url); // PAOLO: We can't do that ... if we're not admins ...
 
             // If we are already with a context for the Admin Site, all good, the user is an admin
             if (site.Url.Contains("-admin.sharepoint.com"))
