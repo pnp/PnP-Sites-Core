@@ -135,11 +135,6 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 throw new ArgumentNullException(nameof(displayName));
             }
 
-            if (String.IsNullOrEmpty(description))
-            {
-                throw new ArgumentNullException(nameof(description));
-            }
-
             if (String.IsNullOrEmpty(mailNickname))
             {
                 throw new ArgumentNullException(nameof(mailNickname));
@@ -439,6 +434,53 @@ namespace OfficeDevPnP.Core.Framework.Graph
                 {
                     pageExists = false;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Sets the visibility of a Group
+        /// </summary>
+        /// <param name="groupId">Id of the Microsoft 365 Group to set the visibility state for</param>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="hideFromAddressLists">True if the group should not be displayed in certain parts of the Outlook UI: the Address Book, address lists for selecting message recipients, and the Browse Groups dialog for searching groups; otherwise, false. Default value is false.</param>
+        /// <param name="hideFromOutlookClients">True if the group should not be displayed in Outlook clients, such as Outlook for Windows and Outlook on the web; otherwise, false. Default value is false.</param>
+        public static void SetUnifiedGroupVisibility(string groupId, string accessToken, bool? hideFromAddressLists, bool? hideFromOutlookClients)
+        {
+            if (String.IsNullOrEmpty(groupId))
+            {
+                throw new ArgumentNullException(nameof(groupId));
+            }
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            // Ensure there's something to update
+            if(!hideFromAddressLists.HasValue && !hideFromOutlookClients.HasValue)
+            {
+                return;
+            }
+
+            try
+            {
+                // PATCH https://graph.microsoft.com/v1.0/groups/{id}
+                string updateGroupUrl = $"{GraphHttpClient.MicrosoftGraphV1BaseUri}groups/{groupId}";
+                var groupRequest = new Model.Group
+                {
+                    HideFromAddressLists = hideFromAddressLists,
+                    HideFromOutlookClients = hideFromOutlookClients
+                };
+
+                var response = GraphHttpClient.MakePatchRequestForString(
+                    requestUrl: updateGroupUrl,
+                    content: JsonConvert.SerializeObject(groupRequest),
+                    contentType: "application/json",
+                    accessToken: accessToken);
+            }
+            catch (ServiceException ex)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
             }
         }
 
@@ -791,6 +833,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// <param name="includeClassification">Defines whether or not to return details about the Modern Site classification value.</param>
         /// <param name="includeHasTeam">Defines whether to check for each unified group if it has a Microsoft Team provisioned for it. Default is false.</param>
         /// <returns>An IList of SiteEntity objects</returns>
+        [Obsolete("ListUnifiedGroups is deprecated, please use GetUnifiedGroups instead.")]
         public static List<UnifiedGroupEntity> ListUnifiedGroups(string accessToken,
             String displayName = null, string mailNickname = null,
             int startIndex = 0, int endIndex = 999, bool includeSite = true,
@@ -872,6 +915,121 @@ namespace OfficeDevPnP.Core.Framework.Graph
                         }
 
                         if (pagedGroups.NextPageRequest != null && groups.Count < endIndex)
+                        {
+                            pagedGroups = await pagedGroups.NextPageRequest.GetAsync();
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    return (groups);
+                }).GetAwaiter().GetResult();
+            }
+            catch (ServiceException ex)
+            {
+                Log.Error(Constants.LOGGING_SOURCE, CoreResources.GraphExtensions_ErrorOccured, ex.Error.Message);
+                throw;
+            }
+            return (result);
+        }
+
+        /// <summary>
+        /// Returns all the Office 365 Groups in the current Tenant based on a startIndex. IncludeSite adds additional properties about the Modern SharePoint Site backing the group
+        /// </summary>
+        /// <param name="accessToken">The OAuth 2.0 Access Token to use for invoking the Microsoft Graph</param>
+        /// <param name="displayName">The DisplayName of the Office 365 Group</param>
+        /// <param name="mailNickname">The MailNickname of the Office 365 Group</param>
+        /// <param name="startIndex">If not specified, method will start with the first group.</param>
+        /// <param name="endIndex">If not specified, method will return all groups.</param>
+        /// <param name="includeSite">Defines whether to return details about the Modern SharePoint Site backing the group. Default is true.</param>
+        /// <param name="retryCount">Number of times to retry the request in case of throttling</param>
+        /// <param name="delay">Milliseconds to wait before retrying the request. The delay will be increased (doubled) every retry</param>
+        /// <param name="includeClassification">Defines whether or not to return details about the Modern Site classification value.</param>
+        /// <param name="includeHasTeam">Defines whether to check for each unified group if it has a Microsoft Team provisioned for it. Default is false.</param>
+        /// <param name="pageSize">Page size used for the individual requests to Micrsoft Graph. Defaults to 999 which is currently the maximum value.</param>
+        /// <returns>An IList of SiteEntity objects</returns>
+        public static List<UnifiedGroupEntity> GetUnifiedGroups(string accessToken,
+            String displayName = null, string mailNickname = null,
+            int startIndex = 0, int? endIndex = null, bool includeSite = true,
+            int retryCount = 10, int delay = 500, bool includeClassification = false, bool includeHasTeam = false, int pageSize = 999)
+        {
+            if (String.IsNullOrEmpty(accessToken))
+            {
+                throw new ArgumentNullException(nameof(accessToken));
+            }
+
+            List<UnifiedGroupEntity> result = null;
+            try
+            {
+                // Use a synchronous model to invoke the asynchronous process
+                result = Task.Run(async () =>
+                {
+                    List<UnifiedGroupEntity> groups = new List<UnifiedGroupEntity>();
+
+                    var graphClient = CreateGraphClient(accessToken, retryCount, delay);
+
+                    // Apply the DisplayName filter, if any
+                    var displayNameFilter = !String.IsNullOrEmpty(displayName) ? $" and (DisplayName eq '{Uri.EscapeDataString(displayName.Replace("'", "''"))}')" : String.Empty;
+                    var mailNicknameFilter = !String.IsNullOrEmpty(mailNickname) ? $" and (MailNickname eq '{Uri.EscapeDataString(mailNickname.Replace("'", "''"))}')" : String.Empty;
+
+                    var pagedGroups = await graphClient.Groups
+                        .Request()
+                        .Filter($"groupTypes/any(grp: grp eq 'Unified'){displayNameFilter}{mailNicknameFilter}")
+                        .Top(pageSize)
+                        .GetAsync();
+
+                    Int32 pageCount = 0;
+                    Int32 currentIndex = 0;
+
+                    while (true)
+                    {
+                        pageCount++;
+
+                        foreach (var g in pagedGroups)
+                        {
+                            currentIndex++;
+
+                            if (currentIndex >= startIndex)
+                            {
+                                var group = new UnifiedGroupEntity
+                                {
+                                    GroupId = g.Id,
+                                    DisplayName = g.DisplayName,
+                                    Description = g.Description,
+                                    Mail = g.Mail,
+                                    MailNickname = g.MailNickname,
+                                    Visibility = g.Visibility
+                                };
+
+                                if (includeSite)
+                                {
+                                    try
+                                    {
+                                        group.SiteUrl = GetUnifiedGroupSiteUrl(g.Id, accessToken);
+                                    }
+                                    catch (ServiceException e)
+                                    {
+                                        group.SiteUrl = e.Error.Message;
+                                    }
+                                }
+
+                                if (includeClassification)
+                                {
+                                    group.Classification = g.Classification;
+                                }
+
+                                if (includeHasTeam)
+                                {
+                                    group.HasTeam = HasTeamsTeam(group.GroupId, accessToken);
+                                }
+
+                                groups.Add(group);
+                            }
+                        }
+
+                        if (pagedGroups.NextPageRequest != null && (endIndex == null || groups.Count < endIndex))
                         {
                             pagedGroups = await pagedGroups.NextPageRequest.GetAsync();
                         }

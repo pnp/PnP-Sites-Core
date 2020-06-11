@@ -1,9 +1,5 @@
 ﻿#if !ONPREMISES
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeDevPnP.Core.Sites
 {
@@ -26,6 +22,11 @@ namespace OfficeDevPnP.Core.Sites
         /// The Guid of the hub site to be used. If specified will associate the communication site to the hub site
         /// </summary>
         public Guid HubSiteId { get; set; }
+        
+        /// <summary>
+        /// The Sensitivity label to use. For instance 'Top Secret'. See https://www.youtube.com/watch?v=NxvUXBiPFcw for more information.
+        /// </summary>
+        public string SensitivityLabel { get; set; }
 
         /// <summary>
         /// Default constructor
@@ -90,7 +91,6 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         public string Owner { get; set; }
 
-
         /// <summary>
         /// If set to true, file sharing for guest users will be allowed.
         /// </summary>
@@ -132,6 +132,10 @@ namespace OfficeDevPnP.Core.Sites
         /// </summary>
         public string WebTemplate { get; protected set; }
 
+        /// <summary>
+        /// The geography in which to create the site collection. Only applicable to multi-geo enabled tenants.
+        /// </summary>
+        public Enums.Office365Geography? PreferredDataLocation { get; set; }
 
         public SiteCreationInformation()
         {
@@ -168,7 +172,6 @@ namespace OfficeDevPnP.Core.Sites
         {
         }
 
-
         /// <summary>
         /// TeamSiteCollectionTeamSiteCollectionGroupifyInformationCreationInformation constructor
         /// </summary>
@@ -178,7 +181,6 @@ namespace OfficeDevPnP.Core.Sites
         public TeamSiteCollectionGroupifyInformation(string alias, string displayName, string description = null) : base(alias, displayName, description)
         {
         }
-
     }
 
     /// <summary>
@@ -252,6 +254,16 @@ namespace OfficeDevPnP.Core.Sites
         /// The Guid of the hub site to be used. If specified will associate the modern team site to the hub site.
         /// </summary>
         public Guid HubSiteId { get; set; }
+
+        /// <summary>
+        /// The Sensitivity label to use. For instance 'Top Secret'. See https://www.youtube.com/watch?v=NxvUXBiPFcw for more information.
+        /// </summary>
+        public string SensitivityLabel { get; set; }
+
+        /// <summary>
+        /// The geography in which to create the site collection. Only applicable to multi-geo enabled tenants.
+        /// </summary>
+        public Enums.Office365Geography? PreferredDataLocation { get; set; }
 
         public SiteCreationGroupInformation()
         {

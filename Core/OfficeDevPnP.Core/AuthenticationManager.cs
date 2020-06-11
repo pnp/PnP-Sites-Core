@@ -40,7 +40,7 @@ namespace OfficeDevPnP.Core
     /// This manager class can be used to obtain a SharePointContext object
     /// </summary>
     ///
-    public class AuthenticationManager
+    public class AuthenticationManager: IDisposable
     {
         private const string SHAREPOINT_PRINCIPAL = "00000003-0000-0ff1-ce00-000000000000";
 
@@ -48,7 +48,9 @@ namespace OfficeDevPnP.Core
         private SharePointOnlineCredentials sharepointOnlineCredentials;
 #endif
         private string appOnlyAccessToken;
+        private AutoResetEvent appOnlyAccessTokenResetEvent = null;        
         private string azureADCredentialsToken;
+        private AutoResetEvent azureADCredentialsResetEvent = null;
         private object tokenLock = new object();
         private CookieContainer fedAuth = null;
         private string _contextUrl;
@@ -57,8 +59,9 @@ namespace OfficeDevPnP.Core
         private static AuthenticationContext _authContext = null;
         private string _clientId;
         private Uri _redirectUri;
+        private bool disposedValue;
 
-#region Construction
+        #region Construction
         public AuthenticationManager()
         {
 #if !ONPREMISES
@@ -284,28 +287,76 @@ namespace OfficeDevPnP.Core
 
                         var response = Utilities.TokenHelper.GetAppOnlyAccessToken(SHAREPOINT_PRINCIPAL, new Uri(siteUrl).Authority, realm);
                         string token = response.AccessToken;
-                        ThreadPool.QueueUserWorkItem(obj =>
+
+                        try
                         {
-                            try
-                            {
-                                Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", response.ExpiresOn);
-                                var lease = GetAccessTokenLease(response.ExpiresOn);
-                                lease =
-                                    TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
-                                Thread.Sleep(lease);
-                                appOnlyAccessToken = null;
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.AuthenticationManger_ProblemDeterminingTokenLease, ex);
-                                appOnlyAccessToken = null;
-                            }
-                        });
+                            Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", response.ExpiresOn);
+                            var lease = GetAccessTokenLease(response.ExpiresOn);
+                            lease = TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
+
+
+
+                            appOnlyAccessTokenResetEvent = new AutoResetEvent(false);
+
+                            AppOnlyAccessTokenWaitInfo wi = new AppOnlyAccessTokenWaitInfo();
+
+                            wi.Handle = ThreadPool.RegisterWaitForSingleObject(appOnlyAccessTokenResetEvent,
+                                                                               new WaitOrTimerCallback(AppOnlyAccessTokenWaitProc),
+                                                                               wi,
+                                                                               (uint)lease.TotalMilliseconds,
+                                                                               true);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Warning(Constants.LOGGING_SOURCE, CoreResources.AuthenticationManger_ProblemDeterminingTokenLease, ex);
+                            appOnlyAccessToken = null;
+                        }
+
+                        //ThreadPool.QueueUserWorkItem(obj =>
+                        //{
+                        //    try
+                        //    {
+                        //        Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", response.ExpiresOn);
+                        //        var lease = GetAccessTokenLease(response.ExpiresOn);
+                        //        lease =
+                        //            TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
+                        //        Thread.Sleep(lease);
+                        //        appOnlyAccessToken = null;
+                        //    }
+                        //    catch (Exception ex)
+                        //    {
+                        //        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.AuthenticationManger_ProblemDeterminingTokenLease, ex);
+                        //        appOnlyAccessToken = null;
+                        //    }
+                        //});
+
                         appOnlyAccessToken = token;
                     }
                 }
             }
         }
+
+        internal class AppOnlyAccessTokenWaitInfo
+        {
+            public RegisteredWaitHandle Handle = null;
+        }
+
+        internal void AppOnlyAccessTokenWaitProc(object state, bool timedOut)         
+        {
+            if (!timedOut)
+            {
+                AppOnlyAccessTokenWaitInfo wi = (AppOnlyAccessTokenWaitInfo)state;
+                if (wi.Handle != null)
+                {
+                    wi.Handle.Unregister(null);
+                }
+            }
+            else
+            {
+                appOnlyAccessToken = null;
+            }
+        }
+
 
         /// <summary>
         /// Get the access token lease time span.
@@ -730,27 +781,72 @@ namespace OfficeDevPnP.Core
                     {
 
                         String accessToken = Task.Run(() => AcquireTokenAsync(resourceUri, userPrincipalName, userPassword, environment)).GetAwaiter().GetResult();
-                        ThreadPool.QueueUserWorkItem(obj =>
+                        //ThreadPool.QueueUserWorkItem(obj =>
+                        //{
+                        //    try
+                        //    {
+                        //        var token = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(accessToken);
+                        //        Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", token.ValidTo);
+                        //        var lease = GetAccessTokenLease(token.ValidTo);
+                        //        lease =
+                        //            TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
+                        //        Thread.Sleep(lease);
+                        //        azureADCredentialsToken = null;
+                        //    }
+                        //    catch (Exception ex)
+                        //    {
+                        //        Log.Warning(Constants.LOGGING_SOURCE, CoreResources.AuthenticationManger_ProblemDeterminingTokenLease, ex);
+                        //        azureADCredentialsToken = null;
+                        //    }
+                        //});
+
+                        try
                         {
-                            try
-                            {
-                                var token = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(accessToken);
-                                Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", token.ValidTo);
-                                var lease = GetAccessTokenLease(token.ValidTo);
-                                lease =
-                                    TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
-                                Thread.Sleep(lease);
-                                azureADCredentialsToken = null;
-                            }
-                            catch (Exception ex)
-                            {
-                                Log.Warning(Constants.LOGGING_SOURCE, CoreResources.AuthenticationManger_ProblemDeterminingTokenLease, ex);
-                                azureADCredentialsToken = null;
-                            }
-                        });
+                            var token = new System.IdentityModel.Tokens.Jwt.JwtSecurityToken(accessToken);
+                            Log.Debug(Constants.LOGGING_SOURCE, "Lease expiration date: {0}", token.ValidTo);
+                            var lease = GetAccessTokenLease(token.ValidTo);
+                            lease = TimeSpan.FromSeconds(lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds > 0 ? lease.TotalSeconds - TimeSpan.FromMinutes(5).TotalSeconds : lease.TotalSeconds);
+                            
+                            azureADCredentialsResetEvent = new AutoResetEvent(false);
+
+                            AzureADCredentialsTokenWaitInfo wi = new AzureADCredentialsTokenWaitInfo();
+
+                            wi.Handle = ThreadPool.RegisterWaitForSingleObject(azureADCredentialsResetEvent,
+                                                                               new WaitOrTimerCallback(AzureADCredentialsTokenWaitProc),
+                                                                               wi,
+                                                                               (uint)lease.TotalMilliseconds,
+                                                                               true);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Warning(Constants.LOGGING_SOURCE, CoreResources.AuthenticationManger_ProblemDeterminingTokenLease, ex);
+                            azureADCredentialsToken = null;
+                        }
+
                         azureADCredentialsToken = accessToken;
                     }
                 }
+            }
+        }
+
+        internal class AzureADCredentialsTokenWaitInfo
+        {
+            public RegisteredWaitHandle Handle = null;
+        }
+
+        internal void AzureADCredentialsTokenWaitProc(object state, bool timedOut)
+        {
+            if (!timedOut)
+            {
+                AzureADCredentialsTokenWaitInfo wi = (AzureADCredentialsTokenWaitInfo)state;
+                if (wi.Handle != null)
+                {
+                    wi.Handle.Unregister(null);
+                }
+            }
+            else
+            {
+                azureADCredentialsToken = null;
             }
         }
 
@@ -979,6 +1075,9 @@ namespace OfficeDevPnP.Core
         /// <returns></returns>
         public ClientContext GetAzureADAppOnlyAuthenticatedContext(string siteUrl, string clientId, string tenant, X509Certificate2 certificate, AzureEnvironment environment = AzureEnvironment.Production)
         {
+            LoggerCallbackHandler.UseDefaultLogging = false;
+
+
             var clientContext = new ClientContext(siteUrl);
 #if !ONPREMISES || SP2016 || SP2019
             clientContext.DisableReturnValueCache = true;
@@ -1051,10 +1150,10 @@ namespace OfficeDevPnP.Core
                     }
             }
         }
-#endregion
+        #endregion
 
 #if !NETSTANDARD2_0
-#region Authenticating against SharePoint on-premises using ADFS based authentication
+        #region Authenticating against SharePoint on-premises using ADFS based authentication
         /// <summary>
         /// Returns a SharePoint on-premises ClientContext for sites secured via ADFS
         /// </summary>
@@ -1263,7 +1362,38 @@ namespace OfficeDevPnP.Core
             }
         }
 
-#endregion
+      
+
+        #endregion
 #endif
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    if (appOnlyAccessTokenResetEvent != null)
+                    {
+                        appOnlyAccessTokenResetEvent.Set();
+                        appOnlyAccessTokenResetEvent?.Dispose();
+                    }
+
+                    if (azureADCredentialsResetEvent != null)
+                    {
+                        azureADCredentialsResetEvent.Set();
+                        azureADCredentialsResetEvent?.Dispose();
+                    }
+                }
+
+                disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

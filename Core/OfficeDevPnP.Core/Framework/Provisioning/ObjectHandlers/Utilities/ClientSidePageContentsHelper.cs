@@ -101,7 +101,11 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     extractedPageInstance.ContentTypeID = !pageContentTypeId.Equals(BuiltInContentTypeId.ModernArticlePage, StringComparison.InvariantCultureIgnoreCase) ? pageContentTypeId : null;
                     extractedPageInstance.ThumbnailUrl = pageToExtract.ThumbnailUrl != null ? TokenizeJsonControlData(web, pageToExtract.ThumbnailUrl) : "";
 
-                    if (pageToExtract.PageHeader != null)
+                    if (pageToExtract.PageHeader != null
+#if !SP2019
+                        && pageToExtract.LayoutType != Pages.ClientSidePageLayoutType.Topic
+#endif
+                        )
                     {
                         
                         var extractedHeader = new ClientSidePageHeader()
@@ -403,72 +407,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                     var untokenizedJsonControlData = controlInstance.JsonControlData;
                                     // Tokenize the JsonControlData
                                     controlInstance.JsonControlData = TokenizeJsonControlData(web, controlInstance.JsonControlData);
-
-                                    // Export relevant files if this flag is set
-                                    if (creationInfo.PersistBrandingFiles)
-                                    {
-                                        List<Guid> fileGuids = new List<Guid>();
-                                        Dictionary<string, string> exportedFiles = new Dictionary<string, string>();
-                                        Dictionary<string, string> exportedPages = new Dictionary<string, string>();
-
-                                        CollectSiteAssetImageFiles(regexSiteAssetUrls, web, untokenizedJsonControlData, fileGuids);
-                                        CollectImageFilesFromGenericGuids(regexGuidPattern, regexGuidPatternEncoded, untokenizedJsonControlData, fileGuids);
-
-                                        // Iterate over the found guids to see if they're exportable files
-                                        foreach (var uniqueId in fileGuids)
-                                        {
-                                            try
-                                            {
-                                                if (!exportedFiles.ContainsKey(uniqueId.ToString()) && !errorneousOrNonImageFileGuids.Contains(uniqueId.ToString()))
-                                                {
-                                                    // Try to see if this is a file
-                                                    var file = web.GetFileById(uniqueId);
-                                                    web.Context.Load(file, f => f.Level, f => f.ServerRelativeUrl);
-                                                    web.Context.ExecuteQueryRetry();
-
-                                                    // Item1 = was file added to the template
-                                                    // Item2 = file name (if file found)
-                                                    var imageAddedTuple = LoadAndAddPageImage(web, file, template, creationInfo, scope);
-
-                                                    if (!string.IsNullOrEmpty(imageAddedTuple.Item2))
-                                                    {
-                                                        if (!imageAddedTuple.Item2.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase))
-                                                        {
-                                                            if (imageAddedTuple.Item1)
-                                                            {
-                                                                // Keep track of the exported file path and it's UniqueId
-                                                                exportedFiles.Add(uniqueId.ToString(), file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()));
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            if (!exportedPages.ContainsKey(uniqueId.ToString()))
-                                                            {
-                                                                exportedPages.Add(uniqueId.ToString(), file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()));
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            catch (Exception ex)
-                                            {
-                                                scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ClientSidePageContents_ErrorDuringFileExport, ex.Message);
-                                                errorneousOrNonImageFileGuids.Add(uniqueId.ToString());
-                                            }
-                                        }
-
-                                        // Tokenize based on the found files, use a different token for encoded guids do we can later on replace by a new encoded guid
-                                        foreach (var exportedFile in exportedFiles)
-                                        {
-                                            controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedFile.Key.Replace("-", "%2D"), $"{{fileuniqueidencoded:{exportedFile.Value}}}", RegexOptions.IgnoreCase);
-                                            controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedFile.Key, $"{{fileuniqueid:{exportedFile.Value}}}", RegexOptions.IgnoreCase);
-                                        }
-                                        foreach (var exportedPage in exportedPages)
-                                        {
-                                            controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedPage.Key.Replace("-", "%2D"), $"{{pageuniqueidencoded:{exportedPage.Value}}}", RegexOptions.IgnoreCase);
-                                            controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedPage.Key, $"{{pageuniqueid:{exportedPage.Value}}}", RegexOptions.IgnoreCase);
-                                        }
-                                    }
+                                    TokenizeBeforeExport(web, template, creationInfo, scope, errorneousOrNonImageFileGuids, regexGuidPattern, regexGuidPatternEncoded, regexSiteAssetUrls, controlInstance, untokenizedJsonControlData);
                                 }
                                 // add control to section
                                 sectionInstance.Controls.Add(controlInstance);
@@ -492,6 +431,62 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     {
                         extractedPageInstance.FieldValues.Add(Pages.ClientSidePage.SpaceContentField, pageToExtract.SpaceContent);
                     }
+
+
+                    if (pageToExtract.LayoutType == Pages.ClientSidePageLayoutType.Topic)
+                    {
+                        // Extract the topic page header controls (the controls which cannot be moved around on the page). 
+                        // These controls will be stored in a one-column section with a order of 999999. 
+                        // TODO: this requires a schema change to store these controls in a more elegant manner
+                        // Create section
+
+                        var sectionInstance = new CanvasSection()
+                        {
+                            Order = 999999,
+                            Type = CanvasSectionType.OneColumn,
+                        };
+
+                        foreach (var headerControl in pageToExtract.HeaderControls)
+                        {
+                            // Create control
+                            CanvasControl controlInstance = new CanvasControl()
+                            {
+                                Column = 1,
+                                ControlId = headerControl.InstanceId,
+                                Order = headerControl.Order,
+                            };
+
+                            controlInstance.ControlId = Guid.Parse((headerControl as Pages.ClientSideWebPart).WebPartId);
+                            controlInstance.Type = WebPartType.Custom;
+
+                            string jsonControlData = "\"id\": \"" + (headerControl as Pages.ClientSideWebPart).WebPartId + "\", \"instanceId\": \"" + (headerControl as Pages.ClientSideWebPart).InstanceId + "\", \"title\": " + JsonConvert.ToString((headerControl as Pages.ClientSideWebPart).Title) + ", \"description\": " + JsonConvert.ToString((headerControl as Pages.ClientSideWebPart).Description) + ", \"dataVersion\": \"" + (headerControl as Pages.ClientSideWebPart).DataVersion + "\", \"properties\": " + (headerControl as Pages.ClientSideWebPart).PropertiesJson + "";
+
+                            // set the control properties
+                            if ((headerControl as Pages.ClientSideWebPart).ServerProcessedContent != null)
+                            {
+                                // If we have serverProcessedContent then also export that one, it's important as some controls depend on this information to be present
+                                string serverProcessedContent = (headerControl as Pages.ClientSideWebPart).ServerProcessedContent.ToString(Formatting.None);
+                                jsonControlData = jsonControlData + ", \"serverProcessedContent\": " + serverProcessedContent + "";
+                            }
+
+                            controlInstance.JsonControlData = "{" + jsonControlData + "}";
+
+                            var untokenizedJsonControlData = controlInstance.JsonControlData;
+                            // Tokenize the JsonControlData
+                            controlInstance.JsonControlData = TokenizeJsonControlData(web, controlInstance.JsonControlData);
+                            TokenizeBeforeExport(web, template, creationInfo, scope, errorneousOrNonImageFileGuids, regexGuidPattern, regexGuidPatternEncoded, regexSiteAssetUrls, controlInstance, untokenizedJsonControlData);
+                            // add control to section
+                            sectionInstance.Controls.Add(controlInstance);
+                        }
+
+                        extractedPageInstance.Sections.Add(sectionInstance);
+
+                        // Extract the topic pages fields                        
+                        extractedPageInstance.FieldValues.Add(Pages.ClientSidePage.TopicEntityId, pageToExtract.EntityId == null ? "" : pageToExtract.EntityId);
+                        extractedPageInstance.FieldValues.Add(Pages.ClientSidePage.TopicEntityType, pageToExtract.EntityType == null ? "" : pageToExtract.EntityType);
+                        extractedPageInstance.FieldValues.Add(Pages.ClientSidePage.TopicEntityRelations, pageToExtract.EntityRelations == null ? "" : pageToExtract.EntityRelations);
+                    }
+
 #endif
 
                     // Add the page to the template
@@ -541,7 +536,76 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             }
         }
 
-                    #region Helper methods
+                        #region Helper methods
+        private void TokenizeBeforeExport(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, List<string> errorneousOrNonImageFileGuids, Regex regexGuidPattern, Regex regexGuidPatternEncoded, Regex regexSiteAssetUrls, CanvasControl controlInstance, string untokenizedJsonControlData)
+        {
+            // Export relevant files if this flag is set
+            if (creationInfo.PersistBrandingFiles)
+            {
+                List<Guid> fileGuids = new List<Guid>();
+                Dictionary<string, string> exportedFiles = new Dictionary<string, string>();
+                Dictionary<string, string> exportedPages = new Dictionary<string, string>();
+
+                CollectSiteAssetImageFiles(regexSiteAssetUrls, web, untokenizedJsonControlData, fileGuids);
+                CollectImageFilesFromGenericGuids(regexGuidPattern, regexGuidPatternEncoded, untokenizedJsonControlData, fileGuids);
+
+                // Iterate over the found guids to see if they're exportable files
+                foreach (var uniqueId in fileGuids)
+                {
+                    try
+                    {
+                        if (!exportedFiles.ContainsKey(uniqueId.ToString()) && !errorneousOrNonImageFileGuids.Contains(uniqueId.ToString()))
+                        {
+                            // Try to see if this is a file
+                            var file = web.GetFileById(uniqueId);
+                            web.Context.Load(file, f => f.Level, f => f.ServerRelativeUrl);
+                            web.Context.ExecuteQueryRetry();
+
+                            // Item1 = was file added to the template
+                            // Item2 = file name (if file found)
+                            var imageAddedTuple = LoadAndAddPageImage(web, file, template, creationInfo, scope);
+
+                            if (!string.IsNullOrEmpty(imageAddedTuple.Item2))
+                            {
+                                if (!imageAddedTuple.Item2.EndsWith(".aspx", StringComparison.InvariantCultureIgnoreCase))
+                                {
+                                    if (imageAddedTuple.Item1)
+                                    {
+                                        // Keep track of the exported file path and it's UniqueId
+                                        exportedFiles.Add(uniqueId.ToString(), file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()));
+                                    }
+                                }
+                                else
+                                {
+                                    if (!exportedPages.ContainsKey(uniqueId.ToString()))
+                                    {
+                                        exportedPages.Add(uniqueId.ToString(), file.ServerRelativeUrl.Substring(web.ServerRelativeUrl.Length).TrimStart("/".ToCharArray()));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        scope.LogWarning(CoreResources.Provisioning_ObjectHandlers_ClientSidePageContents_ErrorDuringFileExport, ex.Message);
+                        errorneousOrNonImageFileGuids.Add(uniqueId.ToString());
+                    }
+                }
+
+                // Tokenize based on the found files, use a different token for encoded guids do we can later on replace by a new encoded guid
+                foreach (var exportedFile in exportedFiles)
+                {
+                    controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedFile.Key.Replace("-", "%2D"), $"{{fileuniqueidencoded:{exportedFile.Value}}}", RegexOptions.IgnoreCase);
+                    controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedFile.Key, $"{{fileuniqueid:{exportedFile.Value}}}", RegexOptions.IgnoreCase);
+                }
+                foreach (var exportedPage in exportedPages)
+                {
+                    controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedPage.Key.Replace("-", "%2D"), $"{{pageuniqueidencoded:{exportedPage.Value}}}", RegexOptions.IgnoreCase);
+                    controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedPage.Key, $"{{pageuniqueid:{exportedPage.Value}}}", RegexOptions.IgnoreCase);
+                }
+            }
+        }
+
         private static void CollectImageFilesFromGenericGuids(Regex regexGuidPattern, Regex regexGuidPatternEncoded, string jsonControlData, List<Guid> fileGuids)
         {
             // grab all the guids in the already tokenized json and check try to get them as a file
@@ -797,7 +861,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
             return json;
         }
-                    #endregion
+                        #endregion
     }
 #endif
                 }

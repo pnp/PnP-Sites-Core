@@ -27,6 +27,10 @@
         /// Page is a spaces page
         /// </summary>
         Spaces = 5,
+        /// <summary>
+        /// Page is a topic page (Cortex)
+        /// </summary>
+        Topic = 6,
 #endif
         /// <summary>
         /// Page is a repost / link page

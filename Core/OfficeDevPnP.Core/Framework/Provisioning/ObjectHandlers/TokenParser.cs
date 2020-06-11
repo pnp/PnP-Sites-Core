@@ -661,11 +661,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
         {
             web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Language);
 
-            _tokens.RemoveAll(t => t.GetType() == typeof(ListIdToken));
-            _tokens.RemoveAll(t => t.GetType() == typeof(ListUrlToken));
-            _tokens.RemoveAll(t => t.GetType() == typeof(ListViewIdToken));
-            _tokens.RemoveAll(t => t.GetType() == typeof(ListContentTypeIdToken));
-            
+            //Remove tokens from TokenDictionary and ListTokenDictionary
+            Predicate<TokenDefinition> listTokenTypes = t => (t.GetType() == typeof(ListIdToken) || t.GetType() == typeof(ListUrlToken) || t.GetType() == typeof(ListViewIdToken) || t.GetType() == typeof(ListContentTypeIdToken));
+            foreach (var listToken in _tokens.FindAll(listTokenTypes))
+            {
+                foreach (string token in listToken.GetTokens())
+                {
+                    var tokenKey = Regex.Unescape(token);
+                    TokenDictionary.Remove(tokenKey);
+                    if (listToken is ListIdToken)
+                    {
+                        ListTokenDictionary.Remove(tokenKey);
+                    }
+                }
+            }
+            _tokens.RemoveAll(listTokenTypes);
+
             web.Context.Load(web.Lists, ls => ls.Include(l => l.Id, l => l.Title, l => l.RootFolder.ServerRelativeUrl, l => l.Views, l => l.ContentTypes
 #if !SP2013
             , l => l.TitleResource

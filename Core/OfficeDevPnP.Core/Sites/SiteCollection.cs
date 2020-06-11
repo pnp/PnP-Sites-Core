@@ -10,6 +10,7 @@ using OfficeDevPnP.Core.Utilities.Async;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 #if !NETSTANDARD2_0
@@ -89,6 +90,14 @@ namespace OfficeDevPnP.Core.Sites
             }
             payload.Add("HubSiteId", siteCollectionCreationInformation.HubSiteId);
 
+            bool sensitivityLabelExists = !string.IsNullOrEmpty(siteCollectionCreationInformation.SensitivityLabel);
+            if (sensitivityLabelExists)
+            {
+                Guid sensitivityLabelId = await GetSensitivityLabelId(clientContext, siteCollectionCreationInformation.SensitivityLabel);
+                payload.Add("SensitivityLabel", sensitivityLabelId);
+                payload["Classification"] = siteCollectionCreationInformation.SensitivityLabel;
+            }
+
             return await CreateAsync(clientContext, siteCollectionCreationInformation.Owner, payload, delayAfterCreation, noWait: noWait);
         }
 
@@ -139,7 +148,8 @@ namespace OfficeDevPnP.Core.Sites
                 throw new Exception("App-Only is currently not supported, unless you provide a Microsoft Graph Access Token.");
             }
 
-            if (string.IsNullOrEmpty(graphAccessToken))
+            // Creating sites through the Microsoft Graph API is preffered. However, if we need to pass in a PreferredDataLocation or a sensitivity label, we need to use the SharePoint API still.
+            if (string.IsNullOrEmpty(graphAccessToken) || siteCollectionCreationInformation.PreferredDataLocation.HasValue || !string.IsNullOrEmpty(siteCollectionCreationInformation.SensitivityLabel))
             {
                 // Use the regular REST API of SPO to create the modern Team Site
                 responseContext = await CreateTeamSiteViaSPOAsync(clientContext, siteCollectionCreationInformation, delayAfterCreation, maxRetryCount, noWait: noWait);
@@ -182,6 +192,14 @@ namespace OfficeDevPnP.Core.Sites
                     handler.SetAuthenticationCookies(clientContext);
                 }
 
+                bool sensitivityLabelExists = !string.IsNullOrEmpty(siteCollectionCreationInformation.SensitivityLabel);
+
+                var sensitivityLabelId = Guid.Empty;
+                if (sensitivityLabelExists)
+                {
+                    sensitivityLabelId = await GetSensitivityLabelId(clientContext, siteCollectionCreationInformation.SensitivityLabel);
+                }
+
                 using (var httpClient = new PnPHttpProvider(handler))
                 {
                     string requestUrl = string.Format("{0}/_api/GroupSiteManager/CreateGroupEx", clientContext.Web.Url);
@@ -193,7 +211,14 @@ namespace OfficeDevPnP.Core.Sites
 
                     var optionalParams = new Dictionary<string, object>();
                     optionalParams.Add("Description", siteCollectionCreationInformation.Description ?? "");
-                    optionalParams.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
+                    if (sensitivityLabelExists && sensitivityLabelId != Guid.Empty)
+                    {
+                        optionalParams.Add("Classification", siteCollectionCreationInformation.SensitivityLabel ?? "");
+                    }
+                    else
+                    {
+                        optionalParams.Add("Classification", siteCollectionCreationInformation.Classification ?? "");
+                    }
                     var creationOptionsValues = new List<string>();
                     if (siteCollectionCreationInformation.SiteDesignId.HasValue)
                     {
@@ -203,12 +228,23 @@ namespace OfficeDevPnP.Core.Sites
                     {
                         creationOptionsValues.Add($"SPSiteLanguage:{siteCollectionCreationInformation.Lcid}");
                     }
-                    creationOptionsValues.Add($"HubSiteId:{siteCollectionCreationInformation.HubSiteId}");
+                    if (siteCollectionCreationInformation.HubSiteId != Guid.Empty)
+                    {
+                        creationOptionsValues.Add($"HubSiteId:{siteCollectionCreationInformation.HubSiteId}");
+                    }
+                    if (sensitivityLabelExists && sensitivityLabelId != Guid.Empty)
+                    {
+                        creationOptionsValues.Add($"SensitivityLabel:{sensitivityLabelId}");
+                    }
                     optionalParams.Add("CreationOptions", creationOptionsValues);
 
                     if (siteCollectionCreationInformation.Owners != null && siteCollectionCreationInformation.Owners.Length > 0)
                     {
                         optionalParams.Add("Owners", siteCollectionCreationInformation.Owners);
+                    }
+                    if (siteCollectionCreationInformation.PreferredDataLocation.HasValue)
+                    {
+                        optionalParams.Add("PreferredDataLocation", siteCollectionCreationInformation.PreferredDataLocation.Value.ToString());
                     }
                     payload.Add("optionalParams", optionalParams);
 
@@ -1061,7 +1097,25 @@ namespace OfficeDevPnP.Core.Sites
             return await Task.Run(() => returnValue);
         }
 
-        private static async Task<string> GetValidSiteUrlFromAliasAsync(ClientContext context, string alias)
+        /// <summary>
+        /// Allows validation if the provided <paramref name="alias"/> is valid to be used to create a new site collection
+        /// </summary>
+        /// <param name="context">SharePoint ClientContext to use to communicate with SharePoint</param>
+        /// <param name="alias">The alias to check for availability</param>
+        /// <returns>True if the provided alias is available to be used, false if it is not</returns>
+        public static async Task<bool> GetIsAliasAvailableAsync(ClientContext context, string alias)
+        {
+            var proposedUrl = await GetValidSiteUrlFromAliasAsync(context, alias);
+            return proposedUrl.EndsWith($"/{alias}", StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        /// <summary>
+        /// Checks if the provided <paramref name="alias"/> is valid to be used to create a new site collection and will return an alternative available proposal if it is not. Use <see cref="GetIsAliasAvailableAsync"/> instead if you are just intered in knowing whether or not a certain alias is still available to be used.
+        /// </summary>
+        /// <param name="context">SharePoint ClientContext to use to communicate with SharePoint</param>
+        /// <param name="alias">The alias to check for availability</param>
+        /// <returns>The full SharePoint URL proposed to be used. If that URL ends with the alias you provided, it means it is still available. If its not available, it will return an alternative proposal to use.</returns>
+        public static async Task<string> GetValidSiteUrlFromAliasAsync(ClientContext context, string alias)
         {
             string responseString = null;
 
@@ -1094,9 +1148,10 @@ namespace OfficeDevPnP.Core.Sites
 
                     if (response.IsSuccessStatusCode)
                     {
-                        // If value empty, URL is taken
-                        responseString = await response.Content.ReadAsStringAsync();
+                        var requestResponse = await response.Content.ReadAsStringAsync();
+                        var requestResponseJson = JObject.Parse(requestResponse);
 
+                        responseString = requestResponseJson["value"].ToString();
                     }
                     else
                     {
@@ -1233,6 +1288,32 @@ namespace OfficeDevPnP.Core.Sites
             }
 
             await context.Web.ExecutePost("/_api/sitepages/communicationsite/enable", $@" {{ ""designPackageId"": ""{designPackageId.ToString()}"" }}");
+        }
+
+        /// <summary>
+        /// Get sensitivity label id for a given Label
+        /// </summary>
+        /// <param name="context">Client context</param>
+        /// <param name="sensitiveLabelString">Sensitive Label string value</param>
+        /// <returns></returns>
+        private static async Task<Guid> GetSensitivityLabelId(ClientContext context, string sensitiveLabelString)
+        {
+            var result = await context.Web.ExecuteGet("/_api/groupsitemanager/GetGroupCreationContext");
+
+            var results = JObject.Parse(result);
+
+            JToken val = results["DataClassificationOptionsNew"]?.Children().FirstOrDefault(jt => (string)jt["Value"] == sensitiveLabelString);
+
+            string sensitivityLabelStringId = Convert.ToString(val?["Key"]);
+
+            Guid sensitivityLabelId = Guid.Empty;
+
+            if (!string.IsNullOrEmpty(sensitivityLabelStringId))
+            {
+                sensitivityLabelId = Guid.Parse(sensitivityLabelStringId);
+            }
+
+            return await Task.Run(() => sensitivityLabelId);
         }
 
     }
