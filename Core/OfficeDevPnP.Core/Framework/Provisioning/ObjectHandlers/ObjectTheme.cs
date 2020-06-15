@@ -7,6 +7,7 @@ using System.Linq;
 using OfficeDevPnP.Core.Diagnostics;
 using OfficeDevPnP.Core.Utilities.Themes;
 using OfficeDevPnP.Core.Enums;
+using OfficeDevPnP.Core.Utilities;
 using Newtonsoft.Json;
 using Microsoft.Online.SharePoint.TenantAdministration;
 #if !ONPREMISES
@@ -34,18 +35,28 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 var parsedName = parser.ParseString(template.Theme.Name);
 
+                web.EnsureProperty(w => w.Url);
+
                 if (Enum.TryParse<SharePointTheme>(parsedName, out SharePointTheme builtInTheme))
                 {
                     ThemeManager.ApplyTheme(web, builtInTheme);
+                }                
+                else if (!string.IsNullOrEmpty(template.Theme.Palette))
+                {   
+                    var parsedPalette = parser.ParseString(template.Theme.Palette);
+
+                    ThemeManager.ApplyTheme(web, parsedPalette, template.Theme.Name ?? parsedPalette);
                 }
                 else
                 {
-                    web.EnsureProperty(w => w.Url);
-                    if (!string.IsNullOrEmpty(template.Theme.Palette))
+                    //The account used for authenticating needs to be tenant administrator.
+                    using (var tenantContext = web.Context.Clone(web.GetTenantAdministrationUrl()))
                     {
-                        var parsedPalette = parser.ParseString(template.Theme.Palette);
-
-                        ThemeManager.ApplyTheme(web, parsedPalette, template.Theme.Name ?? parsedPalette);
+                        var tenant = new Tenant(tenantContext);
+                        var theme = tenant.GetTenantTheme(parsedName);
+                        tenantContext.Load(theme);
+                        tenant.SetWebTheme(parsedName, web.Url);
+                        tenantContext.ExecuteQueryRetry();
                     }
                 }
             }
