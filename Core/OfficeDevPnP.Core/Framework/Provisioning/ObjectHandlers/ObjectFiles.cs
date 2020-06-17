@@ -118,7 +118,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         using (var stream = FileUtilities.GetFileStream(template, file))
                         {
-                            if (stream == null && true)
+                            if (stream == null)
                             {
                                 throw new FileNotFoundException($"File {file.Src} does not exist");
                             }
