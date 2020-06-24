@@ -425,7 +425,10 @@ namespace OfficeDevPnP.Core
                         }
                         if (authCookies != null)
                         {
-                            authCookiesContainer.SetCookies(siteUri, string.Join(",", authCookies));
+                            // Set the authentication cookies both on the SharePoint Online Admin as well as on the SharePoint Online domains to allow for APIs on both domains to be used
+                            var authCookiesString = string.Join(",", authCookies);
+                            authCookiesContainer.SetCookies(siteUri, authCookiesString);
+                            authCookiesContainer.SetCookies(new Uri(siteUri.Scheme + "://" + siteUri.Authority.Replace(".sharepoint.com", "-admin.sharepoint.com")), authCookiesString);
                             form.Close();
                         }
                     }

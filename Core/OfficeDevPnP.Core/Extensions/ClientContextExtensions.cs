@@ -312,7 +312,6 @@ namespace Microsoft.SharePoint.Client
             clonedClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
 #endif
 
-
             // In case of using networkcredentials in on premises or SharePointOnlineCredentials in Office 365
             if (clientContext.Credentials != null)
             {
@@ -330,7 +329,6 @@ namespace Microsoft.SharePoint.Client
             }
             else
             {
-
                 // Check if we do have context settings
                 var contextSettings = clientContext.GetContextSettings();
 
