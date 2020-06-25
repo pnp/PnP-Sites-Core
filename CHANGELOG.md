@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## Changed
 
+- Fixed issue when extract a template with a page from the rootsite when choosing to extract assets [erwinvanhunen - Erwin van Hunen]
 - Adding authentication cookies for SPO Admin domain #2687 [koenzomers - Koen Zomers]
 - Call ParseString for webSettings.SearchCenterUrl #2686 [cebud - Martin Dubec]
 - Fix incorrect onprem eventreceiver reference #2684 [jensotto - Jens Otto Hatlevold]
