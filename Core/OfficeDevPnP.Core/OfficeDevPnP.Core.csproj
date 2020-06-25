@@ -1553,6 +1553,8 @@
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\STS0Template.xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\SP-Responsive-UI.min.js" />
+    <None Include="Resources\SP-Responsive-UI_CSS.min.css" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BDR0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BICENTERSITE0Template.xml" />
     <EmbeddedResource Include="Framework\Provisioning\BaseTemplates\2016\BLOG0Template.xml" />
