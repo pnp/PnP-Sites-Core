@@ -383,6 +383,43 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Connectors
             return filePath;
         }
 
+        private string ConstructPathFiles(string fileName, string container)
+        {
+            string filePath = "";
+
+            if (container.IndexOf(@"\") > 0)
+            {
+                string[] parts = container.Split(new string[] { @"\" }, StringSplitOptions.RemoveEmptyEntries);
+                filePath = Path.Combine(Path.GetDirectoryName(GetConnectionString()), parts[0]);
+
+                if (parts.Length > 1)
+                {
+                    for (int i = 1; i < parts.Length; i++)
+                    {
+                        filePath = Path.Combine(filePath, parts[i]);
+                    }
+                }
+
+                if (!String.IsNullOrEmpty(fileName))
+                {
+                    filePath = Path.Combine(filePath, fileName);
+                }
+            }
+            else
+            {
+                if (!String.IsNullOrEmpty(fileName))
+                {
+                    filePath = Path.Combine(Path.GetDirectoryName(GetConnectionString()), container, fileName);
+                }
+                else
+                {
+                    filePath = Path.Combine(Path.GetDirectoryName(GetConnectionString()), container);
+                }
+            }
+
+            return filePath;
+        }
+
         #endregion
     }
 }
