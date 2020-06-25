@@ -787,7 +787,6 @@ namespace Microsoft.SharePoint.Client
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        //public static async Task<string> GetRequestDigest(this ClientContext context)
         public static async Task<string> GetRequestDigest(this ClientContext context)
         {
             await new SynchronizationContextRemover();

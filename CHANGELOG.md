@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Call ParseString for webSettings.SearchCenterUrl #2686 [cebud - Martin Dubec]
 - Fix incorrect onprem eventreceiver reference #2684 [jensotto - Jens Otto Hatlevold]
 - Added methods for adding/removing/clearing members and owners of M365 Groups #2683 [koenzomers - Koen Zomers]
+- Fix for GetProvisioningTemplate and ApplyProvisioningTemplate to being stucked in Windows Forms applications. #2681 [brank - Brandon Victoria]
 
 ## [3.22.2006.2 - June 2020 release]
 
