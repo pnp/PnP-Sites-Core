@@ -142,10 +142,6 @@ namespace Microsoft.SharePoint.Client
                 {
                     clientContext.ClientTag = SetClientTag(clientTag);
 
-#if NETSTANDARD2_0
-                    (clientContext as ClientContext).FormDigestHandlingEnabled = false;
-#endif
-
                     // Make CSOM request more reliable by disabling the return value cache. Given we 
                     // often clone context objects and the default value is
 #if !SP2013
@@ -391,7 +387,9 @@ namespace Microsoft.SharePoint.Client
                         if (newClientContext != null)
                         {
                             //Take over the form digest handling setting
+#if !NETSTANDARD2_0
                             newClientContext.FormDigestHandlingEnabled = (clientContext as ClientContext).FormDigestHandlingEnabled;
+#endif
                             newClientContext.ClientTag = clientContext.ClientTag;
 #if !SP2013
                             newClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
@@ -422,7 +420,9 @@ namespace Microsoft.SharePoint.Client
                 else // Fallback the default cloning logic if there were not context settings available
                 {
                     //Take over the form digest handling setting
+#if !NETSTANDARD2_0
                     clonedClientContext.FormDigestHandlingEnabled = (clientContext as ClientContext).FormDigestHandlingEnabled;
+#endif
 
                     var originalUri = new Uri(clientContext.Url);
                     // If the cloned host is not the same as the original one

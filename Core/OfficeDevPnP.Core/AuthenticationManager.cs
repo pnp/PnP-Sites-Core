@@ -158,10 +158,6 @@ namespace OfficeDevPnP.Core
             clientContext.DisableReturnValueCache = true;
 #endif
 
-#if NETSTANDARD2_0
-            clientContext.FormDigestHandlingEnabled = false;
-#endif
-
             ClientContextSettings clientContextSettings = new ClientContextSettings()
             {
                 Type = ClientContextType.SharePointACSAppOnly,
