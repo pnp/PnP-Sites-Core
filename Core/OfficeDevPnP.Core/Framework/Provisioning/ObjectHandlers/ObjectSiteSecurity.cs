@@ -846,7 +846,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         WriteMessage("You are requesting to export sitegroups from a subweb. Notice that ALL sitegroups from the site collection are included in the result.", ProvisioningMessageType.Warning);
                     }
-                    foreach (var group in web.SiteGroups.AsEnumerable().Where(o => !associatedGroupIds.Contains(o.Id)))
+                    //preserve all Group Settings - also for Associated Groups since otherwise those Group Configs are lost
+                    foreach (var group in web.SiteGroups.AsEnumerable()) //.Where(o => !associatedGroupIds.Contains(o.Id)))
                     {
                         try
                         {
@@ -876,10 +877,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                             }
 
-                            foreach (var member in group.Users)
+                            //make sure we not include Members twice as they are alreday in AdditionalOwner/Member/Visitor
+                            if (!associatedGroupIds.Contains(group.Id))
                             {
-                                scope.LogDebug("Processing member {0} of group {0}", member.LoginName, group.Title);
-                                siteGroup.Members.Add(new User() { Name = member.LoginName });
+                                foreach (var member in group.Users)
+                                {
+                                    scope.LogDebug("Processing member {0} of group {0}", member.LoginName, group.Title);
+                                    siteGroup.Members.Add(new User() { Name = member.LoginName });
+                                }
                             }
                             siteSecurity.SiteGroups.Add(siteGroup);
                         }
