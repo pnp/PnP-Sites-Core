@@ -74,8 +74,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (string.IsNullOrEmpty(parsedAssociatedOwnerGroupName))
                             {
                                 // does throw exception "Value cannot be null" - todo: how to clear the group?
-                                web.AssociatedOwnerGroup = null;
-                                web.Update();
+                                //web.AssociatedOwnerGroup = null;
+                                //web.Update();
                             }
                             else if (web.GroupExists(parsedAssociatedOwnerGroupName))
                             {
@@ -117,8 +117,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (string.IsNullOrEmpty(parsedAssociatedMemberGroupName))
                             {
                                 // does throw exception "Value cannot be null" - todo: how to clear the group?
-                                web.AssociatedMemberGroup = null;
-                                web.Update();
+                                //web.AssociatedMemberGroup = null;
+                                //web.Update();
                             } else if (web.GroupExists(parsedAssociatedMemberGroupName))
                             {
                                 var memberGroupCandidate = web.SiteGroups.GetByName(parsedAssociatedMemberGroupName);
@@ -161,8 +161,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             if (string.IsNullOrEmpty(parsedAssociatedVisitorGroupName))
                             {
                                 // does throw exception "Value cannot be null" - todo: how to clear the group?
-                                web.AssociatedVisitorGroup = null;
-                                web.Update();
+                                //web.AssociatedVisitorGroup = null;
+                                //web.Update();
                             }
                             else if (web.GroupExists(parsedAssociatedVisitorGroupName))
                             {

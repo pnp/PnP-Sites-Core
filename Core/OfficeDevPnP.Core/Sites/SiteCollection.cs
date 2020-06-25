@@ -358,7 +358,6 @@ namespace OfficeDevPnP.Core.Sites
                         creationOptionsValues.Add($"SPSiteLanguage:{siteCollectionCreationInformation.Lcid}");
                     }
                     creationOptionsValues.Add($"HubSiteId:{siteCollectionCreationInformation.HubSiteId}");
-#endif
                     optionalParams.Add("CreationOptions", creationOptionsValues);
 
 #if !SP2019
@@ -367,7 +366,7 @@ namespace OfficeDevPnP.Core.Sites
                         optionalParams.Add("Owners", siteCollectionCreationInformation.Owners);
                     }
                     payload.Add("optionalParams", optionalParams);
-
+#endif
                     var body = payload;
 
                     // Serialize request object to JSON

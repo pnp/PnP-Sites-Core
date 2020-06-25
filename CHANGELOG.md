@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Fix for GetProvisioningTemplate and ApplyProvisioningTemplate to being stucked in Windows Forms applications. #2681 [brank - Brandon Victoria]
 - Improve exception message when a file is not found during the provisioning #2679 [jackpoz - Giacomo Pozzoni]
 - Doc fix: Fixing duplicated sitecollectionidencoded token #2675 [cmzaragoza - Cristian M. Zaragoza]
+- Enhanced OnPremises Support (SP2019) + UnitTests #2654 [gzdev]
 
 ## [3.22.2006.2 - June 2020 release]
 
