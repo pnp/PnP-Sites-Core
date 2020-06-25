@@ -64,6 +64,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 fileName = WebUtility.UrlDecode(fileName);
                 stream = connector.GetFileStream(fileName, container);
             }
+
+            if (stream == null)
+                throw new ArgumentException($"The specified filename '{fileName}' cannot be found");
+
             byte[] returnData;
 
             using (var memStream = new MemoryStream())
