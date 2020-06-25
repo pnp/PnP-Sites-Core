@@ -18,7 +18,7 @@ using System.Collections.Generic;
 using OfficeDevPnP.Core.Utilities.Context;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
 using OfficeDevPnP.Core.Sites;
 #endif
 
@@ -148,7 +148,7 @@ namespace Microsoft.SharePoint.Client
 
                     // Make CSOM request more reliable by disabling the return value cache. Given we 
                     // often clone context objects and the default value is
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
                     clientContext.DisableReturnValueCache = true;
 #endif
                     // Add event handler to "insert" app decoration header to mark the PnP Sites Core library as a known application
@@ -223,11 +223,41 @@ namespace Microsoft.SharePoint.Client
                     }
                     else
                     {
-                        Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, wex.ToString());
+                        var errorSb = new System.Text.StringBuilder();
+
+                        errorSb.AppendLine(wex.ToString());
+
+                        if (response != null)
+                        {
+                            //if(response.Headers["SPRequestGuid"] != null) 
+                            if (response.Headers.AllKeys.Any(k => string.Equals(k, "SPRequestGuid", StringComparison.InvariantCultureIgnoreCase)))
+                            {
+                                var spRequestGuid = response.Headers["SPRequestGuid"];
+                                errorSb.AppendLine($"ServerErrorTraceCorrelationId: {spRequestGuid}");
+                            }
+                        }
+
+                        Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, errorSb.ToString());
                         throw;
                     }
                 }
+                catch (Microsoft.SharePoint.Client.ServerException serverEx)
+                {
+                    var errorSb = new System.Text.StringBuilder();
+
+                    errorSb.AppendLine(serverEx.ToString());
+                    errorSb.AppendLine($"ServerErrorCode: {serverEx.ServerErrorCode}");
+                    errorSb.AppendLine($"ServerErrorTypeName: {serverEx.ServerErrorTypeName}");
+                    errorSb.AppendLine($"ServerErrorTraceCorrelationId: {serverEx.ServerErrorTraceCorrelationId}");
+                    errorSb.AppendLine($"ServerErrorValue: {serverEx.ServerErrorValue}");
+                    errorSb.AppendLine($"ServerErrorDetails: {serverEx.ServerErrorDetails}");
+
+                    Log.Error(Constants.LOGGING_SOURCE, CoreResources.ClientContextExtensions_ExecuteQueryRetryException, errorSb.ToString());
+
+                    throw;
+                }
             }
+            
             throw new MaximumRetryAttemptedException($"Maximum retry attempts {retryCount}, has be attempted.");
         }
 
@@ -308,7 +338,7 @@ namespace Microsoft.SharePoint.Client
             clonedClientContext.AuthenticationMode = clientContext.AuthenticationMode;
 #endif
             clonedClientContext.ClientTag = clientContext.ClientTag;
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
             clonedClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
 #endif
 
@@ -363,7 +393,7 @@ namespace Microsoft.SharePoint.Client
                             //Take over the form digest handling setting
                             newClientContext.FormDigestHandlingEnabled = (clientContext as ClientContext).FormDigestHandlingEnabled;
                             newClientContext.ClientTag = clientContext.ClientTag;
-#if !ONPREMISES || SP2016 || SP2019
+#if !SP2013
                             newClientContext.DisableReturnValueCache = clientContext.DisableReturnValueCache;
 #endif
                             return newClientContext;
@@ -530,6 +560,60 @@ namespace Microsoft.SharePoint.Client
             }
             return (result);
         }
+
+#if ONPREMISES
+        /// <summary>
+        /// Checks if the used ClientContext is app-only
+        /// </summary>
+        /// <param name="clientContext">The ClientContext to inspect</param>
+        /// <returns>True if app-only, false otherwise</returns>
+        public static bool IsAppOnlyWithDelegation(this ClientRuntimeContext clientContext)
+        {
+            // Set initial result to false
+            var result = false;
+
+            // Try to get an access token from the current context
+            var accessToken = clientContext.GetAccessToken();
+
+            // If any
+            if (!String.IsNullOrEmpty(accessToken))
+            {
+                // Try to decode the access token
+                try
+                {
+                    var token = new JwtSecurityToken(accessToken);
+
+                    if (token.Audiences.Any(x => x.StartsWith(TokenHelper.SharePointPrincipal)))
+                    {
+
+                    }
+
+                    // Search for the UPN claim, to see if we have user's delegation
+                    var upn = token.Claims.FirstOrDefault(claim => claim.Type == "upn")?.Value;
+                    if (!String.IsNullOrEmpty(upn))
+                    {
+                        result = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Maybe Newtonsoft.Json assembly is not loaded?", ex);
+                }
+            }
+            else if (clientContext.Credentials == null)
+            {
+                result = false;
+            }
+
+            // As a final check, do we have the auth cookies?
+            if (clientContext.HasAuthCookies())
+            {
+                result = false;
+            }
+
+            return (result);
+        }
+#endif
 
         /// <summary>
         /// Gets an access token from a <see cref="ClientContext"/> instance. Only works when using an add-in or app-only authentication flow.
@@ -830,7 +914,20 @@ namespace Microsoft.SharePoint.Client
                     }
                     else
                     {
-                        throw new Exception(await response.Content.ReadAsStringAsync());
+                        var errorSb = new System.Text.StringBuilder();
+
+                        errorSb.AppendLine(await response.Content.ReadAsStringAsync());
+                        if (response.Headers.Contains("SPRequestGuid"))
+                        {
+                            var values = response.Headers.GetValues("SPRequestGuid");
+                            if (values != null)
+                            {
+                                var spRequestGuid = values.FirstOrDefault();
+                                errorSb.AppendLine($"ServerErrorTraceCorrelationId: {spRequestGuid}");
+                            }
+                        }
+
+                        throw new Exception(errorSb.ToString());
                     }
                 }
                 var contextInformation = JsonConvert.DeserializeObject<dynamic>(responseString);
@@ -848,7 +945,7 @@ namespace Microsoft.SharePoint.Client
             }
         }
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         /// <summary>
         /// BETA: Creates a Communication Site Collection
         /// </summary>
@@ -874,7 +971,9 @@ namespace Microsoft.SharePoint.Client
 
             return await SiteCollection.CreateAsync(clientContext, siteCollectionCreationInformation);
         }
+#endif
 
+#if !ONPREMISES
         /// <summary>
         /// BETA: Creates a Team Site Collection
         /// </summary>

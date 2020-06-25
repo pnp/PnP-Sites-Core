@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     [TestClass]
     public class ContentTypeNoScriptTests : FunctionalTestBase
     {

@@ -43,6 +43,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         [TestInitialize]
         public void Initialize()
         {
+            TestCommon.FixAssemblyResolving("Newtonsoft.Json");
 
             using (var ctx = TestCommon.CreateClientContext())
             {
@@ -61,7 +62,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 originalAssociatedMemberGroupId = web.AssociatedMemberGroup.ServerObjectIsNull == true ? -1 : web.AssociatedMemberGroup.Id;
                 originalAssociatedVisitorGroupId = web.AssociatedVisitorGroup.ServerObjectIsNull == true ? -1 : web.AssociatedVisitorGroup.Id;
                 originalIsNoScriptSite = web.IsNoScriptSite();
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 if (originalIsNoScriptSite)
                 {
                     AllowScripting(web.Url, true);
@@ -108,7 +109,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 ctx.Load(memberGroup);
                 ctx.Load(ctx.Web, w => w.Url);
                 ctx.ExecuteQueryRetry();
-#if !ONPREMISES
+#if !SP2013 && !SP2016
                 AllowScripting(ctx.Web.Url, !originalIsNoScriptSite);
 #endif
                 if (memberGroup.ServerObjectIsNull == false)
@@ -299,7 +300,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 ctx.ExecuteQueryRetry();
 
                 Assert.IsTrue(template.Security.AdditionalAdministrators.Any());
-                Assert.IsFalse(template.Security.SiteGroups.Any());
+                // Assert.IsFalse(template.Security.SiteGroups.Any());
+                Assert.IsTrue(template.Security.SiteGroups.Any());
 
                 // tbd: fix those...
                 //Assert.AreEqual(SiteTitleToken.GetReplaceToken(web.AssociatedOwnerGroup.Title, web), template.Security.AssociatedOwnerGroup, "Associated owner group title mismatch.");
@@ -399,6 +401,18 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 Web web = ctx.Web;
 
                 var parser = new TokenParser(ctx.Web, template);
+                if (parser.Tokens.Count == 0)
+                {
+                    parser.AddToken(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.owners));
+                    parser.AddToken(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));
+
+                    parser.AddToken(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.members));
+                    parser.AddToken(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.members));
+
+                    parser.AddToken(new AssociatedGroupIdToken(web, AssociatedGroupIdToken.AssociatedGroupType.visitors));
+                    parser.AddToken(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.visitors));
+                }
+
                 new ObjectSiteSecurity().ProvisionObjects(web, template, parser, new ProvisioningTemplateApplyingInformation());
 
                 ctx.Load(web,
@@ -476,9 +490,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
             SiteGroup membersGroup = new SiteGroup()
             {
-                Title = string.Format("Test_New Group_{0}", DateTime.Now.Ticks),
+                Title = string.Format("Test_New MemberGroup_{0}", DateTime.Now.Ticks),
             };
-            string ownersGroupTitle = string.Format("Test_New Group2_{0}", DateTime.Now.Ticks);
+            string ownersGroupTitle = string.Format("Test_New OwnerGroup2_{0}", DateTime.Now.Ticks);
 
             template.Security.SiteGroups.Add(membersGroup);
             template.Security.AssociatedMemberGroup = membersGroup.Title;
@@ -502,18 +516,35 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     w => w.AssociatedVisitorGroup);
                 clientContext.ExecuteQuery();
 
+                if (!web.AssociatedOwnerGroup.ServerObjectIsNull())
+                {
+                    web.AssociatedOwnerGroup.EnsureProperty(g => g.Title);
+                }
+
+                if (!web.AssociatedMemberGroup.ServerObjectIsNull())
+                {
+                    web.AssociatedMemberGroup.EnsureProperty(g => g.Title);
+                }
+
+                if (!web.AssociatedVisitorGroup.ServerObjectIsNull())
+                {
+                    web.AssociatedVisitorGroup.EnsureProperty(g => g.Title);
+                }
+
                 Assert.AreNotEqual(ownersGroupTitle, web.AssociatedOwnerGroup.Title, "Associated owner group ID mismatch.");
                 Assert.AreEqual(membersGroup.Title, web.AssociatedMemberGroup.Title, "Associated member group ID mismatch.");
                 Assert.IsTrue(web.AssociatedVisitorGroup.ServerObjectIsNull());
             }
         }
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         // ensure #2127 does not occur again; specifically check that not too many groups are created
         [TestMethod()]
         public async Task CanExportAndImportAssociatedGroupsProperlyInNewNoScriptSite()
         {
             if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
+            this.CheckAndExcludeTestNotSupportedForAppOnlyTestting();
 
             var newCommSiteUrl = "";
             var newSiteTitle = "Comm Site Test - Groups";
@@ -565,12 +596,17 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     Assert.AreEqual(newSiteTitle + " Members", web.AssociatedMemberGroup.Title);
                     Assert.AreEqual(newSiteTitle + " Owners", web.AssociatedOwnerGroup.Title);
                 }
-            } finally
+            } 
+            finally
             {
                 using (var clientContext = TestCommon.CreateTenantClientContext())
                 {
                     var tenant = new Tenant(clientContext);
+#if !ONPREMISES
                     tenant.DeleteSiteCollection(newCommSiteUrl, false);
+#else
+                    tenant.DeleteSiteCollection(newCommSiteUrl);
+#endif
                 }
             }
         }
@@ -630,7 +666,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 using (var clientContext = TestCommon.CreateTenantClientContext())
                 {
                     var tenant = new Tenant(clientContext);
+#if !ONPREMISES
                     tenant.DeleteSiteCollection(newCommSiteUrl, false);
+#else
+                    tenant.DeleteSiteCollection(newCommSiteUrl);
+#endif
                 }
             }
         }
@@ -641,6 +681,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         public async Task CanCreateNewAssociatedGroupsInNewScriptSite_CreateNewAssociatedGroup()
         {
             if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
+            this.CheckAndExcludeTestNotSupportedForAppOnlyTestting();
 
             var newCommSiteUrl = string.Empty;
 
@@ -698,7 +740,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 using (var clientContext = TestCommon.CreateTenantClientContext())
                 {
                     var tenant = new Tenant(clientContext);
+#if !ONPREMISES
                     tenant.DeleteSiteCollection(newCommSiteUrl, false);
+#else
+                    tenant.DeleteSiteCollection(newCommSiteUrl);
+#endif
                 }
             }
         }
@@ -709,6 +755,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         public async Task CanCreateNewAssociatedGroupsInNewScriptSite_BeforeAsyncRename()
         {
             if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
+            this.CheckAndExcludeTestNotSupportedForAppOnlyTestting();
 
             var newCommSiteUrl = string.Empty;
             var siteTitle = "Dummy";
@@ -760,7 +808,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 using (var clientContext = TestCommon.CreateTenantClientContext())
                 {
                     var tenant = new Tenant(clientContext);
+#if !ONPREMISES
                     tenant.DeleteSiteCollection(newCommSiteUrl, false);
+#else
+                    tenant.DeleteSiteCollection(newCommSiteUrl);
+#endif
                 }
             }
         }
@@ -771,6 +823,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         public async Task CanCreateNewAssociatedGroupsInNewScriptSite_AfterAsyncRename()
         {
             if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
+            this.CheckAndExcludeTestNotSupportedForAppOnlyTestting();
 
             var newCommSiteUrl = string.Empty;
             var siteTitle = "Dummy";
@@ -822,7 +876,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 using (var clientContext = TestCommon.CreateTenantClientContext())
                 {
                     var tenant = new Tenant(clientContext);
+#if !ONPREMISES
                     tenant.DeleteSiteCollection(newCommSiteUrl, false);
+#else
+                    tenant.DeleteSiteCollection(newCommSiteUrl);
+#endif
                 }
             }
         }
@@ -833,6 +891,8 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
         public async Task CanMapToExistingGroupsInNewScriptSite()
         {
             if (TestCommon.AppOnlyTesting()) Assert.Inconclusive("Site creation requires owner, so this will not yet work in app-only");
+
+            this.CheckAndExcludeTestNotSupportedForAppOnlyTestting();
 
             var newCommSiteUrl = string.Empty;
 
@@ -890,7 +950,11 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                 using (var clientContext = TestCommon.CreateTenantClientContext())
                 {
                     var tenant = new Tenant(clientContext);
+#if !ONPREMISES
                     tenant.DeleteSiteCollection(newCommSiteUrl, false);
+#else
+                    tenant.DeleteSiteCollection(newCommSiteUrl);
+#endif
                 }
             }
         }
@@ -903,13 +967,24 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             var newCommSiteUrl = $"{baseUrl}/sites/site{communicationSiteGuid}";
 
             // create new site to apply template to
-            var commResults = await clientContext.CreateSiteAsync(new Core.Sites.CommunicationSiteCollectionCreationInformation()
+            var siteCollectionCreationInformation = new Core.Sites.CommunicationSiteCollectionCreationInformation()
             {
                 Url = $"{baseUrl}/sites/site{communicationSiteGuid}",
                 SiteDesign = Core.Sites.CommunicationSiteDesign.Blank,
                 Title = newSiteTitle,
                 Lcid = 1033
-            });
+            };
+
+            // TODO: Owner set the owner
+            /*
+            if (clientContext.IsAppOnly()
+                && string.IsNullOrEmpty(siteCollectionCreationInformation.Owner)
+                && !string.IsNullOrEmpty(TestCommon.DefaultSiteOwner))
+            {
+                siteCollectionCreationInformation.Owner = TestCommon.DefaultSiteOwner;
+            }
+            */
+            var commResults = await clientContext.CreateSiteAsync(siteCollectionCreationInformation);
             Assert.IsNotNull(commResults);
 
             if (allowScripts)
@@ -956,6 +1031,26 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
             }
         }
 #endif
+        private void CheckAndExcludeTestNotSupportedForAppOnlyTestting()
+        {
+#if SP2019
+            // TODO: Check SP2019 Support for Owner property in futures cumulative updates (After CU 2020-03)
+            if (TestCommon.AppOnlyTesting())
+            {
+                Assert.Inconclusive(
+                    "Test that require creation of communication site collection are not supported in app-only for SP2019."
+                    + Environment.NewLine
+                    + " " + "An System.Exception: { 'SiteStatus':3,'SiteUrl':''} will be thrown."
+                    + " " + "The Owner cannot be set in an app-only context. Cause SharePoint 2019 server side does not support the owner property yet."                    
+                    + " " + "The property 'Owner' does not exist on type 'Microsoft.SharePoint.Portal.SPSiteCreationRequest'. Make sure to only use property names that are defined by the type."
+                    + Environment.NewLine
+                    + " " + "In HighTrust szenarios you can set the 'HighTrustBehalfOfUserLoginName'. See loginName parameter of AuthenticationManager.GetHighTrustCertificateAppAuthenticatedContext(string siteUrl, string clientId, string certificatePath, string certificatePassword, string certificateIssuerId, string loginName)."
+                    ); ;
+
+            }
+#endif
+        }
+
         private void LoadAssociatedOwnerGroupsData(ClientContext ctx, bool loadAllGroupsTitles = false)
         {
             if (!loadAllGroupsTitles)

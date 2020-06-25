@@ -16,12 +16,12 @@ using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     /// <summary>
     /// Test cases for the provisioning engine term group functionality
     /// </summary>
     [TestClass]
-   public class TermGroupNoScriptTests : FunctionalTestBase
+    public class TermGroupNoScriptTests : FunctionalTestBase
     {
         #region Construction
         public TermGroupNoScriptTests()

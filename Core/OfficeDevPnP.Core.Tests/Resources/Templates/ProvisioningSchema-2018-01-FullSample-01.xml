@@ -3,6 +3,7 @@
   <pnp:Preferences Author="John White" Version="1.0" Generator="Human being :-)">
     <pnp:Parameters>
       <pnp:Parameter Key="O365TenantName">contoso</pnp:Parameter>
+      <pnp:Parameter Key="O365AccountDomain">contoso.com</pnp:Parameter>
       <pnp:Parameter Key="CodeProvidedParam" Required="true"/>
       <pnp:Parameter Key="YammerNetwork">contoso.com</pnp:Parameter>
       <pnp:Parameter Key="lcid">1033</pnp:Parameter>
@@ -112,30 +113,30 @@
 
       <pnp:Security BreakRoleInheritance="true" CopyRoleAssignments="false" ClearSubscopes="true">
         <pnp:AdditionalAdministrators>
-          <pnp:User Name="user@contoso.com"/>
+          <pnp:User Name="user@{parameter:O365AccountDomain}"/>
           <pnp:User Name="U_SHAREPOINT_ADMINS"/>
         </pnp:AdditionalAdministrators>
         <pnp:AdditionalOwners>
-          <pnp:User Name="user@contoso.com"/>
+          <pnp:User Name="user@{parameter:O365AccountDomain}"/>
           <pnp:User Name="U_SHAREPOINT_ADMINS"/>
         </pnp:AdditionalOwners>
         <pnp:AdditionalMembers>
-          <pnp:User Name="user@contoso.com"/>
+          <pnp:User Name="user@{parameter:O365AccountDomain}"/>
           <pnp:User Name="U_SHAREPOINT_ADMINS"/>
         </pnp:AdditionalMembers>
         <pnp:AdditionalVisitors>
-          <pnp:User Name="user@contoso.com"/>
+          <pnp:User Name="user@{parameter:O365AccountDomain}"/>
           <pnp:User Name="U_SHAREPOINT_ADMINS"/>
         </pnp:AdditionalVisitors>
         <pnp:SiteGroups>
           <pnp:SiteGroup
               Title="Power Users"
               Description="Group of Power Users"
-              Owner="admin@contoso.com">
+              Owner="admin@{parameter:O365AccountDomain}">
             <pnp:Members>
-              <pnp:User Name="user1@contoso.com" />
-              <pnp:User Name="user2@contoso.com" />
-              <pnp:User Name="user3@contoso.com" />
+              <pnp:User Name="user1@{parameter:O365AccountDomain}" />
+              <pnp:User Name="user2@{parameter:O365AccountDomain}" />
+              <pnp:User Name="user3@{parameter:O365AccountDomain}" />
             </pnp:Members>
           </pnp:SiteGroup>
         </pnp:SiteGroups>
@@ -152,9 +153,9 @@
           </pnp:RoleDefinitions>
           <pnp:RoleAssignments>
             <pnp:RoleAssignment Principal="Power Users" RoleDefinition="Manage List Items"/>
-            <pnp:RoleAssignment Principal="user1@contoso.com" RoleDefinition="Manage List Items"/>
-            <pnp:RoleAssignment Principal="user2@contoso.com" RoleDefinition="Full Control"/>
-            <pnp:RoleAssignment Principal="user3@contoso.com" RoleDefinition="Full Control" Remove="true"/>
+            <pnp:RoleAssignment Principal="user1@{parameter:O365AccountDomain}" RoleDefinition="Manage List Items"/>
+            <pnp:RoleAssignment Principal="user2@{parameter:O365AccountDomain}" RoleDefinition="Full Control"/>
+            <pnp:RoleAssignment Principal="user3@{parameter:O365AccountDomain}" RoleDefinition="Full Control" Remove="true"/>
           </pnp:RoleAssignments>
         </pnp:Permissions>
       </pnp:Security>
@@ -293,9 +294,9 @@
               <pnp:DataValue FieldName="ProjectDescription">This is a sample Project</pnp:DataValue>
               <pnp:Security>
                 <pnp:BreakRoleInheritance CopyRoleAssignments="true" ClearSubscopes="true">
-                  <pnp:RoleAssignment Principal="user1@contoso.com" RoleDefinition="Full Control"/>
-                  <pnp:RoleAssignment Principal="user2@contoso.com" RoleDefinition="Edit"/>
-                  <pnp:RoleAssignment Principal="user3@contoso.com" RoleDefinition="View Only"/>
+                  <pnp:RoleAssignment Principal="user1@{parameter:O365AccountDomain}" RoleDefinition="Full Control"/>
+                  <pnp:RoleAssignment Principal="user2@{parameter:O365AccountDomain}" RoleDefinition="Edit"/>
+                  <pnp:RoleAssignment Principal="user3@{parameter:O365AccountDomain}" RoleDefinition="View Only"/>
                 </pnp:BreakRoleInheritance>
               </pnp:Security>
             </pnp:DataRow>
@@ -306,9 +307,9 @@
               <pnp:DataValue FieldName="ProjectDescription">This is another sample Project</pnp:DataValue>
               <pnp:Security>
                 <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="true">
-                  <pnp:RoleAssignment Principal="user3@contoso.com" RoleDefinition="Full Control"/>
-                  <pnp:RoleAssignment Principal="user2@contoso.com" RoleDefinition="Edit"/>
-                  <pnp:RoleAssignment Principal="user1@contoso.com" RoleDefinition="View Only"/>
+                  <pnp:RoleAssignment Principal="user3@{parameter:O365AccountDomain}" RoleDefinition="Full Control"/>
+                  <pnp:RoleAssignment Principal="user2@{parameter:O365AccountDomain}" RoleDefinition="Edit"/>
+                  <pnp:RoleAssignment Principal="user1@{parameter:O365AccountDomain}" RoleDefinition="View Only"/>
                 </pnp:BreakRoleInheritance>
               </pnp:Security>
             </pnp:DataRow>
@@ -335,9 +336,9 @@
               </pnp:Folder>
               <pnp:Security>
                 <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="true">
-                  <pnp:RoleAssignment Principal="user3@contoso.com" RoleDefinition="Full Control"/>
-                  <pnp:RoleAssignment Principal="user2@contoso.com" RoleDefinition="Edit"/>
-                  <pnp:RoleAssignment Principal="user1@contoso.com" RoleDefinition="View Only"/>
+                  <pnp:RoleAssignment Principal="user3@{parameter:O365AccountDomain}" RoleDefinition="Full Control"/>
+                  <pnp:RoleAssignment Principal="user2@{parameter:O365AccountDomain}" RoleDefinition="Edit"/>
+                  <pnp:RoleAssignment Principal="user1@{parameter:O365AccountDomain}" RoleDefinition="View Only"/>
                 </pnp:BreakRoleInheritance>
               </pnp:Security>
             </pnp:Folder>
@@ -346,9 +347,9 @@
                 <pnp:Folder Name="SubFolder-02-01-01">
                   <pnp:Security>
                     <pnp:BreakRoleInheritance CopyRoleAssignments="false" ClearSubscopes="true">
-                      <pnp:RoleAssignment Principal="user3@contoso.com" RoleDefinition="Full Control"/>
-                      <pnp:RoleAssignment Principal="user2@contoso.com" RoleDefinition="Edit"/>
-                      <pnp:RoleAssignment Principal="user1@contoso.com" RoleDefinition="View Only"/>
+                      <pnp:RoleAssignment Principal="user3@{parameter:O365AccountDomain}" RoleDefinition="Full Control"/>
+                      <pnp:RoleAssignment Principal="user2@{parameter:O365AccountDomain}" RoleDefinition="Edit"/>
+                      <pnp:RoleAssignment Principal="user1@{parameter:O365AccountDomain}" RoleDefinition="View Only"/>
                     </pnp:BreakRoleInheritance>
                   </pnp:Security>
                 </pnp:Folder>
@@ -565,11 +566,11 @@
             </pnp:TermSet>
           </pnp:TermSets>
           <pnp:Contributors>
-            <pnp:User Name="user1@contoso.com"/>
+            <pnp:User Name="user1@{parameter:O365AccountDomain}"/>
           </pnp:Contributors>
           <pnp:Managers>
-            <pnp:User Name="user2@contoso.com"/>
-            <pnp:User Name="user3@contoso.com"/>
+            <pnp:User Name="user2@{parameter:O365AccountDomain}"/>
+            <pnp:User Name="user3@{parameter:O365AccountDomain}"/>
           </pnp:Managers>
         </pnp:TermGroup>
       </pnp:TermGroups>
@@ -748,11 +749,11 @@
     <!-- Let's create a Site Collection -->
     <pnp:SiteCollection Language="1040"
                         SiteTemplate="STS#0"
-                        PrimarySiteCollectionAdmin="john@contoso.com"
+                        PrimarySiteCollectionAdmin="john@{parameter:O365AccountDomain}"
                         MembersCanShare="true"
                         TimeZone="1"
                         Title="{parameter:CompanyName} Intranet"
-                        Url="https://{O365TenantName}.sharepoint.com/sites/Intranet">
+                        Url="https://{parameter:O365TenantName}.sharepoint.com/sites/Intranet">
       <pnp:Templates>
         <!-- And let's use the SPECIALTEAM SharePointProvisioningTemplate -->
         <pnp:ProvisioningTemplateReference ID="SPECIALTEAM" />

@@ -864,4 +864,4 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         #endregion
     }
 #endif
-                }
+}

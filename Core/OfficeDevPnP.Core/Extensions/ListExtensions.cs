@@ -1061,7 +1061,7 @@ namespace Microsoft.SharePoint.Client
         }
 
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         /// <summary>
         /// Can be used to set translations for different cultures. 
         /// <see href="http://blogs.msdn.com/b/vesku/archive/2014/03/20/office365-multilingual-content-types-site-columns-and-site-other-elements.aspx"/>
@@ -1103,9 +1103,7 @@ namespace Microsoft.SharePoint.Client
             List list = web.GetList(listTitle);
             SetLocalizationLabelsForList(list, cultureName, titleResource, descriptionResource);
         }
-#endif
 
-#if !ONPREMISES
         /// <summary>
         /// Can be used to set translations for different cultures. 
         /// </summary>

@@ -2391,6 +2391,13 @@ namespace OfficeDevPnP.Core.Pages
                 {
                     handler.SetAuthenticationCookies(context);
                 }
+                else
+                {
+                    if (context.Credentials is System.Net.NetworkCredential networkCredential)
+                    {
+                        handler.Credentials = networkCredential;
+                    }
+                }
 
                 using (var httpClient = new PnPHttpProvider(handler))
                 {

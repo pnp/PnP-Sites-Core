@@ -11,7 +11,7 @@ using System.Xml.XPath;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     [TestClass]
     public class PagesNoScriptTests : FunctionalTestBase
     {
