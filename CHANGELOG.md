@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Improve exception message when a file is not found during the provisioning #2679 [jackpoz - Giacomo Pozzoni]
 - Doc fix: Fixing duplicated sitecollectionidencoded token #2675 [cmzaragoza - Cristian M. Zaragoza]
 - Enhanced OnPremises Support (SP2019) + UnitTests #2654 [gzdev]
+- Fix preserve SPGroup Config also for Associated Groups #2611 [czullu - Christian Zuellig]
 
 ## [3.22.2006.2 - June 2020 release]
 
