@@ -42,8 +42,54 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Extensions
                 return true;
             }
 
+#if SP2019
+            // TODO: this does not work for HighTrust Auth with user delegation
+            // https://docs.microsoft.com/en-us/previous-versions/office/mt210897(v=office.15)#app-only-policy-authorization
+            // You can't use the app-only policy with the following APIs:
+            // User Profile, ...
+
+            /*
+            var currentUser = web.EnsureProperty(w => w.CurrentUser);
             var currentUser = web.EnsureProperty(w => w.CurrentUser);
             PeopleManager peopleManager = new PeopleManager(web.Context);
+            PeopleManager peopleManager = new PeopleManager(web.Context);
+            
+            var userProfilePropertiesForUser = new Microsoft.SharePoint.Client.UserProfiles.UserProfilePropertiesForUser(
+                web.Context,
+                web.CurrentUser.LoginName,
+                new string[] {"SPS-MUILanguages"}
+                );
+            var propertyArray = peopleManager.GetUserProfilePropertiesFor(userProfilePropertiesForUser);
+            web.Context.Load(userProfilePropertiesForUser);
+            web.Context.ExecuteQueryRetry();
+            string languageSettings = null;
+            languageSettings = propertyArray.FirstOrDefault();
+            if (string.IsNullOrEmpty(languageSettings))
+            {
+                return true;
+            }
+            */
+
+            var testCurrentUser = web.EnsureProperty(w => w.CurrentUser);
+            testCurrentUser.EnsureProperty(u => u.LoginName);
+
+            // currentUser.LoginName
+
+            /*
+            PeopleManager testPeopleManager = new PeopleManager(web.Context);
+            var testProperties = testPeopleManager.GetMyProperties();
+            web.Context.ExecuteQueryRetry();
+            */
+
+
+            if (web.Context.IsAppOnlyWithDelegation())
+            {
+                return true;
+            }
+#endif
+            var currentUser = web.EnsureProperty(w => w.CurrentUser);
+            PeopleManager peopleManager = new PeopleManager(web.Context);
+
             var languageSettings = peopleManager.GetUserProfilePropertyFor(web.CurrentUser.LoginName, "SPS-MUILanguages");
             web.Context.ExecuteQueryRetry();
 

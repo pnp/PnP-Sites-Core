@@ -6,7 +6,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [3.22.2006.1 - June 2020 release]
+## [Unreleased]
+
+## Added
+
+## Changed
+
+- Adding authentication cookies for SPO Admin domain #2687 [koenzomers - Koen Zomers]
+- Call ParseString for webSettings.SearchCenterUrl #2686 [cebud - Martin Dubec]
+- Fix incorrect onprem eventreceiver reference #2684 [jensotto - Jens Otto Hatlevold]
+- Added methods for adding/removing/clearing members and owners of M365 Groups #2683 [koenzomers - Koen Zomers]
+- Fix for GetProvisioningTemplate and ApplyProvisioningTemplate to being stucked in Windows Forms applications. #2681 [brank - Brandon Victoria]
+- Improve exception message when a file is not found during the provisioning #2679 [jackpoz - Giacomo Pozzoni]
+- Doc fix: Fixing duplicated sitecollectionidencoded token #2675 [cmzaragoza - Cristian M. Zaragoza]
+- Enhanced OnPremises Support (SP2019) + UnitTests #2654 [gzdev]
+- Fix preserve SPGroup Config also for Associated Groups #2611 [czullu - Christian Zuellig]
+
+## [3.22.2006.2 - June 2020 release]
 
 ### Added
 

@@ -5,6 +5,7 @@ using OfficeDevPnP.Core.Framework.Provisioning.Model;
 using OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers;
 using OfficeDevPnP.Core.Framework.Provisioning.Providers.Xml;
 using OfficeDevPnP.Core.Tests.Framework.Functional.Validators;
+using System;
 using System.Linq;
 
 namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
@@ -81,12 +82,33 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
             var taxSession = TaxonomySession.GetTaxonomySession(cc);
             var termStore = taxSession.GetDefaultSiteCollectionTermStore();
 
-            DeleteTermGroupsImplementation(cc, termStore);
+
+
+            // Ensure that the group is empty before deleting it. 
+            // exceptions like the following happen:
+            // Microsoft.SharePoint.Client.ServerException: Microsoft.SharePoint.Client.ServerException: A Group cannot be deleted unless it is empty..
+
+            OfficeDevPnP.Core.Tests.Utilities.RetryHelper.Do(
+                () => this.DeleteTermGroupsImplementation(cc, termStore),
+                TimeSpan.FromSeconds(10),
+                3);
         }
 
         private void DeleteTermGroupsImplementation(ClientContext cc, TermStore termStore)
         {
-            cc.Load(termStore.Groups, p => p.Include(t => t.Name, t => t.TermSets.Include(s => s.Name, s => s.Terms.Include(q => q.IsDeprecated, q => q.ReusedTerms))));
+            cc.Load(termStore.Groups, 
+                p => p.Include(
+                    t => t.Name, 
+                    t => t.TermSets.Include(
+                        s => s.Name,
+                        s => s.Terms.Include(
+                            q => q.IsDeprecated, 
+                            q => q.ReusedTerms
+                            )
+                        )
+                    )
+                );
+
             cc.ExecuteQueryRetry();
 
             foreach (var termGroup in termStore.Groups.ToList())
@@ -95,7 +117,16 @@ namespace OfficeDevPnP.Core.Tests.Framework.Functional.Implementation
             }
 
             var siteCollectionGroup = termStore.GetSiteCollectionGroup(cc.Site, true);
-            cc.Load(siteCollectionGroup, t => t.Name, t => t.TermSets.Include(s => s.Name, s => s.Terms.Include(q => q.IsDeprecated, q => q.ReusedTerms)));
+            cc.Load(siteCollectionGroup, 
+                t => t.Name, 
+                t => t.TermSets.Include(
+                    s => s.Name, 
+                    s => s.Terms.Include(
+                        q => q.IsDeprecated, 
+                        q => q.ReusedTerms
+                        )
+                    )
+                );
             cc.ExecuteQueryRetry();
             DeleteTermGroupImplementation(cc, siteCollectionGroup, true);
 

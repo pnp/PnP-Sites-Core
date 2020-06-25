@@ -1,0 +1,1404 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Field_Lower_values_are_better_DisplayName" xml:space="preserve">
+    <value>Lagere waarden zijn beter</value>
+  </data>
+  <data name="Field_Lower_values_are_better_Description" xml:space="preserve">
+    <value>Of lager of hoger beter is</value>
+  </data>
+  <data name="Field_Comments_Lookup_DisplayName" xml:space="preserve">
+    <value>Opmerkingen zoeken</value>
+  </data>
+  <data name="Field_Instance_Id_DisplayName" xml:space="preserve">
+    <value>Exemplaar-id</value>
+  </data>
+  <data name="Field_Enterprise_Keywords_DisplayName" xml:space="preserve">
+    <value>Ondernemingstrefwoorden</value>
+  </data>
+  <data name="Field_Enterprise_Keywords_Description" xml:space="preserve">
+    <value>Ondernemingstrefwoorden worden gedeeld met andere gebruikers en toepassingen, zodat er eenvoudig kan worden gezocht en gefilterd. Daarnaast zijn de metagegevens consistent en kunnen deze opnieuw worden gebruikt</value>
+  </data>
+  <data name="Field_Total_File_Stream_Size_DisplayName" xml:space="preserve">
+    <value>Totale bestandsgrootte van stream</value>
+  </data>
+  <data name="Field_Number_of_Ratings_DisplayName" xml:space="preserve">
+    <value>Aantal classificaties</value>
+  </data>
+  <data name="Field_Number_of_Ratings_Description" xml:space="preserve">
+    <value>Aantal ingediende classificaties</value>
+  </data>
+  <data name="Field_Link_to_Report_DisplayName" xml:space="preserve">
+    <value>Koppeling naar rapport</value>
+  </data>
+  <data name="Field_Description_DisplayName" xml:space="preserve">
+    <value>Beschrijving</value>
+  </data>
+  <data name="Field_Route_To_External_Location_DisplayName" xml:space="preserve">
+    <value>Route naar externe locatie</value>
+  </data>
+  <data name="Field_Formatted_indicator_warning_DisplayName" xml:space="preserve">
+    <value>Opgemaakte indicatorwaarschuwing</value>
+  </data>
+  <data name="Field_Formatted_indicator_warning_Description" xml:space="preserve">
+    <value>De waarschuwingswaarde van de indicator, opgemaakt door de provider van de gegevensbron</value>
+  </data>
+  <data name="Field_Aggregated_Rating_Count_DisplayName" xml:space="preserve">
+    <value>Samengevoegde telling van beoordelingen</value>
+  </data>
+  <data name="Field_Target_Folder_DisplayName" xml:space="preserve">
+    <value>Doelmap</value>
+  </data>
+  <data name="Field_Auto_folder_configuration_data_DisplayName" xml:space="preserve">
+    <value>Automatische mapconfiguratiegegevens</value>
+  </data>
+  <data name="Field_Report_Description_DisplayName" xml:space="preserve">
+    <value>Rapportomschrijving</value>
+  </data>
+  <data name="Field_Report_Description_Description" xml:space="preserve">
+    <value>Een beschrijving van de inhoud van het rapport</value>
+  </data>
+  <data name="Field_Reputation_Score_DisplayName" xml:space="preserve">
+    <value>Reputatiescore</value>
+  </data>
+  <data name="Field_Task_Outcome_DisplayName" xml:space="preserve">
+    <value>Taakresultaat.</value>
+  </data>
+  <data name="Field_Percent_Expression_DisplayName" xml:space="preserve">
+    <value>Expressie voor percentage</value>
+  </data>
+  <data name="Field_Percent_Expression_Description" xml:space="preserve">
+    <value>Bepalen of de expressie wordt gebruikt om een percentage te berekenen</value>
+  </data>
+  <data name="Field_Compatible_Managed_Properties_DisplayName" xml:space="preserve">
+    <value>Compatibele beheerde eigenschappen</value>
+  </data>
+  <data name="Field_Compatible_Managed_Properties_Description" xml:space="preserve">
+    <value>Geef de namen van de beheerde eigenschappen die u wilt gebruiken in dit filterweergavesjabloon. De beheerde eigenschappen waarvan de naam begint met de waarden die u ingaf kunnen gebruik maken van die weergavesjabloon.</value>
+  </data>
+  <data name="Field_Description_DisplayName" xml:space="preserve">
+    <value>Beschrijving</value>
+  </data>
+  <data name="Field_Description_Description" xml:space="preserve">
+    <value>De beschrijving geeft uitleg bij de doelstelling.</value>
+  </data>
+  <data name="Field_Exempt_from_Policy_DisplayName" xml:space="preserve">
+    <value>Van beleid uitgesloten</value>
+  </data>
+  <data name="Field_Priority_DisplayName" xml:space="preserve">
+    <value>Prioriteit</value>
+  </data>
+  <data name="Field_Warning_Cell_DisplayName" xml:space="preserve">
+    <value>Cel voor waarschuwing</value>
+  </data>
+  <data name="Field_Warning_Cell_Description" xml:space="preserve">
+    <value>Adres of naam van de cel voor de waarschuwing</value>
+  </data>
+  <data name="Field_Frame_Width_DisplayName" xml:space="preserve">
+    <value>Framebreedte</value>
+  </data>
+  <data name="Field_Template_Id_DisplayName" xml:space="preserve">
+    <value>Sjabloon-id</value>
+  </data>
+  <data name="Field_Form_Relative_Url_DisplayName" xml:space="preserve">
+    <value>Relatieve URL van het formulier</value>
+  </data>
+  <data name="Field_Managed_Property_Mappings_DisplayName" xml:space="preserve">
+    <value>Toewijzingen beheerde eigenschappen</value>
+  </data>
+  <data name="Field_Managed_Property_Mappings_Description" xml:space="preserve">
+    <value>Vul velden en de beheerde eigenschappen die toegewezen worden op de velden in. Dit veld zal gebruikt worden om te bepalen welke beheerde eigenschappen worden opgehaald door de Zoek van Sharepoint bij gebruik van de Weergavesjablonen. Gebruik het formaat "veldnaam":"eigenschapsnaam", gescheiden door komma's.</value>
+  </data>
+  <data name="Field_Indicator_Value_DisplayName" xml:space="preserve">
+    <value>Indicatorwaarde</value>
+  </data>
+  <data name="Field_Report_Parent_Name_DisplayName" xml:space="preserve">
+    <value>Naam van het bovenliggende item van het rapport</value>
+  </data>
+  <data name="Field_Goal_from_workbook_DisplayName" xml:space="preserve">
+    <value>Doelstelling van werkmap</value>
+  </data>
+  <data name="Field_Goal_from_workbook_Description" xml:space="preserve">
+    <value>Hiermee wordt aangegeven of het doel afkomstig is uit de werkmap of van de definitie van de indicator</value>
+  </data>
+  <data name="Field_Total_File_Count_DisplayName" xml:space="preserve">
+    <value>Totaal aantal bestanden</value>
+  </data>
+  <data name="Field_Report_Created_By_DisplayName" xml:space="preserve">
+    <value>Rapport gemaakt door</value>
+  </data>
+  <data name="Field_Number_of_Likes_DisplayName" xml:space="preserve">
+    <value>Aantal Leuk</value>
+  </data>
+  <data name="Field_Indicator_Comments_DisplayName" xml:space="preserve">
+    <value>Opmerkingen bij indicatoren</value>
+  </data>
+  <data name="Field_Indicator_Comments_Description" xml:space="preserve">
+    <value>Opmerkingen bevatten een beschrijving van de huidige status van de indicator en informatie over oorzaken of problemen.</value>
+  </data>
+  <data name="Field_Detail_Link_DisplayName" xml:space="preserve">
+    <value>Koppeling naar details</value>
+  </data>
+  <data name="Field_Detail_Link_Description" xml:space="preserve">
+    <value>Paginakoppeling voor doorklikken naar details </value>
+  </data>
+  <data name="Field_Member_Status_DisplayName" xml:space="preserve">
+    <value>Lidstatus</value>
+  </data>
+  <data name="Field_Data_Source_DisplayName" xml:space="preserve">
+    <value>Gegevensbron</value>
+  </data>
+  <data name="Field_Data_Source_Description" xml:space="preserve">
+    <value>URL van de gegevensbron</value>
+  </data>
+  <data name="Field_Bit_Rate_DisplayName" xml:space="preserve">
+    <value>Bitrate</value>
+  </data>
+  <data name="Field_Declared_Record_DisplayName" xml:space="preserve">
+    <value>Gedeclareerde record</value>
+  </data>
+  <data name="Field_Report_Modified_By_DisplayName" xml:space="preserve">
+    <value>Rapport gewijzigd door</value>
+  </data>
+  <data name="Field_Save_to_report_history_DisplayName" xml:space="preserve">
+    <value>Opslaan in rapportgeschiedenis</value>
+  </data>
+  <data name="Field_Save_to_report_history_Description" xml:space="preserve">
+    <value>Telkens wanneer dit document wordt opgeslagen, wordt een kopie toegevoegd aan de rapportgeschiedenis.</value>
+  </data>
+  <data name="Field_Trend_DisplayName" xml:space="preserve">
+    <value>Trend</value>
+  </data>
+  <data name="Field_Trend_Description" xml:space="preserve">
+    <value>De trend van de indicator</value>
+  </data>
+  <data name="Field_Indicator_Status_DisplayName" xml:space="preserve">
+    <value>Indicatorstatus</value>
+  </data>
+  <data name="Field_Indicator_Status_Description" xml:space="preserve">
+    <value>De status van de indicator</value>
+  </data>
+  <data name="Field_Length_(seconds)_DisplayName" xml:space="preserve">
+    <value>Lengte (seconden)</value>
+  </data>
+  <data name="Field_WSPublishError_DisplayName" xml:space="preserve">
+    <value>WSPublishError</value>
+  </data>
+  <data name="Field_Crawler_XSL_File_DisplayName" xml:space="preserve">
+    <value>Verkenner XSL-bestand</value>
+  </data>
+  <data name="Field_Crawler_XSL_File_Description" xml:space="preserve">
+    <value>Voeg en XSL-bestand toe dat gebruikt zal worden om HTML te genereren als crawlers de pagina opvragen.</value>
+  </data>
+  <data name="Field_Field_One_DisplayName" xml:space="preserve">
+    <value>Field Een</value>
+  </data>
+  <data name="Field_Field_One_Description" xml:space="preserve">
+    <value>Field Een omschrijving</value>
+  </data>
+  <data name="Field_Report_Modified_DisplayName" xml:space="preserve">
+    <value>Rapport gewijzigd</value>
+  </data>
+  <data name="Field_Custom_Router_DisplayName" xml:space="preserve">
+    <value>Aangepaste router</value>
+  </data>
+  <data name="Field_Form_Category_DisplayName" xml:space="preserve">
+    <value>Formuliercategorie</value>
+  </data>
+  <data name="Field_Description_DisplayName" xml:space="preserve">
+    <value>Beschrijving</value>
+  </data>
+  <data name="Field_Topic_Last_Updated_By_DisplayName" xml:space="preserve">
+    <value>Onderwerp voor het laatst bijgewerkt door</value>
+  </data>
+  <data name="Field_Most_recent_indicator_data_update_DisplayName" xml:space="preserve">
+    <value>De meest recente indicatorupdate voor de gegevens</value>
+  </data>
+  <data name="Field_Most_recent_indicator_data_update_Description" xml:space="preserve">
+    <value>De laatste indicatorupdate van de provider van de gegevensbron</value>
+  </data>
+  <data name="Field_Replies_DisplayName" xml:space="preserve">
+    <value>Antwoorden</value>
+  </data>
+  <data name="Field_Default_Encoding_User_Override_DisplayName" xml:space="preserve">
+    <value>Standaardcodering tijdelijk uitgeschakeld door gebruiker</value>
+  </data>
+  <data name="Field_Active_DisplayName" xml:space="preserve">
+    <value>Actief</value>
+  </data>
+  <data name="Field_Form_Description_DisplayName" xml:space="preserve">
+    <value>Formulierbeschrijving</value>
+  </data>
+  <data name="Field_Author's_Number_of_Best_Replies_DisplayName" xml:space="preserve">
+    <value>Aantal beste antwoorden van auteur</value>
+  </data>
+  <data name="Field_Status_DisplayName" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Field_WSEnabled_DisplayName" xml:space="preserve">
+    <value>WSEnabled</value>
+  </data>
+  <data name="Field_Posted_by_DisplayName" xml:space="preserve">
+    <value>Verzonden door</value>
+  </data>
+  <data name="Field_Rated_By_DisplayName" xml:space="preserve">
+    <value>Beoordeeld door</value>
+  </data>
+  <data name="Field_Rated_By_Description" xml:space="preserve">
+    <value>Gebruikers hebben het item beoordeeld.</value>
+  </data>
+  <data name="Field_WSEventSource_DisplayName" xml:space="preserve">
+    <value>WSEventSource</value>
+  </data>
+  <data name="Field_Author's_Number_of_Posts_DisplayName" xml:space="preserve">
+    <value>Aantal berichten van auteur</value>
+  </data>
+  <data name="Field_TaxKeywordTaxHTField_DisplayName" xml:space="preserve">
+    <value>TaxKeywordTaxHTField</value>
+  </data>
+  <data name="Field_Goal_Cell_DisplayName" xml:space="preserve">
+    <value>Cel voor doelstelling</value>
+  </data>
+  <data name="Field_Goal_Cell_Description" xml:space="preserve">
+    <value>Adres of naam van de cel voor de doelstelling</value>
+  </data>
+  <data name="Field_Name_DisplayName" xml:space="preserve">
+    <value>Naam</value>
+  </data>
+  <data name="Field_Goal_Sheet_DisplayName" xml:space="preserve">
+    <value>Blad voor doelstelling</value>
+  </data>
+  <data name="Field_Goal_Sheet_Description" xml:space="preserve">
+    <value>Naam van het blad voor de doelstelling</value>
+  </data>
+  <data name="Field_Post_DisplayName" xml:space="preserve">
+    <value>Verzenden</value>
+  </data>
+  <data name="Field_Value_Expression_DisplayName" xml:space="preserve">
+    <value>Expressie voor waarde</value>
+  </data>
+  <data name="Field_Value_Expression_Description" xml:space="preserve">
+    <value>Expressie waarmee de waarde van de indicator wordt vastgesteld.</value>
+  </data>
+  <data name="Field_Warning_Sheet_DisplayName" xml:space="preserve">
+    <value>Blad voor waarschuwing</value>
+  </data>
+  <data name="Field_Warning_Sheet_Description" xml:space="preserve">
+    <value>Naam van het blad voor de waarschuwing</value>
+  </data>
+  <data name="Field_Form_Name_DisplayName" xml:space="preserve">
+    <value>Formuliernaam</value>
+  </data>
+  <data name="Field_Form_ID_DisplayName" xml:space="preserve">
+    <value>Formulier-id</value>
+  </data>
+  <data name="Field_Owner_DisplayName" xml:space="preserve">
+    <value>Eigenaar</value>
+  </data>
+  <data name="Field_Owner_Description" xml:space="preserve">
+    <value>De eigenaar van de video</value>
+  </data>
+  <data name="Field_Value_Cell_DisplayName" xml:space="preserve">
+    <value>Waardecel</value>
+  </data>
+  <data name="Field_Value_Cell_Description" xml:space="preserve">
+    <value>Adres of naam van de cel voor de waarde</value>
+  </data>
+  <data name="Field_Form_Version_DisplayName" xml:space="preserve">
+    <value>Formulierversie</value>
+  </data>
+  <data name="Field_Report_Modified_DisplayName" xml:space="preserve">
+    <value>Rapport gewijzigd</value>
+  </data>
+  <data name="Field_WSGUID_DisplayName" xml:space="preserve">
+    <value>WSGUID</value>
+  </data>
+  <data name="Field_Discussions_DisplayName" xml:space="preserve">
+    <value>Discussies</value>
+  </data>
+  <data name="Field_Template_Level_DisplayName" xml:space="preserve">
+    <value>Sjabloonniveau</value>
+  </data>
+  <data name="Field_Template_Level_Description" xml:space="preserve">
+    <value>Selecteer het gegevensniveau die dit weergavesjabloon verwacht en waarvoor het ontworpen is. Hiermee bepaalt u waar dit sjabloon wordt weergegeven als selecteerbare optie in de UI-configuraties.</value>
+  </data>
+  <data name="Field_Best_Replies_DisplayName" xml:space="preserve">
+    <value>Beste antwoorden</value>
+  </data>
+  <data name="Field_Submission_Content_Type_(Internal)_DisplayName" xml:space="preserve">
+    <value>Inhoudstype inzending (intern)</value>
+  </data>
+  <data name="Field_Author's_Number_of_Replies_DisplayName" xml:space="preserve">
+    <value>Aantal antwoorden van auteur</value>
+  </data>
+  <data name="Field_Original_Expiration_Date_DisplayName" xml:space="preserve">
+    <value>Oorspronkelijke verloopdatum</value>
+  </data>
+  <data name="Field_WSDescription_DisplayName" xml:space="preserve">
+    <value>WSDescription</value>
+  </data>
+  <data name="Field_Default_Encoding_DisplayName" xml:space="preserve">
+    <value>Standaardcodering</value>
+  </data>
+  <data name="Field_Show_Download_Link_DisplayName" xml:space="preserve">
+    <value>Downloadkoppeling weergeven</value>
+  </data>
+  <data name="Field_Show_Download_Link_Description" xml:space="preserve">
+    <value>Specificeert of een knop op de pagina van de videospeler verschijnt voor het downloaden van de video die wordt afgespeeld.</value>
+  </data>
+  <data name="Field_Gifted_Badge_DisplayName" xml:space="preserve">
+    <value>Geschonken badge</value>
+  </data>
+  <data name="Field_WSDisplayName_DisplayName" xml:space="preserve">
+    <value>WSDisplayName</value>
+  </data>
+  <data name="Field_Content_Type_ID_DisplayName" xml:space="preserve">
+    <value>Inhoudstype-id</value>
+  </data>
+  <data name="Field_Target_Control_Type_(Search)_DisplayName" xml:space="preserve">
+    <value>Type doelbesturingselement (zoeken)</value>
+  </data>
+  <data name="Field_Target_Control_Type_(Search)_Description" xml:space="preserve">
+    <value>Selecteer de zoekbesturingselementen die deze weergavesjabloon moeten gebruiken.</value>
+  </data>
+  <data name="Field_Report_Created_DisplayName" xml:space="preserve">
+    <value>Rapport gemaakt</value>
+  </data>
+  <data name="Field_Author's_last_activity_date_DisplayName" xml:space="preserve">
+    <value>Datum van laatste activiteit van auteur</value>
+  </data>
+  <data name="Field_Reports_Lookup_DisplayName" xml:space="preserve">
+    <value>Rapporten opzoeken</value>
+  </data>
+  <data name="Field_Report_Status_DisplayName" xml:space="preserve">
+    <value>Rapportstatus</value>
+  </data>
+  <data name="Field_Report_Status_Description" xml:space="preserve">
+    <value>Status van het rapport</value>
+  </data>
+  <data name="Field_Reports_DisplayName" xml:space="preserve">
+    <value>Rapporten</value>
+  </data>
+  <data name="Field_Form_Locale_DisplayName" xml:space="preserve">
+    <value>Landinstellingen voor formulier</value>
+  </data>
+  <data name="Field_Indicator_Warning_Threshold_DisplayName" xml:space="preserve">
+    <value>Drempelwaarde voor indicatorwaarschuwing</value>
+  </data>
+  <data name="Field_Aggregated_Like_Count_DisplayName" xml:space="preserve">
+    <value>Samengevoegde telling van Leuk</value>
+  </data>
+  <data name="Field_Warning_from_workbook_DisplayName" xml:space="preserve">
+    <value>Waarschuwing van werkmap</value>
+  </data>
+  <data name="Field_Warning_from_workbook_Description" xml:space="preserve">
+    <value>Hiermee wordt aangegeven of de waarschuwing afkomstig is uit de werkmap of van de definitie van de indicator</value>
+  </data>
+  <data name="Field_Author's_membership_date_DisplayName" xml:space="preserve">
+    <value>Lidmaatschapdatum van auteur</value>
+  </data>
+  <data name="Field_WSPublishState_DisplayName" xml:space="preserve">
+    <value>WSPublishState</value>
+  </data>
+  <data name="Field_Description_DisplayName" xml:space="preserve">
+    <value>Beschrijving</value>
+  </data>
+  <data name="Field_Description_Description" xml:space="preserve">
+    <value>Een beschrijving van de documentenset</value>
+  </data>
+  <data name="Field_Show_in_Catalog_DisplayName" xml:space="preserve">
+    <value>Weergeven in catalogus</value>
+  </data>
+  <data name="Field_Last_Modified_Date_DisplayName" xml:space="preserve">
+    <value>Laatst gewijzigd op</value>
+  </data>
+  <data name="Field_Last_Post_Date_DisplayName" xml:space="preserve">
+    <value>Datum laatste bericht</value>
+  </data>
+  <data name="Field_Report_Category_DisplayName" xml:space="preserve">
+    <value>Rapportcategorie</value>
+  </data>
+  <data name="Field_Report_Category_Description" xml:space="preserve">
+    <value>Categorie van het rapport</value>
+  </data>
+  <data name="Field_People_In_Video_DisplayName" xml:space="preserve">
+    <value>Mensen in video</value>
+  </data>
+  <data name="Field_People_In_Video_Description" xml:space="preserve">
+    <value>De mensen die in de video te zien zijn.</value>
+  </data>
+  <data name="Field_Compatible_Search_Data_Types_DisplayName" xml:space="preserve">
+    <value>Compatibele gegevenstypen voor zoeken</value>
+  </data>
+  <data name="Field_Compatible_Search_Data_Types_Description" xml:space="preserve">
+    <value>Selecteer de met Zoeken beheerde gegevenstypen voor eigenschappen waarvoor deze filterweergavesjabloon wordt gebruikt. Als u geen waarden invoert, is de weergavesjabloon beschikbaar voor alle gegevenstypen.</value>
+  </data>
+  <data name="Field_Rating_(0-5)_DisplayName" xml:space="preserve">
+    <value>Classificatie (0-5)</value>
+  </data>
+  <data name="Field_Rating_(0-5)_Description" xml:space="preserve">
+    <value>Gemiddelde waarde van alle classificaties die zijn ingediend</value>
+  </data>
+  <data name="Field_Indicator_Goal_Threshold_DisplayName" xml:space="preserve">
+    <value>Drempelwaarde voor indicatordoel</value>
+  </data>
+  <data name="Field_Condition_XML_DisplayName" xml:space="preserve">
+    <value>XML-voorwaarde</value>
+  </data>
+  <data name="Field_Properties_used_in_Conditions_DisplayName" xml:space="preserve">
+    <value>Eigenschappen die in voorwaarden zijn gebruikt</value>
+  </data>
+  <data name="Field_Rule_Name_DisplayName" xml:space="preserve">
+    <value>Regelnaam</value>
+  </data>
+  <data name="Field_View_Guid_DisplayName" xml:space="preserve">
+    <value>Weergave-GUID</value>
+  </data>
+  <data name="Field_View_Guid_Description" xml:space="preserve">
+    <value>GUID van de weergave</value>
+  </data>
+  <data name="Field_Total_Size_DisplayName" xml:space="preserve">
+    <value>Totale grootte</value>
+  </data>
+  <data name="Field_Name_DisplayName" xml:space="preserve">
+    <value>Naam</value>
+  </data>
+  <data name="Field_Update_Error_DisplayName" xml:space="preserve">
+    <value>Fout tijdens het bijwerken</value>
+  </data>
+  <data name="Field_Update_Error_Description" xml:space="preserve">
+    <value>Bevat het foutbericht van de laatste update, indien aanwezig</value>
+  </data>
+  <data name="Field_Target_Library_DisplayName" xml:space="preserve">
+    <value>Doelbibliotheek</value>
+  </data>
+  <data name="Field_WSEventSourceGUID_DisplayName" xml:space="preserve">
+    <value>WSEventSourceGUID</value>
+  </data>
+  <data name="Field_WSEventContextKeys_DisplayName" xml:space="preserve">
+    <value>WSEventContextKeys</value>
+  </data>
+  <data name="Field_Embed_Code_DisplayName" xml:space="preserve">
+    <value>Code insluiten</value>
+  </data>
+  <data name="Field_Property_for_Automatic_Folder_Creation_DisplayName" xml:space="preserve">
+    <value>Eigenschap voor het automatisch maken van mappen</value>
+  </data>
+  <data name="Field_Member_DisplayName" xml:space="preserve">
+    <value>Lid</value>
+  </data>
+  <data name="Field_Frame_Height_DisplayName" xml:space="preserve">
+    <value>Framehoogte</value>
+  </data>
+  <data name="Field_Hide_Reputation_DisplayName" xml:space="preserve">
+    <value>Reputatie verbergen</value>
+  </data>
+  <data name="Field_Gifted_Badge_Text_DisplayName" xml:space="preserve">
+    <value>Tekst geschonken badge</value>
+  </data>
+  <data name="Field_HashTags_DisplayName" xml:space="preserve">
+    <value>HashTags</value>
+  </data>
+  <data name="Field_HashTags_Description" xml:space="preserve">
+    <value>Some description</value>
+  </data>
+  <data name="Field_Label_DisplayName" xml:space="preserve">
+    <value>Label</value>
+  </data>
+  <data name="Field_Label_Description" xml:space="preserve">
+    <value>De tekst die wordt getoond in de videospeler voor deze weergave</value>
+  </data>
+  <data name="Field_Report_Modified_By_DisplayName" xml:space="preserve">
+    <value>Rapport gewijzigd door</value>
+  </data>
+  <data name="Field_Report_Modified_Link_DisplayName" xml:space="preserve">
+    <value>Koppeling naar gewijzigd rapport</value>
+  </data>
+  <data name="Field_Replies_to_reach_next_level_DisplayName" xml:space="preserve">
+    <value>Aantal antwoorden voor het bereiken van het volgende niveau</value>
+  </data>
+  <data name="Field_Show_Embed_Link_DisplayName" xml:space="preserve">
+    <value>Insluitingskoppeling weergeven</value>
+  </data>
+  <data name="Field_Show_Embed_Link_Description" xml:space="preserve">
+    <value>Specificeert of een knop op de pagina van de videospeler verschijnt voor het tonen van de ingebedde code video die wordt afgespeeld.</value>
+  </data>
+  <data name="Field_Topic_page_URL_DisplayName" xml:space="preserve">
+    <value>Pagina-URL onderwerp</value>
+  </data>
+  <data name="Field_Hold_and_Record_Status_DisplayName" xml:space="preserve">
+    <value>Status van bewaring en record</value>
+  </data>
+  <data name="Field_Parent_ID_DisplayName" xml:space="preserve">
+    <value>Hoofd-id</value>
+  </data>
+  <data name="Field_Parent_ID_Description" xml:space="preserve">
+    <value>De hoofd-id van dit rapport</value>
+  </data>
+  <data name="Field_Last_Activity_DisplayName" xml:space="preserve">
+    <value>Laatste activiteit</value>
+  </data>
+  <data name="Field_WSEventType_DisplayName" xml:space="preserve">
+    <value>WSEventType</value>
+  </data>
+  <data name="Field_Form_Name_DisplayName" xml:space="preserve">
+    <value>Formuliernaam</value>
+  </data>
+  <data name="Field_External_Link_DisplayName" xml:space="preserve">
+    <value>Externe koppeling</value>
+  </data>
+  <data name="Field_Submission_Content_Type_DisplayName" xml:space="preserve">
+    <value>Inhoudstype van inzending</value>
+  </data>
+  <data name="Field_Taxonomy_Catch_All_Column1_DisplayName" xml:space="preserve">
+    <value>Taxonomy Catch All Column1</value>
+  </data>
+  <data name="Field_Owner_DisplayName" xml:space="preserve">
+    <value>Eigenaar</value>
+  </data>
+  <data name="Field_Owner_Description" xml:space="preserve">
+    <value>Eigenaar van dit document</value>
+  </data>
+  <data name="Field_Indicator_DisplayName" xml:space="preserve">
+    <value>Indicator</value>
+  </data>
+  <data name="Field_Indicator_Description" xml:space="preserve">
+    <value>Naam van Microsoft SQL Server 2005 Analysis Services KPI</value>
+  </data>
+  <data name="Field_Field_Two_DisplayName" xml:space="preserve">
+    <value>Field Twee</value>
+  </data>
+  <data name="Field_Field_Two_Description" xml:space="preserve">
+    <value>Field Twee omschrijving</value>
+  </data>
+  <data name="Field_Author's_membership_status_DisplayName" xml:space="preserve">
+    <value>Lidmaatschapstatus van auteur</value>
+  </data>
+  <data name="Field_Last_Post_By_DisplayName" xml:space="preserve">
+    <value>Laatste bericht van</value>
+  </data>
+  <data name="Field_Expiration_Date_DisplayName" xml:space="preserve">
+    <value>Verloopdatum</value>
+  </data>
+  <data name="Field_Renditions_Information_DisplayName" xml:space="preserve">
+    <value>Weergave-informatie</value>
+  </data>
+  <data name="Field_Thumbnail_Time_Index_DisplayName" xml:space="preserve">
+    <value>Miniatuurtijdsindex</value>
+  </data>
+  <data name="Field_Report_Created_DisplayName" xml:space="preserve">
+    <value>Rapport gemaakt</value>
+  </data>
+  <data name="Field_Is_Locked_For_Edit_DisplayName" xml:space="preserve">
+    <value>Is vergrendeld voor bewerken</value>
+  </data>
+  <data name="Field_Category_DisplayName" xml:space="preserve">
+    <value>Categorie</value>
+  </data>
+  <data name="Field_HashTags_0_DisplayName" xml:space="preserve">
+    <value>HashTags_0</value>
+  </data>
+  <data name="Field_Formatted_indicator_value_DisplayName" xml:space="preserve">
+    <value>Opgemaakte indicatorwaarde</value>
+  </data>
+  <data name="Field_Formatted_indicator_value_Description" xml:space="preserve">
+    <value>De waarde van de indicator, opgemaakt door de provider van de gegevensbron</value>
+  </data>
+  <data name="Field_Liked_By_DisplayName" xml:space="preserve">
+    <value>Leuk gevonden door</value>
+  </data>
+  <data name="Field_Include_child_indicators_DisplayName" xml:space="preserve">
+    <value>Subindicatoren opnemen</value>
+  </data>
+  <data name="Field_Include_child_indicators_Description" xml:space="preserve">
+    <value>Onderliggende indicatoren opnemen of niet</value>
+  </data>
+  <data name="Field_Description_DisplayName" xml:space="preserve">
+    <value>Beschrijving</value>
+  </data>
+  <data name="Field_Description_Description" xml:space="preserve">
+    <value>Een samenvatting van de video</value>
+  </data>
+  <data name="Field_Auto_Update_DisplayName" xml:space="preserve">
+    <value>Automatisch bijwerken</value>
+  </data>
+  <data name="Field_Auto_Update_Description" xml:space="preserve">
+    <value>Of de back-endgegevens elke keer moeten worden opgehaald</value>
+  </data>
+  <data name="Field_Display_Folder_DisplayName" xml:space="preserve">
+    <value>Weergavemap</value>
+  </data>
+  <data name="Field_Display_Folder_Description" xml:space="preserve">
+    <value>De weergavemap van de indicator</value>
+  </data>
+  <data name="Field_Author's_Reputation_Score_DisplayName" xml:space="preserve">
+    <value>Reputatiescore van auteur</value>
+  </data>
+  <data name="Field_Replies_DisplayName" xml:space="preserve">
+    <value>Antwoorden</value>
+  </data>
+  <data name="Field_Hidden_Template_DisplayName" xml:space="preserve">
+    <value>Verborgen sjabloon</value>
+  </data>
+  <data name="Field_Hidden_Template_Description" xml:space="preserve">
+    <value>Verberg deze weergavesjabloom als gebruikers uit een lijst met beschikbare weergavesjablonen kunnen kiezen.</value>
+  </data>
+  <data name="Field_Popularity_DisplayName" xml:space="preserve">
+    <value>Populariteit</value>
+  </data>
+  <data name="Field_Discussions_DisplayName" xml:space="preserve">
+    <value>Discussies</value>
+  </data>
+  <data name="Field_Category_Picture_DisplayName" xml:space="preserve">
+    <value>Categorieafbeelding</value>
+  </data>
+  <data name="Field_Value_Sheet_DisplayName" xml:space="preserve">
+    <value>Blad voor waarde</value>
+  </data>
+  <data name="Field_Value_Sheet_Description" xml:space="preserve">
+    <value>Naam van het blad voor de waarde</value>
+  </data>
+  <data name="Field_Formatted_indicator_goal_DisplayName" xml:space="preserve">
+    <value>Opgemaakt indicatordoel</value>
+  </data>
+  <data name="Field_Formatted_indicator_goal_Description" xml:space="preserve">
+    <value>Het doel van de indicator, opgemaakt door de provider van de gegevensbron</value>
+  </data>
+  <data name="Field_History_DisplayName" xml:space="preserve">
+    <value>Geschiedenis</value>
+  </data>
+  <data name="Field_Aliases_DisplayName" xml:space="preserve">
+    <value>Aliassen</value>
+  </data>
+  <data name="Field_Target_Path_DisplayName" xml:space="preserve">
+    <value>Doelpad</value>
+  </data>
+  <data name="Field_Taxonomy_Catch_All_Column_DisplayName" xml:space="preserve">
+    <value>Taxonomy Catch All Column</value>
+  </data>
+  <data name="Field_User_ratings_DisplayName" xml:space="preserve">
+    <value>Gebruikersbeoordelingen</value>
+  </data>
+  <data name="Field_User_ratings_Description" xml:space="preserve">
+    <value>Gebruikersbeoordelingen voor het item</value>
+  </data>
+  <data name="Field_Reporter_Lookup_DisplayName" xml:space="preserve">
+    <value>Rapporteur zoeken</value>
+  </data>
+  <data name="Field_Report_Created_By_DisplayName" xml:space="preserve">
+    <value>Rapport gemaakt door</value>
+  </data>
+  <data name="ContentType_Common_Indicator_Columns_Title" xml:space="preserve">
+    <value>Algemene indicatorkolommen</value>
+  </data>
+  <data name="ContentType_Fixed_Value_based_Status_Indicator_Title" xml:space="preserve">
+    <value>Statusindicator op basis van een vaste waarde</value>
+  </data>
+  <data name="ContentType_Fixed_Value_based_Status_Indicator_Description" xml:space="preserve">
+    <value>Een nieuwe statusindicator maken met handmatig ingevoerde gegevens</value>
+  </data>
+  <data name="ContentType_SharePoint_List_based_Status_Indicator_Title" xml:space="preserve">
+    <value>Statusindicator op basis van een SharePoint-lijst</value>
+  </data>
+  <data name="ContentType_SharePoint_List_based_Status_Indicator_Description" xml:space="preserve">
+    <value>Een nieuwe statusindicator maken met gegevens uit SharePoint-lijsten</value>
+  </data>
+  <data name="ContentType_Excel_based_Status_Indicator_Title" xml:space="preserve">
+    <value>Statusindicator op basis van Excel</value>
+  </data>
+  <data name="ContentType_Excel_based_Status_Indicator_Description" xml:space="preserve">
+    <value>Een nieuwe statusindicator maken met gegevens uit Excel Services</value>
+  </data>
+  <data name="ContentType_SQL_Server_Analysis_Services_based_Status_Indicator_Title" xml:space="preserve">
+    <value>Statusindicator op basis van SQL Server Analysis Services</value>
+  </data>
+  <data name="ContentType_SQL_Server_Analysis_Services_based_Status_Indicator_Description" xml:space="preserve">
+    <value>Een nieuwe statusindicator maken met gegevens uit SQL Server Analysis Services</value>
+  </data>
+  <data name="ContentType_Category_Title" xml:space="preserve">
+    <value>Categorie</value>
+  </data>
+  <data name="ContentType_Category_Description" xml:space="preserve">
+    <value>(Beschrijving inhoudstype categorie)</value>
+  </data>
+  <data name="ContentType_Site_Membership_Title" xml:space="preserve">
+    <value>Sitelidmaatschap</value>
+  </data>
+  <data name="ContentType_Site_Membership_Description" xml:space="preserve">
+    <value>Een nieuw lid toevoegen</value>
+  </data>
+  <data name="ContentType_Community_Member_Title" xml:space="preserve">
+    <value>Communitylid</value>
+  </data>
+  <data name="ContentType_Community_Member_Description" xml:space="preserve">
+    <value>Een nieuw communitylid toevoegen</value>
+  </data>
+  <data name="ContentType_WorkflowServiceDefinition_Title" xml:space="preserve">
+    <value>WorkflowServiceDefinition</value>
+  </data>
+  <data name="ContentType_WorkflowServiceDefinition_Description" xml:space="preserve">
+    <value>WorkflowServiceDefinition</value>
+  </data>
+  <data name="ContentType_Project_Policy_Title" xml:space="preserve">
+    <value>Projectbeleid</value>
+  </data>
+  <data name="ContentType_Project_Policy_Description" xml:space="preserve">
+    <value>Container inhoudstype Projectbeleiddefinities</value>
+  </data>
+  <data name="ContentType_WorkflowServiceSubscription_Title" xml:space="preserve">
+    <value>WorkflowServiceSubscription</value>
+  </data>
+  <data name="ContentType_WorkflowServiceSubscription_Description" xml:space="preserve">
+    <value>WorkflowServiceSubscription</value>
+  </data>
+  <data name="ContentType_Rule_Title" xml:space="preserve">
+    <value>Regel</value>
+  </data>
+  <data name="ContentType_Rule_Description" xml:space="preserve">
+    <value>Maak een regel waarmee inhoud die naar deze site is verzonden, naar de juiste bibliotheek of map wordt verplaatst.</value>
+  </data>
+  <data name="ContentType_Display_Template_Title" xml:space="preserve">
+    <value>Weergavesjabloon</value>
+  </data>
+  <data name="ContentType_Display_Template_Description" xml:space="preserve">
+    <value>Basis inhoudstype die gemeenschappelijke weergavesjabloon kolommen bevat. Gebruik een besturingselement, groep, item of weergavefiltersjabloon inhoudstype om een weergavetype te maken.</value>
+  </data>
+  <data name="ContentType_Display_Template_Code_Title" xml:space="preserve">
+    <value>Code van het weergavesjabloon</value>
+  </data>
+  <data name="ContentType_Display_Template_Code_Description" xml:space="preserve">
+    <value>Javascript code van het weergavejabloon die registreert en weergavesjabloon logica uitgevoerd.</value>
+  </data>
+  <data name="ContentType_Report_Title" xml:space="preserve">
+    <value>Rapport</value>
+  </data>
+  <data name="ContentType_ContentType_One_Title" xml:space="preserve">
+    <value>ContentType Een</value>
+  </data>
+  <data name="ContentType_ContentType_One_Description" xml:space="preserve">
+    <value>ContentType Een Omschrijving</value>
+  </data>
+  <data name="ContentType_ContentType_Two_Title" xml:space="preserve">
+    <value>ContentType Twee</value>
+  </data>
+  <data name="ContentType_ContentType_Two_Description" xml:space="preserve">
+    <value>ContentType Twee omschrijving</value>
+  </data>
+  <data name="ContentType_Rich_Media_Asset_Title" xml:space="preserve">
+    <value>Uitgebreid media-activum</value>
+  </data>
+  <data name="ContentType_Rich_Media_Asset_Description" xml:space="preserve">
+    <value>Een activum uploaden.</value>
+  </data>
+  <data name="ContentType_Video_Rendition_Title" xml:space="preserve">
+    <value>Videoweergave</value>
+  </data>
+  <data name="ContentType_Video_Rendition_Description" xml:space="preserve">
+    <value>Een videobestand uploaden.</value>
+  </data>
+  <data name="ContentType_Audio_Title" xml:space="preserve">
+    <value>Audio</value>
+  </data>
+  <data name="ContentType_Audio_Description" xml:space="preserve">
+    <value>Een audiobestand uploaden.</value>
+  </data>
+  <data name="ContentType_Image_Title" xml:space="preserve">
+    <value>Afbeeldingsactivum</value>
+  </data>
+  <data name="ContentType_Image_Description" xml:space="preserve">
+    <value>Een afbeelding uploaden.</value>
+  </data>
+  <data name="ContentType_Web_Part_Page_with_Status_List_Title" xml:space="preserve">
+    <value>Webonderdeelpagina met statuslijst</value>
+  </data>
+  <data name="ContentType_Web_Part_Page_with_Status_List_Description" xml:space="preserve">
+    <value>Hiermee maakt u een pagina waarop statusindicatoren en Excel-werkmappen worden weergegeven.</value>
+  </data>
+  <data name="ContentType_Design_File_Title" xml:space="preserve">
+    <value>Ontwerpbestand</value>
+  </data>
+  <data name="ContentType_Design_File_Description" xml:space="preserve">
+    <value>HTML, JavaScript, CSS, afbeeldingen en andere ondersteunende bestanden in de galerie met basispagina's gebruikt door HTML-basispagina's, pagina-indelingen voor HTML en weergavesjablonen.</value>
+  </data>
+  <data name="ContentType_InfoPath_Form_Template_Title" xml:space="preserve">
+    <value>InfoPath-formuliersjabloon</value>
+  </data>
+  <data name="ContentType_InfoPath_Form_Template_Description" xml:space="preserve">
+    <value>Een Microsoft InfoPath-formuliersjabloon.</value>
+  </data>
+  <data name="ContentType_Master_Page_Preview_Title" xml:space="preserve">
+    <value>Voorbeeld van basispagina</value>
+  </data>
+  <data name="ContentType_Master_Page_Preview_Description" xml:space="preserve">
+    <value>Een nieuw voorbeeld van de basispagina maken.</value>
+  </data>
+  <data name="ContentType_Workflow_Task_(SharePoint_2013)_Title" xml:space="preserve">
+    <value>Werkstroomtaak (SharePoint 2013)</value>
+  </data>
+  <data name="ContentType_Workflow_Task_(SharePoint_2013)_Description" xml:space="preserve">
+    <value>Een SharePoint 2013-werkstroomtaak maken</value>
+  </data>
+  <data name="ContentType_SharePoint_Server_Workflow_Task_Title" xml:space="preserve">
+    <value>Werkstroomtaak van SharePoint Server</value>
+  </data>
+  <data name="ContentType_SharePoint_Server_Workflow_Task_Description" xml:space="preserve">
+    <value>Een werkitem dat is gemaakt door een werkstroom die u of uw team moet uitvoeren.</value>
+  </data>
+  <data name="ContentType_Post_Title" xml:space="preserve">
+    <value>Posten</value>
+  </data>
+  <data name="ContentType_Post_Description" xml:space="preserve">
+    <value>Een nieuw blogbericht maken.</value>
+  </data>
+  <data name="ContentType_Document_Collection_Folder_Title" xml:space="preserve">
+    <value>Documentverzamelingmap</value>
+  </data>
+  <data name="ContentType_Document_Collection_Folder_Description" xml:space="preserve">
+    <value>Een nieuwe documentverzamelingmap maken</value>
+  </data>
+  <data name="ContentType_System_Media_Collection_Title" xml:space="preserve">
+    <value>Systeemmediaverzameling</value>
+  </data>
+  <data name="ContentType_System_Media_Collection_Description" xml:space="preserve">
+    <value>Systeemtype voor een verzameling elementen van uitgebreide media.</value>
+  </data>
+  <data name="ContentType_Video_Title" xml:space="preserve">
+    <value>Video</value>
+  </data>
+  <data name="ContentType_Video_Description" xml:space="preserve">
+    <value>Uploaden of een koppeling naar een video toevoegen.</value>
+  </data>
+  <data name="List_Documents_Title" xml:space="preserve">
+    <value>Documenten</value>
+  </data>
+  <data name="ListView_Documents_All_Documents_Title" xml:space="preserve">
+    <value>Alle documenten</value>
+  </data>
+  <data name="List_Form_Templates_Title" xml:space="preserve">
+    <value>Formuliersjablonen</value>
+  </data>
+  <data name="List_Form_Templates_Description" xml:space="preserve">
+    <value>De bibliotheek bevat formuliersjablonen die door de beheerder zijn goedgekeurd en die voor deze siteverzameling zijn geactiveerd.</value>
+  </data>
+  <data name="ListView_Form_Templates_All_Documents_Title" xml:space="preserve">
+    <value>Alle documenten</value>
+  </data>
+  <data name="ListView_Form_Templates_All_Forms_Title" xml:space="preserve">
+    <value>All Forms</value>
+  </data>
+  <data name="List_LI_2_Title" xml:space="preserve">
+    <value>LI_2</value>
+  </data>
+  <data name="List_LI_2_Description" xml:space="preserve">
+    <value>List Twee omschrijving</value>
+  </data>
+  <data name="ListView_LI_2_All_Items_Title" xml:space="preserve">
+    <value>Alle items</value>
+  </data>
+  <data name="Field_List_Field_One_DisplayName_DisplayName" xml:space="preserve">
+    <value>List Field Een naam</value>
+  </data>
+  <data name="Field_List_Field_One_DisplayName_Description" xml:space="preserve">
+    <value>List Field Een omschrijving</value>
+  </data>
+  <data name="Field_List_Field_Second_DisplayName_DisplayName" xml:space="preserve">
+    <value>List Field Twee naam</value>
+  </data>
+  <data name="Field_List_Field_Second_DisplayName_Description" xml:space="preserve">
+    <value>List Field Twee omschrijving</value>
+  </data>
+  <data name="List_List_One_Title" xml:space="preserve">
+    <value>List Een</value>
+  </data>
+  <data name="List_List_One_Description" xml:space="preserve">
+    <value>List Een omschrijving</value>
+  </data>
+  <data name="ListView_List_One_List_View_Title_Title" xml:space="preserve">
+    <value>List View Titel</value>
+  </data>
+  <data name="List_List_Three_Title" xml:space="preserve">
+    <value>List Drie</value>
+  </data>
+  <data name="List_List_Three_Description" xml:space="preserve">
+    <value>List Drie omschrijving</value>
+  </data>
+  <data name="ListView_List_Three_All_Items_Title" xml:space="preserve">
+    <value>Alle items</value>
+  </data>
+  <data name="List_MicroFeed_Title" xml:space="preserve">
+    <value>Microfeed</value>
+  </data>
+  <data name="List_MicroFeed_Description" xml:space="preserve">
+    <value>Permanente opslaglijst van microfeed voor Mijn site</value>
+  </data>
+  <data name="ListView_MicroFeed_All_Items_Title" xml:space="preserve">
+    <value>All Items</value>
+  </data>
+  <data name="Field_MicroBlogType_DisplayName" xml:space="preserve">
+    <value>MicroBlogType</value>
+  </data>
+  <data name="Field_PostAuthor_DisplayName" xml:space="preserve">
+    <value>PostAuthor</value>
+  </data>
+  <data name="Field_DefinitionId_DisplayName" xml:space="preserve">
+    <value>DefinitionId</value>
+  </data>
+  <data name="Field_RootPostID_DisplayName" xml:space="preserve">
+    <value>RootPostID</value>
+  </data>
+  <data name="Field_RootPostOwnerID_DisplayName" xml:space="preserve">
+    <value>RootPostOwnerID</value>
+  </data>
+  <data name="Field_RootPostUniqueID_DisplayName" xml:space="preserve">
+    <value>RootPostUniqueID</value>
+  </data>
+  <data name="Field_ReplyCount_DisplayName" xml:space="preserve">
+    <value>ReplyCount</value>
+  </data>
+  <data name="Field_ReferenceID_DisplayName" xml:space="preserve">
+    <value>ReferenceID</value>
+  </data>
+  <data name="Field_Attributes_DisplayName" xml:space="preserve">
+    <value>Attributes</value>
+  </data>
+  <data name="Field_Content_DisplayName" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="Field_ContentData_DisplayName" xml:space="preserve">
+    <value>ContentData</value>
+  </data>
+  <data name="Field_SearchContent_DisplayName" xml:space="preserve">
+    <value>SearchContent</value>
+  </data>
+  <data name="Field_RefRoot_DisplayName" xml:space="preserve">
+    <value>RefRoot</value>
+  </data>
+  <data name="Field_RefReply_DisplayName" xml:space="preserve">
+    <value>RefReply</value>
+  </data>
+  <data name="Field_PostSource_DisplayName" xml:space="preserve">
+    <value>PostSource</value>
+  </data>
+  <data name="Field_PeopleCount_DisplayName" xml:space="preserve">
+    <value>PeopleCount</value>
+  </data>
+  <data name="Field_PeopleList_DisplayName" xml:space="preserve">
+    <value>PeopleList</value>
+  </data>
+  <data name="Field_MediaLinkType_DisplayName" xml:space="preserve">
+    <value>MediaLinkType</value>
+  </data>
+  <data name="Field_MediaLinkDescription_DisplayName" xml:space="preserve">
+    <value>MediaLinkDescription</value>
+  </data>
+  <data name="Field_PostSourceUri_DisplayName" xml:space="preserve">
+    <value>PostSourceUri</value>
+  </data>
+  <data name="Field_MediaLinkURI_DisplayName" xml:space="preserve">
+    <value>MediaLinkURI</value>
+  </data>
+  <data name="Field_MediaLinkUISnippet_DisplayName" xml:space="preserve">
+    <value>MediaLinkUISnippet</value>
+  </data>
+  <data name="Field_MediaLinkContentURI_DisplayName" xml:space="preserve">
+    <value>MediaLinkContentURI</value>
+  </data>
+  <data name="Field_MediaLength_DisplayName" xml:space="preserve">
+    <value>MediaLength</value>
+  </data>
+  <data name="Field_MediaWidth_DisplayName" xml:space="preserve">
+    <value>MediaWidth</value>
+  </data>
+  <data name="Field_MediaHeight_DisplayName" xml:space="preserve">
+    <value>MediaHeight</value>
+  </data>
+  <data name="Field_MediaPreviewWidth_DisplayName" xml:space="preserve">
+    <value>MediaPreviewWidth</value>
+  </data>
+  <data name="Field_MediaPreviewHeight_DisplayName" xml:space="preserve">
+    <value>MediaPreviewHeight</value>
+  </data>
+  <data name="Field_MediaActionWidth_DisplayName" xml:space="preserve">
+    <value>MediaActionWidth</value>
+  </data>
+  <data name="Field_MediaActionHeight_DisplayName" xml:space="preserve">
+    <value>MediaActionHeight</value>
+  </data>
+  <data name="Field_MediaActionClickUrl_DisplayName" xml:space="preserve">
+    <value>MediaActionClickUrl</value>
+  </data>
+  <data name="Field_MediaActionClickKind_DisplayName" xml:space="preserve">
+    <value>MediaActionClickKind</value>
+  </data>
+  <data name="Field_eMailSubscribers_DisplayName" xml:space="preserve">
+    <value>eMailSubscribers</value>
+  </data>
+  <data name="Field_eMailUnsubscribed_DisplayName" xml:space="preserve">
+    <value>eMailUnsubscribed</value>
+  </data>
+  <data name="Field_RemoteLocation_DisplayName" xml:space="preserve">
+    <value>RemoteLocation</value>
+  </data>
+  <data name="List_Site_Assets_Title" xml:space="preserve">
+    <value>Siteactiva</value>
+  </data>
+  <data name="List_Site_Assets_Description" xml:space="preserve">
+    <value>Gebruik deze bibliotheek voor het opslaan van bestanden die zijn opgenomen op pagina's binnen deze site, zoals afbeeldingen op wikipagina's.</value>
+  </data>
+  <data name="ListView_Site_Assets_All_Documents_Title" xml:space="preserve">
+    <value>Alle documenten</value>
+  </data>
+  <data name="List_Site_Pages_Title" xml:space="preserve">
+    <value>Sitepagina's</value>
+  </data>
+  <data name="ListView_Site_Pages_All_Pages_Title" xml:space="preserve">
+    <value>Alle pagina's</value>
+  </data>
+  <data name="ListView_Site_Pages_Recent_Changes_Title" xml:space="preserve">
+    <value>Recente wijzigingen</value>
+  </data>
+  <data name="ListView_Site_Pages_Created_By_Me_Title" xml:space="preserve">
+    <value>Gemaakt door mij</value>
+  </data>
+  <data name="ListView_Site_Pages_By_Author_Title" xml:space="preserve">
+    <value>Op auteur</value>
+  </data>
+  <data name="ListView_Site_Pages_By_Editor_Title" xml:space="preserve">
+    <value>Door editor</value>
+  </data>
+  <data name="List_Style_Library_Title" xml:space="preserve">
+    <value>Stijlbibliotheek</value>
+  </data>
+  <data name="List_Style_Library_Description" xml:space="preserve">
+    <value>In de stijlbibliotheek kunt u opmaakmodellen opslaan, zoals CSS- of XSL-bestanden. De opmaakmodellen in deze galerie zijn beschikbaar voor deze site en eventuele subsites.</value>
+  </data>
+  <data name="ListView_Style_Library_All_Documents_Title" xml:space="preserve">
+    <value>Alle documenten</value>
+  </data>
+  <data name="NavigationNode_0_2008_Title" xml:space="preserve">
+    <value>Navigatie One</value>
+  </data>
+  <data name="NavigationNode_0_1031_Title" xml:space="preserve">
+    <value>Start</value>
+  </data>
+  <data name="NavigationNode_0_2001_Title" xml:space="preserve">
+    <value>Notitieblok</value>
+  </data>
+  <data name="NavigationNode_0_2002_Title" xml:space="preserve">
+    <value>Documenten</value>
+  </data>
+  <data name="NavigationNode_0_1033_Title" xml:space="preserve">
+    <value>Recent</value>
+  </data>
+  <data name="NavigationNode_1033_2007_Title" xml:space="preserve">
+    <value>List Three</value>
+  </data>
+  <data name="NavigationNode_1033_2006_Title" xml:space="preserve">
+    <value>LI_2</value>
+  </data>
+  <data name="NavigationNode_0_1034_Title" xml:space="preserve">
+    <value>Inhoud van site</value>
+  </data>
+  <data name="List_Documents_Title" xml:space="preserve">
+    <value>Documenten</value>
+  </data>
+  <data name="ListView_Documents_All_Documents_Title" xml:space="preserve">
+    <value>Alle documenten</value>
+  </data>
+  <data name="List_LI_2_Title" xml:space="preserve">
+    <value>LI_2</value>
+  </data>
+  <data name="List_LI_2_Description" xml:space="preserve">
+    <value>List Twee omschrijving</value>
+  </data>
+  <data name="ListView_LI_2_All_Items_Title" xml:space="preserve">
+    <value>Alle items</value>
+  </data>
+  <data name="Field_List_Field_One_DisplayName_DisplayName" xml:space="preserve">
+    <value>List Field Een naam</value>
+  </data>
+  <data name="Field_List_Field_One_DisplayName_Description" xml:space="preserve">
+    <value>List Field Een omschrijving</value>
+  </data>
+  <data name="Field_List_Field_Second_DisplayName_DisplayName" xml:space="preserve">
+    <value>List Field Twee naam</value>
+  </data>
+  <data name="Field_List_Field_Second_DisplayName_Description" xml:space="preserve">
+    <value>List Field Twee omschrijving</value>
+  </data>
+  <data name="List_List_One_Title" xml:space="preserve">
+    <value>List Een</value>
+  </data>
+  <data name="List_List_One_Description" xml:space="preserve">
+    <value>List Een omschrijving</value>
+  </data>
+  <data name="ListView_List_One_List_View_Title_Title" xml:space="preserve">
+    <value>List View Titel</value>
+  </data>
+  <data name="List_List_Three_Title" xml:space="preserve">
+    <value>List Drie</value>
+  </data>
+  <data name="List_List_Three_Description" xml:space="preserve">
+    <value>List Drie omschrijving</value>
+  </data>
+  <data name="ListView_List_Three_All_Items_Title" xml:space="preserve">
+    <value>Alle items</value>
+  </data>
+  <data name="List_MicroFeed_Title" xml:space="preserve">
+    <value>Microfeed</value>
+  </data>
+  <data name="List_MicroFeed_Description" xml:space="preserve">
+    <value>Permanente opslaglijst van microfeed voor Mijn site</value>
+  </data>
+  <data name="ListView_MicroFeed_All_Items_Title" xml:space="preserve">
+    <value>All Items</value>
+  </data>
+  <data name="Field_MicroBlogType_DisplayName" xml:space="preserve">
+    <value>MicroBlogType</value>
+  </data>
+  <data name="Field_PostAuthor_DisplayName" xml:space="preserve">
+    <value>PostAuthor</value>
+  </data>
+  <data name="Field_DefinitionId_DisplayName" xml:space="preserve">
+    <value>DefinitionId</value>
+  </data>
+  <data name="Field_RootPostID_DisplayName" xml:space="preserve">
+    <value>RootPostID</value>
+  </data>
+  <data name="Field_RootPostOwnerID_DisplayName" xml:space="preserve">
+    <value>RootPostOwnerID</value>
+  </data>
+  <data name="Field_RootPostUniqueID_DisplayName" xml:space="preserve">
+    <value>RootPostUniqueID</value>
+  </data>
+  <data name="Field_ReplyCount_DisplayName" xml:space="preserve">
+    <value>ReplyCount</value>
+  </data>
+  <data name="Field_ReferenceID_DisplayName" xml:space="preserve">
+    <value>ReferenceID</value>
+  </data>
+  <data name="Field_Attributes_DisplayName" xml:space="preserve">
+    <value>Attributes</value>
+  </data>
+  <data name="Field_Content_DisplayName" xml:space="preserve">
+    <value>Content</value>
+  </data>
+  <data name="Field_ContentData_DisplayName" xml:space="preserve">
+    <value>ContentData</value>
+  </data>
+  <data name="Field_SearchContent_DisplayName" xml:space="preserve">
+    <value>SearchContent</value>
+  </data>
+  <data name="Field_RefRoot_DisplayName" xml:space="preserve">
+    <value>RefRoot</value>
+  </data>
+  <data name="Field_RefReply_DisplayName" xml:space="preserve">
+    <value>RefReply</value>
+  </data>
+  <data name="Field_PostSource_DisplayName" xml:space="preserve">
+    <value>PostSource</value>
+  </data>
+  <data name="Field_PeopleCount_DisplayName" xml:space="preserve">
+    <value>PeopleCount</value>
+  </data>
+  <data name="Field_PeopleList_DisplayName" xml:space="preserve">
+    <value>PeopleList</value>
+  </data>
+  <data name="Field_MediaLinkType_DisplayName" xml:space="preserve">
+    <value>MediaLinkType</value>
+  </data>
+  <data name="Field_MediaLinkDescription_DisplayName" xml:space="preserve">
+    <value>MediaLinkDescription</value>
+  </data>
+  <data name="Field_PostSourceUri_DisplayName" xml:space="preserve">
+    <value>PostSourceUri</value>
+  </data>
+  <data name="Field_MediaLinkURI_DisplayName" xml:space="preserve">
+    <value>MediaLinkURI</value>
+  </data>
+  <data name="Field_MediaLinkUISnippet_DisplayName" xml:space="preserve">
+    <value>MediaLinkUISnippet</value>
+  </data>
+  <data name="Field_MediaLinkContentURI_DisplayName" xml:space="preserve">
+    <value>MediaLinkContentURI</value>
+  </data>
+  <data name="Field_MediaLength_DisplayName" xml:space="preserve">
+    <value>MediaLength</value>
+  </data>
+  <data name="Field_MediaWidth_DisplayName" xml:space="preserve">
+    <value>MediaWidth</value>
+  </data>
+  <data name="Field_MediaHeight_DisplayName" xml:space="preserve">
+    <value>MediaHeight</value>
+  </data>
+  <data name="Field_MediaPreviewWidth_DisplayName" xml:space="preserve">
+    <value>MediaPreviewWidth</value>
+  </data>
+  <data name="Field_MediaPreviewHeight_DisplayName" xml:space="preserve">
+    <value>MediaPreviewHeight</value>
+  </data>
+  <data name="Field_MediaActionWidth_DisplayName" xml:space="preserve">
+    <value>MediaActionWidth</value>
+  </data>
+  <data name="Field_MediaActionHeight_DisplayName" xml:space="preserve">
+    <value>MediaActionHeight</value>
+  </data>
+  <data name="Field_MediaActionClickUrl_DisplayName" xml:space="preserve">
+    <value>MediaActionClickUrl</value>
+  </data>
+  <data name="Field_MediaActionClickKind_DisplayName" xml:space="preserve">
+    <value>MediaActionClickKind</value>
+  </data>
+  <data name="Field_eMailSubscribers_DisplayName" xml:space="preserve">
+    <value>eMailSubscribers</value>
+  </data>
+  <data name="Field_eMailUnsubscribed_DisplayName" xml:space="preserve">
+    <value>eMailUnsubscribed</value>
+  </data>
+  <data name="Field_RemoteLocation_DisplayName" xml:space="preserve">
+    <value>RemoteLocation</value>
+  </data>
+  <data name="List_Site_Assets_Title" xml:space="preserve">
+    <value>Siteactiva</value>
+  </data>
+  <data name="List_Site_Assets_Description" xml:space="preserve">
+    <value>Gebruik deze bibliotheek voor het opslaan van bestanden die zijn opgenomen op pagina's binnen deze site, zoals afbeeldingen op wikipagina's.</value>
+  </data>
+  <data name="ListView_Site_Assets_All_Documents_Title" xml:space="preserve">
+    <value>Alle documenten</value>
+  </data>
+  <data name="List_Site_Pages_Title" xml:space="preserve">
+    <value>Sitepagina's</value>
+  </data>
+  <data name="ListView_Site_Pages_All_Pages_Title" xml:space="preserve">
+    <value>Alle pagina's</value>
+  </data>
+  <data name="ListView_Site_Pages_Recent_Changes_Title" xml:space="preserve">
+    <value>Recente wijzigingen</value>
+  </data>
+  <data name="ListView_Site_Pages_Created_By_Me_Title" xml:space="preserve">
+    <value>Gemaakt door mij</value>
+  </data>
+  <data name="ListView_Site_Pages_By_Author_Title" xml:space="preserve">
+    <value>Op auteur</value>
+  </data>
+  <data name="ListView_Site_Pages_By_Editor_Title" xml:space="preserve">
+    <value>Door editor</value>
+  </data>
+</root>

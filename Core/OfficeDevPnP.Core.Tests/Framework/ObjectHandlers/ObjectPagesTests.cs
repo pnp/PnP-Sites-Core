@@ -207,7 +207,7 @@ alert(""Hello!"");
             }
         }
 
-#if !ONPREMISES
+#if !SP2013 && !SP2016
         [TestMethod]
         public void CanSaveAndLoadHeaderProperties()
         {
@@ -220,9 +220,11 @@ alert(""Hello!"");
                 var pageName = $"{Guid.NewGuid().ToString()}.aspx";
                 var newPage = ctx.Web.AddClientSidePage();
                 newPage.LayoutType = Pages.ClientSidePageLayoutType.Article;
+#if !SP2019
                 newPage.PageHeader.TopicHeader = "HEY HEADER";
                 newPage.PageHeader.LayoutType = Pages.ClientSidePageHeaderLayoutType.NoImage;
                 newPage.PageHeader.ShowTopicHeader = true;
+#endif
                 newPage.PageHeader.ImageServerRelativeUrl = imgUrl;
                 newPage.PageHeader.TranslateX = 1.0;
                 newPage.PageHeader.TranslateY = 2.0;
@@ -232,9 +234,11 @@ alert(""Hello!"");
                 {
                     var readPage = ctx.Web.LoadClientSidePage(pageName);
                     Assert.AreEqual(readPage.LayoutType, Pages.ClientSidePageLayoutType.Article);
+#if !SP2019
                     Assert.AreEqual("HEY HEADER", readPage.PageHeader.TopicHeader);
                     Assert.IsTrue(readPage.PageHeader.ShowTopicHeader);
                     Assert.AreEqual(Pages.ClientSidePageHeaderLayoutType.NoImage, readPage.PageHeader.LayoutType);
+#endif
                     Assert.AreEqual(imgUrl, readPage.PageHeader.ImageServerRelativeUrl);
                     Assert.AreEqual(1.0, readPage.PageHeader.TranslateX);
                     Assert.AreEqual(2.0, readPage.PageHeader.TranslateY);

@@ -129,7 +129,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 web.Context.ExecuteQueryRetry();
                                 // there is no associated group yet OR
                                 // there is a group with the desired associated group title that is currently not the associated group? make it the associated group
-                                if (web.AssociatedMemberGroup.ServerObjectIsNull() || web.AssociatedMemberGroup.Id != memberGroupCandidate.Id)
+                                if (web.AssociatedMemberGroup.ServerObjectIsNull() 
+                                    || web.AssociatedMemberGroup.Id != memberGroupCandidate.Id)
                                 {
                                     web.AssociatedMemberGroup = memberGroupCandidate;
                                     web.Update();
@@ -201,12 +202,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var memberGroup = web.AssociatedMemberGroup;
                 var visitorGroup = web.AssociatedVisitorGroup;
 
-#if !ONPREMISES
+#if !SP2013
                 // need to load the groups for the ServerObjectIsNull()-check to get correct results
-                web.Context.Load(ownerGroup);
-                web.Context.Load(memberGroup);
-                web.Context.Load(visitorGroup);
-                web.Context.ExecuteQueryRetry();
+                if (ownerGroup != null
+                    || memberGroup != null
+                    || visitorGroup != null)
+                {
+                    if (ownerGroup != null)
+                    {
+                        web.Context.Load(ownerGroup);
+                    }
+
+                    if (memberGroup != null)
+                    {
+                        web.Context.Load(memberGroup);
+                    }
+
+                    if (visitorGroup != null)
+                    {
+                        web.Context.Load(visitorGroup);
+                    }
+
+                    web.Context.ExecuteQueryRetry();
+                }
 #endif
 
                 if (!ownerGroup.ServerObjectIsNull())
@@ -228,15 +246,24 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                 if (siteSecurity.ClearExistingOwners)
                 {
-                    ClearExistingUsers(web.AssociatedOwnerGroup);
+                    if (!web.AssociatedOwnerGroup.ServerObjectIsNull())
+                    {
+                        ClearExistingUsers(web.AssociatedOwnerGroup);
+                    }
                 }
                 if (siteSecurity.ClearExistingMembers)
                 {
-                    ClearExistingUsers(web.AssociatedMemberGroup);
+                    if (!web.AssociatedMemberGroup.ServerObjectIsNull())
+                    {
+                        ClearExistingUsers(web.AssociatedMemberGroup);
+                    }
                 }
                 if (siteSecurity.ClearExistingVisitors)
                 {
-                    ClearExistingUsers(web.AssociatedVisitorGroup);
+                    if (!web.AssociatedVisitorGroup.ServerObjectIsNull())
+                    {
+                        ClearExistingUsers(web.AssociatedVisitorGroup);
+                    }
                 }
 
                 IEnumerable<AssociatedGroupToken> associatedGroupTokens = parser.Tokens.Where(t => t.GetType() == typeof(AssociatedGroupToken)).Cast<AssociatedGroupToken>();
@@ -607,6 +634,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
         private static Group EnsureGroup(Web web, string groupName)
         {
+            Microsoft.SharePoint.Client.Group group = null;
+            Microsoft.SharePoint.Client.Group newGroup = null;
+
             ExceptionHandlingScope ensureGroupScope = new ExceptionHandlingScope(web.Context);
 
             using (ensureGroupScope.StartScope())
@@ -620,11 +650,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     GroupCreationInformation groupCreationInfo = new GroupCreationInformation();
                     groupCreationInfo.Title = groupName;
-                    web.SiteGroups.Add(groupCreationInfo);
+                    newGroup = web.SiteGroups.Add(groupCreationInfo);
                 }
             }
-            var group = web.SiteGroups.GetByName(groupName);
+
+#if SP2013
+
+
+            newGroup.RefreshLoad();
+            newGroup.Context.ExecuteQueryRetry();
+
+            newGroup.EnsureProperty(g => g.Id);
+
+            group = newGroup;
+#else
+            group = web.SiteGroups.GetByName(groupName);
             group.EnsureProperty(g => g.Title);
+#endif
             return group;
         }
 
@@ -804,7 +846,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                     {
                         WriteMessage("You are requesting to export sitegroups from a subweb. Notice that ALL sitegroups from the site collection are included in the result.", ProvisioningMessageType.Warning);
                     }
-                    foreach (var group in web.SiteGroups.AsEnumerable().Where(o => !associatedGroupIds.Contains(o.Id)))
+                    //preserve all Group Settings - also for Associated Groups since otherwise those Group Configs are lost
+                    foreach (var group in web.SiteGroups.AsEnumerable()) //.Where(o => !associatedGroupIds.Contains(o.Id)))
                     {
                         try
                         {
@@ -834,10 +877,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 }
                             }
 
-                            foreach (var member in group.Users)
+                            //make sure we not include Members twice as they are alreday in AdditionalOwner/Member/Visitor
+                            if (!associatedGroupIds.Contains(group.Id))
                             {
-                                scope.LogDebug("Processing member {0} of group {0}", member.LoginName, group.Title);
-                                siteGroup.Members.Add(new User() { Name = member.LoginName });
+                                foreach (var member in group.Users)
+                                {
+                                    scope.LogDebug("Processing member {0} of group {0}", member.LoginName, group.Title);
+                                    siteGroup.Members.Add(new User() { Name = member.LoginName });
+                                }
                             }
                             siteSecurity.SiteGroups.Add(siteGroup);
                         }
