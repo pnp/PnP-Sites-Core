@@ -709,7 +709,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         {
                             // and if not make it relative to the current root site, if it is from the current host
                             var webUrl = web.EnsureProperty(w => w.Url);
-                            var hostUrl = webUrl.Substring(0, webUrl.IndexOf("/", 9));
+                            var slashIndex = webUrl.IndexOf("/", 9);
+                            var hostUrl = string.Empty;
+                            if (slashIndex == -1)
+                            {
+                                // Assume we're in a root site
+                                hostUrl = webUrl;
+                            }
+                            else
+                            {
+                                hostUrl = webUrl.Substring(0, slashIndex);
+                            }
                             if (s.StartsWith(hostUrl))
                             {
                                 s = s.Substring(hostUrl.Length);
