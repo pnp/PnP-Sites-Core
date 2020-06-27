@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## Changed
 
+- Added an {fqdn} token to the provisioning engine which resolves to yourtenant.sharepoint.com (full qualified domain name) without scheme (unlike {hosturl} which does include the scheme) [erwinvanhunen - Erwin van Hunen]
+- Updated the token parser in the provisioning engine: you can now use {pageuniqueid:/path/topage.aspx} tokens to reference to pages that are not in the template. If the token at application time cannot be resolved it will not be replaced with "" but kept in place as is. [erwinvanhunen - Erwin van Hunen]
 - Fixed issue when extract a template with a page from the rootsite when choosing to extract assets [erwinvanhunen - Erwin van Hunen]
 - Adding authentication cookies for SPO Admin domain #2687 [koenzomers - Koen Zomers]
 - Call ParseString for webSettings.SearchCenterUrl #2686 [cebud - Martin Dubec]

@@ -134,6 +134,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             _tokens.Add(new AuthenticationRealmToken(web));
 #endif
             _tokens.Add(new HostUrlToken(web));
+            _tokens.Add(new FqdnToken(web));
             AddResourceTokens(web, hierarchy.Localizations, hierarchy.Connector);
             _initializedFromHierarchy = true;
         }
@@ -220,6 +221,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #endif
             if (tokenIds.Contains("hosturl"))
                 _tokens.Add(new HostUrlToken(web));
+            if (tokenIds.Contains("fqdn"))
+                _tokens.Add(new FqdnToken(web));
 #if !ONPREMISES
             if (tokenIds.Contains("sitecollectionconnectedoffice365groupid"))
                 _tokens.Add(new SiteCollectionConnectedOffice365GroupId(web));
@@ -276,6 +279,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (tokenIds.Contains("apppackageid"))
                 AddAppPackagesTokens(web);
 #endif
+            if (tokenIds.Contains("pageuniqueid"))
+                AddPageUniqueIdTokens(web, applyingInformation);
 
             // TermStore related tokens
             AddTermStoreTokens(web, tokenIds);
@@ -609,6 +614,29 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
         }
 
+        private void AddPageUniqueIdTokens(Web web, ProvisioningTemplateApplyingInformation applyingInformation)
+        {
+
+            var pagesList = web.GetListByUrl("SitePages", p => p.RootFolder);
+
+            var query = new CamlQuery()
+            {
+                ViewXml = $"<View><ViewFields><FieldRef Name='UniqueId'/><FieldRef Name='FileLeafRef' /></ViewFields></View><RowLimit Paging='TRUE'>100</RowLimit>"
+            };
+            do
+            {
+                var items = pagesList.GetItems(query);
+                web.Context.Load(items);
+                web.Context.ExecuteQueryRetry();
+                foreach (var item in items)
+                {
+                    _tokens.Add(new PageUniqueIdToken(web, $"SitePages/{item["FileLeafRef"]}", Guid.Parse(item["UniqueId"].ToString())));
+                    _tokens.Add(new PageUniqueIdEncodedToken(web, $"SitePages/{item["FileLeafRef"]}", Guid.Parse(item["UniqueId"].ToString())));
+                }
+                query.ListItemCollectionPosition = items.ListItemCollectionPosition;
+            } while (query.ListItemCollectionPosition != null);
+        }
+
         private void AddSiteScriptTokens(Web web, ProvisioningTemplateApplyingInformation applyingInformation)
         {
             try
@@ -687,7 +715,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 {
                     _tokens.Add(new ListViewIdToken(web, list.Title, view.Title, view.Id));
                 }
-                
+
                 foreach (var contentType in list.ContentTypes)
                 {
                     _tokens.Add(new ListContentTypeIdToken(web, list.Title, contentType.Name, contentType.Id));
