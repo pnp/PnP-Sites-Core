@@ -757,19 +757,26 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 var visitorGroup = web.AssociatedVisitorGroup;
                 web.Context.ExecuteQueryRetry();
 
+                bool executeQueryNeeded = false;
                 if (!ownerGroup.ServerObjectIsNull.Value)
                 {
                     web.Context.Load(ownerGroup, o => o.Id, o => o.Users, o => o.Title);
+                    executeQueryNeeded = true;
                 }
                 if (!memberGroup.ServerObjectIsNull.Value)
                 {
                     web.Context.Load(memberGroup, o => o.Id, o => o.Users, o => o.Title);
+                    executeQueryNeeded = true;
                 }
                 if (!visitorGroup.ServerObjectIsNull.Value)
                 {
                     web.Context.Load(visitorGroup, o => o.Id, o => o.Users, o => o.Title);
+                    executeQueryNeeded = true;
                 }
-                web.Context.ExecuteQueryRetry();
+                if (executeQueryNeeded)
+                {
+                    web.Context.ExecuteQueryRetry();
+                }
 
                 List<int> associatedGroupIds = new List<int>();
                 var owners = new List<User>();
