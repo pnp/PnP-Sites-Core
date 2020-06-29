@@ -1671,7 +1671,11 @@ namespace Microsoft.SharePoint.Client
             catch (ServerException ex)
             {
                 // Handling the exception stating the "The object specified does not belong to a list."
+#if !ONPREMISES
+                if (ex.ServerErrorCode != -2113929210)
+#else
                 if (ex.ServerErrorCode != -2146232832)
+#endif
                 {
                     throw;
                 }
