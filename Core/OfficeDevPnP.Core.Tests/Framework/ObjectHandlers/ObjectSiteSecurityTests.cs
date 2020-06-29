@@ -576,7 +576,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     var parser = new TokenParser(ctx.Web, template);
                     new ObjectSiteSecurity().ProvisionObjects(web, template, parser, new ProvisioningTemplateApplyingInformation());
 
-#if !SP2019
+#if SP2019
                     await WaitForAsyncGroupTitleChangeWithTimeout(ctx);
 #endif
 
@@ -647,7 +647,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                     var parser = new TokenParser(ctx.Web, template);
                     new ObjectSiteSecurity().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
-#if !SP2019
+#if SP2019
                     await WaitForAsyncGroupTitleChangeWithTimeout(ctx);
 #endif
 
@@ -716,7 +716,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                     var parser = new TokenParser(ctx.Web, template);
                     new ObjectSiteSecurity().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
-#if !SP2019
+#if SP2019
                     await WaitForAsyncGroupTitleChangeWithTimeout(ctx);
 #endif
 
@@ -795,7 +795,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     // first provision - site titles are not yet in place
                     new ObjectSiteSecurity().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
                     // wait for async rename
-#if !SP2019
+#if SP2019
                     await WaitForAsyncGroupTitleChangeWithTimeout(ctx);
 #endif
 
@@ -863,7 +863,7 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                     var parser = new TokenParser(ctx.Web, template);
                     // wait for async rename
-#if !SP2019
+#if SP2019
                     await WaitForAsyncGroupTitleChangeWithTimeout(ctx);
 #endif
                     // now provision - new site titles are in place
