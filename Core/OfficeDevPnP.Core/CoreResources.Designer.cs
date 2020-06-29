@@ -2592,27 +2592,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /**
-        /// * PnP SharePoint - Responsiveness
-        /// * @see {@link https://github.com/SharePoint/PnP-Guidance/blob/master/articles/Embedding-JavaScript-into-SharePoint.md|PnP Guidance}
-        /// * @see {@link http://usejsdoc.org/|JSDoc}
-        /// */
+        ///   Looks up a localized string similar to  /* SP-Responsive-UI.js
         ///
-        ////*
-        /// * PnPResponsiveApp Namespace
-        /// * @namespace
-        /// */
-        ///if (window.hasOwnProperty(&apos;Type&apos;)) {
-        ///    Type.registerNamespace(&apos;PnPResponsiveApp&apos;);
-        ///} else {
-        ///    window.PnPResponsiveApp = window.PnPResponsiveApp || {};
-        ///}
+        ///512 characters to avoid compiler warnings inside the summary
         ///
-        ////**
-        /// * PnP Responsive Main Class
-        /// * @class
-        /// */
-        ///PnPResponsiveApp [rest of string was truncated]&quot;;.
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///1234567890123 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI {
             get {
@@ -2621,35 +2609,15 @@ namespace OfficeDevPnP.Core {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to /*
-        /// * Hide all HTML nodes that don&apos;t have to appear
-        /// */
+        ///   Looks up a localized string similar to  /* SP-Responsive-UI_CSS.css
         ///
-        ///.mobile-only {
-        ///    display: none;
-        ///}
+        ///512 characters to avoid compiler warnings inside the summary
         ///
-        ///#sideNavBox,
-        ///#contentRow,
-        ///#siteIcon {
-        ///    -webkit-transition: all 400ms ease;
-        ///    -moz-transition: all 400ms ease;
-        ///    -ms-transition: all 400ms ease;
-        ///    -o-transition: all 400ms ease;
-        ///    transition: all 400ms ease;
-        ///}
-        ///#s4-bodyContainer .contentwrapper,
-        ///#contentBox {
-        ///    min-width: auto;
-        ///}
-        ///
-        ////* Make sure dialog windows don&apos;t break */
-        ///
-        ///.ms-dialog #contentRow {
-        ///    margin-left: 0;
-        ///}
-        ///
-        ///.ms-d [rest of string was truncated]&quot;;.
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///1234567890123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
+        ///12345678 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SP_Responsive_UI_CSS {
             get {
