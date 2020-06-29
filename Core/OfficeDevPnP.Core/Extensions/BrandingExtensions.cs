@@ -1552,7 +1552,7 @@ namespace Microsoft.SharePoint.Client
 #if DEBUG || DEBUG15 || DEBUG16 || DEBUG19
                                     CoreResources.SP_Responsive_UI
 #else
-                                    CoreResources.SP_Responsive_UI_MIN
+                                    CoreResources.SP_Responsive_UI_min
 #endif
                                     , 
                                     "SP-Responsive-UI.js");
