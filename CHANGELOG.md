@@ -10,6 +10,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
 ## Added
 
+- Added possibility to set AllowDeletion for a field #2688 [jensotto - Jens Otto Hatlevold]
+
 ## Changed
 
 - Added an {fqdn} token to the provisioning engine which resolves to yourtenant.sharepoint.com (full qualified domain name) without scheme (unlike {hosturl} which does include the scheme) [erwinvanhunen - Erwin van Hunen]
