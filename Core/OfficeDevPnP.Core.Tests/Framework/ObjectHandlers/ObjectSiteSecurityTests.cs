@@ -805,10 +805,15 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     var newVisitorGroupId = ctx.Web.AssociatedVisitorGroup.Id;
                     var newGroupCount = ctx.Web.SiteGroups.Count;
 
+#if SP2019
                     Assert.AreEqual(oldOwnerGroupId, newOwnerGroupId, "Expected owners group to stay the same");
+                    Assert.AreEqual(oldGroupCount, newGroupCount, "Expected no new groups to be created");
+#else
+                    Assert.AreNotEqual(oldOwnerGroupId, newOwnerGroupId, "Expected owners group is different since the added group 'Site Owners' was seen as a new group due to the waiting for async site creation completion in SPO");
+                    Assert.AreEqual(oldGroupCount, newGroupCount - 1, "Expected owners group is different since the added group 'Site Owners' was seen as a new group due to the waiting for async site creation completion in SPO");
+#endif
                     Assert.AreEqual(oldMemberGroupId, newMemberGroupId, "Expected members group to stay the same");
                     Assert.AreEqual(oldVisitorGroupId, newVisitorGroupId, "Expected visitors group to stay the same");
-                    Assert.AreEqual(oldGroupCount, newGroupCount, "Expected no new groups to be created");
                 }
             }
             finally
