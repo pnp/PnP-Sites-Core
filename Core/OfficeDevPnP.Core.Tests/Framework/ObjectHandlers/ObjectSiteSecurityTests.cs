@@ -576,7 +576,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     var parser = new TokenParser(ctx.Web, template);
                     new ObjectSiteSecurity().ProvisionObjects(web, template, parser, new ProvisioningTemplateApplyingInformation());
 
+#if !SP2019
                     await WaitForAsyncGroupTitleChangeWithTimeout(ctx);
+#endif
 
                     ctx.Load(web,
                         w => w.SiteGroups,
@@ -645,7 +647,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                     var parser = new TokenParser(ctx.Web, template);
                     new ObjectSiteSecurity().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+#if !SP2019
                     await WaitForAsyncGroupTitleChangeWithTimeout(ctx);
+#endif
 
                     ctx.Load(ctx.Web,
                         w => w.AssociatedOwnerGroup.Id,
@@ -712,7 +716,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                     var parser = new TokenParser(ctx.Web, template);
                     new ObjectSiteSecurity().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
+#if !SP2019
                     await WaitForAsyncGroupTitleChangeWithTimeout(ctx);
+#endif
 
                     LoadAssociatedOwnerGroupsData(ctx, true);
                     var newOwnerGroupId = ctx.Web.AssociatedOwnerGroup.Id;
@@ -789,7 +795,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
                     // first provision - site titles are not yet in place
                     new ObjectSiteSecurity().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
                     // wait for async rename
+#if !SP2019
                     await WaitForAsyncGroupTitleChangeWithTimeout(ctx);
+#endif
 
                     LoadAssociatedOwnerGroupsData(ctx);
                     var newOwnerGroupId = ctx.Web.AssociatedOwnerGroup.Id;
@@ -855,7 +863,9 @@ namespace OfficeDevPnP.Core.Tests.Framework.ObjectHandlers
 
                     var parser = new TokenParser(ctx.Web, template);
                     // wait for async rename
+#if !SP2019
                     await WaitForAsyncGroupTitleChangeWithTimeout(ctx);
+#endif
                     // now provision - new site titles are in place
                     new ObjectSiteSecurity().ProvisionObjects(ctx.Web, template, parser, new ProvisioningTemplateApplyingInformation());
 
