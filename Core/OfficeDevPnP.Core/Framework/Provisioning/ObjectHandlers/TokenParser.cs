@@ -278,9 +278,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 #if !ONPREMISES
             if (tokenIds.Contains("apppackageid"))
                 AddAppPackagesTokens(web);
-#endif
             if (tokenIds.Contains("pageuniqueid"))
                 AddPageUniqueIdTokens(web, applyingInformation);
+#endif
 
             // TermStore related tokens
             AddTermStoreTokens(web, tokenIds);
