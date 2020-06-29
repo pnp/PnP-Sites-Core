@@ -19,6 +19,53 @@ namespace Microsoft.SharePoint.Client
         #region Site Columns
 
         /// <summary>
+        /// Sets the AllowDeletion property on a field.
+        /// Note 1: This method will load <paramref name="field"/>.SchemaXmlWithResourceTokens if it's not already loaded by the caller.
+        /// Note 2: This method does not update the field nor execute the query.
+        /// </summary>
+        /// <param name="field">Field to be processed</param>
+        /// <param name="AllowDeletion">False blocks field deletion, True enables field deletion. Null uses field default behavior.</param>
+        public static void SetAllowDeletion(this Field field, bool? AllowDeletion)
+        {
+            field.EnsureProperty(f => f.SchemaXmlWithResourceTokens);
+            XElement fieldElement = XElement.Parse(field.SchemaXmlWithResourceTokens);
+            fieldElement.SetAttributeValue("AllowDeletion", AllowDeletion.HasValue ? (AllowDeletion.Value ? "TRUE" : "FALSE") : null);
+            field.SchemaXml = fieldElement.ToString();
+        }
+
+        /// <summary>
+        /// Gets the AllowDeletion property from a field.
+        /// Note 1: This method will load <paramref name="field"/>.SchemaXmlWithResourceTokens if not any of the properties <paramref name="field"/>.SchemaXmlWithResourceTokens or <paramref name="field"/>.SchemaXml is already loaded by the caller.
+        /// </summary>
+        /// <param name="field">Field to be processed</param>
+        /// <returns>Returns false if field deletion is not allowed, true if field deletion is allowed, and null if the field default behavior is used to determine if field deletion is allowed.</returns>
+        public static bool? GetAllowDeletion(this Field field)
+        {
+            string schemaXml;
+            if (field.IsPropertyAvailable(f => f.SchemaXml))
+            {
+                schemaXml = field.SchemaXml;
+            }
+            else
+            {
+                field.EnsureProperty(f => f.SchemaXmlWithResourceTokens);
+                schemaXml = field.SchemaXmlWithResourceTokens;
+            }
+
+            XElement fieldElement = XElement.Parse(schemaXml);
+            XAttribute allowDeletion = fieldElement.Attribute("AllowDeletion");
+            
+            if (allowDeletion == null)
+            {
+                return null;
+            }
+            else
+            {
+                return bool.Parse(allowDeletion.Value);
+            }
+        }
+
+        /// <summary>
         /// Create field to web remotely
         /// </summary>
         /// <param name="web">Site to be processed - can be root web or sub site</param>
