@@ -290,7 +290,7 @@ namespace OfficeDevPnP.Core.Framework.Graph
         /// </summary>
         /// <param name="members">UPNs of users that need to be added as a member to the group</param>
         /// <param name="graphClient">GraphClient instance to use to communicate with the Microsoft Graph</param>
-        /// <param name="/// <param name="groupId">Id of the group which needs the owners added</param>">Id of the group which needs the owners added</param>
+        /// <param name="groupId">Id of the group which needs the owners added</param>
         /// <param name="removeOtherMembers">If set to true, all existing members which are not specified through <paramref name="members"/> will be removed as a member from the group</param>
         private static async Task UpdateMembers(string[] members, GraphServiceClient graphClient, string groupId, bool removeOtherMembers)
         {
