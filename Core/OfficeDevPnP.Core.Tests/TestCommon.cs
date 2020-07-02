@@ -406,8 +406,7 @@ namespace OfficeDevPnP.Core.Tests
             //var tenantId = GetTenantIdByUrl(TestCommon.AppSetting("SPOTenantUrl"));
             if (tenantId == null) return null;
 
-            var clientId = TestCommon.AppSetting("AppId");
-            var clientSecret = TestCommon.AppSetting("AppSecret");
+            var clientId = TestCommon.AppSetting("AzureADClientId");
 
             if (string.IsNullOrEmpty(clientId) || Password == null || string.IsNullOrEmpty(UserName))
             {
