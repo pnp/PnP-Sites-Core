@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Enhanced OnPremises Support (SP2019) + UnitTests #2654 [gzdev]
 - Fix preserve SPGroup Config also for Associated Groups #2611 [czullu - Christian Zuellig]
 - Parse user names when adding them as part of the teams security element during provisioning
+- Fix UpdateListItem: Ignore ID column. ID column cannot be updated. #2692 [gzdev]
 
 ## [3.22.2006.2 - June 2020 release]
 
