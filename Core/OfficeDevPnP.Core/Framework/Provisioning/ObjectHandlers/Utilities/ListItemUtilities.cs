@@ -284,6 +284,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
                 if (field != null)
                 {
+                    if (field.InternalName.Equals("ID", StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        // Ignor ID column. ID column cannot be updated (Exception: This field cannot be updated.)
+                        // Sometimes the ID column is used as KeyColumn for DataRows.
+                        continue;
+                    }
+
                     var value = parser.ParseString(valuesToSet[key]);
 
                     switch (field.TypeAsString)
@@ -451,7 +458,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         case "DateTime":
                             {
                                 if (value == null) goto default;
-                                if(DateTime.TryParse(value, out DateTime dateTimeValue))
+                                if (DateTime.TryParse(value, out DateTime dateTimeValue))
                                 {
                                     itemValues.Add(new FieldUpdateValue(key as string, dateTimeValue));
                                 }
