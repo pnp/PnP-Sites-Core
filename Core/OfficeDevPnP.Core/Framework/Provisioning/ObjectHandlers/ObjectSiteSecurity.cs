@@ -82,7 +82,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 var ownerGroupCandidate = web.SiteGroups.GetByName(parsedAssociatedOwnerGroupName);
                                 web.Context.Load(ownerGroupCandidate,
                                     g => g.Id);
-                                web.Context.Load(web.AssociatedOwnerGroup, 
+                                web.Context.Load(web.AssociatedOwnerGroup,
                                     g => g.Id);
                                 web.Context.ExecuteQueryRetry();
                                 // there is no associated group yet OR
@@ -92,7 +92,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     web.AssociatedOwnerGroup = ownerGroupCandidate;
                                     web.Update();
                                 }
-                            } else
+                            }
+                            else
                             {
                                 scope.LogWarning("Failed to assign '{0}' as associated owner group. Group does not exist.", parsedAssociatedOwnerGroupName);
                             }
@@ -119,7 +120,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                 // does throw exception "Value cannot be null" - todo: how to clear the group?
                                 //web.AssociatedMemberGroup = null;
                                 //web.Update();
-                            } else if (web.GroupExists(parsedAssociatedMemberGroupName))
+                            }
+                            else if (web.GroupExists(parsedAssociatedMemberGroupName))
                             {
                                 var memberGroupCandidate = web.SiteGroups.GetByName(parsedAssociatedMemberGroupName);
                                 web.Context.Load(memberGroupCandidate,
@@ -188,9 +190,10 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                         {
                             web.Context.ExecuteQueryRetry();
                         }
-                    } else
+                    }
+                    else
                     {
-                        if (createNewAssociatedOwnerGroup || createNewAssociatedMemberGroup || createNewAssociatedVisitorGroup || setAssociatedOwnerGroup || setAssociatedMemberGroup|| setAssociatedVisitorGroup)
+                        if (createNewAssociatedOwnerGroup || createNewAssociatedMemberGroup || createNewAssociatedVisitorGroup || setAssociatedOwnerGroup || setAssociatedMemberGroup || setAssociatedVisitorGroup)
                         {
                             scope.LogWarning("Won't modify associated group configuration since the template is applied to a NoScript site.");
                         }
@@ -248,14 +251,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (!ownerGroup.ServerObjectIsNull())
                 {
                     AddUserToGroup(web, ownerGroup, siteSecurity.AdditionalOwners, scope, parser);
+
+                    parser.AddToken(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.owners));                    
                 }
                 if (!memberGroup.ServerObjectIsNull())
                 {
                     AddUserToGroup(web, memberGroup, siteSecurity.AdditionalMembers, scope, parser);
+
+                    parser.AddToken(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.members));                    
                 }
                 if (!visitorGroup.ServerObjectIsNull())
-                {
+                {                    
                     AddUserToGroup(web, visitorGroup, siteSecurity.AdditionalVisitors, scope, parser);
+
+                    parser.AddToken(new AssociatedGroupToken(web, AssociatedGroupToken.AssociatedGroupType.visitors));
                 }
 
                 foreach (var siteGroup in siteSecurity.SiteGroups
@@ -339,6 +348,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                             g => g.RequestToJoinLeaveEmailSetting,
                             g => g.Owner.LoginName);
                         web.Context.ExecuteQueryRetry();
+                        parser.AddToken(new GroupIdToken(web, group.Title, group.Id.ToString()));
 
                         var groupNeedsUpdate = false;
                         var executeQuery = false;
@@ -960,7 +970,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             }
             if (!string.IsNullOrEmpty(web.Title))
             {
-                loginName = loginName.Replace(System.Text.RegularExpressions.Regex.Replace(web.Title, "[\"/\\[\\]\\\\:|<>+=;,?*\'@]", "_"), "{groupsitename}"); 
+                loginName = loginName.Replace(System.Text.RegularExpressions.Regex.Replace(web.Title, "[\"/\\[\\]\\\\:|<>+=;,?*\'@]", "_"), "{groupsitename}");
             }
             return loginName;
         }
