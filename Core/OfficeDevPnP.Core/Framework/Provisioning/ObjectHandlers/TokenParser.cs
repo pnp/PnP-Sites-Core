@@ -281,6 +281,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             if (tokenIds.Contains("pageuniqueid"))
                 AddPageUniqueIdTokens(web, applyingInformation);
 #endif
+            if (tokenIds.Contains("propertybagvalue"))
+                AddPropertyBagTokens(web);
 
             // TermStore related tokens
             AddTermStoreTokens(web, tokenIds);
@@ -386,6 +388,16 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             foreach (var roleDef in web.RoleDefinitions)
             {
                 _tokens.Add(new RoleDefinitionIdToken(web, roleDef.Name, roleDef.Id));
+            }
+        }
+
+        private void AddPropertyBagTokens(Web web)
+        {
+            web.EnsureProperty(w => w.AllProperties);
+
+            foreach (var keyValue in web.AllProperties.FieldValues)
+            {
+                _tokens.Add(new PropertyBagValueToken(web, keyValue.Key, keyValue.Value.ToString()));
             }
         }
 
