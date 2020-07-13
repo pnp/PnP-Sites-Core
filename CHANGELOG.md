@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 - Parse user names when adding them as part of the teams security element during provisioning
 - Fix UpdateListItem: Ignore ID column. ID column cannot be updated. #2692 [gzdev]
 - Updated version of SP-Responsive-UI files (js, css) #2693 [gzdev]
+- Fix: Token parsing changes #2701 [gautamdsheth - Gautam Sheth]
 
 ## [3.22.2006.2 - June 2020 release]
 
