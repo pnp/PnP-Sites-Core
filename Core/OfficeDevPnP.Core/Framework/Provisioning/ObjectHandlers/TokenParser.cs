@@ -16,6 +16,7 @@ using System.Linq;
 using System.Resources;
 using System.Text.RegularExpressions;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Framework.Graph;
 #if NETSTANDARD2_0
 using System.Xml.Linq;
 #endif
@@ -431,16 +432,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                 if (accessToken != null)
                 {
                     // Get Office 365 Groups
-
-                    var officeGroups = HttpHelper.MakeGetRequestForString("https://graph.microsoft.com/v1.0/groups?$filter=groupTypes/any(c:c+eq+'Unified')&$select=id,displayName,mailNickname", accessToken);
-                    var returnObject = JObject.Parse(officeGroups);
-                    var groupsArray = returnObject["value"].Value<JArray>();
-                    foreach (var group in groupsArray)
+                    var officeGroups = UnifiedGroupsUtility.GetUnifiedGroups(accessToken, includeSite: false); 
+                    foreach (var group in officeGroups)
                     {
-                        _tokens.Add(new O365GroupIdToken(web, group["displayName"].Value<string>(), group["id"].Value<string>()));
-                        if (!group["displayName"].Value<string>().Equals(group["mailNickname"].Value<string>()))
+                        _tokens.Add(new O365GroupIdToken(web, group.DisplayName, group.GroupId));
+                        if (!group.DisplayName.Equals(group.MailNickname))
                         {
-                            _tokens.Add(new O365GroupIdToken(web, group["mailNickname"].Value<string>(), group["id"].Value<string>()));
+                            _tokens.Add(new O365GroupIdToken(web, group.MailNickname, group.GroupId));
                         }
                     }
                 }

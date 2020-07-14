@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 #if NETSTANDARD2_0
 using System.Net;
 #endif
@@ -28,23 +29,27 @@ namespace Microsoft.SharePoint.Client
         /// <returns>List of <see cref="OfficeDevPnP.Core.Entities.UserEntity"/> objects</returns>
         public static List<UserEntity> GetAdministrators(this Web web)
         {
-            var users = web.SiteUsers;
-            web.Context.Load(users);
+            var retrievalExpressions = new Expression<Func<User, object>>[]
+            {
+                u => u.Title,
+                u => u.LoginName,
+                u => u.Email
+            };
+
+            var users = web.SiteUsers.Where(u => u.IsSiteAdmin);
+            var adminUsers = web.Context.LoadQuery(users.Include(retrievalExpressions));
             web.Context.ExecuteQueryRetry();
 
             List<UserEntity> admins = new List<UserEntity>();
 
-            foreach (var u in users)
+            foreach (var u in adminUsers)
             {
-                if (u.IsSiteAdmin)
+                admins.Add(new UserEntity()
                 {
-                    admins.Add(new UserEntity()
-                    {
-                        Title = u.Title,
-                        LoginName = u.LoginName,
-                        Email = u.Email,
-                    });
-                }
+                    Title = u.Title,
+                    LoginName = u.LoginName,
+                    Email = u.Email,
+                });
             }
 
             return admins;
@@ -91,18 +96,24 @@ namespace Microsoft.SharePoint.Client
         /// <param name="admin"><see cref="OfficeDevPnP.Core.Entities.UserEntity"/> that describes the admin to be removed</param>
         public static void RemoveAdministrator(this Web web, UserEntity admin)
         {
-            var users = web.SiteUsers;
-            web.Context.Load(users);
+            var retrievalExpressions = new Expression<Func<User, object>>[]
+            {
+                u => u.Title,
+                u => u.LoginName,
+                u => u.Email
+            };
+
+            var users = web.SiteUsers.Where(u => u.IsSiteAdmin);
+            var adminUsers = web.Context.LoadQuery(users.Include(retrievalExpressions));
             web.Context.ExecuteQueryRetry();
 
-            var adminToRemove = users.FirstOrDefault(u => String.Equals(u.LoginName, admin.LoginName, StringComparison.CurrentCultureIgnoreCase));
-            if (adminToRemove != null && adminToRemove.IsSiteAdmin)
+            var adminToRemove = adminUsers.FirstOrDefault(u => String.Equals(u.LoginName, admin.LoginName, StringComparison.CurrentCultureIgnoreCase));
+            if (adminToRemove != null)
             {
                 adminToRemove.IsSiteAdmin = false;
                 adminToRemove.Update();
                 web.Context.ExecuteQueryRetry();
             }
-
         }
 
 
