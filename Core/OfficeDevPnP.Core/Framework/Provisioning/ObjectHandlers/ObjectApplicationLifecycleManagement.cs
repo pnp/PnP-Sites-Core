@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 {
-#if !ONPREMISES
+#if !SP2013 && !SP2016
     internal class ObjectApplicationLifecycleManagement : ObjectHandlerBase
     {
         public override string Name

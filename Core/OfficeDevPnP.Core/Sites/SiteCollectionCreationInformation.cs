@@ -1,4 +1,4 @@
-﻿#if !ONPREMISES
+﻿#if !SP2013 && !SP2016
 using System;
 
 namespace OfficeDevPnP.Core.Sites
@@ -149,6 +149,7 @@ namespace OfficeDevPnP.Core.Sites
         }
     }
 
+#if !ONPREMISES
     /// <summary>
     /// Class for site groupify information
     /// </summary>
@@ -182,7 +183,7 @@ namespace OfficeDevPnP.Core.Sites
         {
         }
     }
-
+#endif
     /// <summary>
     /// Class for group site creation information
     /// </summary>

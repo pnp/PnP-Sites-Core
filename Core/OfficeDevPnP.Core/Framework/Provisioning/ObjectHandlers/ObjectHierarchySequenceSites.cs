@@ -259,13 +259,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     if (groupSiteInfo == null)
                                     {
                                         string graphAccessToken = null;
-                                        try
+
+                                        if (PnPProvisioningContext.Current != null)
                                         {
-                                            graphAccessToken = PnPProvisioningContext.Current.AcquireCookie(Core.Utilities.Graph.GraphHelper.MicrosoftGraphBaseURI);
-                                        }
-                                        catch
-                                        {
-                                            graphAccessToken = PnPProvisioningContext.Current.AcquireToken(Core.Utilities.Graph.GraphHelper.MicrosoftGraphBaseURI, null);
+                                            try
+                                            {
+                                                graphAccessToken = PnPProvisioningContext.Current.AcquireCookie(Core.Utilities.Graph.GraphHelper.MicrosoftGraphBaseURI);
+                                            }
+                                            catch
+                                            {
+                                                graphAccessToken = PnPProvisioningContext.Current.AcquireToken(Core.Utilities.Graph.GraphHelper.MicrosoftGraphBaseURI, null);
+                                            }
                                         }
                                         WriteMessage($"Creating Team Site {siteInfo.Alias}", ProvisioningMessageType.Progress);
                                         siteContext = Sites.SiteCollection.Create(rootSiteContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait, graphAccessToken: graphAccessToken);

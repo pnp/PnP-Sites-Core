@@ -6,7 +6,33 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/).
 
-## [3.22.2006.1 - June 2020 release]
+## [3.23.2007.0 July 2020 release]
+
+## Added
+
+- Added possibility to set AllowDeletion for a field #2688 [jensotto - Jens Otto Hatlevold]
+
+## Changed
+
+- Added an {fqdn} token to the provisioning engine which resolves to yourtenant.sharepoint.com (full qualified domain name) without scheme (unlike {hosturl} which does include the scheme) [erwinvanhunen - Erwin van Hunen]
+- Updated the token parser in the provisioning engine: you can now use {pageuniqueid:/path/topage.aspx} tokens to reference to pages that are not in the template. If the token at application time cannot be resolved it will not be replaced with "" but kept in place as is. [erwinvanhunen - Erwin van Hunen]
+- Fixed issue when extract a template with a page from the rootsite when choosing to extract assets [erwinvanhunen - Erwin van Hunen]
+- Adding authentication cookies for SPO Admin domain #2687 [koenzomers - Koen Zomers]
+- Call ParseString for webSettings.SearchCenterUrl #2686 [cebud - Martin Dubec]
+- Fix incorrect onprem eventreceiver reference #2684 [jensotto - Jens Otto Hatlevold]
+- Added methods for adding/removing/clearing members and owners of M365 Groups #2683 [koenzomers - Koen Zomers]
+- Fix for GetProvisioningTemplate and ApplyProvisioningTemplate to being stucked in Windows Forms applications. #2681 [brank - Brandon Victoria]
+- Improve exception message when a file is not found during the provisioning #2679 [jackpoz - Giacomo Pozzoni]
+- Doc fix: Fixing duplicated sitecollectionidencoded token #2675 [cmzaragoza - Cristian M. Zaragoza]
+- Enhanced OnPremises Support (SP2019) + UnitTests #2654 [gzdev]
+- Fix preserve SPGroup Config also for Associated Groups #2611 [czullu - Christian Zuellig]
+- Parse user names when adding them as part of the teams security element during provisioning
+- Fix UpdateListItem: Ignore ID column. ID column cannot be updated. #2692 [gzdev]
+- Updated version of SP-Responsive-UI files (js, css) #2693 [gzdev]
+- Fix: Token parsing changes #2701 [gautamdsheth - Gautam Sheth]
+- Fix: Site collection admin timeout issue #2702 [gautamdsheth - Gautam Sheth]
+
+## [3.22.2006.2 - June 2020 release]
 
 ### Added
 

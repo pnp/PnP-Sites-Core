@@ -1,864 +1,867 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{251C9DE3-A549-4530-8CAD-2EF3FF79A4CD}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OfficeDevPnP.Core.Tests</RootNamespace>
-    <AssemblyName>OfficeDevPnP.Core.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
-    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
-    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
-    <IsCodedUITest>False</IsCodedUITest>
-    <TestProjectType>UnitTest</TestProjectType>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug15|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug15\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;ONPREMISES;SP2013</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release15|AnyCPU'">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release15\</OutputPath>
-    <DefineConstants>TRACE;ONPREMISES;SP2013</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release16|AnyCPU'">
-    <OutputPath>bin\Release16\</OutputPath>
-    <DefineConstants>TRACE;ONPREMISES;SP2016</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug16|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug16\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;ONPREMISES;SP2016</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug19|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Debug19\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;ONPREMISES;SP2019</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release19|AnyCPU'">
-    <OutputPath>bin\Release19\</OutputPath>
-    <DefineConstants>TRACE;ONPREMISES;SP2019</DefineConstants>
-    <Optimize>true</Optimize>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-  </PropertyGroup>
-  <Choose>
-    <When Condition=" '$(Configuration)' == 'debug' Or '$(Configuration)' == 'release' ">
-      <ItemGroup>
-        <Reference Include="Microsoft.Office.Client.Policy, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.1\Microsoft.Office.Client.Policy.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.Office.Client.TranslationServices, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.1\Microsoft.Office.Client.TranslationServices.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.Online.SharePoint.Client.Tenant, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.1\Microsoft.Online.SharePoint.Client.Tenant.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.DocumentManagement, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.DocumentManagement.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Publishing, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.Publishing.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Runtime, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Search, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.Search.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Search.Applications, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.Search.Applications.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Taxonomy, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.Taxonomy.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.UserProfiles, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.UserProfiles.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.WorkflowServices, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(Configuration)' == 'debug19' Or '$(Configuration)' == 'release19' ">
-      <ItemGroup>
-        <Reference Include="Microsoft.Office.Client.Policy, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.Office.Client.Policy.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.Office.Client.TranslationServices, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.Office.Client.TranslationServices.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.Online.SharePoint.Client.Tenant, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.Online.SharePoint.Client.Tenant.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.DocumentManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.DocumentManagement.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Publishing, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.Publishing.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Runtime, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Search, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.Search.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Search.Applications, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.Search.Applications.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Taxonomy, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.Taxonomy.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.UserProfiles, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.UserProfiles.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.WorkflowServices, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(Configuration)' == 'debug16' Or '$(Configuration)' == 'release16' ">
-      <ItemGroup>
-        <Reference Include="Microsoft.Office.Client.Policy, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0\Microsoft.Office.Client.Policy.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.Office.Client.TranslationServices, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0\Microsoft.Office.Client.TranslationServices.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.Online.SharePoint.Client.Tenant, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0\Microsoft.Online.SharePoint.Client.Tenant.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.DocumentManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.DocumentManagement.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Publishing, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.Publishing.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Runtime, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Search, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.Search.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Search.Applications, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.Search.Applications.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Taxonomy, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.Taxonomy.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.UserProfiles, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.UserProfiles.dll</HintPath>
-          <Private>True</Private>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.WorkflowServices, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="Microsoft.Office.Client.Policy, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\15\Microsoft.Office.Client.Policy.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.Office.Client.TranslationServices, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\15\Microsoft.Office.Client.TranslationServices.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.Online.SharePoint.Client.Tenant, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\15\Microsoft.Online.SharePoint.Client.Tenant.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.DocumentManagement, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.DocumentManagement.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Publishing, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.Publishing.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Runtime, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Search, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.Search.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Search.Applications, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.Search.Applications.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.Taxonomy, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.Taxonomy.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.UserProfiles, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.UserProfiles.dll</HintPath>
-        </Reference>
-        <Reference Include="Microsoft.SharePoint.Client.WorkflowServices, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
-  <ItemGroup>
-    <Reference Include="Microsoft.Data.Edm, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Data.Edm.5.8.4\lib\net40\Microsoft.Data.Edm.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Data.OData, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Data.OData.5.8.4\lib\net40\Microsoft.Data.OData.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Data.Services.Client, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Data.Services.Client.5.8.4\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAzure.Storage, Version=4.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Configuration" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.IdentityModel" />
-    <Reference Include="System.IdentityModel.Selectors" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Security" />
-    <Reference Include="System.ServiceModel" />
-    <Reference Include="System.ServiceModel.Web" />
-    <Reference Include="System.Spatial, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Spatial.5.8.4\lib\net40\System.Spatial.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Web.Services" />
-    <Reference Include="System.XML" />
-    <Reference Include="System.Xml.Linq" />
-  </ItemGroup>
-  <Choose>
-    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
-      </ItemGroup>
-    </When>
-    <Otherwise>
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
-          <Private>False</Private>
-        </Reference>
-      </ItemGroup>
-    </Otherwise>
-  </Choose>
-  <ItemGroup>
-    <Compile Include="ALM\ALMTests.cs" />
-    <Compile Include="Authentication\HighTrustAuthenticationTests.cs" />
-    <Compile Include="Extensions\BrandingExtensionsTests.cs" />
-    <Compile Include="Extensions\ClientObjectExtensionsTests.cs" />
-    <Compile Include="Extensions\FeatureExtensionsTests.cs" />
-    <Compile Include="Extensions\FieldAndContentTypeExtensionsTests.cs" />
-    <Compile Include="Extensions\JavaScriptExtensionsTests.cs" />
-    <Compile Include="Extensions\ListExtensionsTests.cs" />
-    <Compile Include="Extensions\ListRatingExtensionTest.cs" />
-    <Compile Include="Extensions\FileChangeTrackingTests.cs" />
-    <Compile Include="Extensions\SearchExtensionsTests.cs" />
-    <Compile Include="Extensions\SecurityExtensionsTests.cs" />
-    <Compile Include="Extensions\StructuralNavigationExtensionsTests.cs" />
-    <Compile Include="Extensions\TaxonomyExtensionsTests.cs" />
-    <Compile Include="Extensions\FileFolderExtensionsTests.cs" />
-    <Compile Include="Extensions\Tenant15ExtensionsTests.cs" />
-    <Compile Include="Extensions\TenantExtensionsTests.cs" />
-    <Compile Include="Extensions\NavigationExtensionsTests.cs" />
-    <Compile Include="Authentication\AuthenticationTests.cs" />
-    <Compile Include="Diagnostics\LogTests.cs" />
-    <Compile Include="Framework\CanProvisionRules\CanProvisionTests.cs" />
-    <Compile Include="Framework\Connectors\ConnectorAzureTests.cs" />
-    <Compile Include="Framework\Connectors\ConnectorFileSystemTests.cs" />
-    <Compile Include="Framework\Connectors\ConnectorOpenXmlTests.cs" />
-    <Compile Include="Framework\Connectors\ConnectorSharePointTests.cs" />
-    <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockHandler.cs" />
-    <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockInvalidHandler.cs" />
-    <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockTokenProvider.cs" />
-    <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTestConstants.cs" />
-    <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockProvider.cs" />
-    <Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTests.cs" />
-    <Compile Include="Framework\Functional\ComposedLookNoScriptTest.cs" />
-    <Compile Include="Framework\Functional\ContentTypeNoScriptTests.cs" />
-    <Compile Include="Framework\Functional\CustomActionNoScriptTests.cs" />
-    <Compile Include="Framework\Functional\FeatureNoScriptTests.cs" />
-    <Compile Include="Framework\Functional\FieldNoScriptTests.cs" />
-    <Compile Include="Framework\Functional\FilesNoScriptTests.cs" />
-    <Compile Include="Framework\Functional\FilesTests.cs" />
-    <Compile Include="Framework\Functional\Implementation\ComposedLookImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\ContentTypeImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\CustomActionImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\FeatureImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\FieldImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\FilesImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\ImplementationBase.cs" />
-    <Compile Include="Framework\Functional\Implementation\LanguageImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\ListImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\LocalizationImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\NavigationImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\PagesImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\PropertyBagImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\PublishingImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\RegionalSettingsImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\SearchSettingsImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\SecurityImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\TermGroupImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\WebSettingsImplementation.cs" />
-    <Compile Include="Framework\Functional\Implementation\WorkflowImplementation.cs" />
-    <Compile Include="Framework\Functional\LanguageNoScriptTests.cs" />
-    <Compile Include="Framework\Functional\ListNoScriptTests.cs" />
-    <Compile Include="Framework\Functional\ListTests.cs" />
-    <Compile Include="Framework\Functional\ComposedLookTest.cs" />
-    <Compile Include="Framework\Functional\CustomActionTests.cs" />
-    <Compile Include="Framework\Functional\FeatureTests.cs" />
-    <Compile Include="Framework\Functional\ContentTypeTests.cs" />
-    <Compile Include="Framework\Functional\FieldTests.cs" />
-    <Compile Include="Framework\Functional\FunctionalTestBase.cs" />
-    <Compile Include="Framework\Functional\LocalizationNoScriptTest.cs" />
-    <Compile Include="Framework\Functional\LocalizationTest.cs" />
-    <Compile Include="Framework\Functional\NavigationTests.cs" />
-    <Compile Include="Framework\Functional\PagesNoScriptTests.cs" />
-    <Compile Include="Framework\Functional\PagesTests.cs" />
-    <Compile Include="Framework\Functional\PropertyBagNoScriptTests.cs" />
-    <Compile Include="Framework\Functional\PublishingNoScriptTest.cs" />
-    <Compile Include="Framework\Functional\PublishingTest.cs" />
-    <Compile Include="Framework\Functional\RegionalSettingsNoScriptTests.cs" />
-    <Compile Include="Framework\Functional\SearchSettingNoScriptTests.cs" />
-    <Compile Include="Framework\Functional\SecurityNoScriptTests.cs" />
-    <Compile Include="Framework\Functional\SecurityTests.cs" />
-    <Compile Include="Framework\Functional\SitePolicyTests.cs" />
-    <Compile Include="Framework\Functional\TermGroupNoScriptTests.cs" />
-    <Compile Include="Framework\Functional\Validators\AuditSettingsValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\FilesValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\LanguageSettingsValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\LocalizationValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\NavigationValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\ClientSidePagesValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\PagesValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\SecurityValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\SitePolicyValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\TermGroupValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\WebSettingsValidator.cs" />
-    <Compile Include="Framework\Functional\LanguageTests.cs" />
-    <Compile Include="Framework\Functional\TermGroupTests.cs" />
-    <Compile Include="Framework\Functional\Validators\WorkflowValidator.cs" />
-    <Compile Include="Framework\Functional\WebSettingsNoScriptTests.cs" />
-    <Compile Include="Framework\Functional\WebSettingsTests.cs" />
-    <Compile Include="Framework\Functional\RegionalSettingsTests.cs" />
-    <Compile Include="Framework\Functional\SearchSettingTests.cs" />
-    <Compile Include="Framework\Functional\TestProvisioningTemplateResult.cs" />
-    <Compile Include="Framework\Functional\Validators\RegionalSettingsValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\SearchSettingValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\ListInstanceValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\ComposedLookValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\CustomActionValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\FeatureValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\ContentTypeValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\FieldValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\PublishingValidator.cs" />
-    <Compile Include="Framework\Functional\Validators\ValidateXmlEventArgs.cs" />
-    <Compile Include="Framework\Functional\Validators\ValidateEventArgs.cs" />
-    <Compile Include="Framework\Functional\Validators\ValidatorBase.cs" />
-    <Compile Include="Framework\Functional\Validators\PropertyBagValidator.cs" />
-    <Compile Include="Framework\Functional\PropertyBagTests.cs" />
-    <Compile Include="Framework\Functional\Validators\XmlCompare.cs" />
-    <Compile Include="Framework\Functional\Validators\XmlEqualityResult.cs" />
-    <Compile Include="Framework\Functional\WorkflowsNoScriptTests.cs" />
-    <Compile Include="Framework\Functional\WorkflowsTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectAuditSettingsTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectLookupFieldsTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectRegionalSettingsTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectSupportedUILanguagesTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectComposedLookTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectTeamsTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectTermGroupsTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectPagesTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectSiteSecurityTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectPropertyBagEntryTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectListInstanceTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectFilesTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectFeaturesTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectCustomActionsTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectFieldTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectContentTypeTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\ObjectWorkflowsTests.cs" />
-    <Compile Include="Framework\ObjectHandlers\TokenParserTests.cs" />
-    <Compile Include="Framework\Providers\BaseTemplateTests.cs" />
-    <Compile Include="Framework\Providers\Extensibility\SecureXml.cs" />
-    <Compile Include="Framework\Providers\Extensibility\XMLEncryptionTemplateProviderExtension.cs" />
-    <Compile Include="Framework\Providers\XMLProvidersTests.cs" />
-    <Compile Include="Framework\Providers\XMLSerializer202002Tests.cs" />
-    <Compile Include="Framework\Providers\XMLSerializer201909Tests.cs" />
-    <Compile Include="Framework\Providers\XMLSerializer201903Tests.cs" />
-    <Compile Include="Framework\ProvisioningTemplates\DomainModelTests.cs" />
-    <Compile Include="Framework\ProvisioningTemplates\ClientSidePageProvisioningTests.cs" />
-    <Compile Include="Framework\ProvisioningTemplates\ProvisioningTests.cs" />
-    <Compile Include="Pages\ClientSidePagesTests.cs" />
-    <Compile Include="Sites\SiteCollectionTests.cs" />
-    <Compile Include="Utilities\JsonUtilityTests.cs" />
-    <Compile Include="Utilities\EncryptionUtilityTests.cs" />
-    <Compile Include="Diagnostics\PnPMonitoredScopeTests.cs" />
-    <Compile Include="Utilities\ThemeUtilityTests.cs" />
-    <Compile Include="Utilities\UnifiedGroupsUtilityTests.cs" />
-    <Compile Include="Utilities\HttpHelperTests.cs" />
-    <Compile Include="Utilities\UrlUtilityTests.cs" />
-    <Compile Include="Extensions\WebExtensionsTests.cs" />
-    <Compile Include="Extensions\PageExtensionsTests.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="TestCommon.cs" />
-    <Compile Include="Utilities\WebParts\WebPartPostProcessorFactoryTests.cs" />
-    <Compile Include="Utilities\WebParts\XsltWebPartPostProcessorTests.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\OfficeDevPnP.Core\OfficeDevPnP.Core.csproj">
-      <Project>{F2077977-8EBF-409D-BBF4-8EFB328928A8}</Project>
-      <Name>OfficeDevPnP.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="App.config.sample" />
-    <None Include="Framework\Functional\Templates\ct3document.docx" />
-    <None Include="Framework\Functional\Templates\ct1document.docx" />
-    <None Include="Framework\Functional\Templates\CT21Document.docx" />
-    <None Include="Framework\Functional\Templates\CT20Document0101.docx" />
-    <None Include="Framework\Functional\Templates\CT20Document.docx" />
-    <None Include="Framework\Functional\Templates\DirFolder2MetaData.json" />
-    <None Include="Framework\Functional\Templates\DirFolder2\Doc4.docx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Framework\Functional\Templates\DirFolder2\Doc5.docx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Framework\Functional\Templates\DirFolderMetadata.json" />
-    <None Include="Framework\Functional\Templates\DirFolder\Doc1.docx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Framework\Functional\Templates\DirFolder\Doc2.docx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Framework\Functional\Templates\DirFolder\Doc3.docx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Framework\Functional\Templates\DirFolder\sub1\Doc7.docx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Framework\Functional\Templates\DirFolder\sub1\Doc6.docx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Framework\Functional\Templates\oslo.preview">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <Content Include="Framework\Functional\Templates\customaction_modern_add.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\files_add_1605.xml" />
-    <Content Include="Framework\Functional\Templates\list_delta_1705_1.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\list_add_1705.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\LocalizationPage2.aspx">
-      <SubType>ASPXCodeBehind</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\navigation_add_prereq.xml" />
-    <Content Include="Framework\Functional\Templates\navigation_add_1605.xml" />
-    <Content Include="Framework\Functional\Templates\navigation_add2_1605.xml" />
-    <Content Include="Framework\Functional\Templates\navigation_add3_1605.xml" />
-    <Content Include="Framework\Functional\Templates\clientsidepages_add_1705.xml" />
-    <Content Include="Framework\Functional\Templates\pnpfontscheme.spfont" />
-    <None Include="Framework\Functional\Templates\PnPDesignPackagev1.4-1.4.wsp" />
-    <None Include="Framework\Functional\Templates\garagewhite.spcolor">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="packages.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Resources\alm.sppkg" />
-    <None Include="Resources\almskip.sppkg" />
-    <None Include="Resources\custom.spcolor">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\garagewhite.spcolor">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\hello-world.sppkg" />
-    <None Include="Resources\HelloWorldApp.app" />
-    <Content Include="Framework\Functional\Templates\auditsettings_add.xml" />
-    <Content Include="Framework\Functional\Templates\composedlook_add_1.xml" />
-    <Content Include="Framework\Functional\Templates\regionalsettings_delta_1.xml" />
-    <Content Include="Framework\Functional\Templates\files_add.xml" />
-    <Content Include="Framework\Functional\Templates\pages_add.xml" />
-    <Content Include="Framework\Functional\Templates\security_add.xml" />
-    <Content Include="Framework\Functional\Templates\sitepolicy_add.xml" />
-    <Content Include="Framework\Functional\Templates\termgroup_add.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\termgroup_delta_1605.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\garage.css" />
-    <Content Include="Framework\Functional\Templates\languagesettings_delta.xml" />
-    <Content Include="Framework\Functional\Templates\languagesettings_add.xml" />
-    <Content Include="Framework\Functional\Templates\localization_add.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\termgroup_delta_1605_1.xml" />
-    <Content Include="Framework\Functional\Templates\websettings_files.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\composedlook_files.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\garagebg.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Framework\Functional\Templates\garagelogo.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Framework\Functional\Templates\list_delta_1605_1.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\list_add_1605.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\list_delta_1.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\list_supporting_data_2.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\list_supporting_data_1.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\list_add.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\composedlook_add_2.xml" />
-    <Content Include="Framework\Functional\Templates\contenttype_delta_1.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\contenttype_files.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\contenttype_add.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\CT3DisplayForm.aspx">
-      <SubType>ASPXCodeBehind</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\CT3EditForm.aspx">
-      <SubType>ASPXCodeBehind</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\customaction_1605_delta_2.xml" />
-    <Content Include="Framework\Functional\Templates\field_delta_1.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\field_add.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\propertybag_delta_2.xml" />
-    <Content Include="Framework\Functional\Templates\propertybag_delta_1.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\propertybag_add.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Framework\Functional\Templates\customaction_delta_1.xml" />
-    <Content Include="Framework\Functional\Templates\customaction_add.xml" />
-    <Content Include="Framework\Functional\Templates\feature_base.xml" />
-    <Content Include="Framework\Functional\Templates\websettings_add.xml" />
-    <Content Include="Framework\Functional\Templates\regionalsettings_add.xml" />
-    <Content Include="Framework\Functional\Templates\searchsettings_web_1605_add.xml" />
-    <Content Include="Framework\Functional\Templates\searchsettings_site_1605_add.xml" />
-    <Content Include="Framework\Functional\Templates\publishing_add.xml" />
-    <Content Include="Framework\Functional\Templates\workflows_add_1605.xml" />
-    <Content Include="Pages\Samples\EmbedWebPart.html" />
-    <Content Include="Pages\Samples\FileViewerWebPart.html" />
-    <Content Include="Pages\Samples\HeaderImage.txt" />
-    <Content Include="Pages\Samples\StreamWebPart.html" />
-    <Content Include="Pages\Samples\SpacerWebPart.html" />
-    <Content Include="Pages\Samples\SiteActivityWebPart.html" />
-    <Content Include="Pages\Samples\QuickLinksWebPart.html" />
-    <Content Include="Pages\Samples\PeopleWebPart.html" />
-    <Content Include="Pages\Samples\QuickChartWebPart.html" />
-    <Content Include="Pages\Samples\Office365VideoWebPart.html" />
-    <Content Include="Pages\Samples\NewsWebPart.html" />
-    <Content Include="Pages\Samples\FormsWebPart.html" />
-    <Content Include="Pages\Samples\ListWebPart.html" />
-    <Content Include="Pages\Samples\ImageGalleryWebPart.html" />
-    <Content Include="Pages\Samples\HeroWebPart.html" />
-    <Content Include="Pages\Samples\GroupCalendarWebPart.html" />
-    <Content Include="Pages\Samples\EventsWebPart.html" />
-    <Content Include="Pages\Samples\DocumentLibraryWebPart.html" />
-    <Content Include="Pages\Samples\DividerWebPart.html" />
-    <Content Include="Pages\Samples\BingMapWebPart.html" />
-    <Content Include="Pages\Samples\HighlightContentWebPart.html" />
-    <Content Include="Pages\Samples\ImageWebPart.html" />
-    <Content Include="Pages\Samples\LinkWebPart.html" />
-    <Content Include="Resources\EditForm.aspx" />
-    <Content Include="Resources\garagebg.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\garagelogo.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\GuidTermSet.csv" />
-    <Content Include="Resources\ImportTermSet.csv" />
-    <None Include="Resources\HelloWorldApp15.app" />
-    <None Include="Resources\PnPAzureAppTest.pfx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\Templates\ProvisioningSchema-2015-05-ReferenceSample-01.json" />
-    <None Include="Resources\Templates\TestTemplateOriginal.pnp" />
-    <None Include="Resources\Templates\TestTemplateOriginal2.pnp" />
-    <None Include="Resources\TestSolution.wsp" />
-    <Content Include="Resources\Templates\ClientSidePagesWithHeader.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Templates\MeetingsTemplate.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2015-05-FullSample-01.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2015-05-ReferenceSample-01.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2015-12-FullSample-02.xml" />
-    <Content Include="Resources\Templates\ProjectsTemplate.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2015-12-ReferenceSample-01.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2017-05-FullSample-01-OUT.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2017-05-FullSample-01.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2018-01-FullSample-01-OUT.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2018-01-FullSample-01.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2018-05-FullSample-01-OUT.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2018-05-FullSample-01.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2018-07-FullSample-01-NOT-VALID.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2018-07-FullSample-01-OUT.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2018-07-FullSample-01.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2019-03-FullSample-01-OUT.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2019-03-FullSample-01.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2019-09-FullSample-01-OUT.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2019-09-FullSample-01.xml" />
-    <Content Include="Resources\Templates\ProvisioningSchema-2020-02-FullSample-01.xml" />
-    <Content Include="Resources\Templates\ProvisioningTemplate-2015-03-Sample-01.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Templates\ProvisioningTemplate-2015-03-Sample-02.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-NOT-Valid-XInclude-01.xml" />
-    <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-01.xml" />
-    <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03-OUT-ct.xml" />
-    <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03-OUT-nav.xml" />
-    <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03-OUT.xml" />
-    <Content Include="Resources\Templates\UnavailableExtensibilityHandlerTemplates\ProvisioningSchema-2015-12-Sample.xml" />
-    <Content Include="Resources\Templates\UnavailableExtensibilityHandlerTemplates\ProvisioningTemplate-2016-05-Sample.xml" />
-    <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03.xml" />
-    <Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-02.xml" />
-    <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-Valid-XInclude-01.xml" />
-    <Content Include="Resources\Templates\ProvisioningTemplate-2015-05-XInclude-PropertyBags.xml" />
-    <Content Include="Resources\TestDefault.aspx">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>ASPXCodeBehind</SubType>
-    </Content>
-    <Content Include="Resources\UpdateTermSet.csv" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Framework\Functional\Templates\core.nl-nl.resx" />
-    <EmbeddedResource Include="Framework\Functional\Templates\core.en-us.resx" />
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\custombg.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <Content Include="Resources\office365.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Resources\TestHtmlPublishingPageLayout.html" />
-    <Content Include="Resources\TestPublishingPageLayout.aspx">
-      <SubType>ASPXCodeBehind</SubType>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Framework\Functional\Templates\PnPworkflow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resources\workflow.xaml" />
-  </ItemGroup>
-  <Choose>
-    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
-      <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-          <Private>False</Private>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>del $(ProjectDir)\obj\pnpcore.*
-del $(ProjectDir)\obj\*.json</PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+	<PropertyGroup>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+		<ProjectGuid>{251C9DE3-A549-4530-8CAD-2EF3FF79A4CD}</ProjectGuid>
+		<OutputType>Library</OutputType>
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<RootNamespace>OfficeDevPnP.Core.Tests</RootNamespace>
+		<AssemblyName>OfficeDevPnP.Core.Tests</AssemblyName>
+		<TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+		<FileAlignment>512</FileAlignment>
+		<ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+		<VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+		<VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+		<ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+		<IsCodedUITest>False</IsCodedUITest>
+		<TestProjectType>UnitTest</TestProjectType>
+		<TargetFrameworkProfile />
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>full</DebugType>
+		<Optimize>false</Optimize>
+		<OutputPath>bin\Debug\</OutputPath>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<DebugType>pdbonly</DebugType>
+		<Optimize>true</Optimize>
+		<OutputPath>bin\Release\</OutputPath>
+		<DefineConstants>TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug15|AnyCPU' ">
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>full</DebugType>
+		<Optimize>false</Optimize>
+		<OutputPath>bin\Debug15\</OutputPath>
+		<DefineConstants>TRACE;DEBUG;ONPREMISES;SP2013</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release15|AnyCPU'">
+		<DebugType>pdbonly</DebugType>
+		<Optimize>true</Optimize>
+		<OutputPath>bin\Release15\</OutputPath>
+		<DefineConstants>TRACE;ONPREMISES;SP2013</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release16|AnyCPU'">
+		<OutputPath>bin\Release16\</OutputPath>
+		<DefineConstants>TRACE;ONPREMISES;SP2016</DefineConstants>
+		<Optimize>true</Optimize>
+		<DebugType>pdbonly</DebugType>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<ErrorReport>prompt</ErrorReport>
+		<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug16|AnyCPU'">
+		<DebugSymbols>true</DebugSymbols>
+		<OutputPath>bin\Debug16\</OutputPath>
+		<DefineConstants>TRACE;DEBUG;ONPREMISES;SP2016</DefineConstants>
+		<DebugType>full</DebugType>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<ErrorReport>prompt</ErrorReport>
+		<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug19|AnyCPU'">
+		<DebugSymbols>true</DebugSymbols>
+		<OutputPath>bin\Debug19\</OutputPath>
+		<DefineConstants>TRACE;DEBUG;ONPREMISES;SP2019</DefineConstants>
+		<DebugType>full</DebugType>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<ErrorReport>prompt</ErrorReport>
+		<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release19|AnyCPU'">
+		<OutputPath>bin\Release19\</OutputPath>
+		<DefineConstants>TRACE;ONPREMISES;SP2019</DefineConstants>
+		<Optimize>true</Optimize>
+		<DebugType>pdbonly</DebugType>
+		<PlatformTarget>AnyCPU</PlatformTarget>
+		<ErrorReport>prompt</ErrorReport>
+		<CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+	</PropertyGroup>
+	<Choose>
+		<When Condition=" '$(Configuration)' == 'debug' Or '$(Configuration)' == 'release' ">
+			<ItemGroup>
+				<Reference Include="Microsoft.Office.Client.Policy, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.1\Microsoft.Office.Client.Policy.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.Office.Client.TranslationServices, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.1\Microsoft.Office.Client.TranslationServices.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.Online.SharePoint.Client.Tenant, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.1\Microsoft.Online.SharePoint.Client.Tenant.dll</HintPath>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.DocumentManagement, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.DocumentManagement.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Publishing, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.Publishing.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Runtime, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Search, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.Search.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Search.Applications, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.Search.Applications.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Taxonomy, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.Taxonomy.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.UserProfiles, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.UserProfiles.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.WorkflowServices, Version=16.1.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.1\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+		<When Condition=" '$(Configuration)' == 'debug19' Or '$(Configuration)' == 'release19' ">
+			<ItemGroup>
+				<Reference Include="Microsoft.Office.Client.Policy, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0.10000\Microsoft.Office.Client.Policy.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.Office.Client.TranslationServices, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0.10000\Microsoft.Office.Client.TranslationServices.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.Online.SharePoint.Client.Tenant, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0.10000\Microsoft.Online.SharePoint.Client.Tenant.dll</HintPath>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.DocumentManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.DocumentManagement.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Publishing, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.Publishing.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Runtime, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Search, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.Search.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Search.Applications, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.Search.Applications.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Taxonomy, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.Taxonomy.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.UserProfiles, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.UserProfiles.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.WorkflowServices, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0.10000\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+		<When Condition=" '$(Configuration)' == 'debug16' Or '$(Configuration)' == 'release16' ">
+			<ItemGroup>
+				<Reference Include="Microsoft.Office.Client.Policy, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0\Microsoft.Office.Client.Policy.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.Office.Client.TranslationServices, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0\Microsoft.Office.Client.TranslationServices.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.Online.SharePoint.Client.Tenant, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0\Microsoft.Online.SharePoint.Client.Tenant.dll</HintPath>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.DocumentManagement, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.DocumentManagement.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Publishing, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.Publishing.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Runtime, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Search, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.Search.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Search.Applications, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.Search.Applications.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Taxonomy, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.Taxonomy.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.UserProfiles, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.UserProfiles.dll</HintPath>
+					<Private>True</Private>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.WorkflowServices, Version=16.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\16.0\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</When>
+		<Otherwise>
+			<ItemGroup>
+				<Reference Include="Microsoft.Office.Client.Policy, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\15\Microsoft.Office.Client.Policy.dll</HintPath>
+				</Reference>
+				<Reference Include="Microsoft.Office.Client.TranslationServices, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\15\Microsoft.Office.Client.TranslationServices.dll</HintPath>
+				</Reference>
+				<Reference Include="Microsoft.Online.SharePoint.Client.Tenant, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\15\Microsoft.Online.SharePoint.Client.Tenant.dll</HintPath>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.dll</HintPath>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.DocumentManagement, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.DocumentManagement.dll</HintPath>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Publishing, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.Publishing.dll</HintPath>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Runtime, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.Runtime.dll</HintPath>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Search, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.Search.dll</HintPath>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Search.Applications, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.Search.Applications.dll</HintPath>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.Taxonomy, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.Taxonomy.dll</HintPath>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.UserProfiles, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.UserProfiles.dll</HintPath>
+				</Reference>
+				<Reference Include="Microsoft.SharePoint.Client.WorkflowServices, Version=15.0.0.0, Culture=neutral, PublicKeyToken=71e9bce111e9429c, processorArchitecture=MSIL">
+					<SpecificVersion>False</SpecificVersion>
+					<HintPath>..\..\Assemblies\15\Microsoft.SharePoint.Client.WorkflowServices.dll</HintPath>
+				</Reference>
+			</ItemGroup>
+		</Otherwise>
+	</Choose>
+	<ItemGroup>
+		<Reference Include="Microsoft.Data.Edm, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+			<HintPath>..\packages\Microsoft.Data.Edm.5.8.4\lib\net40\Microsoft.Data.Edm.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.Data.OData, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+			<HintPath>..\packages\Microsoft.Data.OData.5.8.4\lib\net40\Microsoft.Data.OData.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.Data.Services.Client, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+			<HintPath>..\packages\Microsoft.Data.Services.Client.5.8.4\lib\net40\Microsoft.Data.Services.Client.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.WindowsAzure.Configuration, Version=1.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>..\packages\Microsoft.WindowsAzure.ConfigurationManager.1.8.0.0\lib\net35-full\Microsoft.WindowsAzure.Configuration.dll</HintPath>
+		</Reference>
+		<Reference Include="Microsoft.WindowsAzure.Storage, Version=4.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+			<SpecificVersion>False</SpecificVersion>
+			<HintPath>..\packages\WindowsAzure.Storage.4.3.0\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
+		</Reference>
+		<Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+			<HintPath>..\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+		</Reference>
+		<Reference Include="System" />
+		<Reference Include="System.Configuration" />
+		<Reference Include="System.Data" />
+		<Reference Include="System.Drawing" />
+		<Reference Include="System.IdentityModel" />
+		<Reference Include="System.IdentityModel.Selectors" />
+		<Reference Include="System.Net.Http" />
+		<Reference Include="System.Runtime.Serialization" />
+		<Reference Include="System.Security" />
+		<Reference Include="System.ServiceModel" />
+		<Reference Include="System.ServiceModel.Web" />
+		<Reference Include="System.Spatial, Version=5.8.4.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+			<HintPath>..\packages\System.Spatial.5.8.4\lib\net40\System.Spatial.dll</HintPath>
+		</Reference>
+		<Reference Include="System.Web" />
+		<Reference Include="System.Web.Extensions" />
+		<Reference Include="System.Web.Services" />
+		<Reference Include="System.XML" />
+		<Reference Include="System.Xml.Linq" />
+	</ItemGroup>
+	<Choose>
+		<When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
+			<ItemGroup>
+				<Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+			</ItemGroup>
+		</When>
+		<Otherwise>
+			<ItemGroup>
+				<Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+					<Private>False</Private>
+				</Reference>
+			</ItemGroup>
+		</Otherwise>
+	</Choose>
+	<ItemGroup>
+		<Compile Include="ALM\ALMTests.cs" />
+		<Compile Include="Authentication\HighTrustAuthenticationTests.cs" />
+		<Compile Include="Extensions\BrandingExtensionsTests.cs" />
+		<Compile Include="Extensions\ClientObjectExtensionsTests.cs" />
+		<Compile Include="Extensions\FeatureExtensionsTests.cs" />
+		<Compile Include="Extensions\FieldAndContentTypeExtensionsTests.cs" />
+		<Compile Include="Extensions\JavaScriptExtensionsTests.cs" />
+		<Compile Include="Extensions\ListExtensionsTests.cs" />
+		<Compile Include="Extensions\ListRatingExtensionTest.cs" />
+		<Compile Include="Extensions\FileChangeTrackingTests.cs" />
+		<Compile Include="Extensions\SearchExtensionsTests.cs" />
+		<Compile Include="Extensions\SecurityExtensionsTests.cs" />
+		<Compile Include="Extensions\StructuralNavigationExtensionsTests.cs" />
+		<Compile Include="Extensions\TaxonomyExtensionsTests.cs" />
+		<Compile Include="Extensions\FileFolderExtensionsTests.cs" />
+		<Compile Include="Extensions\Tenant15ExtensionsTests.cs" />
+		<Compile Include="Extensions\TenantExtensionsTests.cs" />
+		<Compile Include="Extensions\NavigationExtensionsTests.cs" />
+		<Compile Include="Authentication\AuthenticationTests.cs" />
+		<Compile Include="Diagnostics\LogTests.cs" />
+		<Compile Include="Framework\CanProvisionRules\CanProvisionTests.cs" />
+		<Compile Include="Framework\Connectors\ConnectorAzureTests.cs" />
+		<Compile Include="Framework\Connectors\ConnectorFileSystemTests.cs" />
+		<Compile Include="Framework\Connectors\ConnectorOpenXmlTests.cs" />
+		<Compile Include="Framework\Connectors\ConnectorSharePointTests.cs" />
+		<Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockHandler.cs" />
+		<Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockInvalidHandler.cs" />
+		<Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockTokenProvider.cs" />
+		<Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTestConstants.cs" />
+		<Compile Include="Framework\ExtensibilityCallOut\ExtensibilityMockProvider.cs" />
+		<Compile Include="Framework\ExtensibilityCallOut\ExtensibilityTests.cs" />
+		<Compile Include="Framework\Functional\ComposedLookNoScriptTest.cs" />
+		<Compile Include="Framework\Functional\ContentTypeNoScriptTests.cs" />
+		<Compile Include="Framework\Functional\CustomActionNoScriptTests.cs" />
+		<Compile Include="Framework\Functional\FeatureNoScriptTests.cs" />
+		<Compile Include="Framework\Functional\FieldNoScriptTests.cs" />
+		<Compile Include="Framework\Functional\FilesNoScriptTests.cs" />
+		<Compile Include="Framework\Functional\FilesTests.cs" />
+		<Compile Include="Framework\Functional\Implementation\ComposedLookImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\ContentTypeImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\CustomActionImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\FeatureImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\FieldImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\FilesImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\ImplementationBase.cs" />
+		<Compile Include="Framework\Functional\Implementation\LanguageImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\ListImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\LocalizationImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\NavigationImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\PagesImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\PropertyBagImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\PublishingImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\RegionalSettingsImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\SearchSettingsImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\SecurityImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\TermGroupImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\WebSettingsImplementation.cs" />
+		<Compile Include="Framework\Functional\Implementation\WorkflowImplementation.cs" />
+		<Compile Include="Framework\Functional\LanguageNoScriptTests.cs" />
+		<Compile Include="Framework\Functional\ListNoScriptTests.cs" />
+		<Compile Include="Framework\Functional\ListTests.cs" />
+		<Compile Include="Framework\Functional\ComposedLookTest.cs" />
+		<Compile Include="Framework\Functional\CustomActionTests.cs" />
+		<Compile Include="Framework\Functional\FeatureTests.cs" />
+		<Compile Include="Framework\Functional\ContentTypeTests.cs" />
+		<Compile Include="Framework\Functional\FieldTests.cs" />
+		<Compile Include="Framework\Functional\FunctionalTestBase.cs" />
+		<Compile Include="Framework\Functional\LocalizationNoScriptTest.cs" />
+		<Compile Include="Framework\Functional\LocalizationTest.cs" />
+		<Compile Include="Framework\Functional\NavigationTests.cs" />
+		<Compile Include="Framework\Functional\PagesNoScriptTests.cs" />
+		<Compile Include="Framework\Functional\PagesTests.cs" />
+		<Compile Include="Framework\Functional\PropertyBagNoScriptTests.cs" />
+		<Compile Include="Framework\Functional\PublishingNoScriptTest.cs" />
+		<Compile Include="Framework\Functional\PublishingTest.cs" />
+		<Compile Include="Framework\Functional\RegionalSettingsNoScriptTests.cs" />
+		<Compile Include="Framework\Functional\SearchSettingNoScriptTests.cs" />
+		<Compile Include="Framework\Functional\SecurityNoScriptTests.cs" />
+		<Compile Include="Framework\Functional\SecurityTests.cs" />
+		<Compile Include="Framework\Functional\SitePolicyTests.cs" />
+		<Compile Include="Framework\Functional\TermGroupNoScriptTests.cs" />
+		<Compile Include="Framework\Functional\Validators\AuditSettingsValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\FilesValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\LanguageSettingsValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\LocalizationValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\NavigationValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\ClientSidePagesValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\PagesValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\SecurityValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\SitePolicyValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\TermGroupValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\WebSettingsValidator.cs" />
+		<Compile Include="Framework\Functional\LanguageTests.cs" />
+		<Compile Include="Framework\Functional\TermGroupTests.cs" />
+		<Compile Include="Framework\Functional\Validators\WorkflowValidator.cs" />
+		<Compile Include="Framework\Functional\WebSettingsNoScriptTests.cs" />
+		<Compile Include="Framework\Functional\WebSettingsTests.cs" />
+		<Compile Include="Framework\Functional\RegionalSettingsTests.cs" />
+		<Compile Include="Framework\Functional\SearchSettingTests.cs" />
+		<Compile Include="Framework\Functional\TestProvisioningTemplateResult.cs" />
+		<Compile Include="Framework\Functional\Validators\RegionalSettingsValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\SearchSettingValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\ListInstanceValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\ComposedLookValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\CustomActionValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\FeatureValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\ContentTypeValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\FieldValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\PublishingValidator.cs" />
+		<Compile Include="Framework\Functional\Validators\ValidateXmlEventArgs.cs" />
+		<Compile Include="Framework\Functional\Validators\ValidateEventArgs.cs" />
+		<Compile Include="Framework\Functional\Validators\ValidatorBase.cs" />
+		<Compile Include="Framework\Functional\Validators\PropertyBagValidator.cs" />
+		<Compile Include="Framework\Functional\PropertyBagTests.cs" />
+		<Compile Include="Framework\Functional\Validators\XmlCompare.cs" />
+		<Compile Include="Framework\Functional\Validators\XmlEqualityResult.cs" />
+		<Compile Include="Framework\Functional\WorkflowsNoScriptTests.cs" />
+		<Compile Include="Framework\Functional\WorkflowsTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectAuditSettingsTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectLookupFieldsTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectRegionalSettingsTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectSupportedUILanguagesTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectComposedLookTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectTeamsTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectTermGroupsTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectPagesTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectSiteSecurityTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectPropertyBagEntryTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectListInstanceTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectFilesTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectFeaturesTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectCustomActionsTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectFieldTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectContentTypeTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\ObjectWorkflowsTests.cs" />
+		<Compile Include="Framework\ObjectHandlers\TokenParserTests.cs" />
+		<Compile Include="Framework\Providers\BaseTemplateTests.cs" />
+		<Compile Include="Framework\Providers\Extensibility\SecureXml.cs" />
+		<Compile Include="Framework\Providers\Extensibility\XMLEncryptionTemplateProviderExtension.cs" />
+		<Compile Include="Framework\Providers\XMLProvidersTests.cs" />
+		<Compile Include="Framework\Providers\XMLSerializer202002Tests.cs" />
+		<Compile Include="Framework\Providers\XMLSerializer201909Tests.cs" />
+		<Compile Include="Framework\Providers\XMLSerializer201903Tests.cs" />
+		<Compile Include="Framework\ProvisioningTemplates\DomainModelTests.cs" />
+		<Compile Include="Framework\ProvisioningTemplates\ClientSidePageProvisioningTests.cs" />
+		<Compile Include="Framework\ProvisioningTemplates\ProvisioningTests.cs" />
+		<Compile Include="Pages\ClientSidePagesTests.cs" />
+		<Compile Include="Sites\SiteCollectionTests.cs" />
+		<Compile Include="Utilities\JsonUtilityTests.cs" />
+		<Compile Include="Utilities\EncryptionUtilityTests.cs" />
+		<Compile Include="Diagnostics\PnPMonitoredScopeTests.cs" />
+		<Compile Include="Utilities\RetryHelper.cs" />
+		<Compile Include="Utilities\ThemeUtilityTests.cs" />
+		<Compile Include="Utilities\UnifiedGroupsUtilityTests.cs" />
+		<Compile Include="Utilities\HttpHelperTests.cs" />
+		<Compile Include="Utilities\UrlUtilityTests.cs" />
+		<Compile Include="Extensions\WebExtensionsTests.cs" />
+		<Compile Include="Extensions\PageExtensionsTests.cs" />
+		<Compile Include="Properties\AssemblyInfo.cs" />
+		<Compile Include="Properties\Resources.Designer.cs">
+			<AutoGen>True</AutoGen>
+			<DesignTime>True</DesignTime>
+			<DependentUpon>Resources.resx</DependentUpon>
+		</Compile>
+		<Compile Include="TestCommon.cs" />
+		<Compile Include="Utilities\WebParts\WebPartPostProcessorFactoryTests.cs" />
+		<Compile Include="Utilities\WebParts\XsltWebPartPostProcessorTests.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\OfficeDevPnP.Core\OfficeDevPnP.Core.csproj">
+			<Project>{F2077977-8EBF-409D-BBF4-8EFB328928A8}</Project>
+			<Name>OfficeDevPnP.Core</Name>
+		</ProjectReference>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="App.config">
+			<SubType>Designer</SubType>
+		</None>
+		<None Include="App.config.sample" />
+		<None Include="Framework\Functional\Templates\ct3document.docx" />
+		<None Include="Framework\Functional\Templates\ct1document.docx" />
+		<None Include="Framework\Functional\Templates\CT21Document.docx" />
+		<None Include="Framework\Functional\Templates\CT20Document0101.docx" />
+		<None Include="Framework\Functional\Templates\CT20Document.docx" />
+		<None Include="Framework\Functional\Templates\DirFolder2MetaData.json" />
+		<None Include="Framework\Functional\Templates\DirFolder2\Doc4.docx">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="Framework\Functional\Templates\DirFolder2\Doc5.docx">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="Framework\Functional\Templates\DirFolderMetadata.json" />
+		<None Include="Framework\Functional\Templates\DirFolder\Doc1.docx">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="Framework\Functional\Templates\DirFolder\Doc2.docx">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="Framework\Functional\Templates\DirFolder\Doc3.docx">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="Framework\Functional\Templates\DirFolder\sub1\Doc7.docx">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="Framework\Functional\Templates\DirFolder\sub1\Doc6.docx">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="Framework\Functional\Templates\oslo.preview">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<Content Include="Framework\Functional\Templates\customaction_modern_add.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\files_add_1605.xml" />
+		<Content Include="Framework\Functional\Templates\list_delta_1705_1.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\list_add_1705.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\LocalizationPage2.aspx">
+			<SubType>ASPXCodeBehind</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\navigation_add_prereq.xml" />
+		<Content Include="Framework\Functional\Templates\navigation_add_1605.xml" />
+		<Content Include="Framework\Functional\Templates\navigation_add2_1605.xml" />
+		<Content Include="Framework\Functional\Templates\navigation_add3_1605.xml" />
+		<Content Include="Framework\Functional\Templates\clientsidepages_add_1705.xml" />
+		<Content Include="Framework\Functional\Templates\pnpfontscheme.spfont" />
+		<None Include="Framework\Functional\Templates\PnPDesignPackagev1.4-1.4.wsp" />
+		<None Include="Framework\Functional\Templates\garagewhite.spcolor">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="packages.config">
+			<SubType>Designer</SubType>
+		</None>
+		<None Include="Resources\alm.sppkg" />
+		<None Include="Resources\almskip.sppkg" />
+		<None Include="Resources\custom.spcolor">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="Resources\garagewhite.spcolor">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="Resources\hello-world.sppkg" />
+		<None Include="Resources\HelloWorldApp.app" />
+		<Content Include="Framework\Functional\Templates\auditsettings_add.xml" />
+		<Content Include="Framework\Functional\Templates\composedlook_add_1.xml" />
+		<Content Include="Framework\Functional\Templates\regionalsettings_delta_1.xml" />
+		<Content Include="Framework\Functional\Templates\files_add.xml" />
+		<Content Include="Framework\Functional\Templates\pages_add.xml" />
+		<Content Include="Framework\Functional\Templates\security_add.xml" />
+		<Content Include="Framework\Functional\Templates\sitepolicy_add.xml" />
+		<Content Include="Framework\Functional\Templates\termgroup_add.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\termgroup_delta_1605.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\garage.css" />
+		<Content Include="Framework\Functional\Templates\languagesettings_delta.xml" />
+		<Content Include="Framework\Functional\Templates\languagesettings_add.xml" />
+		<Content Include="Framework\Functional\Templates\localization_add.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\termgroup_delta_1605_1.xml" />
+		<Content Include="Framework\Functional\Templates\websettings_files.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\composedlook_files.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\garagebg.jpg">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Framework\Functional\Templates\garagelogo.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Framework\Functional\Templates\list_delta_1605_1.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\list_add_1605.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\list_delta_1.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\list_supporting_data_2.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\list_supporting_data_1.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\list_add.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\composedlook_add_2.xml" />
+		<Content Include="Framework\Functional\Templates\contenttype_delta_1.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\contenttype_files.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\contenttype_add.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\CT3DisplayForm.aspx">
+			<SubType>ASPXCodeBehind</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\CT3EditForm.aspx">
+			<SubType>ASPXCodeBehind</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\customaction_1605_delta_2.xml" />
+		<Content Include="Framework\Functional\Templates\field_delta_1.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\field_add.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\propertybag_delta_2.xml" />
+		<Content Include="Framework\Functional\Templates\propertybag_delta_1.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\propertybag_add.xml">
+			<SubType>Designer</SubType>
+		</Content>
+		<Content Include="Framework\Functional\Templates\customaction_delta_1.xml" />
+		<Content Include="Framework\Functional\Templates\customaction_add.xml" />
+		<Content Include="Framework\Functional\Templates\feature_base.xml" />
+		<Content Include="Framework\Functional\Templates\websettings_add.xml" />
+		<Content Include="Framework\Functional\Templates\regionalsettings_add.xml" />
+		<Content Include="Framework\Functional\Templates\searchsettings_web_1605_add.xml" />
+		<Content Include="Framework\Functional\Templates\searchsettings_site_1605_add.xml" />
+		<Content Include="Framework\Functional\Templates\publishing_add.xml" />
+		<Content Include="Framework\Functional\Templates\workflows_add_1605.xml" />
+		<Content Include="Pages\Samples\EmbedWebPart.html" />
+		<Content Include="Pages\Samples\FileViewerWebPart.html" />
+		<Content Include="Pages\Samples\HeaderImage.txt" />
+		<Content Include="Pages\Samples\StreamWebPart.html" />
+		<Content Include="Pages\Samples\SpacerWebPart.html" />
+		<Content Include="Pages\Samples\SiteActivityWebPart.html" />
+		<Content Include="Pages\Samples\QuickLinksWebPart.html" />
+		<Content Include="Pages\Samples\PeopleWebPart.html" />
+		<Content Include="Pages\Samples\QuickChartWebPart.html" />
+		<Content Include="Pages\Samples\Office365VideoWebPart.html" />
+		<Content Include="Pages\Samples\NewsWebPart.html" />
+		<Content Include="Pages\Samples\FormsWebPart.html" />
+		<Content Include="Pages\Samples\ListWebPart.html" />
+		<Content Include="Pages\Samples\ImageGalleryWebPart.html" />
+		<Content Include="Pages\Samples\HeroWebPart.html" />
+		<Content Include="Pages\Samples\GroupCalendarWebPart.html" />
+		<Content Include="Pages\Samples\EventsWebPart.html" />
+		<Content Include="Pages\Samples\DocumentLibraryWebPart.html" />
+		<Content Include="Pages\Samples\DividerWebPart.html" />
+		<Content Include="Pages\Samples\BingMapWebPart.html" />
+		<Content Include="Pages\Samples\HighlightContentWebPart.html" />
+		<Content Include="Pages\Samples\ImageWebPart.html" />
+		<Content Include="Pages\Samples\LinkWebPart.html" />
+		<Content Include="Resources\EditForm.aspx" />
+		<Content Include="Resources\garagebg.jpg">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Resources\garagelogo.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Resources\GuidTermSet.csv" />
+		<Content Include="Resources\ImportTermSet.csv" />
+		<None Include="Resources\HelloWorldApp15.app" />
+		<None Include="Resources\PnPAzureAppTest.pfx">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<None Include="Resources\Templates\ProvisioningSchema-2015-05-ReferenceSample-01.json" />
+		<None Include="Resources\Templates\TestTemplateOriginal.pnp" />
+		<None Include="Resources\Templates\TestTemplateOriginal2.pnp" />
+		<None Include="Resources\TestSolution.wsp" />
+		<Content Include="Resources\Templates\ClientSidePagesWithHeader.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Resources\Templates\MeetingsTemplate.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2015-05-FullSample-01.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2015-05-ReferenceSample-01.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2015-12-FullSample-02.xml" />
+		<Content Include="Resources\Templates\ProjectsTemplate.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2015-12-ReferenceSample-01.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2017-05-FullSample-01-OUT.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2017-05-FullSample-01.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2018-01-FullSample-01-OUT.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2018-01-FullSample-01.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2018-05-FullSample-01-OUT.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2018-05-FullSample-01.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2018-07-FullSample-01-NOT-VALID.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2018-07-FullSample-01-OUT.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2018-07-FullSample-01.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2019-03-FullSample-01-OUT.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2019-03-FullSample-01.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2019-09-FullSample-01-OUT.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2019-09-FullSample-01.xml" />
+		<Content Include="Resources\Templates\ProvisioningSchema-2020-02-FullSample-01.xml" />
+		<Content Include="Resources\Templates\ProvisioningTemplate-2015-03-Sample-01.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Resources\Templates\ProvisioningTemplate-2015-03-Sample-02.xml">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Resources\Templates\ProvisioningTemplate-2015-05-NOT-Valid-XInclude-01.xml" />
+		<Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-01.xml" />
+		<Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03-OUT-ct.xml" />
+		<Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03-OUT-nav.xml" />
+		<Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03-OUT.xml" />
+		<Content Include="Resources\Templates\UnavailableExtensibilityHandlerTemplates\ProvisioningSchema-2015-12-Sample.xml" />
+		<Content Include="Resources\Templates\UnavailableExtensibilityHandlerTemplates\ProvisioningTemplate-2016-05-Sample.xml" />
+		<Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-03.xml" />
+		<Content Include="Resources\Templates\ProvisioningTemplate-2016-05-Sample-02.xml" />
+		<Content Include="Resources\Templates\ProvisioningTemplate-2015-05-Valid-XInclude-01.xml" />
+		<Content Include="Resources\Templates\ProvisioningTemplate-2015-05-XInclude-PropertyBags.xml" />
+		<Content Include="Resources\TestDefault.aspx">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+			<SubType>ASPXCodeBehind</SubType>
+		</Content>
+		<Content Include="Resources\UpdateTermSet.csv" />
+	</ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="Framework\Functional\Templates\core.nl-nl.resx" />
+		<EmbeddedResource Include="Framework\Functional\Templates\core.en-us.resx" />
+		<EmbeddedResource Include="Properties\Resources.resx">
+			<Generator>ResXFileCodeGenerator</Generator>
+			<LastGenOutput>Resources.Designer.cs</LastGenOutput>
+			<SubType>Designer</SubType>
+		</EmbeddedResource>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="Resources\custombg.jpg">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+		<Content Include="Resources\office365.png">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+		<Content Include="Resources\TestHtmlPublishingPageLayout.html" />
+		<Content Include="Resources\TestPublishingPageLayout.aspx">
+			<SubType>ASPXCodeBehind</SubType>
+		</Content>
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="Framework\Functional\Templates\PnPworkflow.xaml">
+			<Generator>MSBuild:Compile</Generator>
+			<SubType>Designer</SubType>
+		</None>
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="Resources\workflow.xaml" />
+	</ItemGroup>
+	<Choose>
+		<When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
+			<ItemGroup>
+				<Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+					<Private>False</Private>
+				</Reference>
+				<Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+					<Private>False</Private>
+				</Reference>
+				<Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+					<Private>False</Private>
+				</Reference>
+				<Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+					<Private>False</Private>
+				</Reference>
+			</ItemGroup>
+		</When>
+	</Choose>
+	<Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+	<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+	<PropertyGroup>
+		<PreBuildEvent>
+			del $(ProjectDir)\obj\pnpcore.*
+			del $(ProjectDir)\obj\*.json
+		</PreBuildEvent>
+	</PropertyGroup>
+	<!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>

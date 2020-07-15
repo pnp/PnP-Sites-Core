@@ -18,6 +18,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// </summary>
         public SiteWebhookType SiteWebhookType { get; set; }
 
+        // CS0108 - hides inherited member.
+        /*
         /// <summary>
         /// Defines the expire days for the subscription of the Webhook, required attribute.
         /// </summary>
@@ -25,6 +27,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.Model
         /// The maximum value is 6 months (i.e. 180 days)
         /// </remarks>
         public Int32 ExpiresInDays { get; set; }
+        */
 
         #endregion
 

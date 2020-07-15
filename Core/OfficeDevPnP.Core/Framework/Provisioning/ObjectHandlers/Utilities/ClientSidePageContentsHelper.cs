@@ -46,7 +46,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
         public void ExtractClientSidePage(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, PageToExport page)
         {
             bool excludeAuthorInformation = false;
-            if(creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.Pages != null)
+            if (creationInfo.ExtractConfiguration != null && creationInfo.ExtractConfiguration.Pages != null)
             {
                 excludeAuthorInformation = creationInfo.ExtractConfiguration.Pages.ExcludeAuthorInformation;
             }
@@ -71,7 +71,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     }
 
                     int promotedState = 0;
-                    if(pageToExtract.PageListItem[OfficeDevPnP.Core.Pages.ClientSidePage.PromotedStateField]!=null)
+                    if (pageToExtract.PageListItem[OfficeDevPnP.Core.Pages.ClientSidePage.PromotedStateField] != null)
                     {
                         int.TryParse(pageToExtract.PageListItem[OfficeDevPnP.Core.Pages.ClientSidePage.PromotedStateField].ToString(), out promotedState);
                     }
@@ -107,7 +107,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 #endif
                         )
                     {
-                        
+
                         var extractedHeader = new ClientSidePageHeader()
                         {
                             Type = (ClientSidePageHeaderType)Enum.Parse(typeof(Pages.ClientSidePageHeaderType), pageToExtract.PageHeader.Type.ToString()),
@@ -146,6 +146,9 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     string guidPatternNoDashes = "[a-fA-F0-9]{32}";
                     Regex regexGuidPatternNoDashes = new Regex(guidPatternNoDashes, RegexOptions.Compiled);
 
+                    string guidPatternOptionalBrackets = "(?<Bracket>\\{)?[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}(?(Bracket)\\}|)";
+                    Regex regexGuidPatternOptionalBrackets = new Regex(guidPatternOptionalBrackets, RegexOptions.Compiled);
+
                     string siteAssetUrlsPattern = "(?:\")(?<AssetUrl>[\\w|\\.|\\/|:|-]*\\/SiteAssets\\/SitePages\\/[\\w|\\.|\\/|:|-]*)(?:\")";
                     // OLD RegEx with Catastrophic Backtracking: @".*""(.*?/SiteAssets/SitePages/.+?)"".*";
                     Regex regexSiteAssetUrls = new Regex(siteAssetUrlsPattern, RegexOptions.Compiled);
@@ -153,7 +156,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                     if (creationInfo.PersistBrandingFiles && !string.IsNullOrEmpty(extractedPageInstance.ThumbnailUrl))
                     {
                         var thumbnailFileIds = new List<Guid>();
-                        CollectImageFilesFromGenericGuids(regexGuidPatternNoDashes, null, extractedPageInstance.ThumbnailUrl, thumbnailFileIds);
+                        CollectImageFilesFromGenericGuids(regexGuidPatternNoDashes, null, regexGuidPatternOptionalBrackets, extractedPageInstance.ThumbnailUrl, thumbnailFileIds);
                         if (thumbnailFileIds.Count == 1)
                         {
                             var file = web.GetFileById(thumbnailFileIds[0]);
@@ -407,7 +410,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                                     var untokenizedJsonControlData = controlInstance.JsonControlData;
                                     // Tokenize the JsonControlData
                                     controlInstance.JsonControlData = TokenizeJsonControlData(web, controlInstance.JsonControlData);
-                                    TokenizeBeforeExport(web, template, creationInfo, scope, errorneousOrNonImageFileGuids, regexGuidPattern, regexGuidPatternEncoded, regexSiteAssetUrls, controlInstance, untokenizedJsonControlData);
+                                    TokenizeBeforeExport(web, template, creationInfo, scope, errorneousOrNonImageFileGuids, regexGuidPattern, regexGuidPatternEncoded, regexGuidPatternOptionalBrackets, regexSiteAssetUrls, controlInstance, untokenizedJsonControlData);
                                 }
                                 // add control to section
                                 sectionInstance.Controls.Add(controlInstance);
@@ -474,7 +477,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                             var untokenizedJsonControlData = controlInstance.JsonControlData;
                             // Tokenize the JsonControlData
                             controlInstance.JsonControlData = TokenizeJsonControlData(web, controlInstance.JsonControlData);
-                            TokenizeBeforeExport(web, template, creationInfo, scope, errorneousOrNonImageFileGuids, regexGuidPattern, regexGuidPatternEncoded, regexSiteAssetUrls, controlInstance, untokenizedJsonControlData);
+                            TokenizeBeforeExport(web, template, creationInfo, scope, errorneousOrNonImageFileGuids, regexGuidPattern, regexGuidPatternEncoded, regexGuidPatternOptionalBrackets, regexSiteAssetUrls, controlInstance, untokenizedJsonControlData);
                             // add control to section
                             sectionInstance.Controls.Add(controlInstance);
                         }
@@ -536,8 +539,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             }
         }
 
-                        #region Helper methods
-        private void TokenizeBeforeExport(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, List<string> errorneousOrNonImageFileGuids, Regex regexGuidPattern, Regex regexGuidPatternEncoded, Regex regexSiteAssetUrls, CanvasControl controlInstance, string untokenizedJsonControlData)
+        #region Helper methods
+        private void TokenizeBeforeExport(Web web, ProvisioningTemplate template, ProvisioningTemplateCreationInformation creationInfo, PnPMonitoredScope scope, List<string> errorneousOrNonImageFileGuids, Regex regexGuidPattern, Regex regexGuidPatternEncoded, Regex regexGuidPatternOptionalBrackets, Regex regexSiteAssetUrls, CanvasControl controlInstance, string untokenizedJsonControlData)
         {
             // Export relevant files if this flag is set
             if (creationInfo.PersistBrandingFiles)
@@ -547,7 +550,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 Dictionary<string, string> exportedPages = new Dictionary<string, string>();
 
                 CollectSiteAssetImageFiles(regexSiteAssetUrls, web, untokenizedJsonControlData, fileGuids);
-                CollectImageFilesFromGenericGuids(regexGuidPattern, regexGuidPatternEncoded, untokenizedJsonControlData, fileGuids);
+                CollectImageFilesFromGenericGuids(regexGuidPattern, regexGuidPatternEncoded, regexGuidPatternOptionalBrackets, untokenizedJsonControlData, fileGuids);
 
                 // Iterate over the found guids to see if they're exportable files
                 foreach (var uniqueId in fileGuids)
@@ -602,11 +605,12 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                 {
                     controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedPage.Key.Replace("-", "%2D"), $"{{pageuniqueidencoded:{exportedPage.Value}}}", RegexOptions.IgnoreCase);
                     controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedPage.Key, $"{{pageuniqueid:{exportedPage.Value}}}", RegexOptions.IgnoreCase);
+                    controlInstance.JsonControlData = Regex.Replace(controlInstance.JsonControlData, exportedPage.Key.Replace("-", ""), $"{{pageuniqueid:{exportedPage.Value}}}", RegexOptions.IgnoreCase);
                 }
             }
         }
 
-        private static void CollectImageFilesFromGenericGuids(Regex regexGuidPattern, Regex regexGuidPatternEncoded, string jsonControlData, List<Guid> fileGuids)
+        private static void CollectImageFilesFromGenericGuids(Regex regexGuidPattern, Regex regexGuidPatternEncoded, Regex regexGuidPatternOptionalBrackets, string jsonControlData, List<Guid> fileGuids)
         {
             // grab all the guids in the already tokenized json and check try to get them as a file
             if (regexGuidPattern != null)
@@ -634,6 +638,23 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         if (Guid.TryParse(guidMatch.Value.TrimStart("=".ToCharArray()), out uniqueId))
                         {
                             fileGuids.Add(uniqueId);
+                        }
+                    }
+                }
+            }
+            if(regexGuidPatternOptionalBrackets != null)
+            {
+                if(regexGuidPatternOptionalBrackets.IsMatch(jsonControlData))
+                {
+                    foreach(Match guidMatch in regexGuidPatternOptionalBrackets.Matches(jsonControlData))
+                    {
+                        Guid uniqueId;
+                        if(Guid.TryParse(guidMatch.Value, out uniqueId))
+                        {
+                            if (!fileGuids.Contains(uniqueId))
+                            {
+                                fileGuids.Add(uniqueId);
+                            }
                         }
                     }
                 }
@@ -709,7 +730,17 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
                         {
                             // and if not make it relative to the current root site, if it is from the current host
                             var webUrl = web.EnsureProperty(w => w.Url);
-                            var hostUrl = webUrl.Substring(0, webUrl.IndexOf("/", 9));
+                            var slashIndex = webUrl.IndexOf("/", 9);
+                            var hostUrl = string.Empty;
+                            if (slashIndex == -1)
+                            {
+                                // Assume we're in a root site
+                                hostUrl = webUrl;
+                            }
+                            else
+                            {
+                                hostUrl = webUrl.Substring(0, slashIndex);
+                            }
                             if (s.StartsWith(hostUrl))
                             {
                                 s = s.Substring(hostUrl.Length);
@@ -828,9 +859,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
             // HostUrl token replacement
             var uri = new Uri(web.Url);
-            json = Regex.Replace(json, $"{uri.Scheme}://{uri.DnsSafeHost}:{uri.Port}", "{hosturl}", RegexOptions.IgnoreCase);
-            json = Regex.Replace(json, $"{uri.Scheme}://{uri.DnsSafeHost}", "{hosturl}", RegexOptions.IgnoreCase);
 
+            if (web.ServerRelativeUrl != "/")
+            {
+                json = Regex.Replace(json, $"{uri.Scheme}://{uri.DnsSafeHost}:{uri.Port}", $"{uri.Scheme}://{{fqdn}}", RegexOptions.IgnoreCase);
+                json = Regex.Replace(json, $"{uri.Scheme}://{uri.DnsSafeHost}", $"{uri.Scheme}://{{fqdn}}", RegexOptions.IgnoreCase);
+                json = Regex.Replace(json, $"{uri.DnsSafeHost}", "{fqdn}");
+            }
+            else
+            {
+                json = Regex.Replace(json, $"{uri.Scheme}://{uri.DnsSafeHost}:{uri.Port}", $"{uri.Scheme}://{{fqdn}}{{site}}", RegexOptions.IgnoreCase);
+                json = Regex.Replace(json, $"{uri.Scheme}://{uri.DnsSafeHost}", $"{uri.Scheme}://{{fqdn}}{{site}}", RegexOptions.IgnoreCase);
+                json = Regex.Replace(json, $"{uri.DnsSafeHost}", $"{{fqdn}}", RegexOptions.IgnoreCase);
+
+            }
             // Site token replacement, also replace "encoded" guids
             json = Regex.Replace(json, site.Id.ToString(), "{sitecollectionid}", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, site.Id.ToString().Replace("-", "%2D"), "{sitecollectionidencoded}", RegexOptions.IgnoreCase);
@@ -838,10 +880,22 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
             json = Regex.Replace(json, web.Id.ToString(), "{siteid}", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, web.Id.ToString().Replace("-", "%2D"), "{siteidencoded}", RegexOptions.IgnoreCase);
             json = Regex.Replace(json, web.Id.ToString("N"), "{siteid}", RegexOptions.IgnoreCase);
-            json = Regex.Replace(json, "(\"" + web.ServerRelativeUrl + ")(?!&)", "\"{site}", RegexOptions.IgnoreCase);
-            json = Regex.Replace(json, "'" + web.ServerRelativeUrl, "'{site}", RegexOptions.IgnoreCase);
-            json = Regex.Replace(json, ">" + web.ServerRelativeUrl, ">{site}", RegexOptions.IgnoreCase);
-            json = Regex.Replace(json, web.ServerRelativeUrl, "{site}", RegexOptions.IgnoreCase);
+            if (web.ServerRelativeUrl != "/")
+            {
+                // Normal site collection
+                json = Regex.Replace(json, "(\"" + web.ServerRelativeUrl + ")(?!&)", "\"{site}", RegexOptions.IgnoreCase);
+                json = Regex.Replace(json, "'" + web.ServerRelativeUrl, "'{site}", RegexOptions.IgnoreCase);
+                json = Regex.Replace(json, ">" + web.ServerRelativeUrl, ">{site}", RegexOptions.IgnoreCase);
+                json = Regex.Replace(json, web.ServerRelativeUrl, "{site}", RegexOptions.IgnoreCase);
+            }
+            else
+            {
+                // Root site collection
+                json = Regex.Replace(json, "(\"" + web.ServerRelativeUrl + ")(?!&)", "\"{site}/", RegexOptions.IgnoreCase);
+                json = Regex.Replace(json, "'" + web.ServerRelativeUrl, "'{site}/", RegexOptions.IgnoreCase);
+                json = Regex.Replace(json, ">" + web.ServerRelativeUrl, ">{site}/", RegexOptions.IgnoreCase);
+
+            }
 
             // Connected Office 365 group tokenization
             if (site.GroupId != null && !site.GroupId.Equals(Guid.Empty))
@@ -861,7 +915,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers.Utilities
 
             return json;
         }
-                        #endregion
+        #endregion
     }
 #endif
-                }
+}

@@ -175,6 +175,7 @@ FakesAssemblies/
 
 # App.Config files
 [Aa]pp.[Cc]onfig
+[Aa]pp.*.[Cc]onfig
 
 # Visual Studio 2015 cache/options directory
 .vs/

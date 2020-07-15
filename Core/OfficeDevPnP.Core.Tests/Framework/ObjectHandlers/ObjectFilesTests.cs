@@ -117,7 +117,11 @@ alert(""Hello!"");
                 {
                     // If this throws ServerException (does not belong to list), then shouldn't be trying to set properties)
                     // Handling the exception stating the "The object specified does not belong to a list."
+#if !ONPREMISES
+                    if (ex.ServerErrorCode != -2113929210)
+#else
                     if (ex.ServerErrorCode != -2146232832)
+#endif
                     {
                         throw;
                     }
