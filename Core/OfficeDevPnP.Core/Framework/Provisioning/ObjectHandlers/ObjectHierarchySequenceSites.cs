@@ -255,7 +255,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         siteInfo.SiteDesignId = siteDesignId;
                                     }
 
-                                    var groupSiteInfo = Sites.SiteCollection.GetGroupInfoAsync(tenant.Context as ClientContext, siteInfo.Alias).GetAwaiter().GetResult();
+                                    var groupSiteInfo = Sites.SiteCollection.GetGroupInfoAsync(rootSiteContext, siteInfo.Alias).GetAwaiter().GetResult();
                                     if (groupSiteInfo == null)
                                     {
                                         string graphAccessToken = null;
