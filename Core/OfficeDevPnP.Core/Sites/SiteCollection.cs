@@ -1,5 +1,4 @@
-﻿
-#if !SP2013 && !SP2016
+﻿#if !SP2013 && !SP2016
 #if !ONPREMISES
 using Microsoft.Graph;
 #endif
@@ -7,6 +6,7 @@ using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Diagnostics;
+using OfficeDevPnP.Core.Entities;
 using OfficeDevPnP.Core.Utilities;
 using OfficeDevPnP.Core.Utilities.Async;
 using System;
@@ -558,12 +558,58 @@ namespace OfficeDevPnP.Core.Sites
 
             if (group != null && !string.IsNullOrEmpty(group.SiteUrl))
             {
+                // Try to configure the site/group classification, if any
+                if (!string.IsNullOrEmpty(siteCollectionCreationInformation.Classification))
+                {
+                    await SetTeamSiteClassification(
+                        siteCollectionCreationInformation.Classification,
+                        group.GroupId,
+                        graphAccessToken
+                        );
+                }
+
                 responseContext = clientContext.Clone(group.SiteUrl);
             }
 
             return responseContext;
         }
 #endif
+
+        private static async Task SetTeamSiteClassification(string classification, string groupId, string graphAccessToken)
+        {
+            // Patch the created group
+            using (var handler = new HttpClientHandler())
+            {
+                using (var httpClient = new PnPHttpProvider(handler))
+                {
+                    string requestUrl = $"https://graph.microsoft.com/v1.0/groups/{groupId}";
+
+                    // Serialize request object to JSON
+                    var jsonBody = JsonConvert.SerializeObject(new { classification });
+                    var requestBody = new StringContent(jsonBody);
+
+                    // Build Http request
+                    HttpRequestMessage request = new HttpRequestMessage(new HttpMethod("PATCH"), requestUrl);
+                    request.Content = requestBody;
+                    if (MediaTypeHeaderValue.TryParse("application/json", out MediaTypeHeaderValue jsonMediaType))
+                    {
+                        requestBody.Headers.ContentType = jsonMediaType;
+                    }
+                    if (!string.IsNullOrEmpty(graphAccessToken))
+                    {
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", graphAccessToken);
+                    }
+
+                    // Perform actual post operation
+                    HttpResponseMessage response = await httpClient.SendAsync(request, new System.Threading.CancellationToken());
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new Exception("Failed to set Classification for created group");
+                    }
+                }
+            }
+        }
 
 #if !ONPREMISES
         /// <summary>

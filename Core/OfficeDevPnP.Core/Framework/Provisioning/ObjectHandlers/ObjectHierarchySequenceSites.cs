@@ -222,12 +222,19 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
 
                     TokenParser siteTokenParser = null;
 
-                    var tenantThemes = tenant.GetAllTenantThemes();
-                    tenant.Context.Load(tenantThemes);
-                    tenant.Context.ExecuteQueryRetry();
+                    // CHANGED: To avoid issues with low privilege users
+                    ClientObjectList<Microsoft.Online.SharePoint.TenantManagement.ThemeProperties> tenantThemes = null;
+                    if (TenantExtensions.IsCurrentUserTenantAdmin((ClientContext)tenant.Context))
+                    {
+                        tenantThemes = tenant.GetAllTenantThemes();
+                        tenant.Context.Load(tenantThemes);
+                        tenant.Context.ExecuteQueryRetry();
+                    }
 
                     foreach (var sitecollection in sequence.SiteCollections)
                     {
+                        var rootSiteUrl = tenant.Context.Url.Replace("-admin", "");
+                        ClientContext rootSiteContext = tenant.Context.Clone(rootSiteUrl, configuration.AccessTokens);
                         ClientContext siteContext = null;
 
                         switch (sitecollection)
@@ -248,7 +255,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         siteInfo.SiteDesignId = siteDesignId;
                                     }
 
-                                    var groupSiteInfo = Sites.SiteCollection.GetGroupInfoAsync(tenant.Context as ClientContext, siteInfo.Alias).GetAwaiter().GetResult();
+                                    var groupSiteInfo = Sites.SiteCollection.GetGroupInfoAsync(rootSiteContext, siteInfo.Alias).GetAwaiter().GetResult();
                                     if (groupSiteInfo == null)
                                     {
                                         string graphAccessToken = null;
@@ -265,7 +272,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                             }
                                         }
                                         WriteMessage($"Creating Team Site {siteInfo.Alias}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait, graphAccessToken: graphAccessToken);
+                                        siteContext = Sites.SiteCollection.Create(rootSiteContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait, graphAccessToken: graphAccessToken);
                                     }
                                     else
                                     {
@@ -281,7 +288,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         siteContext.ExecuteQueryRetry();
                                         RegisterAsHubSite(tenant, siteContext.Url, siteContext.Site.Id, t.HubSiteLogoUrl, t.HubSiteTitle, tokenParser);
                                     }
-                                    if (!string.IsNullOrEmpty(t.Theme))
+                                    if (!string.IsNullOrEmpty(t.Theme) && tenantThemes != null)
                                     {
                                         var parsedTheme = tokenParser.ParseString(t.Theme);
                                         if (tenantThemes.FirstOrDefault(th => th.Name == parsedTheme) != null)
@@ -335,9 +342,8 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     var siteUrl = tokenParser.ParseString(c.Url);
                                     if (!siteUrl.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
                                     {
-                                        var rootSiteUrl = tenant.GetRootSiteUrl();
-                                        tenant.Context.ExecuteQueryRetry();
-                                        siteUrl = UrlUtility.Combine(rootSiteUrl.Value, siteUrl);
+                                        // CHANGED: Modified to support low privilege users
+                                        siteUrl = UrlUtility.Combine(rootSiteUrl, siteUrl);
                                     }
                                     CommunicationSiteCollectionCreationInformation siteInfo = new CommunicationSiteCollectionCreationInformation()
                                     {
@@ -365,12 +371,13 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         }
                                     }
                                     // check if site exists
-                                    if (tenant.SiteExistsAnywhere(siteInfo.Url) == SiteExistence.Yes)
+                                    var siteExistence = tenant.SiteExistsAnywhere(siteInfo.Url);
+                                    if (siteExistence == SiteExistence.Yes)
                                     {
                                         WriteMessage($"Using existing Communications Site at {siteInfo.Url}", ProvisioningMessageType.Progress);
                                         siteContext = (tenant.Context as ClientContext).Clone(siteInfo.Url, configuration.AccessTokens);
                                     }
-                                    else if (tenant.SiteExistsAnywhere(siteInfo.Url) == SiteExistence.Recycled)
+                                    else if (siteExistence == SiteExistence.Recycled)
                                     {
                                         var errorMessage = $"The requested Communications Site at {siteInfo.Url} is in the Recycle Bin and cannot be created";
                                         WriteMessage(errorMessage, ProvisioningMessageType.Error);
@@ -379,7 +386,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     else
                                     {
                                         WriteMessage($"Creating Communications Site at {siteInfo.Url}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait);
+                                        siteContext = Sites.SiteCollection.Create(rootSiteContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait);
                                     }
                                     if (c.IsHubSite)
                                     {
@@ -387,7 +394,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         siteContext.ExecuteQueryRetry();
                                         RegisterAsHubSite(tenant, siteInfo.Url, siteContext.Site.Id, c.HubSiteLogoUrl, c.HubSiteTitle, tokenParser);
                                     }
-                                    if (!string.IsNullOrEmpty(c.Theme))
+                                    if (!string.IsNullOrEmpty(c.Theme) && tenantThemes != null)
                                     {
                                         var parsedTheme = tokenParser.ParseString(c.Theme);
                                         if (tenantThemes.FirstOrDefault(th => th.Name == parsedTheme) != null)
@@ -423,12 +430,14 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         Description = tokenParser.ParseString(t.Description),
                                         Owner = tokenParser.ParseString(t.Owner)
                                     };
-                                    if (tenant.SiteExistsAnywhere(siteUrl) == SiteExistence.Yes)
+                                    // check if site exists
+                                    var siteExistence = tenant.SiteExistsAnywhere(siteUrl);
+                                    if (siteExistence == SiteExistence.Yes)
                                     {
                                         WriteMessage($"Using existing Team Site at {siteUrl}", ProvisioningMessageType.Progress);
                                         siteContext = (tenant.Context as ClientContext).Clone(siteUrl, configuration.AccessTokens);
                                     }
-                                    else if (tenant.SiteExistsAnywhere(siteUrl) == SiteExistence.Recycled)
+                                    else if (siteExistence == SiteExistence.Recycled)
                                     {
                                         var errorMessage = $"The requested Team Site at {siteUrl} is in the Recycle Bin and cannot be created";
                                         WriteMessage(errorMessage, ProvisioningMessageType.Error);
@@ -437,7 +446,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                     else
                                     {
                                         WriteMessage($"Creating Team Site with no Office 365 group at {siteUrl}", ProvisioningMessageType.Progress);
-                                        siteContext = Sites.SiteCollection.Create(tenant.Context as ClientContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait);
+                                        siteContext = Sites.SiteCollection.Create(rootSiteContext, siteInfo, configuration.Tenant.DelayAfterModernSiteCreation, noWait: nowait);
                                     }
                                     if (t.Groupify)
                                     {
@@ -468,7 +477,7 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
                                         siteContext.ExecuteQueryRetry();
                                         RegisterAsHubSite(tenant, siteContext.Url, siteContext.Site.Id, t.HubSiteLogoUrl, t.HubSiteTitle, tokenParser);
                                     }
-                                    if (!string.IsNullOrEmpty(t.Theme))
+                                    if (!string.IsNullOrEmpty(t.Theme) && tenantThemes != null)
                                     {
                                         var parsedTheme = tokenParser.ParseString(t.Theme);
                                         if (tenantThemes.FirstOrDefault(th => th.Name == parsedTheme) != null)
