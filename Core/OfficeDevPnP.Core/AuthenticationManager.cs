@@ -21,6 +21,7 @@ using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities.Context;
 using System.Web;
+using System.Windows.Threading;
 
 namespace OfficeDevPnP.Core
 {
@@ -375,12 +376,13 @@ namespace OfficeDevPnP.Core
         /// <param name="siteUrl">Site for which the ClientContext object will be instantiated</param>
         /// <param name="icon">Optional icon to use for the popup form</param>
         /// <param name="scriptErrorsSuppressed">Optional parameter to set WebBrowser.ScriptErrorsSuppressed value in the popup form</param>
+        /// <param name="loginRequestUri">Optional URL to use to log the user in to a specific page. If not provided, the <paramref name="siteUrl"/> will be used.</param>
         /// <returns>ClientContext to be used by CSOM code</returns>
-        public ClientContext GetWebLoginClientContext(string siteUrl, System.Drawing.Icon icon = null, bool scriptErrorsSuppressed = true)
+        public ClientContext GetWebLoginClientContext(string siteUrl, System.Drawing.Icon icon = null, bool scriptErrorsSuppressed = true, Uri loginRequestUri = null)
         {
             var authCookiesContainer = new CookieContainer();
             var siteUri = new Uri(siteUrl);
-
+            
             var thread = new Thread(() =>
             {
                 var form = new System.Windows.Forms.Form();
@@ -401,11 +403,11 @@ namespace OfficeDevPnP.Core
                 form.Controls.Add(browser);
                 form.ResumeLayout(false);
 
-                browser.Navigate(siteUri);
+                browser.Navigate(loginRequestUri ?? siteUri);
 
                 browser.Navigated += (sender, args) =>
                 {
-                    if (siteUri.Host.Equals(args.Url.Host))
+                    if ((loginRequestUri ?? siteUri).Host.Equals(args.Url.Host))
                     {
                         var cookieString = CookieReader.GetCookie(siteUrl).Replace("; ", ",").Replace(";", ",");
 
@@ -431,7 +433,7 @@ namespace OfficeDevPnP.Core
                 };
 
                 form.Focus();
-                form.ShowDialog();
+                form.ShowDialog();                
                 browser.Dispose();
             });
 
