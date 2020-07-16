@@ -373,7 +373,7 @@ namespace Microsoft.SharePoint.Client
                         {
                             newClientContext = authManager.GetAppOnlyAuthenticatedContext(newSiteUrl, TokenHelper.GetRealmFromTargetUrl(new Uri(newSiteUrl)), contextSettings.ClientId, contextSettings.ClientSecret, contextSettings.AcsHostUrl, contextSettings.GlobalEndPointPrefix);
                         }
-#if !ONPREMISES && !NETSTANDARD2_0
+#if !ONPREMISES 
                         else if (contextSettings.Type == ClientContextType.AzureADCredentials)
                         {
                             newClientContext = authManager.GetAzureADCredentialsContext(newSiteUrl, contextSettings.UserName, contextSettings.Password);
