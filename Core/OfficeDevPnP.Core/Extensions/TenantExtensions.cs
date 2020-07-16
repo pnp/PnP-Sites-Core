@@ -1023,6 +1023,7 @@ namespace Microsoft.SharePoint.Client
         #endregion
 #endif
 
+#if !ONPREMISES
         public static bool IsCurrentUserTenantAdmin(ClientContext clientContext)
         {
             if (PnPProvisioningContext.Current != null)
@@ -1111,8 +1112,9 @@ namespace Microsoft.SharePoint.Client
                 }
             }
         }
+#endif
 
-#if !SP2013 && !SP2016     
+#if !SP2013 && !SP2016
         public static bool IsCurrentUserTenantAdmin(ClientContext clientContext, string tenantAdminSiteUrl)
         {
             bool result = false;
@@ -1216,10 +1218,10 @@ namespace Microsoft.SharePoint.Client
             return result;
         }
 #endif
-        #endregion
+#endregion
 
 
-        #region Site status checks
+#region Site status checks
         /// <summary>
         /// Returns if a site collection is in a particular status. If the URL contains a sub site then returns true is the sub site exists, false if not. 
         /// Status is irrelevant for sub sites

@@ -122,16 +122,20 @@ namespace OfficeDevPnP.Core.Framework.Provisioning.ObjectHandlers
             // CHANGED: To avoid issues with low privilege users
             Web web = null;
 
+#if !ONPREMISES
             if (TenantExtensions.IsCurrentUserTenantAdmin((ClientContext)tenant.Context))
             {
                 web = ((ClientContext)tenant.Context).Web;
             }
             else
             {
+#endif
                 var rootSiteUrl = tenant.Context.Url.Replace("-admin", "");
                 var context = ((ClientContext)tenant.Context).Clone(rootSiteUrl);
                 web = context.Web;
+#if !ONPREMISES
             }
+#endif
 
             web.EnsureProperties(w => w.ServerRelativeUrl, w => w.Url, w => w.Language);
             _web = web;
