@@ -1666,17 +1666,18 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
                 {
                     if (this.certificate != null)
                     {
-                        ccEnumerate = GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(GetTenantAdminSite(site), this.clientId, this.azureTenant, this.certificate);
+                        ccEnumerate = GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(GetTenantAdminSite(site), this.clientId, this.azureTenant, this.certificate, this.azureEnvironment);
                     }
                     else
                     {
-                        ccEnumerate = GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(GetTenantAdminSite(site), this.clientId, this.azureTenant, this.certificatePath, this.certificatePassword);
+                        ccEnumerate = GetAuthenticationManager(site).GetAzureADAppOnlyAuthenticatedContext(GetTenantAdminSite(site), this.clientId, this.azureTenant, this.certificatePath, this.certificatePassword, this.azureEnvironment);
                     }
                 }
 #if !NETSTANDARD2_0
                 else
                 {
-                    ccEnumerate = GetAuthenticationManager(site).GetSharePointOnlineAuthenticatedContextTenant(GetTenantAdminSite(site), EnumerationUser, EnumerationPassword);
+                    //ccEnumerate = GetAuthenticationManager(site).GetSharePointOnlineAuthenticatedContextTenant(GetTenantAdminSite(site), EnumerationUser, EnumerationPassword);
+                    ccEnumerate = GetAuthenticationManager(site).GetAzureADCredentialsContext(GetTenantAdminSite(site), EnumerationUser, EnumerationPassword, this.azureEnvironment);
                 }
 #endif
                 Tenant tenant = new Tenant(ccEnumerate);
