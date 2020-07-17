@@ -1764,7 +1764,9 @@ namespace OfficeDevPnP.Core.Framework.TimerJobs
             {
                 Uri u = new Uri(GetTopLevelSite(site.Replace("*", "")));
                 string tenantName = u.DnsSafeHost.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries)[0];
-                return $"https://{tenantName}-admin.sharepoint.com";
+                var parts = u.DnsSafeHost.Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries);
+                string domainExtension = parts[parts.Length - 1];
+                return $"https://{tenantName}-admin.sharepoint.{domainExtension}";
             }
         }
 
