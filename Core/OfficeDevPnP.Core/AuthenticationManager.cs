@@ -21,7 +21,9 @@ using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using OfficeDevPnP.Core.Utilities.Context;
 using System.Web;
+#if !ONPREMISES
 using Microsoft.Identity.Client;
+#endif
 
 namespace OfficeDevPnP.Core
 {
@@ -62,10 +64,10 @@ namespace OfficeDevPnP.Core
         private Uri _redirectUri;
         private bool disposedValue;
 
+#if !ONPREMISES
         private static IPublicClientApplication publicClientApplication;
         private static IConfidentialClientApplication confidentialClientApplication;
-        private static string tokenCacheFileName;
-        private static string tokenCacheFileDirectory;
+#endif
 
         #region Construction
         public AuthenticationManager()
